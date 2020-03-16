@@ -15,9 +15,9 @@ public class BouncerAgent : Agent
     int m_NumberJumps = 20;
     int m_JumpLeft = 20;
 
-    IFloatProperties m_ResetParams;
+    FloatPropertiesChannel m_ResetParams;
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
         m_Rb = gameObject.GetComponent<Rigidbody>();
         m_LookDir = Vector3.zero;
@@ -33,7 +33,7 @@ public class BouncerAgent : Agent
         sensor.AddObservation(target.transform.localPosition);
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         for (var i = 0; i < vectorAction.Length; i++)
         {
@@ -52,7 +52,7 @@ public class BouncerAgent : Agent
         m_LookDir = new Vector3(x, y, z);
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         gameObject.transform.localPosition = new Vector3(
             (1 - 2 * Random.value) * 5, 2, (1 - 2 * Random.value) * 5);
@@ -85,7 +85,7 @@ public class BouncerAgent : Agent
         if (gameObject.transform.position.y < -1)
         {
             AddReward(-1);
-            Done();
+            EndEpisode();
             return;
         }
 
@@ -93,12 +93,12 @@ public class BouncerAgent : Agent
             || gameObject.transform.localPosition.z < -19 || gameObject.transform.localPosition.z > 19)
         {
             AddReward(-1);
-            Done();
+            EndEpisode();
             return;
         }
         if (m_JumpLeft == 0)
         {
-            Done();
+            EndEpisode();
         }
     }
 

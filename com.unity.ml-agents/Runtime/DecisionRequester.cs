@@ -1,5 +1,5 @@
-using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -8,7 +8,7 @@ namespace MLAgents
     /// at regular intervals.
     /// </summary>
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
-    public class DecisionRequester : MonoBehaviour
+    internal class DecisionRequester : MonoBehaviour
     {
         /// <summary>
         /// The frequency with which the agent requests a decision. A DecisionPeriod of 5 means
@@ -26,7 +26,8 @@ namespace MLAgents
         [Tooltip("Indicates whether or not the agent will take an action during the Academy " +
                  "steps where it does not request a decision. Has no effect when DecisionPeriod " +
                  "is set to 1.")]
-        public bool RepeatAction = true;
+        [FormerlySerializedAs("RepeatAction")]
+        public bool TakeActionsBetweenDecisions = true;
 
         /// <summary>
         /// Whether or not the Agent decisions should start at an offset (different for each agent).
@@ -62,7 +63,7 @@ namespace MLAgents
             {
                 m_Agent?.RequestDecision();
             }
-            if (RepeatAction)
+            if (TakeActionsBetweenDecisions)
             {
                 m_Agent?.RequestAction();
             }

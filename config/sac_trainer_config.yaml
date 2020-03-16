@@ -40,7 +40,7 @@ Bouncer:
     summary_freq: 20000
 
 PushBlock:
-    max_steps: 1.5e7
+    max_steps: 2e6
     init_entcoef: 0.05
     hidden_units: 256
     summary_freq: 60000

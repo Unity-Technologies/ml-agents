@@ -127,14 +127,22 @@ namespace MLAgents.Inference
         /// </param>
         /// <param name="sensorComponents">Attached sensor components</param>
         /// <returns>The list the error messages of the checks that failed</returns>
-        public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters, SensorComponent[] sensorComponents)
+        public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters,
+            SensorComponent[] sensorComponents, BehaviorType behaviorType = BehaviorType.Default)
         {
             List<string> failedModelChecks = new List<string>();
             if (model == null)
             {
-                failedModelChecks.Add(
-                    "There is no model for this Brain, cannot run inference. " +
-                    "(But can still train)");
+                var errorMsg = "There is no model for this Brain; cannot run inference. ";
+                if (behaviorType == BehaviorType.InferenceOnly)
+                {
+                    errorMsg += "Either assign a model, or change to a different Behavior Type.";
+                }
+                else
+                {
+                    errorMsg += "(But can still train)";
+                }
+                failedModelChecks.Add(errorMsg);
                 return failedModelChecks;
             }
 

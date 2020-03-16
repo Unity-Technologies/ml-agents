@@ -1,4 +1,3 @@
-import logging
 import os
 from typing import List, Tuple
 import numpy as np
@@ -20,9 +19,7 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
 )
 from mlagents_envs.timers import timed, hierarchical_timer
 from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
-
-
-logger = logging.getLogger("mlagents.trainers")
+from google.protobuf.internal.encoder import _EncodeVarint  # type: ignore
 
 
 @timed
@@ -118,6 +115,9 @@ def get_demo_files(path: str) -> List[str]:
         )
 
 
+INITIAL_POS = 33
+
+
 @timed
 def load_demonstration(
     file_path: str
@@ -129,7 +129,6 @@ def load_demonstration(
     """
 
     # First 32 bytes of file dedicated to meta-data.
-    INITIAL_POS = 33
     file_paths = get_demo_files(file_path)
     group_spec = None
     brain_param_proto = None
@@ -168,3 +167,21 @@ def load_demonstration(
             f"No BrainParameters found in demonstration file at {file_path}."
         )
     return group_spec, info_action_pairs, total_expected
+
+
+def write_delimited(f, message):
+    msg_string = message.SerializeToString()
+    msg_size = len(msg_string)
+    _EncodeVarint(f.write, msg_size)
+    f.write(msg_string)
+
+
+def write_demo(demo_path, meta_data_proto, brain_param_proto, agent_info_protos):
+    with open(demo_path, "wb") as f:
+        # write metadata
+        write_delimited(f, meta_data_proto)
+        f.seek(INITIAL_POS)
+        write_delimited(f, brain_param_proto)
+
+        for agent in agent_info_protos:
+            write_delimited(f, agent)

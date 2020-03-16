@@ -244,7 +244,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 1
+  TeamId: 1
   m_UseChildSensors: 1
 --- !u!114 &114492261207303438
 MonoBehaviour:
@@ -277,26 +277,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensor
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &9152743230243588598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -310,7 +310,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &1100217258374548
 GameObject:
@@ -622,7 +622,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &114850431417842684
 MonoBehaviour:
@@ -655,26 +655,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensor
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &404683423509059512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -688,7 +688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &1141134673700168
 GameObject:
@@ -3324,26 +3324,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &1380156559769609756
 GameObject:
   m_ObjectHideFlags: 0
@@ -3883,7 +3883,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 1
+  TeamId: 1
   m_UseChildSensors: 1
 --- !u!114 &6954070104302829726
 MonoBehaviour:
@@ -3916,26 +3916,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensor
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &1627345754148825771
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3949,7 +3949,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &1897170901855235213
 GameObject:
@@ -3994,26 +3994,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &1986779485041503505
 GameObject:
   m_ObjectHideFlags: 0
@@ -4103,7 +4103,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &2022429702144620855
 MonoBehaviour:
@@ -4136,26 +4136,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensor
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &383509589018865836
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4169,7 +4169,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &2124761965305375139
 GameObject:
@@ -4214,26 +4214,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &2226531867376102072
 GameObject:
   m_ObjectHideFlags: 0
@@ -4504,26 +4504,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &2525142235152062310
 GameObject:
   m_ObjectHideFlags: 0
@@ -4803,26 +4803,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &3088685873901699079
 GameObject:
   m_ObjectHideFlags: 0
@@ -4866,26 +4866,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &3137532328811276395
 GameObject:
   m_ObjectHideFlags: 0
@@ -5761,7 +5761,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 1
+  TeamId: 1
   m_UseChildSensors: 1
 --- !u!114 &6855830296884182341
 MonoBehaviour:
@@ -5794,26 +5794,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensor
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &6384345363145965643
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5827,7 +5827,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &5189658827866653388
 GameObject:
@@ -5918,7 +5918,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &582843529477248009
 MonoBehaviour:
@@ -5951,26 +5951,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensor
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &207635274551600999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5984,7 +5984,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &5298260412645894501
 GameObject:
@@ -6157,7 +6157,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 1
+  TeamId: 1
   m_UseChildSensors: 1
 --- !u!114 &2375211931252174569
 MonoBehaviour:
@@ -6190,26 +6190,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensor
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &8829516373144387202
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6223,7 +6223,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &5646796767244272979
 GameObject:
@@ -6391,7 +6391,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &5596404811566570806
 MonoBehaviour:
@@ -6424,26 +6424,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensor
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &3995363798833944065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6457,7 +6457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &5722527935048982596
 GameObject:
@@ -7659,26 +7659,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &7995690102123273994
 GameObject:
   m_ObjectHideFlags: 0
@@ -7722,26 +7722,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &8107722383771667773
 GameObject:
   m_ObjectHideFlags: 0
@@ -8139,7 +8139,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 1
+  TeamId: 1
   m_UseChildSensors: 1
 --- !u!114 &7920144334342864513
 MonoBehaviour:
@@ -8172,26 +8172,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensor
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &3783133589427975123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8205,7 +8205,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &9136065168043485173
 GameObject:
@@ -8250,26 +8250,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: PurpleRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: PurpleRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - purpleGoal
   - blueGoal
   - wall
   - purpleAgent
   - blueAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!1 &9137412374636088465
 GameObject:
   m_ObjectHideFlags: 0
@@ -8359,7 +8359,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SoccerFives
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &1559066246895354931
 MonoBehaviour:
@@ -8392,26 +8392,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensor
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensor
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 5
-  maxRayDegrees: 60
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 5
+  m_MaxRayDegrees: 60
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5
 --- !u!114 &6424037218293500571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8425,7 +8425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
 --- !u!1 &9174017734929201195
 GameObject:
@@ -8470,23 +8470,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensorName: BlueRayPerceptionSensorReverse
-  detectableTags:
+  m_SensorName: BlueRayPerceptionSensorReverse
+  m_DetectableTags:
   - ball
   - blueGoal
   - purpleGoal
   - wall
   - blueAgent
   - purpleAgent
-  raysPerDirection: 2
-  maxRayDegrees: 90
-  sphereCastRadius: 0.5
-  rayLength: 60
-  rayLayerMask:
+  m_RaysPerDirection: 1
+  m_MaxRayDegrees: 45
+  m_SphereCastRadius: 0.5
+  m_RayLength: 60
+  m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
-  observationStacks: 3
+  m_ObservationStacks: 3
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  startVerticalOffset: 0.5
-  endVerticalOffset: 0.5
+  m_StartVerticalOffset: 0.5
+  m_EndVerticalOffset: 0.5

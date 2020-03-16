@@ -1,6 +1,5 @@
-from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel import SideChannel, OutgoingMessage, IncomingMessage
 from mlagents_envs.exception import UnityCommunicationException
-import struct
 import uuid
 from typing import NamedTuple
 
@@ -31,7 +30,7 @@ class EngineConfigurationChannel(SideChannel):
     def __init__(self) -> None:
         super().__init__(uuid.UUID("e951342c-4f7e-11ea-b238-784f4387d1f7"))
 
-    def on_message_received(self, data: bytes) -> None:
+    def on_message_received(self, msg: IncomingMessage) -> None:
         """
         Is called by the environment to the side channel. Can be called
         multiple times per step if multiple messages are meant for that
@@ -65,18 +64,16 @@ class EngineConfigurationChannel(SideChannel):
         :param target_frame_rate: Instructs simulation to try to render at a
         specified frame rate. Default -1.
         """
-        data = bytearray()
-        data += struct.pack("<i", width)
-        data += struct.pack("<i", height)
-        data += struct.pack("<i", quality_level)
-        data += struct.pack("<f", time_scale)
-        data += struct.pack("<i", target_frame_rate)
-        super().queue_message_to_send(data)
+        msg = OutgoingMessage()
+        msg.write_int32(width)
+        msg.write_int32(height)
+        msg.write_int32(quality_level)
+        msg.write_float32(time_scale)
+        msg.write_int32(target_frame_rate)
+        super().queue_message_to_send(msg)
 
     def set_configuration(self, config: EngineConfig) -> None:
         """
         Sets the engine configuration. Takes as input an EngineConfig.
         """
-        data = bytearray()
-        data += struct.pack("<iiifi", *config)
-        super().queue_message_to_send(data)
+        self.set_configuration_parameters(**config._asdict())

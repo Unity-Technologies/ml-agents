@@ -60,7 +60,7 @@ public class SoccerFieldArea : MonoBehaviour
             {
                 ps.agentScript.AddReward(-1);
             }
-            ps.agentScript.Done();  //all agents need to be reset
+            ps.agentScript.EndEpisode();  //all agents need to be reset
 
             if (goalTextUI)
             {

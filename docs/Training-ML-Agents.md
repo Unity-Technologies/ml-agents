@@ -190,6 +190,7 @@ example environments are included in the provided config file.
 | init_entcoef         | How much the agent should explore in the beginning of training.                                                                                                                         | SAC                      |
 | lambd                | The regularization parameter.                                                                                                                                                           | PPO                      |
 | learning_rate        | The initial learning rate for gradient descent.                                                                                                                                         | PPO, SAC             |
+| learning_rate_schedule | Determines how learning rate changes over time. | PPO, SAC |
 | max_steps            | The maximum number of simulation steps to run during a training session.                                                                                                                | PPO, SAC             |
 | memory_size          | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                 | PPO, SAC             |
 | normalize            | Whether to automatically normalize observations.                                                                                                                                        | PPO, SAC                 |

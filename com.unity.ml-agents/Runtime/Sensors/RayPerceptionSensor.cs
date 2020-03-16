@@ -106,7 +106,7 @@ namespace MLAgents.Sensors
             var startPositionWorld = transform.TransformPoint(startPositionLocal);
             var endPositionWorld = transform.TransformPoint(endPositionLocal);
 
-            return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
+            return (StartPositionWorld : startPositionWorld, EndPositionWorld : endPositionWorld);
         }
 
         /// <summary>
@@ -250,12 +250,10 @@ namespace MLAgents.Sensors
         /// <param name="rayInput">The inputs for the sensor.</param>
         public RayPerceptionSensor(string name, RayPerceptionInput rayInput)
         {
-            var numObservations = rayInput.OutputSize();
-            m_Shape = new[] { numObservations };
             m_Name = name;
             m_RayPerceptionInput = rayInput;
 
-            m_Observations = new float[numObservations];
+            SetNumObservations(rayInput.OutputSize());
 
             if (Application.isEditor)
             {
@@ -263,10 +261,27 @@ namespace MLAgents.Sensors
             }
         }
 
-        internal void SetRayPerceptionInput(RayPerceptionInput input)
+        void SetNumObservations(int numObservations)
         {
-            // TODO make sure that number of rays and tags don't change
-            m_RayPerceptionInput = input;
+            m_Shape = new[] { numObservations };
+            m_Observations = new float[numObservations];
+        }
+
+        internal void SetRayPerceptionInput(RayPerceptionInput rayInput)
+        {
+            // Note that change the number of rays or tags doesn't directly call this,
+            // but changing them and then changing another field will.
+            if (m_RayPerceptionInput.OutputSize() != rayInput.OutputSize())
+            {
+                Debug.Log(
+                    "Changing the number of tags or rays at runtime is not " +
+                    "supported and may cause errors in training or inference."
+                );
+                // Changing the shape will probably break things downstream, but we can at least
+                // keep this consistent.
+                SetNumObservations(rayInput.OutputSize());
+            }
+            m_RayPerceptionInput = rayInput;
         }
 
         /// <summary>

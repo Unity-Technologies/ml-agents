@@ -8,7 +8,7 @@ import subprocess
 from typing import Dict, List, Optional, Any
 
 import mlagents_envs
-from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
 
 from mlagents_envs.base_env import (
     BaseEnv,
@@ -46,7 +46,7 @@ from sys import platform
 import signal
 import struct
 
-logging.basicConfig(level=logging.INFO)
+
 logger = logging.getLogger("mlagents_envs")
 
 
@@ -498,7 +498,8 @@ class UnityEnvironment(BaseEnv):
                     "sending side channel data properly.".format(channel_id)
                 )
             if channel_id in side_channels:
-                side_channels[channel_id].on_message_received(message_data)
+                incoming_message = IncomingMessage(message_data)
+                side_channels[channel_id].on_message_received(incoming_message)
             else:
                 logger.warning(
                     "Unknown side channel data received. Channel type "

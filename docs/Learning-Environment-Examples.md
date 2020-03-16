@@ -106,8 +106,8 @@ If you would like to contribute environments, please see our
 * Goal: The agents must hit the ball so that the opponent cannot hit a valid
 return.
 * Agents: The environment contains two agent with same Behavior Parameters.
- After training you can check the `Use Heuristic` checkbox on one of the Agents
- to play against your trained model.
+ After training you can set the `Behavior Type` to `Heuristic Only` on one of the Agent's
+ Behavior Parameters to play against your trained model.
 * Agent Reward Function (independent):
   * +1.0 To the agent that wins the point. An agent wins a point by preventing
    the opponent from hitting a valid return.

@@ -1,12 +1,9 @@
 import logging
 from typing import Any, Dict, List, Optional
-
 import abc
 import numpy as np
-
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
-
 from mlagents_envs.exception import UnityException
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
@@ -59,7 +56,6 @@ class TFPolicy(Policy):
 
         self.use_recurrent = trainer_parameters["use_recurrent"]
         self.memory_dict: Dict[str, np.ndarray] = {}
-        self.reward_signals: Dict[str, "RewardSignal"] = {}
         self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
         self.normalize = trainer_parameters.get("normalize", False)

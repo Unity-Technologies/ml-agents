@@ -17,12 +17,12 @@ namespace MLAgents.Editor
             EditorGUI.BeginChangeCheck();
             EditorGUI.indentLevel++;
 
-            EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
-
-            // Because the number of rays and the tags affect the observation shape,
-            // they are not editable during play mode.
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            // Don't allow certain fields to be modified during play mode.
+            // * SensorName affects the ordering of the Agent's observations
+            // * The number of tags and rays affects the size of the observations.
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
+                EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_DetectableTags"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_RaysPerDirection"), true);
             }
@@ -35,7 +35,7 @@ namespace MLAgents.Editor
 
             // Because the number of observation stacks affects the observation shape,
             // it is not editable during play mode.
-            EditorGUI.BeginDisabledGroup(Application.isPlaying);
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
             }
@@ -56,19 +56,18 @@ namespace MLAgents.Editor
                 m_RequireSensorUpdate = true;
             }
 
-            UpdateSensorIfDirty();
             so.ApplyModifiedProperties();
+            UpdateSensorIfDirty();
         }
-
 
         void UpdateSensorIfDirty()
         {
-                if (m_RequireSensorUpdate)
-                {
-                    var sensorComponent = serializedObject.targetObject as RayPerceptionSensorComponentBase;
-                    sensorComponent?.UpdateSensor();
-                    m_RequireSensorUpdate = false;
-                }
+            if (m_RequireSensorUpdate)
+            {
+                var sensorComponent = serializedObject.targetObject as RayPerceptionSensorComponentBase;
+                sensorComponent?.UpdateSensor();
+                m_RequireSensorUpdate = false;
+            }
         }
     }
 
