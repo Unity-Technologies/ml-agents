@@ -341,17 +341,18 @@ return.
         * Recommended Maximum: 250
 * Benchmark Mean Reward: 10
 
-## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
+## [Soccer](https://youtu.be/Hg3nmYD3DjQ)
 
-![SoccerTwos](images/soccer.png)
+![SoccerTwos](images/soccertwos.png) ![SoccerFives](images/soccerfives.png)
 
-* Set-up: Environment where four agents compete in a 2 vs 2 toy soccer game.
+* Set-up: Environment where agents compete in an n vs n toy soccer game.
 * Goal:
   * Get the ball into the opponent's goal while preventing
   the ball from entering own goal.
   * Goalie:
-* Agents: The environment contains four agents, with the same
-  Behavior Parameters : Soccer.
+* Agents: The SoccerTwos environment contains four agents, with the same
+  Behavior Parameters : SoccerTwos. The SoccerFives environment contains ten agents, with the same
+  Behavior Parameters : SoccerFives.
 * Agent Reward Function (dependent):
     * +1 When ball enters opponent's goal.
     * -1 When ball enters team's goal.
@@ -372,6 +373,10 @@ return.
     * Default: 9.81
     * Recommended minimum: 6
     * Recommended maximum: 20
+* Curriculum for SoccerFives: Since SoccerFives occurs on a larger field, it is more difficult for agents to
+experience terminal rewards.  So, we introduce a curriculum that initially rewards agents for touching the ball.
+These intermediate rewards help agents discover that 'kicking' the ball can lead to larger rewards. Please see
+our documentation for [Curriculum Learning](Training-Curriculum-Learning.md) for more details.
 
 ## Walker
 
