@@ -73,7 +73,10 @@ class GaugeWriter(StatsWriter):
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
         for val, stats_summary in values.items():
-            set_gauge(f"{category}.{val}.mean", float(stats_summary.mean))
+            set_gauge(
+                GaugeWriter.sanitize_string(f"{category}.{val}.mean"),
+                float(stats_summary.mean),
+            )
 
 
 class ConsoleWriter(StatsWriter):

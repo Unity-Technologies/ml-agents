@@ -4,7 +4,7 @@ from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.observation_pb2 import (
     ObservationProto,
-    NONE as COMPRESSION_NONE,
+    NONE as COMPRESSION_TYPE_NONE,
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import numpy as np
@@ -74,7 +74,7 @@ def observation_to_np_array(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
             )
     gray_scale = obs.shape[2] == 1
-    if obs.compression_type == COMPRESSION_NONE:
+    if obs.compression_type == COMPRESSION_TYPE_NONE:
         img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)
         return img
