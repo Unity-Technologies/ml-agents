@@ -144,10 +144,6 @@ class AgentProcessor:
                     self.experience_buffers[global_id] = []
                     if curr_agent_step.done:
                         self.stats_reporter.add_stat(
-                            "Environment/Cumulative Reward",
-                            self.episode_rewards.get(global_id, 0),
-                        )
-                        self.stats_reporter.add_stat(
                             "Environment/Episode Length",
                             self.episode_steps.get(global_id, 0),
                         )

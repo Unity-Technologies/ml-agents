@@ -54,6 +54,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def _update_end_episode_stats(self, agent_id: str, optimizer: TFOptimizer) -> None:
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
+                self.stats_reporter.add_stat(
+                    "Environment/Cumulative Reward", rewards.get(agent_id, 0)
+                )
                 self.cumulative_returns_since_policy_update.append(
                     rewards.get(agent_id, 0)
                 )
