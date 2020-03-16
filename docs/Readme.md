@@ -5,15 +5,14 @@
 * [Installation](Installation.md)
   * [Background: Jupyter Notebooks](Background-Jupyter.md)
   * [Using Virtual Environment](Using-Virtual-Environment.md)
-* [Basic Guide](Basic-Guide.md)
 
 ## Getting Started
 
+* [Getting Started Guide](Getting-Started-with-Balance-Ball.md)
 * [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
   * [Background: Unity](Background-Unity.md)
   * [Background: Machine Learning](Background-Machine-Learning.md)
   * [Background: TensorFlow](Background-TensorFlow.md)
-* [Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
 * [Example Environments](Learning-Environment-Examples.md)
 
 ## Creating Learning Environments
