@@ -318,7 +318,7 @@ class Record1DEnvironment(Simple1DEnvironment):
         for _ in range(self.n_demos):
             for name in self.names:
                 if self.discrete:
-                    self.action[name] = [[self.goal[name]]]
+                    self.action[name] = [[1]] if self.goal[name] > 0 else [[0]]
                 else:
                     self.action[name] = [[float(self.goal[name])]]
             self.step()
