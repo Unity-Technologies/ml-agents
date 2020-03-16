@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_rl_initialization_input.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nFmlagents_envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"/\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\nFmlagents_envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"g\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x12\x1d\n\x15\x63ommunication_version\x18\x02 \x01(\t\x12\x17\n\x0fpackage_version\x18\x03 \x01(\tB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -39,6 +39,20 @@ _UNITYRLINITIALIZATIONINPUTPROTO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='communication_version', full_name='communicator_objects.UnityRLInitializationInputProto.communication_version', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='package_version', full_name='communicator_objects.UnityRLInitializationInputProto.package_version', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -52,7 +66,7 @@ _UNITYRLINITIALIZATIONINPUTPROTO = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=96,
-  serialized_end=143,
+  serialized_end=199,
 )
 
 DESCRIPTOR.message_types_by_name['UnityRLInitializationInputProto'] = _UNITYRLINITIALIZATIONINPUTPROTO

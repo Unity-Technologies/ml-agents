@@ -8,8 +8,16 @@ package communicator_objects;
 // The request message containing the academy's parameters.
 message UnityRLInitializationOutputProto {
     string name = 1;
-    string version = 2;
+
+    // Communication protocol version that the responding side (typically the C# environment) is using.
+    string communication_version = 2;
+
     string log_path = 3;
+
     repeated BrainParametersProto brain_parameters = 5;
+
     reserved 6; //environment parameters
+
+    // Package/library version that the responding side (typically the C# environment) is using.
+    string package_version = 7;
 }

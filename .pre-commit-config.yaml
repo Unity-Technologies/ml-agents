@@ -99,3 +99,9 @@ repos:
         language: script
         entry: utils/validate_versions.py
         files: ".*/__init__.py"
+    -   id: validate-init-py
+        name: validate __init__.py files
+        language: script
+        entry: utils/validate_inits.py
+        types: [python]
+

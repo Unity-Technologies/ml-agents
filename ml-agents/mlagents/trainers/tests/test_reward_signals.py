@@ -2,7 +2,7 @@ import pytest
 import yaml
 import os
 import mlagents.trainers.tests.mock_brain as mb
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 

@@ -5,7 +5,7 @@ import numpy as np
 import yaml
 import os
 
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.components.bc.module import BCModule
 
 

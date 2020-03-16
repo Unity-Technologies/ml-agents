@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using MLAgents;
+using MLAgents.SideChannels;
 
 
 public class GridArea : MonoBehaviour
@@ -13,7 +14,7 @@ public class GridArea : MonoBehaviour
 
     public GameObject trueAgent;
 
-    IFloatProperties m_ResetParameters;
+    FloatPropertiesChannel m_ResetParameters;
 
     Camera m_AgentCam;
 

@@ -7,7 +7,8 @@ import os
 import subprocess
 from typing import Dict, List, Optional, Any
 
-from mlagents_envs.side_channel.side_channel import SideChannel
+import mlagents_envs
+from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
 
 from mlagents_envs.base_env import (
     BaseEnv,
@@ -45,15 +46,26 @@ from sys import platform
 import signal
 import struct
 
-logging.basicConfig(level=logging.INFO)
+
 logger = logging.getLogger("mlagents_envs")
 
 
 class UnityEnvironment(BaseEnv):
     SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-    API_VERSION = "API-15-dev0"
+
+    # Communication protocol version.
+    # When connecting to C#, this must match Academy.k_ApiVersion
+    # Currently we require strict equality between the communication protocol
+    # on each side, although we may allow some flexibility in the future.
+    # This should be incremented whenever a change is made to the communication protocol.
+    API_VERSION = "0.15.0"
+
+    # Default port that the editor listens on. If an environment executable
+    # isn't specified, this port will be used.
     DEFAULT_EDITOR_PORT = 5004
+
+    # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     def __init__(
@@ -86,7 +98,6 @@ class UnityEnvironment(BaseEnv):
         atexit.register(self._close)
         self.port = base_port + worker_id
         self._buffer_size = 12000
-        self._version_ = UnityEnvironment.API_VERSION
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
@@ -122,22 +133,31 @@ class UnityEnvironment(BaseEnv):
             )
         self._loaded = True
 
-        rl_init_parameters_in = UnityRLInitializationInputProto(seed=seed)
+        rl_init_parameters_in = UnityRLInitializationInputProto(
+            seed=seed,
+            communication_version=self.API_VERSION,
+            package_version=mlagents_envs.__version__,
+        )
         try:
             aca_output = self.send_academy_parameters(rl_init_parameters_in)
             aca_params = aca_output.rl_initialization_output
         except UnityTimeOutException:
             self._close()
             raise
-        # TODO : think of a better way to expose the academyParameters
-        self._unity_version = aca_params.version
-        if self._unity_version != self._version_:
+
+        unity_communicator_version = aca_params.communication_version
+        if unity_communicator_version != UnityEnvironment.API_VERSION:
             self._close()
             raise UnityEnvironmentException(
-                f"The API number is not compatible between Unity and python. "
-                f"Python API: {self._version_}, Unity API: {self._unity_version}.\n"
-                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release"
+                f"The communication API version is not compatible between Unity and python. "
+                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
+                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
                 f"to download the latest version of ML-Agents."
+            )
+        else:
+            logger.info(
+                f"Connected to Unity environment with package version {aca_params.package_version} "
+                f"and communication version {aca_params.communication_version}"
             )
         self._env_state: Dict[str, BatchedStepResult] = {}
         self._env_specs: Dict[str, AgentGroupSpec] = {}
@@ -478,7 +498,8 @@ class UnityEnvironment(BaseEnv):
                     "sending side channel data properly.".format(channel_id)
                 )
             if channel_id in side_channels:
-                side_channels[channel_id].on_message_received(message_data)
+                incoming_message = IncomingMessage(message_data)
+                side_channels[channel_id].on_message_received(incoming_message)
             else:
                 logger.warning(
                     "Unknown side channel data received. Channel type "

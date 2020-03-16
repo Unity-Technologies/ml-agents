@@ -1,6 +1,8 @@
 using MLAgents.Sensors;
 using UnityEditor;
 using Barracuda;
+using MLAgents.Policies;
+using UnityEngine;
 
 namespace MLAgents.Editor
 {
@@ -21,27 +23,55 @@ namespace MLAgents.Editor
         {
             var so = serializedObject;
             so.Update();
+            bool needPolicyUpdate; // Whether the name, model, inference device, or BehaviorType changed.
 
             // Drawing the Behavior Parameters
+            EditorGUI.indentLevel++;
+            EditorGUI.BeginChangeCheck(); // global
+
             EditorGUI.BeginChangeCheck();
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorName"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
-            EditorGUILayout.PropertyField(so.FindProperty("m_Model"), true);
-            EditorGUI.indentLevel++;
-            EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
-            EditorGUI.indentLevel--;
-            EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_TeamID"));
-            EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
-            // EditorGUILayout.PropertyField(serializedObject.FindProperty("m_Heuristic"), true);
-            EditorGUI.indentLevel--;
-            if (EditorGUI.EndChangeCheck())
             {
-                m_RequireReload = true;
+                EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorName"));
             }
+            needPolicyUpdate = EditorGUI.EndChangeCheck();
+
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_BrainParameters"), true);
+            }
+            EditorGUI.EndDisabledGroup();
+
+            EditorGUI.BeginChangeCheck();
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_Model"), true);
+                EditorGUI.indentLevel++;
+                EditorGUILayout.PropertyField(so.FindProperty("m_InferenceDevice"), true);
+                EditorGUI.indentLevel--;
+            }
+            needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
+
+            EditorGUI.BeginChangeCheck();
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_BehaviorType"));
+            }
+            needPolicyUpdate = needPolicyUpdate || EditorGUI.EndChangeCheck();
+
+            EditorGUILayout.PropertyField(so.FindProperty("TeamId"));
+            EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_UseChildSensors"), true);
+            }
+            EditorGUI.EndDisabledGroup();
+
+            EditorGUI.indentLevel--;
+            m_RequireReload = EditorGUI.EndChangeCheck();
             DisplayFailedModelChecks();
             so.ApplyModifiedProperties();
+
+            if (needPolicyUpdate)
+            {
+                UpdateAgentPolicy();
+            }
         }
 
         /// <summary>
@@ -75,8 +105,9 @@ namespace MLAgents.Editor
             }
             if (brainParameters != null)
             {
-                var failedChecks = InferenceBrain.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters, sensorComponents);
+                var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
+                    barracudaModel, brainParameters, sensorComponents, behaviorParameters.behaviorType
+                );
                 foreach (var check in failedChecks)
                 {
                     if (check != null)
@@ -85,6 +116,12 @@ namespace MLAgents.Editor
                     }
                 }
             }
+        }
+
+        void UpdateAgentPolicy()
+        {
+            var behaviorParameters = (BehaviorParameters)target;
+            behaviorParameters.UpdateAgentPolicy();
         }
     }
 }

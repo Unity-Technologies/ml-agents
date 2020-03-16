@@ -3,7 +3,7 @@ import logging
 from typing import List, Dict, NamedTuple, Iterable
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
 

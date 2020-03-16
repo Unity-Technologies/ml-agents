@@ -4,7 +4,7 @@ from mlagents.tf_utils import tf
 
 import yaml
 
-from mlagents.trainers.common.distributions import (
+from mlagents.trainers.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
@@ -113,8 +113,8 @@ def test_multicategorical_distribution():
             sess.run(init)
             output = sess.run(distribution.sample)
             for _ in range(10):
-                sample, log_probs = sess.run(
-                    [distribution.sample, distribution.log_probs]
+                sample, log_probs, entropy = sess.run(
+                    [distribution.sample, distribution.log_probs, distribution.entropy]
                 )
                 assert len(log_probs[0]) == sum(DISCRETE_ACTION_SPACE)
                 # Assert action never exceeds [-1,1]
@@ -123,6 +123,8 @@ def test_multicategorical_distribution():
                     assert act >= 0 and act <= DISCRETE_ACTION_SPACE[i]
                 output = sess.run([distribution.total_log_probs])
                 assert output[0].shape[0] == 1
+                # Make sure entropy is correct
+                assert entropy[0] > 3.8
 
             # Test masks
             mask = []

@@ -1,6 +1,4 @@
-import logging
 from typing import Any, Dict, Type
-
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
@@ -10,9 +8,7 @@ from mlagents.trainers.components.reward_signals.gail.signal import GAILRewardSi
 from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
-from mlagents.trainers.tf_policy import TFPolicy
-
-logger = logging.getLogger("mlagents.trainers")
+from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
 NAME_TO_CLASS: Dict[str, Type[RewardSignal]] = {

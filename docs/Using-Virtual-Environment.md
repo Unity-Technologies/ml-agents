@@ -13,10 +13,6 @@ of other projects. This has a few advantages:
 spinning up a new environment and verifying the compatibility of the code with the
 different version.
 
-Requirement - Python 3.6 must be installed on the machine you would like
-to run ML-Agents on (either local laptop/desktop or remote server). Python 3.6 can be
-installed from [here](https://www.python.org/downloads/).
-
 ## Python Version Requirement (Required)
 This guide has been tested with Python 3.6 and 3.7. Python 3.8 is not supported at this time.
 
@@ -36,8 +32,8 @@ python3-distutils needs to be installed. Install python3-distutils using `sudo a
 1. To activate the environment execute `$ source ~/python-envs/sample-env/bin/activate`
 1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the latest, upgrade to
 the latest pip version using `$ pip3 install --upgrade pip`
-1. Install ML-Agents package using `$ pip3 install mlagents`
-1. To deactivate the environment execute `$ deactivate`
+1. To deactivate the environment execute `$ deactivate` (you can reactivate the environment
+using the same `activate` command listed above)
 
 ## Ubuntu Setup
 
@@ -51,8 +47,8 @@ the latest pip version using `$ pip3 install --upgrade pip`
 1. To activate the environment execute `python-envs\sample-env\Scripts\activate`
 1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the
 latest, upgrade to the latest pip version using `pip install --upgrade pip`
-1. Install ML-Agents package using `pip install mlagents`
-1. To deactivate the environment execute `deactivate`
+1. To deactivate the environment execute `deactivate` (you can reactivate the environment
+using the same `activate` command listed above)
 
 Note:
 - Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt using `cmd` and

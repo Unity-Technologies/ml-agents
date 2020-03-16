@@ -2,6 +2,7 @@ using UnityEngine;
 using MLAgents;
 using MLAgentsExamples;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 public class WalkerAgent : Agent
 {
@@ -33,9 +34,9 @@ public class WalkerAgent : Agent
     Rigidbody m_ChestRb;
     Rigidbody m_SpineRb;
 
-    IFloatProperties m_ResetParams;
+    FloatPropertiesChannel m_ResetParams;
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
         m_JdController = GetComponent<JointDriveController>();
         m_JdController.SetupBodyPart(hips);
@@ -104,7 +105,7 @@ public class WalkerAgent : Agent
         }
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         var bpDict = m_JdController.bodyPartsDict;
         var i = -1;
@@ -162,7 +163,7 @@ public class WalkerAgent : Agent
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
     /// </summary>
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         if (m_DirToTarget != Vector3.zero)
         {

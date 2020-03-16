@@ -16,8 +16,15 @@ agents using camera-based visual observations might be slower.
 
 ## Requirements
 
-- Unity _Linux Build Support_ Component
 - [Docker](https://www.docker.com)
+- Unity _Linux Build Support_ Component. Make sure to select the _Linux
+Build Support_ component when installing Unity.
+
+<p align="center">
+  <img src="images/unity_linux_build_support.png"
+       alt="Linux Build Support"
+       width="500" border="10" />
+</p>
 
 ## Setup
 

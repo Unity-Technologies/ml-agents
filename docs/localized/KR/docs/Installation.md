@@ -16,7 +16,7 @@ Clone(복제)하고 추가종속성을 가지는 Python(파이썬)을 설치해�
 </p>
 
 ## Windows 사용자
-Windows에서 환경을 설정하기 위해, [세부 사항](Installation-Windows.md)에 설정 방법에 대해 작성하였습니다.
+Windows에서 환경을 설정하기 위해, [세부 사항](Installation-Anaconda-Windows.md)에 설정 방법에 대해 작성하였습니다.
 Mac과 Linux는 다음 가이드를 확인해주십시오.
 
 ## Mac 또는 Unix 사용자

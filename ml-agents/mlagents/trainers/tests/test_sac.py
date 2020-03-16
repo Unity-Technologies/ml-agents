@@ -7,11 +7,12 @@ from mlagents.tf_utils import tf
 
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.trainers.exception import UnityTrainerException
 
 
 @pytest.fixture
@@ -27,7 +28,7 @@ def dummy_config():
         learning_rate: 3.0e-4
         max_steps: 1024
         memory_size: 10
-        normalize: false
+        normalize: true
         num_update: 1
         train_interval: 1
         num_layers: 1
@@ -221,6 +222,24 @@ def test_process_trajectory(dummy_config):
         for agent in reward.values():
             assert agent == 0
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
+    # Assert we're not just using the default values
+    assert (
+        trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").mean > 0
+    )
+
+
+def test_bad_config(dummy_config):
+    brain_params = make_brain_parameters(
+        discrete_action=False, visual_inputs=0, vec_obs_size=6
+    )
+    # Test that we throw an error if we have sequence length greater than batch size
+    dummy_config["sequence_length"] = 64
+    dummy_config["batch_size"] = 32
+    dummy_config["use_recurrent"] = True
+    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
+    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    with pytest.raises(UnityTrainerException):
+        _ = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,6 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (Ghost Trainer)
 
-# import logging
 from typing import Deque, Dict, List, Any, cast
 
 import numpy as np
@@ -9,13 +8,13 @@ import logging
 
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 
-LOGGER = logging.getLogger("mlagents.trainers")
+logger = logging.getLogger("mlagents.trainers")
 
 
 class GhostTrainer(Trainer):
@@ -102,7 +101,7 @@ class GhostTrainer(Trainer):
         Saves training statistics to Tensorboard.
         """
         opponents = np.array(self.policy_elos, dtype=np.float32)
-        LOGGER.info(
+        logger.info(
             " Learning brain {} ELO: {:0.3f}\n"
             "Mean Opponent ELO: {:0.3f}"
             " Std Opponent ELO: {:0.3f}".format(
@@ -245,7 +244,7 @@ class GhostTrainer(Trainer):
                 x = "current"
                 self.policy_elos[-1] = self.current_elo
             self.current_opponent = -1 if x == "current" else x
-            LOGGER.debug(
+            logger.debug(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
                     self.get_step, x, name_behavior_id, self.learning_behavior_name
                 )

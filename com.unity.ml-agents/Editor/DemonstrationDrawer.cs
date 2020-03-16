@@ -1,7 +1,7 @@
 using System.Text;
-using MLAgents;
 using UnityEditor;
 using MLAgents.Demonstrations;
+using MLAgents.Policies;
 
 
 namespace MLAgents.Editor

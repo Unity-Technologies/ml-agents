@@ -1,8 +1,10 @@
+using System.CodeDom;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
 using MLAgents.Sensors;
+using MLAgents.Policies;
 
 namespace MLAgents.Tests
 {
@@ -34,19 +36,29 @@ namespace MLAgents.Tests
             typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(this, policy);
         }
 
+        internal IPolicy GetPolicy()
+        {
+            return (IPolicy)typeof(Agent).GetField("m_Brain", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+        }
+
         public int initializeAgentCalls;
         public int collectObservationsCalls;
-        public int collectObservationsCallsSinceLastReset;
+        public int collectObservationsCallsForEpisode;
         public int agentActionCalls;
-        public int agentActionCallsSinceLastReset;
-        public int agentResetCalls;
-        public override void InitializeAgent()
+        public int agentActionCallsForEpisode;
+        public int agentOnEpisodeBeginCalls;
+        public int heuristicCalls;
+        public TestSensor sensor1;
+        public TestSensor sensor2;
+
+        public override void Initialize()
         {
             initializeAgentCalls += 1;
 
             // Add in some custom Sensors so we can confirm they get sorted as expected.
-            var sensor1 = new TestSensor("testsensor1");
-            var sensor2 = new TestSensor("testsensor2");
+            sensor1 = new TestSensor("testsensor1");
+            sensor2 = new TestSensor("testsensor2");
+            sensor2.compressionType = SensorCompressionType.PNG;
 
             sensors.Add(sensor2);
             sensors.Add(sensor1);
@@ -55,26 +67,27 @@ namespace MLAgents.Tests
         public override void CollectObservations(VectorSensor sensor)
         {
             collectObservationsCalls += 1;
-            collectObservationsCallsSinceLastReset += 1;
+            collectObservationsCallsForEpisode += 1;
             sensor.AddObservation(0f);
         }
 
-        public override void AgentAction(float[] vectorAction)
+        public override void OnActionReceived(float[] vectorAction)
         {
             agentActionCalls += 1;
-            agentActionCallsSinceLastReset += 1;
+            agentActionCallsForEpisode += 1;
             AddReward(0.1f);
         }
 
-        public override void AgentReset()
+        public override void OnEpisodeBegin()
         {
-            agentResetCalls += 1;
-            collectObservationsCallsSinceLastReset = 0;
-            agentActionCallsSinceLastReset = 0;
+            agentOnEpisodeBeginCalls += 1;
+            collectObservationsCallsForEpisode = 0;
+            agentActionCallsForEpisode = 0;
         }
 
         public override float[] Heuristic()
         {
+            heuristicCalls++;
             return new float[0];
         }
     }
@@ -82,6 +95,9 @@ namespace MLAgents.Tests
     public class TestSensor : ISensor
     {
         public string sensorName;
+        public int numWriteCalls;
+        public int numCompressedCalls;
+        public SensorCompressionType compressionType = SensorCompressionType.None;
 
         public TestSensor(string n)
         {
@@ -95,18 +111,20 @@ namespace MLAgents.Tests
 
         public int Write(WriteAdapter adapter)
         {
+            numWriteCalls++;
             // No-op
             return 0;
         }
 
         public byte[] GetCompressedObservation()
         {
-            return null;
+            numCompressedCalls++;
+            return new byte[] { 0 };
         }
 
         public SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.None;
+            return compressionType;
         }
 
         public string GetName()
@@ -206,8 +224,8 @@ namespace MLAgents.Tests
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
-            Assert.AreEqual(0, agent1.agentResetCalls);
-            Assert.AreEqual(0, agent2.agentResetCalls);
+            Assert.AreEqual(0, agent1.agentOnEpisodeBeginCalls);
+            Assert.AreEqual(0, agent2.agentOnEpisodeBeginCalls);
             Assert.AreEqual(0, agent1.initializeAgentCalls);
             Assert.AreEqual(0, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
@@ -219,8 +237,8 @@ namespace MLAgents.Tests
 
             // agent1 was not enabled when the academy started
             // The agents have been initialized
-            Assert.AreEqual(0, agent1.agentResetCalls);
-            Assert.AreEqual(0, agent2.agentResetCalls);
+            Assert.AreEqual(0, agent1.agentOnEpisodeBeginCalls);
+            Assert.AreEqual(0, agent2.agentOnEpisodeBeginCalls);
             Assert.AreEqual(1, agent1.initializeAgentCalls);
             Assert.AreEqual(1, agent2.initializeAgentCalls);
             Assert.AreEqual(0, agent1.agentActionCalls);
@@ -295,31 +313,35 @@ namespace MLAgents.Tests
 
             agent1.LazyInitialize();
 
-            var numberAgent1Reset = 0;
+            var numberAgent1Episodes = 0;
+            var numberAgent2Episodes = 0;
             var numberAgent2Initialization = 0;
             var requestDecision = 0;
             var requestAction = 0;
             for (var i = 0; i < 50; i++)
             {
-                Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
-                // Agent2 is never reset since initialized after academy
-                Assert.AreEqual(0, agent2.agentResetCalls);
+                Assert.AreEqual(numberAgent1Episodes, agent1.agentOnEpisodeBeginCalls);
+                Assert.AreEqual(numberAgent2Episodes, agent2.agentOnEpisodeBeginCalls);
                 Assert.AreEqual(1, agent1.initializeAgentCalls);
                 Assert.AreEqual(numberAgent2Initialization, agent2.initializeAgentCalls);
                 Assert.AreEqual(i, agent1.agentActionCalls);
                 Assert.AreEqual(requestAction, agent2.agentActionCalls);
                 Assert.AreEqual((i + 1) / 2, agent1.collectObservationsCalls);
                 Assert.AreEqual(requestDecision, agent2.collectObservationsCalls);
-                // Agent 1 resets at the first step
+                // Agent 1 starts a new episode at the first step
                 if (i == 0)
                 {
-                    numberAgent1Reset += 1;
+                    numberAgent1Episodes += 1;
                 }
                 //Agent 2 is only initialized at step 2
                 if (i == 2)
                 {
+                    // Since Agent2 is initialized after the Academy has stepped, its OnEpisodeBegin should be called now.
+                    Assert.AreEqual(0, agent2.agentOnEpisodeBeginCalls);
                     agent2.LazyInitialize();
+                    Assert.AreEqual(1, agent2.agentOnEpisodeBeginCalls);
                     numberAgent2Initialization += 1;
+                    numberAgent2Episodes += 1;
                 }
 
                 // We are testing request decision and request actions when called
@@ -394,45 +416,51 @@ namespace MLAgents.Tests
 
             agent2.LazyInitialize();
 
-            var numberAgent1Reset = 0;
-            var numberAgent2Reset = 0;
+            var numberAgent1Episodes = 0;
+            var numberAgent2Episodes = 0;
             var numberAcaReset = 0;
             var acaStepsSinceReset = 0;
-            var agent2StepSinceReset = 0;
+            var agent2StepForEpisode = 0;
             for (var i = 0; i < 5000; i++)
             {
                 Assert.AreEqual(acaStepsSinceReset, aca.StepCount);
                 Assert.AreEqual(numberAcaReset, aca.EpisodeCount);
 
                 Assert.AreEqual(i, aca.TotalStepCount);
+                Assert.AreEqual(numberAgent2Episodes, agent2.agentOnEpisodeBeginCalls);
+                Assert.AreEqual(agent2StepForEpisode, agent2.StepCount);
 
-                Assert.AreEqual(agent2StepSinceReset, agent2.StepCount);
-                Assert.AreEqual(numberAgent1Reset, agent1.agentResetCalls);
-                Assert.AreEqual(numberAgent2Reset, agent2.agentResetCalls);
-
-                // Agent 2  and academy reset at the first step
+                // Agent 2 and academy reset at the first step
                 if (i == 0)
                 {
+                    Assert.AreEqual(numberAgent2Episodes, agent2.agentOnEpisodeBeginCalls);
                     numberAcaReset += 1;
-                    numberAgent2Reset += 1;
+                    numberAgent2Episodes += 1;
                 }
                 //Agent 1 is only initialized at step 2
                 if (i == 2)
                 {
+                    Assert.AreEqual(numberAgent1Episodes, agent1.agentOnEpisodeBeginCalls);
                     agent1.LazyInitialize();
+                    numberAgent1Episodes += 1;
+                    Assert.AreEqual(numberAgent1Episodes, agent1.agentOnEpisodeBeginCalls);
                 }
                 // Set agent 1 to done every 11 steps to test behavior
                 if (i % 11 == 5)
                 {
-                    agent1.Done();
-                    numberAgent1Reset += 1;
+                    Assert.AreEqual(numberAgent1Episodes, agent1.agentOnEpisodeBeginCalls);
+                    agent1.EndEpisode();
+                    numberAgent1Episodes += 1;
+                    Assert.AreEqual(numberAgent1Episodes, agent1.agentOnEpisodeBeginCalls);
                 }
-                // Resetting agent 2 regularly
+                // Ending the episode for agent 2 regularly
                 if (i % 13 == 3)
                 {
-                    agent2.Done();
-                    numberAgent2Reset += 1;
-                    agent2StepSinceReset = 0;
+                    Assert.AreEqual(numberAgent2Episodes, agent2.agentOnEpisodeBeginCalls);
+                    agent2.EndEpisode();
+                    numberAgent2Episodes += 1;
+                    agent2StepForEpisode = 0;
+                    Assert.AreEqual(numberAgent2Episodes, agent2.agentOnEpisodeBeginCalls);
                 }
                 // Request a decision for agent 2 regularly
                 if (i % 3 == 2)
@@ -446,7 +474,7 @@ namespace MLAgents.Tests
                 }
 
                 acaStepsSinceReset += 1;
-                agent2StepSinceReset += 1;
+                agent2StepForEpisode += 1;
                 aca.EnvironmentStep();
             }
         }
@@ -486,17 +514,17 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
             agent2.SetPolicy(new TestPolicy());
 
-            var expectedAgent1ActionSinceReset = 0;
+            var expectedAgent1ActionForEpisode = 0;
 
             for (var i = 0; i < 50; i++)
             {
-                expectedAgent1ActionSinceReset += 1;
-                if (expectedAgent1ActionSinceReset == agent1.maxStep || i == 0)
+                expectedAgent1ActionForEpisode += 1;
+                if (expectedAgent1ActionForEpisode == agent1.maxStep || i == 0)
                 {
-                    expectedAgent1ActionSinceReset = 0;
+                    expectedAgent1ActionForEpisode = 0;
                 }
                 agent2.RequestAction();
-                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionSinceReset * 10.1f - agent1.GetCumulativeReward()), 0.05f);
+                Assert.LessOrEqual(Mathf.Abs(expectedAgent1ActionForEpisode * 10.1f - agent1.GetCumulativeReward()), 0.05f);
                 Assert.LessOrEqual(Mathf.Abs(i * 0.1f - agent2.GetCumulativeReward()), 0.05f);
 
                 agent1.AddReward(10f);
@@ -521,42 +549,125 @@ namespace MLAgents.Tests
             agent1.LazyInitialize();
 
             var expectedAgentStepCount = 0;
-            var expectedResets = 0;
+            var expectedEpisodes = 0;
             var expectedAgentAction = 0;
-            var expectedAgentActionSinceReset = 0;
+            var expectedAgentActionForEpisode = 0;
             var expectedCollectObsCalls = 0;
-            var expectedCollectObsCallsSinceReset = 0;
+            var expectedCollectObsCallsForEpisode = 0;
 
             for (var i = 0; i < 15; i++)
             {
                 // Agent should observe and act on each Academy step
                 expectedAgentAction += 1;
-                expectedAgentActionSinceReset += 1;
+                expectedAgentActionForEpisode += 1;
                 expectedCollectObsCalls += 1;
-                expectedCollectObsCallsSinceReset += 1;
+                expectedCollectObsCallsForEpisode += 1;
                 expectedAgentStepCount += 1;
 
                 // If the next step will put the agent at maxSteps, we expect it to reset
                 if (agent1.StepCount == maxStep - 1 || (i == 0))
                 {
-                    expectedResets += 1;
+                    expectedEpisodes += 1;
                 }
 
                 if (agent1.StepCount == maxStep - 1)
                 {
-                    expectedAgentActionSinceReset = 0;
-                    expectedCollectObsCallsSinceReset = 0;
+                    expectedAgentActionForEpisode = 0;
+                    expectedCollectObsCallsForEpisode = 0;
                     expectedAgentStepCount = 0;
                 }
                 aca.EnvironmentStep();
 
                 Assert.AreEqual(expectedAgentStepCount, agent1.StepCount);
-                Assert.AreEqual(expectedResets, agent1.agentResetCalls);
+                Assert.AreEqual(expectedEpisodes, agent1.agentOnEpisodeBeginCalls);
                 Assert.AreEqual(expectedAgentAction, agent1.agentActionCalls);
-                Assert.AreEqual(expectedAgentActionSinceReset, agent1.agentActionCallsSinceLastReset);
+                Assert.AreEqual(expectedAgentActionForEpisode, agent1.agentActionCallsForEpisode);
                 Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
-                Assert.AreEqual(expectedCollectObsCallsSinceReset, agent1.collectObservationsCallsSinceLastReset);
+                Assert.AreEqual(expectedCollectObsCallsForEpisode, agent1.collectObservationsCallsForEpisode);
             }
+        }
+
+        [Test]
+        public void TestHeuristicPolicyStepsSensors()
+        {
+            // Make sure that Agents with HeuristicPolicies step their sensors each Academy step.
+            var agentGo1 = new GameObject("TestAgent");
+            agentGo1.AddComponent<TestAgent>();
+            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var aca = Academy.Instance;
+
+            var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
+            decisionRequester.DecisionPeriod = 1;
+            decisionRequester.Awake();
+
+            agent1.LazyInitialize();
+            Assert.AreEqual(agent1.GetPolicy().GetType(), typeof(HeuristicPolicy));
+
+            var numSteps = 10;
+            for (var i = 0; i < numSteps; i++)
+            {
+                aca.EnvironmentStep();
+            }
+            Assert.AreEqual(numSteps, agent1.heuristicCalls);
+            Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
+            Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
+        }
+    }
+
+    [TestFixture]
+    public class TestOnEnableOverride
+    {
+        public class OnEnableAgent : Agent
+        {
+            public bool callBase;
+
+            protected override void OnEnable()
+            {
+                if (callBase)
+                    base.OnEnable();
+            }
+        }
+
+        static void _InnerAgentTestOnEnableOverride(bool callBase = false)
+        {
+            var go = new GameObject();
+            var agent = go.AddComponent<OnEnableAgent>();
+            agent.callBase = callBase;
+            var onEnable = typeof(OnEnableAgent).GetMethod("OnEnable", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sendInfo = typeof(Agent).GetMethod("SendInfoToBrain", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.NotNull(onEnable);
+            onEnable.Invoke(agent, null);
+            Assert.NotNull(sendInfo);
+            if (agent.callBase)
+            {
+                Assert.DoesNotThrow(() => sendInfo.Invoke(agent, null));
+            }
+            else
+            {
+                Assert.Throws<UnityAgentsException>(() =>
+                {
+                    try
+                    {
+                        sendInfo.Invoke(agent, null);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        throw e.GetBaseException();
+                    }
+                });
+            }
+        }
+
+        [Test]
+        public void TestAgentCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride(true);
+        }
+
+        [Test]
+        public void TestAgentDontCallBaseOnEnable()
+        {
+            _InnerAgentTestOnEnableOverride();
         }
     }
 }

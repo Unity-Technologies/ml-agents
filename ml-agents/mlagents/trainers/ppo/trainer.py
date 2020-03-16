@@ -7,12 +7,14 @@ from collections import defaultdict
 
 import numpy as np
 
-from mlagents.trainers.common.nn_policy import NNPolicy
-from mlagents.trainers.rl_trainer import RLTrainer
+from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.exception import UnityTrainerException
+
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -68,6 +70,19 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
+
+    def _check_param_keys(self):
+        super()._check_param_keys()
+        # Check that batch size is greater than sequence length. Else, throw
+        # an exception.
+        if (
+            self.trainer_parameters["sequence_length"]
+            > self.trainer_parameters["batch_size"]
+            and self.trainer_parameters["use_recurrent"]
+        ):
+            raise UnityTrainerException(
+                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
+            )
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -233,7 +248,8 @@ class PPOTrainer(RLTrainer):
         """
         if self.policy:
             logger.warning(
-                "add_policy has been called twice. {} is not a multi-agent trainer".format(
+                "Your environment contains multiple teams, but {} doesn't support adversarial games. Enable self-play to \
+                    train adversarial games.".format(
                     self.__class__.__name__
                 )
             )

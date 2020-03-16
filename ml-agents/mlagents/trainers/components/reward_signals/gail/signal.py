@@ -1,14 +1,12 @@
 from typing import Any, Dict, List
-import logging
 import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
-from mlagents.trainers.tf_policy import TFPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
-
-LOGGER = logging.getLogger("mlagents.trainers")
+from mlagents.trainers.buffer import AgentBuffer
 
 
 class GAILRewardSignal(RewardSignal):
@@ -64,7 +62,7 @@ class GAILRewardSignal(RewardSignal):
             "Policy/GAIL Expert Estimate": "gail_expert_estimate",
         }
 
-    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+    def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
             self.policy.batch_size_ph: len(mini_batch["actions"]),
             self.policy.sequence_length_ph: self.policy.sequence_length,
@@ -104,7 +102,7 @@ class GAILRewardSignal(RewardSignal):
         super().check_config(config_dict, param_keys)
 
     def prepare_update(
-        self, policy: TFPolicy, mini_batch: Dict[str, np.ndarray], num_sequences: int
+        self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare inputs for update. .
@@ -112,16 +110,9 @@ class GAILRewardSignal(RewardSignal):
         :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
         :return: Feed_dict for update process.
         """
-        max_num_experiences = min(
-            len(mini_batch["actions"]), self.demonstration_buffer.num_experiences
-        )
-        # If num_sequences is less, we need to shorten the input batch.
-        for key, element in mini_batch.items():
-            mini_batch[key] = element[:max_num_experiences]
-
-        # Get batch from demo buffer
+        # Get batch from demo buffer. Even if demo buffer is smaller, we sample with replacement
         mini_batch_demo = self.demonstration_buffer.sample_mini_batch(
-            len(mini_batch["actions"]), 1
+            mini_batch.num_experiences, 1
         )
 
         feed_dict: Dict[tf.Tensor, Any] = {

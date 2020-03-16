@@ -4,7 +4,9 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using MLAgents.InferenceBrain;
+using MLAgents.Inference;
+using MLAgents.Policies;
+using MLAgents.SideChannels;
 using Barracuda;
 
 /**
@@ -49,9 +51,24 @@ namespace MLAgents
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
-        const string k_ApiVersion = "API-15-dev0";
+        /// <summary>
+        /// Communication protocol version.
+        /// When connecting to python, this must match UnityEnvironment.API_VERSION.
+        /// Currently we require strict equality between the communication protocol
+        /// on each side, although we may allow some flexibility in the future.
+        /// This should be incremented whenever a change is made to the communication protocol.
+        /// </summary>
+        const string k_ApiVersion = "0.15.0";
+
+        /// <summary>
+        /// Unity package version of com.unity.ml-agents.
+        /// This must match the version string in package.json and is checked in a unit test.
+        /// </summary>
+        internal const string k_PackageVersion = "0.15.0-preview";
+
         const int k_EditorTrainingPort = 5004;
-        internal const string k_portCommandLineFlag = "--mlagents-port";
+
+        const string k_portCommandLineFlag = "--mlagents-port";
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
@@ -72,7 +89,7 @@ namespace MLAgents
         /// <summary>
         /// Collection of float properties (indexed by a string).
         /// </summary>
-        public IFloatProperties FloatProperties;
+        public FloatPropertiesChannel FloatProperties;
 
 
         // Fields not provided in the Inspector.
@@ -108,7 +125,7 @@ namespace MLAgents
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
-        bool m_FirstAcademyReset;
+        bool m_HadFirstReset;
 
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
@@ -325,7 +342,8 @@ namespace MLAgents
                     var unityRlInitParameters = Communicator.Initialize(
                         new CommunicatorInitParameters
                         {
-                            version = k_ApiVersion,
+                            unityCommunicationVersion = k_ApiVersion,
+                            unityPackageVersion = k_PackageVersion,
                             name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
@@ -419,7 +437,7 @@ namespace MLAgents
         {
             EnvironmentReset();
             AgentForceReset?.Invoke();
-            m_FirstAcademyReset = true;
+            m_HadFirstReset = true;
         }
 
         /// <summary>
@@ -428,7 +446,7 @@ namespace MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_FirstAcademyReset)
+            if (!m_HadFirstReset)
             {
                 ForcedFullReset();
             }
@@ -494,6 +512,7 @@ namespace MLAgents
         public void Dispose()
         {
             DisableAutomaticStepping();
+
             // Signal to listeners that the academy is being destroyed now
             DestroyAction?.Invoke();
 
@@ -506,6 +525,7 @@ namespace MLAgents
                 {
                     mr.Dispose();
                 }
+
                 m_ModelRunners = null;
             }
 

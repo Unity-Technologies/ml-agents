@@ -97,7 +97,7 @@ behavior has the following parameters:
   greater than number of thresholds.
 
 Once our curriculum is defined, we have to use the reset parameters we defined
-and modify the environment from the Agent's `AgentReset()` function. See
+and modify the environment from the Agent's `OnEpisodeBegin()` function. See
 [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example.
 

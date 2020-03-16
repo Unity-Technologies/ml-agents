@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 
 import yaml
 
-from mlagents.trainers.common.nn_policy import NNPolicy
+from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.models import EncoderType, ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.brain import BrainParameters, CameraResolution
@@ -64,8 +64,6 @@ def create_policy_mock(dummy_config, use_rnn, use_discrete, use_visual):
     )
 
     trainer_parameters = dummy_config
-    model_path = "testmodel"
-    trainer_parameters["model_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
     policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)

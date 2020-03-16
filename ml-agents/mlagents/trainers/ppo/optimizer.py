@@ -1,16 +1,11 @@
-import logging
 from typing import Optional, Any, Dict
-
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedule
-from mlagents.trainers.tf_policy import TFPolicy
-from mlagents.trainers.common.tf_optimizer import TFOptimizer
+from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
-
-
-logger = logging.getLogger("mlagents.trainers")
 
 
 class PPOOptimizer(TFOptimizer):
@@ -127,7 +122,9 @@ class PPOOptimizer(TFOptimizer):
             self.stream_names, hidden_value
         )
         self.all_old_log_probs = tf.placeholder(
-            shape=[None, 1], dtype=tf.float32, name="old_probabilities"
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="old_probabilities",
         )
 
         self.old_log_probs = tf.reduce_sum(
@@ -172,8 +169,14 @@ class PPOOptimizer(TFOptimizer):
             dtype=tf.float32,
             name="old_probabilities",
         )
+
+        # Break old log probs into separate branches
+        old_log_prob_branches = ModelUtils.break_into_branches(
+            self.all_old_log_probs, self.policy.act_size
+        )
+
         _, _, old_normalized_logits = ModelUtils.create_discrete_action_masking_layer(
-            self.all_old_log_probs, self.policy.action_masks, self.policy.act_size
+            old_log_prob_branches, self.policy.action_masks, self.policy.act_size
         )
 
         action_idx = [0] + list(np.cumsum(self.policy.act_size))

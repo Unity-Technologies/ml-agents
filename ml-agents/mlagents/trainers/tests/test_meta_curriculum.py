@@ -3,12 +3,10 @@ from unittest.mock import patch, Mock
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 import json
+import yaml
 
-from mlagents.trainers.tests.test_simple_rl import (
-    Simple1DEnvironment,
-    _check_environment_trains,
-    BRAIN_NAME,
-)
+from mlagents.trainers.tests.simple_test_envs import Simple1DEnvironment
+from mlagents.trainers.tests.test_simple_rl import _check_environment_trains, BRAIN_NAME
 from mlagents.trainers.tests.test_curriculum import dummy_curriculum_json_str
 
 
@@ -120,7 +118,10 @@ TRAINER_CONFIG = """
 
 @pytest.mark.parametrize("curriculum_brain_name", [BRAIN_NAME, "WrongBrainName"])
 def test_simple_metacurriculum(curriculum_brain_name):
-    env = Simple1DEnvironment(use_discrete=False)
+    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=False)
     curriculum_config = json.loads(dummy_curriculum_json_str)
     mc = MetaCurriculum({curriculum_brain_name: curriculum_config})
-    _check_environment_trains(env, TRAINER_CONFIG, mc, None)
+    trainer_config = yaml.safe_load(TRAINER_CONFIG)
+    _check_environment_trains(
+        env, trainer_config, meta_curriculum=mc, success_threshold=None
+    )
