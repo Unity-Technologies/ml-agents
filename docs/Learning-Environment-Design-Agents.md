@@ -1,7 +1,8 @@
 # Agents
 
 An agent is an entity that can observe its environment, decide on the best
-course of action using those observations, and execute those actions within its environment. Agents can be created in Unity by extending
+course of action using those observations, and execute those actions within
+its environment. Agents can be created in Unity by extending
 the `Agent` class. The most important aspects of creating agents that can
 successfully learn are the observations the agent collects for
 and the reward you assign to estimate the value of the
@@ -16,11 +17,11 @@ discover the optimal decision-making policy.
 
 The `Policy` class abstracts out the decision making logic from the Agent itself so
 that you can use the same Policy in multiple Agents. How a Policy makes its
-decisions depends on the `Behavior Parameters` associated with the agent. If you set `Behavior Type` to
-`Heuristic Only`, the Agent will use its `Heuristic()` method to make decisions
-which can allow you to control the Agent manually or write your own Policy. If
-the Agent has a `Model` file, it Policy will use the neural network `Model` to
-take decisions.
+decisions depends on the `Behavior Parameters` associated with the agent. If you
+set `Behavior Type` to `Heuristic Only`, the Agent will use its `Heuristic()`
+method to make decisions which can allow you to control the Agent manually or
+write your own Policy. If the Agent has a `Model` file, it Policy will use
+the neural network `Model` to take decisions.
 
 ## Decisions
 
@@ -37,7 +38,12 @@ occur, such as in a turn-based game, should call `Agent.RequestDecision()` manua
 
 ## Observations and Sensors
 
-To make informed decisions, an agent must first make observations of the stete of the environment. The observations are collected by Sensors attached to the agent GameObject. By default, agents come with a `VectorSensor` which allows them to collect floating-point observations into a single array. There are additional sensors which can be attached to the agent GameObject which collect their own observations, or modify other observations. These are:
+To make informed decisions, an agent must first make observations of the stete of
+the environment. The observations are collected by Sensors attached to the agent
+GameObject. By default, agents come with a `VectorSensor` which allows them to
+collect floating-point observations into a single array. There are additional
+sensors which can be attached to the agent GameObject which collect their own
+observations, or modify other observations. These are:
 
 * `CameraSensor` - Allows image from `Camera` to be used as observation.
 * `RenderTextureSensor` - Allows content of `RenderTexture` to be used as observation.
@@ -45,13 +51,14 @@ To make informed decisions, an agent must first make observations of the stete o
 
 ### Vector Observations
 
-Vector observations are best used for aspects of the environment which are numerical and non-visual. The Policy
-class calls the `CollectObservations(VectorSensor sensor)` method of each Agent. Your
-implementation of this function must call `VectorSensor.AddObservation` to add vector
-observations.
+Vector observations are best used for aspects of the environment which are numerical
+and non-visual. The Policy class calls the `CollectObservations(VectorSensor sensor)`
+method of each Agent. Your implementation of this function must call
+`VectorSensor.AddObservation` to add vector observations.
 
-In order for an agent to learn, the total of all observations should include all the information an agents needs to accomplish
-its task. Without sufficient and relevant information, an agent may learn poorly
+In order for an agent to learn, the total of all observations should include all the
+information an agents needs to accomplish its task. Without sufficient and relevant
+information, an agent may learn poorly
 or may not learn at all. A reasonable approach for determining what information
 should be included is to consider what you would need to calculate an analytical
 solution to the problem, or what you would expect a human to be able to use to solve the problem.
@@ -172,7 +179,8 @@ used in your normalization formula.
 * Vector Observations should include all variables relevant to allowing the
   agent to take the optimally informed decision, and ideally no extraneous information.
 * In cases where Vector Observations need to be remembered or compared over
-  time, either an LSTM (see [here](Feature-Memory.md)) or by changing the `Stacked Vectors` value in the agent GameObject's `Behavior Parameters`.
+  time, either an LSTM (see [here](Feature-Memory.md)) or by changing the
+  `Stacked Vectors` value in the agent GameObject's `Behavior Parameters`.
 * Categorical variables such as type of object (Sword, Shield, Bow) should be
   encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`).
 * In general, all inputs should be normalized to be in
@@ -186,15 +194,18 @@ used in your normalization formula.
 
 ### Visual Observations
 
-Visual observations are provided to agent via either a `CameraSensor` or `RenderTextureSensor`. These collect image information and transforms it into a 3D Tensor which
+Visual observations are provided to agent via either a `CameraSensor` or `RenderTextureSensor`.
+These collect image information and transforms it into a 3D Tensor which
 can be fed into the convolutional neural network (CNN) of the agent policy. For more information on
-CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). This allows agents to learn from spatial regularities in the observation images. It is possible to
+CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). This allows agents
+to learn from spatial regularities in the observation images. It is possible to
 use visual observations along side vector observations.
 
 Agents using visual observations can capture state of arbitrary complexity and
 are useful when the state is difficult to describe numerically. However, they
 are also typically less efficient and slower to train, and sometimes don't
-succeed at all as compared to vector observations. As such, they should only be used when it is not possible to properly define the problem using vector or ray-cast observations.
+succeed at all as compared to vector observations. As such, they should only be
+used when it is not possible to properly define the problem using vector or ray-cast observations.
 
 Visual observations can be derived from Cameras or RenderTextures within your scene.
 To add a visual observation to an Agent, add either a Camera Sensor Component
@@ -233,14 +244,19 @@ as observations directly, this is done automatically by the Agent.
 
 #### Visual Observation Summary & Best Practices
 
-* To collect visual observations, attach `CameraSensor` or `RenderTextureSensor` components to the agent GameObject.
-* Visual observations should only be used when there is no parsimonious set of vector observations to capture the relevant information necessary for an agent to make informed decisions.
-* Image size should be kept as small as possible, without the loss of needed details for decision making.
-* Images should be made greyscale in situations where color information is not needed for making informed decisions.
+* To collect visual observations, attach `CameraSensor` or `RenderTextureSensor`
+  components to the agent GameObject.
+* Visual observations should only be used when there is no parsimonious set of
+  vector observations to capture the relevant information necessary for an agent to make informed decisions.
+* Image size should be kept as small as possible, without the loss of
+  needed details for decision making.
+* Images should be made greyscale in situations where color information is
+  not needed for making informed decisions.
 
 ### Raycast Observations
 
-Raycasts are another possible method for providing observations to an agent. This can be easily implemented by adding a
+Raycasts are another possible method for providing observations to an agent.
+This can be easily implemented by adding a
 `RayPerceptionSensorComponent3D` (or `RayPerceptionSensorComponent2D`) to the Agent GameObject.
 
 During observations, several rays (or spheres, depending on settings) are cast into
@@ -284,7 +300,8 @@ setting the State Size.
 #### RayCast Observation Summary & Best Practices
 
 * Attach `RayPerceptionSensorComponent3D` or `RayPerceptionSensorComponent2D` to use.
-* This observation type is best used when there is relevant spatial information for the agent that doesn't require a fully rendered image to convey.
+* This observation type is best used when there is relevant spatial information
+  for the agent that doesn't require a fully rendered image to convey.
 * Use as few rays as necessary to solve the problem in order to improve learning stability and agent performance.
 
 ## Actions
@@ -411,7 +428,8 @@ impossible for the next decision. When the Agent is controlled by a
 neural network, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by its Heuristic, the Agent will
 still be able to decide to perform the masked action. In order to mask an
-action,  override the `Agent.CollectDiscreteActionMasks()` virtual method, and call `DiscreteActionMasker.SetMask()` in it:
+action,  override the `Agent.CollectDiscreteActionMasks()` virtual method,
+and call `DiscreteActionMasker.SetMask()` in it:
 
 ```csharp
 public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker){
@@ -472,7 +490,8 @@ general, you should reward results rather than actions you think will lead to
 the desired results. You can even use the
 Agent's Heuristic to control the Agent while watching how it accumulates rewards.
 
-Allocate rewards to an Agent by calling the `AddReward()` or `SetReward()` methods on the agent. The reward assigned between each decision
+Allocate rewards to an Agent by calling the `AddReward()` or `SetReward()` methods on the agent.
+The reward assigned between each decision
 should be in the range [-1,1]. Values outside this range can lead to
 unstable training. The `reward` value is reset to zero when the agent receives a
 new decision. If there are multiple calls to `AddReward()` for a single agent
@@ -561,11 +580,13 @@ called independently of the `Max Step` property.
 
 ### Rewards Summary & Best Practices
 
-* Use `AddReward()` to accumulate rewards between decisions. Use `SetReward()` to overwrite any previous rewards accumulate between decisions.
+* Use `AddReward()` to accumulate rewards between decisions. Use `SetReward()`
+  to overwrite any previous rewards accumulate between decisions.
 * The magnitude of any given reward should typically not be greater than 1.0 in
   order to ensure a more stable learning process.
 * Positive rewards are often more helpful to shaping the desired behavior of an
-  agent than negative rewards. Excessive negative rewards can result in the agent failing to learn any meaningful behavior.
+  agent than negative rewards. Excessive negative rewards can result in the agent
+  failing to learn any meaningful behavior.
 * For locomotion tasks, a small positive reward (+0.1) for forward velocity is
   typically used.
 * If you want the agent to finish a task quickly, it is often helpful to provide
