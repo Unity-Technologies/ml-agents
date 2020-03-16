@@ -5,10 +5,10 @@ test_editors:
     minCoveragePct: 0
   - version: 2019.3
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 70
+    minCoveragePct: 71
   - version: 2020.1
     coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 70
+    minCoveragePct: 71
 test_platforms:
   - name: win
     type: Unity::VM
