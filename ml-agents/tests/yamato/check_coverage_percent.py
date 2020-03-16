@@ -4,6 +4,8 @@ import os
 
 SUMMARY_XML_FILENAME = "Summary.xml"
 
+# Note that this is python2 compatible, since that's currently what's installed on most CI images.
+
 
 def check_coverage(root_dir, min_percentage):
     # Walk the root directory looking for the summary file that
