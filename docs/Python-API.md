@@ -64,7 +64,7 @@ env = UnityEnvironment(file_name="3DBall", base_port=5005, seed=1, side_channels
 - `worker_id` indicates which port to use for communication with the
   environment. For use in parallel training regimes such as A3C.
 - `seed` indicates the seed to use when generating random numbers during the
-  training process. In environments which do not involve physics calculations,
+  training process. In environments which are deterministic,
   setting the seed enables reproducible experimentation by ensuring that the
   environment and trainers utilize the same random seed.
 - `side_channels` provides a way to exchange data with the Unity simulation that
