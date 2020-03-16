@@ -1,13 +1,10 @@
 # Making a New Learning Environment
 
-This tutorial walks through the process of creating a Unity Environment. A Unity
-Environment is an application built using the Unity Engine which can be used to
-train Reinforcement Learning Agents.
+This tutorial walks through the process of creating a Unity Environment from scratch. We recommend first reading the [Getting Started](Getting-Started-with-Balance-Ball.md) guide to understand the concepts presented here first in an already-built environment.
 
 ![A simple ML-Agents environment](images/mlagents-NewTutSplash.png)
 
-In this example, we will train a ball to roll to a randomly placed cube. The
-ball also learns to avoid falling off the platform.
+In this example, we will create an agent capable of controlling a ball on a platform. We will then train the agent to roll the ball toward the cube while avoiding falling off the platform.
 
 ## Overview
 
@@ -487,16 +484,3 @@ to the prefab TrainingArea's location, and not global coordinates.
 
 This is only one way to achieve this objective. Refer to the
 [example environments](Learning-Environment-Examples.md) for other ways we can achieve relative positioning.
-
-## Review: Scene Layout
-
-This section briefly reviews how to organize your scene when using Agents in
-your Unity environment.
-
-There are two kinds of game objects you need to include in your scene in order
-to use Unity ML-Agents: an Academy and one or more Agents.
-
-Keep in mind:
-
-* If you are using multiple training areas, make sure all the Agents have the same `Behavior Name`
-and `Behavior Parameters`

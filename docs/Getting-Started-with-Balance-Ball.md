@@ -65,9 +65,9 @@ behavior:
 When you create an Agent, you must extend the base Agent class.
 The Ball3DAgent subclass defines the following methods:
 
-* `Agent.OnEpisodeBegin()` — Called when the Agent resets, including at the beginning
-  of the simulation. The Ball3DAgent class uses the reset function to reset the
-  agent cube and ball. The function randomizes the reset values so that the
+* `Agent.OnEpisodeBegin()` — Called at the beginning of an Agent's episode, including at the beginning
+  of the simulation. The Ball3DAgent class uses this function to reset the
+  agent cube and ball to their starting positions. The function randomizes the reset values so that the
   training generalizes to more than a specific starting position and agent cube
   attitude.
 * `Agent.CollectObservations(VectorSensor sensor)` — Called every simulation step. Responsible for
@@ -191,24 +191,24 @@ Then navigate to `localhost:6006` in your browser.
 
 From TensorBoard, you will see the summary statistics:
 
-* Lesson - only interesting when performing [curriculum
+* **Lesson** - only interesting when performing [curriculum
   training](Training-Curriculum-Learning.md). This is not used in the 3D Balance
   Ball environment.
-* Cumulative Reward - The mean cumulative episode reward over all agents. Should
+* **Cumulative Reward** - The mean cumulative episode reward over all agents. Should
   increase during a successful training session.
-* Entropy - How random the decisions of the model are. Should slowly decrease
+* **Entropy** - How random the decisions of the model are. Should slowly decrease
   during a successful training process. If it decreases too quickly, the `beta`
   hyperparameter should be increased.
-* Episode Length - The mean length of each episode in the environment for all
+* **Episode Length** - The mean length of each episode in the environment for all
   agents.
-* Learning Rate - How large a step the training algorithm takes as it searches
+* **Learning Rate** - How large a step the training algorithm takes as it searches
   for the optimal policy. Should decrease over time.
-* Policy Loss - The mean loss of the policy function update. Correlates to how
+* **Policy Loss** - The mean loss of the policy function update. Correlates to how
   much the policy (process for deciding actions) is changing. The magnitude of
   this should decrease during a successful training session.
-* Value Estimate - The mean value estimate for all states visited by the agent.
+* **Value Estimate** - The mean value estimate for all states visited by the agent.
   Should increase during a successful training session.
-* Value Loss - The mean loss of the value function update. Correlates to how
+* **Value Loss** - The mean loss of the value function update. Correlates to how
   well the model is able to predict the value of each state. This should
   decrease during a successful training session.
 
