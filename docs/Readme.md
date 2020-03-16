@@ -8,7 +8,7 @@
 
 ## Getting Started
 
-* [Getting Started Guide](Getting-Started-with-Balance-Ball.md)
+* [Getting Started Guide](Getting-Started.md)
 * [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
   * [Background: Unity](Background-Unity.md)
   * [Background: Machine Learning](Background-Machine-Learning.md)

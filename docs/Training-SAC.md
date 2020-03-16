@@ -290,7 +290,7 @@ Typical Range (Discrete): `32` - `512`
 
 To view training statistics, use TensorBoard. For information on launching and
 using TensorBoard, see
-[here](./Getting-Started-with-Balance-Ball.md#observing-training-progress).
+[here](./Getting-Started.md#observing-training-progress).
 
 ### Cumulative Reward
 
