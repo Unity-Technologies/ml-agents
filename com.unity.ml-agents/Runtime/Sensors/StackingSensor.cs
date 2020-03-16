@@ -64,7 +64,7 @@ namespace MLAgents.Sensors
 
         public int Write(WriteAdapter adapter)
         {
-            // First, call the wrapped sensor's write method. Make sure to use our own adapater, not the passed one.
+            // First, call the wrapped sensor's write method. Make sure to use our own adapter, not the passed one.
             var wrappedShape = m_WrappedSensor.GetObservationShape();
             m_LocalAdapter.SetTarget(m_StackedObservations[m_CurrentIndex], wrappedShape, 0);
             m_WrappedSensor.Write(m_LocalAdapter);
