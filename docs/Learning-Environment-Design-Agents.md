@@ -4,11 +4,11 @@ An agent is an entity that can observe its environment, decide on the best
 course of action using those observations, and execute those actions within
 its environment. Agents can be created in Unity by extending
 the `Agent` class. The most important aspects of creating agents that can
-successfully learn are the observations the agent collects for
+successfully learn are the observations the agent collects,
 and the reward you assign to estimate the value of the
 agent's current state toward accomplishing its tasks.
 
-An Agent passes its observations to its Policy. The Policy, then, makes a decision
+An Agent passes its observations to its Policy. The Policy then makes a decision
 and passes the chosen action back to the agent. Your agent code must execute the
 action, for example, move the agent in one direction or another. In order to
 [train an agent using reinforcement learning](Learning-Environment-Design.md),
@@ -20,7 +20,7 @@ that you can use the same Policy in multiple Agents. How a Policy makes its
 decisions depends on the `Behavior Parameters` associated with the agent. If you
 set `Behavior Type` to `Heuristic Only`, the Agent will use its `Heuristic()`
 method to make decisions which can allow you to control the Agent manually or
-write your own Policy. If the Agent has a `Model` file, it Policy will use
+write your own Policy. If the Agent has a `Model` file, its Policy will use
 the neural network `Model` to take decisions.
 
 ## Decisions
@@ -38,16 +38,16 @@ occur, such as in a turn-based game, should call `Agent.RequestDecision()` manua
 
 ## Observations and Sensors
 
-To make informed decisions, an agent must first make observations of the stete of
+To make informed decisions, an agent must first make observations of the state of
 the environment. The observations are collected by Sensors attached to the agent
 GameObject. By default, agents come with a `VectorSensor` which allows them to
 collect floating-point observations into a single array. There are additional
-sensors which can be attached to the agent GameObject which collect their own
+sensor components which can be attached to the agent GameObject which collect their own
 observations, or modify other observations. These are:
 
-* `CameraSensor` - Allows image from `Camera` to be used as observation.
-* `RenderTextureSensor` - Allows content of `RenderTexture` to be used as observation.
-* `RayCastSensor` - Allows information from set of ray-casts to be used as observation.
+* `CameraSensorComponent` - Allows image from `Camera` to be used as observation.
+* `RenderTextureSensorComponent` - Allows content of `RenderTexture` to be used as observation.
+* `RayPerceptionSensorComponent` - Allows information from set of ray-casts to be used as observation.
 
 ### Vector Observations
 
@@ -56,8 +56,8 @@ and non-visual. The Policy class calls the `CollectObservations(VectorSensor sen
 method of each Agent. Your implementation of this function must call
 `VectorSensor.AddObservation` to add vector observations.
 
-In order for an agent to learn, the total of all observations should include all the
-information an agents needs to accomplish its task. Without sufficient and relevant
+In order for an agent to learn, the observations should include all the
+information an agent needs to accomplish its task. Without sufficient and relevant
 information, an agent may learn poorly
 or may not learn at all. A reasonable approach for determining what information
 should be included is to consider what you would need to calculate an analytical
@@ -130,7 +130,7 @@ public override void CollectObservations(VectorSensor sensor)
 }
 ```
 
-`VectorSensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
+`VectorSensor` also provides a two-argument function `AddOneHotObservation()` as a shortcut for _one-hot_
 style observations. The following example is identical to the previous one.
 
 ```csharp
@@ -176,13 +176,14 @@ used in your normalization formula.
 
 #### Vector Observation Summary & Best Practices
 
-* Vector Observations should include all variables relevant to allowing the
+* Vector Observations should include all variables relevant for allowing the
   agent to take the optimally informed decision, and ideally no extraneous information.
 * In cases where Vector Observations need to be remembered or compared over
-  time, either an LSTM (see [here](Feature-Memory.md)) or by changing the
-  `Stacked Vectors` value in the agent GameObject's `Behavior Parameters`.
+  time, either an LSTM (see [here](Feature-Memory.md)) should be used in the model, or the
+  `Stacked Vectors` value in the agent GameObject's `Behavior Parameters` should be changed.
 * Categorical variables such as type of object (Sword, Shield, Bow) should be
-  encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`).
+  encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`). This can be done automatically using the
+  `AddOneHotObservation()` method of the `VectorSensor`.
 * In general, all inputs should be normalized to be in
   the range 0 to +1 (or -1 to 1). For example, the `x` position information of
   an agent where the maximum possible value is `maxValue` should be recorded as
@@ -194,12 +195,12 @@ used in your normalization formula.
 
 ### Visual Observations
 
-Visual observations are provided to agent via either a `CameraSensor` or `RenderTextureSensor`.
+Visual observations are generally provided to agent via either a `CameraSensor` or `RenderTextureSensor`.
 These collect image information and transforms it into a 3D Tensor which
 can be fed into the convolutional neural network (CNN) of the agent policy. For more information on
 CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). This allows agents
 to learn from spatial regularities in the observation images. It is possible to
-use visual observations along side vector observations.
+use visual and vector observations with the same agent.
 
 Agents using visual observations can capture state of arbitrary complexity and
 are useful when the state is difficult to describe numerically. However, they
@@ -246,8 +247,7 @@ as observations directly, this is done automatically by the Agent.
 
 * To collect visual observations, attach `CameraSensor` or `RenderTextureSensor`
   components to the agent GameObject.
-* Visual observations should only be used when there is no parsimonious set of
-  vector observations to capture the relevant information necessary for an agent to make informed decisions.
+* Visual observations should generally be used unless vector observations are not sufficient.
 * Image size should be kept as small as possible, without the loss of
   needed details for decision making.
 * Images should be made greyscale in situations where color information is
@@ -302,7 +302,7 @@ setting the State Size.
 * Attach `RayPerceptionSensorComponent3D` or `RayPerceptionSensorComponent2D` to use.
 * This observation type is best used when there is relevant spatial information
   for the agent that doesn't require a fully rendered image to convey.
-* Use as few rays as necessary to solve the problem in order to improve learning stability and agent performance.
+* Use as few rays and tags as necessary to solve the problem in order to improve learning stability and agent performance.
 
 ## Actions
 
@@ -390,7 +390,7 @@ containing indices. With the discrete vector action space, `Branches` is an
 array of integers, each value corresponds to the number of possibilities for
 each branch.
 
-For example, if we wanted an Agent that can move in an plane and jump, we could
+For example, if we wanted an Agent that can move in a plane and jump, we could
 define two branches (one for motion and one for jumping) because we want our
 agent be able to move __and__ jump concurrently. We define the first branch to
 have 5 possible actions (don't move, go left, go right, go backward, go forward)

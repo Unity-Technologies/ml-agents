@@ -54,13 +54,13 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The neural network model used when in inference mode.
-        /// This cannot be set directly; use <see cref="Agent.GiveModel(string,NNModel,InferenceDevice)"/>
-        /// to set it.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// to set it instead.
         /// </summary>
         public NNModel model
         {
             get { return m_Model; }
-            internal set { m_Model = value; }
+            set { m_Model = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -68,13 +68,13 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// How inference is performed for this Agent's model.
-        /// This cannot be set directly; use <see cref="Agent.GiveModel(string,NNModel,InferenceDevice)"/>
-        /// to set it.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// to set it instead.
         /// </summary>
         public InferenceDevice inferenceDevice
         {
             get { return m_InferenceDevice; }
-            internal set { m_InferenceDevice = value; }
+            set { m_InferenceDevice = value; UpdateAgentPolicy();}
         }
 
         [HideInInspector, SerializeField]
@@ -82,13 +82,11 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The BehaviorType for the Agent.
-        /// This cannot be set directly; use <see cref="Agent.SetBehaviorType(BehaviorType)"/>
-        /// to set it.
         /// </summary>
         public BehaviorType behaviorType
         {
             get { return m_BehaviorType; }
-            internal set { m_BehaviorType = value; }
+            set { m_BehaviorType = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -97,13 +95,13 @@ namespace MLAgents.Policies
         /// <summary>
         /// The name of this behavior, which is used as a base name. See
         /// <see cref="fullyQualifiedBehaviorName"/> for the full name.
-        /// This cannot be set directly; use <see cref="Agent.GiveModel(string,NNModel,InferenceDevice)"/>
-        /// to set it.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// to set it instead.
         /// </summary>
         public string behaviorName
         {
             get { return m_BehaviorName; }
-            internal set { m_BehaviorName = value; }
+            set { m_BehaviorName = value; UpdateAgentPolicy(); }
         }
 
         /// <summary>
@@ -121,11 +119,12 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// Whether or not to use all the sensor components attached to child GameObjects of the agent.
+        /// Note that changing this after the Agent has been initialized will not have any effect.
         /// </summary>
         public bool useChildSensors
         {
             get { return m_UseChildSensors; }
-            internal set { m_UseChildSensors = value; } // TODO make public, don't allow changes at runtime
+            set { m_UseChildSensors = value; }
         }
 
         /// <summary>
@@ -143,7 +142,17 @@ namespace MLAgents.Policies
                 case BehaviorType.HeuristicOnly:
                     return new HeuristicPolicy(heuristic);
                 case BehaviorType.InferenceOnly:
+                {
+                    if (m_Model == null)
+                    {
+                        var behaviorType = BehaviorType.InferenceOnly.ToString();
+                        throw new UnityAgentsException(
+                            $"Can't use Behavior Type {behaviorType} without a model. " +
+                            "Either assign a model, or change to a different Behavior Type."
+                        );
+                    }
                     return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
@@ -160,6 +169,16 @@ namespace MLAgents.Policies
                 default:
                     return new HeuristicPolicy(heuristic);
             }
+        }
+
+        internal void UpdateAgentPolicy()
+        {
+            var agent = GetComponent<Agent>();
+            if (agent == null)
+            {
+                return;
+            }
+            agent.ReloadPolicy();
         }
     }
 }

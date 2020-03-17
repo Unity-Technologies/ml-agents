@@ -95,7 +95,7 @@ namespace MLAgents
     /// value takes precedence (since the agent max step will never be reached).
     ///
     /// Lastly, note that at any step the policy to the agent is allowed to
-    /// change model with <see cref="GiveModel"/>.
+    /// change model with <see cref="SetModel"/>.
     ///
     /// Implementation-wise, it is required that this class is extended and the
     /// virtual methods overridden. For sample implementations of agent behavior,
@@ -259,6 +259,15 @@ namespace MLAgents
             ResetData();
             Initialize();
             InitializeSensors();
+
+            // The first time the Academy resets, all Agents in the scene will be
+            // forced to reset through the <see cref="AgentForceReset"/> event.
+            // To avoid the Agent resetting twice, the Agents will not begin their
+            // episode when initializing until after the Academy had its first reset.
+            if (Academy.Instance.TotalStepCount != 0)
+            {
+                OnEpisodeBegin();
+            }
         }
 
         /// <summary>
@@ -374,25 +383,16 @@ namespace MLAgents
             ReloadPolicy();
         }
 
-        /// <summary>
-        /// Updates the type of behavior for the agent.
-        /// </summary>
-        /// <param name="behaviorType"> The new behaviorType for the Agent.</param>
-        public void SetBehaviorType(BehaviorType behaviorType)
-        {
-            if (m_PolicyFactory.behaviorType == behaviorType)
-            {
-                return;
-            }
-            m_PolicyFactory.behaviorType = behaviorType;
-            ReloadPolicy();
-        }
-
         internal void ReloadPolicy()
         {
+            if (!m_Initialized)
+            {
+                // If we haven't initialized yet, no need to make any changes now; they'll
+                // happen in LazyInitialize later.
+                return;
+            }
             m_Brain?.Dispose();
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
-
         }
 
         /// <summary>
@@ -790,7 +790,6 @@ namespace MLAgents
             {
                 m_RequestAction = false;
                 OnActionReceived(m_Action.vectorActions);
-
             }
 
             if ((m_StepCount >= maxStep) && (maxStep > 0))

@@ -1,6 +1,6 @@
 # Making a New Learning Environment
 
-This tutorial walks through the process of creating a Unity Environment from scratch. We recommend first reading the [Getting Started](Getting-Started.md) guide to understand the concepts presented here first in an already-built environment.
+This tutorial walks through the process of creating a Unity Environment from scratch. We recommend first reading the [Getting Started](Getting-Started-with-Balance-Ball.md) guide to understand the concepts presented here first in an already-built environment.
 
 ![A simple ML-Agents environment](images/mlagents-NewTutSplash.png)
 

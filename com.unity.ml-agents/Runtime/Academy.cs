@@ -64,7 +64,7 @@ namespace MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "0.14.1-preview";
+        internal const string k_PackageVersion = "0.15.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -125,7 +125,7 @@ namespace MLAgents
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
-        bool m_FirstAcademyReset;
+        bool m_HadFirstReset;
 
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
@@ -437,7 +437,7 @@ namespace MLAgents
         {
             EnvironmentReset();
             AgentForceReset?.Invoke();
-            m_FirstAcademyReset = true;
+            m_HadFirstReset = true;
         }
 
         /// <summary>
@@ -446,7 +446,7 @@ namespace MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_FirstAcademyReset)
+            if (!m_HadFirstReset)
             {
                 ForcedFullReset();
             }
