@@ -48,7 +48,7 @@ Using Docker for ML-Agents involves three steps: building the Unity environment
 with specific flags, building a Docker container and, finally, running the
 container. If you are not familiar with building a Unity environment for
 ML-Agents, please read through our [Getting Started with the 3D Balance Ball
-Example](Getting-Started-with-Balance-Ball.md) guide first.
+Example](Getting-Started.md) guide first.
 
 ### Build the Environment (Optional)
 
