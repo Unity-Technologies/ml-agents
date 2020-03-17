@@ -40,7 +40,7 @@
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
 * [Training with LSTM](Feature-Memory.md)
-* [Training with Domain Randomization](Training-Domain-Randomization.md)
+* [Training with Domain Variation](Training-Domain-Variation.md)
 
 ## Inference
 

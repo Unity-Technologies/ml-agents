@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
- - Renamed 'Generalization' feature to 'Domain Randomization'.
+ - Renamed 'Generalization' feature to 'Domain Variation'.
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes

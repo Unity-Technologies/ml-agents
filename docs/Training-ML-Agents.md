@@ -106,7 +106,7 @@ environment, you can set the following command line options when invoking
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
 * `--sampler=<file>`: Specify a sampler YAML file for defining the
-  sampler for domain randomization. See [Domain Randomization](Training-Domain-Randomization.md) for more information.
+  sampler for domain variation. See [Domain Variation](Training-Domain-Variation.md) for more information.
 * `--keep-checkpoints=<n>`: Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
