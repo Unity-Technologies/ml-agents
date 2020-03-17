@@ -4,6 +4,7 @@ from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.learn import parse_command_line
 from mlagents_envs.exception import UnityEnvironmentException
+from mlagents.trainers.stats import StatsReporter
 
 
 def basic_options(extra_args=None):
@@ -49,6 +50,7 @@ def test_run_training(
                 sampler_manager_mock.return_value,
                 None,
             )
+    StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 
 
 @patch("mlagents.trainers.learn.SamplerManager")
@@ -74,6 +76,7 @@ def test_docker_target_path(
             mock_init.assert_called_once()
             assert mock_init.call_args[0][1] == "/dockertarget/models/ppo"
             assert mock_init.call_args[0][2] == "/dockertarget/summaries"
+    StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 
 
 def test_bad_env_path():
