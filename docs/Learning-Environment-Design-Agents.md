@@ -42,12 +42,12 @@ To make informed decisions, an agent must first make observations of the state o
 the environment. The observations are collected by Sensors attached to the agent
 GameObject. By default, agents come with a `VectorSensor` which allows them to
 collect floating-point observations into a single array. There are additional
-sensors which can be attached to the agent GameObject which collect their own
+sensor components which can be attached to the agent GameObject which collect their own
 observations, or modify other observations. These are:
 
-* `CameraSensor` - Allows image from `Camera` to be used as observation.
-* `RenderTextureSensor` - Allows content of `RenderTexture` to be used as observation.
-* `RayCastSensor` - Allows information from set of ray-casts to be used as observation.
+* `CameraSensorComponent` - Allows image from `Camera` to be used as observation.
+* `RenderTextureSensorComponent` - Allows content of `RenderTexture` to be used as observation.
+* `RayPerceptionSensorComponent` - Allows information from set of ray-casts to be used as observation.
 
 ### Vector Observations
 
@@ -130,7 +130,7 @@ public override void CollectObservations(VectorSensor sensor)
 }
 ```
 
-`VectorSensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
+`VectorSensor` also provides a two-argument function `AddOneHotObservation()` as a shortcut for _one-hot_
 style observations. The following example is identical to the previous one.
 
 ```csharp
@@ -195,12 +195,12 @@ used in your normalization formula.
 
 ### Visual Observations
 
-Visual observations are provided to agent via either a `CameraSensor` or `RenderTextureSensor`.
+Visual observations are generally provided to agent via either a `CameraSensor` or `RenderTextureSensor`.
 These collect image information and transforms it into a 3D Tensor which
 can be fed into the convolutional neural network (CNN) of the agent policy. For more information on
 CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). This allows agents
 to learn from spatial regularities in the observation images. It is possible to
-use visual observations alongside vector observations.
+use visual and vector observations with the same agent.
 
 Agents using visual observations can capture state of arbitrary complexity and
 are useful when the state is difficult to describe numerically. However, they
@@ -247,8 +247,7 @@ as observations directly, this is done automatically by the Agent.
 
 * To collect visual observations, attach `CameraSensor` or `RenderTextureSensor`
   components to the agent GameObject.
-* Visual observations should only be used when there is no parsimonious set of
-  vector observations to capture the relevant information necessary for an agent to make informed decisions.
+* Visual observations should generally be used unless vector observations are not sufficient.
 * Image size should be kept as small as possible, without the loss of
   needed details for decision making.
 * Images should be made greyscale in situations where color information is
@@ -303,7 +302,7 @@ setting the State Size.
 * Attach `RayPerceptionSensorComponent3D` or `RayPerceptionSensorComponent2D` to use.
 * This observation type is best used when there is relevant spatial information
   for the agent that doesn't require a fully rendered image to convey.
-* Use as few rays as necessary to solve the problem in order to improve learning stability and agent performance.
+* Use as few rays and tags as necessary to solve the problem in order to improve learning stability and agent performance.
 
 ## Actions
 
