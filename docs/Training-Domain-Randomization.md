@@ -1,4 +1,4 @@
-# Training Generalized Reinforcement Learning Agents
+# Domain Randomization
 
 One of the challenges of training and testing agents on the same
 environment is that the agents tend to overfit. The result is that the
@@ -7,8 +7,8 @@ This is analogous to a model being trained and tested on an identical dataset
 in supervised learning. This becomes problematic in cases where environments
 are randomly instantiated with varying objects or properties.
 
-To make agents robust and generalizable to different environments, the agent
-should be trained over multiple variations of the environment. Using this approach
+To make agents robust and better generalizable to different environments, the agent
+should be trained over multiple variations of the environment. We refer to this approach as **Domain Randomization**. Using domain randomization
 for training, the agent will be better suited to adapt (with higher performance)
 to future unseen variations of the environment
 
@@ -18,7 +18,7 @@ Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
 ![](images/3dball_small.png)  |  ![](images/3dball_big.png)
 
-## Introducing Generalization Using Reset Parameters
+## Introducing Domain Randomization Using Reset Parameters
 
 To enable variations in the environments, we implemented `Reset Parameters`.
 `Reset Parameters` are `Academy.Instance.FloatProperties` that are used only when
@@ -28,7 +28,7 @@ sampling methods for each `Reset Parameter`. In the 3D ball environment example 
 in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 
-## How to Enable Generalization Using Reset Parameters
+## How to Enable Domain Randomization Using Reset Parameters
 
 We first need to provide a way to modify the environment by supplying a set of `Reset Parameters`
 and vary them over time. This provision can be done either deterministically or randomly.
@@ -158,16 +158,16 @@ mass:
     argC: 3
 ```
 
-### Training with Generalization Using Reset Parameters
+### Training with Domain Randomization Using Reset Parameters
 
 After the sampler YAML file is defined, we proceed by launching `mlagents-learn` and specify
 our configured sampler file with the `--sampler` flag. For example, if we wanted to train the
-3D ball agent with generalization using `Reset Parameters` with `config/3dball_generalize.yaml`
+3D ball agent with domain randomization using `Reset Parameters` with `config/3dball_randomize.yaml`
 sampling setup, we would run
 
 ```sh
-mlagents-learn config/trainer_config.yaml --sampler=config/3dball_generalize.yaml
---run-id=3D-Ball-generalization --train
+mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
+--run-id=3D-Ball-randomize --train
 ```
 
 We can observe progress and metrics via Tensorboard.

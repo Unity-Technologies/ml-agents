@@ -351,11 +351,11 @@ training process.
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
 - **Training with Reset Parameter Sampling** - To train agents to be adapt
-  to changes in its environment (i.e., generalization), the agent should be exposed
+  to changes in its environment (i.e., better generalize), the agent should be exposed
   to several variations of the environment. Similar to Curriculum Learning,
   where environments become more difficult as the agent learns, the toolkit provides
   a way to randomly sample Reset Parameters of the environment during training. See
-  [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
+  [Training With Domain Randomization](Training-Domain-Randomization.md)
   to learn more about this feature.
 
 - **Cloud Training on AWS** - To facilitate using the ML-Agents toolkit on
