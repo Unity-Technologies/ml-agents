@@ -162,7 +162,7 @@ mass:
 
 After the sampler YAML file is defined, we proceed by launching `mlagents-learn` and specify
 our configured sampler file with the `--sampler` flag. For example, if we wanted to train the
-3D ball agent with domain randomization using `Reset Parameters` with `config/3dball_variation.yaml`
+3D ball agent with domain variation using `Reset Parameters` with `config/3dball_variation.yaml`
 sampling setup, we would run
 
 ```sh
