@@ -120,7 +120,7 @@ VisualPyramids:
     buffer_size: 12000
     summary_freq: 12000
     time_horizon: 1000
-    max_steps: 5.0e5
+    max_steps: 5.0e6
     beta: 0.001
     reward_signals:
         extrinsic:
