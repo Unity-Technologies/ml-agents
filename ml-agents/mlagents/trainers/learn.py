@@ -407,7 +407,7 @@ def create_environment_factory(
     env_path: Optional[str],
     docker_target_name: Optional[str],
     no_graphics: bool,
-    seed: Optional[int],
+    seed: int,
     start_port: int,
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
@@ -426,15 +426,12 @@ def create_environment_factory(
         #         container.
         # Navigate in docker path and find env_path and copy it.
         env_path = prepare_for_docker_run(docker_target_name, env_path)
-    seed_count = 10000
-    seed_pool = [np.random.randint(0, seed_count) for _ in range(seed_count)]
 
     def create_unity_environment(
         worker_id: int, side_channels: List[SideChannel]
     ) -> UnityEnvironment:
-        env_seed = seed
-        if not env_seed:
-            env_seed = seed_pool[worker_id % len(seed_pool)]
+        # Make sure that each environment gets a different seed
+        env_seed = seed + worker_id
         return UnityEnvironment(
             file_name=env_path,
             worker_id=worker_id,
