@@ -4,7 +4,7 @@
 embedded visualizations. We provide one such notebook,
 `notebooks/getting-started.ipynb`, for testing the Python control interface to a
 Unity build. This notebook is introduced in the
-[Getting Started with the 3D Balance Ball Environment](Getting-Started-with-Balance-Ball.md)
+[Getting Started Guide](Getting-Started.md)
 tutorial, but can be used for testing the connection to any Unity build.
 
 For a walkthrough of how to use Jupyter, see

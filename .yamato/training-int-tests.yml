@@ -15,6 +15,7 @@ test_mac_training_int_{{ editor.version }}:
     - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.training_int_tests
   triggers:
+    cancel_old_ci: true
     changes:
       only:
         - "com.unity.ml-agents/**"

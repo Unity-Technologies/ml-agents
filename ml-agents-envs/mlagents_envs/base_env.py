@@ -95,10 +95,8 @@ class BatchedStepResult:
     @property
     def agent_id_to_index(self) -> Dict[AgentId, int]:
         """
-        Returns the index of the agent_id in this BatchedStepResult, and
-        -1 if agent_id is not in this BatchedStepResult.
-        :param agent_id: The id of the agent
-        :returns: The index of the agent_id, and -1 if not found.
+        :returns: A Dict that maps agent_id to the index of those agents in
+        this BatchedStepResult.
         """
         if self._agent_id_to_index is None:
             self._agent_id_to_index = {}
@@ -118,7 +116,9 @@ class BatchedStepResult:
         """
         if not self.contains_agent(agent_id):
             raise IndexError(
-                "agent_id {} is not present in the BatchedStepResult".format(agent_id)
+                "get_agent_step_result failed. agent_id {} is not present in the BatchedStepResult".format(
+                    agent_id
+                )
             )
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []

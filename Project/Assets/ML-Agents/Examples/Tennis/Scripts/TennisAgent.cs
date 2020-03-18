@@ -26,7 +26,7 @@ public class TennisAgent : Agent
     const string k_ScoreBoardAName = "ScoreA";
     const string k_ScoreBoardBName = "ScoreB";
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
@@ -60,7 +60,7 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * m_InvertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
@@ -95,7 +95,7 @@ public class TennisAgent : Agent
         return action;
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         m_InvertMult = invertX ? -1f : 1f;
 

@@ -35,36 +35,81 @@ namespace MLAgents.Policies
     /// The Factory to generate policies.
     /// </summary>
     [AddComponentMenu("ML Agents/Behavior Parameters", (int)MenuGroup.Default)]
-    internal class BehaviorParameters : MonoBehaviour
+    public class BehaviorParameters : MonoBehaviour
     {
-        [HideInInspector]
-        [SerializeField]
+        [HideInInspector, SerializeField]
         BrainParameters m_BrainParameters = new BrainParameters();
-        [HideInInspector]
-        [SerializeField]
-        NNModel m_Model;
-        [HideInInspector]
-        [SerializeField]
-        InferenceDevice m_InferenceDevice;
-        [HideInInspector]
-        [SerializeField]
 
-        // Disable warning /com.unity.ml-agents/Runtime/Policy/BehaviorParameters.cs(...):
-        //   warning CS0649: Field 'BehaviorParameters.m_BehaviorType' is never assigned to,
-        //   and will always have its default value
-        // This field is set in the custom editor.
-        #pragma warning disable 0649
-        internal BehaviorType m_BehaviorType;
-        #pragma warning restore 0649
-        [HideInInspector]
-        [SerializeField]
+        /// <summary>
+        /// The associated <see cref="BrainParameters"/> for this behavior.
+        /// </summary>
+        public BrainParameters brainParameters
+        {
+            get { return m_BrainParameters; }
+            internal set { m_BrainParameters = value; }
+        }
+
+        [HideInInspector, SerializeField]
+        NNModel m_Model;
+
+        /// <summary>
+        /// The neural network model used when in inference mode.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// to set it instead.
+        /// </summary>
+        public NNModel model
+        {
+            get { return m_Model; }
+            set { m_Model = value; UpdateAgentPolicy(); }
+        }
+
+        [HideInInspector, SerializeField]
+        InferenceDevice m_InferenceDevice;
+
+        /// <summary>
+        /// How inference is performed for this Agent's model.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// to set it instead.
+        /// </summary>
+        public InferenceDevice inferenceDevice
+        {
+            get { return m_InferenceDevice; }
+            set { m_InferenceDevice = value; UpdateAgentPolicy();}
+        }
+
+        [HideInInspector, SerializeField]
+        BehaviorType m_BehaviorType;
+
+        /// <summary>
+        /// The BehaviorType for the Agent.
+        /// </summary>
+        public BehaviorType behaviorType
+        {
+            get { return m_BehaviorType; }
+            set { m_BehaviorType = value; UpdateAgentPolicy(); }
+        }
+
+        [HideInInspector, SerializeField]
         string m_BehaviorName = "My Behavior";
+
+        /// <summary>
+        /// The name of this behavior, which is used as a base name. See
+        /// <see cref="fullyQualifiedBehaviorName"/> for the full name.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// to set it instead.
+        /// </summary>
+        public string behaviorName
+        {
+            get { return m_BehaviorName; }
+            set { m_BehaviorName = value; UpdateAgentPolicy(); }
+        }
 
         /// <summary>
         /// The team ID for this behavior.
         /// </summary>
         [HideInInspector, SerializeField, FormerlySerializedAs("m_TeamID")]
         public int TeamId;
+        // TODO properties here instead of Agent
 
         [FormerlySerializedAs("m_useChildSensors")]
         [HideInInspector]
@@ -73,28 +118,13 @@ namespace MLAgents.Policies
         bool m_UseChildSensors = true;
 
         /// <summary>
-        /// The associated <see cref="BrainParameters"/> for this behavior.
-        /// </summary>
-        internal BrainParameters brainParameters
-        {
-            get { return m_BrainParameters; }
-        }
-
-        /// <summary>
         /// Whether or not to use all the sensor components attached to child GameObjects of the agent.
+        /// Note that changing this after the Agent has been initialized will not have any effect.
         /// </summary>
         public bool useChildSensors
         {
             get { return m_UseChildSensors; }
-        }
-
-        /// <summary>
-        /// The name of this behavior, which is used as a base name. See
-        /// <see cref="fullyQualifiedBehaviorName"/> for the full name.
-        /// </summary>
-        public string behaviorName
-        {
-            get { return m_BehaviorName; }
+            set { m_UseChildSensors = value; }
         }
 
         /// <summary>
@@ -105,14 +135,24 @@ namespace MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        public IPolicy GeneratePolicy(Func<float[]> heuristic)
+        internal IPolicy GeneratePolicy(Func<float[]> heuristic)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
                     return new HeuristicPolicy(heuristic);
                 case BehaviorType.InferenceOnly:
+                {
+                    if (m_Model == null)
+                    {
+                        var behaviorType = BehaviorType.InferenceOnly.ToString();
+                        throw new UnityAgentsException(
+                            $"Can't use Behavior Type {behaviorType} without a model. " +
+                            "Either assign a model, or change to a different Behavior Type."
+                        );
+                    }
                     return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
@@ -131,20 +171,14 @@ namespace MLAgents.Policies
             }
         }
 
-        /// <summary>
-        /// Updates the model and related details for this behavior.
-        /// </summary>
-        /// <param name="newBehaviorName">New name for the behavior.</param>
-        /// <param name="model">New neural network model for this behavior.</param>
-        /// <param name="inferenceDevice">New inference device for this behavior.</param>
-        public void GiveModel(
-            string newBehaviorName,
-            NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
+        internal void UpdateAgentPolicy()
         {
-            m_Model = model;
-            m_InferenceDevice = inferenceDevice;
-            m_BehaviorName = newBehaviorName;
+            var agent = GetComponent<Agent>();
+            if (agent == null)
+            {
+                return;
+            }
+            agent.ReloadPolicy();
         }
     }
 }

@@ -28,11 +28,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Name of the generated <see cref="CameraSensor"/> object.
+        /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
         public string sensorName
         {
             get { return m_SensorName;  }
-            internal set { m_SensorName = value;  }
+            set { m_SensorName = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("width")]
@@ -40,11 +41,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Width of the generated observation.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public int width
         {
             get { return m_Width;  }
-            internal set { m_Width = value;  }
+            set { m_Width = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("height")]
@@ -52,11 +54,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Height of the generated observation.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public int height
         {
             get { return m_Height;  }
-            internal set { m_Height = value;  }
+            set { m_Height = value;  }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
@@ -64,11 +67,12 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Whether to generate grayscale images or color.
+        /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool grayscale
         {
             get { return m_Grayscale;  }
-            internal set { m_Grayscale = value;  }
+            set { m_Grayscale = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
