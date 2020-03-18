@@ -1,4 +1,4 @@
-# Domain Variation
+# Training With Domain Variation
 
 One of the challenges of training and testing agents on the same
 environment is that the agents tend to overfit. The result is that the
@@ -8,7 +8,7 @@ in supervised learning. This becomes problematic in cases where environments
 are randomly instantiated with varying objects or properties.
 
 To make agents robust and better generalizable to different environments, the agent
-should be trained over multiple variations of the environment. We refer to this approach as **Domain Variation**. Using domain variation
+should be trained over multiple variations of the environment. We refer to this approach as **Domain Variation**, where the parameters of the environment are refered to as the domain. Using domain variation
 for training, the agent will be better suited to adapt (with higher performance)
 to future unseen variations of the environment
 
