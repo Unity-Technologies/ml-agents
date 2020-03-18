@@ -1690,8 +1690,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: CrawlerStatic
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114230237520033992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1704,6 +1704,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 5000
   target: {fileID: 4749909135913778}
   ground: {fileID: 4856650706546504}
@@ -1759,7 +1762,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 0
+  TakeActionsBetweenDecisions: 0
   offsetStep: 0
 --- !u!1 &1492926997393242
 GameObject:
@@ -2959,8 +2962,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1995322274649904}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0.5, z: 0}
-  m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
+  m_LocalPosition: {x: -0, y: 1.5, z: 0}
+  m_LocalScale: {x: 0.01, y: 0.03, z: 0.01}
   m_Children: []
   m_Father: {fileID: 4924174722017668}
   m_RootOrder: 1

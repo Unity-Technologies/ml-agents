@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [0.15.1-preview] - 2020-03-30
+### Bug Fixes
+ - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
+
+
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
  - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
