@@ -1,4 +1,4 @@
-from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult, EpisodeStatus
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
@@ -173,10 +173,13 @@ def batched_step_result_from_proto(
 
     _raise_on_nan_and_inf(rewards, "rewards")
 
-    done = np.array([agent_info.done for agent_info in agent_info_list], dtype=np.bool)
-    max_step = np.array(
-        [agent_info.max_step_reached for agent_info in agent_info_list], dtype=np.bool
-    )
+    status = [
+        EpisodeStatus.Interrupted if agent_info.max_step_reached
+        else EpisodeStatus.Terminated if agent_info.done
+        else EpisodeStatus.Default
+        for agent_info in agent_info_list
+    ]
+
     agent_id = np.array(
         [agent_info.id for agent_info in agent_info_list], dtype=np.int32
     )
@@ -196,7 +199,7 @@ def batched_step_result_from_proto(
             action_mask = (1 - mask_matrix).astype(np.bool)
             indices = _generate_split_indices(group_spec.discrete_action_branches)
             action_mask = np.split(action_mask, indices, axis=1)
-    return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask)
+    return BatchedStepResult(obs_list, rewards, status, agent_id, action_mask)
 
 
 def _generate_split_indices(dims):

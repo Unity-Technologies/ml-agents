@@ -76,8 +76,8 @@ def test_step(mock_communicator, mock_launcher):
     assert len(spec.observation_shapes) == len(batched_step_result.obs)
     for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
         assert (n_agents,) + shape == obs.shape
-    assert not batched_step_result.done[0]
-    assert batched_step_result.done[2]
+    assert not batched_step_result.status[0].is_done()
+    assert batched_step_result.status[2].is_done()
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")

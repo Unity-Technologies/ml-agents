@@ -36,8 +36,9 @@ def generate_list_agent_proto(
     for agent_index in range(n_agent):
         ap = AgentInfoProto()
         ap.reward = float("inf") if infinite_rewards else agent_index
-        ap.done = agent_index % 2 == 0
-        ap.max_step_reached = agent_index % 2 == 1
+        ap.max_step_reached = agent_index % 3 == 1
+        # all agents that reached max step are also done
+        ap.done = agent_index % 3 == 0 or agent_index % 3 == 1
         ap.id = agent_index
         ap.action_mask.extend([True, False] * 5)
         obs_proto_list = []
@@ -86,8 +87,8 @@ def proto_from_batched_step_result(
     for agent_id in batched_step_result.agent_id:
         agent_id_index = batched_step_result.agent_id_to_index[agent_id]
         reward = batched_step_result.reward[agent_id_index]
-        done = batched_step_result.done[agent_id_index]
-        max_step_reached = batched_step_result.max_step[agent_id_index]
+        done = batched_step_result.status[agent_id_index].is_done()
+        max_step_reached = batched_step_result.status[agent_id_index].is_interrupted()
         agent_mask = None
         if batched_step_result.action_mask is not None:
             agent_mask = []  # type: ignore
@@ -201,8 +202,8 @@ def test_batched_step_result_from_proto():
     assert list(result.reward) == list(range(n_agents))
     assert list(result.agent_id) == list(range(n_agents))
     for index in range(n_agents):
-        assert result.done[index] == (index % 2 == 0)
-        assert result.max_step[index] == (index % 2 == 1)
+        assert result.status[index].is_done() == (index % 3 == 0 or index % 3 == 1 )
+        assert result.status[index].is_interrupted() == (index % 3 == 1)
     assert list(result.obs[0].shape) == [n_agents] + list(shapes[0])
     assert list(result.obs[1].shape) == [n_agents] + list(shapes[1])
 

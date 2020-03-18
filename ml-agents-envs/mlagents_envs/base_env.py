@@ -20,10 +20,41 @@ not necessarily correspond to a fixed simulation time increment.
 from abc import ABC, abstractmethod
 from typing import List, NamedTuple, Tuple, Optional, Union, Dict
 import numpy as np
-from enum import Enum
+from enum import Enum, IntEnum
 
 AgentId = int
 AgentGroup = str
+
+
+class EpisodeStatus(IntEnum):
+    """
+    The Episode is still ongoing
+    """
+    Default = 0,
+
+    """
+    The Episode ended. The Agent either failed or succeeded at its task.
+    """
+    Terminated = 1,
+
+    """
+    The Episode was interrupted. The Agent neither failed nor succeeded at the
+    task since it was interrupted.
+    """
+    Interrupted = 2
+
+    def is_done(self) -> bool:
+        """
+        return True if the episode was terminated or interrupted
+        """
+        return self.value == 1 or self.value == 2
+
+    def is_interrupted(self) -> bool:
+        """
+        return True if the episode was interrupted
+        """
+        print(self.value)
+        return self.value == 2
 
 
 class StepResult(NamedTuple):
@@ -34,10 +65,8 @@ class StepResult(NamedTuple):
      agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
-     - done is a bool. Is true if the Agent was terminated during the last
-     simulation step.
-     - max_step is a bool. Is true if the Agent reached its maximum number of
-     steps during the last simulation step.
+     - status is an EpisodeStatus. Corresponds to the state of the Episode for
+     for the Agent.
      - agent_id is an int and an unique identifier for the corresponding Agent.
      - action_mask is an optional list of one dimensional array of booleans.
      Only available in multi-discrete action space type.
@@ -48,8 +77,7 @@ class StepResult(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
-    done: bool
-    max_step: bool
+    status: EpisodeStatus
     agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
 
@@ -67,11 +95,8 @@ class BatchedStepResult:
      the group.
      - reward is a float vector of length batch size. Corresponds to the
      rewards collected by each agent since the last simulation step.
-     - done is an array of booleans of length batch size. Is true if the
-     associated Agent was terminated during the last simulation step.
-     - max_step is an array of booleans of length batch size. Is true if the
-     associated Agent reached its maximum number of steps during the last
-     simulation step.
+    - status is a List of EpisodeStatus. Corresponds to the state of the Episode for
+     for each Agent.
      - agent_id is an int vector of length batch size containing unique
      identifier for the corresponding Agent. This is used to track Agents
      across simulation steps.
@@ -83,11 +108,10 @@ class BatchedStepResult:
      this simulation step.
     """
 
-    def __init__(self, obs, reward, done, max_step, agent_id, action_mask):
+    def __init__(self, obs, reward, status, agent_id, action_mask):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.done: np.ndarray = done
-        self.max_step: np.ndarray = max_step
+        self.status: List[EpisodeStatus] = status
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
@@ -111,7 +135,7 @@ class BatchedStepResult:
         """
         returns the step result for a specific agent.
         :param agent_id: The id of the agent
-        :returns: obs, reward, done, agent_id and optional action mask for a
+        :returns: obs, reward, status, agent_id and optional action mask for a
         specific agent
         """
         if not self.contains_agent(agent_id):
@@ -132,8 +156,7 @@ class BatchedStepResult:
         return StepResult(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            done=self.done[agent_index],
-            max_step=self.max_step[agent_index],
+            status=self.status[agent_index],
             agent_id=agent_id,
             action_mask=agent_mask,
         )
@@ -150,8 +173,7 @@ class BatchedStepResult:
         return BatchedStepResult(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            done=np.zeros(0, dtype=np.bool),
-            max_step=np.zeros(0, dtype=np.bool),
+            status=[],
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
         )
@@ -297,7 +319,7 @@ class BaseEnv(ABC):
         simulation.
         :param agent_group: The name of the group the agents are part of
         :return: A BatchedStepResult NamedTuple containing the observations,
-        the rewards and the done flags for this group of agents.
+        the rewards and the statuses for this group of agents.
         """
         pass
 
