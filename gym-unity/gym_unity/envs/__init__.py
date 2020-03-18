@@ -7,7 +7,7 @@ import gym
 from gym import error, spaces
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import BatchedStepResult, EpisodeStatus
 
 
 class UnityGymException(error.Error):
@@ -257,7 +257,7 @@ class UnityEnv(gym.Env):
         return (
             default_observation,
             info.reward[0],
-            info.done[0],
+            info.status[0].is_done(),
             {"batched_step_result": info},
         )
 
@@ -276,7 +276,7 @@ class UnityEnv(gym.Env):
         return (
             list(default_observation),
             list(info.reward),
-            list(info.done),
+            [status.is_done() for status in info.status],
             {"batched_step_result": info},
         )
 
@@ -371,13 +371,13 @@ class UnityEnv(gym.Env):
                 "The number of agents in the scene does not match the expected number."
             )
 
-        if step_result.n_agents() - sum(step_result.done) != self._n_agents:
+        if step_result.n_agents() - sum(step_result.status) != self._n_agents:
             raise UnityGymException(
                 "The number of agents in the scene does not match the expected number."
             )
 
         for index, agent_id in enumerate(step_result.agent_id):
-            if step_result.done[index]:
+            if step_result.status[index].is_done():
                 self.agent_mapper.mark_agent_done(agent_id, step_result.reward[index])
 
         # Set the new AgentDone flags to True
@@ -389,7 +389,7 @@ class UnityEnv(gym.Env):
                 # Register this agent, and get the reward of the previous agent that
                 # was in its index, so that we can return it to the gym.
                 last_reward = self.agent_mapper.register_new_agent_id(agent_id)
-                step_result.done[index] = True
+                step_result.status[index] = EpisodeStatus.Terminated
                 step_result.reward[index] = last_reward
 
         self._previous_step_result = step_result  # store the new original
@@ -409,8 +409,7 @@ class UnityEnv(gym.Env):
         return BatchedStepResult(
             obs=new_obs,
             reward=step_result.reward[new_id_order],
-            done=step_result.done[new_id_order],
-            max_step=step_result.max_step[new_id_order],
+            status=[step_result.status[i] for i in new_id_order],
             agent_id=step_result.agent_id[new_id_order],
             action_mask=_mask,
         )
@@ -420,7 +419,7 @@ class UnityEnv(gym.Env):
             (self._previous_step_result.n_agents(), self.group_spec.action_size)
         )
         for index, agent_id in enumerate(self._previous_step_result.agent_id):
-            if not self._previous_step_result.done[index]:
+            if not self._previous_step_result.status[index].is_done():
                 array_index = self.agent_mapper.get_gym_index(agent_id)
                 sanitized_action[index, :] = action[array_index, :]
         return sanitized_action
@@ -435,8 +434,8 @@ class UnityEnv(gym.Env):
         # 1) all agents requested decisions (some of which might be done)
         # 2) some Agents were marked Done in between steps.
         # In case 2,  we re-request decisions until all agents request a real decision.
-        while info.n_agents() - sum(info.done) < self._n_agents:
-            if not info.done.all():
+        while info.n_agents() - sum(info.status) < self._n_agents:
+            if not all((s.is_done() for s in info.status)):
                 raise UnityGymException(
                     "The environment does not have the expected amount of agents. "
                     + "Some agents did not request decisions at the same time."

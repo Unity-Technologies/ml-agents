@@ -9,7 +9,12 @@ from gym_unity.envs import (
     AgentIdIndexMapper,
     AgentIdIndexMapperSlow,
 )
-from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.base_env import (
+    AgentGroupSpec,
+    ActionType,
+    BatchedStepResult,
+    EpisodeStatus,
+)
 
 
 @mock.patch("gym_unity.envs.UnityEnvironment")
@@ -123,7 +128,11 @@ def test_sanitize_action_one_agent_done(mock_env):
     received_step_result = create_mock_vector_step_result(num_agents=6)
     received_step_result.agent_id = np.array(range(6))
     # agent #3 (id = 2) is Done
-    received_step_result.done = np.array([False] * 2 + [True] + [False] * 3)
+    received_step_result.status = (
+        [EpisodeStatus.Default] * 2
+        + [EpisodeStatus.Terminated]
+        + [EpisodeStatus.Default] * 3
+    )
     sanitized_result = env._sanitize_info(received_step_result)
     for expected_agent_id, agent_id in zip([0, 1, 5, 3, 4], sanitized_result.agent_id):
         assert expected_agent_id == agent_id
@@ -163,7 +172,7 @@ def create_mock_group_spec(
 def create_mock_vector_step_result(num_agents=1, number_visual_observations=0):
     """
     Creates a mock BatchedStepResult with vector observations. Imitates constant
-    vector observations, rewards, dones, and agents.
+    vector observations, rewards, status, and agents.
 
     :int num_agents: Number of "agents" to imitate in your BatchedStepResult values.
     """
@@ -171,9 +180,9 @@ def create_mock_vector_step_result(num_agents=1, number_visual_observations=0):
     if number_visual_observations:
         obs += [np.zeros(shape=(num_agents, 8, 8, 3), dtype=np.float32)]
     rewards = np.array(num_agents * [1.0])
-    done = np.array(num_agents * [False])
+    status = num_agents * [EpisodeStatus.Default]
     agents = np.array(range(0, num_agents))
-    return BatchedStepResult(obs, rewards, done, done, agents, None)
+    return BatchedStepResult(obs, rewards, status, agents, None)
 
 
 def setup_mock_unityenvironment(mock_env, mock_spec, mock_result):
