@@ -30,12 +30,13 @@ class EpisodeStatus(IntEnum):
     """
     The Episode is still ongoing
     """
-    Default = 0,
+
+    Default = (0,)
 
     """
     The Episode ended. The Agent either failed or succeeded at its task.
     """
-    Terminated = 1,
+    Terminated = (1,)
 
     """
     The Episode was interrupted. The Agent neither failed nor succeeded at the

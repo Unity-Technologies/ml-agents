@@ -202,7 +202,7 @@ def test_batched_step_result_from_proto():
     assert list(result.reward) == list(range(n_agents))
     assert list(result.agent_id) == list(range(n_agents))
     for index in range(n_agents):
-        assert result.status[index].is_done() == (index % 3 == 0 or index % 3 == 1 )
+        assert result.status[index].is_done() == (index % 3 == 0 or index % 3 == 1)
         assert result.status[index].is_interrupted() == (index % 3 == 1)
     assert list(result.obs[0].shape) == [n_agents] + list(shapes[0])
     assert list(result.obs[1].shape) == [n_agents] + list(shapes[1])

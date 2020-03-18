@@ -1,4 +1,9 @@
-from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult, EpisodeStatus
+from mlagents_envs.base_env import (
+    AgentGroupSpec,
+    ActionType,
+    BatchedStepResult,
+    EpisodeStatus,
+)
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
@@ -174,8 +179,10 @@ def batched_step_result_from_proto(
     _raise_on_nan_and_inf(rewards, "rewards")
 
     status = [
-        EpisodeStatus.Interrupted if agent_info.max_step_reached
-        else EpisodeStatus.Terminated if agent_info.done
+        EpisodeStatus.Interrupted
+        if agent_info.max_step_reached
+        else EpisodeStatus.Terminated
+        if agent_info.done
         else EpisodeStatus.Default
         for agent_info in agent_info_list
     ]
