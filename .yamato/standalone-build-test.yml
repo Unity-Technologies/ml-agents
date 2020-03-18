@@ -15,6 +15,7 @@ test_mac_standalone_{{ editor.version }}:
     - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.standalone_build_tests
   triggers:
+    cancel_old_ci: true
     changes:
       only:
         - "com.unity.ml-agents/**"
