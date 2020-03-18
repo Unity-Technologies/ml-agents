@@ -8,6 +8,10 @@ from mlagents_envs.base_env import (
     BatchedStepResult,
     ActionType,
 )
+from mlagents_envs.tests.test_rpc_utils import proto_from_batched_step_result_and_action
+from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
+    AgentInfoActionPairProto,
+)
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
@@ -228,7 +232,7 @@ class Simple1DEnvironment(BaseEnv):
 
 class Memory1DEnvironment(Simple1DEnvironment):
     def __init__(self, brain_names, use_discrete, step_size=0.2):
-        super().__init__(brain_names, use_discrete, step_size=0.2)
+        super().__init__(brain_names, use_discrete, step_size=step_size)
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
         self.num_show_steps = 2
@@ -273,3 +277,48 @@ class Memory1DEnvironment(Simple1DEnvironment):
             m_agent_id,
             action_mask,
         )
+
+
+class Record1DEnvironment(Simple1DEnvironment):
+    def __init__(
+        self,
+        brain_names,
+        use_discrete,
+        step_size=0.2,
+        num_visual=0,
+        num_vector=1,
+        n_demos=30,
+    ):
+        super().__init__(
+            brain_names,
+            use_discrete,
+            step_size=step_size,
+            num_visual=num_visual,
+            num_vector=num_vector,
+        )
+        self.demonstration_protos: Dict[str, List[AgentInfoActionPairProto]] = {}
+        self.n_demos = n_demos
+        for name in self.names:
+            self.demonstration_protos[name] = []
+
+    def step(self) -> None:
+        super().step()
+        for name in self.names:
+            self.demonstration_protos[
+                name
+            ] += proto_from_batched_step_result_and_action(
+                self.step_result[name], self.action[name]
+            )
+            self.demonstration_protos[name] = self.demonstration_protos[name][
+                -self.n_demos :
+            ]
+
+    def solve(self) -> None:
+        self.reset()
+        for _ in range(self.n_demos):
+            for name in self.names:
+                if self.discrete:
+                    self.action[name] = [[1]] if self.goal[name] > 0 else [[0]]
+                else:
+                    self.action[name] = [[float(self.goal[name])]]
+            self.step()

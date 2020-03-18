@@ -164,9 +164,6 @@ class TrainerController(object):
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
-            self.logger.info(trainer)
-            if self.train_model:
-                trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
         trainer.add_policy(name_behavior_id, policy)

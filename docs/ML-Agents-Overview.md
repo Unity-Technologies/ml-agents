@@ -199,8 +199,7 @@ To summarize: our built-in implementations are based on TensorFlow, thus, during
 training the Python API uses the observations it receives to learn a TensorFlow
 model. This model is then embedded within the Agent during inference.
 
-The
-[Getting Started with the 3D Balance Ball Example](Getting-Started-with-Balance-Ball.md)
+The [Getting Started Guide](Getting-Started.md)
 tutorial covers this training mode with the **3D Balance Ball** sample environment.
 
 ### Custom Training and Inference
@@ -379,7 +378,7 @@ packed with several features to enable researchers and developers to leverage
 
 To help you use ML-Agents, we've created several in-depth tutorials for
 [installing ML-Agents](Installation.md),
-[getting started](Getting-Started-with-Balance-Ball.md) with the 3D Balance Ball
+[getting started](Getting-Started.md) with the 3D Balance Ball
 environment (one of our many
 [sample environments](Learning-Environment-Examples.md)) and
 [making your own environment](Learning-Environment-Create-New.md).
