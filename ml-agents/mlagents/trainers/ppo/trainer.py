@@ -221,7 +221,6 @@ class PPOTrainer(RLTrainer):
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
-            tanh_squash=True,
         )
 
         return policy
