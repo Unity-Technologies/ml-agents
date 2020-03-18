@@ -113,18 +113,14 @@ class ConsoleWriter(StatsWriter):
             )
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                mean_opponent_elo = values["Self-play/Mean Opponent ELO"]
-                std_opponent_elo = values["Self-play/Std Opponent ELO"]
+                #        mean_opponent_elo = values["Self-play/Mean Opponent ELO"]
+                #        std_opponent_elo = values["Self-play/Std Opponent ELO"]
                 logger.info(
-                    "{} Team {}: ELO: {:0.3f}. "
-                    "Mean Opponent ELO: {:0.3f}. "
-                    "Std Opponent ELO: {:0.3f}. ".format(
-                        category,
-                        self.self_play_team,
-                        elo_stats.mean,
-                        mean_opponent_elo.mean,
-                        std_opponent_elo.mean,
+                    "{} Team {}: ELO: {:0.3f}. ".format(
+                        category, self.self_play_team, elo_stats.mean
                     )
+                    #                mean_opponent_elo.mean,
+                    #                std_opponent_elo.mean,
                 )
         else:
             logger.info(

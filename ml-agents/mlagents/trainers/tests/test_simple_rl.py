@@ -145,6 +145,7 @@ def _check_environment_trains(
             keep_checkpoints=1,
             train_model=True,
             load_model=False,
+            ghost_swap=10000,
             seed=seed,
             meta_curriculum=meta_curriculum,
             multi_gpu=False,

@@ -1,5 +1,6 @@
-from typing import Deque, List
+from typing import Deque, Dict
 from collections import deque
+from mlagents.trainers.ghost.trainer import GhostTrainer
 
 
 class GhostController(object):
@@ -8,32 +9,38 @@ class GhostController(object):
         self._last_swap: int = 0
         self._queue: Deque[int] = deque(maxlen=maxlen)
         self._learning_team: int = 0
-        self._subscribed_teams: List[int] = []
+        self._ghost_trainers: Dict[int, GhostTrainer] = {}
 
-    def subscribe_team_id(self, team_id: int) -> None:
-        if team_id not in self._subscribed_teams:
+    def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
+        if team_id not in self._ghost_trainers:
             self._queue.append(team_id)
-            self._subscribed_teams.append(team_id)
+            self._ghost_trainers[team_id] = trainer
 
     def get_learning_team(self, step: int) -> int:
         if step >= self._swap_interval + self._last_swap:
             self._last_swap = step
-            self.subscribe_team_id(self._learning_team)
             self._learning_team = self._queue.popleft()
+            self._queue.append(self._learning_team)
         return self._learning_team
 
+    # Adapted from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
+    # https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/
+    # ELO calculation
 
-# Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
-# https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/
-# ELO calculation
+    def compute_elo_rating_changes(self, rating: float, result: float) -> float:
+        opponent_rating: float = 0.0
+        for team_id, trainer in self._ghost_trainers.items():
+            if team_id != self._learning_team:
+                opponent_rating = trainer.get_opponent_elo()
+        r1 = pow(10, rating / 400)
+        r2 = pow(10, opponent_rating / 400)
 
+        summed = r1 + r2
+        e1 = r1 / summed
 
-def compute_elo_rating_changes(rating1: float, rating2: float, result: float) -> float:
-    r1 = pow(10, rating1 / 400)
-    r2 = pow(10, rating2 / 400)
+        change = result - e1
+        for team_id, trainer in self._ghost_trainers.items():
+            if team_id != self._learning_team:
+                trainer.change_opponent_elo(change)
 
-    summed = r1 + r2
-    e1 = r1 / summed
-
-    change = result - e1
-    return change
+        return change

@@ -48,11 +48,8 @@ class GhostTrainer(Trainer):
         self.trainer = trainer
         self.controller = controller
 
-        self.internal_trajectory_queues: Dict[str, AgentManagerQueue[Trajectory]] = {}
-        self._name_to_trajectory_queue: Dict[str, AgentManagerQueue[Trajectory]] = {}
-
-        self.internal_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
-        self._name_to_policy_queue: Dict[str, AgentManagerQueue[Policy]] = {}
+        self._internal_trajectory_queues: Dict[str, AgentManagerQueue[Trajectory]] = {}
+        self._internal_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
 
         self._name_to_parsed_behavior_id: Dict[str, BehaviorIdentifiers] = {}
 
@@ -68,18 +65,24 @@ class GhostTrainer(Trainer):
         )
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
+        self.ghost_step: int = 0
 
         self.policies: Dict[str, TFPolicy] = {}
         self.policy_snapshots: List[Any] = []
         self.snapshot_counter: int = 0
+
+        # wrapped_training_team and learning team need to be separate
+        # in the situation where new agents are created destroyed
+        # after learning team switches. These agents need to be added
+        # to trainers properly.
         self.learning_team: int = None
+        self.wrapped_trainer_team: int = None
         self.current_policy_snapshot = None
         self.last_save = 0
         self.last_swap = 0
 
         # Chosen because it is the initial ELO in Chess
         self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
-        self.current_elo: float = self.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * (
             self.window + 1
         )  # for learning policy
@@ -103,6 +106,19 @@ class GhostTrainer(Trainer):
          """
         return self.trainer.reward_buffer
 
+    @property
+    def current_elo(self) -> float:
+        return self.policy_elos[-1]
+
+    def change_current_elo(self, change: float) -> None:
+        self.policy_elos[-1] += change
+
+    def get_opponent_elo(self) -> float:
+        return self.policy_elos[self.current_opponent]
+
+    def change_opponent_elo(self, change: float) -> None:
+        self.policy_elos[self.current_opponent] -= change
+
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         if trajectory.done_reached and not trajectory.max_step_reached:
             # Assumption is that final reward is 1/.5/0 for win/draw/loss
@@ -113,17 +129,16 @@ class GhostTrainer(Trainer):
             elif final_reward < 0:
                 result = 0.0
 
-            change = compute_elo_rating_changes(
-                self.current_elo, self.policy_elos[self.current_opponent], result
+            change = self.controller.compute_elo_rating_changes(
+                self.current_elo, result
             )
-            self.current_elo += change
-            self.policy_elos[self.current_opponent] -= change
-            opponents = np.array(self.policy_elos, dtype=np.float32)
+            self.change_current_elo(change)
+            # opponents = np.array(self.policy_elos, dtype=np.float32)
             self._stats_reporter.add_stat("Self-play/ELO", self.current_elo)
-            self._stats_reporter.add_stat(
-                "Self-play/Mean Opponent ELO", opponents.mean()
-            )
-            self._stats_reporter.add_stat("Self-play/Std Opponent ELO", opponents.std())
+            # self._stats_reporter.add_stat(
+            #    "Self-play/Mean Opponent ELO", opponents.mean()
+            # )
+            # self._stats_reporter.add_stat("Self-play/Std Opponent ELO", opponents.std())
 
     def advance(self) -> None:
         """
@@ -135,7 +150,7 @@ class GhostTrainer(Trainer):
             ]
             if parsed_behavior_id.team_id == self.learning_team:
                 # With a future multiagent trainer, this will be indexed by 'role'
-                internal_trajectory_queue = self.internal_trajectory_queues[
+                internal_trajectory_queue = self._internal_trajectory_queues[
                     parsed_behavior_id.brain_name
                 ]
                 try:
@@ -153,7 +168,9 @@ class GhostTrainer(Trainer):
                 # Dump trajectories from non-learning policy
                 try:
                     for _ in range(trajectory_queue.maxlen):
-                        trajectory_queue.get_nowait()
+                        t = trajectory_queue.get_nowait()
+                        # count ghost steps
+                        self.ghost_step += len(t.steps)
                 except AgentManagerQueue.Empty:
                     pass
 
@@ -166,7 +183,7 @@ class GhostTrainer(Trainer):
             ]
             if parsed_behavior_id.team_id == self.learning_team:
                 # With a future multiagent trainer, this will be indexed by 'role'
-                internal_policy_queue = self.internal_policy_queues[
+                internal_policy_queue = self._internal_policy_queues[
                     parsed_behavior_id.brain_name
                 ]
                 # Get policies that correspond to the policy queue in question
@@ -177,15 +194,15 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        if self.get_step - self.last_save > self.steps_between_save:
+        if self.ghost_step - self.last_save > self.steps_between_save:
             self._save_snapshot(self.trainer.policy)
-            self.last_save = self.get_step
+            self.last_save = self.ghost_step
 
-        if self.get_step - self.last_swap > self.steps_between_swap:
+        if self.ghost_step - self.last_swap > self.steps_between_swap:
             self._swap_snapshots()
-            self.last_swap = self.get_step
+            self.last_swap = self.ghost_step
 
-        self.learning_team = self.controller.get_learning_team(self.get_step)
+        self.learning_team = self.controller.get_learning_team(self.ghost_step)
 
     def end_episode(self):
         self.trainer.end_episode()
@@ -210,19 +227,20 @@ class GhostTrainer(Trainer):
         """
         name_behavior_id = parsed_behavior_id.behavior_id
         team_id = parsed_behavior_id.team_id
-        self.controller.subscribe_team_id(team_id)
+        self.controller.subscribe_team_id(team_id, self)
         self.policies[name_behavior_id] = policy
         policy.create_tf_graph()
 
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
 
-        # First policy encountered
-        if not self.learning_team:
+        # First policy or a new agent on the same team encountered
+        if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
             self.trainer.add_policy(parsed_behavior_id, policy)
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
             self.learning_team = team_id
+            self.wrapped_trainer_team = team_id
             self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY_TEAM, team_id)
         else:
             # for saving/swapping snapshots
@@ -254,7 +272,6 @@ class GhostTrainer(Trainer):
             else:
                 snapshot = self.current_policy_snapshot
                 x = "current"
-                self.policy_elos[-1] = self.current_elo
             self.current_opponent = -1 if x == "current" else x
             logger.debug(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
@@ -273,14 +290,13 @@ class GhostTrainer(Trainer):
         """
         super().publish_policy_queue(policy_queue)
         parsed_behavior_id = self._name_to_parsed_behavior_id[policy_queue.behavior_id]
-        self._name_to_policy_queue[parsed_behavior_id.behavior_id] = policy_queue
-        if parsed_behavior_id.team_id == self.learning_team:
-
+        if parsed_behavior_id.team_id == self.wrapped_trainer_team:
+            # With a future multiagent trainer, this will be indexed by 'role'
             internal_policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
                 parsed_behavior_id.brain_name
             )
 
-            self.internal_policy_queues[
+            self._internal_policy_queues[
                 parsed_behavior_id.brain_name
             ] = internal_policy_queue
             self.trainer.publish_policy_queue(internal_policy_queue)
@@ -296,33 +312,13 @@ class GhostTrainer(Trainer):
         parsed_behavior_id = self._name_to_parsed_behavior_id[
             trajectory_queue.behavior_id
         ]
-        self._name_to_trajectory_queue[
-            parsed_behavior_id.behavior_id
-        ] = trajectory_queue
-
-        if parsed_behavior_id.team_id == self.learning_team:
+        if parsed_behavior_id.team_id == self.wrapped_trainer_team:
             # With a future multiagent trainer, this will be indexed by 'role'
             internal_trajectory_queue: AgentManagerQueue[
                 Trajectory
             ] = AgentManagerQueue(parsed_behavior_id.brain_name)
 
-            self.internal_trajectory_queues[
+            self._internal_trajectory_queues[
                 parsed_behavior_id.brain_name
             ] = internal_trajectory_queue
             self.trainer.subscribe_trajectory_queue(internal_trajectory_queue)
-
-
-# Taken from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
-# https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/
-# ELO calculation
-
-
-def compute_elo_rating_changes(rating1: float, rating2: float, result: float) -> float:
-    r1 = pow(10, rating1 / 400)
-    r2 = pow(10, rating2 / 400)
-
-    summed = r1 + r2
-    e1 = r1 / summed
-
-    change = result - e1
-    return change
