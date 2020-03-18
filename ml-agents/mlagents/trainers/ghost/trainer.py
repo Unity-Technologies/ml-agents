@@ -48,10 +48,13 @@ class GhostTrainer(Trainer):
         self.trainer = trainer
         self.controller = controller
 
-        self.internal_policy_queues: List[AgentManagerQueue[Policy]] = []
-        self.internal_trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
-        self.ignored_trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
-        self.learning_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
+        self.internal_trajectory_queues: Dict[str, AgentManagerQueue[Trajectory]] = {}
+        self._name_to_trajectory_queue: Dict[str, AgentManagerQueue[Trajectory]] = {}
+
+        self.internal_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
+        self._name_to_policy_queue: Dict[str, AgentManagerQueue[Policy]] = {}
+
+        self._name_to_parsed_behavior_id: Dict[str, BehaviorIdentifiers] = {}
 
         # assign ghost's stats collection to wrapped trainer's
         self._stats_reporter = self.trainer.stats_reporter
@@ -69,7 +72,7 @@ class GhostTrainer(Trainer):
         self.policies: Dict[str, TFPolicy] = {}
         self.policy_snapshots: List[Any] = []
         self.snapshot_counter: int = 0
-        self.learning_behavior_name: str = None
+        self.learning_team: int = None
         self.current_policy_snapshot = None
         self.last_save = 0
         self.last_swap = 0
@@ -126,40 +129,53 @@ class GhostTrainer(Trainer):
         """
         Steps the trainer, passing trajectories to wrapped trainer and calling trainer advance
         """
-        for traj_queue in self.trajectory_queues:
-            if traj_queue.behavior_id == self.learning_behavior_name:
-                for internal_traj_queue in self.internal_trajectory_queues:
-                    try:
-                        # We grab at most the maximum length of the queue.
-                        # This ensures that even if the queue is being filled faster than it is
-                        # being emptied, the trajectories in the queue are on-policy.
-                        for _ in range(traj_queue.maxlen):
-                            t = traj_queue.get_nowait()
-                            # adds to wrapped trainers queue
-                            internal_traj_queue.put(t)
-                            self._process_trajectory(t)
-                    except AgentManagerQueue.Empty:
-                        pass
+        for trajectory_queue in self.trajectory_queues:
+            parsed_behavior_id = self._name_to_parsed_behavior_id[
+                trajectory_queue.behavior_id
+            ]
+            if parsed_behavior_id.team_id == self.learning_team:
+                # With a future multiagent trainer, this will be indexed by 'role'
+                internal_trajectory_queue = self.internal_trajectory_queues[
+                    parsed_behavior_id.brain_name
+                ]
+                try:
+                    # We grab at most the maximum length of the queue.
+                    # This ensures that even if the queue is being filled faster than it is
+                    # being emptied, the trajectories in the queue are on-policy.
+                    for _ in range(trajectory_queue.maxlen):
+                        t = trajectory_queue.get_nowait()
+                        # adds to wrapped trainers queue
+                        internal_trajectory_queue.put(t)
+                        self._process_trajectory(t)
+                except AgentManagerQueue.Empty:
+                    pass
             else:
                 # Dump trajectories from non-learning policy
                 try:
-                    for _ in range(traj_queue.maxlen):
-                        traj_queue.get_nowait()
+                    for _ in range(trajectory_queue.maxlen):
+                        trajectory_queue.get_nowait()
                 except AgentManagerQueue.Empty:
                     pass
 
         self.next_summary_step = self.trainer.next_summary_step
-
         self.trainer.advance()
 
-        for internal_q in self.internal_policy_queues:
-            # Get policies that correspond to the policy queue in question
-            try:
-                policy = cast(TFPolicy, internal_q.get_nowait())
-                self.current_policy_snapshot = policy.get_weights()
-                self.learning_policy_queues[internal_q.behavior_id].put(policy)
-            except AgentManagerQueue.Empty:
-                pass
+        for policy_queue in self.policy_queues:
+            parsed_behavior_id = self._name_to_parsed_behavior_id[
+                policy_queue.behavior_id
+            ]
+            if parsed_behavior_id.team_id == self.learning_team:
+                # With a future multiagent trainer, this will be indexed by 'role'
+                internal_policy_queue = self.internal_policy_queues[
+                    parsed_behavior_id.brain_name
+                ]
+                # Get policies that correspond to the policy queue in question
+                try:
+                    policy = cast(TFPolicy, internal_policy_queue.get_nowait())
+                    self.current_policy_snapshot = policy.get_weights()
+                    policy_queue.put(policy)
+                except AgentManagerQueue.Empty:
+                    pass
 
         if self.get_step - self.last_save > self.steps_between_save:
             self._save_snapshot(self.trainer.policy)
@@ -169,7 +185,7 @@ class GhostTrainer(Trainer):
             self._swap_snapshots()
             self.last_swap = self.get_step
 
-        self.learning_behavior_name = self.controller.get_learning_id(self.get_step)
+        self.learning_team = self.controller.get_learning_team(self.get_step)
 
     def end_episode(self):
         self.trainer.end_episode()
@@ -183,28 +199,30 @@ class GhostTrainer(Trainer):
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         return self.trainer.create_policy(brain_parameters)
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer. For the first policy added, add a trainer
         to the policy and set the learning behavior name to name_behavior_id.
         :param name_behavior_id: Behavior ID that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
-        self.controller.subscribe_behavior_id(name_behavior_id)
+        name_behavior_id = parsed_behavior_id.behavior_id
+        team_id = parsed_behavior_id.team_id
+        self.controller.subscribe_team_id(team_id)
         self.policies[name_behavior_id] = policy
         policy.create_tf_graph()
 
+        self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
+
         # First policy encountered
-        if not self.learning_behavior_name:
+        if not self.learning_team:
             weights = policy.get_weights()
             self.current_policy_snapshot = weights
-            self.trainer.add_policy(name_behavior_id, policy)
+            self.trainer.add_policy(parsed_behavior_id, policy)
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
-            self.learning_behavior_name = name_behavior_id
-            behavior_id_parsed = BehaviorIdentifiers.from_name_behavior_id(
-                self.learning_behavior_name
-            )
-            team_id = behavior_id_parsed.behavior_ids["team"]
+            self.learning_team = team_id
             self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY_TEAM, team_id)
         else:
             # for saving/swapping snapshots
@@ -223,10 +241,12 @@ class GhostTrainer(Trainer):
         self.snapshot_counter = (self.snapshot_counter + 1) % self.window
 
     def _swap_snapshots(self) -> None:
-        for q in self.policy_queues:
-            name_behavior_id = q.behavior_id
+        for policy_queue in self.policy_queues:
+            parsed_behavior_id = self._name_to_parsed_behavior_id[
+                policy_queue.behavior_id
+            ]
             # here is the place for a sampling protocol
-            if name_behavior_id == self.learning_behavior_name:
+            if parsed_behavior_id.team_id == self.learning_team:
                 continue
             elif np.random.uniform() < (1 - self.play_against_current_self_ratio):
                 x = np.random.randint(len(self.policy_snapshots))
@@ -238,12 +258,12 @@ class GhostTrainer(Trainer):
             self.current_opponent = -1 if x == "current" else x
             logger.debug(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
-                    self.get_step, x, name_behavior_id, self.learning_behavior_name
+                    self.get_step, x, parsed_behavior_id.behavior_id, self.learning_team
                 )
             )
-            policy = self.get_policy(name_behavior_id)
+            policy = self.get_policy(parsed_behavior_id.behavior_id)
             policy.load_weights(snapshot)
-            q.put(policy)
+            policy_queue.put(policy)
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
         """
@@ -252,14 +272,17 @@ class GhostTrainer(Trainer):
         :param queue: Policy queue to publish to.
         """
         super().publish_policy_queue(policy_queue)
-        if policy_queue.behavior_id == self.learning_behavior_name:
+        parsed_behavior_id = self._name_to_parsed_behavior_id[policy_queue.behavior_id]
+        self._name_to_policy_queue[parsed_behavior_id.behavior_id] = policy_queue
+        if parsed_behavior_id.team_id == self.learning_team:
 
             internal_policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
-                policy_queue.behavior_id
+                parsed_behavior_id.brain_name
             )
 
-            self.internal_policy_queues.append(internal_policy_queue)
-            self.learning_policy_queues[policy_queue.behavior_id] = policy_queue
+            self.internal_policy_queues[
+                parsed_behavior_id.brain_name
+            ] = internal_policy_queue
             self.trainer.publish_policy_queue(internal_policy_queue)
 
     def subscribe_trajectory_queue(
@@ -270,12 +293,22 @@ class GhostTrainer(Trainer):
         :param queue: Trajectory queue to publish to.
         """
         super().subscribe_trajectory_queue(trajectory_queue)
-        if trajectory_queue.behavior_id == self.learning_behavior_name:
+        parsed_behavior_id = self._name_to_parsed_behavior_id[
+            trajectory_queue.behavior_id
+        ]
+        self._name_to_trajectory_queue[
+            parsed_behavior_id.behavior_id
+        ] = trajectory_queue
+
+        if parsed_behavior_id.team_id == self.learning_team:
+            # With a future multiagent trainer, this will be indexed by 'role'
             internal_trajectory_queue: AgentManagerQueue[
                 Trajectory
-            ] = AgentManagerQueue(trajectory_queue.behavior_id)
+            ] = AgentManagerQueue(parsed_behavior_id.brain_name)
 
-            self.internal_trajectory_queues.append(internal_trajectory_queue)
+            self.internal_trajectory_queues[
+                parsed_behavior_id.brain_name
+            ] = internal_trajectory_queue
             self.trainer.subscribe_trajectory_queue(internal_trajectory_queue)
 
 

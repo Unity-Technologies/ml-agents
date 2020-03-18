@@ -1,10 +1,10 @@
-from typing import Dict, NamedTuple
+from typing import NamedTuple
 
 
 class BehaviorIdentifiers(NamedTuple):
-    name_behavior_id: str
+    behavior_id: str
     brain_name: str
-    behavior_ids: Dict[str, int]
+    team_id: int
 
     @staticmethod
     def from_name_behavior_id(name_behavior_id: str) -> "BehaviorIdentifiers":
@@ -17,20 +17,14 @@ class BehaviorIdentifiers(NamedTuple):
         :returns: A BehaviorIdentifiers object.
         """
 
-        ids: Dict[str, int] = {}
+        team_id: int = 0
         if "?" in name_behavior_id:
-            name, identifiers = name_behavior_id.rsplit("?", 1)
-            if "&" in identifiers:
-                list_of_identifiers = identifiers.split("&")
-            else:
-                list_of_identifiers = [identifiers]
-
-            for identifier in list_of_identifiers:
-                key, value = identifier.split("=")
-                ids[key] = int(value)
+            name, team_and_id = name_behavior_id.rsplit("?", 1)
+            _, team_id_str = team_and_id.split("=")
+            team_id = int(team_id_str)
         else:
             name = name_behavior_id
 
         return BehaviorIdentifiers(
-            name_behavior_id=name_behavior_id, brain_name=name, behavior_ids=ids
+            behavior_id=name_behavior_id, brain_name=name, team_id=team_id
         )

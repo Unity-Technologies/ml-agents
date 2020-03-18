@@ -1,4 +1,4 @@
-from typing import Deque
+from typing import Deque, List
 from collections import deque
 
 
@@ -8,11 +8,14 @@ class GhostController(object):
         self._last_swap: int = 0
         self._queue: Deque[int] = deque(maxlen=maxlen)
         self._learning_team: int = 0
+        self._subscribed_teams: List[int] = []
 
     def subscribe_team_id(self, team_id: int) -> None:
-        self._queue.append(team_id)
+        if team_id not in self._subscribed_teams:
+            self._queue.append(team_id)
+            self._subscribed_teams.append(team_id)
 
-    def get_learning_id(self, step: int) -> int:
+    def get_learning_team(self, step: int) -> int:
         if step >= self._swap_interval + self._last_swap:
             self._last_swap = step
             self.subscribe_team_id(self._learning_team)
