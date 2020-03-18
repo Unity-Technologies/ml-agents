@@ -133,12 +133,7 @@ class GhostTrainer(Trainer):
                 self.current_elo, result
             )
             self.change_current_elo(change)
-            # opponents = np.array(self.policy_elos, dtype=np.float32)
             self._stats_reporter.add_stat("Self-play/ELO", self.current_elo)
-            # self._stats_reporter.add_stat(
-            #    "Self-play/Mean Opponent ELO", opponents.mean()
-            # )
-            # self._stats_reporter.add_stat("Self-play/Std Opponent ELO", opponents.std())
 
     def advance(self) -> None:
         """
@@ -194,6 +189,8 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
+        self.learning_team = self.controller.get_learning_team(self.ghost_step)
+
         if self.ghost_step - self.last_save > self.steps_between_save:
             self._save_snapshot(self.trainer.policy)
             self.last_save = self.ghost_step
@@ -201,8 +198,6 @@ class GhostTrainer(Trainer):
         if self.ghost_step - self.last_swap > self.steps_between_swap:
             self._swap_snapshots()
             self.last_swap = self.ghost_step
-
-        self.learning_team = self.controller.get_learning_team(self.ghost_step)
 
     def end_episode(self):
         self.trainer.end_episode()
@@ -241,7 +236,6 @@ class GhostTrainer(Trainer):
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
             self.learning_team = team_id
             self.wrapped_trainer_team = team_id
-            self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY_TEAM, team_id)
         else:
             # for saving/swapping snapshots
             policy.init_load_weights()
@@ -275,7 +269,10 @@ class GhostTrainer(Trainer):
             self.current_opponent = -1 if x == "current" else x
             logger.debug(
                 "Step {}: Swapping snapshot {} to id {} with {} learning".format(
-                    self.get_step, x, parsed_behavior_id.behavior_id, self.learning_team
+                    self.ghost_step,
+                    x,
+                    parsed_behavior_id.behavior_id,
+                    self.learning_team,
                 )
             )
             policy = self.get_policy(parsed_behavior_id.behavior_id)
