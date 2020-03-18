@@ -350,11 +350,10 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Training with Environment Parameter Randomization** - To train agents to be adapt
-  to changes in its environment (i.e., better generalize), the agent should be exposed
-  to several variations of the environment. Similar to Curriculum Learning,
+- **Training with Environment Parameter Randomization** - If an agent is exposed to several variations of an environment, it will be more robust (i.e. generalize better) to
+  unseen variations of the environment. Similar to Curriculum Learning,
   where environments become more difficult as the agent learns, the toolkit provides
-  a way to randomly sample Environment Parameters of the environment during training. See
+  a way to randomly sample parameters of the environment during training. See
   [Training With Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
   to learn more about this feature.
 
