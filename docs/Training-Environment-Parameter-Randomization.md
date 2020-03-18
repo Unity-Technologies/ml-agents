@@ -7,8 +7,8 @@ This is analogous to a model being trained and tested on an identical dataset
 in supervised learning. This becomes problematic in cases where environments
 are instantiated with varying objects or properties.
 
-To make agents robust and better generalizable to changes in the environment, the agent
-should be trained over multiple variations of a given environment. We refer to this approach as ** Environment Parameter Randomization**. By using parameter randomization
+To help agents robust and better generalizable to changes in the environment, the agent
+can be trained over multiple variations of a given environment. We refer to this approach as **Environment Parameter Randomization**. For those familiar with Reinforcement Learning research, this approach is based on the concept of Domain Randomization (you can read more about it [here](https://arxiv.org/abs/1703.06907)). By using parameter randomization
 during training, the agent can be better suited to adapt (with higher performance)
 to future unseen variations of the environment.
 
