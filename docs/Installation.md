@@ -124,7 +124,7 @@ order will download `mlagents_envs` from PyPi.
 
 ## Next Steps
 
-The [Basic Guide](Basic-Guide.md) page contains several short tutorials on
+The [Getting Started](Getting-Started.md) guide contains several short tutorials on
 setting up the ML-Agents Toolkit within Unity, running a pre-trained model, in
 addition to building and training environments.
 
