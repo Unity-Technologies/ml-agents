@@ -106,8 +106,7 @@ environment, you can set the following command line options when invoking
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
 * `--sampler=<file>`: Specify a sampler YAML file for defining the
-  sampler for generalization training. See [Generalization
-  Training](Training-Generalized-Reinforcement-Learning-Agents.md) for more information.
+  sampler for parameter randomization. See [Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md) for more information.
 * `--keep-checkpoints=<n>`: Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
@@ -218,7 +217,7 @@ are conducting, see:
 * [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
-* [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
+* [Training with Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
 
 You can also compare the
 [example environments](Learning-Environment-Examples.md)
