@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
  - Replaced `done` and `max_step` booleans in the Low-Level Python API with a `status` enum.
+ - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
+ - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
