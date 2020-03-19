@@ -6,8 +6,8 @@ from distutils.version import LooseVersion
 from datetime import datetime
 
 def table_line(display_name, name, date, highlight = False):
-	bold_str = "**" if highlight else ""
-	return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} |  {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
+    bold_str = "**" if highlight else ""
+    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} |  {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
 
 
 versions = [
@@ -20,16 +20,18 @@ versions = [
     ["0.13.1", "January 21, 2020"],
     ["0.14.0", "February 13, 2020"],
     ["0.14.1", "February 26, 2020"],
-    ["0.15.0", "March 18, 2020"]
+    ["0.15.0", "March 18, 2020"],
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
-sorted_versions = sorted(([LooseVersion(v[0]), v[1]] for v in versions), key=lambda x: x[0], reverse=True)
+sorted_versions = sorted(
+    ([LooseVersion(v[0]), v[1]] for v in versions), key=lambda x: x[0], reverse=True
+)
 
 print(table_line("master (unstable)", "master", "--"))
 highlight = True  # whether to bold the line or not
 for v in sorted_versions:
-	elapsed_days = (datetime.today() - datetime.strptime(v[1], "%B %d, %Y")).days
-	if elapsed_days <= MAX_DAYS:
-		print(table_line(v[0], v[0], v[1], highlight))
-		highlight = False  # only bold the first stable release
+    elapsed_days = (datetime.today() - datetime.strptime(v[1], "%B %d, %Y")).days
+    if elapsed_days <= MAX_DAYS:
+        print(table_line(v[0], v[0], v[1], highlight))
+        highlight = False  # only bold the first stable release
