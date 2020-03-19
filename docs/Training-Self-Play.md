@@ -15,7 +15,8 @@ Self-play is triggered by including the self-play hyperparameter hierarchy in th
 
 ![Team ID](images/team_id.png)
 
-***Team ID must be 0 or an integer greater than 0. Negative numbers will cause unpredictable behavior.*** See the trainer configuration and agent prefabs for our Tennis environment for an example.
+***Team ID must be 0 or an integer greater than 0. Negative numbers will cause unpredictable behavior.*** 
+See the trainer configuration and agent prefabs for our Tennis environment for an example.
 
 ## Best Practices Training with Self-Play
 
