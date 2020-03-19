@@ -134,7 +134,7 @@ A `BatchedStepResult` has the following fields :
  can take 3 values :
     - `Default` : The episode is ongoing.
     - `Terminated` : The episode ended because the task either succeeded or failed.
-    - `Interrupted` : The episode was interrupted before the natural end of the episode.
+    - `Interrupted` : The episode was interrupted before the task ended.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
