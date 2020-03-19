@@ -8,7 +8,7 @@ from datetime import datetime
 
 def table_line(display_name, name, date, bold=False):
     bold_str = "**" if bold else ""
-    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} |  {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
+    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
 
 
 versions = [
@@ -31,8 +31,8 @@ sorted_versions = sorted(
 
 print(table_line("master (unstable)", "master", "--"))
 highlight = True  # whether to bold the line or not
-for v in sorted_versions:
-    elapsed_days = (datetime.today() - datetime.strptime(v[1], "%B %d, %Y")).days
+for version_name, version_date in sorted_versions:
+    elapsed_days = (datetime.today() - datetime.strptime(version_date, "%B %d, %Y")).days
     if elapsed_days <= MAX_DAYS:
-        print(table_line(v[0], v[0], v[1], highlight))
+        print(table_line(version_name, version_name, version_date, highlight))
         highlight = False  # only bold the first stable release
