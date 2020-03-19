@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using MLAgents;
+using MLAgents.SideChannels;
 
 public class FoodCollectorSettings : MonoBehaviour
 {
@@ -44,5 +45,6 @@ public class FoodCollectorSettings : MonoBehaviour
     public void Update()
     {
         scoreText.text = $"Score: {totalScore}";
+        Academy.Instance.GetSideChannel<StatsSideChannel>().AddStat("TotalScore", totalScore);
     }
 }

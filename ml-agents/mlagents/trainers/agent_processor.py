@@ -258,3 +258,8 @@ class AgentManager(AgentProcessor):
             self.behavior_id
         )
         self.publish_trajectory_queue(self.trajectory_queue)
+
+    def set_environment_stats(self, env_stats: Dict[str, float]) -> None:
+        for stat_name, val in env_stats.items():
+            # full_stat = f"Environment/{stat_name}"
+            self.stats_reporter.set_stat(stat_name, val)

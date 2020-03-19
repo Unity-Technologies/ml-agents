@@ -17,6 +17,7 @@ class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
     brain_name_to_action_info: Dict[AgentGroup, ActionInfo]
+    environment_stats: Dict[str, float]
 
     @property
     def name_behavior_ids(self) -> Iterable[AgentGroup]:
@@ -24,7 +25,7 @@ class EnvironmentStep(NamedTuple):
 
     @staticmethod
     def empty(worker_id: int) -> "EnvironmentStep":
-        return EnvironmentStep({}, worker_id, {})
+        return EnvironmentStep({}, worker_id, {}, {})
 
 
 class EnvManager(ABC):
@@ -108,4 +109,11 @@ class EnvManager(ABC):
                         name_behavior_id, ActionInfo.empty()
                     ),
                 )
+
+                # In order to prevent conflicts between multiple environments,
+                # only stats from the first environment are recorded.
+                if step_info.worker_id == 0:
+                    self.agent_managers[name_behavior_id].set_environment_stats(
+                        step_info.environment_stats
+                    )
         return len(step_infos)

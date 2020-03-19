@@ -538,6 +538,43 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Returns the SideChannel of Type T if there is one registered, or null if it doesn't.
+        /// If there are multiple SideChannels of the same type registered, only the first found will be returned.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public T GetSideChannel<T>() where T: SideChannel
+        {
+            foreach (var sc in m_SideChannels.Values)
+            {
+                if (sc.GetType() == typeof(T))
+                {
+                    return (T) sc;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns all SideChannels of Type T that are registered.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public List<T> GetSideChannels<T>() where T: SideChannel
+        {
+            var output = new List<T>();
+
+            foreach (var sc in m_SideChannels.Values)
+            {
+                if (sc.GetType() == typeof(T))
+                {
+                    output.Add((T) sc);
+                }
+            }
+            return output;
+        }
+
+        /// <summary>
         /// Grabs the messages that the registered side channels will send to Python at the current step
         /// into a singe byte array.
         /// </summary>

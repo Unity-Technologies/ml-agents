@@ -13,7 +13,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Initializes the side channel.
         /// </summary>
-        public EngineConfigurationChannel()
+        internal EngineConfigurationChannel()
         {
             ChannelId = new Guid(k_EngineConfigId);
         }

@@ -167,5 +167,20 @@ namespace MLAgents
         /// </summary>
         /// <param name="sideChannel"> The side channel to be unregistered.</param>
         void UnregisterSideChannel(SideChannel sideChannel);
+
+        /// <summary>
+        /// Returns the SideChannel of Type T if there is one registered, or null if it doesn't.
+        /// If there are multiple SideChannels of the same type registered, only the first found will be returned.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        T GetSideChannel<T>() where T : SideChannel;
+
+        /// <summary>
+        /// Returns all SideChannels of Type T that are registered.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        List<T> GetSideChannels<T>() where T : SideChannel;
     }
 }
