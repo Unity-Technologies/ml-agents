@@ -1,4 +1,5 @@
 from typing import NamedTuple
+from urllib.parse import urlparse, parse_qs
 
 
 class BehaviorIdentifiers(NamedTuple):
@@ -17,14 +18,12 @@ class BehaviorIdentifiers(NamedTuple):
         :returns: A BehaviorIdentifiers object.
         """
 
+        parsed = urlparse(name_behavior_id)
+        name = parsed.path
+        ids = parse_qs(parsed.query)
         team_id: int = 0
-        if "?" in name_behavior_id:
-            name, team_and_id = name_behavior_id.rsplit("?", 1)
-            _, team_id_str = team_and_id.split("=")
-            team_id = int(team_id_str)
-        else:
-            name = name_behavior_id
-
+        if "team" in ids:
+            team_id = int(ids["team"][0])
         return BehaviorIdentifiers(
             behavior_id=name_behavior_id, brain_name=name, team_id=team_id
         )
