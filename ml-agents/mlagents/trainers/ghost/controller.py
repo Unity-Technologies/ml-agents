@@ -1,6 +1,10 @@
+import logging
+
 from typing import Deque, Dict
 from collections import deque
 from mlagents.trainers.ghost.trainer import GhostTrainer
+
+logger = logging.getLogger("mlagents.trainers")
 
 
 class GhostController(object):
@@ -13,16 +17,22 @@ class GhostController(object):
 
     def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
         if team_id not in self._ghost_trainers:
-            self._queue.append(team_id)
             self._ghost_trainers[team_id] = trainer
             if self._learning_team < 0:
                 self._learning_team = team_id
+            else:
+                self._queue.append(team_id)
 
     def get_learning_team(self, step: int) -> int:
         if step >= self._swap_interval + self._last_swap:
             self._last_swap = step
-            self._learning_team = self._queue.popleft()
             self._queue.append(self._learning_team)
+            self._learning_team = self._queue.popleft()
+            logger.debug(
+                "Learning team {} swapped on step {}".format(
+                    self._learning_team, self._last_swap
+                )
+            )
         return self._learning_team
 
     # Adapted from https://github.com/Unity-Technologies/ml-agents/pull/1975 and

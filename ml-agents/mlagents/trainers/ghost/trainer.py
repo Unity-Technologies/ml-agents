@@ -143,6 +143,7 @@ class GhostTrainer(Trainer):
             parsed_behavior_id = self._name_to_parsed_behavior_id[
                 trajectory_queue.behavior_id
             ]
+
             if parsed_behavior_id.team_id == self._learning_team:
                 # With a future multiagent trainer, this will be indexed by 'role'
                 internal_trajectory_queue = self._internal_trajectory_queues[
@@ -189,7 +190,8 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        self._learning_team = self.controller.get_learning_team(self.ghost_step)
+        self._learning_team = self.controller.get_learning_team(self.get_step)
+        # self._learning_team = self.controller.get_learning_team(self.ghost_step)
 
         # Note save and swap should be on different step counters.
         # We don't want to save unless the policy is learning.

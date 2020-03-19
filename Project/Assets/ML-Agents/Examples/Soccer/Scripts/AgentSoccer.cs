@@ -23,6 +23,9 @@ public class AgentSoccer : Agent
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
+    
+    float m_LateralSpeed;
+    float m_Power;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -37,11 +40,15 @@ public class AgentSoccer : Agent
         {
             team = Team.Blue;
             m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
+            m_LateralSpeed = 0.3f;
+            m_Power = 2000f;
         }
         else
         {
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
+            m_LateralSpeed = 1.0f;
+            m_Power = 3000f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -83,10 +90,10 @@ public class AgentSoccer : Agent
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * 0.3f;
+                dirToGo = transform.right * m_LateralSpeed;
                 break;
             case 2:
-                dirToGo = transform.right * -0.3f;
+                dirToGo = transform.right * m_LateralSpeed;
                 break;
         }
 
@@ -149,7 +156,7 @@ public class AgentSoccer : Agent
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 2000f * m_KickPower;
+        var force = m_Power * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
             var dir = c.contacts[0].point - transform.position;
