@@ -29,14 +29,14 @@ developer communities.
 * Unity environment control from Python
 * 15+ sample Unity environments
 * Two deep reinforcement learning algorithms,
-[Proximal Policy Optimization](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-PPO.md)
- (PPO) and [Soft Actor-Critic](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-SAC.md)
+[Proximal Policy Optimization](docs/Training-PPO.md)
+ (PPO) and [Soft Actor-Critic](docs/Training-SAC.md)
  (SAC)
 * Support for multiple environment configurations and training scenarios
 * Self-play mechanism for training agents in adversarial scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
-* Built-in support for [Imitation Learning](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
+* Built-in support for [Imitation Learning](docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
 * Wrap learning environments as a gym
@@ -44,8 +44,9 @@ developer communities.
 * Train using concurrent Unity environment instances
 
 ## Releases & Documentation
-**Our latest, stable release is 0.14.1. Click
+**Our latest, stable release is 0.15.0. Click
 [here](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md) to
+
 get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `master` branch which is under active
@@ -61,17 +62,15 @@ details of the changes between versions.
 
 | **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
-| **master** (unstable) | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
-| **0.14.1** (latest stable release) | February 26, 2020 | **[source](https://github.com/Unity-Technologies/ml-agents/tree/latest_release)** |  **[docs](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/latest_release.zip)** |
-| **0.14.0**  | February 13, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.0.zip) |
-| **0.13.1**  | January 21, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.1.zip) |
-| **0.13.0**  | January 8, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.0.zip) |
-| **0.12.1**  | December 11, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.12.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.12.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.12.1.zip) |
-| **0.12.0**  | December 2, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.12.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.12.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.12.0.zip) |
-| **0.11.0**  | November 4, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.11.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.11.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.11.0.zip) |
-| **0.10.1**  | October 9, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.10.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.10.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.10.1.zip) |
-| **0.10.0**  | September 30, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.10.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.10.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.10.0.zip) |
-
+| **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
+| **0.15.0** | **March 18, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/0.15.0.zip)** |
+| **0.14.1** | February 26, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.1) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.1.zip) |
+| **0.14.0** | February 13, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.0.zip) |
+| **0.13.1** | January 21, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.1.zip) |
+| **0.13.0** | January 8, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.0) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.0.zip) |
+| **0.12.1** | December 11, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.12.1) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.12.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.12.1.zip) |
+| **0.12.0** | December 2, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.12.0) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.12.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.12.0.zip) |
+| **0.11.0** | November 4, 2019 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.11.0) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.11.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.11.0.zip) |
 
 ## Citation
 

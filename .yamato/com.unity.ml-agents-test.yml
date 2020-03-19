@@ -43,6 +43,7 @@ test_{{ platform.name }}_{{ editor.version }}:
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
+    cancel_old_ci: true
     changes:
       only:
         - "com.unity.ml-agents/**"

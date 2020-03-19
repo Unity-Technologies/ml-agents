@@ -190,6 +190,6 @@ def test_subprocess_env_endtoend(num_envs):
     # check the StatsReporter's debug stat writer's last reward.
     assert isinstance(StatsReporter.writers[0], DebugWriter)
     assert all(
-        val > 0.99 for val in StatsReporter.writers[0].get_last_rewards().values()
+        val > 0.7 for val in StatsReporter.writers[0].get_last_rewards().values()
     )
     env_manager.close()

@@ -27,6 +27,7 @@ test_mac_protobuf_generation:
       echo "Apply the patch with the command 'git apply proto.patch'";                                  \
       git diff -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" > artifacts/proto.patch; exit $GIT_ERR; }
   triggers:
+    cancel_old_ci: true
     changes:
       only:
         - "protobuf-definitions/**"
