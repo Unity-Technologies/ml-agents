@@ -191,9 +191,11 @@ class GhostTrainer(Trainer):
 
         self._learning_team = self.controller.get_learning_team(self.ghost_step)
 
-        if self.ghost_step - self.last_save > self.steps_between_save:
+        # Note save and swap should be on different step counters.
+        # We don't want to save unless the policy is learning.
+        if self.get_step - self.last_save > self.steps_between_save:
             self._save_snapshot(self.trainer.policy)
-            self.last_save = self.ghost_step
+            self.last_save = self.get_step
 
         if self.ghost_step - self.last_swap > self.steps_between_swap:
             self._swap_snapshots()
