@@ -32,7 +32,9 @@ sorted_versions = sorted(
 print(table_line("master (unstable)", "master", "--"))
 highlight = True  # whether to bold the line or not
 for version_name, version_date in sorted_versions:
-    elapsed_days = (datetime.today() - datetime.strptime(version_date, "%B %d, %Y")).days
+    elapsed_days = (
+        datetime.today() - datetime.strptime(version_date, "%B %d, %Y")
+    ).days
     if elapsed_days <= MAX_DAYS:
         print(table_line(version_name, version_name, version_date, highlight))
         highlight = False  # only bold the first stable release
