@@ -115,7 +115,15 @@ public class AgentSoccer : Agent
     public override void OnActionReceived(float[] vectorAction)
     {
         // Existential penalty for strikers.
-        AddReward(-1f / 3000f);
+        if (team == Team.Purple)
+        {
+            AddReward(1f / 3000f);
+        }
+        else
+        {
+            AddReward(-1f / 3000f);
+        }
+
         MoveAgent(vectorAction);
     }
 
