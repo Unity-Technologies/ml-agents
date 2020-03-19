@@ -29,14 +29,14 @@ developer communities.
 * Unity environment control from Python
 * 15+ sample Unity environments
 * Two deep reinforcement learning algorithms,
-[Proximal Policy Optimization](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-PPO.md)
- (PPO) and [Soft Actor-Critic](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-SAC.md)
+[Proximal Policy Optimization](docs/Training-PPO.md)
+ (PPO) and [Soft Actor-Critic](docs/Training-SAC.md)
  (SAC)
 * Support for multiple environment configurations and training scenarios
 * Self-play mechanism for training agents in adversarial scenarios
 * Train memory-enhanced agents using deep reinforcement learning
 * Easily definable Curriculum Learning and Generalization scenarios
-* Built-in support for [Imitation Learning](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
+* Built-in support for [Imitation Learning](docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
 * Flexible agent control with On Demand Decision Making
 * Visualizing network outputs within the environment
 * Wrap learning environments as a gym
@@ -46,6 +46,7 @@ developer communities.
 ## Releases & Documentation
 **Our latest, stable release is 0.15.0. Click
 [here](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/Readme.md) to
+
 get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `master` branch which is under active
