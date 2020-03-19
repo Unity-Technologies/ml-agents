@@ -6,8 +6,8 @@ from distutils.version import LooseVersion
 from datetime import datetime
 
 
-def table_line(display_name, name, date, highlight=False):
-    bold_str = "**" if highlight else ""
+def table_line(display_name, name, date, bold=False):
+    bold_str = "**" if bold else ""
     return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} |  {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
 
 
