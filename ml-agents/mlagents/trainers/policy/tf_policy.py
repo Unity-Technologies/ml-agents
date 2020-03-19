@@ -176,10 +176,10 @@ class TFPolicy(Policy):
 
         agents_done = [
             agent
-            for agent, done in zip(
-                batched_step_result.agent_id, batched_step_result.done
+            for agent, status in zip(
+                batched_step_result.agent_id, batched_step_result.status
             )
-            if done
+            if status.is_done()
         ]
 
         self.remove_memories(agents_done)

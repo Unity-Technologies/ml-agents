@@ -5,7 +5,7 @@ import numpy as np
 from mlagents.trainers.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import BatchedStepResult, EpisodeStatus
 
 
 def create_mock_brainparams(
@@ -69,11 +69,12 @@ def create_mock_batchedstep(
         ]
 
     reward = np.array(num_agents * [1.0], dtype=np.float32)
-    done = np.array(num_agents * [done], dtype=np.bool)
-    max_step = np.array(num_agents * [False], dtype=np.bool)
+    status = [EpisodeStatus.Default] * num_agents
+    if done:
+        status = [EpisodeStatus.Terminated] * num_agents
     agent_id = np.arange(num_agents, dtype=np.int32)
 
-    return BatchedStepResult(obs_list, reward, done, max_step, agent_id, action_mask)
+    return BatchedStepResult(obs_list, reward, status, agent_id, action_mask)
 
 
 def create_batchedstep_from_brainparams(

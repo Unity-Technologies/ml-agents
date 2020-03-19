@@ -53,7 +53,7 @@ def make_demo_buffer(
         next_agent_id = next_step_info.agent_id[0]
         next_agent_step_info = next_step_info.get_agent_step_result(next_agent_id)
 
-        demo_raw_buffer["done"].append(next_agent_step_info.done)
+        demo_raw_buffer["done"].append(next_agent_step_info.status.is_done())
         demo_raw_buffer["rewards"].append(next_agent_step_info.reward)
         split_obs = SplitObservations.from_observations(current_agent_step_info.obs)
         for i, obs in enumerate(split_obs.visual_observations):
@@ -61,7 +61,7 @@ def make_demo_buffer(
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
         demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
         demo_raw_buffer["prev_action"].append(previous_action)
-        if next_step_info.done:
+        if next_step_info.status[0].is_done():
             demo_raw_buffer.resequence_and_append(
                 demo_processed_buffer, batch_size=None, training_length=sequence_length
             )

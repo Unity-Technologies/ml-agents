@@ -7,6 +7,7 @@ from mlagents_envs.base_env import (
     AgentGroupSpec,
     BatchedStepResult,
     ActionType,
+    EpisodeStatus,
 )
 from mlagents_envs.tests.test_rpc_utils import proto_from_batched_step_result_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -130,7 +131,7 @@ class Simple1DEnvironment(BaseEnv):
     ) -> BatchedStepResult:
         m_vector_obs = self._make_obs(self.goal[name])
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = np.array([done], dtype=np.bool)
+        m_done = [EpisodeStatus.Terminated] if done else [EpisodeStatus.Default]
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
 
@@ -153,12 +154,7 @@ class Simple1DEnvironment(BaseEnv):
                 name,
             )
         return BatchedStepResult(
-            m_vector_obs,
-            m_reward,
-            m_done,
-            np.zeros(m_done.shape, dtype=bool),
-            m_agent_id,
-            action_mask,
+            m_vector_obs, m_reward, m_done, m_agent_id, action_mask
         )
 
     def _construct_reset_step(
@@ -166,13 +162,13 @@ class Simple1DEnvironment(BaseEnv):
         vector_obs: List[np.ndarray],
         new_vector_obs: List[np.ndarray],
         reward: np.ndarray,
-        done: np.ndarray,
+        done: List[EpisodeStatus],
         agent_id: np.ndarray,
         action_mask: List[np.ndarray],
         name: str,
     ) -> Tuple[List[np.ndarray], np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         new_reward = np.array([0.0], dtype=np.float32)
-        new_done = np.array([False], dtype=np.bool)
+        new_done = [EpisodeStatus.Default]
         new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         new_action_mask = self._generate_mask()
 
@@ -181,7 +177,7 @@ class Simple1DEnvironment(BaseEnv):
             for old, new in zip(vector_obs, new_vector_obs)
         ]
         m_reward = np.concatenate((reward, new_reward), axis=0)
-        m_done = np.concatenate((done, new_done), axis=0)
+        m_done = done + new_done
         m_agent_id = np.concatenate((agent_id, new_agent_id), axis=0)
         if action_mask is not None:
             action_mask = [
@@ -245,7 +241,7 @@ class Memory1DEnvironment(Simple1DEnvironment):
         )
         m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = np.array([done], dtype=np.bool)
+        m_done = [EpisodeStatus.Terminated] if done else [EpisodeStatus.Default]
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
         if done:
@@ -270,12 +266,7 @@ class Memory1DEnvironment(Simple1DEnvironment):
                 name,
             )
         return BatchedStepResult(
-            m_vector_obs,
-            m_reward,
-            m_done,
-            np.zeros(m_done.shape, dtype=bool),
-            m_agent_id,
-            action_mask,
+            m_vector_obs, m_reward, m_done, m_agent_id, action_mask
         )
 
 

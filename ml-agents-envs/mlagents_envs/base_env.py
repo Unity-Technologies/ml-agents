@@ -48,14 +48,13 @@ class EpisodeStatus(IntEnum):
         """
         return True if the episode was terminated or interrupted
         """
-        return self.value == 1 or self.value == 2
+        return self.value == 1 or self.value == 2  # pylint: disable=W0143
 
     def is_interrupted(self) -> bool:
         """
         return True if the episode was interrupted
         """
-        print(self.value)
-        return self.value == 2
+        return self.value == 2  # pylint: disable=W0143
 
 
 class StepResult(NamedTuple):
