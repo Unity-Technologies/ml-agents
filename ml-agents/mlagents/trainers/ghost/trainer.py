@@ -234,7 +234,7 @@ class GhostTrainer(Trainer):
             self.current_policy_snapshot = weights
             self.trainer.add_policy(parsed_behavior_id, policy)
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
-            self.learning_team = team_id
+            self.learning_team = self.controller.get_learning_team(self.ghost_step)
             self.wrapped_trainer_team = team_id
         else:
             # for saving/swapping snapshots

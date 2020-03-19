@@ -27,7 +27,6 @@ class StatsSummary(NamedTuple):
 class StatsPropertyType(Enum):
     HYPERPARAMETERS = "hyperparameters"
     SELF_PLAY = "selfplay"
-    SELF_PLAY_TEAM = "selfplayteam"
 
 
 class StatsWriter(abc.ABC):
