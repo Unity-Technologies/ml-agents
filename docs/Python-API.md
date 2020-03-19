@@ -130,11 +130,11 @@ A `BatchedStepResult` has the following fields :
  `env.step()`).
  - `reward` is a float vector of length batch size. Corresponds to the
  rewards collected by each agent since the last simulation step.
- - `done` is an array of booleans of length batch size. Is true if the
- associated Agent was terminated during the last simulation step.
- - `max_step` is an array of booleans of length batch size. Is true if the
- associated Agent reached its maximum number of steps during the last
- simulation step.
+ - `status` is a list of `EpisodeStatus` enum of length batch size. EpisodeStatus
+ can take 3 values :
+    - `Default` : The episode is ongoing.
+    - `Terminated` : The episode ended because the task either succeeded or failed.
+    - `Interrupted` : The episode was interrupted before the natural end of the episode.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
