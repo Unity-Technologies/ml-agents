@@ -3,24 +3,30 @@ Generate the "Releases" table on the main readme. Update the versions lists, run
 into the markdown file.
 """
 from distutils.version import LooseVersion
+from datetime import datetime
 
-
-def table_line(version):
-    return f"| **{version}**  | [source](https://github.com/Unity-Technologies/ml-agents/tree/{version}) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/{version}/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/{version}.zip) |"  # noqa
+def table_line(display_name, name, date):
+    return f"| **{display_name}** | {date} | [source](https://github.com/Unity-Technologies/ml-agents/tree/{name}) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs) | [download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip) |"  # noqa
 
 
 versions = [
-    "0.10.0",
-    "0.10.1",
-    "0.11.0",
-    "0.12.0",
-    "0.12.1",
-    "0.13.0",
-    "0.13.1",
-    "0.14.0",
+    ["0.10.0", "September 30, 2019"],
+    ["0.10.1", "October 9, 2019"],
+    ["0.11.0", "November 4, 2019"],
+    ["0.12.0", "December 2, 2019"],
+    ["0.12.1", "December 11, 2019"],
+    ["0.13.0", "January 8, 2020"],
+    ["0.13.1", "January 21, 2020"],
+    ["0.14.0", "February 13, 2020"],
+    ["0.14.1", "February 26, 2020"],
+    ["0.15.0", "March 18, 2020"]
 ]
 
-sorted_versions = sorted((LooseVersion(v) for v in versions), reverse=True)
+MAX_DAYS = 150  # do not print releases older than this many days
+sorted_versions = sorted(([LooseVersion(v[0]), v[1]] for v in versions), key=lambda x: x[0], reverse=True)
 
+print(table_line("master (unstable)", "master", "--"))
 for v in sorted_versions:
-    print(table_line(str(v)))
+	elapsed_days = (datetime.today() - datetime.strptime(v[1], "%B %d, %Y")).days
+	if elapsed_days <= MAX_DAYS:
+		print(table_line(v[0], v[0], v[1]))
