@@ -102,8 +102,8 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         manager.step_queue = Mock()
         manager.step_queue.get_nowait.side_effect = [
-            EnvironmentResponse("step", 0, StepResponse(0, None)),
-            EnvironmentResponse("step", 1, StepResponse(1, None)),
+            EnvironmentResponse("step", 0, StepResponse(0, None, {})),
+            EnvironmentResponse("step", 1, StepResponse(1, None, {})),
             EmptyQueue(),
         ]
         step_mock = Mock()
@@ -147,7 +147,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         env_manager.set_agent_manager(brain_name, agent_manager_mock)
 
         step_info_dict = {brain_name: Mock()}
-        step_info = EnvironmentStep(step_info_dict, 0, action_info_dict)
+        step_info = EnvironmentStep(step_info_dict, 0, action_info_dict, {})
         step_mock.return_value = [step_info]
         env_manager.advance()
 
