@@ -155,8 +155,8 @@ class GaussianDistribution(OutputDistribution):
         """
         Adjust probabilities for squashed sample before output
         """
-        probs -= tf.log(1 - squashed_policy ** 2 + EPSILON)
-        return probs
+        adjusted_probs = probs - tf.log(1 - squashed_policy ** 2 + EPSILON)
+        return adjusted_probs
 
     @property
     def total_log_probs(self) -> tf.Tensor:
