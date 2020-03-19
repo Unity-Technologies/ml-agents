@@ -8,13 +8,15 @@ class GhostController(object):
         self._swap_interval = swap_interval
         self._last_swap: int = 0
         self._queue: Deque[int] = deque(maxlen=maxlen)
-        self._learning_team: int = 0
+        self._learning_team: int = -1
         self._ghost_trainers: Dict[int, GhostTrainer] = {}
 
     def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
         if team_id not in self._ghost_trainers:
             self._queue.append(team_id)
             self._ghost_trainers[team_id] = trainer
+            if self._learning_team < 0:
+                self._learning_team = team_id
 
     def get_learning_team(self, step: int) -> int:
         if step >= self._swap_interval + self._last_swap:

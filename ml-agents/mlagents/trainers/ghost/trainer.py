@@ -75,7 +75,7 @@ class GhostTrainer(Trainer):
         # in the situation where new agents are created destroyed
         # after learning team switches. These agents need to be added
         # to trainers properly.
-        self.learning_team: int = None
+        self._learning_team: int = None
         self.wrapped_trainer_team: int = None
         self.current_policy_snapshot = None
         self.last_save = 0
@@ -143,7 +143,7 @@ class GhostTrainer(Trainer):
             parsed_behavior_id = self._name_to_parsed_behavior_id[
                 trajectory_queue.behavior_id
             ]
-            if parsed_behavior_id.team_id == self.learning_team:
+            if parsed_behavior_id.team_id == self._learning_team:
                 # With a future multiagent trainer, this will be indexed by 'role'
                 internal_trajectory_queue = self._internal_trajectory_queues[
                     parsed_behavior_id.brain_name
@@ -176,7 +176,7 @@ class GhostTrainer(Trainer):
             parsed_behavior_id = self._name_to_parsed_behavior_id[
                 policy_queue.behavior_id
             ]
-            if parsed_behavior_id.team_id == self.learning_team:
+            if parsed_behavior_id.team_id == self._learning_team:
                 # With a future multiagent trainer, this will be indexed by 'role'
                 internal_policy_queue = self._internal_policy_queues[
                     parsed_behavior_id.brain_name
@@ -189,7 +189,7 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        self.learning_team = self.controller.get_learning_team(self.ghost_step)
+        self._learning_team = self.controller.get_learning_team(self.ghost_step)
 
         if self.ghost_step - self.last_save > self.steps_between_save:
             self._save_snapshot(self.trainer.policy)
@@ -234,7 +234,7 @@ class GhostTrainer(Trainer):
             self.current_policy_snapshot = weights
             self.trainer.add_policy(parsed_behavior_id, policy)
             self._save_snapshot(policy)  # Need to save after trainer initializes policy
-            self.learning_team = self.controller.get_learning_team(self.ghost_step)
+            self._learning_team = self.controller.get_learning_team(self.ghost_step)
             self.wrapped_trainer_team = team_id
         else:
             # for saving/swapping snapshots
@@ -258,7 +258,7 @@ class GhostTrainer(Trainer):
                 policy_queue.behavior_id
             ]
             # here is the place for a sampling protocol
-            if parsed_behavior_id.team_id == self.learning_team:
+            if parsed_behavior_id.team_id == self._learning_team:
                 continue
             elif np.random.uniform() < (1 - self.play_against_current_self_ratio):
                 x = np.random.randint(len(self.policy_snapshots))
@@ -272,7 +272,7 @@ class GhostTrainer(Trainer):
                     self.ghost_step,
                     x,
                     parsed_behavior_id.behavior_id,
-                    self.learning_team,
+                    self._learning_team,
                 )
             )
             policy = self.get_policy(parsed_behavior_id.behavior_id)
