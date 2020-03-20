@@ -230,7 +230,7 @@ def test_recurrent_ppo(use_discrete):
         "use_recurrent": True,
     }
     config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    _check_environment_trains(env, config, success_threshold=0.9)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
