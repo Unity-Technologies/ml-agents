@@ -3,6 +3,14 @@ from urllib.parse import urlparse, parse_qs
 
 
 class BehaviorIdentifiers(NamedTuple):
+    """
+    BehaviorIdentifiers is a named tuple if the identifiers that uniquely distinguish
+    an agent encountered in the trainer_controller. The named tuple consists of the
+    fully qualified behavior name, the name of the brain name (corresponds to trainer
+    in the trainer controller) and the team id.  In the future, this can be extended
+    to support further identifiers.
+    """
+
     behavior_id: str
     brain_name: str
     team_id: int
@@ -10,10 +18,9 @@ class BehaviorIdentifiers(NamedTuple):
     @staticmethod
     def from_name_behavior_id(name_behavior_id: str) -> "BehaviorIdentifiers":
         """
-        Parses a name_behavior_id of the form name?team=0&param1=i&...
+        Parses a name_behavior_id of the form name?team=0
         into a BehaviorIdentifiers NamedTuple.
-        This allows you to access the brain name and distinguishing identifiers
-        without parsing more than once.
+        This allows you to access the brain name and team id og an agent
         :param name_behavior_id: String of behavior params in HTTP format.
         :returns: A BehaviorIdentifiers object.
         """

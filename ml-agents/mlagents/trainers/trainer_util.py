@@ -25,7 +25,7 @@ class TrainerFactory:
         keep_checkpoints: int,
         train_model: bool,
         load_model: bool,
-        ghost_swap: int,
+        team_change: int,
         seed: int,
         meta_curriculum: MetaCurriculum = None,
         multi_gpu: bool = False,
@@ -40,7 +40,7 @@ class TrainerFactory:
         self.seed = seed
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
-        self.ghost_controller = GhostController(ghost_swap)
+        self.ghost_controller = GhostController(team_change)
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
@@ -85,6 +85,7 @@ def initialize_trainer(
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
     :param load_model: Whether to load the model or randomly initialize
+    :param ghost_controller: The object that coordinates ghost trainers
     :param seed: The random seed to use
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
