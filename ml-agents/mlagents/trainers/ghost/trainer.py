@@ -20,6 +20,19 @@ logger = logging.getLogger("mlagents.trainers")
 
 
 class GhostTrainer(Trainer):
+    """
+    The GhostTrainer trains agents in adversarial games (there are teams in opposition) using a self-play mechanism.
+    In adversarial settings with self-play, at any time, there is only a single learning team. The other team(s) is
+    "ghosted" which means that its agents are executing fixed policies and not learning. The GhostTrainer wraps
+    a standard RL trainer which trains the learning team and ensures that only the trajectories collected
+    by the learning team are used for training.  The GhostTrainer also maintains past policy snapshots to be used
+    as the fixed policies when the team is not learning. The GhostTrainer is 1:1 with brain_names as the other
+    trainers, and is responsible for one or more teams. Note, a GhostTrainer can have only one team in
+    asymmetric games where there is only one team with a particular behavior i.e. Hide and Seek.
+    The GhostController manages high level coordination between multiple ghost trainers. The learning team id
+    is cycled throughout a training run.
+    """
+
     def __init__(
         self,
         trainer,
@@ -31,10 +44,10 @@ class GhostTrainer(Trainer):
         run_id,
     ):
         """
-        Responsible for collecting experiences and training trainer model via self_play.
+        Creates a GhostTrainer.
         :param trainer: The trainer of the policy/policies being trained with self_play
         :param brain_name: The name of the brain associated with trainer config
-        :param controller: Object that coordinates all ghost trainers
+        :param controller: GhostController that coordinates all ghost trainers and calculates ELO
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_parameters: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
@@ -108,18 +121,41 @@ class GhostTrainer(Trainer):
 
     @property
     def current_elo(self) -> float:
+        """
+        Gets ELO of current policy which is always last in the list
+        :return: ELO of current policy
+        """
         return self.policy_elos[-1]
 
     def change_current_elo(self, change: float) -> None:
+        """
+        Changes elo of current policy which is always last in the list
+        :param change: Amount to change current elo by
+        """
         self.policy_elos[-1] += change
 
     def get_opponent_elo(self) -> float:
+        """
+        Get elo of current opponent policy
+        :return: ELO of current opponent policy
+        """
         return self.policy_elos[self.current_opponent]
 
     def change_opponent_elo(self, change: float) -> None:
+        """
+        Changes elo of current opponent policy
+        :param change: Amount to change current opponent elo by
+        """
         self.policy_elos[self.current_opponent] -= change
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
+        """
+        Determines the final result of an episode and asks the GhostController
+        to calculate the ELO change. The GhostController changes the ELO
+        of the opponent policy since this may be in a different GhostTrainer
+        i.e. in asymmetric games. We assume the last reward determines the winner.
+        :param trajectory: Trajectory.
+        """
         if trajectory.done_reached and not trajectory.max_step_reached:
             # Assumption is that final reward is 1/.5/0 for win/draw/loss
             final_reward = trajectory.steps[-1].reward
@@ -202,23 +238,37 @@ class GhostTrainer(Trainer):
             self.last_swap = self.ghost_step
 
     def end_episode(self):
+        """
+        Forwarding call to wrapped trainers end_episode
+        """
         self.trainer.end_episode()
 
     def save_model(self, name_behavior_id: str) -> None:
+        """
+        Forwarding call to wrapped trainers save_model
+        """
         self.trainer.save_model(name_behavior_id)
 
     def export_model(self, name_behavior_id: str) -> None:
+        """
+        Forwarding call to wrapped trainers export_model
+        """
         self.trainer.export_model(name_behavior_id)
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+        """
+        Creates policy with the wrapped trainer's create_policy function
+        """
         return self.trainer.create_policy(brain_parameters)
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
     ) -> None:
         """
-        Adds policy to trainer. For the first policy added, add a trainer
-        to the policy and set the learning behavior name to name_behavior_id.
+        Adds policy to trainer. The first policy encountered sets the wrapped
+        trainer team.  This is to ensure that all agents from the same multi-agent
+        team are grouped. All policies associated with this team are added to the
+        wrapped trainer to be trained.
         :param name_behavior_id: Behavior ID that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
@@ -243,9 +293,19 @@ class GhostTrainer(Trainer):
             policy.init_load_weights()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
+        """
+        Gets policy associated with name_behavior_id
+        :param name_behavior_id: Fully qualified behavior name
+        :return: Policy associated with name_behavior_id
+        """
         return self.policies[name_behavior_id]
 
     def _save_snapshot(self, policy: TFPolicy) -> None:
+        """
+        Saves a snapshot of the weights of the policy and maintains the policy_snapshots
+        according to the window size
+        :param policy: The policy to be snapshotted
+        """
         weights = policy.get_weights()
         try:
             self.policy_snapshots[self.snapshot_counter] = weights
@@ -255,14 +315,21 @@ class GhostTrainer(Trainer):
         self.snapshot_counter = (self.snapshot_counter + 1) % self.window
 
     def _swap_snapshots(self) -> None:
+        """
+        Swaps the appropriate weight to the policy and pushes it to respective policy queues
+        """
+
         for policy_queue in self.policy_queues:
             parsed_behavior_id = self._name_to_parsed_behavior_id[
                 policy_queue.behavior_id
             ]
-            # here is the place for a sampling protocol
-            if parsed_behavior_id.team_id == self._learning_team:
-                continue
-            elif np.random.uniform() < (1 - self.play_against_current_self_ratio):
+            # Here is the place for a sampling protocol. If the learning team switches
+            # immediately before swapping, this first check ensures that the new learning
+            # team gets the current policy snapshot. Otherwise, it redundantly swaps
+            # the current policy.
+            if parsed_behavior_id.team_id != self._learning_team and np.random.uniform() < (
+                1 - self.play_against_current_self_ratio
+            ):
                 x = np.random.randint(len(self.policy_snapshots))
                 snapshot = self.policy_snapshots[x]
             else:
@@ -283,8 +350,9 @@ class GhostTrainer(Trainer):
 
     def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
         """
-        Adds a policy queue to the list of queues to publish to when this Trainer
-        makes a policy update
+        Adds a policy queue for every member of the team to the list of queues to publish to when this Trainer
+        makes a policy update.  Creates an internal policy queue for the wrapped
+        trainer to push to.  The GhostTrainer pushes all policies to the env.
         :param queue: Policy queue to publish to.
         """
         super().publish_policy_queue(policy_queue)
@@ -304,7 +372,9 @@ class GhostTrainer(Trainer):
         self, trajectory_queue: AgentManagerQueue[Trajectory]
     ) -> None:
         """
-        Adds a trajectory queue to the list of queues for the trainer to ingest Trajectories from.
+        Adds a trajectory queue for every member of the team to the list of queues for the trainer
+        to ingest Trajectories from. Creates an internal trajectory queue to push trajectories from
+        the learning team.  The wrapped trainer subscribes to this queue.
         :param queue: Trajectory queue to publish to.
         """
         super().subscribe_trajectory_queue(trajectory_queue)
