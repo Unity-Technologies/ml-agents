@@ -202,6 +202,7 @@ class NNPolicy(TFPolicy):
                 self.act_size,
                 reparameterize=reparameterize,
                 tanh_squash=tanh_squash,
+                condition_sigma=condition_sigma_on_obs,
             )
 
         if tanh_squash:
