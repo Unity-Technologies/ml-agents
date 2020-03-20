@@ -31,30 +31,33 @@ class EpisodeStatus(IntEnum):
     The Episode is still ongoing
     """
 
-    Default = 0
+    DEFAULT = 0
 
     """
     The Episode ended. The Agent either failed or succeeded at its task.
     """
-    Terminated = 1
+    TERMINATED = 1
 
     """
     The Episode was interrupted. The Agent neither failed nor succeeded at the
     task since it was interrupted.
     """
-    Interrupted = 2
+    INTERRUPTED = 2
 
     def is_done(self) -> bool:
         """
         return True if the episode was terminated or interrupted
         """
-        return self.value == 1 or self.value == 2  # pylint: disable=W0143
+        return (
+            self.value == EpisodeStatus.TERMINATED  # pylint: disable=W0143
+            or self.value == EpisodeStatus.INTERRUPTED  # pylint: disable=W0143
+        )
 
     def is_interrupted(self) -> bool:
         """
         return True if the episode was interrupted
         """
-        return self.value == 2  # pylint: disable=W0143
+        return self.value == EpisodeStatus.INTERRUPTED  # pylint: disable=W0143
 
 
 class StepResult(NamedTuple):

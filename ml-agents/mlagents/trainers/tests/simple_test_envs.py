@@ -131,7 +131,7 @@ class Simple1DEnvironment(BaseEnv):
     ) -> BatchedStepResult:
         m_vector_obs = self._make_obs(self.goal[name])
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = [EpisodeStatus.Terminated] if done else [EpisodeStatus.Default]
+        m_done = [EpisodeStatus.TERMINATED] if done else [EpisodeStatus.DEFAULT]
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
 
@@ -168,7 +168,7 @@ class Simple1DEnvironment(BaseEnv):
         name: str,
     ) -> Tuple[List[np.ndarray], np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         new_reward = np.array([0.0], dtype=np.float32)
-        new_done = [EpisodeStatus.Default]
+        new_done = [EpisodeStatus.DEFAULT]
         new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         new_action_mask = self._generate_mask()
 
@@ -241,7 +241,7 @@ class Memory1DEnvironment(Simple1DEnvironment):
         )
         m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = [EpisodeStatus.Terminated] if done else [EpisodeStatus.Default]
+        m_done = [EpisodeStatus.TERMINATED] if done else [EpisodeStatus.DEFAULT]
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
         if done:

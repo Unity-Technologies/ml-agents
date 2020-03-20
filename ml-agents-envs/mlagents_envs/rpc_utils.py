@@ -179,11 +179,11 @@ def batched_step_result_from_proto(
     _raise_on_nan_and_inf(rewards, "rewards")
 
     status = [
-        EpisodeStatus.Interrupted
+        EpisodeStatus.INTERRUPTED
         if agent_info.max_step_reached
-        else EpisodeStatus.Terminated
+        else EpisodeStatus.TERMINATED
         if agent_info.done
-        else EpisodeStatus.Default
+        else EpisodeStatus.DEFAULT
         for agent_info in agent_info_list
     ]
 

@@ -41,7 +41,7 @@ def test_take_action_returns_nones_on_missing_values():
     policy.evaluate = MagicMock(return_value={})
     policy.save_memories = MagicMock()
     step_with_agents = BatchedStepResult(
-        [], np.array([], dtype=np.float32), [EpisodeStatus.Default], np.array([0]), None
+        [], np.array([], dtype=np.float32), [EpisodeStatus.DEFAULT], np.array([0]), None
     )
     result = policy.get_action(step_with_agents, worker_id=0)
     assert result == ActionInfo(None, None, {}, [0])
@@ -57,7 +57,7 @@ def test_take_action_returns_action_info_when_available():
     }
     policy.evaluate = MagicMock(return_value=policy_eval_out)
     step_with_agents = BatchedStepResult(
-        [], np.array([], dtype=np.float32), [EpisodeStatus.Default], np.array([0]), None
+        [], np.array([], dtype=np.float32), [EpisodeStatus.DEFAULT], np.array([0]), None
     )
     result = policy.get_action(step_with_agents)
     expected = ActionInfo(

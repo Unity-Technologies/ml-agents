@@ -129,9 +129,9 @@ def test_sanitize_action_one_agent_done(mock_env):
     received_step_result.agent_id = np.array(range(6))
     # agent #3 (id = 2) is Done
     received_step_result.status = (
-        [EpisodeStatus.Default] * 2
-        + [EpisodeStatus.Terminated]
-        + [EpisodeStatus.Default] * 3
+        [EpisodeStatus.DEFAULT] * 2
+        + [EpisodeStatus.TERMINATED]
+        + [EpisodeStatus.DEFAULT] * 3
     )
     sanitized_result = env._sanitize_info(received_step_result)
     for expected_agent_id, agent_id in zip([0, 1, 5, 3, 4], sanitized_result.agent_id):
@@ -180,7 +180,7 @@ def create_mock_vector_step_result(num_agents=1, number_visual_observations=0):
     if number_visual_observations:
         obs += [np.zeros(shape=(num_agents, 8, 8, 3), dtype=np.float32)]
     rewards = np.array(num_agents * [1.0])
-    status = num_agents * [EpisodeStatus.Default]
+    status = num_agents * [EpisodeStatus.DEFAULT]
     agents = np.array(range(0, num_agents))
     return BatchedStepResult(obs, rewards, status, agents, None)
 

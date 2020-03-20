@@ -69,9 +69,9 @@ def create_mock_batchedstep(
         ]
 
     reward = np.array(num_agents * [1.0], dtype=np.float32)
-    status = [EpisodeStatus.Default] * num_agents
+    status = [EpisodeStatus.DEFAULT] * num_agents
     if done:
-        status = [EpisodeStatus.Terminated] * num_agents
+        status = [EpisodeStatus.TERMINATED] * num_agents
     agent_id = np.arange(num_agents, dtype=np.int32)
 
     return BatchedStepResult(obs_list, reward, status, agent_id, action_mask)
