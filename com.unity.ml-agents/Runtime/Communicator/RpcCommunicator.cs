@@ -458,13 +458,16 @@ namespace MLAgents
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(behaviorName))
                 {
-                    if (output == null)
+                    if (m_CurrentUnityRlOutput.AgentInfos[behaviorName].CalculateSize() > 0)
                     {
-                        output = new UnityRLInitializationOutputProto();
-                    }
+                        if (output == null)
+                        {
+                            output = new UnityRLInitializationOutputProto();
+                        }
 
-                    var brainParameters = m_UnsentBrainKeys[behaviorName];
-                    output.BrainParameters.Add(brainParameters.ToProto(behaviorName, true));
+                        var brainParameters = m_UnsentBrainKeys[behaviorName];
+                        output.BrainParameters.Add(brainParameters.ToProto(behaviorName, true));
+                    }
                 }
             }
 
