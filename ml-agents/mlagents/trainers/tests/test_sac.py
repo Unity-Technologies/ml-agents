@@ -29,8 +29,7 @@ def dummy_config():
         max_steps: 1024
         memory_size: 10
         normalize: true
-        num_update: 1
-        train_interval: 1
+        steps_per_update: 1
         num_layers: 1
         time_horizon: 64
         sequence_length: 16

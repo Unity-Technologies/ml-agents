@@ -63,8 +63,7 @@ SAC_CONFIG = f"""
         max_steps: 1000
         memory_size: 16
         normalize: false
-        num_update: 1
-        train_interval: 1
+        steps_per_update: 1
         num_layers: 1
         time_horizon: 64
         sequence_length: 32
