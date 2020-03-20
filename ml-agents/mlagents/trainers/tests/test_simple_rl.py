@@ -224,9 +224,10 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
 def test_recurrent_ppo(use_discrete):
     env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     override_vals = {
-        "max_steps": 3000,
+        "max_steps": 4000,
         "batch_size": 64,
         "buffer_size": 128,
+        "learning_rate": 1e-3,
         "use_recurrent": True,
     }
     config = generate_config(PPO_CONFIG, override_vals)
