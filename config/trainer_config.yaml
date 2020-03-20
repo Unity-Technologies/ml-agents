@@ -143,22 +143,7 @@ Tennis:
 
 SoccerOne:
     normalize: false
-    max_steps: 1.0e7
-    learning_rate_schedule: constant
-    batch_size: 2048
-    buffer_size: 20480
-    hidden_units: 512
-    time_horizon: 1000
-    num_layers: 3
-    self_play:
-        window: 20
-        play_against_current_self_ratio: 0.2
-        save_steps: 40000
-        swap_steps: 20000
-
-SoccerTwos:
-    normalize: false
-    max_steps: 1.0e7
+    max_steps: 5.0e7
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
@@ -166,10 +151,25 @@ SoccerTwos:
     time_horizon: 1000
     num_layers: 2
     self_play:
-        window: 20
+        window: 100
         play_against_current_self_ratio: 0.2
-        save_steps: 40000
-        swap_steps: 40000
+        save_steps: 50000
+        swap_steps: 50000
+
+SoccerTwos:
+    normalize: false
+    max_steps: 5.0e7
+    learning_rate_schedule: constant
+    batch_size: 2048
+    buffer_size: 20480
+    hidden_units: 512
+    time_horizon: 1000
+    num_layers: 2
+    self_play:
+        window: 100
+        play_against_current_self_ratio: 0.2
+        save_steps: 50000
+        swap_steps: 100000
 
 CrawlerStatic:
     normalize: true
