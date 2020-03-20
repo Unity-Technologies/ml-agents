@@ -83,8 +83,12 @@ class SACTrainer(RLTrainer):
         self.optimizer: SACOptimizer = None  # type: ignore
 
         self.step = 0
-        self.update_steps = 0
-        self.reward_signal_update_steps = 0
+
+        # Don't count buffer_init_steps in steps_per_update ratio, but also don't divide-by-0
+        self.update_steps = max(1, self.trainer_parameters["buffer_init_steps"])
+        self.reward_signal_update_steps = max(
+            1, self.trainer_parameters["buffer_init_steps"]
+        )
 
         self.steps_per_update = (
             trainer_parameters["steps_per_update"]
