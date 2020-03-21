@@ -85,6 +85,10 @@ class GhostTrainer(Trainer):
         )
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
+        # Counts the The number of steps of the ghost policies. Snapshot swapping
+        # depends on this counter whereas snapshot saving and team switching depends
+        # on the wrapped. This ensures that all teams train for the same number of trainer
+        # steps.
         self.ghost_step: int = 0
 
         # A list of dicts from brain name to a single snapshot for this trainer's policies
