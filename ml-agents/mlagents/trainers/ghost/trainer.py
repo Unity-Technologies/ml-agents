@@ -229,7 +229,7 @@ class GhostTrainer(Trainer):
         # will push the current_snapshot into the correct queue.  Otherwise,
         # it will continue skipping and swap_snapshot will continue to handle
         # pushing fixed snapshots
-        next_learning_team = self.controller.get_learning_team(self.ghost_step)
+        next_learning_team = self.controller.get_learning_team(self.get_step)
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
             try:
