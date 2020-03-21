@@ -34,3 +34,13 @@ class BehaviorIdentifiers(NamedTuple):
         return BehaviorIdentifiers(
             behavior_id=name_behavior_id, brain_name=name, team_id=team_id
         )
+
+
+def create_name_behavior_id(name: str, team_id: int) -> str:
+    """
+   Reconstructs fully qualified behavior name from name and team_id
+   :param name: brain name
+   :param team_id: team ID
+   :return: name_behavior_id
+   """
+    return name + "?team=" + str(team_id)
