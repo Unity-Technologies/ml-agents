@@ -232,6 +232,8 @@ class GhostTrainer(Trainer):
         # will push the current_snapshot into the correct queue.  Otherwise,
         # it will continue skipping and swap_snapshot will continue to handle
         # pushing fixed snapshots
+        # Case 3: No team change. The if statement just continues to push the policy
+        # into the correct queue (or not if not learning team).
         next_learning_team = self.controller.get_learning_team(self.get_step)
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
@@ -280,9 +282,14 @@ class GhostTrainer(Trainer):
 
     def export_model(self, name_behavior_id: str) -> None:
         """
-        Forwarding call to wrapped trainers export_model
+        Forwarding call to wrapped trainers export_model.
+        First loads the current snapshot.
         """
-        self.trainer.export_model(name_behavior_id)
+        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
+        brain_name = parsed_behavior_id.brain_name
+        policy = self.trainer.get_policy(brain_name)
+        policy.load_weights(self.current_policy_snapshot[brain_name])
+        self.trainer.export_model(brain_name)
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         """
