@@ -28,6 +28,9 @@ namespace MLAgentsExamples
 
         public void Awake()
         {
+            // Alert developers we are changing these settings
+            Debug.Log("Attention: Project Settings Overrides applied by MLAgentsExamples");
+            
             // Save the original values
             m_OriginalGravity = Physics.gravity;
             m_OriginalFixedDeltaTime = Time.fixedDeltaTime;
