@@ -52,7 +52,7 @@ The versions can be found in
 * We strongly recommend replacing the following methods with their new equivalent as they will be removed in a later release:
   * `InitializeAgent()` to `Initialize()`
   * `AgentAction()` to `OnActionReceived()`
-  * `AgentReset()` to `OnEpsiodeBegin()`
+  * `AgentReset()` to `OnEpisodeBegin()`
   * `Done()` to `EndEpisode()`
   * `GiveModel()` to `SetModel()`
 * Replace `IFloatProperties` variables with `FloatPropertiesChannel` variables.
