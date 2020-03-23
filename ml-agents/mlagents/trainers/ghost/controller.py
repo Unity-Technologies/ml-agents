@@ -22,7 +22,9 @@ class GhostController(object):
         """
 
         self._swap_interval = swap_interval
-        self._last_swap: int = 0
+        # Tracks last swap step for  each learning team because trainer
+        # steps of all GhostTrainers do not increment together
+        self._last_swap: Dict[int, int] = {}
         self._queue: Deque[int] = deque(maxlen=maxlen)
         self._learning_team: int = -1
         # Dict from team id to GhostTrainer
@@ -37,6 +39,7 @@ class GhostController(object):
         """
         if team_id not in self._ghost_trainers:
             self._ghost_trainers[team_id] = trainer
+            self._last_swap[team_id] = 0
             if self._learning_team < 0:
                 self._learning_team = team_id
             else:
@@ -49,8 +52,8 @@ class GhostController(object):
         :param step: Current step of the trainer.
         :return: The learning team id
         """
-        if step >= self._swap_interval + self._last_swap:
-            self._last_swap = step
+        if step >= self._swap_interval + self._last_swap[self._learning_team]:
+            self._last_swap[self._learning_team] = step
             self._queue.append(self._learning_team)
             self._learning_team = self._queue.popleft()
             logger.debug(

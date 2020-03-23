@@ -137,7 +137,7 @@ Tennis:
     time_horizon: 1000
     self_play:
         window: 10
-        play_against_current_self_ratio: 0.5
+        play_against_current_best_ratio: 0.5
         save_steps: 50000
         swap_steps: 50000
 
@@ -152,7 +152,7 @@ SoccerOne:
     num_layers: 2
     self_play:
         window: 100
-        play_against_current_self_ratio: 0.2
+        play_against_current_best_ratio: 0.2
         save_steps: 50000
         swap_steps: 25000
 
@@ -167,7 +167,7 @@ SoccerTwos:
     num_layers: 2
     self_play:
         window: 100
-        play_against_current_self_ratio: 0.2
+        play_against_current_best_ratio: 0.2
         save_steps: 50000
         swap_steps: 100000
 

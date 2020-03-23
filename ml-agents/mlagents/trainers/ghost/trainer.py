@@ -80,8 +80,8 @@ class GhostTrainer(Trainer):
 
         self_play_parameters = trainer_parameters["self_play"]
         self.window = self_play_parameters.get("window", 10)
-        self.play_against_current_self_ratio = self_play_parameters.get(
-            "play_against_current_self_ratio", 0.5
+        self.play_against_current_best_ratio = self_play_parameters.get(
+            "play_against_current_best_ratio", 0.5
         )
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
@@ -365,7 +365,7 @@ class GhostTrainer(Trainer):
         for team_id in self._team_to_name_to_policy_queue:
             if team_id == self._learning_team:
                 continue
-            elif np.random.uniform() < (1 - self.play_against_current_self_ratio):
+            elif np.random.uniform() < (1 - self.play_against_current_best_ratio):
                 x = np.random.randint(len(self.policy_snapshots))
                 snapshot = self.policy_snapshots[x]
             else:
