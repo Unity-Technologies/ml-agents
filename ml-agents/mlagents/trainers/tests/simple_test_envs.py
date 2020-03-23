@@ -53,9 +53,7 @@ class SimpleEnvironment(BaseEnv):
         self.group_spec = AgentGroupSpec(
             self._make_obs_spec(),
             action_type,
-            tuple(action_size for _ in range(action_size))
-            if use_discrete
-            else action_size,
+            tuple(2 for _ in range(action_size)) if use_discrete else action_size,
         )
         self.action_size = action_size
         self.names = brain_names
