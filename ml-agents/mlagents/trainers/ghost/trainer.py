@@ -228,7 +228,7 @@ class GhostTrainer(Trainer):
         self.trainer.advance()
 
         if self.get_step - self.last_team_change > self.steps_to_train_team:
-            self.controller.finish_training()
+            self.controller.finish_training(self.get_step)
             self.last_team_change = self.get_step
 
         next_learning_team = self.controller.get_learning_team()
@@ -332,7 +332,7 @@ class GhostTrainer(Trainer):
             ] = policy.get_weights()
             self._save_snapshot()  # Need to save after trainer initializes policy
             self.trainer.add_policy(parsed_behavior_id, policy)
-            self._learning_team = self.controller.get_learning_team(self.ghost_step)
+            self._learning_team = self.controller.get_learning_team()
             self.wrapped_trainer_team = team_id
         else:
             # for saving/swapping snapshots

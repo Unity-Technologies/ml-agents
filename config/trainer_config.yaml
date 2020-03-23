@@ -140,6 +140,7 @@ Tennis:
         play_against_current_best_ratio: 0.5
         save_steps: 50000
         swap_steps: 50000
+        team_change: 100000
 
 SoccerOne:
     normalize: false
@@ -155,6 +156,7 @@ SoccerOne:
         play_against_current_best_ratio: 0.2
         save_steps: 50000
         swap_steps: 25000
+        team_change: 200000
 
 SoccerTwos:
     normalize: false
@@ -170,6 +172,7 @@ SoccerTwos:
         play_against_current_best_ratio: 0.2
         save_steps: 50000
         swap_steps: 100000
+        team_change: 200000
 
 CrawlerStatic:
     normalize: true

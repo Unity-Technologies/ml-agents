@@ -3,7 +3,7 @@
 ML-Agents provides the functionality to train both symmetric and asymmetric adversarial games with
 [Self-Play](https://openai.com/blog/competitive-self-play/).
 A symmetric game is one in which opposing agents are equal in form, function snd objective. Examples of symmetric games
-are Tennis and Soccer. In reinforcement learning, this means both agents have the same observation and
+are our Tennis and Soccer example environments. In reinforcement learning, this means both agents have the same observation and
 action spaces and learn from the same reward function and so *they can share the same policy*. In asymmetric games,
 this is not the case. Examples of asymmetric games are Hide and Seek or Strikers vs Goalie in Soccer. Agents in these
 types of games do not always have the same observation or action spaces and so sharing policy networks is not
@@ -57,21 +57,6 @@ The ELO calculation (discussed below) depends on this final reward being either 
 
 The reward signal should still be used as described in the documentation for the other trainers and [reward signals.](Reward-Signals.md) However, we encourage users to be a bit more conservative when shaping reward functions due to the instability and non-stationarity of learning in adversarial games. Specifically, we encourage users to begin with the simplest possible reward function (+1 winning, -1 losing) and to allow for more iterations of training to compensate for the sparsity of reward.
 
-### Team Change
-
-The `team-change` ***command line argument*** corresponds to the number of *trainer_steps* between switching the learning team. So,
-if you run with the command line flag `--team-change=200000`, the learning team will change every `200000` trainer steps. This ensures each team trains
-for precisely the same number of steps. Note, this is not specified in the trainer configuration yaml file, but as a command line argument.
-
-A larger value of `team-change` will allow the agent to train longer against it's opponents.  The longer an agent trains against the same set of opponents
-the more able it will be to defeat them. However, training against them for too long may result in overfitting to the particular opponent strategies
-and so the agent may fail against the next batch of opponents.
-
-The value of `team-change` will determine how many snapshots of the agent's policy are saved to be used as opponents for the other team.  So, we
-recommend setting this value as a function of the `save_steps` parameter which is discussed in the next section.
-
-Recommended Range : 4x-10x where x=`save_steps`
-
 ### Save Steps
 
 The `save_steps` parameter corresponds to the number of *trainer steps* between snapshots.  For example, if `save_steps=10000` then a snapshot of the current policy will be saved every `10000` trainer steps. Note, trainer steps are counted per agent. For more information, please see the [migration doc](Migrating.md) after v0.13.
@@ -80,11 +65,28 @@ A larger value of `save_steps` will yield a set of opponents that cover a wider 
 
 Recommended Range : 10000-100000
 
+### Team Change
+
+The `team_change` parameter corresponds to the number of *trainer_steps* between switching the learning team.
+This is the number of trainer steps the teams associated with a specific ghost trainer will train before a different team
+becomes the new learning team. It is possible that, in asymmetric games, opposing teams require fewer trainer steps to make similar
+performance gains. This enables users to train a more complicated team of agents for more trainer steps than a simpler team of agents
+per team switch.
+
+A larger value of `team-change` will allow the agent to train longer against it's opponents.  The longer an agent trains against the same set of opponents
+the more able it will be to defeat them. However, training against them for too long may result in overfitting to the particular opponent strategies
+and so the agent may fail against the next batch of opponents.
+
+The value of `team-change` will determine how many snapshots of the agent's policy are saved to be used as opponents for the other team.  So, we
+recommend setting this value as a function of the `save_steps` parameter discussed previously.
+
+Recommended Range : 4x-10x where x=`save_steps`
+
+
 ### Swap Steps
 
-The `swap_steps` parameter corresponds to the number of *ghost steps* between swapping the opponents policy with a different snapshot.
-This occurs when the team of this agent is not learning. A 'ghost step' refers
-to a step taken by an agent *that is following a fixed policy* i.e. is not the learning agent. The reason for this distinction is that in asymmetric games,
+The `swap_steps` parameter corresponds to the number of *ghost steps* (note, not trainer steps) between swapping the opponents policy with a different snapshot.
+A 'ghost step' refers to a step taken by an agent *that is following a fixed policy and not learning*. The reason for this distinction is that in asymmetric games,
 we may have teams with an unequal number of agents e.g. the 2v1 scenario in our Strikers Vs Goalie environment. The team with two agents collects
 twice as many agent steps per environment step as the team with one agent.  Thus, these two values will need to be distinct to ensure that the same number
 of trainer steps corresponds to the same number of opponent swaps for each team. The formula for `swap_steps` if

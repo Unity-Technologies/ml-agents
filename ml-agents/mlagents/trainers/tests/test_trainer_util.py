@@ -127,7 +127,6 @@ def test_initialize_trainer_parameters_override_defaults(
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
-            team_change=100,
             seed=seed,
         )
         trainers = {}
@@ -179,7 +178,6 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
-            team_change=100,
             seed=seed,
         )
         trainers = {}
@@ -199,7 +197,6 @@ def test_initialize_invalid_trainer_raises_exception(
     keep_checkpoints = 1
     train_model = True
     load_model = False
-    team_change = 100
     seed = 11
     bad_config = dummy_bad_config
     BrainParametersMock.return_value.brain_name = "testbrain"
@@ -214,7 +211,6 @@ def test_initialize_invalid_trainer_raises_exception(
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
-            team_change=team_change,
             seed=seed,
         )
         trainers = {}
@@ -232,7 +228,6 @@ def test_initialize_invalid_trainer_raises_exception(
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
-            team_change=team_change,
             seed=seed,
         )
         trainers = {}
@@ -250,7 +245,6 @@ def test_initialize_invalid_trainer_raises_exception(
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
-            team_change=team_change,
             seed=seed,
         )
         trainers = {}
@@ -281,7 +275,6 @@ def test_handles_no_default_section(dummy_config):
         keep_checkpoints=1,
         train_model=True,
         load_model=False,
-        team_change=100,
         seed=42,
     )
     trainer_factory.generate(brain_parameters.brain_name)
@@ -311,7 +304,6 @@ def test_raise_if_no_config_for_brain(dummy_config):
         keep_checkpoints=1,
         train_model=True,
         load_model=False,
-        team_change=100,
         seed=42,
     )
     with pytest.raises(TrainerConfigError):

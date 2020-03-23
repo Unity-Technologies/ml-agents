@@ -1,5 +1,4 @@
 import logging
-
 from typing import Deque, Dict
 from collections import deque
 from mlagents.trainers.ghost.trainer import GhostTrainer
