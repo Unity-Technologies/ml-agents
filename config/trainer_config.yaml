@@ -154,7 +154,7 @@ SoccerOne:
         window: 100
         play_against_current_self_ratio: 0.2
         save_steps: 50000
-        swap_steps: 50000
+        swap_steps: 25000
 
 SoccerTwos:
     normalize: false
