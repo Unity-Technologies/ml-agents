@@ -85,6 +85,8 @@ class GhostTrainer(Trainer):
         )
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
+        self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
+
         # Counts the The number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
         # on the wrapped. This ensures that all teams train for the same number of trainer
@@ -108,6 +110,7 @@ class GhostTrainer(Trainer):
         self.wrapped_trainer_team: int = None
         self.last_save: int = 0
         self.last_swap: int = 0
+        self.last_team_change: int = 0
 
         # Chosen because it is the initial ELO in Chess
         self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
@@ -223,6 +226,12 @@ class GhostTrainer(Trainer):
         self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
 
+        if self.get_step - self.last_team_change > self.steps_to_train_team:
+            self.controller.finish_training()
+            self.last_team_change = self.get_step
+
+        next_learning_team = self.controller.get_learning_team()
+
         # CASE 1: Current learning team is managed by this GhostTrainer.
         # If the learning team changes, the following loop over queues will push the
         # new policy into the policy queue for the new learning agent if
@@ -234,7 +243,6 @@ class GhostTrainer(Trainer):
         # pushing fixed snapshots
         # Case 3: No team change. The if statement just continues to push the policy
         # into the correct queue (or not if not learning team).
-        next_learning_team = self.controller.get_learning_team(self.get_step)
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
             try:

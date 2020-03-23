@@ -1,6 +1,9 @@
+import logging
 from typing import Deque, Dict
 from collections import deque
 from mlagents.trainers.ghost.trainer import GhostTrainer
+
+logger = logging.getLogger("mlagents.trainers")
 
 
 class GhostController(object):
@@ -10,20 +13,17 @@ class GhostController(object):
     which corresponds to the number of trainer steps between changing learning teams.
     """
 
-    def __init__(self, swap_interval: int, maxlen: int = 10):
+    def __init__(self, maxlen: int = 10):
         """
         Create a GhostController.
-        :param swap_interval: Number of trainer steps between changing learning teams.
         :param maxlen: Maximum number of GhostTrainers allowed in this GhostController
         """
 
-        self._swap_interval = swap_interval
         # Tracks last swap step for  each learning team because trainer
         # steps of all GhostTrainers do not increment together
-        self._last_swap: Dict[int, int] = {}
         self._queue: Deque[int] = deque(maxlen=maxlen)
         self._learning_team: int = -1
-        # Dict from team id to GhostTrainer
+        # Dict from team id to GhostTrainer for ELO calculation
         self._ghost_trainers: Dict[int, GhostTrainer] = {}
 
     def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
@@ -35,24 +35,29 @@ class GhostController(object):
         """
         if team_id not in self._ghost_trainers:
             self._ghost_trainers[team_id] = trainer
-            self._last_swap[team_id] = 0
             if self._learning_team < 0:
                 self._learning_team = team_id
             else:
                 self._queue.append(team_id)
 
-    def get_learning_team(self, step: int) -> int:
+    def get_learning_team(self) -> int:
         """
-        Returns the current learning team. If 'swap_interval' steps have elapsed, the current
-        learning team is added to the end of the queue and then updated with the next in line.
-        :param step: Current step of the trainer.
+        Returns the current learning team.
         :return: The learning team id
         """
-        if step >= self._swap_interval + self._last_swap[self._learning_team]:
-            self._last_swap[self._learning_team] = step
-            self._queue.append(self._learning_team)
-            self._learning_team = self._queue.popleft()
         return self._learning_team
+
+    def finish_training(self, step: int) -> None:
+        """
+        The current learning team is added to the end of the queue and then updated with the
+        next in line.
+        :param step: The step of the trainer for debugging
+        """
+        self._queue.append(self._learning_team)
+        self._learning_team = self._queue.popleft()
+        logger.debug(
+            "Learning team {} swapped on step {}".format(self._learning_team, step)
+        )
 
     # Adapted from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
     # https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/
