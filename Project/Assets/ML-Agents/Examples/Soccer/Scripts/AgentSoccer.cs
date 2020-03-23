@@ -18,14 +18,21 @@ public class AgentSoccer : Agent
         Purple = 1
     }
 
+    public enum Position
+    {
+        Striker,
+        Goalie
+    }
+
     [HideInInspector]
     public Team team;
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
-    
-    float m_LateralSpeed;
+    public Position position;
+
     float m_Power;
+    float m_LateralSpeed;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -40,15 +47,21 @@ public class AgentSoccer : Agent
         {
             team = Team.Blue;
             m_Transform = new Vector3(transform.position.x - 4f, .5f, transform.position.z);
-            m_LateralSpeed = 0.3f;
-            m_Power = 2000f;
         }
         else
         {
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
-            m_LateralSpeed = 1.0f;
+        }
+        if (position == Position.Striker)
+        {
+            m_Power = 2000f;
+            m_LateralSpeed = 0.3f;
+        }
+        else if (position == Position.Goalie)
+        {
             m_Power = 3000f;
+            m_LateralSpeed = 1.0f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -93,7 +106,7 @@ public class AgentSoccer : Agent
                 dirToGo = transform.right * m_LateralSpeed;
                 break;
             case 2:
-                dirToGo = transform.right * m_LateralSpeed;
+                dirToGo = transform.right * -m_LateralSpeed;
                 break;
         }
 
@@ -114,13 +127,14 @@ public class AgentSoccer : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        // Existential penalty for strikers.
-        if (team == Team.Purple)
+        if (position == Position.Striker)
         {
-            AddReward(1f / 3000f);
+            // Existential penalty for Strikers.
+            AddReward(-1f / 3000f);
         }
-        else
+        else if (position == Position.Goalie)
         {
+            // Existential bonus for Goalies.
             AddReward(-1f / 3000f);
         }
 
