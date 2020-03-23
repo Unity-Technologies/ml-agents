@@ -322,3 +322,72 @@ class Record1DEnvironment(Simple1DEnvironment):
                 else:
                     self.action[name] = [[float(self.goal[name])]]
             self.step()
+
+
+class Simple2DEnvironment(Simple1DEnvironment):
+    def __init__(
+        self,
+        brain_names,
+        use_discrete,
+        step_size=0.5,
+        num_visual=0,
+        num_vector=1,
+        n_demos=30,
+    ):
+        self.positions: Dict[str, List[float]] = {}
+        super().__init__(
+            brain_names,
+            use_discrete,
+            step_size=step_size,
+            num_visual=num_visual,
+            num_vector=num_vector,
+        )
+        action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
+        self.group_spec = AgentGroupSpec(
+            self._make_obs_spec(), action_type, (2, 2) if use_discrete else 2
+        )
+
+    def _take_action(self, name: str) -> bool:
+        deltas = []
+        for _act in self.action[name][0]:
+            if self.discrete:
+                deltas.append(1 if _act else -1)
+            else:
+                deltas.append(_act)
+        for i, _delta in enumerate(deltas):
+            _delta = clamp(_delta, -self.step_size, self.step_size)
+            self.positions[name][i] += _delta
+            self.positions[name][i] = clamp(self.positions[name][i], -1, 1)
+            self.step_count[name] += 1
+            # Both must be in 1.0 to be done
+        done = all(pos >= 1.0 or pos <= -1.0 for pos in self.positions[name])
+        return done
+
+    def _generate_mask(self):
+        if self.discrete:
+            # LL-Python API will return an empty dim if there is only 1 agent.
+            ndmask = np.array(4 * [False], dtype=np.bool)
+            ndmask = np.expand_dims(ndmask, axis=0)
+            action_mask = [ndmask]
+        else:
+            action_mask = None
+        return action_mask
+
+    def _compute_reward(self, name: str, done: bool) -> float:
+        if done:
+            reward = 0.0
+            for _pos in self.positions[name]:
+                reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
+                    self.positions[name]
+                )
+        else:
+            reward = -TIME_PENALTY
+        return reward
+
+    def _reset_agent(self, name):
+        self.goal[name] = self.random.choice([-1, 1])
+        self.positions[name] = [0.0, 0.0]
+        self.step_count[name] = 0
+        self.final_rewards[name].append(self.rewards[name])
+        self.rewards[name] = 0
+        self.agent_id[name] = self.agent_id[name] + 1

@@ -9,6 +9,7 @@ from mlagents.trainers.tests.simple_test_envs import (
     Simple1DEnvironment,
     Memory1DEnvironment,
     Record1DEnvironment,
+    Simple2DEnvironment,
 )
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -184,6 +185,13 @@ def test_simple_ppo(use_discrete):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
+def test_2d_ppo(use_discrete):
+    env = Simple2DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    config = generate_config(PPO_CONFIG)
+    _check_environment_trains(env, config)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, use_discrete):
     env = Simple1DEnvironment(
@@ -237,6 +245,13 @@ def test_recurrent_ppo(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_sac(use_discrete):
     env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    config = generate_config(SAC_CONFIG)
+    _check_environment_trains(env, config)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_2d_sac(use_discrete):
+    env = Simple2DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = generate_config(SAC_CONFIG)
     _check_environment_trains(env, config)
 
