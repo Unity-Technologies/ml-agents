@@ -179,7 +179,7 @@ class TFPolicy(Policy):
             for agent, status in zip(
                 batched_step_result.agent_id, batched_step_result.status
             )
-            if status.is_done()
+            if status.done()
         ]
 
         self.remove_memories(agents_done)

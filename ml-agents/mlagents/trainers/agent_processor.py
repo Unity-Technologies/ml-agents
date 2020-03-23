@@ -88,14 +88,14 @@ class AgentProcessor:
             if stored_agent_step is not None and stored_take_action_outputs is not None:
                 # We know the step is from the same worker, so use the local agent id.
                 obs = stored_agent_step.obs
-                if not stored_agent_step.status.is_done():
+                if not stored_agent_step.status.done():
                     if self.policy.use_recurrent:
                         memory = self.policy.retrieve_memories([global_id])[0, :]
                     else:
                         memory = None
 
-                    done = curr_agent_step.status.is_done()
-                    max_step = curr_agent_step.status.is_interrupted()
+                    done = curr_agent_step.status.done()
+                    max_step = curr_agent_step.status.interrupted()
 
                     # Add the outputs of the last eval
                     action = stored_take_action_outputs["action"][idx]
@@ -125,7 +125,7 @@ class AgentProcessor:
                     self.experience_buffers[global_id].append(experience)
                     self.episode_rewards[global_id] += curr_agent_step.reward
                 if (
-                    curr_agent_step.status.is_done()
+                    curr_agent_step.status.done()
                     or (
                         len(self.experience_buffers[global_id])
                         >= self.max_trajectory_length
@@ -142,13 +142,13 @@ class AgentProcessor:
                     for traj_queue in self.trajectory_queues:
                         traj_queue.put(trajectory)
                     self.experience_buffers[global_id] = []
-                    if curr_agent_step.status.is_done():
+                    if curr_agent_step.status.done():
                         self.stats_reporter.add_stat(
                             "Environment/Episode Length",
                             self.episode_steps.get(global_id, 0),
                         )
                         terminated_agents.add(global_id)
-                elif not curr_agent_step.status.is_done():
+                elif not curr_agent_step.status.done():
                     self.episode_steps[global_id] += 1
 
             # Index is needed to grab from last_take_action_outputs

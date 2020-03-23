@@ -44,7 +44,7 @@ class EpisodeStatus(IntEnum):
     """
     INTERRUPTED = 2
 
-    def is_done(self) -> bool:
+    def done(self) -> bool:
         """
         return True if the episode was terminated or interrupted
         """
@@ -53,7 +53,7 @@ class EpisodeStatus(IntEnum):
             or self.value == EpisodeStatus.INTERRUPTED  # pylint: disable=W0143
         )
 
-    def is_interrupted(self) -> bool:
+    def interrupted(self) -> bool:
         """
         return True if the episode was interrupted
         """

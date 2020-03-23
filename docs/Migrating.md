@@ -13,8 +13,8 @@ The versions can be found in
  * Replaced `done` and `max_step` booleans in the Low-Level Python API with a `status` enum.
 
 ### Steps to Migrate
- * When using the Low-Level Python API, use `BatchedStepResult.status[agent_index].is_done()` rather than `BatchedStepResult.done[agent_index]`
- * When using the Low-Level Python API, use `BatchedStepResult.status[agent_index].is_interrupted()` rather than `BatchedStepResult.max_step[agent_index]`
+ * When using the Low-Level Python API, use `BatchedStepResult.status[agent_index].done()` rather than `BatchedStepResult.done[agent_index]`
+ * When using the Low-Level Python API, use `BatchedStepResult.status[agent_index].interrupted()` rather than `BatchedStepResult.max_step[agent_index]`
 
 
 ## Migrating from 0.14 to 0.15

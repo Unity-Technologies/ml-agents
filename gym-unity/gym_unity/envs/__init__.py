@@ -257,7 +257,7 @@ class UnityEnv(gym.Env):
         return (
             default_observation,
             info.reward[0],
-            info.status[0].is_done(),
+            info.status[0].done(),
             {"batched_step_result": info},
         )
 
@@ -276,7 +276,7 @@ class UnityEnv(gym.Env):
         return (
             list(default_observation),
             list(info.reward),
-            [status.is_done() for status in info.status],
+            [status.done() for status in info.status],
             {"batched_step_result": info},
         )
 
@@ -371,14 +371,14 @@ class UnityEnv(gym.Env):
                 "The number of agents in the scene does not match the expected number."
             )
 
-        num_done = sum((status.is_done() for status in step_result.status))
+        num_done = sum((status.done() for status in step_result.status))
         if step_result.n_agents() - num_done != self._n_agents:
             raise UnityGymException(
                 "The number of agents in the scene does not match the expected number."
             )
 
         for index, agent_id in enumerate(step_result.agent_id):
-            if step_result.status[index].is_done():
+            if step_result.status[index].done():
                 self.agent_mapper.mark_agent_done(agent_id, step_result.reward[index])
 
         # Set the new AgentDone flags to True
@@ -420,7 +420,7 @@ class UnityEnv(gym.Env):
             (self._previous_step_result.n_agents(), self.group_spec.action_size)
         )
         for index, agent_id in enumerate(self._previous_step_result.agent_id):
-            if not self._previous_step_result.status[index].is_done():
+            if not self._previous_step_result.status[index].done():
                 array_index = self.agent_mapper.get_gym_index(agent_id)
                 sanitized_action[index, :] = action[array_index, :]
         return sanitized_action
@@ -435,9 +435,9 @@ class UnityEnv(gym.Env):
         # 1) all agents requested decisions (some of which might be done)
         # 2) some Agents were marked Done in between steps.
         # In case 2,  we re-request decisions until all agents request a real decision.
-        num_done = sum((status.is_done() for status in info.status))
+        num_done = sum((status.done() for status in info.status))
         while info.n_agents() - num_done < self._n_agents:
-            if not all((s.is_done() for s in info.status)):
+            if not all((s.done() for s in info.status)):
                 raise UnityGymException(
                     "The environment does not have the expected amount of agents. "
                     + "Some agents did not request decisions at the same time."
