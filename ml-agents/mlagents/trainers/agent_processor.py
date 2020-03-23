@@ -3,6 +3,7 @@ from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Set
 from collections import defaultdict, Counter, deque
 
 from mlagents_envs.base_env import BatchedStepResult, StepResult
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
@@ -259,7 +260,22 @@ class AgentManager(AgentProcessor):
         )
         self.publish_trajectory_queue(self.trajectory_queue)
 
-    def set_environment_stats(self, env_stats: Dict[str, float]) -> None:
-        for stat_name, val in env_stats.items():
-            # full_stat = f"Environment/{stat_name}"
-            self.stats_reporter.set_stat(stat_name, val)
+    def record_environment_stats(
+        self, env_stats: Dict[str, Tuple[float, StatsAggregationMethod]], worker_id: int
+    ) -> None:
+        """
+        Pass stats from the environment to the StatsReporter.
+        Depending on the StatsAggregationMethod, either StatsReporter.add_stat or StatsReporter.set_stat is used.
+        The worker_id is used to determin whether StatsReporter.set_stat should be used.
+        :param env_stats:
+        :param worker_id:
+        :return:
+        """
+        for stat_name, (val, agg_type) in env_stats.items():
+            if agg_type == StatsAggregationMethod.AVERAGE:
+                self.stats_reporter.add_stat(stat_name, val)
+            elif agg_type == StatsAggregationMethod.MOST_RECENT:
+                # In order to prevent conflicts between multiple environments,
+                # only stats from the first environment are recorded.
+                if worker_id == 0:
+                    self.stats_reporter.set_stat(stat_name, val)

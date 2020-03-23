@@ -237,22 +237,28 @@ namespace MLAgents
 
         /// <summary>
         /// Returns the SideChannel of Type T if there is one registered, or null if it doesn't.
-        /// If there are multiple SideChannels of the same type registered, only the first found will be returned.
+        /// If there are multiple SideChannels of the same type registered, the returned instance is arbitrary.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public T GetSideChannel<T>() where T: SideChannel
         {
-            return Communicator.GetSideChannel<T>();
+            return Communicator?.GetSideChannel<T>();
         }
 
         /// <summary>
-        /// Returns all SideChannels of Type T that are registered.
+        /// Returns all SideChannels of Type T that are registered. Use <see cref=GetSideChannel()> if possible, as
+        /// that does not make any memory allocations.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
         public List<T> GetSideChannels<T>() where T: SideChannel
         {
+            if (Communicator == null)
+            {
+                // Make sure we return a non-null List.
+                return new List<T>();
+            }
             return Communicator.GetSideChannels<T>();
         }
 

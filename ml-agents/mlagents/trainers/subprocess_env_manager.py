@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
+from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set, Tuple
 import cloudpickle
 
 from mlagents_envs.environment import UnityEnvironment
@@ -23,7 +23,10 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
 )
-from mlagents_envs.side_channel.stats_side_channel import StatsSideChannel
+from mlagents_envs.side_channel.stats_side_channel import (
+    StatsSideChannel,
+    StatsAggregationMethod,
+)
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
 
@@ -44,7 +47,7 @@ class EnvironmentResponse(NamedTuple):
 class StepResponse(NamedTuple):
     all_step_result: AllStepResult
     timer_root: Optional[TimerNode]
-    environment_stats: Dict[str, float]
+    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
 
 
 class UnityEnvWorker:
@@ -133,10 +136,9 @@ def worker(
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
                 # TODO get gauges from the workers and merge them in the main process too.
+                env_stats = stats_channel.get_and_reset_stats()
                 step_response = StepResponse(
-                    all_step_result,
-                    get_timer_root(),
-                    stats_channel.get_and_reset_stats(),
+                    all_step_result, get_timer_root(), env_stats
                 )
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()

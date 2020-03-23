@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import logging
-from typing import List, Dict, NamedTuple, Iterable
+from typing import List, Dict, NamedTuple, Iterable, Tuple
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
@@ -17,7 +18,7 @@ class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
     brain_name_to_action_info: Dict[AgentGroup, ActionInfo]
-    environment_stats: Dict[str, float]
+    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
 
     @property
     def name_behavior_ids(self) -> Iterable[AgentGroup]:
@@ -110,10 +111,7 @@ class EnvManager(ABC):
                     ),
                 )
 
-                # In order to prevent conflicts between multiple environments,
-                # only stats from the first environment are recorded.
-                if step_info.worker_id == 0:
-                    self.agent_managers[name_behavior_id].set_environment_stats(
-                        step_info.environment_stats
-                    )
+                self.agent_managers[name_behavior_id].record_environment_stats(
+                    step_info.environment_stats, step_info.worker_id
+                )
         return len(step_infos)
