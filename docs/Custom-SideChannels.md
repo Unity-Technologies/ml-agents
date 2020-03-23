@@ -193,7 +193,7 @@ messages to the Unity environment from Python using it.
 string_log = StringLogChannel()
 
 # We start the communication with the Unity Editor and pass the string_log side channel as input
-env = UnityEnvironment(base_port=UnityEnvironment.DEFAULT_EDITOR_PORT, side_channels=[string_log])
+env = UnityEnvironment(side_channels=[string_log])
 env.reset()
 string_log.send_string("The environment was reset")
 
