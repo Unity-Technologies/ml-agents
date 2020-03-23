@@ -371,11 +371,8 @@ class UnityEnv(gym.Env):
                 "The number of agents in the scene does not match the expected number."
             )
 
-        if (
-            step_result.n_agents()
-            - sum((status.is_done() for status in step_result.status))
-            != self._n_agents
-        ):
+        num_done = sum((status.is_done() for status in step_result.status))
+        if step_result.n_agents() - num_done != self._n_agents:
             raise UnityGymException(
                 "The number of agents in the scene does not match the expected number."
             )
@@ -438,10 +435,8 @@ class UnityEnv(gym.Env):
         # 1) all agents requested decisions (some of which might be done)
         # 2) some Agents were marked Done in between steps.
         # In case 2,  we re-request decisions until all agents request a real decision.
-        while (
-            info.n_agents() - sum((status.is_done() for status in info.status))
-            < self._n_agents
-        ):
+        num_done = sum((status.is_done() for status in info.status))
+        while info.n_agents() - num_done < self._n_agents:
             if not all((s.is_done() for s in info.status)):
                 raise UnityGymException(
                     "The environment does not have the expected amount of agents. "
