@@ -6,10 +6,9 @@ import numpy as np
 from typing import Dict, Any
 
 from mlagents.trainers.tests.simple_test_envs import (
-    Simple1DEnvironment,
-    Memory1DEnvironment,
-    Record1DEnvironment,
-    Simple2DEnvironment,
+    SimpleEnvironment,
+    MemoryEnvironment,
+    RecordEnvironment,
 )
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -179,14 +178,16 @@ def _check_environment_trains(
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ppo(use_discrete):
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = generate_config(PPO_CONFIG)
     _check_environment_trains(env, config)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_2d_ppo(use_discrete):
-    env = Simple2DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = SimpleEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
+    )
     config = generate_config(PPO_CONFIG)
     _check_environment_trains(env, config)
 
@@ -194,7 +195,7 @@ def test_2d_ppo(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, use_discrete):
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME],
         use_discrete=use_discrete,
         num_visual=num_visual,
@@ -209,7 +210,7 @@ def test_visual_ppo(num_visual, use_discrete):
 @pytest.mark.parametrize("num_visual", [1, 2])
 @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
 def test_visual_advanced_ppo(vis_encode_type, num_visual):
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME],
         use_discrete=True,
         num_visual=num_visual,
@@ -230,7 +231,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_ppo(use_discrete):
-    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     override_vals = {
         "max_steps": 4000,
         "batch_size": 64,
@@ -244,14 +245,16 @@ def test_recurrent_ppo(use_discrete):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_sac(use_discrete):
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = generate_config(SAC_CONFIG)
     _check_environment_trains(env, config)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_2d_sac(use_discrete):
-    env = Simple2DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = SimpleEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
+    )
     config = generate_config(SAC_CONFIG)
     _check_environment_trains(env, config)
 
@@ -259,7 +262,7 @@ def test_2d_sac(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 @pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_sac(num_visual, use_discrete):
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME],
         use_discrete=use_discrete,
         num_visual=num_visual,
@@ -274,7 +277,7 @@ def test_visual_sac(num_visual, use_discrete):
 @pytest.mark.parametrize("num_visual", [1, 2])
 @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
 def test_visual_advanced_sac(vis_encode_type, num_visual):
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME],
         use_discrete=True,
         num_visual=num_visual,
@@ -296,7 +299,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    env = Memory1DEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 2000}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
@@ -304,7 +307,7 @@ def test_recurrent_sac(use_discrete):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ghost(use_discrete):
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
     )
     override_vals = {
@@ -321,7 +324,7 @@ def test_simple_ghost(use_discrete):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ghost_fails(use_discrete):
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
     )
     # This config should fail because the ghosted policy is never swapped with a competent policy.
@@ -348,7 +351,7 @@ def test_simple_ghost_fails(use_discrete):
 @pytest.fixture(scope="session")
 def simple_record(tmpdir_factory):
     def record_demo(use_discrete, num_visual=0, num_vector=1):
-        env = Record1DEnvironment(
+        env = RecordEnvironment(
             [BRAIN_NAME],
             use_discrete=use_discrete,
             num_visual=num_visual,
@@ -380,7 +383,7 @@ def simple_record(tmpdir_factory):
 @pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
 def test_gail(simple_record, use_discrete, trainer_config):
     demo_path = simple_record(use_discrete)
-    env = Simple1DEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
+    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
     override_vals = {
         "max_steps": 500,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
@@ -400,7 +403,7 @@ def test_gail(simple_record, use_discrete, trainer_config):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_gail_visual_ppo(simple_record, use_discrete):
     demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME],
         num_visual=1,
         num_vector=0,
@@ -427,7 +430,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_gail_visual_sac(simple_record, use_discrete):
     demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
-    env = Simple1DEnvironment(
+    env = SimpleEnvironment(
         [BRAIN_NAME],
         num_visual=1,
         num_vector=0,
