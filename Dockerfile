@@ -132,7 +132,7 @@ COPY ml-agents /ml-agents
 WORKDIR /ml-agents
 RUN pip install -e .
 
-# port 5005 is the port used in in Editor training.
-EXPOSE 5005
+# port 5004 is the port used in in Editor training.
+EXPOSE 5004
 
 ENTRYPOINT ["mlagents-learn"]
