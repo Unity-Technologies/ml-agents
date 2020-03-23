@@ -152,6 +152,15 @@ def test_agent_deletion():
     assert len(processor.last_take_action_outputs.keys()) == 0
     assert len(processor.episode_steps.keys()) == 0
     assert len(processor.episode_rewards.keys()) == 0
+    assert len(processor.last_step_result.keys()) == 0
+
+    # check that steps with immediate dones don't blow up the dicts
+    processor.add_experiences(mock_done_step, 0, ActionInfo.empty())
+    assert len(processor.experience_buffers.keys()) == 0
+    assert len(processor.last_take_action_outputs.keys()) == 0
+    assert len(processor.episode_steps.keys()) == 0
+    assert len(processor.episode_rewards.keys()) == 0
+    assert len(processor.last_step_result.keys()) == 0
 
 
 def test_end_episode():
