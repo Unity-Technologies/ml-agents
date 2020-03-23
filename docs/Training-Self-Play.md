@@ -3,7 +3,7 @@
 ML-Agents provides the functionality to train both symmetric and asymmetric adversarial games with
 [Self-Play](https://openai.com/blog/competitive-self-play/).
 A symmetric game is one in which opposing agents are equal in form, function snd objective. Examples of symmetric games
-are Tennis and Soccer. In reinforcement learning, this means both agents have the same observation and
+are our Tennis and Soccer example environments. In reinforcement learning, this means both agents have the same observation and
 action spaces and learn from the same reward function and so *they can share the same policy*. In asymmetric games,
 this is not the case. Examples of asymmetric games are Hide and Seek or Strikers vs Goalie in Soccer. Agents in these
 types of games do not always have the same observation or action spaces and so sharing policy networks is not
