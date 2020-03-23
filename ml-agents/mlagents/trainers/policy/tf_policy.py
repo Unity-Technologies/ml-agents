@@ -285,8 +285,6 @@ class TFPolicy(Policy):
         for agent_id in agent_ids:
             if agent_id in self.previous_action_dict:
                 self.previous_action_dict.pop(agent_id)
-            else:
-                print("Bad removal", agent_ids)
 
     def get_current_step(self):
         """
