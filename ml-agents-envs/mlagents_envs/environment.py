@@ -72,6 +72,9 @@ class UnityEnvironment(BaseEnv):
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
+    # Seconds to wait for the environment to cleanly shutdown.
+    SHUTDOWN_WAIT = 5
+
     def __init__(
         self,
         file_name: Optional[str] = None,
@@ -450,7 +453,7 @@ class UnityEnvironment(BaseEnv):
         if self.proc1 is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self.proc1.wait(timeout=self.timeout_wait)
+                self.proc1.wait(timeout=self.SHUTDOWN_WAIT)
                 signal_name = self.returncode_to_signal_name(self.proc1.returncode)
                 signal_name = f" ({signal_name})" if signal_name else ""
                 return_info = f"Environment shut down with return code {self.proc1.returncode}{signal_name}."
