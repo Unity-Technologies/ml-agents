@@ -458,13 +458,20 @@ namespace MLAgents
             {
                 if (m_CurrentUnityRlOutput.AgentInfos.ContainsKey(behaviorName))
                 {
-                    if (output == null)
+                    if (m_CurrentUnityRlOutput.AgentInfos[behaviorName].CalculateSize() > 0)
                     {
-                        output = new UnityRLInitializationOutputProto();
-                    }
+                        // Only send the BrainParameters if there is a non empty list of
+                        // AgentInfos ready to be sent.
+                        // This is to ensure that The Python side will always have a first
+                        // observation when receiving the BrainParameters
+                        if (output == null)
+                        {
+                            output = new UnityRLInitializationOutputProto();
+                        }
 
-                    var brainParameters = m_UnsentBrainKeys[behaviorName];
-                    output.BrainParameters.Add(brainParameters.ToProto(behaviorName, true));
+                        var brainParameters = m_UnsentBrainKeys[behaviorName];
+                        output.BrainParameters.Add(brainParameters.ToProto(behaviorName, true));
+                    }
                 }
             }
 
