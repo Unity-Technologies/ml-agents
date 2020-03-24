@@ -211,10 +211,20 @@ class TrainerController(object):
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
-        except (KeyboardInterrupt, UnityCommunicationException):
+        except (
+            KeyboardInterrupt,
+            UnityCommunicationException,
+            UnityEnvironmentException,
+        ) as ex:
             if self.train_model:
                 self._save_model_when_interrupted()
-            pass
+
+            if isinstance(ex, KeyboardInterrupt):
+                pass
+            else:
+                # If the environment failed, we want to make sure to raise
+                # the exception so we get the correct error code.
+                raise ex
         if self.train_model:
             self._export_graph()
 
