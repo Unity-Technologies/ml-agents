@@ -65,6 +65,10 @@ class UnityEnvironment(BaseEnv):
     # isn't specified, this port will be used.
     DEFAULT_EDITOR_PORT = 5004
 
+    # Default base port for environments. Each environment will be offset from this
+    # by it's worker_id.
+    BASE_ENVIRONMENT_PORT = 5005
+
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
@@ -72,7 +76,7 @@ class UnityEnvironment(BaseEnv):
         self,
         file_name: Optional[str] = None,
         worker_id: int = 0,
-        base_port: int = 5005,
+        base_port: Optional[int] = None,
         seed: int = 0,
         docker_training: bool = False,
         no_graphics: bool = False,
@@ -87,7 +91,8 @@ class UnityEnvironment(BaseEnv):
 
         :string file_name: Name of Unity environment binary.
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-        :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
+        If no environment is specified (i.e. file_name is None), the DEFAULT_EDITOR_PORT will be used.
+        :int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
         :bool docker_training: Informs this class whether the process is being run within a container.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
@@ -96,6 +101,12 @@ class UnityEnvironment(BaseEnv):
         """
         args = args or []
         atexit.register(self._close)
+        # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
+        # an environment, otherwise DEFAULT_EDITOR_PORT
+        if base_port is None:
+            base_port = (
+                self.BASE_ENVIRONMENT_PORT if file_name else self.DEFAULT_EDITOR_PORT
+            )
         self.port = base_port + worker_id
         self._buffer_size = 12000
         # If true, this means the environment was successfully loaded

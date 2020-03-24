@@ -8,8 +8,8 @@ class Communicator(object):
         """
         Python side of the communication. Must be used in pair with the right Unity Communicator equivalent.
 
+        :int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-        :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
