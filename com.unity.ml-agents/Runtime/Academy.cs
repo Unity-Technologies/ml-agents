@@ -247,8 +247,8 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns all SideChannels of Type T that are registered. Use <see cref=GetSideChannel()> if possible, as
-        /// that does not make any memory allocations.
+        /// Returns all SideChannels of Type T that are registered. Use <see cref="GetSideChannel{T}()"/> if possible,
+        /// as that does not make any memory allocations.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
