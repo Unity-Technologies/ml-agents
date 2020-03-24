@@ -72,9 +72,6 @@ class UnityEnvironment(BaseEnv):
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
-    # Seconds to wait for the environment to cleanly shutdown.
-    SHUTDOWN_WAIT = 5
-
     def __init__(
         self,
         file_name: Optional[str] = None,
@@ -156,12 +153,12 @@ class UnityEnvironment(BaseEnv):
             aca_output = self.send_academy_parameters(rl_init_parameters_in)
             aca_params = aca_output.rl_initialization_output
         except UnityTimeOutException:
-            self._close()
+            self._close(0)
             raise
 
         unity_communicator_version = aca_params.communication_version
         if unity_communicator_version != UnityEnvironment.API_VERSION:
-            self._close()
+            self._close(0)
             raise UnityEnvironmentException(
                 f"The communication API version is not compatible between Unity and python. "
                 f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
@@ -242,7 +239,7 @@ class UnityEnvironment(BaseEnv):
     def executable_launcher(self, file_name, docker_training, no_graphics, args):
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
-            self._close()
+            self._close(0)
             raise UnityEnvironmentException(
                 f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
             )
@@ -447,13 +444,15 @@ class UnityEnvironment(BaseEnv):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
-    def _close(self):
+    def _close(self, timeout: Optional[int] = None) -> None:
+        if timeout is None:
+            timeout = self.timeout_wait
         self._loaded = False
         self.communicator.close()
         if self.proc1 is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self.proc1.wait(timeout=self.SHUTDOWN_WAIT)
+                self.proc1.wait(timeout=timeout)
                 signal_name = self.returncode_to_signal_name(self.proc1.returncode)
                 signal_name = f" ({signal_name})" if signal_name else ""
                 return_info = f"Environment shut down with return code {self.proc1.returncode}{signal_name}."
