@@ -21,7 +21,8 @@ public class AgentSoccer : Agent
     public enum Position
     {
         Striker,
-        Goalie
+        Goalie,
+        Generic
     }
 
     [HideInInspector]
@@ -53,15 +54,15 @@ public class AgentSoccer : Agent
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
         }
-        if (position == Position.Striker)
-        {
-            m_Power = 2000f;
-            m_LateralSpeed = 0.3f;
-        }
-        else if (position == Position.Goalie)
+        if (position == Position.Goalie)
         {
             m_Power = 3000f;
             m_LateralSpeed = 1.0f;
+        }
+        else
+        {
+            m_Power = 2000f;
+            m_LateralSpeed = 0.3f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -127,6 +128,8 @@ public class AgentSoccer : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
+
+        // Generic gets nothing
         if (position == Position.Striker)
         {
             // Existential penalty for Strikers.
@@ -137,7 +140,6 @@ public class AgentSoccer : Agent
             // Existential bonus for Goalies.
             AddReward(1f / 3000f);
         }
-
         MoveAgent(vectorAction);
     }
 
