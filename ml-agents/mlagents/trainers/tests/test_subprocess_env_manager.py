@@ -12,7 +12,7 @@ from mlagents.trainers.subprocess_env_manager import (
 from mlagents.trainers.env_manager import EnvironmentStep
 from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
-from mlagents.trainers.tests.simple_test_envs import Simple1DEnvironment
+from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.tests.test_simple_rl import (
     _check_environment_trains,
@@ -169,7 +169,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 
 
 def simple_env_factory(worker_id, config):
-    env = Simple1DEnvironment(["1D"], use_discrete=True)
+    env = SimpleEnvironment(["1D"], use_discrete=True)
     return env
 
 
