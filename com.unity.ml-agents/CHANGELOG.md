@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [0.15.1-preview] - 2020-03-30
 ### Bug Fixes
  - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
+ - Fixed an issue where specifying `vis_encode_type` was required only for SAC. (#3677)
 
 
 ## [0.15.0-preview] - 2020-03-18
