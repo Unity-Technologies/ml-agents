@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
  - Fixed an issue where specifying `vis_encode_type` was required only for SAC. (#3677)
  - Fixed an issue where switching models using `SetModel()` during training would use an excessive amount of memory. (#3664)
+ - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
 
 
 ## [0.15.0-preview] - 2020-03-18
