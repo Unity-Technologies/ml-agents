@@ -255,7 +255,7 @@ def test_2d_sac(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
     )
-    override_vals = {"buffer_init_steps": 1000, "max_steps": 2000}
+    override_vals = {"buffer_init_steps": 2000, "max_steps": 3000}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
 
