@@ -149,10 +149,8 @@ class Trainer(abc.ABC):
         is reached.
         """
         if hvd.rank() == 0:
-            logger.info("Worker = 0, step = %s", self.get_step)
             return self.is_training and self.get_step <= self.get_max_steps
         else:
-            logger.info("Worker = %s, step = %s", (hvd.rank(), self.get_step))
             return True
 
     @property
