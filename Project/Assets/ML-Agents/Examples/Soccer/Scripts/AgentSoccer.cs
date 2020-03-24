@@ -135,7 +135,7 @@ public class AgentSoccer : Agent
         else if (position == Position.Goalie)
         {
             // Existential bonus for Goalies.
-            AddReward(-1f / 3000f);
+            AddReward(1f / 3000f);
         }
 
         MoveAgent(vectorAction);

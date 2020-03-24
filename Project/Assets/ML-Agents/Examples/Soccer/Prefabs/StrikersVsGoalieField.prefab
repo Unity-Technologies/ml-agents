@@ -189,7 +189,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4540034559941056}
-  - {fileID: 2148914632064875291}
   m_Father: {fileID: 4558743310993102}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
@@ -240,10 +239,10 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 9d26b71f04a2d4680a68d8de4f6b62e9, type: 3}
+  m_Model: {fileID: 11400000, guid: e9c10c18f4eb745d19186a54dbe3ca2e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Soccer
+  m_BehaviorName: Goalie
   TeamId: 1
   m_UseChildSensors: 1
 --- !u!114 &114492261207303438
@@ -278,14 +277,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: PurpleRayPerceptionSensor
+  m_SensorName: PurpleGoalieRayPerceptionSensor
   m_DetectableTags:
   - ball
   - purpleGoal
-  - blueGoal
   - wall
   - blueAgent
-  m_RaysPerDirection: 12
+  m_RaysPerDirection: 16
   m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 20
@@ -346,7 +344,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33633802242053180
 MeshFilter:
@@ -604,10 +602,10 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 9d26b71f04a2d4680a68d8de4f6b62e9, type: 3}
+  m_Model: {fileID: 11400000, guid: 75a830685bf8e43918adc4783a2abebf, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Soccer
+  m_BehaviorName: Striker
   TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &114850431417842684
@@ -645,7 +643,6 @@ MonoBehaviour:
   m_SensorName: BlueRayPerceptionSensor
   m_DetectableTags:
   - ball
-  - blueGoal
   - purpleGoal
   - wall
   - blueAgent
@@ -764,7 +761,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33668595490148080
 MeshFilter:
@@ -949,7 +946,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33151135767273144
 MeshFilter:
@@ -1041,7 +1038,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33588944737043670
 MeshFilter:
@@ -1133,6 +1130,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_Children:
+  - {fileID: 2086200762019023354}
   - {fileID: 4801812717426866}
   - {fileID: 4126397864270240}
   - {fileID: 4159817556359240}
@@ -1271,7 +1269,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33059579809774616
 MeshFilter:
@@ -1426,7 +1424,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33594846689333450
 MeshFilter:
@@ -1517,7 +1515,7 @@ Transform:
   m_LocalScale: {x: 300, y: 10, z: 1200}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 12
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33793007115865784
 MeshFilter:
@@ -1809,7 +1807,7 @@ Transform:
   m_LocalScale: {x: 300, y: 10, z: 1200}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33115785189444248
 MeshFilter:
@@ -1899,7 +1897,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33126869764191840
 MeshFilter:
@@ -1977,7 +1975,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33850606399392830
 MeshFilter:
@@ -2303,7 +2301,7 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 13
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &65985899904153804
 BoxCollider:
@@ -2506,7 +2504,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33554809688293470
 MeshFilter:
@@ -2637,7 +2635,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33225887987242578
 MeshFilter:
@@ -2806,7 +2804,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33693580190047416
 MeshFilter:
@@ -2866,6 +2864,97 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 200, y: 50, z: 850.0001}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &466852996558031858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2086200762019023354}
+  - component: {fileID: 7251278500439741597}
+  - component: {fileID: 1384062692232262378}
+  - component: {fileID: 1453625387528710450}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: wall
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2086200762019023354
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466852996558031858}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -988, y: 100, z: 0}
+  m_LocalScale: {x: 100, y: 1000, z: 1800}
+  m_Children: []
+  m_Father: {fileID: 4109868016055942}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &7251278500439741597
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466852996558031858}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &1384062692232262378
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466852996558031858}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!65 &1453625387528710450
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 466852996558031858}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1897170901855235213
 GameObject:
   m_ObjectHideFlags: 0
@@ -2912,7 +3001,6 @@ MonoBehaviour:
   m_SensorName: BlueRayPerceptionSensorReverse
   m_DetectableTags:
   - ball
-  - blueGoal
   - purpleGoal
   - wall
   - blueAgent
@@ -3202,7 +3290,6 @@ MonoBehaviour:
   m_SensorName: BlueRayPerceptionSensorReverse
   m_DetectableTags:
   - ball
-  - blueGoal
   - purpleGoal
   - wall
   - blueAgent
@@ -3540,10 +3627,10 @@ MonoBehaviour:
     vectorActionSize: 030000000300000003000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 9d26b71f04a2d4680a68d8de4f6b62e9, type: 3}
+  m_Model: {fileID: 11400000, guid: 75a830685bf8e43918adc4783a2abebf, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Soccer
+  m_BehaviorName: Striker
   TeamId: 0
   m_UseChildSensors: 1
 --- !u!114 &5379409612883756837
@@ -3581,7 +3668,6 @@ MonoBehaviour:
   m_SensorName: BlueRayPerceptionSensor
   m_DetectableTags:
   - ball
-  - blueGoal
   - purpleGoal
   - wall
   - blueAgent
@@ -3613,66 +3699,3 @@ MonoBehaviour:
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
   offsetStep: 0
---- !u!1 &9136065168043485173
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2148914632064875291}
-  - component: {fileID: 4662000663245579659}
-  m_Layer: 0
-  m_Name: PurpleReverseRays
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2148914632064875291
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9136065168043485173}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4277721046484044}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!114 &4662000663245579659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9136065168043485173}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: PurpleRayPerceptionSensorReverse
-  m_DetectableTags:
-  - ball
-  - purpleGoal
-  - blueGoal
-  - wall
-  - purpleAgent
-  - blueAgent
-  m_RaysPerDirection: 1
-  m_MaxRayDegrees: 45
-  m_SphereCastRadius: 0.5
-  m_RayLength: 20
-  m_RayLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967291
-  m_ObservationStacks: 3
-  rayHitColor: {r: 1, g: 0, b: 0, a: 1}
-  rayMissColor: {r: 1, g: 1, b: 1, a: 1}
-  m_StartVerticalOffset: 0.5
-  m_EndVerticalOffset: 0.5
