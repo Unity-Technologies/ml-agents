@@ -445,6 +445,12 @@ class UnityEnvironment(BaseEnv):
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
     def _close(self, timeout: Optional[int] = None) -> None:
+        """
+        Close the communicator and environment subprocess (if necessary).
+
+        :int timeout: [Optional] Number of seconds to wait for the environment to shut down before
+            force-killing it.  Defaults to `self.timeout_wait`.
+        """
         if timeout is None:
             timeout = self.timeout_wait
         self._loaded = False
