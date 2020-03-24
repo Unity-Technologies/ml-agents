@@ -34,10 +34,6 @@ class StepResult(NamedTuple):
      agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
-     - done is a bool. Is true if the Agent was terminated during the last
-     simulation step.
-     - max_step is a bool. Is true if the Agent reached its maximum number of
-     steps during the last simulation step.
      - agent_id is an int and an unique identifier for the corresponding Agent.
      - action_mask is an optional list of one dimensional array of booleans.
      Only available in multi-discrete action space type.
@@ -48,8 +44,6 @@ class StepResult(NamedTuple):
 
     obs: List[np.ndarray]
     reward: float
-    done: bool
-    max_step: bool
     agent_id: AgentId
     action_mask: Optional[List[np.ndarray]]
 
@@ -67,11 +61,6 @@ class BatchedStepResult:
      the group.
      - reward is a float vector of length batch size. Corresponds to the
      rewards collected by each agent since the last simulation step.
-     - done is an array of booleans of length batch size. Is true if the
-     associated Agent was terminated during the last simulation step.
-     - max_step is an array of booleans of length batch size. Is true if the
-     associated Agent reached its maximum number of steps during the last
-     simulation step.
      - agent_id is an int vector of length batch size containing unique
      identifier for the corresponding Agent. This is used to track Agents
      across simulation steps.
@@ -83,11 +72,9 @@ class BatchedStepResult:
      this simulation step.
     """
 
-    def __init__(self, obs, reward, done, max_step, agent_id, action_mask):
+    def __init__(self, obs, reward, agent_id, action_mask):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.done: np.ndarray = done
-        self.max_step: np.ndarray = max_step
         self.agent_id: np.ndarray = agent_id
         self.action_mask: Optional[List[np.ndarray]] = action_mask
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
@@ -107,7 +94,7 @@ class BatchedStepResult:
     def contains_agent(self, agent_id: AgentId) -> bool:
         return agent_id in self.agent_id_to_index
 
-    def get_agent_step_result(self, agent_id: AgentId) -> StepResult:
+    def get_agent_data(self, agent_id: AgentId) -> StepResult:
         """
         returns the step result for a specific agent.
         :param agent_id: The id of the agent
@@ -132,8 +119,6 @@ class BatchedStepResult:
         return StepResult(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            done=self.done[agent_index],
-            max_step=self.max_step[agent_index],
             agent_id=agent_id,
             action_mask=agent_mask,
         )
@@ -150,12 +135,118 @@ class BatchedStepResult:
         return BatchedStepResult(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            done=np.zeros(0, dtype=np.bool),
-            max_step=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
         )
 
+    @property
+    def n_agents(self) -> int:
+        return len(self.agent_id)
+
+
+class TerminationStepResult(NamedTuple):
+    """
+    Contains the data a single Agent collected since the last
+    simulation step.
+     - obs is a list of numpy arrays observations collected by the group of
+     agent.
+     - reward is a float. Corresponds to the rewards collected by the agent
+     since the last simulation step.
+     - max_step is a bool. Is true if the Agent reached its maximum number of
+     steps during the last simulation step.
+     - agent_id is an int and an unique identifier for the corresponding Agent.
+    """
+
+    obs: List[np.ndarray]
+    reward: float
+    max_step: bool
+    agent_id: AgentId
+
+
+class TerminationBatchedStepResult:
+    """
+    Contains the data a group of similar Agents collected since the last
+    simulation step. Note that all Agents do not necessarily have new
+    information to send at each simulation step. Therefore, the ordering of
+    agents and the batch size of the BatchedStepResult are not fixed across
+    simulation steps.
+     - obs is a list of numpy arrays observations collected by the group of
+     agent. Each obs has one extra dimension compared to StepResult: the first
+     dimension of the array corresponds to the batch size of
+     the group.
+     - reward is a float vector of length batch size. Corresponds to the
+     rewards collected by each agent since the last simulation step.
+     - max_step is an array of booleans of length batch size. Is true if the
+     associated Agent reached its maximum number of steps during the last
+     simulation step.
+     - agent_id is an int vector of length batch size containing unique
+     identifier for the corresponding Agent. This is used to track Agents
+     across simulation steps.
+    """
+
+    def __init__(self, obs, reward, max_step, agent_id):
+        self.obs: List[np.ndarray] = obs
+        self.reward: np.ndarray = reward
+        self.max_step: np.ndarray = max_step
+        self.agent_id: np.ndarray = agent_id
+        self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
+
+    @property
+    def agent_id_to_index(self) -> Dict[AgentId, int]:
+        """
+        :returns: A Dict that maps agent_id to the index of those agents in
+        this BatchedStepResult.
+        """
+        if self._agent_id_to_index is None:
+            self._agent_id_to_index = {}
+            for a_idx, a_id in enumerate(self.agent_id):
+                self._agent_id_to_index[a_id] = a_idx
+        return self._agent_id_to_index
+
+    def contains_agent(self, agent_id: AgentId) -> bool:
+        return agent_id in self.agent_id_to_index
+
+    def get_agent_data(self, agent_id: AgentId) -> TerminationStepResult:
+        """
+        returns the step result for a specific agent.
+        :param agent_id: The id of the agent
+        :returns: obs, reward, done, agent_id and optional action mask for a
+        specific agent
+        """
+        if not self.contains_agent(agent_id):
+            raise IndexError(
+                "get_agent_step_result failed. agent_id {} is not present in the BatchedStepResult".format(
+                    agent_id
+                )
+            )
+        agent_index = self._agent_id_to_index[agent_id]  # type: ignore
+        agent_obs = []
+        for batched_obs in self.obs:
+            agent_obs.append(batched_obs[agent_index])
+        return StepResult(
+            obs=agent_obs,
+            reward=self.reward[agent_index],
+            max_step=self.max_step[agent_index],
+            agent_id=agent_id,
+        )
+
+    @staticmethod
+    def empty(spec: "AgentGroupSpec") -> "TerminationBatchedStepResult":
+        """
+        Returns an empty BatchedStepResult.
+        :param spec: The AgentGroupSpec for the BatchedStepResult
+        """
+        obs: List[np.ndarray] = []
+        for shape in spec.observation_shapes:
+            obs += [np.zeros((0,) + shape, dtype=np.float32)]
+        return BatchedStepResult(
+            obs=obs,
+            reward=np.zeros(0, dtype=np.float32),
+            max_step=np.zeros(0, dtype=np.bool),
+            agent_id=np.zeros(0, dtype=np.int32),
+        )
+
+    @property
     def n_agents(self) -> int:
         return len(self.agent_id)
 
@@ -254,7 +345,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def get_agent_groups(self) -> List[AgentGroup]:
+    def get_names(self) -> List[AgentGroup]:
         """
         Returns the list of the agent group names present in the environment.
         Agents grouped under the same group name have the same action and
@@ -285,24 +376,29 @@ class BaseEnv(ABC):
         step.
         :param agent_group: The name of the group the agent is part of
         :param agent_id: The id of the agent the action is set for
-        :param action: A two dimensional np.ndarray corresponding to the action
+        :param action: A one dimensional np.ndarray corresponding to the action
         (either int or float)
         """
         pass
 
     @abstractmethod
-    def get_step_result(self, agent_group: AgentGroup) -> BatchedStepResult:
+    def get_result(self, agent_group: AgentGroup) -> Tuple[BatchedStepResult, TerminationBatchedStepResult]:
         """
         Retrieves the observations of the agents that requested a step in the
         simulation.
         :param agent_group: The name of the group the agents are part of
-        :return: A BatchedStepResult NamedTuple containing the observations,
-        the rewards and the done flags for this group of agents.
+        :return: A tuple containing :
+         - A BatchedStepResult NamedTuple containing the observations,
+         the rewards, the agent ids and the done action masks for the Agents
+         of the specified groups that need an action this step.
+         - A TerminationStepResult NamedTuple containing the observations,
+         rewards, agent ids and max_step flags of the agents that had their
+         episode terminated last step.
         """
         pass
 
     @abstractmethod
-    def get_agent_group_spec(self, agent_group: AgentGroup) -> AgentGroupSpec:
+    def get_pec(self, agent_group: AgentGroup) -> AgentGroupSpec:
         """
         Get the AgentGroupSpec corresponding to the agent group name
         :param agent_group: The name of the group the agents are part of
