@@ -223,7 +223,7 @@ class TrainerController(object):
                 pass
             else:
                 # If the environment failed, we want to make sure to raise
-                # the exception so we get the correct error code.
+                # the exception so we exit the process with an return code of 1.
                 raise ex
         if self.train_model:
             self._export_graph()
