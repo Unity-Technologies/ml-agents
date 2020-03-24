@@ -382,7 +382,9 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def get_result(self, agent_group: AgentGroup) -> Tuple[BatchedStepResult, TerminationBatchedStepResult]:
+    def get_result(
+        self, agent_group: AgentGroup
+    ) -> Tuple[BatchedStepResult, TerminationBatchedStepResult]:
         """
         Retrieves the observations of the agents that requested a step in the
         simulation.
@@ -398,7 +400,7 @@ class BaseEnv(ABC):
         pass
 
     @abstractmethod
-    def get_pec(self, agent_group: AgentGroup) -> AgentGroupSpec:
+    def get_spec(self, agent_group: AgentGroup) -> AgentGroupSpec:
         """
         Get the AgentGroupSpec corresponding to the agent group name
         :param agent_group: The name of the group the agents are part of
