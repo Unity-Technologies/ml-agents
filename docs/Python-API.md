@@ -56,7 +56,7 @@ as `envs`. For example, if the filename of your Unity environment is `3DBall`, i
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-env = UnityEnvironment(file_name="3DBall", base_port=5005, seed=1, side_channels=[])
+env = UnityEnvironment(file_name="3DBall", seed=1, side_channels=[])
 ```
 
 - `file_name` is the name of the environment binary (located in the root
@@ -239,7 +239,7 @@ from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 channel = EngineConfigurationChannel()
 
-env = UnityEnvironment(base_port = UnityEnvironment.DEFAULT_EDITOR_PORT, side_channels = [channel])
+env = UnityEnvironment(side_channels=[channel])
 
 channel.set_configuration_parameters(time_scale = 2.0)
 
@@ -267,7 +267,7 @@ from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesC
 
 channel = FloatPropertiesChannel()
 
-env = UnityEnvironment(base_port = UnityEnvironment.DEFAULT_EDITOR_PORT, side_channels = [channel])
+env = UnityEnvironment(side_channels=[channel])
 
 channel.set_property("parameter_1", 2.0)
 

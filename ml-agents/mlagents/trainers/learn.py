@@ -91,7 +91,7 @@ def _create_parser():
     )
     argparser.add_argument(
         "--base-port",
-        default=5005,
+        default=UnityEnvironment.BASE_ENVIRONMENT_PORT,
         type=int,
         help="Base port for environment communication",
     )

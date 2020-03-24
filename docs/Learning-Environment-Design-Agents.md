@@ -160,6 +160,7 @@ To normalize a value to [0, 1], you can use the following formula:
 ```csharp
 normalizedValue = (currentValue - minValue)/(maxValue - minValue)
 ```
+:warning: For vectors, you should apply the above formula to each component (x, y, and z). Note that this is *not* the same as using the `Vector3.normalized` property or `Vector3.Normalize()` method in Unity (and similar for `Vector2`).
 
 Rotations and angles should also be normalized. For angles between 0 and 360
 degrees, you can use the following formulas:

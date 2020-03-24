@@ -41,6 +41,7 @@ The versions can be found in
 * The interface for SideChannels was changed:
   * In C#, `OnMessageReceived` now takes a `IncomingMessage` argument, and `QueueMessageToSend` takes an `OutgoingMessage` argument.
   * In python, `on_message_received` now takes a `IncomingMessage` argument, and `queue_message_to_send` takes an `OutgoingMessage` argument.
+  * Automatic stepping for Academy is now controlled from the AutomaticSteppingEnabled property.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
@@ -52,11 +53,12 @@ The versions can be found in
 * We strongly recommend replacing the following methods with their new equivalent as they will be removed in a later release:
   * `InitializeAgent()` to `Initialize()`
   * `AgentAction()` to `OnActionReceived()`
-  * `AgentReset()` to `OnEpsiodeBegin()`
+  * `AgentReset()` to `OnEpisodeBegin()`
   * `Done()` to `EndEpisode()`
   * `GiveModel()` to `SetModel()`
 * Replace `IFloatProperties` variables with `FloatPropertiesChannel` variables.
 * If you implemented custom `SideChannels`, update the signatures of your methods, and add your data to the `OutgoingMessage` or read it from the `IncomingMessage`.
+* Replace calls to Academy.EnableAutomaticStepping()/DisableAutomaticStepping() with Academy.AutomaticSteppingEnabled = true/false.
 
 ## Migrating from 0.13 to 0.14
 
