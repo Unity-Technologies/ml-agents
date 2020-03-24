@@ -27,9 +27,6 @@ class MockCommunicator(Communicator):
     ):
         """
         Python side of the grpc communication. Python is the client and Unity the server
-
-        :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-        :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
         """
         super().__init__()
         self.is_discrete = discrete_action

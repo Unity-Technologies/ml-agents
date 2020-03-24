@@ -315,6 +315,7 @@ namespace MLAgents
 
         void NotifyAgentDone(DoneReason doneReason)
         {
+            m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
@@ -376,7 +377,7 @@ namespace MLAgents
                 // If everything is the same, don't make any changes.
                 return;
             }
-
+            NotifyAgentDone(DoneReason.Disabled);
             m_PolicyFactory.model = model;
             m_PolicyFactory.inferenceDevice = inferenceDevice;
             m_PolicyFactory.behaviorName = behaviorName;

@@ -26,6 +26,29 @@ def test_initialization(mock_communicator, mock_launcher):
     env.close()
 
 
+@pytest.mark.parametrize(
+    "base_port,file_name,expected",
+    [
+        # Non-None base port value will always be used
+        (6001, "foo.exe", 6001),
+        # No port specified and environment specified, so use BASE_ENVIRONMENT_PORT
+        (None, "foo.exe", UnityEnvironment.BASE_ENVIRONMENT_PORT),
+        # No port specified and no environment, so use DEFAULT_EDITOR_PORT
+        (None, None, UnityEnvironment.DEFAULT_EDITOR_PORT),
+    ],
+)
+@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+def test_port_defaults(
+    mock_communicator, mock_launcher, base_port, file_name, expected
+):
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=False, visual_inputs=0
+    )
+    env = UnityEnvironment(file_name=file_name, worker_id=0, base_port=base_port)
+    assert expected == env.port
+
+
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_reset(mock_communicator, mock_launcher):

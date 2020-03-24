@@ -57,7 +57,7 @@ class UnityEnv(gym.Env):
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
         """
-        base_port = 5005
+        base_port = UnityEnvironment.BASE_ENVIRONMENT_PORT
         if environment_filename is None:
             base_port = UnityEnvironment.DEFAULT_EDITOR_PORT
 

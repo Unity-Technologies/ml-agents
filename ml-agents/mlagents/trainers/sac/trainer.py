@@ -74,7 +74,6 @@ class SACTrainer(RLTrainer):
             "memory_size",
             "model_path",
             "reward_signals",
-            "vis_encode_type",
         ]
 
         self._check_param_keys()

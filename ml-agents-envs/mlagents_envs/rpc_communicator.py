@@ -36,7 +36,8 @@ class RpcCommunicator(Communicator):
 
 
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-        :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
+        :int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
+        :int timeout_wait: Timeout (in seconds) to wait for a response before exiting.
         """
         super().__init__(worker_id, base_port)
         self.port = base_port + worker_id
