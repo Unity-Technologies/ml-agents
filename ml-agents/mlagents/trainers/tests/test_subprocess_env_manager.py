@@ -12,6 +12,7 @@ from mlagents.trainers.subprocess_env_manager import (
 from mlagents.trainers.env_manager import EnvironmentStep
 from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.tests.simple_test_envs import Simple1DEnvironment
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.tests.test_simple_rl import (
@@ -147,7 +148,11 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         env_manager.set_agent_manager(brain_name, agent_manager_mock)
 
         step_info_dict = {brain_name: Mock()}
-        step_info = EnvironmentStep(step_info_dict, 0, action_info_dict, {})
+        env_stats = {
+            "averaged": (1.0, StatsAggregationMethod.AVERAGE),
+            "most_recent": (2.0, StatsAggregationMethod.MOST_RECENT),
+        }
+        step_info = EnvironmentStep(step_info_dict, 0, action_info_dict, env_stats)
         step_mock.return_value = [step_info]
         env_manager.advance()
 
