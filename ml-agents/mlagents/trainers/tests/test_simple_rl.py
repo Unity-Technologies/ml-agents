@@ -56,7 +56,7 @@ SAC_CONFIG = f"""
         trainer: sac
         batch_size: 8
         buffer_size: 500
-        buffer_init_steps: 100
+        buffer_init_steps: 200
         hidden_units: 16
         init_entcoef: 0.01
         learning_rate: 5.0e-3
@@ -255,7 +255,7 @@ def test_2d_sac(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
-    override_vals = {"buffer_init_steps": 2000, "max_steps": 3000}
+    override_vals = {"buffer_init_steps": 2000, "max_steps": 4000}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
 
