@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
  - Fixed an issue where specifying `vis_encode_type` was required only for SAC. (#3677)
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
+ - Fixed the reported entropy values for continuous actions (#3684)
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
