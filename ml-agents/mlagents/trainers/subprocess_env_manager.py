@@ -136,7 +136,7 @@ def worker(
         return result
 
     try:
-        env: BaseEnv = env_factory(
+        env = env_factory(
             worker_id,
             [shared_float_properties, engine_configuration_channel, stats_channel],
         )
@@ -158,7 +158,11 @@ def worker(
                 step_response = StepResponse(
                     all_step_result, get_timer_root(), env_stats
                 )
-                step_queue.put(EnvironmentResponse(EnvironmentCommand.STEP, worker_id, step_response))
+                step_queue.put(
+                    EnvironmentResponse(
+                        EnvironmentCommand.STEP, worker_id, step_response
+                    )
+                )
                 reset_timers()
             elif req.cmd == EnvironmentCommand.EXTERNAL_BRAINS:
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
