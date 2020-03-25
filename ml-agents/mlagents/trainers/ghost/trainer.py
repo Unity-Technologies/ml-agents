@@ -86,6 +86,14 @@ class GhostTrainer(Trainer):
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
         self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
+        if self.steps_to_train_team > self.get_max_steps:
+            logger.warning(
+                "The max steps of the GhostTrainer for behavior name {} is less than \
+            team change. This team will not face opposition that has been trained if the opposition \
+            is managed by a different GhostTrainer as in an asymmetric game.".format(
+                    self.brain_name
+                )
+            )
 
         # Counts the The number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
@@ -122,8 +130,8 @@ class GhostTrainer(Trainer):
     @property
     def get_step(self) -> int:
         """
-        Returns the number of steps the trainer has performed
-        :return: the step count of the trainer
+        Returns the number of steps the wrapped trainer has performed
+        :return: the step count of the wrapped trainer
         """
         return self.trainer.get_step
 
