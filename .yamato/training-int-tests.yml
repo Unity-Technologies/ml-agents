@@ -14,7 +14,7 @@ test_mac_training_int_{{ editor.version }}:
   commands:
     - pip install pyyaml
     # Intentional breakage!
-    - python -u -m ml-agents.tests.yamato.training_int_tests --python==0.14.0
+    - python -u -m ml-agents.tests.yamato.training_int_tests --csharp==0.14.0
   triggers:
     cancel_old_ci: true
     changes:
