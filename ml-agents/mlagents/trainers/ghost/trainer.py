@@ -234,10 +234,10 @@ class GhostTrainer(Trainer):
         self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
         if self.get_step - self.last_team_change > self.steps_to_train_team:
-            self.controller.finish_training(self.get_step)
+            self.controller.change_training_team(self.get_step)
             self.last_team_change = self.get_step
 
-        next_learning_team = self.controller.get_learning_team()
+        next_learning_team = self.controller.get_learning_team
 
         # CASE 1: Current learning team is managed by this GhostTrainer.
         # If the learning team changes, the following loop over queues will push the
@@ -341,7 +341,7 @@ class GhostTrainer(Trainer):
 
             self._save_snapshot()  # Need to save after trainer initializes policy
             self.trainer.add_policy(parsed_behavior_id, policy)
-            self._learning_team = self.controller.get_learning_team()
+            self._learning_team = self.controller.get_learning_team
             self.wrapped_trainer_team = team_id
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
