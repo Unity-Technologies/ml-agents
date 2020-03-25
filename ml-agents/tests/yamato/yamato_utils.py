@@ -71,7 +71,7 @@ def init_venv(mlagents_python_version: str = None) -> str:
     ]
     if mlagents_python_version:
         # install from pypi
-        pip_commands.append(f"mlagents={mlagents_python_version}")
+        pip_commands.append(f"mlagents=={mlagents_python_version}")
     else:
         # Local install
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents"]
