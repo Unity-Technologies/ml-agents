@@ -8,6 +8,7 @@ from mlagents.trainers.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
     StepResponse,
+    EnvironmentCommand,
 )
 from mlagents.trainers.env_manager import EnvironmentStep
 from mlagents_envs.base_env import BaseEnv
@@ -39,7 +40,9 @@ class MockEnvWorker:
 
 
 def create_worker_mock(worker_id, step_queue, env_factor, engine_c):
-    return MockEnvWorker(worker_id, EnvironmentResponse("reset", worker_id, worker_id))
+    return MockEnvWorker(
+        worker_id, EnvironmentResponse(EnvironmentCommand.RESET, worker_id, worker_id)
+    )
 
 
 class SubprocessEnvManagerTest(unittest.TestCase):
@@ -72,7 +75,9 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         params = {"test": "params"}
         manager._reset_env(params)
-        manager.env_workers[0].send.assert_called_with("reset", (params))
+        manager.env_workers[0].send.assert_called_with(
+            EnvironmentCommand.RESET, (params)
+        )
 
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
@@ -86,7 +91,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         params = {"test": "params"}
         res = manager._reset_env(params)
         for i, env in enumerate(manager.env_workers):
-            env.send.assert_called_with("reset", (params))
+            env.send.assert_called_with(EnvironmentCommand.RESET, (params))
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(
@@ -104,8 +109,8 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         manager.step_queue = Mock()
         manager.step_queue.get_nowait.side_effect = [
-            EnvironmentResponse("step", 0, StepResponse(0, None, {})),
-            EnvironmentResponse("step", 1, StepResponse(1, None, {})),
+            EnvironmentResponse(EnvironmentCommand.STEP, 0, StepResponse(0, None, {})),
+            EnvironmentResponse(EnvironmentCommand.STEP, 1, StepResponse(1, None, {})),
             EmptyQueue(),
         ]
         step_mock = Mock()
@@ -118,7 +123,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         res = manager._step()
         for i, env in enumerate(manager.env_workers):
             if i < 2:
-                env.send.assert_called_with("step", step_mock)
+                env.send.assert_called_with(EnvironmentCommand.STEP, step_mock)
                 manager.step_queue.get_nowait.assert_called()
                 # Check that the "last steps" are set to the value returned for each step
                 self.assertEqual(
