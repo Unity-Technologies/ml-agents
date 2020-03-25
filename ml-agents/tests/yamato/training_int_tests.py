@@ -9,6 +9,8 @@ from .yamato_utils import (
     run_standalone_build,
     init_venv,
     override_config_file,
+    checkout_csharp_version,
+    undo_git_checkout,
 )
 
 
@@ -26,6 +28,9 @@ def run_training(python_version, csharp_version):
 
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
+
+    if csharp_version is not None:
+        checkout_csharp_version(csharp_version)
 
     build_returncode = run_standalone_build(base_path)
     if build_returncode != 0:
@@ -65,7 +70,11 @@ def main():
     parser.add_argument("--csharp", default=None)
     args = parser.parse_args()
 
-    run_training(args.python, args.csharp)
+    try:
+        run_training(args.python, args.csharp)
+    finally:
+        # Cleanup - this gets executed even if we hit sys.exit()
+        undo_git_checkout()
 
 
 if __name__ == "__main__":

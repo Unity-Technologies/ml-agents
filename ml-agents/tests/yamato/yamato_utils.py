@@ -83,6 +83,28 @@ def init_venv(mlagents_python_version: str = None) -> str:
     return venv_path
 
 
+def checkout_csharp_version(csharp_version):
+    """
+    Checks out the specific git revision (usually a tag) for the C# package and Project.
+    If csharp_version is None, no changes are made.
+    :param csharp_version:
+    :return:
+    """
+    if csharp_version is None:
+        return
+    csharp_dirs = ["com.unity.ml-agents", "Project"]
+    for csharp_dir in csharp_dirs:
+        subprocess.check_call(f"git checkout {csharp_version} -- {csharp_dir}")
+
+
+def undo_git_checkout():
+    """
+    Clean up the git working directory.
+    """
+    subprocess.check_call("git reset HEAD .")
+    subprocess.check_call("git checkout -- .")
+
+
 def override_config_file(src_path, dest_path, **kwargs):
     """
     Override settings in a trainer config file. For example,
