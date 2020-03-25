@@ -1,6 +1,7 @@
 import sys
-from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Set
-from collections import defaultdict, Counter, deque
+from typing import List, Dict, TypeVar, Generic, Tuple, Set
+from collections import defaultdict, Counter
+import queue
 
 from mlagents_envs.base_env import BatchedStepResult, StepResult
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
@@ -221,20 +222,29 @@ class AgentManagerQueue(Generic[T]):
         separately from an AgentManager.
         """
         self.maxlen: int = maxlen
-        self.queue: Deque[T] = deque(maxlen=self.maxlen)
+        self.queue: queue.Queue = queue.Queue(maxsize=maxlen)
         self.behavior_id = behavior_id
 
     def empty(self) -> bool:
-        return len(self.queue) == 0
+        return self.queue.empty()
 
     def get_nowait(self) -> T:
         try:
-            return self.queue.popleft()
-        except IndexError:
+            return self.queue.get_nowait()
+        except queue.Empty:
+            raise self.Empty("The AgentManagerQueue is empty.")
+
+    def get(self, timeout: float) -> T:
+        """
+        Blocking get
+        """
+        try:
+            return self.queue.get(timeout=timeout)
+        except queue.Empty:
             raise self.Empty("The AgentManagerQueue is empty.")
 
     def put(self, item: T) -> None:
-        self.queue.append(item)
+        self.queue.put(item)
 
 
 class AgentManager(AgentProcessor):
