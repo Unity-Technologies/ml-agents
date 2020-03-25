@@ -134,13 +134,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def advance(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
-        Will block and wait if there are no trajectories.
+        Will block and wait briefly if there are no trajectories.
         """
         with hierarchical_timer("process_trajectory"):
             for traj_queue in self.trajectory_queues:
-                # We grab at most the maximum length of the queue.
-                # This ensures that even if the queue is being filled faster than it is
-                # being emptied, the trajectories in the queue are on-policy.
                 try:
                     t = traj_queue.get(0.05)
                     self._process_trajectory(t)

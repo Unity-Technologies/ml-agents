@@ -282,11 +282,6 @@ class TrainerController(object):
                         "Environment/Lesson", curr.lesson_num
                     )
 
-        # # Advance trainers. This can be done in a separate loop in the future.
-        # with hierarchical_timer("trainer_advance"):
-        #     for trainer in self.trainers.values():
-        #         trainer.advance()
-
         return num_steps
 
     def trainer_update_func(self, trainer: Trainer) -> None:
