@@ -95,7 +95,6 @@ docker run -it --name <container-name> \
            -p 5005:5005 \
            -p 6006:6006 \
            <image-name>:latest \
-           --docker-target-name=unity-volume \
            <trainer-config-file> \
            --env=<environment-name> \
            --train \
@@ -117,9 +116,6 @@ Notes on argument values:
 - `source`: Reference to the path in your host OS where you will store the Unity
   executable.
 - `target`: Tells Docker to mount the `source` path as a disk with this name.
-- `docker-target-name`: Tells the ML-Agents Python package what the name of the
-  disk where it can read the Unity executable and store the graph. **This should
-  therefore be identical to `target`.**
 - `trainer-config-file`, `train`, `run-id`: ML-Agents arguments passed to
   `mlagents-learn`. `trainer-config-file` is the filename of the trainer config
   file, `train` trains the algorithm, and `run-id` is used to tag each
@@ -134,9 +130,8 @@ docker run -it --name 3DBallContainer.first.trial \
            -p 5005:5005 \
            -p 6006:6006 \
            balance.ball.v0.1:latest 3DBall \
-           --docker-target-name=unity-volume \
-           trainer_config.yaml \
-           --env=3DBall \
+           /unity-volume/trainer_config.yaml \
+           --env=/unity-volume/3DBall \
            --train \
            --run-id=3dball_first_trial
 ```
