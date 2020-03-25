@@ -26,12 +26,11 @@ AgentId = int
 AgentGroup = str
 
 
-class StepResult(NamedTuple):
+class DecisionRequest(NamedTuple):
     """
     Contains the data a single Agent collected since the last
     simulation step.
-     - obs is a list of numpy arrays observations collected by the group of
-     agent.
+     - obs is a list of numpy arrays observations collected by the agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
      - agent_id is an int and an unique identifier for the corresponding Agent.
@@ -48,15 +47,15 @@ class StepResult(NamedTuple):
     action_mask: Optional[List[np.ndarray]]
 
 
-class BatchedStepResult:
+class DecisionRequests:
     """
     Contains the data a group of similar Agents collected since the last
     simulation step. Note that all Agents do not necessarily have new
     information to send at each simulation step. Therefore, the ordering of
-    agents and the batch size of the BatchedStepResult are not fixed across
+    agents and the batch size of the DecisionRequest are not fixed across
     simulation steps.
      - obs is a list of numpy arrays observations collected by the group of
-     agent. Each obs has one extra dimension compared to StepResult: the first
+     agent. Each obs has one extra dimension compared to DecisionRequest: the first
      dimension of the array corresponds to the batch size of
      the group.
      - reward is a float vector of length batch size. Corresponds to the
@@ -83,7 +82,7 @@ class BatchedStepResult:
     def agent_id_to_index(self) -> Dict[AgentId, int]:
         """
         :returns: A Dict that maps agent_id to the index of those agents in
-        this BatchedStepResult.
+        this DecisionRequests.
         """
         if self._agent_id_to_index is None:
             self._agent_id_to_index = {}
@@ -94,16 +93,16 @@ class BatchedStepResult:
     def contains_agent(self, agent_id: AgentId) -> bool:
         return agent_id in self.agent_id_to_index
 
-    def get_agent_data(self, agent_id: AgentId) -> StepResult:
+    def get_agent_data(self, agent_id: AgentId) -> DecisionRequest:
         """
-        returns the step result for a specific agent.
+        returns the DecisionRequest for a specific agent.
         :param agent_id: The id of the agent
         :returns: obs, reward, done, agent_id and optional action mask for a
         specific agent
         """
         if not self.contains_agent(agent_id):
             raise IndexError(
-                "get_agent_step_result failed. agent_id {} is not present in the BatchedStepResult".format(
+                "get_agent_data failed. agent_id {} is not present in the DecisionRequests".format(
                     agent_id
                 )
             )
@@ -116,7 +115,7 @@ class BatchedStepResult:
             agent_mask = []
             for mask in self.action_mask:
                 agent_mask.append(mask[agent_index])
-        return StepResult(
+        return DecisionRequest(
             obs=agent_obs,
             reward=self.reward[agent_index],
             agent_id=agent_id,
@@ -124,15 +123,15 @@ class BatchedStepResult:
         )
 
     @staticmethod
-    def empty(spec: "AgentGroupSpec") -> "BatchedStepResult":
+    def empty(spec: "AgentGroupSpec") -> "DecisionRequests":
         """
-        Returns an empty BatchedStepResult.
-        :param spec: The AgentGroupSpec for the BatchedStepResult
+        Returns an empty DecisionRequests.
+        :param spec: The AgentGroupSpec for the DecisionRequests
         """
         obs: List[np.ndarray] = []
         for shape in spec.observation_shapes:
             obs += [np.zeros((0,) + shape, dtype=np.float32)]
-        return BatchedStepResult(
+        return DecisionRequests(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
             agent_id=np.zeros(0, dtype=np.int32),
@@ -144,12 +143,10 @@ class BatchedStepResult:
         return len(self.agent_id)
 
 
-class TerminationStepResult(NamedTuple):
+class TerminalState(NamedTuple):
     """
-    Contains the data a single Agent collected since the last
-    simulation step.
-     - obs is a list of numpy arrays observations collected by the group of
-     agent.
+    Contains the data a single Agent collected when its episode ended.
+     - obs is a list of numpy arrays observations collected by the agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
      - max_step is a bool. Is true if the Agent reached its maximum number of
@@ -163,16 +160,14 @@ class TerminationStepResult(NamedTuple):
     agent_id: AgentId
 
 
-class TerminationBatchedStepResult:
+class TerminalStates:
     """
-    Contains the data a group of similar Agents collected since the last
-    simulation step. Note that all Agents do not necessarily have new
-    information to send at each simulation step. Therefore, the ordering of
-    agents and the batch size of the BatchedStepResult are not fixed across
-    simulation steps.
+    Contains the data a group of similar Agents collected when their episode
+    terminated. All Agents present in the TerminalStates have ended their
+    episode.
      - obs is a list of numpy arrays observations collected by the group of
-     agent. Each obs has one extra dimension compared to StepResult: the first
-     dimension of the array corresponds to the batch size of
+     agent. Each obs has one extra dimension compared to DecisionRequest: the
+     first dimension of the array corresponds to the batch size of
      the group.
      - reward is a float vector of length batch size. Corresponds to the
      rewards collected by each agent since the last simulation step.
@@ -195,7 +190,7 @@ class TerminationBatchedStepResult:
     def agent_id_to_index(self) -> Dict[AgentId, int]:
         """
         :returns: A Dict that maps agent_id to the index of those agents in
-        this BatchedStepResult.
+        this TerminalStates.
         """
         if self._agent_id_to_index is None:
             self._agent_id_to_index = {}
@@ -206,16 +201,16 @@ class TerminationBatchedStepResult:
     def contains_agent(self, agent_id: AgentId) -> bool:
         return agent_id in self.agent_id_to_index
 
-    def get_agent_data(self, agent_id: AgentId) -> TerminationStepResult:
+    def get_agent_data(self, agent_id: AgentId) -> TerminalState:
         """
-        returns the step result for a specific agent.
+        returns the TerminalState for a specific agent.
         :param agent_id: The id of the agent
         :returns: obs, reward, done, agent_id and optional action mask for a
         specific agent
         """
         if not self.contains_agent(agent_id):
             raise IndexError(
-                "get_agent_step_result failed. agent_id {} is not present in the BatchedStepResult".format(
+                "get_agent_data failed. agent_id {} is not present in the TerminalStates".format(
                     agent_id
                 )
             )
@@ -223,7 +218,7 @@ class TerminationBatchedStepResult:
         agent_obs = []
         for batched_obs in self.obs:
             agent_obs.append(batched_obs[agent_index])
-        return StepResult(
+        return DecisionRequest(
             obs=agent_obs,
             reward=self.reward[agent_index],
             max_step=self.max_step[agent_index],
@@ -231,15 +226,15 @@ class TerminationBatchedStepResult:
         )
 
     @staticmethod
-    def empty(spec: "AgentGroupSpec") -> "TerminationBatchedStepResult":
+    def empty(spec: "AgentGroupSpec") -> "TerminalStates":
         """
-        Returns an empty BatchedStepResult.
-        :param spec: The AgentGroupSpec for the BatchedStepResult
+        Returns an empty TerminalStates.
+        :param spec: The AgentGroupSpec for the TerminalStates
         """
         obs: List[np.ndarray] = []
         for shape in spec.observation_shapes:
             obs += [np.zeros((0,) + shape, dtype=np.float32)]
-        return BatchedStepResult(
+        return DecisionRequests(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
             max_step=np.zeros(0, dtype=np.bool),
@@ -262,7 +257,7 @@ class AgentGroupSpec(NamedTuple):
     spaces for a group of Agents.
      - observation_shapes is a List of Tuples of int : Each Tuple corresponds
      to an observation's dimensions. The shape tuples have the same ordering as
-     the ordering of the BatchedStepResult and StepResult.
+     the ordering of the DecisionRequests and TerminalStates.
      - action_type is the type of data of the action. it can be discrete or
      continuous. If discrete, the action tensors are expected to be int32. If
      continuous, the actions are expected to be float32.
@@ -360,7 +355,7 @@ class BaseEnv(ABC):
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in
-        the step result.
+        the DecisionRequests.
         :param agent_group: The name of the group the agents are part of
         :param action: A two dimensional np.ndarray corresponding to the action
         (either int or float)
@@ -384,16 +379,16 @@ class BaseEnv(ABC):
     @abstractmethod
     def get_result(
         self, agent_group: AgentGroup
-    ) -> Tuple[BatchedStepResult, TerminationBatchedStepResult]:
+    ) -> Tuple[DecisionRequests, TerminalStates]:
         """
         Retrieves the observations of the agents that requested a step in the
         simulation.
         :param agent_group: The name of the group the agents are part of
         :return: A tuple containing :
-         - A BatchedStepResult NamedTuple containing the observations,
+         - A DecisionRequests NamedTuple containing the observations,
          the rewards, the agent ids and the done action masks for the Agents
          of the specified groups that need an action this step.
-         - A TerminationStepResult NamedTuple containing the observations,
+         - A TerminalStates NamedTuple containing the observations,
          rewards, agent ids and max_step flags of the agents that had their
          episode terminated last step.
         """
