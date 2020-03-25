@@ -1,3 +1,4 @@
+import argparse
 import os
 import sys
 import subprocess
@@ -10,7 +11,11 @@ from .yamato_utils import (
 )
 
 
-def main():
+def run_training(python_version, csharp_version):
+    latest = "latest"
+    print(
+        f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
+    )
     nn_file_expected = "./models/ppo/3DBall.nn"
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
@@ -25,7 +30,7 @@ def main():
         print("Standalone build FAILED!")
         sys.exit(build_returncode)
 
-    init_venv()
+    venv_path = init_venv()
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
@@ -40,7 +45,9 @@ def main():
     # TODO pass scene name and exe destination to build
     # TODO make sure we fail if the exe isn't found - see MLA-559
     mla_learn_cmd = "mlagents-learn override.yaml --train --env=Project/testPlayer --no-graphics --env-args -logFile -"  # noqa
-    res = subprocess.run(f"source venv/bin/activate; {mla_learn_cmd}", shell=True)
+    res = subprocess.run(
+        f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
+    )
 
     if res.returncode != 0 or not os.path.exists(nn_file_expected):
         print("mlagents-learn run FAILED!")
@@ -48,6 +55,15 @@ def main():
 
     print("mlagents-learn run SUCCEEDED!")
     sys.exit(0)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--python", default=None)
+    parser.add_argument("--csharp", default=None)
+    args = parser.parse_args()
+
+    run_training(args.python, args.csharp)
 
 
 if __name__ == "__main__":

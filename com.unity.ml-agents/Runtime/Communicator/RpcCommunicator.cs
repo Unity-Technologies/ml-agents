@@ -545,20 +545,20 @@ namespace MLAgents
         }
 
         /// <inheritdoc/>
-        public T GetSideChannel<T>() where T: SideChannel
+        public T GetSideChannel<T>() where T : SideChannel
         {
             foreach (var sc in m_SideChannels.Values)
             {
                 if (sc.GetType() == typeof(T))
                 {
-                    return (T) sc;
+                    return (T)sc;
                 }
             }
             return null;
         }
 
         /// <inheritdoc/>
-        public List<T> GetSideChannels<T>() where T: SideChannel
+        public List<T> GetSideChannels<T>() where T : SideChannel
         {
             var output = new List<T>();
 
@@ -566,7 +566,7 @@ namespace MLAgents
             {
                 if (sc.GetType() == typeof(T))
                 {
-                    output.Add((T) sc);
+                    output.Add((T)sc);
                 }
             }
             return output;

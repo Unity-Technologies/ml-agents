@@ -1,6 +1,7 @@
 import os
 import subprocess
 import yaml
+import time
 
 
 def get_unity_executable_path():
@@ -49,21 +50,35 @@ def run_standalone_build(base_path: str, verbose: bool = False) -> int:
     return res.returncode
 
 
-def init_venv():
+def init_venv(mlagents_python_version: str = None) -> str:
+    """
+    Set up the virtual environment, and return the venv path.
+    :param mlagents_python_version: The version of mlagents python packcage to install.
+        If None, will do a local install, otherwise will install from pypi
+    :return:
+    """
+    # Make a distinct venv path
+    time_ms = int(time.time() * 1000.0)
+    venv_path = f"venv_{time_ms}"
     # Set up the venv and install mlagents
-    subprocess.check_call("python -m venv venv", shell=True)
+    subprocess.check_call(f"python -m venv {venv_path}", shell=True)
     pip_commands = [
         "--upgrade pip",
         "--upgrade setuptools",
         # TODO build these and publish to internal pypi
         "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
-        "-e ./ml-agents-envs",
-        "-e ./ml-agents",
     ]
+    if mlagents_python_version:
+        # install from pypi
+        pip_commands.append(f"ml-agents={mlagents_python_version}")
+    else:
+        # Local install
+        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents"]
     for cmd in pip_commands:
         subprocess.check_call(
             f"source venv/bin/activate; python -m pip install -q {cmd}", shell=True
         )
+    return venv_path
 
 
 def override_config_file(src_path, dest_path, **kwargs):
