@@ -32,7 +32,7 @@ def run_training(python_version, csharp_version):
         print("Standalone build FAILED!")
         sys.exit(build_returncode)
 
-    venv_path = init_venv()
+    venv_path = init_venv(python_version)
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
