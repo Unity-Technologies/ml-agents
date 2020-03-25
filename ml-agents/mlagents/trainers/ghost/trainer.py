@@ -88,9 +88,9 @@ class GhostTrainer(Trainer):
         self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
         if self.steps_to_train_team > self.get_max_steps:
             logger.warning(
-                "The max steps of the GhostTrainer for behavior name {} is less than \
-            team change. This team will not face opposition that has been trained if the opposition \
-            is managed by a different GhostTrainer as in an asymmetric game.".format(
+                "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not face \
+                opposition that has been trained if the opposition is managed by a different GhostTrainer as in an \
+                asymmetric game.".format(
                     self.brain_name
                 )
             )
@@ -233,7 +233,6 @@ class GhostTrainer(Trainer):
 
         self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
-
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.finish_training(self.get_step)
             self.last_team_change = self.get_step
@@ -331,19 +330,19 @@ class GhostTrainer(Trainer):
         policy.create_tf_graph()
 
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
+        # for saving/swapping snapshots
+        policy.init_load_weights()
 
         # First policy or a new agent on the same team encountered
         if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
             ] = policy.get_weights()
+
             self._save_snapshot()  # Need to save after trainer initializes policy
             self.trainer.add_policy(parsed_behavior_id, policy)
             self._learning_team = self.controller.get_learning_team()
             self.wrapped_trainer_team = team_id
-        else:
-            # for saving/swapping snapshots
-            policy.init_load_weights()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
@@ -386,6 +385,7 @@ class GhostTrainer(Trainer):
             else:
                 snapshot = self.current_policy_snapshot
                 x = "current"
+
             self.current_opponent = -1 if x == "current" else x
             name_to_policy_queue = self._team_to_name_to_policy_queue[team_id]
             for brain_name in self._team_to_name_to_policy_queue[team_id]:

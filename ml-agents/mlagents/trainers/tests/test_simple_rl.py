@@ -314,7 +314,7 @@ def test_simple_ghost(use_discrete):
     override_vals = {
         "max_steps": 2500,
         "self_play": {
-            "play_against_current_self_ratio": 1.0,
+            "play_against_current_best_ratio": 1.0,
             "save_steps": 2000,
             "swap_steps": 2000,
         },
@@ -333,12 +333,63 @@ def test_simple_ghost_fails(use_discrete):
     override_vals = {
         "max_steps": 2500,
         "self_play": {
-            "play_against_current_self_ratio": 1.0,
+            "play_against_current_best_ratio": 1.0,
             "save_steps": 2000,
             "swap_steps": 4000,
         },
     }
     config = generate_config(PPO_CONFIG, override_vals)
+    _check_environment_trains(env, config, success_threshold=None)
+    processed_rewards = [
+        default_reward_processor(rewards) for rewards in env.final_rewards.values()
+    ]
+    success_threshold = 0.99
+    assert any(reward > success_threshold for reward in processed_rewards) and any(
+        reward < success_threshold for reward in processed_rewards
+    )
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_asymm_ghost(use_discrete):
+    # Make opponent for asymmetric case
+    brain_name_opp = BRAIN_NAME + "Opp"
+    env = SimpleEnvironment(
+        [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], use_discrete=use_discrete
+    )
+    override_vals = {
+        "max_steps": 2000,
+        "self_play": {
+            "play_against_current_best_ratio": 1.0,
+            "save_steps": 5000,
+            "swap_steps": 5000,
+            "team_change": 2000,
+        },
+    }
+    config = generate_config(PPO_CONFIG, override_vals)
+    config[brain_name_opp] = config[BRAIN_NAME]
+    _check_environment_trains(env, config)
+
+
+@pytest.mark.parametrize("use_discrete", [True, False])
+def test_simple_asymm_ghost_fails(use_discrete):
+    # Make opponent for asymmetric case
+    brain_name_opp = BRAIN_NAME + "Opp"
+    env = SimpleEnvironment(
+        [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], use_discrete=use_discrete
+    )
+    # This config should fail because the team that us not learning when both have reached
+    # max step should be executing the initial, untrained poliy.
+    override_vals = {
+        "max_steps": 2000,
+        "self_play": {
+            "play_against_current_best_ratio": 0.0,
+            "save_steps": 5000,
+            "swap_steps": 5000,
+            "team_change": 2000,
+        },
+    }
+    config = generate_config(PPO_CONFIG, override_vals)
+    config[brain_name_opp] = config[BRAIN_NAME]
     _check_environment_trains(env, config, success_threshold=None)
     processed_rewards = [
         default_reward_processor(rewards) for rewards in env.final_rewards.values()
