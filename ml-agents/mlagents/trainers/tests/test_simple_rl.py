@@ -314,7 +314,7 @@ def test_simple_ghost(use_discrete):
     override_vals = {
         "max_steps": 2500,
         "self_play": {
-            "play_against_current_best_ratio": 1.0,
+            "play_against_latest_model_ratio": 1.0,
             "save_steps": 2000,
             "swap_steps": 2000,
         },
@@ -333,7 +333,7 @@ def test_simple_ghost_fails(use_discrete):
     override_vals = {
         "max_steps": 2500,
         "self_play": {
-            "play_against_current_best_ratio": 1.0,
+            "play_against_latest_model_ratio": 1.0,
             "save_steps": 2000,
             "swap_steps": 4000,
         },
@@ -359,7 +359,7 @@ def test_simple_asymm_ghost(use_discrete):
     override_vals = {
         "max_steps": 2000,
         "self_play": {
-            "play_against_current_best_ratio": 1.0,
+            "play_against_latest_model_ratio": 1.0,
             "save_steps": 5000,
             "swap_steps": 5000,
             "team_change": 2000,
@@ -382,7 +382,7 @@ def test_simple_asymm_ghost_fails(use_discrete):
     override_vals = {
         "max_steps": 2000,
         "self_play": {
-            "play_against_current_best_ratio": 0.0,
+            "play_against_latest_model_ratio": 0.0,
             "save_steps": 5000,
             "swap_steps": 5000,
             "team_change": 2000,
