@@ -94,15 +94,17 @@ def checkout_csharp_version(csharp_version):
         return
     csharp_dirs = ["com.unity.ml-agents", "Project"]
     for csharp_dir in csharp_dirs:
-        subprocess.check_call(f"git checkout {csharp_version} -- {csharp_dir}")
+        subprocess.check_call(
+            f"git checkout {csharp_version} -- {csharp_dir}", shell=True
+        )
 
 
 def undo_git_checkout():
     """
     Clean up the git working directory.
     """
-    subprocess.check_call("git reset HEAD .")
-    subprocess.check_call("git checkout -- .")
+    subprocess.check_call("git reset HEAD .", shell=True)
+    subprocess.check_call("git checkout -- .", shell=True)
 
 
 def override_config_file(src_path, dest_path, **kwargs):
