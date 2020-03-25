@@ -11,6 +11,7 @@ class GhostController(object):
     GhostController contains a queue of team ids. GhostTrainers subscribe to the GhostController and query
     it to get the current learning team.  The GhostController cycles through team ids every 'swap_interval'
     which corresponds to the number of trainer steps between changing learning teams.
+    The GhostController is a unique object and there can only be one per training run.
     """
 
     def __init__(self, maxlen: int = 10):
@@ -26,6 +27,14 @@ class GhostController(object):
         # Dict from team id to GhostTrainer for ELO calculation
         self._ghost_trainers: Dict[int, GhostTrainer] = {}
 
+    @property
+    def get_learning_team(self) -> int:
+        """
+        Returns the current learning team.
+        :return: The learning team id
+        """
+        return self._learning_team
+
     def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
         """
         Given a team_id and trainer, add to queue and trainers if not already.
@@ -40,14 +49,7 @@ class GhostController(object):
             else:
                 self._queue.append(team_id)
 
-    def get_learning_team(self) -> int:
-        """
-        Returns the current learning team.
-        :return: The learning team id
-        """
-        return self._learning_team
-
-    def finish_training(self, step: int) -> None:
+    def change_training_team(self, step: int) -> None:
         """
         The current learning team is added to the end of the queue and then updated with the
         next in line.

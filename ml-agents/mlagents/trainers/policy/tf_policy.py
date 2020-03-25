@@ -144,6 +144,10 @@ class TFPolicy(Policy):
                 self.assign_ops.append(tf.assign(var, assign_ph))
 
     def load_weights(self, values):
+        if len(self.assign_ops) == 0:
+            logger.warning(
+                "Calling load_weights in tf_policy but assign_ops is empty. Did you forget to call init_load_weights?"
+            )
         with self.graph.as_default():
             feed_dict = {}
             for assign_ph, value in zip(self.assign_phs, values):

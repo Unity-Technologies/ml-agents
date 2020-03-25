@@ -80,12 +80,20 @@ class GhostTrainer(Trainer):
 
         self_play_parameters = trainer_parameters["self_play"]
         self.window = self_play_parameters.get("window", 10)
-        self.play_against_current_best_ratio = self_play_parameters.get(
-            "play_against_current_best_ratio", 0.5
+        self.play_against_latest_model_ratio = self_play_parameters.get(
+            "play_against_latest_model_ratio", 0.5
         )
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
         self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
+        if self.steps_to_train_team > self.get_max_steps:
+            logger.warning(
+                "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not face \
+                opposition that has been trained if the opposition is managed by a different GhostTrainer as in an \
+                asymmetric game.".format(
+                    self.brain_name
+                )
+            )
 
         # Counts the The number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
@@ -122,8 +130,8 @@ class GhostTrainer(Trainer):
     @property
     def get_step(self) -> int:
         """
-        Returns the number of steps the trainer has performed
-        :return: the step count of the trainer
+        Returns the number of steps the wrapped trainer has performed
+        :return: the step count of the wrapped trainer
         """
         return self.trainer.get_step
 
@@ -226,12 +234,11 @@ class GhostTrainer(Trainer):
 
         self.next_summary_step = self.trainer.next_summary_step
         self.trainer.advance()
-
         if self.get_step - self.last_team_change > self.steps_to_train_team:
-            self.controller.finish_training(self.get_step)
+            self.controller.change_training_team(self.get_step)
             self.last_team_change = self.get_step
 
-        next_learning_team = self.controller.get_learning_team()
+        next_learning_team = self.controller.get_learning_team
 
         # CASE 1: Current learning team is managed by this GhostTrainer.
         # If the learning team changes, the following loop over queues will push the
@@ -324,19 +331,19 @@ class GhostTrainer(Trainer):
         policy.create_tf_graph()
 
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
+        # for saving/swapping snapshots
+        policy.init_load_weights()
 
         # First policy or a new agent on the same team encountered
         if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
             ] = policy.get_weights()
+
             self._save_snapshot()  # Need to save after trainer initializes policy
             self.trainer.add_policy(parsed_behavior_id, policy)
-            self._learning_team = self.controller.get_learning_team()
+            self._learning_team = self.controller.get_learning_team
             self.wrapped_trainer_team = team_id
-        else:
-            # for saving/swapping snapshots
-            policy.init_load_weights()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """
@@ -373,12 +380,13 @@ class GhostTrainer(Trainer):
         for team_id in self._team_to_name_to_policy_queue:
             if team_id == self._learning_team:
                 continue
-            elif np.random.uniform() < (1 - self.play_against_current_best_ratio):
+            elif np.random.uniform() < (1 - self.play_against_latest_model_ratio):
                 x = np.random.randint(len(self.policy_snapshots))
                 snapshot = self.policy_snapshots[x]
             else:
                 snapshot = self.current_policy_snapshot
                 x = "current"
+
             self.current_opponent = -1 if x == "current" else x
             name_to_policy_queue = self._team_to_name_to_policy_queue[team_id]
             for brain_name in self._team_to_name_to_policy_queue[team_id]:

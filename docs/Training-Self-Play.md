@@ -2,7 +2,7 @@
 
 ML-Agents provides the functionality to train both symmetric and asymmetric adversarial games with
 [Self-Play](https://openai.com/blog/competitive-self-play/).
-A symmetric game is one in which opposing agents are equal in form, function snd objective. Examples of symmetric games
+A symmetric game is one in which opposing agents are equal in form, function and objective. Examples of symmetric games
 are our Tennis and Soccer example environments. In reinforcement learning, this means both agents have the same observation and
 action spaces and learn from the same reward function and so *they can share the same policy*. In asymmetric games,
 this is not the case. Examples of asymmetric games are Hide and Seek or Strikers vs Goalie in Soccer. Agents in these
@@ -85,7 +85,7 @@ Recommended Range : 4x-10x where x=`save_steps`
 
 ### Swap Steps
 
-The `swap_steps` parameter corresponds to the number of *ghost steps* (note, not trainer steps) between swapping the opponents policy with a different snapshot.
+The `swap_steps` parameter corresponds to the number of *ghost steps* (not trainer steps) between swapping the opponents policy with a different snapshot.
 A 'ghost step' refers to a step taken by an agent *that is following a fixed policy and not learning*. The reason for this distinction is that in asymmetric games,
 we may have teams with an unequal number of agents e.g. the 2v1 scenario in our Strikers Vs Goalie environment. The team with two agents collects
 twice as many agent steps per environment step as the team with one agent.  Thus, these two values will need to be distinct to ensure that the same number
