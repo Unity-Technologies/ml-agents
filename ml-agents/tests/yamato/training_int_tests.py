@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 import subprocess
+import time
 
 from .yamato_utils import (
     get_base_path,
@@ -13,10 +14,11 @@ from .yamato_utils import (
 
 def run_training(python_version, csharp_version):
     latest = "latest"
+    run_id = int(time.time() * 1000.0)
     print(
         f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
     )
-    nn_file_expected = "./models/ppo/3DBall.nn"
+    nn_file_expected = f"./models/{run_id}/3DBall.nn"
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
         print("Artifacts from previous build found!")
@@ -44,7 +46,7 @@ def run_training(python_version, csharp_version):
 
     # TODO pass scene name and exe destination to build
     # TODO make sure we fail if the exe isn't found - see MLA-559
-    mla_learn_cmd = "mlagents-learn override.yaml --train --env=Project/testPlayer --no-graphics --env-args -logFile -"  # noqa
+    mla_learn_cmd = f"mlagents-learn override.yaml --train --env=Project/testPlayer --run-id={run_id} --no-graphics --env-args -logFile -"  # noqa
     res = subprocess.run(
         f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
     )

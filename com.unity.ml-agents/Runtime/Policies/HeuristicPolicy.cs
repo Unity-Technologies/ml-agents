@@ -102,7 +102,7 @@ namespace MLAgents.Policies
             public float this[int index]
             {
                 get { return 0.0f; }
-                set {}
+                set { }
             }
         }
 

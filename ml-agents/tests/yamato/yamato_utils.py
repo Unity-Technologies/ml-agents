@@ -1,7 +1,6 @@
 import os
 import subprocess
 import yaml
-import time
 
 
 def get_unity_executable_path():
@@ -57,9 +56,11 @@ def init_venv(mlagents_python_version: str = None) -> str:
         If None, will do a local install, otherwise will install from pypi
     :return:
     """
-    # Make a distinct venv path
-    time_ms = int(time.time() * 1000.0)
-    venv_path = f"venv_{time_ms}"
+    # Use a different venv path for different versions
+    venv_path = "venv"
+    if mlagents_python_version:
+        venv_path += "_" + mlagents_python_version
+
     # Set up the venv and install mlagents
     subprocess.check_call(f"python -m venv {venv_path}", shell=True)
     pip_commands = [
@@ -76,7 +77,8 @@ def init_venv(mlagents_python_version: str = None) -> str:
         pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents"]
     for cmd in pip_commands:
         subprocess.check_call(
-            f"source venv/bin/activate; python -m pip install -q {cmd}", shell=True
+            f"source {venv_path}/bin/activate; python -m pip install -q {cmd}",
+            shell=True,
         )
     return venv_path
 
