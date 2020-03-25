@@ -36,8 +36,8 @@ and Unity, see the [installation instructions](Installation.md).
 
 Depending on your version of Unity, it may be necessary to change the **Scripting Runtime Version** of your project. This can be done as follows:
 
-1. Launch Unity
-2. On the Projects dialog, choose the **Open** option at the top of the window.
+1. Launch Unity Hub
+2. On the Projects dialog, choose the **Add** option at the top of the window.
 3. Using the file dialog that opens, locate the `Project` folder
    within the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**

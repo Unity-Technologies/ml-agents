@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
+from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set, Tuple
 import cloudpickle
 
 from mlagents_envs.environment import UnityEnvironment
@@ -23,6 +23,10 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
 )
+from mlagents_envs.side_channel.stats_side_channel import (
+    StatsSideChannel,
+    StatsAggregationMethod,
+)
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
 
@@ -43,6 +47,7 @@ class EnvironmentResponse(NamedTuple):
 class StepResponse(NamedTuple):
     all_step_result: AllStepResult
     timer_root: Optional[TimerNode]
+    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
 
 
 class UnityEnvWorker:
@@ -93,8 +98,10 @@ def worker(
     shared_float_properties = FloatPropertiesChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
+    stats_channel = StatsSideChannel()
     env: BaseEnv = env_factory(
-        worker_id, [shared_float_properties, engine_configuration_channel]
+        worker_id,
+        [shared_float_properties, engine_configuration_channel, stats_channel],
     )
 
     def _send_response(cmd_name, payload):
@@ -129,7 +136,10 @@ def worker(
                 # Note that we could randomly return timers a fraction of the time if we wanted to reduce
                 # the data transferred.
                 # TODO get gauges from the workers and merge them in the main process too.
-                step_response = StepResponse(all_step_result, get_timer_root())
+                env_stats = stats_channel.get_and_reset_stats()
+                step_response = StepResponse(
+                    all_step_result, get_timer_root(), env_stats
+                )
                 step_queue.put(EnvironmentResponse("step", worker_id, step_response))
                 reset_timers()
             elif cmd.name == "external_brains":
@@ -246,7 +256,7 @@ class SubprocessEnvManager(EnvManager):
             ew.send("reset", config)
         # Next (synchronously) collect the reset observations from each worker in sequence
         for ew in self.env_workers:
-            ew.previous_step = EnvironmentStep(ew.recv().payload, ew.worker_id, {})
+            ew.previous_step = EnvironmentStep(ew.recv().payload, ew.worker_id, {}, {})
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property
@@ -278,6 +288,7 @@ class SubprocessEnvManager(EnvManager):
                 payload.all_step_result,
                 step.worker_id,
                 env_worker.previous_all_action_info,
+                payload.environment_stats,
             )
             step_infos.append(new_step)
             env_worker.previous_step = new_step

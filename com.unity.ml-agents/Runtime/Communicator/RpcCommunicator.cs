@@ -544,6 +544,34 @@ namespace MLAgents
             }
         }
 
+        /// <inheritdoc/>
+        public T GetSideChannel<T>() where T: SideChannel
+        {
+            foreach (var sc in m_SideChannels.Values)
+            {
+                if (sc.GetType() == typeof(T))
+                {
+                    return (T) sc;
+                }
+            }
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public List<T> GetSideChannels<T>() where T: SideChannel
+        {
+            var output = new List<T>();
+
+            foreach (var sc in m_SideChannels.Values)
+            {
+                if (sc.GetType() == typeof(T))
+                {
+                    output.Add((T) sc);
+                }
+            }
+            return output;
+        }
+
         /// <summary>
         /// Grabs the messages that the registered side channels will send to Python at the current step
         /// into a singe byte array.
