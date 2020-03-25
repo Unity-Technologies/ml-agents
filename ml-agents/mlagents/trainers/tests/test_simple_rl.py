@@ -253,7 +253,7 @@ def test_simple_sac(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_2d_sac(use_discrete):
     env = SimpleEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
+        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
     override_vals = {"buffer_init_steps": 2000, "max_steps": 3000}
     config = generate_config(SAC_CONFIG, override_vals)
