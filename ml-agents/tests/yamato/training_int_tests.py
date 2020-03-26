@@ -32,7 +32,7 @@ def run_training(python_version, csharp_version):
     if csharp_version is not None:
         checkout_csharp_version(csharp_version)
 
-    build_returncode = run_standalone_build(base_path)
+    build_returncode = run_standalone_build(base_path, verbose=True)
     if build_returncode != 0:
         print("Standalone build FAILED!")
         sys.exit(build_returncode)
