@@ -137,4 +137,4 @@ RUN pip install -e .
 # so allow enough ports for several environments.
 EXPOSE 5004-5050
 
-ENTRYPOINT ["mlagents-learn"]
+ENTRYPOINT ["xvfb-run", "--auto-servernum", "--server-args='-screen 0 640x480x24'", "mlagents-learn"]

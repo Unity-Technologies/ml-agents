@@ -36,7 +36,7 @@ PPO_CONFIG = f"""
         lambd: 0.95
         learning_rate: 5.0e-3
         learning_rate_schedule: constant
-        max_steps: 2000
+        max_steps: 3000
         memory_size: 16
         normalize: false
         num_epoch: 3
@@ -99,7 +99,7 @@ def default_reward_processor(rewards, last_n_rewards=5):
     rewards_to_use = rewards[-last_n_rewards:]
     # For debugging tests
     print("Last {} rewards:".format(last_n_rewards), rewards_to_use)
-    return np.array(rewards[-last_n_rewards:], dtype=np.float32).max()
+    return np.array(rewards[-last_n_rewards:], dtype=np.float32).mean()
 
 
 class DebugWriter(StatsWriter):
@@ -127,7 +127,7 @@ def _check_environment_trains(
     trainer_config,
     reward_processor=default_reward_processor,
     meta_curriculum=None,
-    success_threshold=0.99,
+    success_threshold=0.9,
     env_manager=None,
 ):
     # Create controller and begin training.
@@ -259,7 +259,7 @@ def test_2d_sac(use_discrete):
     )
     override_vals = {"buffer_init_steps": 2000, "max_steps": 4000}
     config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    _check_environment_trains(env, config, success_threshold=0.8)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -303,7 +303,13 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
     env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {"batch_size": 32, "use_recurrent": True, "max_steps": 2000}
+    override_vals = {
+        "batch_size": 64,
+        "use_recurrent": True,
+        "max_steps": 3000,
+        "learning_rate": 1e-3,
+        "buffer_init_steps": 500,
+    }
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
 
@@ -345,7 +351,7 @@ def test_simple_ghost_fails(use_discrete):
     processed_rewards = [
         default_reward_processor(rewards) for rewards in env.final_rewards.values()
     ]
-    success_threshold = 0.99
+    success_threshold = 0.9
     assert any(reward > success_threshold for reward in processed_rewards) and any(
         reward < success_threshold for reward in processed_rewards
     )

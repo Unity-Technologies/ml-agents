@@ -8,12 +8,13 @@ namespace MLAgents.SideChannels
     /// </summary>
     public class EngineConfigurationChannel : SideChannel
     {
-        private const string k_EngineConfigId = "e951342c-4f7e-11ea-b238-784f4387d1f7";
+        const string k_EngineConfigId = "e951342c-4f7e-11ea-b238-784f4387d1f7";
 
         /// <summary>
-        /// Initializes the side channel.
+        /// Initializes the side channel. The constructor is internal because only one instance is
+        /// supported at a time, and is created by the Academy.
         /// </summary>
-        public EngineConfigurationChannel()
+        internal EngineConfigurationChannel()
         {
             ChannelId = new Guid(k_EngineConfigId);
         }
