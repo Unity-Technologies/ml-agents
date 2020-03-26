@@ -244,6 +244,10 @@ def test_agent_id_index_mapper(mapper_cls):
     mapper.mark_agent_done(1001, 42.0)
     mapper.mark_agent_done(1004, 1337.0)
 
+    # Make sure we can handle an unknown agent id being marked done.
+    # This can happen when an agent ends an episode on the same step it starts.
+    mapper.mark_agent_done(9999, -1.0)
+
     # Now add new agents, and get the rewards of the agent they replaced.
     old_reward1 = mapper.register_new_agent_id(2001)
     old_reward2 = mapper.register_new_agent_id(2002)

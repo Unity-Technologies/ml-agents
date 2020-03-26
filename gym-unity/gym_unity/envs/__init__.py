@@ -588,9 +588,13 @@ class AgentIdIndexMapperSlow:
         self._gym_id_order = list(agent_ids)
 
     def mark_agent_done(self, agent_id: int, reward: float) -> None:
-        gym_index = self._gym_id_order.index(agent_id)
-        self._done_agents_index_to_last_reward[gym_index] = reward
-        self._gym_id_order[gym_index] = -1
+        try:
+            gym_index = self._gym_id_order.index(agent_id)
+            self._done_agents_index_to_last_reward[gym_index] = reward
+            self._gym_id_order[gym_index] = -1
+        except ValueError:
+            # Agent was never registered in the first place (e.g. EndEpisode called multiple times)
+            pass
 
     def register_new_agent_id(self, agent_id: int) -> float:
         original_index = self._gym_id_order.index(-1)
