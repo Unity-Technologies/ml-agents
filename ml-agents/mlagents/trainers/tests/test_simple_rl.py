@@ -351,7 +351,7 @@ def test_simple_ghost_fails(use_discrete):
     processed_rewards = [
         default_reward_processor(rewards) for rewards in env.final_rewards.values()
     ]
-    success_threshold = 0.99
+    success_threshold = 0.9
     assert any(reward > success_threshold for reward in processed_rewards) and any(
         reward < success_threshold for reward in processed_rewards
     )
