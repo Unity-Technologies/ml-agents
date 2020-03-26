@@ -439,6 +439,12 @@ namespace MLAgents
                 DecideAction?.Invoke();
             }
 
+            // If the communicator is not on, we need to clear the SideChannel sending queue
+            if (!IsCommunicatorOn)
+            {
+                SideChannelUtils.GetSideChannelMessage();
+            }
+
             using (TimerStack.Instance.Scoped("AgentAct"))
             {
                 AgentAct?.Invoke();

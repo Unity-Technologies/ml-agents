@@ -116,7 +116,7 @@ namespace MLAgents.SideChannels
         /// into a singe byte array.
         /// </summary>
         /// <returns></returns>
-        public static byte[] GetSideChannelMessage()
+        internal static byte[] GetSideChannelMessage()
         {
             return GetSideChannelMessage(RegisteredChannels);
         }
@@ -153,7 +153,7 @@ namespace MLAgents.SideChannels
         /// Separates the data received from Python into individual messages for each registered side channel.
         /// </summary>
         /// <param name="dataReceived">The byte array of data received from Python.</param>
-        public static void ProcessSideChannelData(byte[] dataReceived)
+        internal static void ProcessSideChannelData(byte[] dataReceived)
         {
             ProcessSideChannelData(RegisteredChannels, dataReceived);
         }
