@@ -13,7 +13,7 @@ public class Ball3DAgent : Agent
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
-        m_ResetParams = Academy.Instance.FloatProperties;
+        m_ResetParams = Academy.Instance.GetSideChannel<FloatPropertiesChannel>();
         SetResetParameters();
     }
 

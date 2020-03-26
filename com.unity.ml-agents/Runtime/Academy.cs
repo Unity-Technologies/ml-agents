@@ -89,6 +89,7 @@ namespace MLAgents
         /// <summary>
         /// Collection of float properties (indexed by a string).
         /// </summary>
+        [Obsolete("Academy.FloatProperties has been deprecated, use Academy.GetSideChannel<>() instead.")]
         public FloatPropertiesChannel FloatProperties;
 
 
@@ -343,7 +344,9 @@ namespace MLAgents
             EnableAutomaticStepping();
 
             var floatProperties = new FloatPropertiesChannel();
+#pragma warning disable 0618
             FloatProperties = floatProperties;
+#pragma warning restore 0618
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
@@ -563,8 +566,9 @@ namespace MLAgents
             // TODO - Pass worker ID or some other identifier,
             // so that multiple envs won't overwrite each others stats.
             TimerStack.Instance.SaveJsonTimers();
-
+#pragma warning disable 0618
             FloatProperties = null;
+#pragma warning restore 0618
             m_Initialized = false;
 
             // Reset the Lazy instance

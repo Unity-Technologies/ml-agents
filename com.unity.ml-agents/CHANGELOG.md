@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+ - `Academy.FloatProperties` was deprecated, please use `Academy.GetSideChannel<FloatPropertiesChannel>()` instead.
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)

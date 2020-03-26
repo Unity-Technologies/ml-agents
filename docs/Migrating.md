@@ -10,8 +10,10 @@ The versions can be found in
 ## Migrating from 0.15 to latest
 
 ### Important changes
+* `Academy.FloatProperties` was deprecated. It will be removed in a later release.
 
 ### Steps to Migrate
+* Replace `Academy.FloatProperties` with `Academy.GetSideChannel<FloatPropertiesChannel>()`.
 
 
 ## Migrating from 0.14 to 0.15

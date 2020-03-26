@@ -32,7 +32,7 @@ public class GridArea : MonoBehaviour
 
     public void Start()
     {
-        m_ResetParameters = Academy.Instance.FloatProperties;
+        m_ResetParameters = Academy.Instance.GetSideChannel<FloatPropertiesChannel>();
 
         m_Objects = new[] { goalPref, pitPref };
 
