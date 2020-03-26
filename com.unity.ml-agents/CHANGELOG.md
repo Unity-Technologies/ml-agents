@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
  - Fixed an issue where switching models using `SetModel()` during training would use an excessive amount of memory. (#3664)
  - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
+ - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
