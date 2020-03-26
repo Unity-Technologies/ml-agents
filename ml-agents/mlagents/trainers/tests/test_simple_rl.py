@@ -56,7 +56,7 @@ SAC_CONFIG = f"""
         trainer: sac
         batch_size: 8
         buffer_size: 500
-        buffer_init_steps: 200
+        buffer_init_steps: 100
         hidden_units: 16
         init_entcoef: 0.01
         learning_rate: 5.0e-3
@@ -96,7 +96,10 @@ def generate_config(
 # Custom reward processors shuld be built within the test function and passed to _check_environment_trains
 # Default is average over the last 5 final rewards
 def default_reward_processor(rewards, last_n_rewards=5):
-    return np.array(rewards[-last_n_rewards:], dtype=np.float32).mean()
+    rewards_to_use = rewards[-last_n_rewards:]
+    # For debugging tests
+    print("Last {} rewards:".format(last_n_rewards), rewards_to_use)
+    return np.array(rewards[-last_n_rewards:], dtype=np.float32).max()
 
 
 class DebugWriter(StatsWriter):
@@ -168,7 +171,6 @@ def _check_environment_trains(
         if (
             success_threshold is not None
         ):  # For tests where we are just checking setup and not reward
-
             processed_rewards = [
                 reward_processor(rewards) for rewards in env.final_rewards.values()
             ]
