@@ -113,10 +113,10 @@ A larger value of `swap_steps` means that an agent will play against the same fi
 
 Recommended Range : 10000-100000
 
-### Play against current best ratio
+### Play against latest model ratio
 
 The `play_against_latest_model_ratio` parameter corresponds to the probability
-an agent will play against the current opponent. With probability
+an agent will play against the latest opponent policy. With probability
 1 - `play_against_latest_model_ratio`, the agent will play against a snapshot of its
 opponent from a past iteration.
 
@@ -147,4 +147,3 @@ In a proper training run, the ELO of the agent should steadily increase. The abs
 Note, this implementation will support any number of teams but ELO is only applicable to games with two teams.  It is ongoing work to implement
 a reliable metric for measuring progress in these scenarios. These scenarios can still train, though as of now, reward and qualitative observations
 are the only metric by which we can judge performance.
-
