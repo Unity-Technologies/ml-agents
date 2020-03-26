@@ -30,6 +30,7 @@ public class AgentSoccer : Agent
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
+    float m_BallTouch;
     public Position position;
 
     float m_Power;
@@ -183,6 +184,11 @@ public class AgentSoccer : Agent
         var force = m_Power * m_KickPower;
         if (c.gameObject.CompareTag("ball"))
         {
+            // Generic gets curriculum
+            if (position == Position.Generic)
+            {
+                AddReward(.2f * m_BallTouch);
+            }
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
@@ -191,6 +197,7 @@ public class AgentSoccer : Agent
 
     public override void OnEpisodeBegin()
     {
+        m_BallTouch = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
