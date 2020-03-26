@@ -17,7 +17,7 @@ to competing against the current, best opponent in every episode, which is const
 Self-play can be used with our implementations of both [Proximal Policy Optimization (PPO)](Training-PPO.md) and [Soft Actor-Critc (SAC)](Training-SAC.md).
 However, from the perspective of an individual agent, these scenarios appear to have non-stationary dynamics because the opponent is often changing.
 This can cause significant issues in the experience replay mechanism used by SAC. Thus, we recommend that users use PPO. For further reading on
-this issue in particular, [see this paper](https://arxiv.org/pdf/1702.08887.pdf).
+this issue in particular, see the paper [Stabilising Experience Replay for Deep Multi-Agent Reinforcement Learning](https://arxiv.org/pdf/1702.08887.pdf).
 For more general information on training with ML-Agents, see [Training ML-Agents](Training-ML-Agents.md).
 For more algorithm specific instruction, please see the documentation for [PPO](Training-PPO.md) or [SAC](Training-SAC.md).
 
@@ -115,14 +115,14 @@ Recommended Range : 10000-100000
 
 ### Play against current best ratio
 
-The `play_against_current_best_ratio` parameter corresponds to the probability
+The `play_against_latest_model_ratio` parameter corresponds to the probability
 an agent will play against the current opponent. With probability
-1 - `play_against_current_best_ratio`, the agent will play against a snapshot of its
+1 - `play_against_latest_model_ratio`, the agent will play against a snapshot of its
 opponent from a past iteration.
 
-A larger value of `play_against_current_best_ratio` indicates that an agent will be playing against the current opponent more often. Since the agent is updating it's policy, the opponent will be different from iteration to iteration.  This can lead to an unstable learning environment, but poses the agent with an [auto-curricula](https://openai.com/blog/emergent-tool-use/) of more increasingly challenging situations which may lead to a stronger final policy.
+A larger value of `play_against_latest_model_ratio` indicates that an agent will be playing against the current opponent more often. Since the agent is updating it's policy, the opponent will be different from iteration to iteration.  This can lead to an unstable learning environment, but poses the agent with an [auto-curricula](https://openai.com/blog/emergent-tool-use/) of more increasingly challenging situations which may lead to a stronger final policy.
 
-Recommended Range : 0.0 - 1.0
+Range : 0.0 - 1.0
 
 ### Window
 
