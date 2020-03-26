@@ -364,9 +364,8 @@ class UnityEnv(gym.Env):
 
     def _sanitize_info(self, step_result: BatchedStepResult) -> BatchedStepResult:
         n_extra_agents = step_result.n_agents() - self._n_agents
-        if n_extra_agents < 0 or n_extra_agents > self._n_agents:
+        if n_extra_agents < 0:
             # In this case, some Agents did not request a decision when expected
-            # or too many requested a decision
             raise UnityGymException(
                 "The number of agents in the scene does not match the expected number."
             )
@@ -386,6 +385,10 @@ class UnityEnv(gym.Env):
         # only cares about the ordering.
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
+                if step_result.done[index]:
+                    # If the Agent is already done (e.g. it ended its epsiode twice in one step)
+                    # Don't try to register it here.
+                    continue
                 # Register this agent, and get the reward of the previous agent that
                 # was in its index, so that we can return it to the gym.
                 last_reward = self.agent_mapper.register_new_agent_id(agent_id)
@@ -528,8 +531,12 @@ class AgentIdIndexMapper:
         """
         Declare the agent done with the corresponding final reward.
         """
-        gym_index = self._agent_id_to_gym_index.pop(agent_id)
-        self._done_agents_index_to_last_reward[gym_index] = reward
+        if agent_id in self._agent_id_to_gym_index:
+            gym_index = self._agent_id_to_gym_index.pop(agent_id)
+            self._done_agents_index_to_last_reward[gym_index] = reward
+        else:
+            # Agent was never registered in the first place (e.g. EndEpisode called multiple times)
+            pass
 
     def register_new_agent_id(self, agent_id: int) -> float:
         """
