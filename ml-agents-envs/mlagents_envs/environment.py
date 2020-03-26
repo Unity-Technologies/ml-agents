@@ -78,7 +78,6 @@ class UnityEnvironment(BaseEnv):
         worker_id: int = 0,
         base_port: Optional[int] = None,
         seed: int = 0,
-        docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 60,
         args: Optional[List[str]] = None,
@@ -93,7 +92,6 @@ class UnityEnvironment(BaseEnv):
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
         If no environment is specified (i.e. file_name is None), the DEFAULT_EDITOR_PORT will be used.
         :int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
-        :bool docker_training: Informs this class whether the process is being run within a container.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :list args: Addition Unity command line arguments
@@ -136,7 +134,7 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics, args)
+            self.executable_launcher(file_name, no_graphics, args)
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -236,7 +234,7 @@ class UnityEnvironment(BaseEnv):
                 launch_string = candidates[0]
         return launch_string
 
-    def executable_launcher(self, file_name, docker_training, no_graphics, args):
+    def executable_launcher(self, file_name, no_graphics, args):
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
             self._close(0)
@@ -246,61 +244,28 @@ class UnityEnvironment(BaseEnv):
         else:
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
-            if not docker_training:
-                subprocess_args = [launch_string]
-                if no_graphics:
-                    subprocess_args += ["-nographics", "-batchmode"]
-                subprocess_args += [
-                    UnityEnvironment.PORT_COMMAND_LINE_ARG,
-                    str(self.port),
-                ]
-                subprocess_args += args
-                try:
-                    self.proc1 = subprocess.Popen(
-                        subprocess_args,
-                        # start_new_session=True means that signals to the parent python process
-                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
-                        # This is generally good since we want the environment to have a chance to shutdown,
-                        # but may be undesirable in come cases; if so, we'll add a command-line toggle.
-                        # Note that on Windows, the CTRL_C signal will still be sent.
-                        start_new_session=True,
-                    )
-                except PermissionError as perm:
-                    # This is likely due to missing read or execute permissions on file.
-                    raise UnityEnvironmentException(
-                        f"Error when trying to launch environment - make sure "
-                        f"permissions are set correctly. For example "
-                        f'"chmod -R 755 {launch_string}"'
-                    ) from perm
-
-            else:
-                # Comments for future maintenance:
-                #     xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                #     rendering is done to virtual memory. It automatically creates a
-                #     new virtual server automatically picking a server number `auto-servernum`.
-                #     The server is passed the arguments using `server-args`, we are telling
-                #     Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                #     Note that 640 X 480 are the default width and height. The main reason for
-                #     us to add this is because we'd like to change the depth from the default
-                #     of 8 bits to 24.
-                #     Unfortunately, this means that we will need to pass the arguments through
-                #     a shell which is why we set `shell=True`. Now, this adds its own
-                #     complications. E.g SIGINT can bounce off the shell and not get propagated
-                #     to the child processes. This is why we add `exec`, so that the shell gets
-                #     launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                #     we created with `xvfb`.
-                #
-                docker_ls = (
-                    f"exec xvfb-run --auto-servernum --server-args='-screen 0 640x480x24'"
-                    f" {launch_string} {UnityEnvironment.PORT_COMMAND_LINE_ARG} {self.port}"
-                )
-
+            subprocess_args = [launch_string]
+            if no_graphics:
+                subprocess_args += ["-nographics", "-batchmode"]
+            subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
+            subprocess_args += args
+            try:
                 self.proc1 = subprocess.Popen(
-                    docker_ls,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    shell=True,
+                    subprocess_args,
+                    # start_new_session=True means that signals to the parent python process
+                    # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
+                    # This is generally good since we want the environment to have a chance to shutdown,
+                    # but may be undesirable in come cases; if so, we'll add a command-line toggle.
+                    # Note that on Windows, the CTRL_C signal will still be sent.
+                    start_new_session=True,
                 )
+            except PermissionError as perm:
+                # This is likely due to missing read or execute permissions on file.
+                raise UnityEnvironmentException(
+                    f"Error when trying to launch environment - make sure "
+                    f"permissions are set correctly. For example "
+                    f'"chmod -R 755 {launch_string}"'
+                ) from perm
 
     def _update_group_specs(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
