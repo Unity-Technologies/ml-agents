@@ -43,7 +43,7 @@ namespace MLAgentsExamples
             Physics.defaultSolverIterations = solverIterations;
             Physics.defaultSolverVelocityIterations = solverVelocityIterations;
 
-            Academy.Instance.GetSideChannel<FloatPropertiesChannel>().RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
+            SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
         }
 
         public void OnDestroy()

@@ -41,7 +41,7 @@ the same environment.
 In order to define the curricula, the first step is to decide which parameters of
 the environment will vary. In the case of the Wall Jump environment,
 the height of the wall is what varies. We define this as a `Shared Float Property`
-that can be accessed in `Academy.Instance.GetSideChannel<FloatPropertiesChannel>()`, and by doing
+that can be accessed in `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`, and by doing
 so it becomes adjustable via the Python API.
 Rather than adjusting it by hand, we will create a YAML file which
 describes the structure of the curricula. Within it, we can specify which

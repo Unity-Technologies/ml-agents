@@ -57,7 +57,7 @@ public class WallJumpAgent : Agent
 
         spawnArea.SetActive(false);
 
-        m_FloatProperties = Academy.Instance.GetSideChannel<FloatPropertiesChannel>();
+        m_FloatProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
     }
 
     // Begin the jump sequence
