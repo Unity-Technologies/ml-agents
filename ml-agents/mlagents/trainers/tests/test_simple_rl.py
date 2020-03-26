@@ -306,7 +306,7 @@ def test_recurrent_sac(use_discrete):
     override_vals = {
         "batch_size": 32,
         "use_recurrent": True,
-        "max_steps": 2000,
+        "max_steps": 3000,
         "buffer_init_steps": 1000,
     }
     config = generate_config(SAC_CONFIG, override_vals)
