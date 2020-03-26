@@ -2877,11 +2877,11 @@ GameObject:
   - component: {fileID: 1384062692232262378}
   - component: {fileID: 1453625387528710450}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: StrikerWall
   m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &2086200762019023354
 Transform:
@@ -2891,8 +2891,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 466852996558031858}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -988, y: 100, z: 0}
-  m_LocalScale: {x: 100, y: 1000, z: 1800}
+  m_LocalPosition: {x: -988, y: 250, z: 0}
+  m_LocalScale: {x: 100, y: 500, z: 1575}
   m_Children: []
   m_Father: {fileID: 4109868016055942}
   m_RootOrder: 0
@@ -2922,7 +2922,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 89ad1e117353e48db80e27f4f7727dc1, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
