@@ -259,7 +259,7 @@ def test_2d_sac(use_discrete):
     )
     override_vals = {"buffer_init_steps": 2000, "max_steps": 4000}
     config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    _check_environment_trains(env, config, success_threshold=0.8)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -304,10 +304,11 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 def test_recurrent_sac(use_discrete):
     env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     override_vals = {
-        "batch_size": 32,
+        "batch_size": 64,
         "use_recurrent": True,
         "max_steps": 3000,
-        "buffer_init_steps": 1000,
+        "learning_rate": 1e-3,
+        "buffer_init_steps": 500,
     }
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
