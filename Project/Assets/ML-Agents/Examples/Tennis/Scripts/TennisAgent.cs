@@ -13,6 +13,7 @@ public class TennisAgent : Agent
     public GameObject myArea;
     public float angle;
     public float scale;
+    float m_BallTouch;
 
     Text m_TextComponent;
     Rigidbody m_AgentRb;
@@ -95,8 +96,19 @@ public class TennisAgent : Agent
         return action;
     }
 
+    void OnCollisionEnter(Collision c)
+    {
+        if (c.gameObject.CompareTag("ball"))
+        {
+            // 8f is for offset of ball to area
+            AddReward(.05f * m_BallTouch * (8f + ball.transform.position.y - myArea.transform.position.y));
+        }
+    }
+
     public override void OnEpisodeBegin()
     {
+
+        m_BallTouch = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_touch", 0);
         m_InvertMult = invertX ? -1f : 1f;
 
         transform.position = new Vector3(-m_InvertMult * Random.Range(6f, 8f), -1.5f, -1.8f) + transform.parent.transform.position;
