@@ -129,6 +129,50 @@ def test_sanitize_action_one_agent_done(mock_env):
         assert expected_agent_id == agent_id
 
 
+@mock.patch("gym_unity.envs.UnityEnvironment")
+def test_sanitize_action_new_agent_done(mock_env):
+    mock_spec = create_mock_group_spec(
+        vector_action_space_type="discrete", vector_action_space_size=[2, 2, 3]
+    )
+    mock_step = create_mock_vector_step_result(num_agents=3)
+    mock_step.agent_id = np.array(range(5))
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
+    env = UnityEnv(" ", use_visual=False, multiagent=True)
+
+    received_step_result = create_mock_vector_step_result(num_agents=7)
+    received_step_result.agent_id = np.array(range(7))
+    # agent #3 (id = 2) is Done
+    # so is the "new" agent (id = 5)
+    done = [False] * 7
+    done[2] = True
+    done[5] = True
+    received_step_result.done = np.array(done)
+    sanitized_result = env._sanitize_info(received_step_result)
+    for expected_agent_id, agent_id in zip([0, 1, 6, 3, 4], sanitized_result.agent_id):
+        assert expected_agent_id == agent_id
+
+
+@mock.patch("gym_unity.envs.UnityEnvironment")
+def test_sanitize_action_single_agent_multiple_done(mock_env):
+    mock_spec = create_mock_group_spec(
+        vector_action_space_type="discrete", vector_action_space_size=[2, 2, 3]
+    )
+    mock_step = create_mock_vector_step_result(num_agents=1)
+    mock_step.agent_id = np.array(range(1))
+    setup_mock_unityenvironment(mock_env, mock_spec, mock_step)
+    env = UnityEnv(" ", use_visual=False, multiagent=False)
+
+    received_step_result = create_mock_vector_step_result(num_agents=3)
+    received_step_result.agent_id = np.array(range(3))
+    # original agent (id = 0) is Done
+    # so is the "new" agent (id = 1)
+    done = [True, True, False]
+    received_step_result.done = np.array(done)
+    sanitized_result = env._sanitize_info(received_step_result)
+    for expected_agent_id, agent_id in zip([2], sanitized_result.agent_id):
+        assert expected_agent_id == agent_id
+
+
 # Helper methods
 
 
@@ -199,6 +243,10 @@ def test_agent_id_index_mapper(mapper_cls):
     # Mark some agents as done with their last rewards.
     mapper.mark_agent_done(1001, 42.0)
     mapper.mark_agent_done(1004, 1337.0)
+
+    # Make sure we can handle an unknown agent id being marked done.
+    # This can happen when an agent ends an episode on the same step it starts.
+    mapper.mark_agent_done(9999, -1.0)
 
     # Now add new agents, and get the rewards of the agent they replaced.
     old_reward1 = mapper.register_new_agent_id(2001)
