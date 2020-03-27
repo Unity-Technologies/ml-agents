@@ -13,7 +13,11 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.trainers.trainer_util import load_config, TrainerFactory
+from mlagents.trainers.trainer_util import (
+    load_config,
+    TrainerFactory,
+    handle_existing_directories,
+)
 from mlagents.trainers.stats import (
     TensorboardWriter,
     CSVWriter,
@@ -75,6 +79,14 @@ def _create_parser():
         dest="resume",
         action="store_true",
         help="Resumes training from a checkpoint. Specify a --run-id to use this option.",
+    )
+    argparser.add_argument(
+        "--force",
+        default=False,
+        dest="force",
+        action="store_true",
+        help="Force-overwrite existing models and summaries for a run-id that has been used "
+        "before.",
     )
     argparser.add_argument(
         "--run-id",
@@ -175,6 +187,7 @@ class RunOptions(NamedTuple):
     run_id: str = parser.get_default("run_id")
     load_model: bool = parser.get_default("load_model")
     resume: bool = parser.get_default("resume")
+    force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
     save_freq: int = parser.get_default("save_freq")
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
@@ -212,7 +225,8 @@ class RunOptions(NamedTuple):
             argparse_args["sampler_config"] = load_config(
                 argparse_args["sampler_file_path"]
             )
-
+        # Keep deprecated --load working, TODO: remove
+        argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
         argparse_args.pop("sampler_file_path")
@@ -256,6 +270,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 "Environment/Episode Length",
             ],
         )
+        handle_existing_directories(
+            model_path, summaries_dir, options.resume, options.force
+        )
         tb_writer = TensorboardWriter(summaries_dir)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
@@ -290,7 +307,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             model_path,
             options.keep_checkpoints,
             options.train_model,
-            options.load_model or options.resume,
+            options.resume,
             run_seed,
             maybe_meta_curriculum,
             options.multi_gpu,
