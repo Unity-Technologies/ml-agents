@@ -115,10 +115,10 @@ class TFPolicy(Policy):
             logger.info("Loading Model for brain {}".format(self.brain.brain_name))
             ckpt = tf.train.get_checkpoint_state(self.model_path)
             if ckpt is None:
-                logger.info(
-                    "The model {0} could not be found. Make "
+                raise UnityPolicyException(
+                    "The model {0} could not be loaded. Make "
                     "sure you specified the right "
-                    "--run-id".format(self.model_path)
+                    "--run-id.".format(self.model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 
