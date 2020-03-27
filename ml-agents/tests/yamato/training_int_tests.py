@@ -1,17 +1,26 @@
+import argparse
 import os
 import sys
 import subprocess
+import time
 
 from .yamato_utils import (
     get_base_path,
     run_standalone_build,
     init_venv,
     override_config_file,
+    checkout_csharp_version,
+    undo_git_checkout,
 )
 
 
-def main():
-    nn_file_expected = "./models/ppo/3DBall.nn"
+def run_training(python_version, csharp_version):
+    latest = "latest"
+    run_id = int(time.time() * 1000.0)
+    print(
+        f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
+    )
+    nn_file_expected = f"./models/{run_id}/3DBall.nn"
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
         print("Artifacts from previous build found!")
@@ -20,12 +29,15 @@ def main():
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
 
+    if csharp_version is not None:
+        checkout_csharp_version(csharp_version)
+
     build_returncode = run_standalone_build(base_path)
     if build_returncode != 0:
         print("Standalone build FAILED!")
         sys.exit(build_returncode)
 
-    init_venv()
+    venv_path = init_venv(python_version)
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
@@ -39,8 +51,10 @@ def main():
 
     # TODO pass scene name and exe destination to build
     # TODO make sure we fail if the exe isn't found - see MLA-559
-    mla_learn_cmd = "mlagents-learn override.yaml --train --env=Project/testPlayer --no-graphics --env-args -logFile -"  # noqa
-    res = subprocess.run(f"source venv/bin/activate; {mla_learn_cmd}", shell=True)
+    mla_learn_cmd = f"mlagents-learn override.yaml --train --env=Project/testPlayer --run-id={run_id} --no-graphics --env-args -logFile -"  # noqa
+    res = subprocess.run(
+        f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
+    )
 
     if res.returncode != 0 or not os.path.exists(nn_file_expected):
         print("mlagents-learn run FAILED!")
@@ -48,6 +62,19 @@ def main():
 
     print("mlagents-learn run SUCCEEDED!")
     sys.exit(0)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--python", default=None)
+    parser.add_argument("--csharp", default=None)
+    args = parser.parse_args()
+
+    try:
+        run_training(args.python, args.csharp)
+    finally:
+        # Cleanup - this gets executed even if we hit sys.exit()
+        undo_git_checkout()
 
 
 if __name__ == "__main__":
