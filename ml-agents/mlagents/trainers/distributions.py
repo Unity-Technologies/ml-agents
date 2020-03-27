@@ -160,7 +160,7 @@ class GaussianDistribution(OutputDistribution):
         self, encoded: "GaussianDistribution.MuSigmaTensors"
     ) -> tf.Tensor:
         single_dim_entropy = 0.5 * tf.reduce_mean(
-            tf.log(2 * np.pi * np.e) + tf.square(encoded.log_sigma)
+            tf.log(2 * np.pi * np.e) + 2 * encoded.log_sigma
         )
         # Make entropy the right shape
         return tf.ones_like(tf.reshape(encoded.mu[:, 0], [-1])) * single_dim_entropy
