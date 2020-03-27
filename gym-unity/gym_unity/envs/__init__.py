@@ -7,7 +7,7 @@ from gym import error, spaces
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.base_env import BatchedStepResult
-from mlagents_envs.logging_util import get_logger, set_log_level, INFO
+from mlagents_envs import logging_util
 
 
 class UnityGymException(error.Error):
@@ -18,8 +18,8 @@ class UnityGymException(error.Error):
     pass
 
 
-logger = get_logger(__name__)
-set_log_level(INFO)
+logger = logging_util.get_logger(__name__)
+logging_util.set_log_level(logging_util.INFO)
 
 GymSingleStepResult = Tuple[np.ndarray, float, bool, Dict]
 GymMultiStepResult = Tuple[List[np.ndarray], List[float], List[bool], Dict]

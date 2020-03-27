@@ -34,7 +34,7 @@ def set_log_level(log_level: int) -> None:
     """
     Set the ML-Agents logging level. This will also configure the logging format (if it hasn't already been set).
     """
-    global _log_level  # pylint: disable=global-statement
+    global _log_level
     _log_level = log_level
 
     # Configure the log format.
