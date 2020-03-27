@@ -77,13 +77,6 @@ def _create_parser():
         help="Resumes training from a checkpoint. Specify a --run-id to use this option.",
     )
     argparser.add_argument(
-        "--load",
-        default=False,
-        dest="load_model",
-        action="store_true",
-        help=argparse.SUPPRESS,
-    )
-    argparser.add_argument(
         "--run-id",
         default="ppo",
         help="The directory name for model and summary statistics",
