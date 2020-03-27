@@ -201,6 +201,7 @@ def handle_existing_directories(
     Throws an exception if resume isn't specified and run_id exists. Throws an exception
     if --resume is specified and run-id was not found.
     :param model_path: The model path specified.
+    :param summary_path: The summary path to be used.
     :param resume: Whether or not the --resume flag was passed.
     :param force: Whether or not the --force flag was passed.
     """
