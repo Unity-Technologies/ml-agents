@@ -1,6 +1,5 @@
 import os
 import yaml
-import shutil
 from typing import Any, Dict, TextIO
 import logging
 
@@ -205,18 +204,6 @@ def handle_existing_directories(
     :param resume: Whether or not the --resume flag was passed.
     :param force: Whether or not the --force flag was passed.
     """
-
-    def _try_delete_directory(directory_path: str) -> None:
-        try:
-            if os.path.isdir(directory_path):
-                shutil.rmtree(directory_path)
-        except os.error:
-            raise UnityTrainerException(
-                "Unable to overwrite previous directory {}. Check to see that you have"
-                "the appropriate file permissions in that directory.".format(
-                    directory_path
-                )
-            )
 
     model_path_exists = os.path.isdir(model_path)
 
