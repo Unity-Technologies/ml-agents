@@ -1,9 +1,9 @@
-import logging
 import numpy as np
 from typing import Dict, List, Optional, Any, Mapping
 
 from mlagents.tf_utils import tf
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
 from mlagents.trainers.models import LearningRateSchedule, EncoderType, ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
@@ -13,7 +13,7 @@ from mlagents_envs.timers import timed
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 POLICY_SCOPE = ""
 TARGET_SCOPE = "target_network"
