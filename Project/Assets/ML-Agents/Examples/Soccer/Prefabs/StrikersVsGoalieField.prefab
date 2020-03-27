@@ -283,7 +283,7 @@ MonoBehaviour:
   - purpleGoal
   - wall
   - blueAgent
-  m_RaysPerDirection: 16
+  m_RaysPerDirection: 20
   m_MaxRayDegrees: 180
   m_SphereCastRadius: 0.5
   m_RayLength: 20

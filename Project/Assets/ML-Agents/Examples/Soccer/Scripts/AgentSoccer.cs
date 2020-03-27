@@ -35,6 +35,7 @@ public class AgentSoccer : Agent
 
     float m_Power;
     float m_LateralSpeed;
+    float m_ForwardSpeed;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -57,13 +58,21 @@ public class AgentSoccer : Agent
         }
         if (position == Position.Goalie)
         {
-            m_Power = 1f;
+            m_Power = 1000f;
             m_LateralSpeed = 1.0f;
+            m_ForwardSpeed = 0.8f;
         }
-        else
+        else if (position == Position.Striker)
+        {
+            m_Power = 3000f;
+            m_LateralSpeed = 0.3f;
+            m_ForwardSpeed = 1.3f;
+        }
+        else 
         {
             m_Power = 2000f;
             m_LateralSpeed = 0.3f;
+            m_ForwardSpeed = 1.0f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -94,11 +103,11 @@ public class AgentSoccer : Agent
         switch (forwardAxis)
         {
             case 1:
-                dirToGo = transform.forward * 1f;
+                dirToGo = transform.forward * m_ForwardSpeed;
                 m_KickPower = 1f;
                 break;
             case 2:
-                dirToGo = transform.forward * -1f;
+                dirToGo = transform.forward * -m_ForwardSpeed;
                 break;
         }
 
