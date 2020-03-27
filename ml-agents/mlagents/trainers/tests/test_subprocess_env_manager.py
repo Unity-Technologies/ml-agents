@@ -8,11 +8,13 @@ from mlagents.trainers.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
     StepResponse,
+    EnvironmentCommand,
 )
 from mlagents.trainers.env_manager import EnvironmentStep
 from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.tests.test_simple_rl import (
@@ -38,7 +40,9 @@ class MockEnvWorker:
 
 
 def create_worker_mock(worker_id, step_queue, env_factor, engine_c):
-    return MockEnvWorker(worker_id, EnvironmentResponse("reset", worker_id, worker_id))
+    return MockEnvWorker(
+        worker_id, EnvironmentResponse(EnvironmentCommand.RESET, worker_id, worker_id)
+    )
 
 
 class SubprocessEnvManagerTest(unittest.TestCase):
@@ -71,7 +75,9 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         params = {"test": "params"}
         manager._reset_env(params)
-        manager.env_workers[0].send.assert_called_with("reset", (params))
+        manager.env_workers[0].send.assert_called_with(
+            EnvironmentCommand.RESET, (params)
+        )
 
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
@@ -85,7 +91,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         params = {"test": "params"}
         res = manager._reset_env(params)
         for i, env in enumerate(manager.env_workers):
-            env.send.assert_called_with("reset", (params))
+            env.send.assert_called_with(EnvironmentCommand.RESET, (params))
             env.recv.assert_called()
             # Check that the "last steps" are set to the value returned for each step
             self.assertEqual(
@@ -103,8 +109,8 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         manager.step_queue = Mock()
         manager.step_queue.get_nowait.side_effect = [
-            EnvironmentResponse("step", 0, StepResponse(0, None, {})),
-            EnvironmentResponse("step", 1, StepResponse(1, None, {})),
+            EnvironmentResponse(EnvironmentCommand.STEP, 0, StepResponse(0, None, {})),
+            EnvironmentResponse(EnvironmentCommand.STEP, 1, StepResponse(1, None, {})),
             EmptyQueue(),
         ]
         step_mock = Mock()
@@ -117,7 +123,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         res = manager._step()
         for i, env in enumerate(manager.env_workers):
             if i < 2:
-                env.send.assert_called_with("step", step_mock)
+                env.send.assert_called_with(EnvironmentCommand.STEP, step_mock)
                 manager.step_queue.get_nowait.assert_called()
                 # Check that the "last steps" are set to the value returned for each step
                 self.assertEqual(
@@ -173,13 +179,12 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         assert agent_manager_mock.policy == mock_policy
 
 
-def simple_env_factory(worker_id, config):
-    env = SimpleEnvironment(["1D"], use_discrete=True)
-    return env
-
-
 @pytest.mark.parametrize("num_envs", [1, 4])
 def test_subprocess_env_endtoend(num_envs):
+    def simple_env_factory(worker_id, config):
+        env = SimpleEnvironment(["1D"], use_discrete=True)
+        return env
+
     env_manager = SubprocessEnvManager(
         simple_env_factory, EngineConfig.default_config(), num_envs
     )
@@ -197,4 +202,23 @@ def test_subprocess_env_endtoend(num_envs):
     assert all(
         val > 0.7 for val in StatsReporter.writers[0].get_last_rewards().values()
     )
+    env_manager.close()
+
+
+@pytest.mark.parametrize("num_envs", [1, 4])
+def test_subprocess_env_raises_errors(num_envs):
+    def failing_env_factory(worker_id, config):
+        import time
+
+        # Sleep momentarily to allow time for the EnvManager to be waiting for the
+        # subprocess response.  We won't be able to capture failures from the subprocess
+        # that cause it to close the pipe before we can send the first message.
+        time.sleep(0.1)
+        raise UnityEnvironmentException()
+
+    env_manager = SubprocessEnvManager(
+        failing_env_factory, EngineConfig.default_config(), num_envs
+    )
+    with pytest.raises(UnityEnvironmentException):
+        env_manager.reset()
     env_manager.close()
