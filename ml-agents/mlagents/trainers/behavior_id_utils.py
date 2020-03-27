@@ -20,7 +20,7 @@ class BehaviorIdentifiers(NamedTuple):
         """
         Parses a name_behavior_id of the form name?team=0
         into a BehaviorIdentifiers NamedTuple.
-        This allows you to access the brain name and team id og an agent
+        This allows you to access the brain name and team id of an agent
         :param name_behavior_id: String of behavior params in HTTP format.
         :returns: A BehaviorIdentifiers object.
         """
