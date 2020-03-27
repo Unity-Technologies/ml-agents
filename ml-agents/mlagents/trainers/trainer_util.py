@@ -211,5 +211,12 @@ def handle_existing_directories(
         if not resume and not force:
             raise UnityTrainerException(
                 "Previous data from this run-id was found. "
-                "Either specify a new run-id or use the --force parameter to overwrite existing data."
+                "Either specify a new run-id, use --resume to resume this run, "
+                "or use the --force parameter to overwrite existing data."
+            )
+    else:
+        if resume:
+            raise UnityTrainerException(
+                "Previous data from this run-id was not found. "
+                "Train a new run by removing the --resume flag."
             )

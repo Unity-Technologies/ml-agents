@@ -118,7 +118,8 @@ class TFPolicy(Policy):
                 raise UnityPolicyException(
                     "The model {0} could not be loaded. Make "
                     "sure you specified the right "
-                    "--run-id.".format(self.model_path)
+                    "--run-id. and that the previous run you are resuming from had the same "
+                    "behavior names.".format(self.model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 

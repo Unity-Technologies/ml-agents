@@ -104,7 +104,15 @@ def _create_parser():
         default=False,
         dest="train_model",
         action="store_true",
-        help="Whether to train model, or only run inference",
+        help=argparse.SUPPRESS,
+    )
+    argparser.add_argument(
+        "--inference",
+        default=False,
+        dest="inference",
+        action="store_true",
+        help="Run in Python inference mode (don't train). Use with --resume to load a model trained with an "
+        "existing run-id.",
     )
     argparser.add_argument(
         "--base-port",
@@ -189,6 +197,7 @@ class RunOptions(NamedTuple):
     resume: bool = parser.get_default("resume")
     force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
+    inference: bool = parser.get_default("inference")
     save_freq: int = parser.get_default("save_freq")
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
     base_port: int = parser.get_default("base_port")
@@ -306,7 +315,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.run_id,
             model_path,
             options.keep_checkpoints,
-            options.train_model,
+            not options.inference,
             options.resume,
             run_seed,
             maybe_meta_curriculum,
@@ -320,7 +329,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.run_id,
             options.save_freq,
             maybe_meta_curriculum,
-            options.train_model,
+            not options.inference,
             run_seed,
             sampler_manager,
             resampling_interval,
@@ -452,6 +461,11 @@ def run_cli(options: RunOptions) -> None:
     if options.load_model:
         trainer_logger.warning(
             "The --load option has been deprecated. Please use the --resume option instead."
+        )
+    if options.train_model:
+        trainer_logger.warning(
+            "The --train option has been deprecated. Train mode is now the default. Use "
+            "--inference to run in inference mode."
         )
 
     run_seed = options.seed
