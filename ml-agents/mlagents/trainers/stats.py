@@ -198,7 +198,20 @@ class TensorboardWriter(StatsWriter):
                 basedir=self.base_dir, category=category
             )
             os.makedirs(filewriter_dir, exist_ok=True)
+            self._delete_all_events_files(filewriter_dir)
             self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
+
+    def _delete_all_events_files(self, directory_name: str) -> None:
+        for file_name in os.listdir(directory_name):
+            if file_name.startswith("events.out"):
+                full_fname = os.path.join(directory_name, file_name)
+                try:
+                    os.remove(full_fname)
+                except OSError:
+                    logger.warning(
+                        "{} was left over from a previous run and "
+                        "not deleted.".format(full_fname)
+                    )
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
