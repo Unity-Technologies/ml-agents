@@ -15,8 +15,7 @@ As such, it can serve as the basis for developing and evaluating new learning al
 The ML-Agents Toolkit Low Level API is a Python API for controlling the simulation
 loop of an environment or game built with Unity. This API is used by the
 training algorithms inside the ML-Agent Toolkit, but you can also write your own
-Python programs using this API. Go [here](../notebooks/getting-started.ipynb)
-for a Jupyter Notebook walking through the functionality of the API.
+Python programs using this API.
 
 The key objects in the Python API include:
 

@@ -3,7 +3,6 @@
 ## Installation & Set-up
 
 * [Installation](Installation.md)
-  * [Background: Jupyter Notebooks](Background-Jupyter.md)
   * [Using Virtual Environment](Using-Virtual-Environment.md)
 
 ## Getting Started

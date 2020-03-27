@@ -10,6 +10,7 @@ The versions can be found in
 ## Migrating from 0.15 to latest
 
 ### Important changes
+* The Jupyter notebooks have been removed from the repository.
 
 ### Steps to Migrate
 
