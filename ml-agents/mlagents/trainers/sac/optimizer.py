@@ -155,7 +155,6 @@ class SACOptimizer(TFOptimizer):
             "q1_loss": self.q1_loss,
             "q2_loss": self.q2_loss,
             "entropy_coef": self.ent_coef,
-            "entropy": self.policy.entropy,
             "update_batch": self.update_batch_policy,
             "update_value": self.update_batch_value,
             "update_entropy": self.update_batch_entropy,
