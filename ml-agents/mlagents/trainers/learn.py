@@ -67,7 +67,21 @@ def _create_parser():
         default=False,
         dest="load_model",
         action="store_true",
-        help="Whether to load the model or randomly initialize",
+        help=argparse.SUPPRESS,  # Deprecated but still usable for now.
+    )
+    argparser.add_argument(
+        "--resume",
+        default=False,
+        dest="resume",
+        action="store_true",
+        help="Resumes training from a checkpoint. Specify a --run-id to use this option.",
+    )
+    argparser.add_argument(
+        "--load",
+        default=False,
+        dest="load_model",
+        action="store_true",
+        help=argparse.SUPPRESS,
     )
     argparser.add_argument(
         "--run-id",
@@ -167,6 +181,7 @@ class RunOptions(NamedTuple):
     env_path: Optional[str] = parser.get_default("env_path")
     run_id: str = parser.get_default("run_id")
     load_model: bool = parser.get_default("load_model")
+    resume: bool = parser.get_default("resume")
     train_model: bool = parser.get_default("train_model")
     save_freq: int = parser.get_default("save_freq")
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
@@ -282,7 +297,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             model_path,
             options.keep_checkpoints,
             options.train_model,
-            options.load_model,
+            options.load_model or options.resume,
             run_seed,
             maybe_meta_curriculum,
             options.multi_gpu,
@@ -422,6 +437,12 @@ def run_cli(options: RunOptions) -> None:
 
     trainer_logger.debug("Configuration for this run:")
     trainer_logger.debug(json.dumps(options._asdict(), indent=4))
+
+    # Options deprecation warnings
+    if options.load_model:
+        trainer_logger.warning(
+            "The --load option has been deprecated. Please use the --resume option instead."
+        )
 
     run_seed = options.seed
     if options.cpu:
