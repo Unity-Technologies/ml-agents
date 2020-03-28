@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+ - The `--load` and `--train` command-line flags have been deprecated. Training now happens by default, and
+ use `--resume` to resume training instead. (#3705)
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
@@ -19,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
  - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
+ - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
