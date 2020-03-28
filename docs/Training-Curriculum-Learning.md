@@ -110,7 +110,7 @@ for our curricula and PPO will train using Curriculum Learning. For example,
 to train agents in the Wall Jump environment with curriculum learning, we can run:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum --train
+mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum
 ```
 
 We can then keep track of the current lessons and progresses via TensorBoard.
