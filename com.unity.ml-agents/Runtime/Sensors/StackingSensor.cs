@@ -9,7 +9,7 @@ namespace MLAgents.Sensors
     ///
     /// Currently, compressed and multidimensional observations are not supported.
     /// </summary>
-    internal class StackingSensor : ISensor
+    public class StackingSensor : ISensor
     {
         /// <summary>
         /// The wrapped sensor.
