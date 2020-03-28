@@ -20,7 +20,7 @@ Ball scale of 0.5          |  Ball scale of 4
 
 
 To enable variations in the environments, we implemented `Environment Parameters`.
-`Environment Parameters` are values in the Academy's `FloatPropertiesChannel` that can be read when setting
+`Environment Parameters` are values in the `FloatPropertiesChannel` that can be read when setting
 up the environment. We
 also included different sampling methods and the ability to create new kinds of
 sampling methods for each `Environment Parameter`. In the 3D ball environment example displayed

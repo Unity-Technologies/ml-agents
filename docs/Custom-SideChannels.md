@@ -122,7 +122,7 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // When a Debug.Log message is created, we send it to the stringChannel
         Application.logMessageReceived += stringChannel.SendDebugStatementToPython;
 
-        // The channel must be registered with the Academy
+        // The channel must be registered with the SideChannelUtils class
         SideChannelUtils.RegisterSideChannel(stringChannel);
     }
 
