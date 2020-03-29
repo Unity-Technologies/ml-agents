@@ -496,7 +496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     vectorObservationSize: 4
-    numStackedVectorObservations: 1
+    numStackedVectorObservations: 2
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
@@ -1187,7 +1187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     vectorObservationSize: 4
-    numStackedVectorObservations: 1
+    numStackedVectorObservations: 2
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
@@ -1689,7 +1689,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     vectorObservationSize: 4
-    numStackedVectorObservations: 1
+    numStackedVectorObservations: 2
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
