@@ -42,13 +42,12 @@ public class SmallCubeAgent : Agent
         sensor.AddObservation(m_HitPoints);
         // Direction big agent is looking
         Vector3 dirToSelf = transform.position - m_LargeAgent.transform.position;
-        float angle = Vector3.Dot(transform.forward.normalized, dirToSelf.normalized);
+        float angle = Vector3.Dot(m_LargeAgent.transform.forward.normalized, dirToSelf.normalized);
         sensor.AddObservation(angle);
         if (m_Dead)
         {
             AddReward(-.001f * m_Bonus);
         }
-        Debug.Log(angle);
     }
 
     public Color32 ToColor(int hexVal)
