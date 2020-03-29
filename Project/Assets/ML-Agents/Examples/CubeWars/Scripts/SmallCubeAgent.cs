@@ -16,6 +16,7 @@ public class SmallCubeAgent : Agent
     float m_HitPoints;
     // Speed of agent rotation.
     public float turnSpeed;
+    float m_Bonus;
 
     // Speed of agent movement.
     public float moveSpeed;
@@ -45,7 +46,7 @@ public class SmallCubeAgent : Agent
         sensor.AddObservation(angle);
         if (m_Dead)
         {
-            AddReward(-.001f);
+            AddReward(-.001f * m_Bonus);
         }
         Debug.Log(angle);
     }
@@ -138,7 +139,7 @@ public class SmallCubeAgent : Agent
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent();
 
-                    AddReward(.001f);
+                    AddReward(.001f * m_Bonus);
                 }
             }
         }
@@ -183,7 +184,7 @@ public class SmallCubeAgent : Agent
         }
         else // Dead
         {
-            AddReward(-.1f);
+            AddReward(-.1f * m_Bonus);
             m_Dead = true;
             gameObject.tag = "DeadSmallAgent";
             gameObject.GetComponentInChildren<Renderer>().material = deadMaterial;
@@ -225,6 +226,7 @@ public class SmallCubeAgent : Agent
         HealthStatus();
         m_Dead = false;
         m_Shoot = false;
+        m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         float smallRange = 30f * m_MyArea.range;
