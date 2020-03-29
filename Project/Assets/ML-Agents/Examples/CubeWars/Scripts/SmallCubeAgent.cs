@@ -137,6 +137,8 @@ public class SmallCubeAgent : Agent
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent();
+
+                    AddReward(.001f);
                 }
             }
         }
