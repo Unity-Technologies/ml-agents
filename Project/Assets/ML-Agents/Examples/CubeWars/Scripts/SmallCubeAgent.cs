@@ -139,7 +139,7 @@ public class SmallCubeAgent : Agent
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent();
 
-                    AddReward(.001f * m_Bonus);
+                    AddReward(.1f * m_Bonus);
                 }
             }
         }
