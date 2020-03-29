@@ -29,6 +29,14 @@ TagManager:
   - symbol_O_Goal
   - purpleAgent
   - purpleGoal
+  - StrongLargeAgent
+  - WeakLargeAgent
+  - DeadLargeAgent
+  - StrongSmallAgent
+  - WeakSmallAgent
+  - DeadSmallAgent
+  - largeLazer
+  - smallLazer
   layers:
   - Default
   - TransparentFX
