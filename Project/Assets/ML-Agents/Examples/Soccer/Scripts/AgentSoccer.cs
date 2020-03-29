@@ -60,7 +60,7 @@ public class AgentSoccer : Agent
         {
             m_Power = 1000f;
             m_LateralSpeed = 1.0f;
-            m_ForwardSpeed = 0.8f;
+            m_ForwardSpeed = 1.0f;
         }
         else if (position == Position.Striker)
         {
