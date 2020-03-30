@@ -22,7 +22,7 @@ public class BouncerAgent : Agent
         m_Rb = gameObject.GetComponent<Rigidbody>();
         m_LookDir = Vector3.zero;
 
-        m_ResetParams = Academy.Instance.FloatProperties;
+        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         SetResetParameters();
     }

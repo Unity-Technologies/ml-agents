@@ -279,7 +279,7 @@ readout_value = channel.get_property("parameter_2")
 Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
 
 ```csharp
-var sharedProperties = Academy.Instance.FloatProperties;
+var sharedProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 ```
 
