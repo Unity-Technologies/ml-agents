@@ -11,6 +11,7 @@ public class SmallCubeAgent : Agent
     LargeCubeAgent m_LargeAgent;
     bool m_Dead;
     bool m_Shoot;
+    float m_ShootTime;
     Rigidbody m_AgentRb;
     float m_LaserLength;
     float m_HitPoints;
@@ -110,16 +111,22 @@ public class SmallCubeAgent : Agent
             }
             if (shootCommand)
             {
-                m_Shoot = true;
+                if (Time.time > m_ShootTime + .5f)
+                {
+                    m_Shoot = true;
+                    dirToGo *= 0.5f;
+                    m_AgentRb.velocity *= 0.9f;
+                    m_ShootTime = Time.time;
+                }
             }
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
             m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
         }
 
-        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
-        {
-            m_AgentRb.velocity *= 0.95f;
-        }
+        //if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
+        //{
+        //    m_AgentRb.velocity *= 0.95f;
+        //}
 
         if (m_Shoot)
         {
@@ -128,7 +135,7 @@ public class SmallCubeAgent : Agent
             var rayDir = 25.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 25f))
+            if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 28f))
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
@@ -136,23 +143,23 @@ public class SmallCubeAgent : Agent
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent();
+                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.05f);
 
                     AddReward(.1f * m_Bonus);
                 }
             }
         }
-        else
+        else if (Time.time > m_ShootTime + .25f)
         {
             myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         }
     }
 
-    public void HitAgent()
+    public void HitAgent(float damage)
     {
         if (!m_Dead)
         {
-            m_HitPoints -= .05f;
+            m_HitPoints -= damage;
             HealthStatus();
         }
     }
@@ -161,8 +168,7 @@ public class SmallCubeAgent : Agent
     {
         if (m_HitPoints < 1f)
         {
-            m_HitPoints += .01f;
-            m_HitPoints = Mathf.Min(m_HitPoints + .01f, 1f);
+            m_HitPoints = Mathf.Min(m_HitPoints + .1f, 1f);
             HealthStatus();
         }
     }
@@ -207,6 +213,14 @@ public class SmallCubeAgent : Agent
         {
             action[0] = 1f;
         }
+        if (Input.GetKey(KeyCode.E))
+        {
+            action[1] = 1f;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            action[1] = 2f;
+        }
         if (Input.GetKey(KeyCode.A))
         {
             action[2] = 1f;
@@ -225,10 +239,11 @@ public class SmallCubeAgent : Agent
         HealthStatus();
         m_Dead = false;
         m_Shoot = false;
+        m_ShootTime = -.5f;
         m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
-        float smallRange = 30f * m_MyArea.range;
+        float smallRange = 50f * m_MyArea.range;
         transform.position = new Vector3(Random.Range(-smallRange, smallRange),
             2f,Random.Range(-smallRange, smallRange))
             + area.transform.position;

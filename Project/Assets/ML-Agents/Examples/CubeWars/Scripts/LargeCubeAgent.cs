@@ -9,6 +9,9 @@ public class LargeCubeAgent : Agent
     CubeWarArea m_MyArea;
     bool m_Dead;
     bool m_Shoot;
+    float m_ShootTime;
+    bool m_Shockwave;
+    float m_ShockwaveTime;
     Rigidbody m_AgentRb;
     float m_LaserLength;
     float m_HitPoints;
@@ -21,6 +24,7 @@ public class LargeCubeAgent : Agent
     public Material weakMaterial;
     public Material deadMaterial;
     public GameObject myLaser;
+    public GameObject shockwave;
 
 
     public override void Initialize()
@@ -48,6 +52,7 @@ public class LargeCubeAgent : Agent
     public void MoveAgent(float[] act)
     {
         m_Shoot = false;
+        m_Shockwave = false;
 
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
@@ -55,10 +60,12 @@ public class LargeCubeAgent : Agent
         if (!m_Dead)
         {
             var shootCommand = false;
+            var shockwaveCommand = false;
             var forwardAxis = (int)act[0];
             var rightAxis = (int)act[1];
             var rotateAxis = (int)act[2];
             var shootAxis = (int)act[3];
+            var shockwaveAxis = (int)act[4];
 
             switch (forwardAxis)
             {
@@ -95,16 +102,33 @@ public class LargeCubeAgent : Agent
                     shootCommand = true;
                     break;
             }
+            switch (shockwaveAxis)
+            {
+                case 1:
+                    shockwaveCommand = true;
+                    break;
+            }
             if (shootCommand)
             {
-                m_Shoot = true;
-                dirToGo *= 0.5f;
-                m_AgentRb.velocity *= 0.75f;
+                if (Time.time > m_ShootTime + 1f)
+                {
+                    m_Shoot = true;
+                    dirToGo *= 0.5f;
+                    m_AgentRb.velocity *= 0.75f;
+                    m_ShootTime = Time.time;
+                }
             }
-            else
+            if (shockwaveCommand)
             {
-                transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+                if (Time.time > m_ShockwaveTime + 3f)
+                {
+                    m_Shockwave = true;
+                    dirToGo *= 0.5f;
+                    m_AgentRb.velocity *= 0.75f;
+                    m_ShockwaveTime = Time.time;
+                }
             }
+            transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
             m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
         }
 
@@ -113,18 +137,19 @@ public class LargeCubeAgent : Agent
             m_AgentRb.velocity *= 0.95f;
         }
 
+        float checkTime = Time.time;
         if (m_Shoot)
         {
             var myTransform = transform;
             myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
-            var rayDir = 125.0f * myTransform.forward;
+            var rayDir = 120.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
-            if (Physics.SphereCast(transform.position, 7f, rayDir, out hit, 125f))
+            if (Physics.SphereCast(transform.position, 7f, rayDir, out hit, 120f))
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent();
+                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(.35f);
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
@@ -132,17 +157,45 @@ public class LargeCubeAgent : Agent
                 }
             }
         }
-        else
+        else if (checkTime > m_ShootTime + .5f)
         {
             myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         }
+
+        if (m_Shockwave)
+        {
+            var myTransform = transform;
+            shockwave.transform.localScale = new Vector3(1f, 1f, 1f);
+            RaycastHit hit;
+            int casts = 16;
+            float angleRotation = 360f / (float)casts;
+            for (int i = 0; i < casts; i++)
+            {
+                var rayDir = Quaternion.AngleAxis(angleRotation * i, Vector3.up) * myTransform.forward * 10f;
+                Debug.DrawRay(myTransform.position, rayDir, Color.green, 0f, true);
+
+                if (Physics.SphereCast(transform.position, 3f, rayDir, out hit, 7f))
+                {
+                    if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
+                    {
+                        hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(1f);
+                    }
+                }
+            }
+        }
+        else if (checkTime > m_ShockwaveTime + 1.5f)
+        {
+            shockwave.transform.localScale = new Vector3(0f, 0f, 0f);
+        }
+
+
     }
 
-    public void HitAgent()
+    public void HitAgent(float damage)
     {
         if (!m_Dead)
         {
-            m_HitPoints -= .005f;
+            m_HitPoints -= damage;
             HealthStatus();
         }
     }
@@ -151,7 +204,6 @@ public class LargeCubeAgent : Agent
     {
         if (m_HitPoints < 1f && !m_Dead)
         {
-            m_HitPoints += .1f;
             m_HitPoints = Mathf.Min(m_HitPoints + .1f, 1f);
             HealthStatus();
         }
@@ -187,7 +239,7 @@ public class LargeCubeAgent : Agent
 
     public override float[] Heuristic()
     {
-        var action = new float[4];
+        var action = new float[5];
         if (Input.GetKey(KeyCode.D))
         {
             action[2] = 2f;
@@ -195,6 +247,14 @@ public class LargeCubeAgent : Agent
         if (Input.GetKey(KeyCode.W))
         {
             action[0] = 1f;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            action[1] = 1f;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            action[1] = 2f;
         }
         if (Input.GetKey(KeyCode.A))
         {
@@ -205,6 +265,7 @@ public class LargeCubeAgent : Agent
             action[0] = 2f;
         }
         action[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        action[4] = Input.GetKey(KeyCode.O) ? 1.0f : 0.0f;
         return action;
     }
 
@@ -214,8 +275,11 @@ public class LargeCubeAgent : Agent
         HealthStatus();
         m_Dead = false;
         m_Shoot = false;
+        m_ShootTime = -1f;
+        m_ShockwaveTime = -3f;
         m_AgentRb.velocity = Vector3.zero;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+        shockwave.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
             2f, Random.Range(-m_MyArea.range, m_MyArea.range))
             + area.transform.position;
