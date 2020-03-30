@@ -44,3 +44,5 @@ disable =
     # Appears to be https://github.com/PyCQA/pylint/issues/2981
     W0201,
 
+    # Using the global statement
+    W0603,
