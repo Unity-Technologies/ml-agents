@@ -1,5 +1,4 @@
 # # Unity ML-Agents Toolkit
-import logging
 from typing import Dict, List, Deque, Any
 import time
 import abc
@@ -10,6 +9,7 @@ from mlagents import tf_utils
 from collections import deque
 
 from mlagents_envs.timers import set_gauge
+from mlagents_envs.logging_util import get_logger
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
@@ -20,7 +20,8 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.timers import hierarchical_timer
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class Trainer(abc.ABC):

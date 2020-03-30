@@ -1,13 +1,14 @@
 import atexit
 import glob
 import uuid
-import logging
 import numpy as np
 import os
 import subprocess
 from typing import Dict, List, Optional, Any
 
 import mlagents_envs
+
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
 
 from mlagents_envs.base_env import (
@@ -47,7 +48,7 @@ import signal
 import struct
 
 
-logger = logging.getLogger("mlagents_envs")
+logger = get_logger(__name__)
 
 
 class UnityEnvironment(BaseEnv):

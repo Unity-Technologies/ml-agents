@@ -4,9 +4,12 @@ import numpy as np
 import abc
 import csv
 import os
-
-from mlagents.tf_utils import tf
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
+from mlagents.tf_utils import tf
+
+
+logger = get_logger(__name__)
 
 
 class StatsSummary(NamedTuple):
