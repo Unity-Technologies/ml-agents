@@ -1,9 +1,9 @@
-import logging
+from mlagents_envs.logging_util import get_logger
 from typing import Deque, Dict
 from collections import deque
 from mlagents.trainers.ghost.trainer import GhostTrainer
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class GhostController(object):
