@@ -282,7 +282,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         handle_existing_directories(
             model_path, summaries_dir, options.resume, options.force
         )
-        tb_writer = TensorboardWriter(summaries_dir)
+        tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
