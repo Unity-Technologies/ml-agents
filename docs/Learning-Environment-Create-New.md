@@ -388,11 +388,6 @@ from the platform. Note that for more involved debugging, the ML-Agents SDK
 includes a convenient Monitor class that you can use to easily display Agent
 status information in the Game window.
 
-One additional test you can perform is to first ensure that your environment and
-the Python API work as expected using the `notebooks/getting-started.ipynb`
-[Jupyter notebook](Background-Jupyter.md). Within the notebook, be sure to set
-`env_name` to the name of the environment file you specify when building this
-environment.
 
 ## Training the Environment
 
