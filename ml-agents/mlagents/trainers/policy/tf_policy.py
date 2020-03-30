@@ -1,10 +1,10 @@
-import logging
 from typing import Any, Dict, List, Optional
 import abc
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
@@ -13,7 +13,7 @@ from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.models import ModelUtils
 
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class UnityPolicyException(UnityException):
@@ -173,17 +173,6 @@ class TFPolicy(Policy):
         """
         if batched_step_result.n_agents() == 0:
             return ActionInfo.empty()
-
-        agents_done = [
-            agent
-            for agent, done in zip(
-                batched_step_result.agent_id, batched_step_result.done
-            )
-            if done
-        ]
-
-        self.remove_memories(agents_done)
-        self.remove_previous_action(agents_done)
 
         global_agent_ids = [
             get_global_agent_id(worker_id, int(agent_id))
@@ -379,9 +368,11 @@ class TFPolicy(Policy):
 
     def create_input_placeholders(self):
         with self.graph.as_default():
-            self.global_step, self.increment_step_op, self.steps_to_increment = (
-                ModelUtils.create_global_steps()
-            )
+            (
+                self.global_step,
+                self.increment_step_op,
+                self.steps_to_increment,
+            ) = ModelUtils.create_global_steps()
             self.visual_in = ModelUtils.create_visual_input_placeholders(
                 self.brain.camera_resolutions
             )

@@ -5,6 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [0.15.1-preview] - 2020-03-30
+### Bug Fixes
+ - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
+ - Fixed an issue where specifying `vis_encode_type` was required only for SAC. (#3677)
+ - Fixed the reported entropy values for continuous actions (#3684)
+ - Fixed an issue where switching models using `SetModel()` during training would use an excessive amount of memory. (#3664)
+ - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
+ - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
+ - Fixed an issue where logging output was not visible; logging levels are now set consistently (#3703).
+
+
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
  - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
