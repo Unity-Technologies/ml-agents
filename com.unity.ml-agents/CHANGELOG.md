@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
  - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
+ - Fixed an issue where logging output was not visible; logging levels are now set consistently (#3703).
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
