@@ -29,13 +29,19 @@ def run_training(python_version, csharp_version):
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
 
+    standalone_player_path = "testPlayer"
     if csharp_version is not None:
+        standalone_player_path += "_" + csharp_version
         checkout_csharp_version(csharp_version)
+        # Only build the standalone player if we're overriding the C# version
+        # Otherwise we'll use the one built earlier in the pipeline.
+        build_returncode = run_standalone_build(
+            base_path, output_path=standalone_player_path
+        )
 
-    build_returncode = run_standalone_build(base_path)
-    if build_returncode != 0:
-        print("Standalone build FAILED!")
-        sys.exit(build_returncode)
+        if build_returncode != 0:
+            print("Standalone build FAILED!")
+            sys.exit(build_returncode)
 
     venv_path = init_venv(python_version)
 
@@ -49,9 +55,10 @@ def run_training(python_version, csharp_version):
         buffer_size=10,
     )
 
-    # TODO pass scene name and exe destination to build
-    # TODO make sure we fail if the exe isn't found - see MLA-559
-    mla_learn_cmd = f"mlagents-learn override.yaml --train --env=Project/testPlayer --run-id={run_id} --no-graphics --env-args -logFile -"  # noqa
+    mla_learn_cmd = (
+        f"mlagents-learn override.yaml --train --env=Project/{standalone_player_path} "
+        f"--run-id={run_id} --no-graphics --env-args -logFile -"
+    )  # noqa
     res = subprocess.run(
         f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
     )
