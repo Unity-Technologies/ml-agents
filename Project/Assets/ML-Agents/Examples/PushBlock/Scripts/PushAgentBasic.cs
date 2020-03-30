@@ -3,6 +3,7 @@
 using System.Collections;
 using UnityEngine;
 using MLAgents;
+using MLAgents.SideChannels;
 
 public class PushAgentBasic : Agent
 {
@@ -225,7 +226,7 @@ public class PushAgentBasic : Agent
 
     public void SetGroundMaterialFriction()
     {
-        var resetParams = Academy.Instance.FloatProperties;
+        var resetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         var groundCollider = ground.GetComponent<Collider>();
 
@@ -235,7 +236,7 @@ public class PushAgentBasic : Agent
 
     public void SetBlockProperties()
     {
-        var resetParams = Academy.Instance.FloatProperties;
+        var resetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         var scale = resetParams.GetPropertyWithDefault("block_scale", 2);
         //Set the scale of the block

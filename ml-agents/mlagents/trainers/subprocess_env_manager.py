@@ -1,4 +1,3 @@
-import logging
 from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set, Tuple
 import cloudpickle
 import enum
@@ -13,6 +12,7 @@ from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, AgentGroup
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
     TimerNode,
@@ -35,7 +35,8 @@ from mlagents_envs.side_channel.stats_side_channel import (
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class EnvironmentCommand(enum.Enum):

@@ -4,8 +4,8 @@
 from typing import Deque, Dict, List, cast
 
 import numpy as np
-import logging
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -19,7 +19,8 @@ from mlagents.trainers.behavior_id_utils import (
     create_name_behavior_id,
 )
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class GhostTrainer(Trainer):

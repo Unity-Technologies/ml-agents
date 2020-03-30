@@ -1,6 +1,7 @@
 using UnityEngine;
 using MLAgents;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 public class ReacherAgent : Agent
 {
@@ -109,7 +110,7 @@ public class ReacherAgent : Agent
 
     public void SetResetParameters()
     {
-        var fp = Academy.Instance.FloatProperties;
+        var fp = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
         m_GoalSize = fp.GetPropertyWithDefault("goal_size", 5);
         m_GoalSpeed = Random.Range(-1f, 1f) * fp.GetPropertyWithDefault("goal_speed", 1);
         m_Deviation = fp.GetPropertyWithDefault("deviation", 0);

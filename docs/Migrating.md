@@ -10,8 +10,14 @@ The versions can be found in
 ## Migrating from 0.15 to latest
 
 ### Important changes
+* The Jupyter notebooks have been removed from the repository.
+* `Academy.FloatProperties` was removed.
+* `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were removed.
 
 ### Steps to Migrate
+* Replace `Academy.FloatProperties` with `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`.
+* Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
+* Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
 
 
 ## Migrating from 0.14 to 0.15

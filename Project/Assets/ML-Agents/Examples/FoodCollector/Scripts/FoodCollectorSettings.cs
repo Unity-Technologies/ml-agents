@@ -19,7 +19,7 @@ public class FoodCollectorSettings : MonoBehaviour
     public void Awake()
     {
         Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-        m_statsSideChannel = Academy.Instance.GetSideChannel<StatsSideChannel>();
+        m_statsSideChannel = SideChannelUtils.GetSideChannel<StatsSideChannel>();
     }
 
     public void EnvironmentReset()
