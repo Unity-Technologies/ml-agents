@@ -460,11 +460,11 @@ def run_cli(options: RunOptions) -> None:
 
     # Options deprecation warnings
     if options.load_model:
-        trainer_logger.warning(
+        logger.warning(
             "The --load option has been deprecated. Please use the --resume option instead."
         )
     if options.train_model:
-        trainer_logger.warning(
+        logger.warning(
             "The --train option has been deprecated. Train mode is now the default. Use "
             "--inference to run in inference mode."
         )
