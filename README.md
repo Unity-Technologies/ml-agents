@@ -61,7 +61,7 @@ details of the changes between versions.
 
 | **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
-| **0.15.0** | February 26, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.15.0.zip) |
+| **0.15.0** | March 18, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.15.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.15.0.zip) |
 | **0.14.1** | February 26, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.1.zip) |
 | **0.14.0**  | February 13, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.14.0/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.14.0.zip) |
 | **0.13.1**  | January 21, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1) |  [docs](https://github.com/Unity-Technologies/ml-agents/tree/0.13.1/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/0.13.1.zip) |
