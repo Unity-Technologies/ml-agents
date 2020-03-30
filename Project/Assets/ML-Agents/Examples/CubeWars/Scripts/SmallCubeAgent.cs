@@ -1,6 +1,7 @@
 using UnityEngine;
 using MLAgents;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 public class SmallCubeAgent : Agent
 {
@@ -240,7 +241,8 @@ public class SmallCubeAgent : Agent
         m_Dead = false;
         m_Shoot = false;
         m_ShootTime = -.5f;
-        m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
+        //m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
+        m_Bonus = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         float smallRange = 50f * m_MyArea.range;
@@ -259,12 +261,12 @@ public class SmallCubeAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = Academy.Instance.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
+        m_LaserLength = 1f;
     }
 
     public void SetAgentScale()
     {
-        float agentScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
+        float agentScale = 1f;
         gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 

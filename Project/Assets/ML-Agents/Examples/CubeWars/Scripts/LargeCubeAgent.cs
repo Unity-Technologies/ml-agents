@@ -295,12 +295,12 @@ public class LargeCubeAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = Academy.Instance.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
+        m_LaserLength = 1f;
     }
 
     public void SetAgentScale()
     {
-        float agentScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("agent_scale", 5.0f);
+        float agentScale = 5f;
         gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 

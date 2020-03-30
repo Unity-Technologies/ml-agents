@@ -2322,7 +2322,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3952752091333818756}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalPosition: {x: 0, y: 0.05, z: 0}
   m_LocalScale: {x: 4.7, y: 0.1, z: 4.7}
   m_Children: []
   m_Father: {fileID: 5682403052473880320}
@@ -3157,7 +3157,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   maxStep: 3000
   area: {fileID: 1819751139121548}
-  turnSpeed: 100
+  turnSpeed: 150
   moveSpeed: 1
   normalMaterial: {fileID: 2100000, guid: 88b9ae7af2c1748a0a1f63407587a601, type: 2}
   weakMaterial: {fileID: 2100000, guid: 52eab8ab5010f438fab93da85735ba1d, type: 2}
