@@ -174,14 +174,17 @@ class ConsoleWriter(StatsWriter):
 
 
 class TensorboardWriter(StatsWriter):
-    def __init__(self, base_dir: str):
+    def __init__(self, base_dir: str, clear_past_data: bool = False):
         """
         A StatsWriter that writes to a Tensorboard summary.
         :param base_dir: The directory within which to place all the summaries. Tensorboard files will be written to a
         {base_dir}/{category} directory.
+        :param clear_past_data: Whether or not to clean up existing Tensorboard files associated with the base_dir and
+            category.
         """
         self.summary_writers: Dict[str, tf.summary.FileWriter] = {}
         self.base_dir: str = base_dir
+        self._clear_past_data = clear_past_data
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -199,7 +202,24 @@ class TensorboardWriter(StatsWriter):
                 basedir=self.base_dir, category=category
             )
             os.makedirs(filewriter_dir, exist_ok=True)
+            if self._clear_past_data:
+                self._delete_all_events_files(filewriter_dir)
             self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
+
+    def _delete_all_events_files(self, directory_name: str) -> None:
+        for file_name in os.listdir(directory_name):
+            if file_name.startswith("events.out"):
+                logger.warning(
+                    "{} was left over from a previous run. Deleting.".format(file_name)
+                )
+                full_fname = os.path.join(directory_name, file_name)
+                try:
+                    os.remove(full_fname)
+                except OSError:
+                    logger.warning(
+                        "{} was left over from a previous run and "
+                        "not deleted.".format(full_fname)
+                    )
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any

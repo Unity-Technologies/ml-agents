@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+ - The `--load` and `--train` command-line flags have been deprecated. Training now happens by default, and
+ use `--resume` to resume training instead. (#3705)
  - The Jupyter notebooks have been removed from the repository.
  - Introduced the `SideChannelUtils` to register, unregister and access side channels.
  - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
  - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
+ - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
  - Fixed an issue where logging output was not visible; logging levels are now set consistently (#3703).
 
 ## [0.15.0-preview] - 2020-03-18
