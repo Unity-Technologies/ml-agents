@@ -86,13 +86,20 @@ def _create_parser():
         default=False,
         dest="force",
         action="store_true",
-        help="Force-overwrite existing models and summaries for a run-id that has been used "
+        help="Force-overwrite existing models and summaries for a run id that has been used "
         "before.",
     )
     argparser.add_argument(
         "--run-id",
         default="ppo",
-        help="The directory name for model and summary statistics",
+        help="The run identifier for model and summary statistics.",
+    )
+    argparser.add_argument(
+        "--initialize-from",
+        metavar="RUN_ID",
+        default=None,
+        help="Specify a previously saved run id from which to initialize the model from. "
+        "This can be used, for instance, to fine-tune an existing model on a new environment. ",
     )
     argparser.add_argument(
         "--save-freq", default=50000, type=int, help="Frequency at which to save model"
@@ -113,7 +120,7 @@ def _create_parser():
         dest="inference",
         action="store_true",
         help="Run in Python inference mode (don't train). Use with --resume to load a model trained with an "
-        "existing run-id.",
+        "existing run id.",
     )
     argparser.add_argument(
         "--base-port",
@@ -194,6 +201,7 @@ class RunOptions(NamedTuple):
     seed: int = parser.get_default("seed")
     env_path: Optional[str] = parser.get_default("env_path")
     run_id: str = parser.get_default("run_id")
+    initialize_from: str = parser.get_default("initialize_from")
     load_model: bool = parser.get_default("load_model")
     resume: bool = parser.get_default("resume")
     force: bool = parser.get_default("force")
@@ -268,6 +276,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     """
     with hierarchical_timer("run_training.setup"):
         model_path = f"./models/{options.run_id}"
+        maybe_init_path = (
+            f"./models/{options.initialize_from}" if options.initialize_from else None
+        )
         summaries_dir = "./summaries"
         port = options.base_port
 
@@ -281,7 +292,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             ],
         )
         handle_existing_directories(
-            model_path, summaries_dir, options.resume, options.force
+            model_path, summaries_dir, options.resume, options.force, maybe_init_path
         )
         tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
@@ -319,6 +330,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             not options.inference,
             options.resume,
             run_seed,
+            maybe_init_path,
             maybe_meta_curriculum,
             options.multi_gpu,
         )

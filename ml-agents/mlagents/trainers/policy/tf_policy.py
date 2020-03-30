@@ -128,7 +128,6 @@ class TFPolicy(Policy):
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
             if reset_global_steps:
-                print(self._set_step(0))
                 logger.info(
                     "Starting training from step 0 and saving to {}.".format(
                         self.model_path
@@ -140,12 +139,14 @@ class TFPolicy(Policy):
                 )
 
     def initialize_or_load(self):
-        load_path = (
-            self.initialize_ckpt_path if self.initialize_ckpt_path else self.model_path
-        )
-        reset = self.initialize_ckpt_path is not None
-        if self.load:
-            self._load_graph(load_path, reset_global_steps=reset)
+        # If there is an initialize path, load from that. Else, load from the set model path.
+        # If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
+        # e.g., resume from an initialize path.
+        reset_steps = not self.load
+        if self.initialize_ckpt_path is not None:
+            self._load_graph(self.initialize_ckpt_path, reset_global_steps=reset_steps)
+        elif self.load:
+            self._load_graph(self.model_path, reset_global_steps=reset_steps)
         else:
             self._initialize_graph()
 
