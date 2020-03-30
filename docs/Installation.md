@@ -103,8 +103,7 @@ parameters you can use with `mlagents-learn`.
 
 By installing the `mlagents` package, the dependencies listed in the
 [setup.py file](../ml-agents/setup.py) are also installed. These include
-[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support) and
-[Jupyter](Background-Jupyter.md).
+[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support).
 
 #### Advanced: Installing for Development
 
