@@ -7,11 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+ - The Jupyter notebooks have been removed from the repository.
+ - Introduced the `SideChannelUtils` to register, unregister and access side channels.
+ - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
  - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
- - Added a feature to allow sending stats from C# environments to TensorBoard (and other python StatsWriters). To do this from your code, use `Academy.Instance.GetSideChannel<StatsSideChannel>().AddStat(key, value)` (#3660)
+ - Added a feature to allow sending stats from C# environments to TensorBoard (and other python StatsWriters). To do this from your code, use `SideChannelUtils.GetSideChannel<StatsSideChannel>().AddStat(key, value)` (#3660)
  - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
  - Fixed an issue where specifying `vis_encode_type` was required only for SAC. (#3677)
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
@@ -20,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
  - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
+ - Fixed an issue where logging output was not visible; logging levels are now set consistently (#3703).
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes

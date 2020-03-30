@@ -1,5 +1,4 @@
 # # Unity ML-Agents Toolkit
-import logging
 import argparse
 
 import os
@@ -30,7 +29,9 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents_envs.timers import hierarchical_timer, get_timer_tree
-from mlagents.logging_util import create_logger
+from mlagents_envs import logging_util
+
+logger = logging_util.get_logger(__name__)
 
 
 def _create_parser():
@@ -315,7 +316,7 @@ def write_timing_tree(summaries_dir: str, run_id: str) -> None:
         with open(timing_path, "w") as f:
             json.dump(get_timer_tree(), f, indent=4)
     except FileNotFoundError:
-        logging.warning(
+        logger.warning(
             f"Unable to save to {timing_path}. Make sure the directory exists"
         )
 
@@ -412,16 +413,16 @@ def run_cli(options: RunOptions) -> None:
     print(get_version_string())
 
     if options.debug:
-        log_level = logging.DEBUG
+        log_level = logging_util.DEBUG
     else:
-        log_level = logging.INFO
+        log_level = logging_util.INFO
         # disable noisy warnings from tensorflow
         tf_utils.set_warnings_enabled(False)
 
-    trainer_logger = create_logger("mlagents.trainers", log_level)
+    logging_util.set_log_level(log_level)
 
-    trainer_logger.debug("Configuration for this run:")
-    trainer_logger.debug(json.dumps(options._asdict(), indent=4))
+    logger.debug("Configuration for this run:")
+    logger.debug(json.dumps(options._asdict(), indent=4))
 
     run_seed = options.seed
     if options.cpu:
