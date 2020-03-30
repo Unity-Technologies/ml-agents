@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using MLAgents;
 using MLAgents.Policies;
+using MLAgents.SideChannels;
 
 public class AgentSoccer : Agent
 {
@@ -205,7 +206,7 @@ public class AgentSoccer : Agent
 
     public override void OnEpisodeBegin()
     {
-        m_BallTouch = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_touch", 0);
+        m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
