@@ -6,12 +6,13 @@ import abc
 import csv
 import os
 import time
-import logging
 
-from mlagents.tf_utils import tf, generate_session_config
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
+from mlagents.tf_utils import tf, generate_session_config
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class StatsSummary(NamedTuple):

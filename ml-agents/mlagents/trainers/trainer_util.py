@@ -1,8 +1,8 @@
 import os
 import yaml
 from typing import Any, Dict, TextIO
-import logging
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
@@ -11,7 +11,8 @@ from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class TrainerFactory:

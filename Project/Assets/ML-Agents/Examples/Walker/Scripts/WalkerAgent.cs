@@ -60,7 +60,7 @@ public class WalkerAgent : Agent
         m_ChestRb = chest.GetComponent<Rigidbody>();
         m_SpineRb = spine.GetComponent<Rigidbody>();
 
-        m_ResetParams = Academy.Instance.FloatProperties;
+        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         SetResetParameters();
     }
