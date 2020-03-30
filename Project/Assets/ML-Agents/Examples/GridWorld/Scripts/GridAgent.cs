@@ -4,6 +4,7 @@ using System.Linq;
 using MLAgents;
 using MLAgents.Sensors;
 using UnityEngine.Serialization;
+using MLAgents.SideChannels;
 
 public class GridAgent : Agent
 {
@@ -36,7 +37,7 @@ public class GridAgent : Agent
            // Prevents the agent from picking an action that would make it collide with a wall
             var positionX = (int)transform.position.x;
             var positionZ = (int)transform.position.z;
-            var maxPosition = (int)Academy.Instance.FloatProperties.GetPropertyWithDefault("gridSize", 5f) - 1;
+            var maxPosition = (int)SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("gridSize", 5f) - 1;
 
             if (positionX == 0)
             {

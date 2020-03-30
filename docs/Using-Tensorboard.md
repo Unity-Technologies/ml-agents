@@ -91,6 +91,6 @@ The ML-Agents training program saves the following statistics:
 ## Custom Metrics from C#
 To get custom metrics from a C# environment into Tensorboard, you can use the StatsSideChannel:
 ```csharp
-var statsSideChannel = Academy.Instance.GetSideChannel<StatsSideChannel>();
+var statsSideChannel = SideChannelUtils.GetSideChannel<StatsSideChannel>();
 statsSideChannel.AddStat("MyMetric", 1.0);
 ```
