@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Collections.Generic;
 using MLAgents.Sensors;
 using MLAgents.Policies;
+using MLAgents.SideChannels;
 
 namespace MLAgents.Tests
 {
@@ -194,7 +195,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, aca.EpisodeCount);
             Assert.AreEqual(0, aca.StepCount);
             Assert.AreEqual(0, aca.TotalStepCount);
-            Assert.AreNotEqual(null, aca.FloatProperties);
+            Assert.AreNotEqual(null, SideChannelUtils.GetSideChannel<FloatPropertiesChannel>());
 
             // Check that Dispose is idempotent
             aca.Dispose();
@@ -205,10 +206,11 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademyDispose()
         {
-            var floatProperties1 = Academy.Instance.FloatProperties;
+            var floatProperties1 = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
             Academy.Instance.Dispose();
 
-            var floatProperties2 = Academy.Instance.FloatProperties;
+            Academy.Instance.LazyInitialize();
+            var floatProperties2 = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
             Academy.Instance.Dispose();
 
             Assert.AreNotEqual(floatProperties1, floatProperties2);

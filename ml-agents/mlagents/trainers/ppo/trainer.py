@@ -2,11 +2,11 @@
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
-import logging
 from collections import defaultdict
 
 import numpy as np
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
@@ -17,7 +17,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class PPOTrainer(RLTrainer):

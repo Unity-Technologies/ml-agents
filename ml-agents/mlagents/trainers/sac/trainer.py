@@ -2,7 +2,6 @@
 # Contains an implementation of SAC as described in https://arxiv.org/abs/1801.01290
 # and implemented in https://github.com/hill-a/stable-baselines
 
-import logging
 from collections import defaultdict
 from typing import Dict
 import os
@@ -10,6 +9,7 @@ import os
 import numpy as np
 
 
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy.nn_policy import NNPolicy
@@ -21,7 +21,8 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
+
 BUFFER_TRUNCATE_PERCENT = 0.8
 
 

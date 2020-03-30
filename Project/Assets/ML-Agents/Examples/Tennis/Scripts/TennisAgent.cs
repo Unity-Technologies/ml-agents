@@ -32,7 +32,7 @@ public class TennisAgent : Agent
         m_BallRb = ball.GetComponent<Rigidbody>();
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
-        m_ResetParams = Academy.Instance.FloatProperties;
+        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
         if (invertX)
         {
             scoreBoard = canvas.transform.Find(k_ScoreBoardBName).gameObject;
