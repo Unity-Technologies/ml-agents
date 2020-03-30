@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The Jupyter notebooks have been removed from the repository.
  - Introduced the `SideChannelUtils` to register, unregister and access side channels.
  - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
- 
+
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
  - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
