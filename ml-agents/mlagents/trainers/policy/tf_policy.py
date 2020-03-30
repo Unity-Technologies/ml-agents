@@ -63,6 +63,7 @@ class TFPolicy(Policy):
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
         self.model_path = trainer_parameters["model_path"]
+        self.initialize_ckpt_path = trainer_parameters.get("init_path", None)
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
         self.sess = tf.Session(
@@ -109,23 +110,42 @@ class TFPolicy(Policy):
             init = tf.global_variables_initializer()
             self.sess.run(init)
 
-    def _load_graph(self):
+    def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
         with self.graph.as_default():
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            logger.info("Loading Model for brain {}".format(self.brain.brain_name))
-            ckpt = tf.train.get_checkpoint_state(self.model_path)
+            logger.info(
+                "Loading model for brain {} from {}.".format(
+                    self.brain.brain_name, model_path
+                )
+            )
+            ckpt = tf.train.get_checkpoint_state(model_path)
             if ckpt is None:
                 raise UnityPolicyException(
                     "The model {0} could not be loaded. Make "
                     "sure you specified the right "
-                    "--run-id. and that the previous run you are resuming from had the same "
-                    "behavior names.".format(self.model_path)
+                    "--run-id and that the previous run you are loading from had the same "
+                    "behavior names.".format(model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            if reset_global_steps:
+                print(self._set_step(0))
+                logger.info(
+                    "Starting training from step 0 and saving to {}.".format(
+                        self.model_path
+                    )
+                )
+            else:
+                logger.info(
+                    "Resuming training from step {}.".format(self.get_current_step())
+                )
 
     def initialize_or_load(self):
+        load_path = (
+            self.initialize_ckpt_path if self.initialize_ckpt_path else self.model_path
+        )
+        reset = self.initialize_ckpt_path is not None
         if self.load:
-            self._load_graph()
+            self._load_graph(load_path, reset_global_steps=reset)
         else:
             self._initialize_graph()
 
@@ -294,6 +314,16 @@ class TFPolicy(Policy):
         """
         step = self.sess.run(self.global_step)
         return step
+
+    def _set_step(self, step: int) -> int:
+        """
+        Sets current model step to step without creating additional ops.
+        :param step: Step to set the current model step to.
+        :return: The step the model was set to.
+        """
+        current_step = self.get_current_step()
+        # Increment a positive or negative number of steps.
+        return self.increment_step(step - current_step)
 
     def increment_step(self, n_steps):
         """
