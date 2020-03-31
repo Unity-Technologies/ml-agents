@@ -25,6 +25,7 @@ public class LargeCubeAgent : Agent
     public Material deadMaterial;
     public GameObject myLaser;
     public GameObject shockwave;
+    public GameObject myBody;
 
 
     public override void Initialize()
@@ -164,6 +165,9 @@ public class LargeCubeAgent : Agent
 
         if (m_Shockwave)
         {
+            // Squish animation
+            myBody.transform.localScale = new Vector3(1.2f, 0.8f, 1.2f);
+            // Make shockwave animation
             var myTransform = transform;
             shockwave.transform.localScale = new Vector3(1f, 1f, 1f);
             RaycastHit hit;
@@ -185,6 +189,7 @@ public class LargeCubeAgent : Agent
         }
         else if (checkTime > m_ShockwaveTime + 1.5f)
         {
+            myBody.transform.localScale = new Vector3(1f, 1f, 1f);
             shockwave.transform.localScale = new Vector3(0f, 0f, 0f);
         }
 
