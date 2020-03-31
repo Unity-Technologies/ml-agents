@@ -101,9 +101,10 @@ def initialize_trainer(
     trainer_parameters["model_path"] = "{basedir}/{name}".format(
         basedir=model_path, name=brain_name
     )
-    trainer_parameters["init_path"] = "{basedir}/{name}".format(
-        basedir=init_path, name=brain_name
-    )
+    if init_path is not None:
+        trainer_parameters["init_path"] = "{basedir}/{name}".format(
+            basedir=init_path, name=brain_name
+        )
     trainer_parameters["keep_checkpoints"] = keep_checkpoints
     if brain_name in trainer_config:
         _brain_key: Any = brain_name
@@ -231,7 +232,7 @@ def handle_existing_directories(
             )
 
     # Verify init path if specified.
-    if init_path:
+    if init_path is not None:
         if not os.path.isdir(init_path):
             raise UnityTrainerException(
                 "Could not initialize from {}. "
