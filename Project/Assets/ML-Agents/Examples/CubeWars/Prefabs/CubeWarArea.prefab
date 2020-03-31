@@ -500,7 +500,7 @@ MonoBehaviour:
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
+  m_Model: {fileID: 11400000, guid: f0cde68512f074e09a9a10fe34c5a256, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallCubeSoldier
@@ -2612,7 +2612,7 @@ MonoBehaviour:
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
+  m_Model: {fileID: 11400000, guid: f0cde68512f074e09a9a10fe34c5a256, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallCubeSoldier
@@ -2928,7 +2928,7 @@ MonoBehaviour:
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
+  m_Model: {fileID: 11400000, guid: f0cde68512f074e09a9a10fe34c5a256, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallCubeSoldier
@@ -3090,7 +3090,7 @@ MonoBehaviour:
     vectorActionSize: 0300000003000000030000000200000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: fa881d0c4f6b44ea9880a781d0771fc9, type: 3}
+  m_Model: {fileID: 11400000, guid: b0f600e95eb414841ac5934a0034b1e9, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: LargeCubeSoldier
