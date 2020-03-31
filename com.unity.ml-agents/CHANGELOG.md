@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
  - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
+ - `StackingSensor` was changed from `internal` visibility to `public`
 
 ## [0.15.1-preview] - 2020-03-30
 ### Bug Fixes
