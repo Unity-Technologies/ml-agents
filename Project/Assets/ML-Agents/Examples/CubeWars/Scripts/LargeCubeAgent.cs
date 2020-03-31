@@ -39,6 +39,7 @@ public class LargeCubeAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
+        sensor.AddObservation(System.Convert.ToInt32(m_Shockwave));
         sensor.AddObservation(m_HitPoints);
     }
 
