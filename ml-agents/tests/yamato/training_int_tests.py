@@ -41,7 +41,7 @@ def run_training(python_version, csharp_version):
         os.rename(full_player_path, temp_player_path)
 
         checkout_csharp_version(csharp_version)
-        build_returncode = run_standalone_build(base_path, verbose=True)
+        build_returncode = run_standalone_build(base_path)
 
         if build_returncode != 0:
             print("Standalone build FAILED!")
