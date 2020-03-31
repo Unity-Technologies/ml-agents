@@ -10,6 +10,13 @@ The versions can be found in
 ## Migrating from 0.15 to latest
 
 ### Important changes
+* The `--load` and `--train` command-line flags have been deprecated and replaced with `--resume` and `--inference`.
+* Running with the same `--run-id` twice will now throw an error.
+
+### Steps to Migrate
+* Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
+ will happen by default. To run without training, use `--inference`.
+* To force-overwrite files from a pre-existing run, add the `--force` command-line flag.
 * The Jupyter notebooks have been removed from the repository.
 * `Academy.FloatProperties` was removed.
 * `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were removed.
@@ -18,7 +25,6 @@ The versions can be found in
 * Replace `Academy.FloatProperties` with `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`.
 * Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
 * Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
-
 
 ## Migrating from 0.14 to 0.15
 

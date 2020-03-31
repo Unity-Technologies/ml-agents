@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Major Changes
+ - The `--load` and `--train` command-line flags have been deprecated. Training now happens by default, and
+ use `--resume` to resume training instead. (#3705)
  - The Jupyter notebooks have been removed from the repository.
  - Introduced the `SideChannelUtils` to register, unregister and access side channels.
  - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
@@ -17,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
+ - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
 
 ## [0.15.1-preview] - 2020-03-30
 ### Bug Fixes
