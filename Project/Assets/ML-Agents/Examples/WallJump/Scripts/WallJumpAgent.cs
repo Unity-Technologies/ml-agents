@@ -5,6 +5,7 @@ using UnityEngine;
 using MLAgents;
 using Barracuda;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 public class WallJumpAgent : Agent
 {
@@ -41,6 +42,8 @@ public class WallJumpAgent : Agent
     Vector3 m_JumpTargetPos;
     Vector3 m_JumpStartingPos;
 
+    FloatPropertiesChannel m_FloatProperties;
+
     public override void Initialize()
     {
         m_WallJumpSettings = FindObjectOfType<WallJumpSettings>();
@@ -53,6 +56,8 @@ public class WallJumpAgent : Agent
         m_GroundMaterial = m_GroundRenderer.material;
 
         spawnArea.SetActive(false);
+
+        m_FloatProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
     }
 
     // Begin the jump sequence
@@ -313,7 +318,7 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                Academy.Instance.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
+                m_FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
                 localScale.z);
             wall.transform.localScale = localScale;
             SetModel("SmallWallJump", noWallBrain);
@@ -322,15 +327,15 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                Academy.Instance.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
+                m_FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
                 localScale.z);
             wall.transform.localScale = localScale;
             SetModel("SmallWallJump", smallWallBrain);
         }
         else
         {
-            var min = Academy.Instance.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
-            var max = Academy.Instance.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var min = m_FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
+            var max = m_FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
             var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,

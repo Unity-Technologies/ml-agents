@@ -1,4 +1,3 @@
-import logging
 from typing import Any, Dict, List
 from collections import namedtuple
 import numpy as np
@@ -6,11 +5,13 @@ import abc
 
 from mlagents.tf_utils import tf
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 RewardSignalResult = namedtuple(
     "RewardSignalResult", ["scaled_reward", "unscaled_reward"]

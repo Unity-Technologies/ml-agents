@@ -1,10 +1,10 @@
-import logging
 from typing import Any, Dict, List, Optional
 import abc
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
@@ -13,7 +13,7 @@ from mlagents_envs.base_env import BatchedStepResult
 from mlagents.trainers.models import ModelUtils
 
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class UnityPolicyException(UnityException):
@@ -115,10 +115,11 @@ class TFPolicy(Policy):
             logger.info("Loading Model for brain {}".format(self.brain.brain_name))
             ckpt = tf.train.get_checkpoint_state(self.model_path)
             if ckpt is None:
-                logger.info(
-                    "The model {0} could not be found. Make "
+                raise UnityPolicyException(
+                    "The model {0} could not be loaded. Make "
                     "sure you specified the right "
-                    "--run-id".format(self.model_path)
+                    "--run-id. and that the previous run you are resuming from had the same "
+                    "behavior names.".format(self.model_path)
                 )
             self.saver.restore(self.sess, ckpt.model_checkpoint_path)
 

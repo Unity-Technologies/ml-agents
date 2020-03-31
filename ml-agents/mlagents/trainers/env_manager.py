@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-import logging
 from typing import List, Dict, NamedTuple, Iterable, Tuple
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
@@ -7,11 +6,13 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
+from mlagents_envs.logging_util import get_logger
 
 AllStepResult = Dict[AgentGroup, BatchedStepResult]
 AllGroupSpec = Dict[AgentGroup, AgentGroupSpec]
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class EnvironmentStep(NamedTuple):
