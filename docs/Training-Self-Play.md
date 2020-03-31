@@ -145,5 +145,5 @@ We provide an implementation of the ELO rating system, a method for calculating 
 In a proper training run, the ELO of the agent should steadily increase. The absolute value of the ELO is less important than the change in ELO over training iterations.
 
 Note, this implementation will support any number of teams but ELO is only applicable to games with two teams.  It is ongoing work to implement
-a reliable metric for measuring progress in these scenarios. These scenarios can still train, though as of now, reward and qualitative observations
+a reliable metric for measuring progress in scenarios with three or more teams. These scenarios can still train, though as of now, reward and qualitative observations
 are the only metric by which we can judge performance.
