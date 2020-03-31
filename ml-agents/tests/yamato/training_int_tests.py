@@ -1,5 +1,4 @@
 import argparse
-import glob
 import os
 import sys
 import subprocess
@@ -30,23 +29,30 @@ def run_training(python_version, csharp_version):
     base_path = get_base_path()
     print(f"Running in base path {base_path}")
 
-    standalone_player_path = "testPlayer"
+    # Only build the standalone player if we're overriding the C# version
+    # Otherwise we'll use the one built earlier in the pipeline.
     if csharp_version is not None:
-        # Something in the BuildPipeline removes trailing ".0"
-        # TODO - get a repro case for platform team, workaround for now.
-        standalone_player_path += "_" + csharp_version.replace(".", "_")
+        # We can't rely on the old C# code recognizing the commandline argument to set the output
+        # So rename testPlayer (containing the most recent build) to something else temporarily
+        full_player_path = os.path.join("Project", "testPlayer.app")
+        temp_player_path = os.path.join("Project", "temp_testPlayer.app")
+        final_player_path = os.path.join("Project", f"testPlayer_{csharp_version}.app")
+
+        os.rename(full_player_path, temp_player_path)
+
         checkout_csharp_version(csharp_version)
-        # Only build the standalone player if we're overriding the C# version
-        # Otherwise we'll use the one built earlier in the pipeline.
-        build_returncode = run_standalone_build(
-            base_path, output_path=standalone_player_path, verbose=True
-        )
+        build_returncode = run_standalone_build(base_path, verbose=True)
 
         if build_returncode != 0:
             print("Standalone build FAILED!")
             sys.exit(build_returncode)
-        else:
-            print(glob.glob("Project/testPlayer*"))
+
+        # Now rename the newly-built executable, and restore the old one
+        os.rename(full_player_path, final_player_path)
+        os.rename(temp_player_path, full_player_path)
+        standalone_player_path = f"testPlayer_{csharp_version}"
+    else:
+        standalone_player_path = "testPlayer"
 
     venv_path = init_venv(python_version)
 
