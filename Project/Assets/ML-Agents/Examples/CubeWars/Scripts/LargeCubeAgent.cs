@@ -130,7 +130,11 @@ public class LargeCubeAgent : Agent
                 }
             }
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
-            m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+            if(!m_Shockwave)
+            {
+                transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+                m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+            }
         }
 
         if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
@@ -187,7 +191,7 @@ public class LargeCubeAgent : Agent
                 }
             }
         }
-        else if (checkTime > m_ShockwaveTime + 1.5f)
+        else if (checkTime > m_ShockwaveTime + 0.3f)
         {
             myBody.transform.localScale = new Vector3(1f, 1f, 1f);
             shockwave.transform.localScale = new Vector3(0f, 0f, 0f);
