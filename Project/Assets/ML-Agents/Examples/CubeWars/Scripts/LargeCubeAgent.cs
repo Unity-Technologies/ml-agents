@@ -129,7 +129,6 @@ public class LargeCubeAgent : Agent
                     m_ShockwaveTime = Time.time;
                 }
             }
-            transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
             if(!m_Shockwave)
             {
                 transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
