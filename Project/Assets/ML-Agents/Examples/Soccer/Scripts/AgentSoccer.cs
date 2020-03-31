@@ -140,16 +140,15 @@ public class AgentSoccer : Agent
     public override void OnActionReceived(float[] vectorAction)
     {
 
-        // Generic gets nothing
-        if (position == Position.Striker)
-        {
-            // Existential penalty for Strikers.
-            AddReward(-1f / 3000f);
-        }
-        else if (position == Position.Goalie)
+        if (position == Position.Goalie)
         {
             // Existential bonus for Goalies.
             AddReward(1f / 3000f);
+        }
+        else
+        {
+            // Existential penalty for Strikers/Generic.
+            AddReward(-1f / 3000f);
         }
         MoveAgent(vectorAction);
     }
