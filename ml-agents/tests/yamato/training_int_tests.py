@@ -31,7 +31,9 @@ def run_training(python_version, csharp_version):
 
     standalone_player_path = "testPlayer"
     if csharp_version is not None:
-        standalone_player_path += "_" + csharp_version
+        # Something in the BuildPipeline removes trailing ".0"
+        # TODO - get a repro case for platform team, workaround for now.
+        standalone_player_path += "_" + csharp_version.replace(".", "_")
         checkout_csharp_version(csharp_version)
         # Only build the standalone player if we're overriding the C# version
         # Otherwise we'll use the one built earlier in the pipeline.

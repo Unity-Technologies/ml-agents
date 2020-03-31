@@ -22,10 +22,11 @@ namespace MLAgents
                 if (args[i] == k_outputCommandLineFlag)
                 {
                     outputPath = args[i + 1];
+                    Debug.Log($"Overriding output path to {outputPath}");
                 }
                 else if (args[i] == k_sceneCommandLineFlag)
                 {
-                    outputPath = args[i + 1];
+                    scenePath = args[i + 1];
                 }
             }
 
