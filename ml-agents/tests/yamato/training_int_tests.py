@@ -1,4 +1,5 @@
 import argparse
+import glob
 import os
 import sys
 import subprocess
@@ -38,12 +39,14 @@ def run_training(python_version, csharp_version):
         # Only build the standalone player if we're overriding the C# version
         # Otherwise we'll use the one built earlier in the pipeline.
         build_returncode = run_standalone_build(
-            base_path, output_path=standalone_player_path
+            base_path, output_path=standalone_player_path, verbose=True
         )
 
         if build_returncode != 0:
             print("Standalone build FAILED!")
             sys.exit(build_returncode)
+        else:
+            print(glob.glob("Project/testPlayer*"))
 
     venv_path = init_venv(python_version)
 
