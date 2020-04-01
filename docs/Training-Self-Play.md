@@ -24,7 +24,7 @@ Self-play is triggered by including the self-play hyperparameter hierarchy in th
 
 ![Team ID](images/team_id.png)
 
-***Team ID must be 0 or an integer greater than 0. Negative numbers will cause unpredictable behavior.***
+***Team ID must be 0 or an integer greater than 0.***
 
 In symmetric games, since all agents (even on opposing teams) will share the same policy, they should have the same 'Behavior Name' in their
 Behavior Parameters Script.  In asymmetric games, they should have a different Behavior Name in their Behavior Parameters script.
