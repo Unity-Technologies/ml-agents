@@ -7,7 +7,9 @@ def main():
 
     # Name of the Unity environment binary to launch
     multi_env_name = "Project/testPlayer"
-    multi_env = UnityEnv(multi_env_name, worker_id=1, use_visual=False, multiagent=True)
+    multi_env = UnityEnv(
+        multi_env_name, worker_id=1, use_visual=False, multiagent=True, no_graphics=True
+    )
 
     try:
         # Examine environment parameters

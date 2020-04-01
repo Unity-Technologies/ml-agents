@@ -12,6 +12,7 @@ def main():
     env = UnityEnvironment(
         file_name=env_name,
         side_channels=[engine_configuration_channel],
+        no_graphics=True,
         args=["-logFile", "-"],
     )
 
