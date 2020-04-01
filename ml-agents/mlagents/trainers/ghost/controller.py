@@ -6,7 +6,7 @@ from mlagents.trainers.ghost.trainer import GhostTrainer
 logger = get_logger(__name__)
 
 
-class GhostController(object):
+class GhostController:
     """
     GhostController contains a queue of team ids. GhostTrainers subscribe to the GhostController and query
     it to get the current learning team.  The GhostController cycles through team ids every 'swap_interval'
