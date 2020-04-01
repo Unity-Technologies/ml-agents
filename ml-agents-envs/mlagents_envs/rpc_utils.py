@@ -1,4 +1,9 @@
-from mlagents_envs.base_env import BehaviorSpec, ActionType, DecisionSteps, TerminalSteps
+from mlagents_envs.base_env import (
+    BehaviorSpec,
+    ActionType,
+    DecisionSteps,
+    TerminalSteps,
+)
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
@@ -155,8 +160,12 @@ def steps_from_proto(
     ],  # pylint: disable=unsubscriptable-object
     behavior_spec: BehaviorSpec,
 ) -> Tuple[DecisionSteps, TerminalSteps]:
-    decision_agent_info_list = [agent_info for agent_info in agent_info_list if not agent_info.done]
-    terminal_agent_info_list = [agent_info for agent_info in agent_info_list if agent_info.done]
+    decision_agent_info_list = [
+        agent_info for agent_info in agent_info_list if not agent_info.done
+    ]
+    terminal_agent_info_list = [
+        agent_info for agent_info in agent_info_list if agent_info.done
+    ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
     for obs_index, obs_shape in enumerate(behavior_spec.observation_shapes):
@@ -164,17 +173,25 @@ def steps_from_proto(
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], obs_shape)
             decision_obs_list.append(
-                _process_visual_observation(obs_index, obs_shape, decision_agent_info_list)
+                _process_visual_observation(
+                    obs_index, obs_shape, decision_agent_info_list
+                )
             )
             terminal_obs_list.append(
-                _process_visual_observation(obs_index, obs_shape, terminal_agent_info_list)
+                _process_visual_observation(
+                    obs_index, obs_shape, terminal_agent_info_list
+                )
             )
         else:
             decision_obs_list.append(
-                _process_vector_observation(obs_index, obs_shape, decision_agent_info_list)
+                _process_vector_observation(
+                    obs_index, obs_shape, decision_agent_info_list
+                )
             )
             terminal_obs_list.append(
-                _process_vector_observation(obs_index, obs_shape, terminal_agent_info_list)
+                _process_vector_observation(
+                    obs_index, obs_shape, terminal_agent_info_list
+                )
             )
     decision_rewards = np.array(
         [agent_info.reward for agent_info in decision_agent_info_list], dtype=np.float32
@@ -187,7 +204,8 @@ def steps_from_proto(
     _raise_on_nan_and_inf(terminal_rewards, "rewards")
 
     max_step = np.array(
-        [agent_info.max_step_reached for agent_info in terminal_agent_info_list], dtype=np.bool
+        [agent_info.max_step_reached for agent_info in terminal_agent_info_list],
+        dtype=np.bool,
     )
     decision_agent_id = np.array(
         [agent_info.id for agent_info in decision_agent_info_list], dtype=np.int32
@@ -197,7 +215,10 @@ def steps_from_proto(
     )
     action_mask = None
     if behavior_spec.is_action_discrete():
-        if any([agent_info.action_mask is not None] for agent_info in decision_agent_info_list):
+        if any(
+            [agent_info.action_mask is not None]
+            for agent_info in decision_agent_info_list
+        ):
             n_agents = len(decision_agent_info_list)
             a_size = np.sum(behavior_spec.discrete_action_branches)
             mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
@@ -212,8 +233,10 @@ def steps_from_proto(
             indices = _generate_split_indices(behavior_spec.discrete_action_branches)
             action_mask = np.split(action_mask, indices, axis=1)
     return (
-        DecisionSteps(decision_obs_list, decision_rewards, decision_agent_id, action_mask),
-        TerminalSteps(terminal_obs_list, terminal_rewards, max_step, terminal_agent_id)
+        DecisionSteps(
+            decision_obs_list, decision_rewards, decision_agent_id, action_mask
+        ),
+        TerminalSteps(terminal_obs_list, terminal_rewards, max_step, terminal_agent_id),
     )
 
 

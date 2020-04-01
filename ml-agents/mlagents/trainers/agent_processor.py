@@ -2,7 +2,12 @@ import sys
 from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Any
 from collections import defaultdict, Counter, deque
 
-from mlagents_envs.base_env import DecisionSteps, DecisionStep, TerminalSteps, TerminalStep
+from mlagents_envs.base_env import (
+    DecisionSteps,
+    DecisionStep,
+    TerminalSteps,
+    TerminalStep,
+)
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
@@ -80,26 +85,31 @@ class AgentProcessor:
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
-            stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
+            stored_decision_step, idx = self.last_step_result.get(
+                global_id, (None, None)
+            )
             stored_take_action_outputs = self.last_take_action_outputs.get(
                 global_id, None
             )
             # Index is needed to grab from last_take_action_outputs
             self.last_step_result[global_id] = (
                 ongoing_step,
-                decision_steps.agent_id_to_index[local_id]
+                decision_steps.agent_id_to_index[local_id],
             )
-            
+
             # This state is the consequence of a past action
-            if stored_decision_step is not None and stored_take_action_outputs is not None:
+            if (
+                stored_decision_step is not None
+                and stored_take_action_outputs is not None
+            ):
                 obs = stored_decision_step.obs
                 if self.policy.use_recurrent:
                     memory = self.policy.retrieve_memories([global_id])[0, :]
                 else:
                     memory = None
-                done = False # Since this is an ongoing step
+                done = False  # Since this is an ongoing step
                 max_step = False
-                                    # Add the outputs of the last eval
+                # Add the outputs of the last eval
                 action = stored_take_action_outputs["action"][idx]
                 if self.policy.use_continuous_act:
                     action_pre = stored_take_action_outputs["pre_action"][idx]
@@ -107,9 +117,7 @@ class AgentProcessor:
                     action_pre = None
                 action_probs = stored_take_action_outputs["log_probs"][idx]
                 action_mask = stored_decision_step.action_mask
-                prev_action = self.policy.retrieve_previous_action([global_id])[
-                    0, :
-                ]
+                prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
                 experience = AgentExperience(
                     obs=obs,
                     reward=ongoing_step.reward,
@@ -126,9 +134,12 @@ class AgentProcessor:
                 self.experience_buffers[global_id].append(experience)
                 self.episode_rewards[global_id] += ongoing_step.reward
                 self.episode_steps[global_id] += 1
-            
+
                 # if the trajectory is too long, we truncate it
-                if len(self.experience_buffers[global_id]) >= self.max_trajectory_length:
+                if (
+                    len(self.experience_buffers[global_id])
+                    >= self.max_trajectory_length
+                ):
                     # Make next AgentExperience
                     next_obs = ongoing_step.obs
                     trajectory = Trajectory(
@@ -145,21 +156,26 @@ class AgentProcessor:
         for terminated_step in terminal_steps.values():
             local_id = terminated_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
-            stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
+            stored_decision_step, idx = self.last_step_result.get(
+                global_id, (None, None)
+            )
             stored_take_action_outputs = self.last_take_action_outputs.get(
                 global_id, None
             )
             # We do not need to store this step as this agent is terminated
             # This state is the consequence of a past action
-            if stored_decision_step is not None and stored_take_action_outputs is not None:
+            if (
+                stored_decision_step is not None
+                and stored_take_action_outputs is not None
+            ):
                 obs = stored_decision_step.obs
                 if self.policy.use_recurrent:
                     memory = self.policy.retrieve_memories([global_id])[0, :]
                 else:
                     memory = None
-                done = True  #The agent is terminated
+                done = True  # The agent is terminated
                 max_step = terminated_step.max_step
-                                    # Add the outputs of the last eval
+                # Add the outputs of the last eval
                 action = stored_take_action_outputs["action"][idx]
                 if self.policy.use_continuous_act:
                     action_pre = stored_take_action_outputs["pre_action"][idx]
@@ -167,9 +183,7 @@ class AgentProcessor:
                     action_pre = None
                 action_probs = stored_take_action_outputs["log_probs"][idx]
                 action_mask = stored_decision_step.action_mask
-                prev_action = self.policy.retrieve_previous_action([global_id])[
-                    0, :
-                ]
+                prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
                 experience = AgentExperience(
                     obs=obs,
                     reward=terminated_step.reward,
@@ -185,7 +199,7 @@ class AgentProcessor:
                 # Add the value outputs if needed
                 self.experience_buffers[global_id].append(experience)
                 self.episode_rewards[global_id] += terminated_step.reward
-            
+
                 # Since the Agent is done, we must generate the trajectory
                 # Make next AgentExperience
                 next_obs = terminated_step.obs

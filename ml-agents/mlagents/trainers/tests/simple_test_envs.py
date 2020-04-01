@@ -174,20 +174,22 @@ class SimpleEnvironment(BaseEnv):
                 new_action_mask,
             ) = self._construct_reset_step(name)
 
-            decision_step = DecisionSteps(new_vector_obs, new_reward, new_agent_id, new_action_mask)
-            terminal_step = TerminalSteps(m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id)
+            decision_step = DecisionSteps(
+                new_vector_obs, new_reward, new_agent_id, new_action_mask
+            )
+            terminal_step = TerminalSteps(
+                m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id
+            )
         return (decision_step, terminal_step)
-       
 
     def _construct_reset_step(
-        self,
-        name: str,
+        self, name: str
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         new_reward = np.array([0.0], dtype=np.float32)
         new_done = np.array([False], dtype=np.bool)
         new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         new_action_mask = self._generate_mask()
-        return  new_reward, new_done, new_agent_id, new_action_mask
+        return new_reward, new_done, new_agent_id, new_action_mask
 
     def step(self) -> None:
         assert all(action is not None for action in self.action.values())
@@ -243,8 +245,12 @@ class MemoryEnvironment(SimpleEnvironment):
                 new_agent_id,
                 new_action_mask,
             ) = self._construct_reset_step(name)
-            decision_step = DecisionSteps(new_vector_obs, new_reward, new_agent_id, new_action_mask)
-            terminal_step = TerminalSteps(m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id)
+            decision_step = DecisionSteps(
+                new_vector_obs, new_reward, new_agent_id, new_action_mask
+            )
+            terminal_step = TerminalSteps(
+                m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id
+            )
         return (decision_step, terminal_step)
 
 
@@ -273,9 +279,7 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
-            self.demonstration_protos[
-                name
-            ] += proto_from_steps_and_action(
+            self.demonstration_protos[name] += proto_from_steps_and_action(
                 self.step_result[name][0], self.step_result[name][1], self.action[name]
             )
             self.demonstration_protos[name] = self.demonstration_protos[name][

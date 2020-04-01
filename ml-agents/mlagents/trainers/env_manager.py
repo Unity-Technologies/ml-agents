@@ -1,7 +1,12 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import List, Dict, NamedTuple, Iterable, Tuple
-from mlagents_envs.base_env import DecisionSteps, TerminalSteps, BehaviorSpec, BehaviorName
+from mlagents_envs.base_env import (
+    DecisionSteps,
+    TerminalSteps,
+    BehaviorSpec,
+    BehaviorName,
+)
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
@@ -38,7 +43,9 @@ class EnvManager(ABC):
         if brain_name in self.agent_managers:
             self.agent_managers[brain_name].policy = policy
 
-    def set_agent_manager(self, brain_name: BehaviorName, manager: AgentManager) -> None:
+    def set_agent_manager(
+        self, brain_name: BehaviorName, manager: AgentManager
+    ) -> None:
         self.agent_managers[brain_name] = manager
 
     @abstractmethod
@@ -102,8 +109,12 @@ class EnvManager(ABC):
                     )
                     continue
                 self.agent_managers[name_behavior_id].add_experiences(
-                    step_info.current_all_step_result[name_behavior_id][0], #DecisionSteps
-                    step_info.current_all_step_result[name_behavior_id][1], #TerminalSteps
+                    step_info.current_all_step_result[name_behavior_id][
+                        0
+                    ],  # DecisionSteps
+                    step_info.current_all_step_result[name_behavior_id][
+                        1
+                    ],  # TerminalSteps
                     step_info.worker_id,
                     step_info.brain_name_to_action_info.get(
                         name_behavior_id, ActionInfo.empty()

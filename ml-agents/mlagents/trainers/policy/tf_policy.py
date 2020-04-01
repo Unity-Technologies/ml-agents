@@ -219,10 +219,7 @@ class TFPolicy(Policy):
             feed_dict[self.vector_in] = vec_vis_obs.vector_observations
         if not self.use_continuous_act:
             mask = np.ones(
-                (
-                    len(batched_step_result),
-                    np.sum(self.brain.vector_action_space_size),
-                ),
+                (len(batched_step_result), np.sum(self.brain.vector_action_space_size)),
                 dtype=np.float32,
             )
             if batched_step_result.action_mask is not None:

@@ -5,7 +5,12 @@ import numpy as np
 from mlagents.trainers.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents_envs.base_env import DecisionSteps, TerminalSteps, BehaviorSpec, ActionType
+from mlagents_envs.base_env import (
+    DecisionSteps,
+    TerminalSteps,
+    BehaviorSpec,
+    ActionType,
+)
 
 
 def create_mock_brainparams(
@@ -72,13 +77,21 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     max_step = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
-    behavior_spec = BehaviorSpec([(84, 84, 3)] * num_vis_observations + [(num_vector_observations,)],
+    behavior_spec = BehaviorSpec(
+        [(84, 84, 3)] * num_vis_observations + [(num_vector_observations,)],
         ActionType.DISCRETE if discrete else ActionType.CONTINUOUS,
-        action_shape if discrete else action_shape[0])
+        action_shape if discrete else action_shape[0],
+    )
     if done:
-        return (DecisionSteps.empty(behavior_spec), TerminalSteps(obs_list, reward, max_step, agent_id))
+        return (
+            DecisionSteps.empty(behavior_spec),
+            TerminalSteps(obs_list, reward, max_step, agent_id),
+        )
     else:
-        return (DecisionSteps(obs_list,reward, agent_id, action_mask), TerminalSteps.empty(behavior_spec))
+        return (
+            DecisionSteps(obs_list, reward, agent_id, action_mask),
+            TerminalSteps.empty(behavior_spec),
+        )
 
 
 def create_steps_from_brainparams(

@@ -92,7 +92,7 @@ def test_step(mock_communicator, mock_launcher):
             "RealFakeBrain",
             np.zeros((n_agents - 1, spec.action_size), dtype=np.float32),
         )
-    decision_steps, terminal_steps =  env.get_steps("RealFakeBrain")
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
     env.set_actions(
         "RealFakeBrain", -1 * np.ones((n_agents, spec.action_size), dtype=np.float32)

@@ -14,7 +14,12 @@ from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
 from mlagents_envs.communicator_objects.agent_action_pb2 import AgentActionProto
-from mlagents_envs.base_env import BehaviorSpec, ActionType, DecisionSteps, TerminalSteps
+from mlagents_envs.base_env import (
+    BehaviorSpec,
+    ActionType,
+    DecisionSteps,
+    TerminalSteps,
+)
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.rpc_utils import (
     behavior_spec_from_proto,
@@ -80,8 +85,7 @@ def generate_uncompressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
 
 
 def proto_from_steps(
-    decision_steps: DecisionSteps,
-    terminal_steps: TerminalSteps
+    decision_steps: DecisionSteps, terminal_steps: TerminalSteps
 ) -> List[AgentInfoProto]:
     agent_info_protos: List[AgentInfoProto] = []
     # Take care of the DecisionSteps first
@@ -119,13 +123,13 @@ def proto_from_steps(
             observations=observations,
         )
         agent_info_protos.append(agent_info_proto)
-    #Take care of the TerminalSteps second
+    # Take care of the TerminalSteps second
     for agent_id in terminal_steps.agent_id:
         agent_id_index = terminal_steps.agent_id_to_index[agent_id]
         reward = terminal_steps.reward[agent_id_index]
         done = True
         max_step_reached = terminal_steps.max_step[agent_id]
-        
+
         observations: List[ObservationProto] = []
         for all_observations_of_type in terminal_steps.obs:
             observation = all_observations_of_type[agent_id_index]
@@ -148,7 +152,7 @@ def proto_from_steps(
             observations=observations,
         )
         agent_info_protos.append(agent_info_proto)
-    
+
     return agent_info_protos
 
 
@@ -238,7 +242,7 @@ def test_batched_step_result_from_proto():
         else:
             raise Exception("Missing agent from the steps")
     # We sort the AgentId since they are split between DecisionSteps and TerminalSteps
-    combined_agent_id = (list(decision_steps.agent_id) + list(terminal_steps.agent_id))
+    combined_agent_id = list(decision_steps.agent_id) + list(terminal_steps.agent_id)
     combined_agent_id.sort()
     assert combined_agent_id == list(range(n_agents))
     for agent_id in range(n_agents):
@@ -260,8 +264,8 @@ def test_action_masking_discrete():
     masks = decision_steps.action_mask
     assert isinstance(masks, list)
     assert len(masks) == 2
-    assert masks[0].shape == (n_agents / 2, 7) # half agents are done
-    assert masks[1].shape == (n_agents / 2, 3) # half agents are done
+    assert masks[0].shape == (n_agents / 2, 7)  # half agents are done
+    assert masks[1].shape == (n_agents / 2, 3)  # half agents are done
     assert masks[0][0, 0]
     assert not masks[1][0, 0]
     assert masks[1][0, 1]
@@ -289,9 +293,9 @@ def test_action_masking_discrete_2():
     masks = decision_steps.action_mask
     assert isinstance(masks, list)
     assert len(masks) == 3
-    assert masks[0].shape == (n_agents/2, 2)
-    assert masks[1].shape == (n_agents/2, 2)
-    assert masks[2].shape == (n_agents/2, 6)
+    assert masks[0].shape == (n_agents / 2, 2)
+    assert masks[1].shape == (n_agents / 2, 2)
+    assert masks[2].shape == (n_agents / 2, 6)
     assert masks[0][0, 0]
 
 

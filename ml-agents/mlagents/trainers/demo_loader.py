@@ -8,10 +8,7 @@ from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents_envs.rpc_utils import (
-    behavior_spec_from_proto,
-    steps_from_proto,
-)
+from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
@@ -49,14 +46,14 @@ def make_demo_buffer(
                 pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
             )
 
-        next_done = (len(next_terminal_step) == 1)
+        next_done = len(next_terminal_step) == 1
         next_reward = 0
-        if (len(next_terminal_step) == 1):
+        if len(next_terminal_step) == 1:
             next_reward = next_terminal_step.reward[0]
         else:
             next_reward = next_decision_step.reward[0]
         current_obs = None
-        if (len(current_terminal_step) == 1):
+        if len(current_terminal_step) == 1:
             current_obs = current_terminal_step.values()[0].obs
         else:
             current_obs = current_decision_step.values()[0].obs
