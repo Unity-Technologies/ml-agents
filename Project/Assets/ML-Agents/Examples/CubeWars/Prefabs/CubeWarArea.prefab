@@ -431,7 +431,7 @@ MonoBehaviour:
     vectorActionSize: 0300000003000000030000000200000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 86410b92defbb4a8aa77210d3fc693c3, type: 3}
+  m_Model: {fileID: 11400000, guid: 1c4b1974d2b0143479df30fa456c3c7d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: LargeCubeSoldier
@@ -547,12 +547,7 @@ PrefabInstance:
     - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
         type: 3}
       propertyPath: width
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: isFired
-      value: 0
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
         type: 3}
@@ -624,26 +619,6 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: b0ec2cb58d3f946419d6d96c502b2b1e, type: 2}
-    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
-      value: 0.06442642
-      objectReference: {fileID: 0}
-    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: m_Parameters.widthMultiplier
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: m_Positions.Array.data[1].z
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d40a32b30361e40b49d59bdfbbdb2e8c, type: 3}
 --- !u!4 &3331463254605917318 stripped
