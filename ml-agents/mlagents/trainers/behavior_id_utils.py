@@ -4,7 +4,7 @@ from urllib.parse import urlparse, parse_qs
 
 class BehaviorIdentifiers(NamedTuple):
     """
-    BehaviorIdentifiers is a named tuple if the identifiers that uniquely distinguish
+    BehaviorIdentifiers is a named tuple of the identifiers that uniquely distinguish
     an agent encountered in the trainer_controller. The named tuple consists of the
     fully qualified behavior name, the name of the brain name (corresponds to trainer
     in the trainer controller) and the team id.  In the future, this can be extended

@@ -12,6 +12,7 @@ The versions can be found in
 ### Important changes
 * The `--load` and `--train` command-line flags have been deprecated and replaced with `--resume` and `--inference`.
 * Running with the same `--run-id` twice will now throw an error.
+* The `play_against_current_self_ratio` self-play trainer hyperparameter has been renamed to `play_against_latest_model_ratio`
 
 ### Steps to Migrate
 * Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
