@@ -86,7 +86,7 @@ def _create_parser():
         default=False,
         dest="force",
         action="store_true",
-        help="Force-overwrite existing models and summaries for a run id that has been used "
+        help="Force-overwrite existing models and summaries for a run ID that has been used "
         "before.",
     )
     argparser.add_argument(
@@ -98,7 +98,7 @@ def _create_parser():
         "--initialize-from",
         metavar="RUN_ID",
         default=None,
-        help="Specify a previously saved run id from which to initialize the model from. "
+        help="Specify a previously saved run ID from which to initialize the model from. "
         "This can be used, for instance, to fine-tune an existing model on a new environment. ",
     )
     argparser.add_argument(
@@ -120,7 +120,7 @@ def _create_parser():
         dest="inference",
         action="store_true",
         help="Run in Python inference mode (don't train). Use with --resume to load a model trained with an "
-        "existing run id.",
+        "existing run ID.",
     )
     argparser.add_argument(
         "--base-port",

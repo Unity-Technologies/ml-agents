@@ -220,14 +220,14 @@ def handle_existing_directories(
     if model_path_exists:
         if not resume and not force:
             raise UnityTrainerException(
-                "Previous data from this run id was found. "
-                "Either specify a new run id, use --resume to resume this run, "
+                "Previous data from this run ID was found. "
+                "Either specify a new run ID, use --resume to resume this run, "
                 "or use the --force parameter to overwrite existing data."
             )
     else:
         if resume:
             raise UnityTrainerException(
-                "Previous data from this run id was not found. "
+                "Previous data from this run ID was not found. "
                 "Train a new run by removing the --resume flag."
             )
 
@@ -236,7 +236,7 @@ def handle_existing_directories(
         if not os.path.isdir(init_path):
             raise UnityTrainerException(
                 "Could not initialize from {}. "
-                "Make sure models have already been saved with that run id.".format(
+                "Make sure models have already been saved with that run ID.".format(
                     init_path
                 )
             )
