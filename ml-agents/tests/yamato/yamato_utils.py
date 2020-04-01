@@ -73,10 +73,13 @@ def init_venv(mlagents_python_version: str = None) -> str:
     ]
     if mlagents_python_version:
         # install from pypi
-        pip_commands.append(f"mlagents=={mlagents_python_version}")
+        pip_commands += [
+            f"mlagents=={mlagents_python_version}",
+            f"gym-unity=={mlagents_python_version}",
+        ]
     else:
         # Local install
-        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents"]
+        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
     for cmd in pip_commands:
         subprocess.check_call(
             f"source {venv_path}/bin/activate; python -m pip install -q {cmd}",
