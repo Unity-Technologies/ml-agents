@@ -23,7 +23,7 @@ public class LargeCubeAgent : Agent
     public Material normalMaterial;
     public Material weakMaterial;
     public Material deadMaterial;
-    public GameObject myLaser;
+    public Laser myLaser;
     public GameObject shockwave;
     public GameObject myBody;
 
@@ -146,7 +146,7 @@ public class LargeCubeAgent : Agent
         if (m_Shoot)
         {
             var myTransform = transform;
-            myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
+            myLaser.isFired = true;
             var rayDir = 120.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
@@ -164,7 +164,7 @@ public class LargeCubeAgent : Agent
         }
         else if (checkTime > m_ShootTime + .5f)
         {
-            myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+            myLaser.isFired = false;
         }
 
         if (m_Shockwave)
@@ -223,20 +223,20 @@ public class LargeCubeAgent : Agent
         if (m_HitPoints <= 1f && m_HitPoints > .5f)
         {
             gameObject.tag = "StrongLargeAgent";
-            gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
+            myBody.GetComponentInChildren<Renderer>().material = normalMaterial;
         }
 
         else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
         {
             gameObject.tag = "WeakLargeAgent";
-            gameObject.GetComponentInChildren<Renderer>().material = weakMaterial;
+            myBody.GetComponentInChildren<Renderer>().material = weakMaterial;
 
         }
         else // Dead
         {
             m_Dead = true;
             gameObject.tag = "DeadLargeAgent";
-            gameObject.GetComponentInChildren<Renderer>().material = deadMaterial;
+            myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
             m_MyArea.AgentDied();
         }
     }
@@ -287,7 +287,6 @@ public class LargeCubeAgent : Agent
         m_ShootTime = -1f;
         m_ShockwaveTime = -3f;
         m_AgentRb.velocity = Vector3.zero;
-        myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         shockwave.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
             2f, Random.Range(-m_MyArea.range, m_MyArea.range))
@@ -310,7 +309,8 @@ public class LargeCubeAgent : Agent
     public void SetAgentScale()
     {
         float agentScale = 5f;
-        gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
+        myBody.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
+        shockwave.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 
     public void SetResetParameters()
