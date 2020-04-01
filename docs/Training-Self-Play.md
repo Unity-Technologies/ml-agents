@@ -5,10 +5,9 @@ ML-Agents provides the functionality to train both symmetric and asymmetric adve
 A symmetric game is one in which opposing agents are equal in form, function and objective. Examples of symmetric games
 are our Tennis and Soccer example environments. In reinforcement learning, this means both agents have the same observation and
 action spaces and learn from the same reward function and so *they can share the same policy*. In asymmetric games,
-this is not the case. Examples of asymmetric games are Hide and Seek or Strikers vs Goalie in Soccer. Agents in these
+this is not the case. An example of an asymmetric games are Hide and Seek. Agents in these
 types of games do not always have the same observation or action spaces and so sharing policy networks is not
-necessarily ideal. Fortunately, both of these situations are supported with only a few extra command line
-arguments and trainer configurations!
+necessarily ideal.
 
 With self-play, an agent learns in adversarial games by competing against fixed, past versions of its opponent
 (which could be itself as in symmetric games) to provide a more stable, stationary learning environment. This is compared
@@ -25,15 +24,16 @@ Self-play is triggered by including the self-play hyperparameter hierarchy in th
 
 ![Team ID](images/team_id.png)
 
-***Team ID must be 0 or an integer greater than 0. Negative numbers will cause unpredictable behavior.***
+***Team ID must be 0 or an integer greater than 0.***
 
 In symmetric games, since all agents (even on opposing teams) will share the same policy, they should have the same 'Behavior Name' in their
 Behavior Parameters Script.  In asymmetric games, they should have a different Behavior Name in their Behavior Parameters script.
 Note, in asymmetric games, the agents must have both different Behavior Names *and* different team IDs! Then, specify the trainer configuration
 for each Behavior Name in your scene as you would normally, and remember to include the self-play hyperparameter hierarchy!
 
-For examples of how to use this feature, you can see the trainer configurations and agent prefabs for our Tennis, Soccer and Strikers Vs Goalie environments.
-Tennis and Soccer provide examples of symmetric games whereas Strikers Vs Goalie provides an example of an asymmetric game.
+For examples of how to use this feature, you can see the trainer configurations and agent prefabs for our Tennis and Soccer environments.
+Tennis and Soccer provide examples of symmetric games. To train an asymmetric game, specify trainer configurations for each of your behavior names
+and include the self-play hyperparameter hierarchy in both.
 
 
 ## Best Practices Training with Self-Play
@@ -87,7 +87,7 @@ Recommended Range : 4x-10x where x=`save_steps`
 
 The `swap_steps` parameter corresponds to the number of *ghost steps* (not trainer steps) between swapping the opponents policy with a different snapshot.
 A 'ghost step' refers to a step taken by an agent *that is following a fixed policy and not learning*. The reason for this distinction is that in asymmetric games,
-we may have teams with an unequal number of agents e.g. the 2v1 scenario in our Strikers Vs Goalie environment. The team with two agents collects
+we may have teams with an unequal number of agents e.g. a 2v1 scenario. The team with two agents collects
 twice as many agent steps per environment step as the team with one agent.  Thus, these two values will need to be distinct to ensure that the same number
 of trainer steps corresponds to the same number of opponent swaps for each team. The formula for `swap_steps` if
 a user desires `x` swaps of a team with `num_agents` agents against an opponent team with `num_opponent_agents`
@@ -97,7 +97,7 @@ agents during `team-change` total steps is:
 swap_steps = (num_agents / num_opponent_agents) * (team_change / x)
 ```
 
-As an example, in our Strikers Vs Goalie environment, if we want the swap to occur `x=4` times during `team-change=200000` steps,
+As an example, in a 2v1 scenario, if we want the swap to occur `x=4` times during `team-change=200000` steps,
 the `swap_steps` for the team of one agent is:
 
 ```
