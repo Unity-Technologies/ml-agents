@@ -311,8 +311,7 @@ public class LargeCubeAgent : Agent
     public void SetAgentScale()
     {
         float agentScale = 5f;
-        myBody.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
-        shockwave.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
+        transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 
     public void SetResetParameters()
