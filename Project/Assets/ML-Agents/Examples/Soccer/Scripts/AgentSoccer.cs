@@ -59,7 +59,7 @@ public class AgentSoccer : Agent
         }
         if (position == Position.Goalie)
         {
-            m_Power = 1000f;
+            m_Power = 1f;
             m_LateralSpeed = 1.0f;
             m_ForwardSpeed = 1.0f;
         }

@@ -176,7 +176,7 @@ Striker:
 
 SoccerTwos:
     normalize: false
-    max_steps: 5.0e7
+    max_steps: 1.0e8
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
