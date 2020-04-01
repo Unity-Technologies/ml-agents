@@ -144,9 +144,9 @@ public class SmallCubeAgent : Agent
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.05f);
+                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.02f);
 
-                    AddReward(.5f * m_Bonus);
+                    AddReward(.1f + .4f * m_Bonus);
                 }
             }
         }
@@ -169,20 +169,20 @@ public class SmallCubeAgent : Agent
     {
         if (m_HitPoints < 1f)
         {
-            m_HitPoints = Mathf.Min(m_HitPoints + .1f, 1f);
+            m_HitPoints = Mathf.Min(m_HitPoints + .2f, 1f);
             HealthStatus();
         }
     }
 
     void HealthStatus()
     {
-        if (m_HitPoints <= 1f && m_HitPoints > .65f)
+        if (m_HitPoints <= 1f && m_HitPoints > .5f)
         {
             gameObject.tag = "StrongSmallAgent";
             gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
         }
 
-        else if (m_HitPoints <= .65f && m_HitPoints > .3f)
+        else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
         {
             gameObject.tag = "WeakSmallAgent";
             gameObject.GetComponentInChildren<Renderer>().material = weakMaterial;

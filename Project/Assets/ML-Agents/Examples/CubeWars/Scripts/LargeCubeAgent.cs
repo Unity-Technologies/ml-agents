@@ -38,6 +38,7 @@ public class LargeCubeAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
+        sensor.AddObservation(System.Convert.ToInt32(m_Shockwave));
         sensor.AddObservation(m_HitPoints);
     }
 
@@ -149,7 +150,8 @@ public class LargeCubeAgent : Agent
             {
                 if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(.35f);
+                    hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(.5f);
+                    AddReward(.1f);
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
@@ -179,6 +181,7 @@ public class LargeCubeAgent : Agent
                     if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
                     {
                         hit.collider.gameObject.GetComponent<SmallCubeAgent>().HitAgent(1f);
+                        AddReward(.1f);
                     }
                 }
             }
