@@ -233,6 +233,7 @@ example environments are included in the provided config file.
 | train_interval       | How often to update the agent.                                                                                                                                                          | SAC                      |
 | num_update           | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC             |
+| init_path        | Initialize trainer from a previously saved model.                                                                                       | PPO, SAC             |
 
 \*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral Cloning (Imitation), GAIL = Generative Adversarial Imitaiton Learning
 
