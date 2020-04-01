@@ -126,7 +126,16 @@ class TFPolicy(Policy):
                     "--run-id and that the previous run you are loading from had the same "
                     "behavior names.".format(model_path)
                 )
-            self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            try:
+                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
+            except tf.errors.NotFoundError:
+                raise UnityPolicyException(
+                    "The model {0} was found but could not be loaded. Make "
+                    "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
+                    "and is using the same trainer configuration as the current run.".format(
+                        model_path
+                    )
+                )
             if reset_global_steps:
                 logger.info(
                     "Starting training from step 0 and saving to {}.".format(
