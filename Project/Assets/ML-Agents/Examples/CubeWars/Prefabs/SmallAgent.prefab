@@ -471,7 +471,7 @@ MonoBehaviour:
     vectorActionSize: 03000000030000000300000002000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e02f9bfa96633469caa86300b4d4f68d, type: 3}
+  m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallCubeSoldier
