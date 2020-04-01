@@ -20,7 +20,7 @@ Ball scale of 0.5          |  Ball scale of 4
 
 
 To enable variations in the environments, we implemented `Environment Parameters`.
-`Environment Parameters` are `Academy.Instance.FloatProperties` that can be read when setting
+`Environment Parameters` are values in the `FloatPropertiesChannel` that can be read when setting
 up the environment. We
 also included different sampling methods and the ability to create new kinds of
 sampling methods for each `Environment Parameter`. In the 3D ball environment example displayed
@@ -71,7 +71,7 @@ train under a particular environment configuration before resetting the
 environment with a new sample of `Environment Parameters`.
 
 * `Environment Parameter` - Name of the `Environment Parameter` like `mass`, `gravity` and `scale`. This should match the name
-specified in the `FloatProperties` of the environment being trained. If a parameter specified in the file doesn't exist in the
+specified in the `FloatPropertiesChannel` of the environment being trained. If a parameter specified in the file doesn't exist in the
 environment, then this parameter will be ignored.  Within each `Environment Parameter`
 
     * `sampler-type` - Specify the sampler type to use for the `Environment Parameter`.
@@ -165,7 +165,7 @@ sampling setup, we would run
 
 ```sh
 mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
---run-id=3D-Ball-randomize --train
+--run-id=3D-Ball-randomize
 ```
 
 We can observe progress and metrics via Tensorboard.

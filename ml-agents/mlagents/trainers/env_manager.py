@@ -1,22 +1,25 @@
 from abc import ABC, abstractmethod
-import logging
-from typing import List, Dict, NamedTuple, Iterable
+from typing import List, Dict, NamedTuple, Iterable, Tuple
 from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
+from mlagents_envs.logging_util import get_logger
 
 AllStepResult = Dict[AgentGroup, BatchedStepResult]
 AllGroupSpec = Dict[AgentGroup, AgentGroupSpec]
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
     brain_name_to_action_info: Dict[AgentGroup, ActionInfo]
+    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
 
     @property
     def name_behavior_ids(self) -> Iterable[AgentGroup]:
@@ -24,7 +27,7 @@ class EnvironmentStep(NamedTuple):
 
     @staticmethod
     def empty(worker_id: int) -> "EnvironmentStep":
-        return EnvironmentStep({}, worker_id, {})
+        return EnvironmentStep({}, worker_id, {}, {})
 
 
 class EnvManager(ABC):
@@ -107,5 +110,9 @@ class EnvManager(ABC):
                     step_info.brain_name_to_action_info.get(
                         name_behavior_id, ActionInfo.empty()
                     ),
+                )
+
+                self.agent_managers[name_behavior_id].record_environment_stats(
+                    step_info.environment_stats, step_info.worker_id
                 )
         return len(step_infos)

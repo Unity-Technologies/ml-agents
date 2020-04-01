@@ -4,6 +4,7 @@ import pytest
 import tempfile
 import unittest
 import csv
+import time
 
 from mlagents.trainers.stats import (
     StatsReporter,
@@ -75,7 +76,7 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
     # Test write_stats
     category = "category1"
     with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
-        tb_writer = TensorboardWriter(base_dir)
+        tb_writer = TensorboardWriter(base_dir, clear_past_data=False)
         statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
         tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
 
@@ -100,6 +101,26 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
             "category1", StatsPropertyType.HYPERPARAMETERS, {"example": 1.0}
         )
         assert mock_filewriter.return_value.add_summary.call_count > 1
+
+
+def test_tensorboard_writer_clear(tmp_path):
+    tb_writer = TensorboardWriter(tmp_path, clear_past_data=False)
+    statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
+    tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
+    # TB has some sort of timeout before making a new file
+    time.sleep(1.0)
+    assert len(os.listdir(os.path.join(tmp_path, "category1"))) > 0
+
+    # See if creating a new one doesn't delete it
+    tb_writer = TensorboardWriter(tmp_path, clear_past_data=False)
+    tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
+    assert len(os.listdir(os.path.join(tmp_path, "category1"))) > 1
+    time.sleep(1.0)
+
+    # See if creating a new one deletes old ones
+    tb_writer = TensorboardWriter(tmp_path, clear_past_data=True)
+    tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
+    assert len(os.listdir(os.path.join(tmp_path, "category1"))) == 1
 
 
 def test_csv_writer():
@@ -192,7 +213,6 @@ class ConsoleWriterTest(unittest.TestCase):
             category = "category1"
             console_writer = ConsoleWriter()
             console_writer.add_property(category, StatsPropertyType.SELF_PLAY, True)
-            console_writer.add_property(category, StatsPropertyType.SELF_PLAY_TEAM, 1)
             statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
             console_writer.write_stats(
                 category,
@@ -200,16 +220,10 @@ class ConsoleWriterTest(unittest.TestCase):
                     "Environment/Cumulative Reward": statssummary1,
                     "Is Training": statssummary1,
                     "Self-play/ELO": statssummary1,
-                    "Self-play/Mean Opponent ELO": statssummary1,
-                    "Self-play/Std Opponent ELO": statssummary1,
                 },
                 10,
             )
 
         self.assertIn(
             "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
-        )
-        self.assertIn(
-            "category1 Team 1: ELO: 1.000. Mean Opponent ELO: 1.000. Std Opponent ELO: 1.000.",
-            cm.output[1],
         )

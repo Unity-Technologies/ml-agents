@@ -1,13 +1,14 @@
 import atexit
 import glob
 import uuid
-import logging
 import numpy as np
 import os
 import subprocess
 from typing import Dict, List, Optional, Any
 
 import mlagents_envs
+
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
 
 from mlagents_envs.base_env import (
@@ -47,7 +48,7 @@ import signal
 import struct
 
 
-logger = logging.getLogger("mlagents_envs")
+logger = get_logger(__name__)
 
 
 class UnityEnvironment(BaseEnv):
@@ -65,6 +66,10 @@ class UnityEnvironment(BaseEnv):
     # isn't specified, this port will be used.
     DEFAULT_EDITOR_PORT = 5004
 
+    # Default base port for environments. Each environment will be offset from this
+    # by it's worker_id.
+    BASE_ENVIRONMENT_PORT = 5005
+
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
@@ -72,9 +77,8 @@ class UnityEnvironment(BaseEnv):
         self,
         file_name: Optional[str] = None,
         worker_id: int = 0,
-        base_port: int = 5005,
+        base_port: Optional[int] = None,
         seed: int = 0,
-        docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 60,
         args: Optional[List[str]] = None,
@@ -87,8 +91,8 @@ class UnityEnvironment(BaseEnv):
 
         :string file_name: Name of Unity environment binary.
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-        :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
-        :bool docker_training: Informs this class whether the process is being run within a container.
+        If no environment is specified (i.e. file_name is None), the DEFAULT_EDITOR_PORT will be used.
+        :int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :list args: Addition Unity command line arguments
@@ -96,6 +100,12 @@ class UnityEnvironment(BaseEnv):
         """
         args = args or []
         atexit.register(self._close)
+        # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
+        # an environment, otherwise DEFAULT_EDITOR_PORT
+        if base_port is None:
+            base_port = (
+                self.BASE_ENVIRONMENT_PORT if file_name else self.DEFAULT_EDITOR_PORT
+            )
         self.port = base_port + worker_id
         self._buffer_size = 12000
         # If true, this means the environment was successfully loaded
@@ -125,7 +135,7 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics, args)
+            self.executable_launcher(file_name, no_graphics, args)
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -142,12 +152,12 @@ class UnityEnvironment(BaseEnv):
             aca_output = self.send_academy_parameters(rl_init_parameters_in)
             aca_params = aca_output.rl_initialization_output
         except UnityTimeOutException:
-            self._close()
+            self._close(0)
             raise
 
         unity_communicator_version = aca_params.communication_version
         if unity_communicator_version != UnityEnvironment.API_VERSION:
-            self._close()
+            self._close(0)
             raise UnityEnvironmentException(
                 f"The communication API version is not compatible between Unity and python. "
                 f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
@@ -225,71 +235,38 @@ class UnityEnvironment(BaseEnv):
                 launch_string = candidates[0]
         return launch_string
 
-    def executable_launcher(self, file_name, docker_training, no_graphics, args):
+    def executable_launcher(self, file_name, no_graphics, args):
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
-            self._close()
+            self._close(0)
             raise UnityEnvironmentException(
                 f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
             )
         else:
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
-            if not docker_training:
-                subprocess_args = [launch_string]
-                if no_graphics:
-                    subprocess_args += ["-nographics", "-batchmode"]
-                subprocess_args += [
-                    UnityEnvironment.PORT_COMMAND_LINE_ARG,
-                    str(self.port),
-                ]
-                subprocess_args += args
-                try:
-                    self.proc1 = subprocess.Popen(
-                        subprocess_args,
-                        # start_new_session=True means that signals to the parent python process
-                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
-                        # This is generally good since we want the environment to have a chance to shutdown,
-                        # but may be undesirable in come cases; if so, we'll add a command-line toggle.
-                        # Note that on Windows, the CTRL_C signal will still be sent.
-                        start_new_session=True,
-                    )
-                except PermissionError as perm:
-                    # This is likely due to missing read or execute permissions on file.
-                    raise UnityEnvironmentException(
-                        f"Error when trying to launch environment - make sure "
-                        f"permissions are set correctly. For example "
-                        f'"chmod -R 755 {launch_string}"'
-                    ) from perm
-
-            else:
-                # Comments for future maintenance:
-                #     xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                #     rendering is done to virtual memory. It automatically creates a
-                #     new virtual server automatically picking a server number `auto-servernum`.
-                #     The server is passed the arguments using `server-args`, we are telling
-                #     Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                #     Note that 640 X 480 are the default width and height. The main reason for
-                #     us to add this is because we'd like to change the depth from the default
-                #     of 8 bits to 24.
-                #     Unfortunately, this means that we will need to pass the arguments through
-                #     a shell which is why we set `shell=True`. Now, this adds its own
-                #     complications. E.g SIGINT can bounce off the shell and not get propagated
-                #     to the child processes. This is why we add `exec`, so that the shell gets
-                #     launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                #     we created with `xvfb`.
-                #
-                docker_ls = (
-                    f"exec xvfb-run --auto-servernum --server-args='-screen 0 640x480x24'"
-                    f" {launch_string} {UnityEnvironment.PORT_COMMAND_LINE_ARG} {self.port}"
-                )
-
+            subprocess_args = [launch_string]
+            if no_graphics:
+                subprocess_args += ["-nographics", "-batchmode"]
+            subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
+            subprocess_args += args
+            try:
                 self.proc1 = subprocess.Popen(
-                    docker_ls,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    shell=True,
+                    subprocess_args,
+                    # start_new_session=True means that signals to the parent python process
+                    # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
+                    # This is generally good since we want the environment to have a chance to shutdown,
+                    # but may be undesirable in come cases; if so, we'll add a command-line toggle.
+                    # Note that on Windows, the CTRL_C signal will still be sent.
+                    start_new_session=True,
                 )
+            except PermissionError as perm:
+                # This is likely due to missing read or execute permissions on file.
+                raise UnityEnvironmentException(
+                    f"Error when trying to launch environment - make sure "
+                    f"permissions are set correctly. For example "
+                    f'"chmod -R 755 {launch_string}"'
+                ) from perm
 
     def _update_group_specs(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
@@ -433,13 +410,21 @@ class UnityEnvironment(BaseEnv):
         else:
             raise UnityEnvironmentException("No Unity environment is loaded.")
 
-    def _close(self):
+    def _close(self, timeout: Optional[int] = None) -> None:
+        """
+        Close the communicator and environment subprocess (if necessary).
+
+        :int timeout: [Optional] Number of seconds to wait for the environment to shut down before
+            force-killing it.  Defaults to `self.timeout_wait`.
+        """
+        if timeout is None:
+            timeout = self.timeout_wait
         self._loaded = False
         self.communicator.close()
         if self.proc1 is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self.proc1.wait(timeout=self.timeout_wait)
+                self.proc1.wait(timeout=timeout)
                 signal_name = self.returncode_to_signal_name(self.proc1.returncode)
                 signal_name = f" ({signal_name})" if signal_name else ""
                 return_info = f"Environment shut down with return code {self.proc1.returncode}{signal_name}."

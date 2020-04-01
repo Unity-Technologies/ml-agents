@@ -29,7 +29,10 @@ namespace MLAgents.Policies
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
             StepSensors(sensors);
-            m_LastDecision = m_Heuristic.Invoke();
+            if (!info.done)
+            {
+                m_LastDecision = m_Heuristic.Invoke();
+            }
         }
 
         /// <inheritdoc />

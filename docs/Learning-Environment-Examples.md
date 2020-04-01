@@ -349,7 +349,6 @@ return.
 * Goal:
   * Get the ball into the opponent's goal while preventing
   the ball from entering own goal.
-  * Goalie:
 * Agents: The environment contains four agents, with the same
   Behavior Parameters : Soccer.
 * Agent Reward Function (dependent):

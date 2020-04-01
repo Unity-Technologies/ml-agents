@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import List
 import uuid
-import logging
 
 from mlagents_envs.side_channel import IncomingMessage, OutgoingMessage
+from mlagents_envs.logging_util import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class SideChannel(ABC):

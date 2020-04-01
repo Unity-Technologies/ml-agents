@@ -15,8 +15,7 @@ As such, it can serve as the basis for developing and evaluating new learning al
 The ML-Agents Toolkit Low Level API is a Python API for controlling the simulation
 loop of an environment or game built with Unity. This API is used by the
 training algorithms inside the ML-Agent Toolkit, but you can also write your own
-Python programs using this API. Go [here](../notebooks/getting-started.ipynb)
-for a Jupyter Notebook walking through the functionality of the API.
+Python programs using this API.
 
 The key objects in the Python API include:
 
@@ -56,7 +55,7 @@ as `envs`. For example, if the filename of your Unity environment is `3DBall`, i
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-env = UnityEnvironment(file_name="3DBall", base_port=5005, seed=1, side_channels=[])
+env = UnityEnvironment(file_name="3DBall", seed=1, side_channels=[])
 ```
 
 - `file_name` is the name of the environment binary (located in the root
@@ -239,7 +238,7 @@ from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 channel = EngineConfigurationChannel()
 
-env = UnityEnvironment(base_port = UnityEnvironment.DEFAULT_EDITOR_PORT, side_channels = [channel])
+env = UnityEnvironment(side_channels=[channel])
 
 channel.set_configuration_parameters(time_scale = 2.0)
 
@@ -267,7 +266,7 @@ from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesC
 
 channel = FloatPropertiesChannel()
 
-env = UnityEnvironment(base_port = UnityEnvironment.DEFAULT_EDITOR_PORT, side_channels = [channel])
+env = UnityEnvironment(side_channels=[channel])
 
 channel.set_property("parameter_1", 2.0)
 
@@ -280,7 +279,7 @@ readout_value = channel.get_property("parameter_2")
 Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
 
 ```csharp
-var sharedProperties = Academy.Instance.FloatProperties;
+var sharedProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
 ```
 

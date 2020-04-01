@@ -24,7 +24,7 @@ To send data from C# to Python, create an `OutgoingMessage` instance, add data t
 `base.QueueMessageToSend(msg)` method inside the side channel, and call the
 `OutgoingMessage.Dispose()` method.
 
-To register a side channel on the Unity side, call `Academy.Instance.RegisterSideChannel` with the side channel
+To register a side channel on the Unity side, call `SideChannelUtils.RegisterSideChannel` with the side channel
 as only argument.
 
 ### Python side
@@ -122,8 +122,8 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // When a Debug.Log message is created, we send it to the stringChannel
         Application.logMessageReceived += stringChannel.SendDebugStatementToPython;
 
-        // The channel must be registered with the Academy
-        Academy.Instance.RegisterSideChannel(stringChannel);
+        // The channel must be registered with the SideChannelUtils class
+        SideChannelUtils.RegisterSideChannel(stringChannel);
     }
 
     public void OnDestroy()
@@ -131,7 +131,7 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // De-register the Debug.Log callback
         Application.logMessageReceived -= stringChannel.SendDebugStatementToPython;
         if (Academy.IsInitialized){
-            Academy.Instance.UnregisterSideChannel(stringChannel);
+            SideChannelUtils.UnregisterSideChannel(stringChannel);
         }
     }
 
@@ -193,7 +193,7 @@ messages to the Unity environment from Python using it.
 string_log = StringLogChannel()
 
 # We start the communication with the Unity Editor and pass the string_log side channel as input
-env = UnityEnvironment(base_port=UnityEnvironment.DEFAULT_EDITOR_PORT, side_channels=[string_log])
+env = UnityEnvironment(side_channels=[string_log])
 env.reset()
 string_log.send_string("The environment was reset")
 

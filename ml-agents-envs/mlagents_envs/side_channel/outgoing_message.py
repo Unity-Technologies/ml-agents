@@ -1,9 +1,9 @@
 from typing import List
 import struct
 
-import logging
+from mlagents_envs.logging_util import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class OutgoingMessage:
