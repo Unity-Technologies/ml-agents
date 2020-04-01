@@ -25,4 +25,8 @@ test_mac_standalone_{{ editor.version }}:
         - "*.md"
         - "com.unity.ml-agents/*.md"
         - "com.unity.ml-agents/**/*.md"
+  artifacts:
+    standalonebuild:
+      paths:
+        - "Project/testPlayer*/**"
 {% endfor %}

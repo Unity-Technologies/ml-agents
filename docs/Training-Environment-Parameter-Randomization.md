@@ -165,7 +165,7 @@ sampling setup, we would run
 
 ```sh
 mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
---run-id=3D-Ball-randomize --train
+--run-id=3D-Ball-randomize
 ```
 
 We can observe progress and metrics via Tensorboard.

@@ -23,11 +23,11 @@ def get_base_path():
     return os.getcwd()
 
 
-def run_standalone_build(base_path: str, verbose: bool = False) -> int:
+def run_standalone_build(
+    base_path: str, verbose: bool = False, output_path: str = None
+) -> int:
     """
-    Run BuildStandalonePlayerOSX test to produce a player at Project/testPlayer
-    :param base_path:
-    :return:
+    Run BuildStandalonePlayerOSX test to produce a player. The location defaults to Project/testPlayer.
     """
     unity_exe = get_unity_executable_path()
     print(f"Running BuildStandalonePlayerOSX via {unity_exe}")
@@ -42,6 +42,8 @@ def run_standalone_build(base_path: str, verbose: bool = False) -> int:
     ]
     if verbose:
         test_args += ["-logfile", "-"]
+    if output_path is not None:
+        test_args += ["--mlagents-build-output-path", output_path]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case
