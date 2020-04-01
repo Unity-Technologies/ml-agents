@@ -534,6 +534,7 @@ GameObject:
   - component: {fileID: 114284317994838100}
   - component: {fileID: 114466000339026140}
   - component: {fileID: 8193279139064749781}
+  - component: {fileID: 7923264721978289873}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -591,8 +592,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: 3DBallHard
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114466000339026140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -605,6 +606,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: edf26e11cf4ed42eaa3ffb7b91bb4676, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 5000
   ball: {fileID: 1142513601053358}
 --- !u!114 &8193279139064749781
@@ -620,8 +624,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
+--- !u!114 &7923264721978289873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1829721031899636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1978072206102878
 GameObject:
   m_ObjectHideFlags: 0
