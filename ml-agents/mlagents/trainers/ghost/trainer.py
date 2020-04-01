@@ -84,6 +84,14 @@ class GhostTrainer(Trainer):
         self.play_against_latest_model_ratio = self_play_parameters.get(
             "play_against_latest_model_ratio", 0.5
         )
+        if (
+            self.play_against_latest_model_ratio > 1.0
+            or self.play_against_latest_model_ratio < 0.0
+        ):
+            logger.warning(
+                "The play_against_latest_model_ratio is not between 0 and 1."
+            )
+
         self.steps_between_save = self_play_parameters.get("save_steps", 20000)
         self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
         self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
