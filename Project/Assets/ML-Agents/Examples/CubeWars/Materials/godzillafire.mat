@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: godzillafire
   m_Shader: {fileID: 211, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _ALPHABLEND_ON _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+  m_ShaderKeywords: _ALPHABLEND_ON _EMISSION _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -71,15 +71,15 @@ Material:
     - _DistortionEnabled: 0
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0
-    - _DstBlend: 10
-    - _EmissionEnabled: 0
+    - _DstBlend: 1
+    - _EmissionEnabled: 1
     - _FlipbookMode: 0
     - _GlossMapScale: 0
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _LightingEnabled: 0
     - _Metallic: 0.132
-    - _Mode: 2
+    - _Mode: 4
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 1
@@ -94,5 +94,5 @@ Material:
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 0, g: 0.46433306, b: 1, a: 0.8039216}
     - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
-    - _EmissionColor: {r: 0.18910186, g: 0.040765576, b: 0.19117647, a: 1}
+    - _EmissionColor: {r: 0.03921568, g: 0.12030976, b: 0.19215687, a: 1}
     - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
