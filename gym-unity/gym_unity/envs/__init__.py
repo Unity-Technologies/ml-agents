@@ -10,7 +10,6 @@ from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs import logging_util
 
 
-
 class UnityGymException(error.Error):
     """
     Any error related to the gym wrapper of ml-agents.

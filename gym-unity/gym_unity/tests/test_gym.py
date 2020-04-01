@@ -266,4 +266,3 @@ def test_agent_id_index_mapper(mapper_cls):
     for idx, agent_id in enumerate(initial_agent_ids):
         if agent_id in permuted_ids:
             assert permuted_ids[idx] == agent_id
-

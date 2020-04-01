@@ -28,10 +28,7 @@ from mlagents_envs.exception import (
 )
 
 from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
-from mlagents_envs.rpc_utils import (
-    behavior_spec_from_proto,
-    steps_from_proto,
-)
+from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 
 from mlagents_envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
@@ -293,9 +290,9 @@ class UnityEnvironment(BaseEnv):
                 )
             else:
                 self._env_state[brain_name] = (
-                        DecisionSteps.empty(self._env_specs[brain_name]),
-                        TerminalSteps.empty(self._env_specs[brain_name])
-                    )
+                    DecisionSteps.empty(self._env_specs[brain_name]),
+                    TerminalSteps.empty(self._env_specs[brain_name]),
+                )
         self._parse_side_channel_message(self.side_channels, output.side_channel)
 
     def reset(self) -> None:
@@ -395,7 +392,9 @@ class UnityEnvironment(BaseEnv):
             ) from ie
         self._env_actions[behavior_name][index] = action
 
-    def get_steps(self, behavior_name: BehaviorName) -> Tuple[DecisionSteps, TerminalSteps]:
+    def get_steps(
+        self, behavior_name: BehaviorName
+    ) -> Tuple[DecisionSteps, TerminalSteps]:
         self._assert_behavior_exists(behavior_name)
         return self._env_state[behavior_name]
 

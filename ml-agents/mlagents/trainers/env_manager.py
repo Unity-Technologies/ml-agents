@@ -27,7 +27,6 @@ class EnvironmentStep(NamedTuple):
     brain_name_to_action_info: Dict[BehaviorName, ActionInfo]
     environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
 
-
     @property
     def name_behavior_ids(self) -> Iterable[BehaviorName]:
         return self.current_all_step_result.keys()
