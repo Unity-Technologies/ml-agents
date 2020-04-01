@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4497121, g: 0.49977785, b: 0.57563704, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971216, g: 0.49977785, b: 0.5756371, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -302,6 +302,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CubeWarArea (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -359,6 +363,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CubeWarArea (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -415,6 +423,10 @@ PrefabInstance:
     - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_Name
       value: CubeWarArea (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
@@ -538,6 +550,10 @@ PrefabInstance:
     - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_Name
       value: CubeWarArea (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
@@ -787,6 +803,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CubeWarArea (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -890,6 +910,10 @@ PrefabInstance:
     - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_Name
       value: CubeWarArea (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1020,6 +1044,10 @@ PrefabInstance:
     - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_Name
       value: CubeWarArea (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1220,10 +1248,6 @@ PrefabInstance:
     - target: {fileID: 4688212428263696, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4842597515579046, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 507699f5e996e4b839e9b05fce9dde76, type: 3}

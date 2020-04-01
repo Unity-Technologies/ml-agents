@@ -25,7 +25,8 @@ public class SmallCubeAgent : Agent
     public Material normalMaterial;
     public Material weakMaterial;
     public Material deadMaterial;
-    public GameObject myLaser;
+    public Laser myLaser;
+    public GameObject myBody;
 
 
     public override void Initialize()
@@ -132,7 +133,6 @@ public class SmallCubeAgent : Agent
         if (m_Shoot)
         {
             var myTransform = transform;
-            myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
             var rayDir = 25.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
@@ -148,11 +148,12 @@ public class SmallCubeAgent : Agent
 
                     AddReward(.1f + .4f * m_Bonus);
                 }
+                myLaser.isFired = true;
             }
         }
         else if (Time.time > m_ShootTime + .25f)
         {
-            myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+            myLaser.isFired = false;
         }
     }
 
@@ -179,13 +180,13 @@ public class SmallCubeAgent : Agent
         if (m_HitPoints <= 1f && m_HitPoints > .5f)
         {
             gameObject.tag = "StrongSmallAgent";
-            gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
+            myBody.GetComponentInChildren<Renderer>().material = normalMaterial;
         }
 
         else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
         {
             gameObject.tag = "WeakSmallAgent";
-            gameObject.GetComponentInChildren<Renderer>().material = weakMaterial;
+            myBody.GetComponentInChildren<Renderer>().material = weakMaterial;
 
         }
         else // Dead
@@ -193,7 +194,7 @@ public class SmallCubeAgent : Agent
             AddReward(-.1f * m_Bonus);
             m_Dead = true;
             gameObject.tag = "DeadSmallAgent";
-            gameObject.GetComponentInChildren<Renderer>().material = deadMaterial;
+            myBody.GetComponentInChildren<Renderer>().material = deadMaterial;
             m_MyArea.AgentDied();
         }
     }
@@ -244,7 +245,7 @@ public class SmallCubeAgent : Agent
         //m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
         m_Bonus = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
-        myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+
         float smallRange = 50f * m_MyArea.range;
         transform.position = new Vector3(Random.Range(-smallRange, smallRange),
             2f,Random.Range(-smallRange, smallRange))
