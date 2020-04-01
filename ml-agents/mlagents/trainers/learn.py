@@ -12,7 +12,11 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.trainers.trainer_util import load_config, TrainerFactory
+from mlagents.trainers.trainer_util import (
+    load_config,
+    TrainerFactory,
+    handle_existing_directories,
+)
 from mlagents.trainers.stats import (
     TensorboardWriter,
     CSVWriter,
@@ -68,7 +72,22 @@ def _create_parser():
         default=False,
         dest="load_model",
         action="store_true",
-        help="Whether to load the model or randomly initialize",
+        help=argparse.SUPPRESS,  # Deprecated but still usable for now.
+    )
+    argparser.add_argument(
+        "--resume",
+        default=False,
+        dest="resume",
+        action="store_true",
+        help="Resumes training from a checkpoint. Specify a --run-id to use this option.",
+    )
+    argparser.add_argument(
+        "--force",
+        default=False,
+        dest="force",
+        action="store_true",
+        help="Force-overwrite existing models and summaries for a run-id that has been used "
+        "before.",
     )
     argparser.add_argument(
         "--run-id",
@@ -86,7 +105,15 @@ def _create_parser():
         default=False,
         dest="train_model",
         action="store_true",
-        help="Whether to train model, or only run inference",
+        help=argparse.SUPPRESS,
+    )
+    argparser.add_argument(
+        "--inference",
+        default=False,
+        dest="inference",
+        action="store_true",
+        help="Run in Python inference mode (don't train). Use with --resume to load a model trained with an "
+        "existing run-id.",
     )
     argparser.add_argument(
         "--base-port",
@@ -168,7 +195,10 @@ class RunOptions(NamedTuple):
     env_path: Optional[str] = parser.get_default("env_path")
     run_id: str = parser.get_default("run_id")
     load_model: bool = parser.get_default("load_model")
+    resume: bool = parser.get_default("resume")
+    force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
+    inference: bool = parser.get_default("inference")
     save_freq: int = parser.get_default("save_freq")
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
     base_port: int = parser.get_default("base_port")
@@ -205,7 +235,8 @@ class RunOptions(NamedTuple):
             argparse_args["sampler_config"] = load_config(
                 argparse_args["sampler_file_path"]
             )
-
+        # Keep deprecated --load working, TODO: remove
+        argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
         argparse_args.pop("sampler_file_path")
@@ -249,7 +280,10 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 "Environment/Episode Length",
             ],
         )
-        tb_writer = TensorboardWriter(summaries_dir)
+        handle_existing_directories(
+            model_path, summaries_dir, options.resume, options.force
+        )
+        tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
@@ -282,8 +316,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.run_id,
             model_path,
             options.keep_checkpoints,
-            options.train_model,
-            options.load_model,
+            not options.inference,
+            options.resume,
             run_seed,
             maybe_meta_curriculum,
             options.multi_gpu,
@@ -296,7 +330,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.run_id,
             options.save_freq,
             maybe_meta_curriculum,
-            options.train_model,
+            not options.inference,
             run_seed,
             sampler_manager,
             resampling_interval,
@@ -423,6 +457,17 @@ def run_cli(options: RunOptions) -> None:
 
     logger.debug("Configuration for this run:")
     logger.debug(json.dumps(options._asdict(), indent=4))
+
+    # Options deprecation warnings
+    if options.load_model:
+        logger.warning(
+            "The --load option has been deprecated. Please use the --resume option instead."
+        )
+    if options.train_model:
+        logger.warning(
+            "The --train option has been deprecated. Train mode is now the default. Use "
+            "--inference to run in inference mode."
+        )
 
     run_seed = options.seed
     if options.cpu:
