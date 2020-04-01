@@ -10,6 +10,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
+from mlagents.trainers.ghost.controller import GhostController
 
 
 logger = get_logger(__name__)
@@ -39,6 +40,7 @@ class TrainerFactory:
         self.seed = seed
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
+        self.ghost_controller = GhostController()
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
@@ -50,6 +52,7 @@ class TrainerFactory:
             self.keep_checkpoints,
             self.train_model,
             self.load_model,
+            self.ghost_controller,
             self.seed,
             self.meta_curriculum,
             self.multi_gpu,
@@ -65,6 +68,7 @@ def initialize_trainer(
     keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
+    ghost_controller: GhostController,
     seed: int,
     meta_curriculum: MetaCurriculum = None,
     multi_gpu: bool = False,
@@ -81,6 +85,7 @@ def initialize_trainer(
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
     :param load_model: Whether to load the model or randomly initialize
+    :param ghost_controller: The object that coordinates ghost trainers
     :param seed: The random seed to use
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
@@ -158,6 +163,7 @@ def initialize_trainer(
         trainer = GhostTrainer(
             trainer,
             brain_name,
+            ghost_controller,
             min_lesson_length,
             trainer_parameters,
             train_model,

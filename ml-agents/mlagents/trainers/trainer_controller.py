@@ -156,9 +156,8 @@ class TrainerController(object):
         self, env_manager: EnvManager, name_behavior_id: str
     ) -> None:
 
-        brain_name = BehaviorIdentifiers.from_name_behavior_id(
-            name_behavior_id
-        ).brain_name
+        parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+        brain_name = parsed_behavior_id.brain_name
         try:
             trainer = self.trainers[brain_name]
         except KeyError:
@@ -166,7 +165,7 @@ class TrainerController(object):
             self.trainers[brain_name] = trainer
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
-        trainer.add_policy(name_behavior_id, policy)
+        trainer.add_policy(parsed_behavior_id, policy)
 
         agent_manager = AgentManager(
             policy,
