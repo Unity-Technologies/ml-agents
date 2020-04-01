@@ -9,15 +9,14 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: godzillafire
   m_Shader: {fileID: 211, guid: 0000000000000000f000000000000000, type: 0}
-  m_ShaderKeywords: _ALPHABLEND_ON _EMISSION _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
+  m_ShaderKeywords: EFFECT_BUMP _ALPHABLEND_ON _EMISSION _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 3000
   stringTagMap:
     RenderType: Transparent
-  disabledShaderPasses:
-  - ALWAYS
+  disabledShaderPasses: []
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -40,11 +39,11 @@ Material:
     - _EmissionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Offset: {x: 1, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f281a0b6dea6a4060b63212ffc5d11c2, type: 3}
+        m_Texture: {fileID: 2800000, guid: 96c8496fda24a42309496909d05f5c2a, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
+        m_Offset: {x: 1, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -67,10 +66,10 @@ Material:
     - _Cull: 2
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DistortionBlend: 0.5
-    - _DistortionEnabled: 0
+    - _DistortionBlend: 0.103
+    - _DistortionEnabled: 1
     - _DistortionStrength: 1
-    - _DistortionStrengthScaled: 0
+    - _DistortionStrengthScaled: 0.1
     - _DstBlend: 1
     - _EmissionEnabled: 1
     - _FlipbookMode: 0
