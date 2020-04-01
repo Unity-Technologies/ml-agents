@@ -10,7 +10,9 @@ def main():
     env_name = "Project/testPlayer"
     engine_configuration_channel = EngineConfigurationChannel()
     env = UnityEnvironment(
-        file_name=env_name, side_channels=[engine_configuration_channel]
+        file_name=env_name,
+        side_channels=[engine_configuration_channel],
+        args=["-logFile", "-"],
     )
 
     try:
