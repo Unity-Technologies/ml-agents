@@ -138,11 +138,14 @@ namespace MLAgents
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
-        // Signals to all the agents at each environment step along with the
-        // Academy's maxStepReached, done and stepCount values. The agents rely
-        // on this event to update their own values of max step reached and done
-        // in addition to aligning on the step count of the global episode.
-        internal event Action<int> AgentSetStatus;
+
+        /// <summary>
+        /// Signals to all of the <see cref="Agent"/>s that their step is about to begin.
+        /// This is a good time for an <see cref="Agent"/> to decide if it would like to
+        /// call <see cref="Agent.RequestDecision"/> or <see cref="Agent.RequestAction"/>
+        /// for this step.  Any other pre-step setup could be done during this even as well.
+        /// </summary>
+        public event Action<int> AgentPreStep;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
@@ -347,7 +350,7 @@ namespace MLAgents
         {
             DecideAction = () => {};
             DestroyAction = () => {};
-            AgentSetStatus = i => {};
+            AgentPreStep = i => {};
             AgentSendState = () => {};
             AgentAct = () => {};
             AgentForceReset = () => {};
@@ -423,7 +426,7 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            AgentSetStatus?.Invoke(m_StepCount);
+            AgentPreStep?.Invoke(m_StepCount);
 
             m_StepCount += 1;
             m_TotalStepCount += 1;

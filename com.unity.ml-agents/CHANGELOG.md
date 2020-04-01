@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
  - The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
  - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
+ - The internal event `Academy.AgentSetStatus` was renamed to `Academy.AgentPreStep` and made public.
+ - The offset logic was removed from DecisionRequester.
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)

@@ -36,6 +36,6 @@ test_mac_protobuf_generation:
         - "protobuf-definitions/*.md"
         - "protobuf-definitions/**/*.md"
   artifacts:
-    dist:
+    patch:
       paths:
-        - "artifacts/*"
+        - "artifacts/*.*"

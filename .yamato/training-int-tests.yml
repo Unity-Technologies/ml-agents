@@ -35,7 +35,10 @@ test_mac_training_int_{{ editor.version }}:
         - "com.unity.ml-agents/*.md"
         - "com.unity.ml-agents/**/*.md"
   artifacts:
-    unit:
+    logs:
       paths:
-        - "artifacts/**"
+        - "artifacts/standalone_build.txt"
+    standalonebuild:
+      paths:
+        - "artifacts/testplayer*/**"
 {% endfor %}
