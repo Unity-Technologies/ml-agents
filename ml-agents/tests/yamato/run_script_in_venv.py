@@ -4,7 +4,7 @@ import subprocess
 from .yamato_utils import get_base_path, init_venv
 
 
-def run_training(script_path):
+def run_script_in_venv(script_path):
     """
     Sets up the venv, runs the specified script, and returns based on whether the script succeeded.
     :return:
@@ -28,7 +28,7 @@ def run_training(script_path):
 
 def main():
     script_path = sys.argv[1]
-    run_training(script_path)
+    run_script_in_venv(script_path)
 
 
 if __name__ == "__main__":
