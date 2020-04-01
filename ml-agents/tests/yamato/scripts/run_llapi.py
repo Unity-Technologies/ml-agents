@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 
 from mlagents_envs.environment import UnityEnvironment
@@ -6,8 +7,11 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
 )
 
 
-def main():
-    env_name = "Project/testPlayer"
+def main(env_name):
+    """
+    Run the low-level API test using the specified environment
+    :param env_name: Name of the Unity environment binary to launch
+    """
     engine_configuration_channel = EngineConfigurationChannel()
     env = UnityEnvironment(
         file_name=env_name,
@@ -75,4 +79,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--env", default="Project/testPlayer")
+    args = parser.parse_args()
+    main(args.env)

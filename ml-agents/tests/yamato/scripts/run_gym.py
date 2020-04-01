@@ -1,14 +1,16 @@
+import argparse
 import numpy as np
 
 from gym_unity.envs import UnityEnv
 
 
-def main():
-
-    # Name of the Unity environment binary to launch
-    multi_env_name = "Project/testPlayer"
+def main(env_name):
+    """
+    Run the gym test using the specified environment
+    :param env_name: Name of the Unity environment binary to launch
+    """
     multi_env = UnityEnv(
-        multi_env_name, worker_id=1, use_visual=False, multiagent=True, no_graphics=True
+        env_name, worker_id=1, use_visual=False, multiagent=True, no_graphics=True
     )
 
     try:
@@ -40,4 +42,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--env", default="Project/testPlayer")
+    args = parser.parse_args()
+    main(args.env)
