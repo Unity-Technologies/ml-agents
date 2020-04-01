@@ -1,6 +1,7 @@
 import os
 import subprocess
 import yaml
+from typing import List, Optional
 
 
 def get_unity_executable_path():
@@ -51,7 +52,9 @@ def run_standalone_build(
     return res.returncode
 
 
-def init_venv(mlagents_python_version: str = None) -> str:
+def init_venv(
+    mlagents_python_version: str = None, extra_packages: Optional[List[str]] = None
+) -> str:
     """
     Set up the virtual environment, and return the venv path.
     :param mlagents_python_version: The version of mlagents python packcage to install.
@@ -73,10 +76,15 @@ def init_venv(mlagents_python_version: str = None) -> str:
     ]
     if mlagents_python_version:
         # install from pypi
-        pip_commands.append(f"mlagents=={mlagents_python_version}")
+        pip_commands += [
+            f"mlagents=={mlagents_python_version}",
+            f"gym-unity=={mlagents_python_version}",
+        ]
     else:
         # Local install
-        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents"]
+        pip_commands += ["-e ./ml-agents-envs", "-e ./ml-agents", "-e ./gym-unity"]
+    if extra_packages:
+        pip_commands += extra_packages
     for cmd in pip_commands:
         subprocess.check_call(
             f"source {venv_path}/bin/activate; python -m pip install -q {cmd}",

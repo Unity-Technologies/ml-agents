@@ -214,7 +214,6 @@ class GhostTrainer(Trainer):
             parsed_behavior_id = self._name_to_parsed_behavior_id[
                 trajectory_queue.behavior_id
             ]
-
             if parsed_behavior_id.team_id == self._learning_team:
                 # With a future multiagent trainer, this will be indexed by 'role'
                 internal_trajectory_queue = self._internal_trajectory_queues[
