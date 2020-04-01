@@ -13,7 +13,7 @@ test_mac_ll_api_{{ editor.version }}:
   commands:
     - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.setup_venv
-    - .venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py
+    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py
   dependencies:
     - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
   triggers:
