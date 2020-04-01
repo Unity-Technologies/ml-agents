@@ -36,8 +36,8 @@ and Unity, see the [installation instructions](Installation.md).
 
 Depending on your version of Unity, it may be necessary to change the **Scripting Runtime Version** of your project. This can be done as follows:
 
-1. Launch Unity
-2. On the Projects dialog, choose the **Open** option at the top of the window.
+1. Launch Unity Hub
+2. On the Projects dialog, choose the **Add** option at the top of the window.
 3. Using the file dialog that opens, locate the `Project` folder
    within the ML-Agents toolkit project and click **Open**.
 4. Go to **Edit** > **Project Settings** > **Player**
@@ -197,19 +197,17 @@ which accepts arguments used to configure both training and inference phases.
 2. Navigate to the folder where you cloned the ML-Agents toolkit repository.
    **Note**: If you followed the default [installation](Installation.md), then
    you should be able to run `mlagents-learn` from any directory.
-3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier> --train`
+3. Run `mlagents-learn <trainer-config-path> --run-id=<run-identifier>`
    where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
       trainer configuration. The defaults used by example environments included
       in `MLAgentsSDK` can be found in `config/trainer_config.yaml`.
     - `<run-identifier>` is a string used to separate the results of different
-      training runs
-    - `--train` tells `mlagents-learn` to run a training session (rather
-      than inference)
+      training runs. Make sure to use one that hasn't been used already!
 4. If you cloned the ML-Agents repo, then you can simply run
 
       ```sh
-      mlagents-learn config/trainer_config.yaml --run-id=firstRun --train
+      mlagents-learn config/trainer_config.yaml --run-id=firstRun
       ```
 
 5. When the message _"Start training by pressing the Play button in the Unity
@@ -219,7 +217,6 @@ which accepts arguments used to configure both training and inference phases.
 **Note**: If you're using Anaconda, don't forget to activate the ml-agents
 environment first.
 
-The `--train` flag tells the ML-Agents toolkit to run in training mode.
 The `--time-scale=100` sets the `Time.TimeScale` value in Unity.
 
 **Note**: You can train using an executable rather than the Editor. To do so,
@@ -330,8 +327,14 @@ Either wait for the training process to close the window or press Ctrl+C at the
 command-line prompt. If you close the window manually, the `.nn` file
 containing the trained model is not exported into the ml-agents folder.
 
-You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<behavior_name>.nn` where
+If you've quit the training early using Ctrl+C and want to resume training, run the
+same command again, appending the `--resume` flag:
+
+```sh
+mlagents-learn config/trainer_config.yaml --run-id=firstRun --resume
+```
+
+Your trained model will be at `models/<run-identifier>/<behavior_name>.nn` where
 `<behavior_name>` is the name of the `Behavior Name` of the agents corresponding to the model.
 (**Note:** There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step

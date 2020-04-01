@@ -4,13 +4,13 @@
 
 import os
 import sys
-import logging
 from typing import Dict, Optional, Set
 from collections import defaultdict
 
 import numpy as np
 from mlagents.tf_utils import tf
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.env_manager import EnvManager
 from mlagents_envs.exception import (
     UnityEnvironmentException,
@@ -55,7 +55,7 @@ class TrainerController(object):
         self.trainer_factory = trainer_factory
         self.model_path = model_path
         self.summaries_dir = summaries_dir
-        self.logger = logging.getLogger("mlagents.trainers")
+        self.logger = get_logger(__name__)
         self.run_id = run_id
         self.save_freq = save_freq
         self.train_model = train
@@ -156,9 +156,8 @@ class TrainerController(object):
         self, env_manager: EnvManager, name_behavior_id: str
     ) -> None:
 
-        brain_name = BehaviorIdentifiers.from_name_behavior_id(
-            name_behavior_id
-        ).brain_name
+        parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+        brain_name = parsed_behavior_id.brain_name
         try:
             trainer = self.trainers[brain_name]
         except KeyError:
@@ -166,7 +165,7 @@ class TrainerController(object):
             self.trainers[brain_name] = trainer
 
         policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
-        trainer.add_policy(name_behavior_id, policy)
+        trainer.add_policy(parsed_behavior_id, policy)
 
         agent_manager = AgentManager(
             policy,
@@ -211,10 +210,20 @@ class TrainerController(object):
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
-        except (KeyboardInterrupt, UnityCommunicationException):
+        except (
+            KeyboardInterrupt,
+            UnityCommunicationException,
+            UnityEnvironmentException,
+        ) as ex:
             if self.train_model:
                 self._save_model_when_interrupted()
-            pass
+
+            if isinstance(ex, KeyboardInterrupt):
+                pass
+            else:
+                # If the environment failed, we want to make sure to raise
+                # the exception so we exit the process with an return code of 1.
+                raise ex
         if self.train_model:
             self._export_graph()
 

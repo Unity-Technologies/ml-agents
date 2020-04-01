@@ -6,8 +6,10 @@ namespace MLAgents.Sensors
     /// For example, 4 stacked sets of observations would be output like
     ///   |  t = now - 3  |  t = now -3  |  t = now - 2  |  t = now  |
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
+    ///
+    /// Currently, compressed and multidimensional observations are not supported.
     /// </summary>
-    internal class StackingSensor : ISensor
+    public class StackingSensor : ISensor
     {
         /// <summary>
         /// The wrapped sensor.
@@ -32,7 +34,7 @@ namespace MLAgents.Sensors
         WriteAdapter m_LocalAdapter = new WriteAdapter();
 
         /// <summary>
-        ///
+        /// Initializes the sensor.
         /// </summary>
         /// <param name="wrapped">The wrapped sensor.</param>
         /// <param name="numStackedObservations">Number of stacked observations to keep.</param>
@@ -44,7 +46,16 @@ namespace MLAgents.Sensors
 
             m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
+            if (wrapped.GetCompressionType() != SensorCompressionType.None)
+            {
+                throw new UnityAgentsException("StackingSensor doesn't support compressed observations.'");
+            }
+
             var shape = wrapped.GetObservationShape();
+            if (shape.Length != 1)
+            {
+                throw new UnityAgentsException("Only 1-D observations are supported by StackingSensor");
+            }
             m_Shape = new int[shape.Length];
 
             m_UnstackedObservationSize = wrapped.ObservationSize();
@@ -62,6 +73,7 @@ namespace MLAgents.Sensors
             }
         }
 
+        /// <inheritdoc/>
         public int Write(WriteAdapter adapter)
         {
             // First, call the wrapped sensor's write method. Make sure to use our own adapter, not the passed one.
@@ -90,21 +102,25 @@ namespace MLAgents.Sensors
             m_CurrentIndex = (m_CurrentIndex + 1) % m_NumStackedObservations;
         }
 
+        /// <inheritdoc/>
         public int[] GetObservationShape()
         {
             return m_Shape;
         }
 
+        /// <inheritdoc/>
         public string GetName()
         {
             return m_Name;
         }
 
+        /// <inheritdoc/>
         public virtual byte[] GetCompressedObservation()
         {
             return null;
         }
 
+        /// <inheritdoc/>
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.None;

@@ -2,7 +2,6 @@
 # Contains an implementation of SAC as described in https://arxiv.org/abs/1801.01290
 # and implemented in https://github.com/hill-a/stable-baselines
 
-import logging
 from collections import defaultdict
 from typing import Dict
 import os
@@ -10,6 +9,7 @@ import os
 import numpy as np
 
 
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy.nn_policy import NNPolicy
@@ -18,9 +18,11 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
+
 BUFFER_TRUNCATE_PERCENT = 0.8
 
 
@@ -336,7 +338,9 @@ class SACTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer.
         :param brain_parameters: specifications for policy construction

@@ -2,11 +2,11 @@
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
-import logging
 from collections import defaultdict
 
 import numpy as np
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
@@ -14,9 +14,10 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class PPOTrainer(RLTrainer):
@@ -237,10 +238,12 @@ class PPOTrainer(RLTrainer):
 
         return policy
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer.
-        :param name_behavior_id: Behavior ID that the policy should belong to.
+        :param parsed_behavior_id: Behavior identifiers that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
         if self.policy:
