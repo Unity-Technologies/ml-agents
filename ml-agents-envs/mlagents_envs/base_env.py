@@ -104,9 +104,7 @@ class DecisionSteps(Mapping):
         """
         if agent_id not in self:
             raise KeyError(
-                "agent_id {} is not present in the DecisionSteps".format(
-                    agent_id
-                )
+                "agent_id {} is not present in the DecisionSteps".format(agent_id)
             )
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
@@ -125,18 +123,7 @@ class DecisionSteps(Mapping):
         )
 
     def __iter__(self) -> AgentId:
-        for agent_id in self.agent_id:
-            yield agent_id
-
-    def keys(self) -> List[AgentId]:
-        return list(self.agent_id)
-
-    def items(self) -> List[Tuple[AgentId, DecisionStep]]:
-        return [(agent_id, self[agent_id]) for agent_id in self.agent_id]
-
-    def values(self) -> List[DecisionStep]:
-        return [self[agent_id] for agent_id in self.agent_id]
-
+        return iter(dict([(agent_id, self[agent_id]) for agent_id in self.agent_id]))
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "DecisionSteps":
@@ -153,7 +140,6 @@ class DecisionSteps(Mapping):
             agent_id=np.zeros(0, dtype=np.int32),
             action_mask=None,
         )
-
 
 
 class TerminalStep(NamedTuple):
@@ -225,15 +211,13 @@ class TerminalSteps(Mapping):
         """
         if agent_id not in self:
             raise KeyError(
-                "agent_id {} is not present in the TerminalSteps".format(
-                    agent_id
-                )
+                "agent_id {} is not present in the TerminalSteps".format(agent_id)
             )
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:
             agent_obs.append(batched_obs[agent_index])
-        return DecisionStep(
+        return TerminalStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
             max_step=self.max_step[agent_index],
@@ -241,17 +225,7 @@ class TerminalSteps(Mapping):
         )
 
     def __iter__(self) -> AgentId:
-        for agent_id in self.agent_id:
-            yield agent_id
-
-    def keys(self) -> List[AgentId]:
-        return list(self.agent_id)
-
-    def items(self) -> List[Tuple[AgentId, DecisionStep]]:
-        return [(agent_id, self[agent_id]) for agent_id in self.agent_id]
-
-    def values(self) -> List[DecisionStep]:
-        return [self[agent_id] for agent_id in self.agent_id]
+        return iter(dict([(agent_id, self[agent_id]) for agent_id in self.agent_id]))
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "TerminalSteps":
@@ -268,7 +242,6 @@ class TerminalSteps(Mapping):
             max_step=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
         )
-
 
 
 class ActionType(Enum):

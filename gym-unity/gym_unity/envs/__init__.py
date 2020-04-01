@@ -7,7 +7,7 @@ import gym
 from gym import error, spaces
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 
 
 class UnityGymException(error.Error):
@@ -69,7 +69,7 @@ class UnityEnv(gym.Env):
         )
 
         # Take a single step so that the brain information will be sent over
-        if not self._env.get_agent_groups():
+        if not self._env.get_behavior_names():
             self._env.step()
 
         self.visual_obs = None

@@ -1,14 +1,14 @@
 from abc import ABC, abstractmethod
 import logging
-from typing import List, Dict, NamedTuple, Iterable
-from mlagents_envs.base_env import BatchedStepResult, AgentGroupSpec, AgentGroup
+from typing import List, Dict, NamedTuple, Iterable, Tuple
+from mlagents_envs.base_env import DecisionSteps, TerminalSteps, BehaviorSpec, BehaviorName
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
 
-AllStepResult = Dict[AgentGroup, BatchedStepResult]
-AllGroupSpec = Dict[AgentGroup, AgentGroupSpec]
+AllStepResult = Dict[BehaviorName, Tuple[DecisionSteps, TerminalSteps]]
+AllGroupSpec = Dict[BehaviorName, BehaviorSpec]
 
 logger = logging.getLogger("mlagents.trainers")
 
@@ -16,10 +16,10 @@ logger = logging.getLogger("mlagents.trainers")
 class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
-    brain_name_to_action_info: Dict[AgentGroup, ActionInfo]
+    brain_name_to_action_info: Dict[BehaviorName, ActionInfo]
 
     @property
-    def name_behavior_ids(self) -> Iterable[AgentGroup]:
+    def name_behavior_ids(self) -> Iterable[BehaviorName]:
         return self.current_all_step_result.keys()
 
     @staticmethod
@@ -29,16 +29,16 @@ class EnvironmentStep(NamedTuple):
 
 class EnvManager(ABC):
     def __init__(self):
-        self.policies: Dict[AgentGroup, TFPolicy] = {}
-        self.agent_managers: Dict[AgentGroup, AgentManager] = {}
+        self.policies: Dict[BehaviorName, TFPolicy] = {}
+        self.agent_managers: Dict[BehaviorName, AgentManager] = {}
         self.first_step_infos: List[EnvironmentStep] = None
 
-    def set_policy(self, brain_name: AgentGroup, policy: TFPolicy) -> None:
+    def set_policy(self, brain_name: BehaviorName, policy: TFPolicy) -> None:
         self.policies[brain_name] = policy
         if brain_name in self.agent_managers:
             self.agent_managers[brain_name].policy = policy
 
-    def set_agent_manager(self, brain_name: AgentGroup, manager: AgentManager) -> None:
+    def set_agent_manager(self, brain_name: BehaviorName, manager: AgentManager) -> None:
         self.agent_managers[brain_name] = manager
 
     @abstractmethod
@@ -59,12 +59,12 @@ class EnvManager(ABC):
 
     @property
     @abstractmethod
-    def external_brains(self) -> Dict[AgentGroup, BrainParameters]:
+    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         pass
 
     @property
     @abstractmethod
-    def get_properties(self) -> Dict[AgentGroup, float]:
+    def get_properties(self) -> Dict[BehaviorName, float]:
         pass
 
     @abstractmethod
@@ -102,7 +102,8 @@ class EnvManager(ABC):
                     )
                     continue
                 self.agent_managers[name_behavior_id].add_experiences(
-                    step_info.current_all_step_result[name_behavior_id],
+                    step_info.current_all_step_result[name_behavior_id][0], #DecisionSteps
+                    step_info.current_all_step_result[name_behavior_id][1], #TerminalSteps
                     step_info.worker_id,
                     step_info.brain_name_to_action_info.get(
                         name_behavior_id, ActionInfo.empty()
