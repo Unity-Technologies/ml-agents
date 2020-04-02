@@ -132,7 +132,7 @@ def proto_from_steps(
 
         final_observations: List[ObservationProto] = []
         for all_observations_of_type in terminal_steps.obs:
-            final_observations = all_observations_of_type[agent_id_index]
+            observation = all_observations_of_type[agent_id_index]
             if len(observation.shape) == 3:
                 final_observations.append(generate_uncompressed_proto_obs(observation))
             else:
