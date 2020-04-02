@@ -849,7 +849,7 @@ PrefabInstance:
     - target: {fileID: 547513711375494624, guid: 3c19832ce9ed2473daa69598255a556f,
         type: 3}
       propertyPath: m_Name
-      value: CubeZilla
+      value: DragonCube
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c19832ce9ed2473daa69598255a556f, type: 3}
