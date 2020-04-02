@@ -113,7 +113,7 @@ public class SmallCubeAgent : Agent
             }
             if (shootCommand)
             {
-                if (Time.time > m_ShootTime + .5f)
+                if (Time.time > m_ShootTime + .4f)
                 {
                     m_Shoot = true;
                     dirToGo *= 0.5f;
@@ -170,7 +170,7 @@ public class SmallCubeAgent : Agent
     {
         if (m_HitPoints < 1f)
         {
-            m_HitPoints = Mathf.Min(m_HitPoints + .2f, 1f);
+            m_HitPoints = Mathf.Min(m_HitPoints + .25f, 1f);
             HealthStatus();
         }
     }
