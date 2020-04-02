@@ -54,9 +54,9 @@ def make_demo_buffer(
             next_reward = next_decision_step.reward[0]
         current_obs = None
         if len(current_terminal_step) == 1:
-            current_obs = current_terminal_step.values()[0].obs
+            current_obs = list(current_terminal_step.values())[0].obs
         else:
-            current_obs = current_decision_step.values()[0].obs
+            current_obs = list(current_decision_step.values())[0].obs
 
         demo_raw_buffer["done"].append(next_done)
         demo_raw_buffer["rewards"].append(next_reward)

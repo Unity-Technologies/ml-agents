@@ -19,7 +19,7 @@ not necessarily correspond to a fixed simulation time increment.
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from typing import List, NamedTuple, Tuple, Optional, Union, Dict
+from typing import List, NamedTuple, Tuple, Optional, Union, Dict, Iterator, Any
 import numpy as np
 from enum import Enum
 
@@ -93,7 +93,7 @@ class DecisionSteps(Mapping):
     def __len__(self) -> int:
         return len(self.agent_id)
 
-    def __contains__(self, item: AgentId) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.agent_id_to_index
 
     def __getitem__(self, agent_id: AgentId) -> DecisionStep:
@@ -122,8 +122,8 @@ class DecisionSteps(Mapping):
             action_mask=agent_mask,
         )
 
-    def __iter__(self) -> AgentId:
-        return iter(dict([(agent_id, self[agent_id]) for agent_id in self.agent_id]))
+    def __iter__(self) -> Iterator[Any]:
+        return iter({(agent_id, self[agent_id]) for agent_id in self.agent_id})
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "DecisionSteps":
@@ -199,7 +199,7 @@ class TerminalSteps(Mapping):
     def __len__(self) -> int:
         return len(self.agent_id)
 
-    def __contains__(self, item: AgentId) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self.agent_id_to_index
 
     def __getitem__(self, agent_id: AgentId) -> TerminalStep:
@@ -224,8 +224,8 @@ class TerminalSteps(Mapping):
             agent_id=agent_id,
         )
 
-    def __iter__(self) -> AgentId:
-        return iter(dict([(agent_id, self[agent_id]) for agent_id in self.agent_id]))
+    def __iter__(self) -> Iterator[Any]:
+        return iter({(agent_id, self[agent_id]) for agent_id in self.agent_id})
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "TerminalSteps":

@@ -128,15 +128,15 @@ def proto_from_steps(
         agent_id_index = terminal_steps.agent_id_to_index[agent_id]
         reward = terminal_steps.reward[agent_id_index]
         done = True
-        max_step_reached = terminal_steps.max_step[agent_id]
+        max_step_reached = terminal_steps.max_step[agent_id_index]
 
-        observations: List[ObservationProto] = []
+        final_observations: List[ObservationProto] = []
         for all_observations_of_type in terminal_steps.obs:
-            observation = all_observations_of_type[agent_id_index]
+            final_observations = all_observations_of_type[agent_id_index]
             if len(observation.shape) == 3:
-                observations.append(generate_uncompressed_proto_obs(observation))
+                final_observations.append(generate_uncompressed_proto_obs(observation))
             else:
-                observations.append(
+                final_observations.append(
                     ObservationProto(
                         float_data=ObservationProto.FloatData(data=observation),
                         shape=[len(observation)],
@@ -149,7 +149,7 @@ def proto_from_steps(
             id=agent_id,
             max_step_reached=max_step_reached,
             action_mask=None,
-            observations=observations,
+            observations=final_observations,
         )
         agent_info_protos.append(agent_info_proto)
 

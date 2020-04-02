@@ -153,7 +153,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         agent_manager_mock = mock.Mock()
         env_manager.set_agent_manager(brain_name, agent_manager_mock)
 
-        step_info_dict = {brain_name: Mock()}
+        step_info_dict = {brain_name: (Mock(), Mock())}
         env_stats = {
             "averaged": (1.0, StatsAggregationMethod.AVERAGE),
             "most_recent": (2.0, StatsAggregationMethod.MOST_RECENT),
@@ -166,7 +166,8 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         env_manager._step.assert_called_once()
 
         agent_manager_mock.add_experiences.assert_called_once_with(
-            step_info.current_all_step_result[brain_name],
+            step_info.current_all_step_result[brain_name][0],
+            step_info.current_all_step_result[brain_name][1],
             0,
             step_info.brain_name_to_action_info[brain_name],
         )
