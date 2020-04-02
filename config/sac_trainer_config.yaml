@@ -10,7 +10,6 @@ default:
     max_steps: 5.0e5
     memory_size: 128
     normalize: false
-    num_update: 1
     steps_per_update: 10
     num_layers: 2
     time_horizon: 64
