@@ -42,17 +42,16 @@ environments.
 
 #### Number of Updates for Reward Signal (Optional)
 
-`reward_signal_num_update` for the reward signals corresponds to the number of mini batches sampled
-and used for updating the reward signals during each
-update. By default, we update the reward signals once every time the main policy is updated.
+`reward_signal_steps_per_update` for the reward signals corresponds to the number of steps per mini batch sampled
+and used for updating the reward signals. By default, we update the reward signals once every time the main policy is updated.
 However, to imitate the training procedure in certain imitation learning papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
-we may want to update the policy N times, then update the reward signal (GAIL) M times.
-We can change `train_interval` and `num_update` of SAC to N, as well as `reward_signal_num_update`
-under `reward_signals` to M to accomplish this. By default, `reward_signal_num_update` is set to
-`num_update`.
+we may want to update the reward signal (GAIL) M times for every update of the policy.
+We can change `steps_per_update` of SAC to N, as well as `reward_signal_steps_per_update`
+under `reward_signals` to N / M to accomplish this. By default, `reward_signal_steps_per_update` is set to
+`steps_per_update`.
 
-Typical Range: `num_update`
+Typical Range: `steps_per_update`
 
 ### Buffer Size
 
@@ -106,17 +105,16 @@ there may not be any new interesting information between steps, and `train_inter
 
 Typical Range: `1` - `5`
 
-### Number of Updates
+### Steps Per Update
 
-`num_update` corresponds to the number of mini batches sampled and used for training during each
-training event. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
-replay buffer, and using this mini batch to update the models. Typically, this can be left at 1.
+`steps_per_update` corresponds to the number agent steps (actions) taken for each mini-batch sampled and used during training. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
+replay buffer, and using this mini batch to update the models. Typically, this should be greater than 1.
 However, to imitate the training procedure in certain papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
 we may want to update N times with different mini batches before grabbing additional samples.
-We can change `train_interval` and `num_update` to N to accomplish this.
+We can change `steps_per_update` to lower than 1 to accomplish this.
 
-Typical Range: `1`
+Typical Range: `10` - `20`
 
 ### Tau
 

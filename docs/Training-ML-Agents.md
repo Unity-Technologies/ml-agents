@@ -224,7 +224,7 @@ example environments are included in the provided config file.
 | time_horizon         | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC    |
 | trainer              | The type of training to perform: "ppo", "sac", "offline_bc" or "online_bc".                                                                                                             | PPO, SAC             |
 | train_interval       | How often to update the agent.                                                                                                                                                          | SAC                      |
-| num_update           | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
+| steps_per_update           | Ratio of agent steps per mini-batch update.                                                                                                                     | SAC                      |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC             |
 
 \*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral Cloning (Imitation), GAIL = Generative Adversarial Imitaiton Learning
