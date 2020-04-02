@@ -1,6 +1,10 @@
 # Training with Curriculum Learning
 
-## Sample Environment
+Curriculum learning is a feature of ML-Agents which allows for the properties of environments to be changed during the training process to aid in learning.
+
+## An Instructional Example
+
+*[**Note**: The example provided below is for instructional purposes, and was based on an early version of the [Wall Jump example environment](Example-Environments.md). As such, it is not possible to directly replicate the results here using that environment.]*
 
 Imagine a task in which an agent needs to scale a wall to arrive at a goal. The
 starting point when training an agent to accomplish this task will be a random
@@ -10,8 +14,8 @@ If we start with a simpler task, such as moving toward an unobstructed goal,
 then the agent can easily learn to accomplish the task. From there, we can
 slowly add to the difficulty of the task by increasing the size of the wall
 until the agent can complete the initially near-impossible task of scaling the
-wall. We have included an environment to demonstrate this with ML-Agents,
-called __Wall Jump__.
+wall.
+
 
 ![Wall](images/curriculum.png)
 
