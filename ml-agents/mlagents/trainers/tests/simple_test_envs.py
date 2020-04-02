@@ -8,12 +8,16 @@ from mlagents_envs.base_env import (
     BatchedStepResult,
     ActionType,
 )
+from mlagents_envs.tests.test_rpc_utils import proto_from_batched_step_result_and_action
+from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
+    AgentInfoActionPairProto,
+)
 
 OBS_SIZE = 1
 VIS_OBS_SIZE = (20, 20, 3)
 STEP_SIZE = 0.1
 
-TIME_PENALTY = 0.001
+TIME_PENALTY = 0.01
 MIN_STEPS = int(1.0 / STEP_SIZE) + 1
 SUCCESS_REWARD = 1.0 + MIN_STEPS * TIME_PENALTY
 
@@ -22,7 +26,7 @@ def clamp(x, min_val, max_val):
     return max(min_val, min(x, max_val))
 
 
-class Simple1DEnvironment(BaseEnv):
+class SimpleEnvironment(BaseEnv):
     """
     Very simple "game" - the agent has a position on [-1, 1], gets a reward of 1 if it reaches 1, and a reward of -1 if
     it reaches -1. The position is incremented by the action amount (clamped to [-step_size, step_size]).
@@ -37,6 +41,7 @@ class Simple1DEnvironment(BaseEnv):
         num_vector=1,
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
+        action_size=1,
     ):
         super().__init__()
         self.discrete = use_discrete
@@ -46,10 +51,13 @@ class Simple1DEnvironment(BaseEnv):
         self.vec_obs_size = vec_obs_size
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
         self.group_spec = AgentGroupSpec(
-            self._make_obs_spec(), action_type, (2,) if use_discrete else 1
+            self._make_obs_spec(),
+            action_type,
+            tuple(2 for _ in range(action_size)) if use_discrete else action_size,
         )
+        self.action_size = action_size
         self.names = brain_names
-        self.position: Dict[str, float] = {}
+        self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
         self.random = random.Random(str(self.group_spec))
         self.goal: Dict[str, int] = {}
@@ -101,25 +109,49 @@ class Simple1DEnvironment(BaseEnv):
         return self.step_result[name]
 
     def _take_action(self, name: str) -> bool:
-        if self.discrete:
-            act = self.action[name][0][0]
-            delta = 1 if act else -1
-        else:
-            delta = self.action[name][0][0]
-
-        delta = clamp(delta, -self.step_size, self.step_size)
-        self.position[name] += delta
-        self.position[name] = clamp(self.position[name], -1, 1)
-        self.step_count[name] += 1
-        done = self.position[name] >= 1.0 or self.position[name] <= -1.0
+        deltas = []
+        for _act in self.action[name][0]:
+            if self.discrete:
+                deltas.append(1 if _act else -1)
+            else:
+                deltas.append(_act)
+        for i, _delta in enumerate(deltas):
+            _delta = clamp(_delta, -self.step_size, self.step_size)
+            self.positions[name][i] += _delta
+            self.positions[name][i] = clamp(self.positions[name][i], -1, 1)
+            self.step_count[name] += 1
+            # Both must be in 1.0 to be done
+        done = all(pos >= 1.0 or pos <= -1.0 for pos in self.positions[name])
         return done
+
+    def _generate_mask(self):
+        if self.discrete:
+            # LL-Python API will return an empty dim if there is only 1 agent.
+            ndmask = np.array(2 * self.action_size * [False], dtype=np.bool)
+            ndmask = np.expand_dims(ndmask, axis=0)
+            action_mask = [ndmask]
+        else:
+            action_mask = None
+        return action_mask
 
     def _compute_reward(self, name: str, done: bool) -> float:
         if done:
-            reward = SUCCESS_REWARD * self.position[name] * self.goal[name]
+            reward = 0.0
+            for _pos in self.positions[name]:
+                reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
+                    self.positions[name]
+                )
         else:
             reward = -TIME_PENALTY
         return reward
+
+    def _reset_agent(self, name):
+        self.goal[name] = self.random.choice([-1, 1])
+        self.positions[name] = [0.0 for _ in range(self.action_size)]
+        self.step_count[name] = 0
+        self.final_rewards[name].append(self.rewards[name])
+        self.rewards[name] = 0
+        self.agent_id[name] = self.agent_id[name] + 1
 
     def _make_batched_step(
         self, name: str, done: bool, reward: float
@@ -195,24 +227,6 @@ class Simple1DEnvironment(BaseEnv):
             self.rewards[name] += reward
             self.step_result[name] = self._make_batched_step(name, done, reward)
 
-    def _generate_mask(self):
-        if self.discrete:
-            # LL-Python API will return an empty dim if there is only 1 agent.
-            ndmask = np.array(2 * [False], dtype=np.bool)
-            ndmask = np.expand_dims(ndmask, axis=0)
-            action_mask = [ndmask]
-        else:
-            action_mask = None
-        return action_mask
-
-    def _reset_agent(self, name):
-        self.goal[name] = self.random.choice([-1, 1])
-        self.position[name] = 0.0
-        self.step_count[name] = 0
-        self.final_rewards[name].append(self.rewards[name])
-        self.rewards[name] = 0
-        self.agent_id[name] = self.agent_id[name] + 1
-
     def reset(self) -> None:  # type: ignore
         for name in self.names:
             self._reset_agent(name)
@@ -226,9 +240,9 @@ class Simple1DEnvironment(BaseEnv):
         pass
 
 
-class Memory1DEnvironment(Simple1DEnvironment):
+class MemoryEnvironment(SimpleEnvironment):
     def __init__(self, brain_names, use_discrete, step_size=0.2):
-        super().__init__(brain_names, use_discrete, step_size=0.2)
+        super().__init__(brain_names, use_discrete, step_size=step_size)
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
         self.num_show_steps = 2
@@ -273,3 +287,48 @@ class Memory1DEnvironment(Simple1DEnvironment):
             m_agent_id,
             action_mask,
         )
+
+
+class RecordEnvironment(SimpleEnvironment):
+    def __init__(
+        self,
+        brain_names,
+        use_discrete,
+        step_size=0.2,
+        num_visual=0,
+        num_vector=1,
+        n_demos=30,
+    ):
+        super().__init__(
+            brain_names,
+            use_discrete,
+            step_size=step_size,
+            num_visual=num_visual,
+            num_vector=num_vector,
+        )
+        self.demonstration_protos: Dict[str, List[AgentInfoActionPairProto]] = {}
+        self.n_demos = n_demos
+        for name in self.names:
+            self.demonstration_protos[name] = []
+
+    def step(self) -> None:
+        super().step()
+        for name in self.names:
+            self.demonstration_protos[
+                name
+            ] += proto_from_batched_step_result_and_action(
+                self.step_result[name], self.action[name]
+            )
+            self.demonstration_protos[name] = self.demonstration_protos[name][
+                -self.n_demos :
+            ]
+
+    def solve(self) -> None:
+        self.reset()
+        for _ in range(self.n_demos):
+            for name in self.names:
+                if self.discrete:
+                    self.action[name] = [[1]] if self.goal[name] > 0 else [[0]]
+                else:
+                    self.action[name] = [[float(self.goal[name])]]
+            self.step()

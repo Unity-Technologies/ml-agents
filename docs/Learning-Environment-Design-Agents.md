@@ -1,26 +1,27 @@
 # Agents
 
-An agent is an actor that can observe its environment and decide on the best
-course of action using those observations. Create Agents in Unity by extending
-the Agent class. The most important aspects of creating agents that can
-successfully learn are the observations the agent collects for
-reinforcement learning and the reward you assign to estimate the value of the
+An agent is an entity that can observe its environment, decide on the best
+course of action using those observations, and execute those actions within
+its environment. Agents can be created in Unity by extending
+the `Agent` class. The most important aspects of creating agents that can
+successfully learn are the observations the agent collects,
+and the reward you assign to estimate the value of the
 agent's current state toward accomplishing its tasks.
 
-An Agent passes its observations to its Policy. The Policy, then, makes a decision
+An Agent passes its observations to its Policy. The Policy then makes a decision
 and passes the chosen action back to the agent. Your agent code must execute the
 action, for example, move the agent in one direction or another. In order to
 [train an agent using reinforcement learning](Learning-Environment-Design.md),
 your agent must calculate a reward value at each action. The reward is used to
 discover the optimal decision-making policy.
 
-The Policy class abstracts out the decision making logic from the Agent itself so
+The `Policy` class abstracts out the decision making logic from the Agent itself so
 that you can use the same Policy in multiple Agents. How a Policy makes its
-decisions depends on the kind of Policy it is. You can change the Policy of an
-Agent by changing its `Behavior Parameters`. If you check `Use Heuristic`, the
-Agent will use its `Heuristic()` method to make decisions which can allow you to
-control the Agent manually or write your own Policy. If the Agent has a `Model`
-file, it Policy will use the neural network `Model` to take decisions.
+decisions depends on the `Behavior Parameters` associated with the agent. If you
+set `Behavior Type` to `Heuristic Only`, the Agent will use its `Heuristic()`
+method to make decisions which can allow you to control the Agent manually or
+write your own Policy. If the Agent has a `Model` file, its Policy will use
+the neural network `Model` to take decisions.
 
 ## Decisions
 
@@ -28,42 +29,39 @@ The observation-decision-action-reward cycle repeats each time the Agent request
 a decision.
 Agents will request a decision when `Agent.RequestDecision()` is called. If you need
 the Agent to request decisions on its own at regular intervals, add a
-`Decision Requester` component to the Agent's Game Object. Making decisions at regular step
+`Decision Requester` component to the Agent's GameObject. Making decisions at regular step
 intervals is generally most appropriate for physics-based simulations. For example, an
 agent in a robotic simulator that must provide fine-control of joint torques
 should make its decisions every step of the simulation. On the other hand, an
 agent that only needs to make decisions when certain game or simulation events
-occur, should call `Agent.RequestDecision()` manually.
+occur, such as in a turn-based game, should call `Agent.RequestDecision()` manually.
 
-## Observations
+## Observations and Sensors
 
-To make decisions, an agent must observe its environment in order to infer the
-state of the world. A state observation can take the following forms:
+To make informed decisions, an agent must first make observations of the state of
+the environment. The observations are collected by Sensors attached to the agent
+GameObject. By default, agents come with a `VectorSensor` which allows them to
+collect floating-point observations into a single array. There are additional
+sensor components which can be attached to the agent GameObject which collect their own
+observations, or modify other observations. These are:
 
-* **Vector Observation** — a feature vector consisting of an array of floating
-  point numbers.
-* **Visual Observations** — one or more camera images and/or render textures.
+* `CameraSensorComponent` - Allows image from `Camera` to be used as observation.
+* `RenderTextureSensorComponent` - Allows content of `RenderTexture` to be used as observation.
+* `RayPerceptionSensorComponent` - Allows information from set of ray-casts to be used as observation.
 
-When you use vector observations for an Agent, implement the
-`Agent.CollectObservations(VectorSensor sensor)` method to create the feature vector. When you use
-**Visual Observations**, you only need to identify which Unity Camera objects
-or RenderTextures will provide images and the base Agent class handles the rest.
-You do not need to implement the `CollectObservations(VectorSensor sensor)` method when your Agent
-uses visual observations (unless it also uses vector observations).
+### Vector Observations
 
-### Vector Observation Space: Feature Vectors
+Vector observations are best used for aspects of the environment which are numerical
+and non-visual. The Policy class calls the `CollectObservations(VectorSensor sensor)`
+method of each Agent. Your implementation of this function must call
+`VectorSensor.AddObservation` to add vector observations.
 
-For agents using a continuous state space, you create a feature vector to
-represent the agent's observation at each step of the simulation. The Policy
-class calls the `CollectObservations(VectorSensor sensor)` method of each Agent. Your
-implementation of this function must call `VectorSensor.AddObservation` to add vector
-observations.
-
-The observation must include all the information an agents needs to accomplish
-its task. Without sufficient and relevant information, an agent may learn poorly
+In order for an agent to learn, the observations should include all the
+information an agent needs to accomplish its task. Without sufficient and relevant
+information, an agent may learn poorly
 or may not learn at all. A reasonable approach for determining what information
 should be included is to consider what you would need to calculate an analytical
-solution to the problem.
+solution to the problem, or what you would expect a human to be able to use to solve the problem.
 
 For examples of various state observation functions, you can look at the
 [example environments](Learning-Environment-Examples.md) included in the
@@ -99,7 +97,7 @@ an agent's observations to a fixed subset. For example, instead of observing
 every enemy agent in an environment, you could only observe the closest five.
 
 When you set up an Agent's `Behavior Parameters` in the Unity Editor, set the following
-properties to use a continuous vector observation:
+properties to use a vector observation:
 
 * **Space Size** — The state size must match the length of your feature vector.
 
@@ -110,6 +108,8 @@ The `VectorSensor.AddObservation` method provides a number of overloads for addi
 of data to your observation vector. You can add Integers and booleans directly to
 the observation vector, as well as some common Unity data types such as `Vector2`,
 `Vector3`, and `Quaternion`.
+
+#### One-hot encoding categorical information
 
 Type enumerations should be encoded in the _one-hot_ style. That is, add an
 element to the feature vector for each element of enumeration, setting the
@@ -130,7 +130,7 @@ public override void CollectObservations(VectorSensor sensor)
 }
 ```
 
-`VectorSensor.AddObservation` also provides a two-argument version as a shortcut for _one-hot_
+`VectorSensor` also provides a two-argument function `AddOneHotObservation()` as a shortcut for _one-hot_
 style observations. The following example is identical to the previous one.
 
 ```csharp
@@ -160,6 +160,7 @@ To normalize a value to [0, 1], you can use the following formula:
 ```csharp
 normalizedValue = (currentValue - minValue)/(maxValue - minValue)
 ```
+:warning: For vectors, you should apply the above formula to each component (x, y, and z). Note that this is *not* the same as using the `Vector3.normalized` property or `Vector3.Normalize()` method in Unity (and similar for `Vector2`).
 
 Rotations and angles should also be normalized. For angles between 0 and 360
 degrees, you can use the following formulas:
@@ -174,18 +175,39 @@ For angles that can be outside the range [0,360], you can either reduce the
 angle, or, if the number of turns is significant, increase the maximum value
 used in your normalization formula.
 
-### Multiple Visual Observations
+#### Vector Observation Summary & Best Practices
 
-Visual observations use rendered textures directly or from one or more
-cameras in a scene. The Policy vectorizes the textures into a 3D Tensor which
-can be fed into a convolutional neural network (CNN). For more information on
-CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). You
-can use visual observations along side vector observations.
+* Vector Observations should include all variables relevant for allowing the
+  agent to take the optimally informed decision, and ideally no extraneous information.
+* In cases where Vector Observations need to be remembered or compared over
+  time, either an LSTM (see [here](Feature-Memory.md)) should be used in the model, or the
+  `Stacked Vectors` value in the agent GameObject's `Behavior Parameters` should be changed.
+* Categorical variables such as type of object (Sword, Shield, Bow) should be
+  encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`). This can be done automatically using the
+  `AddOneHotObservation()` method of the `VectorSensor`.
+* In general, all inputs should be normalized to be in
+  the range 0 to +1 (or -1 to 1). For example, the `x` position information of
+  an agent where the maximum possible value is `maxValue` should be recorded as
+  `VectorSensor.AddObservation(transform.position.x / maxValue);` rather than
+  `VectorSensor.AddObservation(transform.position.x);`.
+* Positional information of relevant GameObjects should be encoded in relative
+  coordinates wherever possible. This is often relative to the agent position.
+
+
+### Visual Observations
+
+Visual observations are generally provided to agent via either a `CameraSensor` or `RenderTextureSensor`.
+These collect image information and transforms it into a 3D Tensor which
+can be fed into the convolutional neural network (CNN) of the agent policy. For more information on
+CNNs, see [this guide](http://cs231n.github.io/convolutional-networks/). This allows agents
+to learn from spatial regularities in the observation images. It is possible to
+use visual and vector observations with the same agent.
 
 Agents using visual observations can capture state of arbitrary complexity and
 are useful when the state is difficult to describe numerically. However, they
 are also typically less efficient and slower to train, and sometimes don't
-succeed at all.
+succeed at all as compared to vector observations. As such, they should only be
+used when it is not possible to properly define the problem using vector or ray-cast observations.
 
 Visual observations can be derived from Cameras or RenderTextures within your scene.
 To add a visual observation to an Agent, add either a Camera Sensor Component
@@ -222,10 +244,21 @@ as observations directly, this is done automatically by the Agent.
 
 ![Agent RenderTexture Debug](images/gridworld.png)
 
+#### Visual Observation Summary & Best Practices
+
+* To collect visual observations, attach `CameraSensor` or `RenderTextureSensor`
+  components to the agent GameObject.
+* Visual observations should generally be used unless vector observations are not sufficient.
+* Image size should be kept as small as possible, without the loss of
+  needed details for decision making.
+* Images should be made greyscale in situations where color information is
+  not needed for making informed decisions.
+
 ### Raycast Observations
-Raycasts are an alternative system for the Agent to provide observations based on
-the physical environment. This can be easily implemented by adding a
-RayPerceptionSensorComponent3D (or RayPerceptionSensorComponent2D) to the Agent.
+
+Raycasts are another possible method for providing observations to an agent.
+This can be easily implemented by adding a
+`RayPerceptionSensorComponent3D` (or `RayPerceptionSensorComponent2D`) to the Agent GameObject.
 
 During observations, several rays (or spheres, depending on settings) are cast into
 the physics world, and the objects that are hit determine the observation vector that
@@ -251,7 +284,7 @@ Both sensor components have several settings:
  * _Start Vertical Offset_ (3D only) The vertical offset of the ray start point.
  * _End Vertical Offset_ (3D only) The vertical offset of the ray end point.
 
-In the example image above, the Agent has two RayPerceptionSensorComponent3Ds.
+In the example image above, the Agent has two `RayPerceptionSensorComponent3D`s.
 Both use 3 Rays Per Direction and 90 Max Ray Degrees. One of the components
 had a vertical offset, so the Agent can tell whether it's clear to jump over
 the wall.
@@ -265,13 +298,22 @@ amount of data used. Note that this is separate from the State Size defined in
 `Behavior Parameters`, so you don't need to worry about the formula above when
 setting the State Size.
 
-## Vector Actions
+#### RayCast Observation Summary & Best Practices
+
+* Attach `RayPerceptionSensorComponent3D` or `RayPerceptionSensorComponent2D` to use.
+* This observation type is best used when there is relevant spatial information
+  for the agent that doesn't require a fully rendered image to convey.
+* Use as few rays and tags as necessary to solve the problem in order to improve learning stability and agent performance.
+
+## Actions
 
 An action is an instruction from the Policy that the agent carries out. The
 action is passed to the Agent as a parameter when the Academy invokes the
-agent's `AgentAction()` function. When you specify that the vector action space
+agent's `OnActionReceived()` function. Actions for an agent can take one of two forms, either **Continuous** or **Discrete**.
+
+When you specify that the vector action space
 is **Continuous**, the action parameter passed to the Agent is an array of
-control signals with length equal to the `Vector Action Space Size` property.
+floating point numbers with length equal to the `Vector Action Space Size` property.
 When you specify a **Discrete** vector action space type, the action parameter
 is an array containing integers. Each integer is an index into a list or table
 of commands. In the **Discrete** vector action space type, the action parameter
@@ -284,10 +326,7 @@ Neither the Policy nor the training algorithm know anything about what the actio
 values themselves mean. The training algorithm simply tries different values for
 the action list and observes the affect on the accumulated rewards over time and
 many training episodes. Thus, the only place actions are defined for an Agent is
-in the `AgentAction()` function. You simply specify the type of vector action
-space, and, for the continuous vector action space, the number of values, and
-then apply the received values appropriately (and consistently) in
-`ActionAct()`.
+in the `OnActionReceived()` function.
 
 For example, if you designed an agent to move in two dimensions, you could use
 either continuous or the discrete vector actions. In the continuous case, you
@@ -312,7 +351,7 @@ up to use either the continuous or the discrete vector action spaces.
 ### Continuous Action Space
 
 When an Agent uses a Policy set to the **Continuous** vector action space, the
-action parameter passed to the Agent's `AgentAction()` function is an array with
+action parameter passed to the Agent's `OnActionReceived()` function is an array with
 length equal to the `Vector Action Space Size` property value.
 The individual values in the array have whatever meanings that you ascribe to
 them. If you assign an element in the array as the speed of an Agent, for
@@ -327,7 +366,7 @@ continuous action space with four control values.
 These control values are applied as torques to the bodies making up the arm:
 
 ```csharp
-public override void AgentAction(float[] act)
+public override void OnActionReceived(float[] act)
 {
     float torque_x = Mathf.Clamp(act[0], -1, 1) * 100f;
     float torque_z = Mathf.Clamp(act[1], -1, 1) * 100f;
@@ -347,17 +386,17 @@ As shown above, you can scale the control values as needed after clamping them.
 ### Discrete Action Space
 
 When an Agent uses a  **Discrete** vector action space, the
-action parameter passed to the Agent's `AgentAction()` function is an array
+action parameter passed to the Agent's `OnActionReceived()` function is an array
 containing indices. With the discrete vector action space, `Branches` is an
 array of integers, each value corresponds to the number of possibilities for
 each branch.
 
-For example, if we wanted an Agent that can move in an plane and jump, we could
+For example, if we wanted an Agent that can move in a plane and jump, we could
 define two branches (one for motion and one for jumping) because we want our
 agent be able to move __and__ jump concurrently. We define the first branch to
 have 5 possible actions (don't move, go left, go right, go backward, go forward)
 and the second one to have 2 possible actions (don't jump, jump). The
-AgentAction method would look something like:
+`OnActionReceived()` method would look something like:
 
 ```csharp
 // Get the action index for movement
@@ -390,7 +429,8 @@ impossible for the next decision. When the Agent is controlled by a
 neural network, the Agent will be unable to perform the specified action. Note
 that when the Agent is controlled by its Heuristic, the Agent will
 still be able to decide to perform the masked action. In order to mask an
-action,  override the `Agent.CollectDiscreteActionMasks()` virtual method, and call `DiscreteActionMasker.SetMask()` in it:
+action,  override the `Agent.CollectDiscreteActionMasks()` virtual method,
+and call `DiscreteActionMasker.SetMask()` in it:
 
 ```csharp
 public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker){
@@ -422,6 +462,19 @@ Notes:
 * You cannot mask all the actions of a branch.
 * You cannot mask actions in continuous control.
 
+### Actions Summary &  Best Practices
+
+* Actions can either use `Discrete` or `Continuous` spaces.
+* When using `Discrete` it is possible to assign multiple action branches, and to mask certain actions.
+* In general, smaller action spaces will make for easier learning.
+* Be sure to set the Vector Action's Space Size to the number of used Vector
+  Actions, and not greater, as doing the latter can interfere with the
+  efficiency of the training process.
+* When using continuous control, action values should be clipped to an
+  appropriate range. The provided PPO model automatically clips these values
+  between -1 and 1, but third party training systems may not do so.
+
+
 ## Rewards
 
 In reinforcement learning, the reward is a signal that the agent has done
@@ -435,22 +488,21 @@ trained model and is also not used during imitation learning.
 
 Perhaps the best advice is to start simple and only add complexity as needed. In
 general, you should reward results rather than actions you think will lead to
-the desired results. To help develop your rewards, you can use the Monitor class
-to display the cumulative reward received by an Agent. You can even use the
+the desired results. You can even use the
 Agent's Heuristic to control the Agent while watching how it accumulates rewards.
 
-Allocate rewards to an Agent by calling the `AddReward()` method in the
-`AgentAction()` function. The reward assigned between each decision
+Allocate rewards to an Agent by calling the `AddReward()` or `SetReward()` methods on the agent.
+The reward assigned between each decision
 should be in the range [-1,1]. Values outside this range can lead to
 unstable training. The `reward` value is reset to zero when the agent receives a
 new decision. If there are multiple calls to `AddReward()` for a single agent
 decision, the rewards will be summed together to evaluate how good the previous
-decision was. There is a method called `SetReward()` that will override all
+decision was. The `SetReward()` will override all
 previous rewards given to an agent since the previous decision.
 
 ### Examples
 
-You can examine the `AgentAction()` functions defined in the [example
+You can examine the `OnActionReceived()` functions defined in the [example
 environments](Learning-Environment-Examples.md) to see how those projects
 allocate rewards.
 
@@ -464,12 +516,12 @@ Collider[] hitObjects = Physics.OverlapBox(trueAgent.transform.position,
 if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
 {
     AddReward(1.0f);
-    Done();
+    EndEpisode();
 }
 if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
 {
     AddReward(-1f);
-    Done();
+    EndEpisode();
 }
 ```
 
@@ -491,7 +543,7 @@ if (gameObject.transform.position.y < 0.0f ||
     Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||
     Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 {
-    Done();
+    EndEpisode();
     AddReward(-1f);
 }
 ```
@@ -506,27 +558,42 @@ balances the ball. The agent can maximize its rewards by keeping the ball on the
 platform:
 
 ```csharp
-if (IsDone() == false)
-{
-    SetReward(0.1f);
-}
 
-// When ball falls mark Agent as done and give a negative penalty
+SetReward(0.1f);
+
+// When ball falls mark Agent as finished and give a negative penalty
 if ((ball.transform.position.y - gameObject.transform.position.y) < -2f ||
     Mathf.Abs(ball.transform.position.x - gameObject.transform.position.x) > 3f ||
     Mathf.Abs(ball.transform.position.z - gameObject.transform.position.z) > 3f)
 {
-    Done();
     SetReward(-1f);
+    EndEpisode();
+
 }
 ```
 
 The `Ball3DAgent` also assigns a negative penalty when the ball falls off the
 platform.
 
-Note that all of these environments make use of the `Done()` method, which manually
+Note that all of these environments make use of the `EndEpisode()` method, which manually
 terminates an episode when a termination condition is reached. This can be
 called independently of the `Max Step` property.
+
+### Rewards Summary & Best Practices
+
+* Use `AddReward()` to accumulate rewards between decisions. Use `SetReward()`
+  to overwrite any previous rewards accumulate between decisions.
+* The magnitude of any given reward should typically not be greater than 1.0 in
+  order to ensure a more stable learning process.
+* Positive rewards are often more helpful to shaping the desired behavior of an
+  agent than negative rewards. Excessive negative rewards can result in the agent
+  failing to learn any meaningful behavior.
+* For locomotion tasks, a small positive reward (+0.1) for forward velocity is
+  typically used.
+* If you want the agent to finish a task quickly, it is often helpful to provide
+  a small penalty every step (-0.05) that the agent does not complete the task.
+  In this case completion of the task should also coincide with the end of the
+  episode by calling `EndEpisode()` on the agent when it has accomplished its goal.
 
 ## Agent Properties
 

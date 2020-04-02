@@ -9,8 +9,9 @@ from mlagents.trainers.agent_processor import (
 )
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.stats import StatsReporter, StatsSummary
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
 
 def create_mock_brain():
@@ -152,6 +153,15 @@ def test_agent_deletion():
     assert len(processor.last_take_action_outputs.keys()) == 0
     assert len(processor.episode_steps.keys()) == 0
     assert len(processor.episode_rewards.keys()) == 0
+    assert len(processor.last_step_result.keys()) == 0
+
+    # check that steps with immediate dones don't add to dicts
+    processor.add_experiences(mock_done_step, 0, ActionInfo.empty())
+    assert len(processor.experience_buffers.keys()) == 0
+    assert len(processor.last_take_action_outputs.keys()) == 0
+    assert len(processor.episode_steps.keys()) == 0
+    assert len(processor.episode_rewards.keys()) == 0
+    assert len(processor.last_step_result.keys()) == 0
 
 
 def test_end_episode():
@@ -229,3 +239,34 @@ def test_agent_manager_queue():
     queue_traj = queue.get_nowait()
     assert isinstance(queue_traj, Trajectory)
     assert queue.empty()
+
+
+def test_agent_manager_stats():
+    policy = mock.Mock()
+    stats_reporter = StatsReporter("FakeCategory")
+    writer = mock.Mock()
+    stats_reporter.add_writer(writer)
+    manager = AgentManager(policy, "MyBehavior", stats_reporter)
+
+    all_env_stats = [
+        {
+            "averaged": (1.0, StatsAggregationMethod.AVERAGE),
+            "most_recent": (2.0, StatsAggregationMethod.MOST_RECENT),
+        },
+        {
+            "averaged": (3.0, StatsAggregationMethod.AVERAGE),
+            "most_recent": (4.0, StatsAggregationMethod.MOST_RECENT),
+        },
+    ]
+    for env_stats in all_env_stats:
+        manager.record_environment_stats(env_stats, worker_id=0)
+
+    expected_stats = {
+        "averaged": StatsSummary(mean=2.0, std=mock.ANY, num=2),
+        "most_recent": StatsSummary(mean=4.0, std=0.0, num=1),
+    }
+    stats_reporter.write_stats(123)
+    writer.write_stats.assert_any_call("FakeCategory", expected_stats, 123)
+
+    # clean up our Mock from the global list
+    StatsReporter.writers.remove(writer)

@@ -1,8 +1,8 @@
 import os
 import yaml
 from typing import Any, Dict, TextIO
-import logging
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
@@ -10,8 +10,10 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
+from mlagents.trainers.ghost.controller import GhostController
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class TrainerFactory:
@@ -38,6 +40,7 @@ class TrainerFactory:
         self.seed = seed
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
+        self.ghost_controller = GhostController()
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
@@ -49,6 +52,7 @@ class TrainerFactory:
             self.keep_checkpoints,
             self.train_model,
             self.load_model,
+            self.ghost_controller,
             self.seed,
             self.meta_curriculum,
             self.multi_gpu,
@@ -64,6 +68,7 @@ def initialize_trainer(
     keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
+    ghost_controller: GhostController,
     seed: int,
     meta_curriculum: MetaCurriculum = None,
     multi_gpu: bool = False,
@@ -80,6 +85,7 @@ def initialize_trainer(
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
     :param load_model: Whether to load the model or randomly initialize
+    :param ghost_controller: The object that coordinates ghost trainers
     :param seed: The random seed to use
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
@@ -157,6 +163,7 @@ def initialize_trainer(
         trainer = GhostTrainer(
             trainer,
             brain_name,
+            ghost_controller,
             min_lesson_length,
             trainer_parameters,
             train_model,
@@ -190,3 +197,33 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
             "Error parsing yaml file. Please check for formatting errors. "
             "A tool such as http://www.yamllint.com/ can be helpful with this."
         ) from e
+
+
+def handle_existing_directories(
+    model_path: str, summary_path: str, resume: bool, force: bool
+) -> None:
+    """
+    Validates that if the run_id model exists, we do not overwrite it unless --force is specified.
+    Throws an exception if resume isn't specified and run_id exists. Throws an exception
+    if --resume is specified and run-id was not found.
+    :param model_path: The model path specified.
+    :param summary_path: The summary path to be used.
+    :param resume: Whether or not the --resume flag was passed.
+    :param force: Whether or not the --force flag was passed.
+    """
+
+    model_path_exists = os.path.isdir(model_path)
+
+    if model_path_exists:
+        if not resume and not force:
+            raise UnityTrainerException(
+                "Previous data from this run-id was found. "
+                "Either specify a new run-id, use --resume to resume this run, "
+                "or use the --force parameter to overwrite existing data."
+            )
+    else:
+        if resume:
+            raise UnityTrainerException(
+                "Previous data from this run-id was not found. "
+                "Train a new run by removing the --resume flag."
+            )

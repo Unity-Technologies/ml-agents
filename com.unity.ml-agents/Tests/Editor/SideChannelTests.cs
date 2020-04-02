@@ -13,18 +13,23 @@ namespace MLAgents.Tests
         {
             public List<int> messagesReceived = new List<int>();
 
-            public TestSideChannel() {
+            public TestSideChannel()
+            {
                 ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7");
             }
 
-            public override void OnMessageReceived(byte[] data)
+            public override void OnMessageReceived(IncomingMessage msg)
             {
-                messagesReceived.Add(BitConverter.ToInt32(data, 0));
+                messagesReceived.Add(msg.ReadInt32());
             }
 
-            public void SendInt(int data)
+            public void SendInt(int value)
             {
-                QueueMessageToSend(BitConverter.GetBytes(data));
+                using (var msg = new OutgoingMessage())
+                {
+                    msg.WriteInt32(value);
+                    QueueMessageToSend(msg);
+                }
             }
         }
 
@@ -40,8 +45,8 @@ namespace MLAgents.Tests
             intSender.SendInt(5);
             intSender.SendInt(6);
 
-            byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
-            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
+            byte[] fakeData = SideChannelUtils.GetSideChannelMessage(dictSender);
+            SideChannelUtils.ProcessSideChannelData(dictReceiver, fakeData);
 
             Assert.AreEqual(intReceiver.messagesReceived[0], 4);
             Assert.AreEqual(intReceiver.messagesReceived[1], 5);
@@ -62,8 +67,8 @@ namespace MLAgents.Tests
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str1));
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str2));
 
-            byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
-            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
+            byte[] fakeData = SideChannelUtils.GetSideChannelMessage(dictSender);
+            SideChannelUtils.ProcessSideChannelData(dictReceiver, fakeData);
 
             var messages = strReceiver.GetAndClearReceivedMessages();
 
@@ -91,8 +96,8 @@ namespace MLAgents.Tests
             tmp = propB.GetPropertyWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 1.0f);
 
-            byte[] fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
-            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
+            byte[] fakeData = SideChannelUtils.GetSideChannelMessage(dictSender);
+            SideChannelUtils.ProcessSideChannelData(dictReceiver, fakeData);
 
             tmp = propA.GetPropertyWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 1.0f);
@@ -100,9 +105,63 @@ namespace MLAgents.Tests
             Assert.AreEqual(wasCalled, 0);
             propB.SetProperty(k1, 1.0f);
             Assert.AreEqual(wasCalled, 0);
-            fakeData = RpcCommunicator.GetSideChannelMessage(dictSender);
-            RpcCommunicator.ProcessSideChannelData(dictReceiver, fakeData);
+            fakeData = SideChannelUtils.GetSideChannelMessage(dictSender);
+            SideChannelUtils.ProcessSideChannelData(dictReceiver, fakeData);
             Assert.AreEqual(wasCalled, 1);
+
+            var keysA = propA.ListProperties();
+            Assert.AreEqual(2, keysA.Count);
+            Assert.IsTrue(keysA.Contains(k1));
+            Assert.IsTrue(keysA.Contains(k2));
+
+            var keysB = propA.ListProperties();
+            Assert.AreEqual(2, keysB.Count);
+            Assert.IsTrue(keysB.Contains(k1));
+            Assert.IsTrue(keysB.Contains(k2));
+        }
+
+        [Test]
+        public void TestOutgoingMessageRawBytes()
+        {
+            // Make sure that SetRawBytes resets the buffer correctly.
+            // Write 8 bytes (an int and float) then call SetRawBytes with 4 bytes
+            var msg = new OutgoingMessage();
+            msg.WriteInt32(42);
+            msg.WriteFloat32(1.0f);
+
+            var data = new byte[] { 1, 2, 3, 4 };
+            msg.SetRawBytes(data);
+
+            var result = msg.ToByteArray();
+            Assert.AreEqual(data, result);
+        }
+
+        [Test]
+        public void TestMessageReadWrites()
+        {
+            var boolVal = true;
+            var intVal = 1337;
+            var floatVal = 4.2f;
+            var floatListVal = new float[] { 1001, 1002 };
+            var stringVal = "mlagents!";
+
+            IncomingMessage incomingMsg;
+            using (var outgoingMsg = new OutgoingMessage())
+            {
+                outgoingMsg.WriteBoolean(boolVal);
+                outgoingMsg.WriteInt32(intVal);
+                outgoingMsg.WriteFloat32(floatVal);
+                outgoingMsg.WriteString(stringVal);
+                outgoingMsg.WriteFloatList(floatListVal);
+
+                incomingMsg = new IncomingMessage(outgoingMsg.ToByteArray());
+            }
+
+            Assert.AreEqual(boolVal, incomingMsg.ReadBoolean());
+            Assert.AreEqual(intVal, incomingMsg.ReadInt32());
+            Assert.AreEqual(floatVal, incomingMsg.ReadFloat32());
+            Assert.AreEqual(stringVal, incomingMsg.ReadString());
+            Assert.AreEqual(floatListVal, incomingMsg.ReadFloatList());
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using MLAgents;
+using MLAgents.SideChannels;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -60,7 +61,7 @@ public class SoccerFieldArea : MonoBehaviour
             {
                 ps.agentScript.AddReward(-1);
             }
-            ps.agentScript.Done();  //all agents need to be reset
+            ps.agentScript.EndEpisode();  //all agents need to be reset
 
             if (goalTextUI)
             {
@@ -83,7 +84,7 @@ public class SoccerFieldArea : MonoBehaviour
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 
-        var ballScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("ball_scale", 0.015f);
+        var ballScale = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_scale", 0.015f);
         ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }

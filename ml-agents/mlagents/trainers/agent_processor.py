@@ -1,8 +1,9 @@
 import sys
-from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Set
+from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Any
 from collections import defaultdict, Counter, deque
 
 from mlagents_envs.base_env import BatchedStepResult, StepResult
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
@@ -66,7 +67,6 @@ class AgentProcessor:
             for _entropy in take_action_outputs["entropy"]:
                 self.stats_reporter.add_stat("Policy/Entropy", _entropy)
 
-        terminated_agents: Set[str] = set()
         # Make unique agent_ids that are global across workers
         action_global_agent_ids = [
             get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
@@ -85,6 +85,7 @@ class AgentProcessor:
             stored_take_action_outputs = self.last_take_action_outputs.get(
                 global_id, None
             )
+
             if stored_agent_step is not None and stored_take_action_outputs is not None:
                 # We know the step is from the same worker, so use the local agent id.
                 obs = stored_agent_step.obs
@@ -143,15 +144,12 @@ class AgentProcessor:
                         traj_queue.put(trajectory)
                     self.experience_buffers[global_id] = []
                     if curr_agent_step.done:
-                        self.stats_reporter.add_stat(
-                            "Environment/Cumulative Reward",
-                            self.episode_rewards.get(global_id, 0),
-                        )
+                        # Record episode length for agents which have had at least
+                        # 1 step. Done after reset ignored.
                         self.stats_reporter.add_stat(
                             "Environment/Episode Length",
                             self.episode_steps.get(global_id, 0),
                         )
-                        terminated_agents.add(global_id)
                 elif not curr_agent_step.done:
                     self.episode_steps[global_id] += 1
 
@@ -160,9 +158,9 @@ class AgentProcessor:
                 curr_agent_step,
                 batched_step_result.agent_id_to_index[_id],
             )
-
-        for terminated_id in terminated_agents:
-            self._clean_agent_data(terminated_id)
+            # Delete all done agents, regardless of if they had a 0-length episode.
+            if curr_agent_step.done:
+                self._clean_agent_data(global_id)
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,
@@ -177,13 +175,21 @@ class AgentProcessor:
         """
         Removes the data for an Agent.
         """
-        del self.experience_buffers[global_id]
-        del self.last_take_action_outputs[global_id]
-        del self.last_step_result[global_id]
-        del self.episode_steps[global_id]
-        del self.episode_rewards[global_id]
+        self._safe_delete(self.experience_buffers, global_id)
+        self._safe_delete(self.last_take_action_outputs, global_id)
+        self._safe_delete(self.last_step_result, global_id)
+        self._safe_delete(self.episode_steps, global_id)
+        self._safe_delete(self.episode_rewards, global_id)
         self.policy.remove_previous_action([global_id])
         self.policy.remove_memories([global_id])
+
+    def _safe_delete(self, my_dictionary: Dict[Any, Any], key: Any) -> None:
+        """
+        Safe removes data from a dictionary. If not found,
+        don't delete.
+        """
+        if key in my_dictionary:
+            del my_dictionary[key]
 
     def publish_trajectory_queue(
         self, trajectory_queue: "AgentManagerQueue[Trajectory]"
@@ -262,3 +268,23 @@ class AgentManager(AgentProcessor):
             self.behavior_id
         )
         self.publish_trajectory_queue(self.trajectory_queue)
+
+    def record_environment_stats(
+        self, env_stats: Dict[str, Tuple[float, StatsAggregationMethod]], worker_id: int
+    ) -> None:
+        """
+        Pass stats from the environment to the StatsReporter.
+        Depending on the StatsAggregationMethod, either StatsReporter.add_stat or StatsReporter.set_stat is used.
+        The worker_id is used to determin whether StatsReporter.set_stat should be used.
+        :param env_stats:
+        :param worker_id:
+        :return:
+        """
+        for stat_name, (val, agg_type) in env_stats.items():
+            if agg_type == StatsAggregationMethod.AVERAGE:
+                self.stats_reporter.add_stat(stat_name, val)
+            elif agg_type == StatsAggregationMethod.MOST_RECENT:
+                # In order to prevent conflicts between multiple environments,
+                # only stats from the first environment are recorded.
+                if worker_id == 0:
+                    self.stats_reporter.set_stat(stat_name, val)

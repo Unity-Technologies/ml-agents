@@ -41,7 +41,7 @@ the same environment.
 In order to define the curricula, the first step is to decide which parameters of
 the environment will vary. In the case of the Wall Jump environment,
 the height of the wall is what varies. We define this as a `Shared Float Property`
-that can be accessed in `Academy.Instance.FloatProperties`, and by doing
+that can be accessed in `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`, and by doing
 so it becomes adjustable via the Python API.
 Rather than adjusting it by hand, we will create a YAML file which
 describes the structure of the curricula. Within it, we can specify which
@@ -93,11 +93,11 @@ behavior has the following parameters:
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
 * `parameters` (dictionary of key:string, value:float array) - Corresponds to
-  Academy reset parameters to control. Length of each array should be one
+  Environment parameters to control. Length of each array should be one
   greater than number of thresholds.
 
-Once our curriculum is defined, we have to use the reset parameters we defined
-and modify the environment from the Agent's `AgentReset()` function. See
+Once our curriculum is defined, we have to use the environment parameters we defined
+and modify the environment from the Agent's `OnEpisodeBegin()` function. See
 [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 for an example.
 
@@ -110,7 +110,7 @@ for our curricula and PPO will train using Curriculum Learning. For example,
 to train agents in the Wall Jump environment with curriculum learning, we can run:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum --train
+mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum
 ```
 
 We can then keep track of the current lessons and progresses via TensorBoard.

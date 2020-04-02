@@ -53,7 +53,7 @@ NUM_AGENTS = 12
 
 def test_gaussian_distribution():
     with tf.Graph().as_default():
-        logits = tf.Variable(initial_value=[[0, 0]], trainable=True, dtype=tf.float32)
+        logits = tf.Variable(initial_value=[[1, 1]], trainable=True, dtype=tf.float32)
         distribution = GaussianDistribution(
             logits,
             act_size=VECTOR_ACTION_SPACE,
@@ -71,6 +71,14 @@ def test_gaussian_distribution():
                     assert out.shape[1] == VECTOR_ACTION_SPACE[0]
                 output = sess.run([distribution.total_log_probs])
                 assert output[0].shape[0] == 1
+            # Test entropy is correct
+            log_std_tensor = tf.get_default_graph().get_tensor_by_name(
+                "log_std/BiasAdd:0"
+            )
+            feed_dict = {log_std_tensor: [[1.0, 1.0]]}
+            entropy = sess.run([distribution.entropy], feed_dict=feed_dict)
+            # Entropy with log_std of 1.0 should be 2.42
+            assert pytest.approx(entropy[0], 0.01) == 2.42
 
 
 def test_tanh_distribution():
@@ -113,8 +121,8 @@ def test_multicategorical_distribution():
             sess.run(init)
             output = sess.run(distribution.sample)
             for _ in range(10):
-                sample, log_probs = sess.run(
-                    [distribution.sample, distribution.log_probs]
+                sample, log_probs, entropy = sess.run(
+                    [distribution.sample, distribution.log_probs, distribution.entropy]
                 )
                 assert len(log_probs[0]) == sum(DISCRETE_ACTION_SPACE)
                 # Assert action never exceeds [-1,1]
@@ -123,6 +131,8 @@ def test_multicategorical_distribution():
                     assert act >= 0 and act <= DISCRETE_ACTION_SPACE[i]
                 output = sess.run([distribution.total_log_probs])
                 assert output[0].shape[0] == 1
+                # Make sure entropy is correct
+                assert entropy[0] > 3.8
 
             # Test masks
             mask = []

@@ -4,9 +4,9 @@ from typing import Dict, Any, TextIO
 
 from .exception import CurriculumConfigError, CurriculumLoadingError
 
-import logging
+from mlagents_envs.logging_util import get_logger
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class Curriculum:

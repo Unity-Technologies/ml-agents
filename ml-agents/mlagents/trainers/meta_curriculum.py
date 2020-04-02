@@ -3,9 +3,9 @@
 from typing import Dict, Set
 from mlagents.trainers.curriculum import Curriculum
 
-import logging
+from mlagents_envs.logging_util import get_logger
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 
 class MetaCurriculum:

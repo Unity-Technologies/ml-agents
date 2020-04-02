@@ -36,7 +36,7 @@ Unity Assets。`python` 目录包含训练代码。
 
 ### Windows 用户
 
-如果您是刚接触 Python 和 TensorFlow 的 Windows 用户，请遵循[此指南](/docs/Installation-Windows.md)来设置 Python 环境。
+如果您是刚接触 Python 和 TensorFlow 的 Windows 用户，请遵循[此指南](/docs/Installation-Anaconda-Windows.md)来设置 Python 环境。
 
 ### Mac 和 Unix 用户
 

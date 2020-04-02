@@ -1,9 +1,9 @@
-import logging
 import numpy as np
 from typing import Dict, List, Optional, Any, Mapping
 
 from mlagents.tf_utils import tf
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
 from mlagents.trainers.models import LearningRateSchedule, EncoderType, ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
@@ -13,7 +13,7 @@ from mlagents_envs.timers import timed
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
-logger = logging.getLogger("mlagents.trainers")
+logger = get_logger(__name__)
 
 POLICY_SCOPE = ""
 TARGET_SCOPE = "target_network"
@@ -155,7 +155,6 @@ class SACOptimizer(TFOptimizer):
             "q1_loss": self.q1_loss,
             "q2_loss": self.q2_loss,
             "entropy_coef": self.ent_coef,
-            "entropy": self.policy.entropy,
             "update_batch": self.update_batch_policy,
             "update_value": self.update_batch_value,
             "update_entropy": self.update_batch_entropy,
@@ -232,8 +231,9 @@ class SACOptimizer(TFOptimizer):
 
         for name in stream_names:
             if discrete:
-                _branched_mpq1 = self._apply_as_branches(
-                    self.policy_network.q1_pheads[name] * discrete_action_probs
+                _branched_mpq1 = ModelUtils.break_into_branches(
+                    self.policy_network.q1_pheads[name] * discrete_action_probs,
+                    self.act_size,
                 )
                 branched_mpq1 = tf.stack(
                     [
@@ -243,8 +243,9 @@ class SACOptimizer(TFOptimizer):
                 )
                 _q1_p_mean = tf.reduce_mean(branched_mpq1, axis=0)
 
-                _branched_mpq2 = self._apply_as_branches(
-                    self.policy_network.q2_pheads[name] * discrete_action_probs
+                _branched_mpq2 = ModelUtils.break_into_branches(
+                    self.policy_network.q2_pheads[name] * discrete_action_probs,
+                    self.act_size,
                 )
                 branched_mpq2 = tf.stack(
                     [
@@ -282,11 +283,11 @@ class SACOptimizer(TFOptimizer):
 
             if discrete:
                 # We need to break up the Q functions by branch, and update them individually.
-                branched_q1_stream = self._apply_as_branches(
-                    self.policy.selected_actions * q1_streams[name]
+                branched_q1_stream = ModelUtils.break_into_branches(
+                    self.policy.selected_actions * q1_streams[name], self.act_size
                 )
-                branched_q2_stream = self._apply_as_branches(
-                    self.policy.selected_actions * q2_streams[name]
+                branched_q2_stream = ModelUtils.break_into_branches(
+                    self.policy.selected_actions * q2_streams[name], self.act_size
                 )
 
                 # Reduce each branch into scalar
@@ -344,7 +345,9 @@ class SACOptimizer(TFOptimizer):
         self.ent_coef = tf.exp(self.log_ent_coef)
         if discrete:
             # We also have to do a different entropy and target_entropy per branch.
-            branched_per_action_ent = self._apply_as_branches(per_action_entropy)
+            branched_per_action_ent = ModelUtils.break_into_branches(
+                per_action_entropy, self.act_size
+            )
             branched_ent_sums = tf.stack(
                 [
                     tf.reduce_sum(_lp, axis=1, keep_dims=True) + _te
@@ -364,8 +367,8 @@ class SACOptimizer(TFOptimizer):
             # Same with policy loss, we have to do the loss per branch and average them,
             # so that larger branches don't get more weight.
             # The equivalent KL divergence from Eq 10 of Haarnoja et al. is also pi*log(pi) - Q
-            branched_q_term = self._apply_as_branches(
-                discrete_action_probs * self.policy_network.q1_p
+            branched_q_term = ModelUtils.break_into_branches(
+                discrete_action_probs * self.policy_network.q1_p, self.act_size
             )
 
             branched_policy_loss = tf.stack(
@@ -443,18 +446,6 @@ class SACOptimizer(TFOptimizer):
         self.total_value_loss = self.q1_loss + self.q2_loss + self.value_loss
 
         self.entropy = self.policy_network.entropy
-
-    def _apply_as_branches(self, concat_logits: tf.Tensor) -> List[tf.Tensor]:
-        """
-        Takes in a concatenated set of logits and breaks it up into a list of non-concatenated logits, one per
-        action branch
-        """
-        action_idx = [0] + list(np.cumsum(self.act_size))
-        branches_logits = [
-            concat_logits[:, action_idx[i] : action_idx[i + 1]]
-            for i in range(len(self.act_size))
-        ]
-        return branches_logits
 
     def _create_sac_optimizer_ops(self) -> None:
         """
@@ -537,7 +528,7 @@ class SACOptimizer(TFOptimizer):
         return update_stats
 
     def update_reward_signals(
-        self, reward_signal_minibatches: Mapping[str, Dict], num_sequences: int
+        self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
     ) -> Dict[str, float]:
         """
         Only update the reward signals.
@@ -567,7 +558,7 @@ class SACOptimizer(TFOptimizer):
         feed_dict: Dict[tf.Tensor, Any],
         update_dict: Dict[str, tf.Tensor],
         stats_needed: Dict[str, str],
-        reward_signal_minibatches: Mapping[str, Dict],
+        reward_signal_minibatches: Mapping[str, AgentBuffer],
         num_sequences: int,
     ) -> None:
         """

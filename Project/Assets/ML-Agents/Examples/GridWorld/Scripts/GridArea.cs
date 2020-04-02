@@ -14,7 +14,7 @@ public class GridArea : MonoBehaviour
 
     public GameObject trueAgent;
 
-    IFloatProperties m_ResetParameters;
+    FloatPropertiesChannel m_ResetParameters;
 
     Camera m_AgentCam;
 
@@ -32,7 +32,7 @@ public class GridArea : MonoBehaviour
 
     public void Start()
     {
-        m_ResetParameters = Academy.Instance.FloatProperties;
+        m_ResetParameters = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         m_Objects = new[] { goalPref, pitPref };
 

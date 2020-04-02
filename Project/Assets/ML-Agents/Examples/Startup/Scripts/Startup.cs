@@ -7,10 +7,28 @@ namespace MLAgentsExamples
     internal class Startup : MonoBehaviour
     {
         const string k_SceneVariableName = "SCENE_NAME";
+        private const string k_SceneCommandLineFlag = "--mlagents-scene-name";
 
         void Awake()
         {
-            var sceneName = Environment.GetEnvironmentVariable(k_SceneVariableName);
+            var sceneName = "";
+            
+            // Check for the CLI '--scene-name' flag.  This will be used if
+            // no scene environment variable is found.
+            var args = Environment.GetCommandLineArgs();
+            Console.WriteLine("Command line arguments passed: " + String.Join(" ", args));
+            for (int i = 0; i < args.Length; i++) {
+                if (args [i] == k_SceneCommandLineFlag && i < args.Length - 1) {
+                    sceneName = args[i + 1];
+                }
+            }
+
+            var sceneEnvironmentVariable = Environment.GetEnvironmentVariable(k_SceneVariableName);
+            if (!string.IsNullOrEmpty(sceneEnvironmentVariable))
+            {
+                sceneName = sceneEnvironmentVariable;
+            }
+            
             SwitchScene(sceneName);
         }
 
@@ -18,13 +36,19 @@ namespace MLAgentsExamples
         {
             if (sceneName == null)
             {
-                throw new ArgumentException(
-                    $"You didn't specified the {k_SceneVariableName} environment variable");
+                Console.WriteLine(
+                    $"You didn't specify the {k_SceneVariableName} environment variable or the {k_SceneCommandLineFlag} command line argument."
+                );
+                Application.Quit(22);
+                return;
             }
             if (SceneUtility.GetBuildIndexByScenePath(sceneName) < 0)
             {
-                throw new ArgumentException(
-                    $"The scene {sceneName} doesn't exist within your build. ");
+                Console.WriteLine(
+                    $"The scene {sceneName} doesn't exist within your build."
+                );
+                Application.Quit(22);
+                return;
             }
             SceneManager.LoadSceneAsync(sceneName);
         }

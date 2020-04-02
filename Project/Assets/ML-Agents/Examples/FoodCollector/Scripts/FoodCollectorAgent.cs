@@ -1,6 +1,7 @@
 using UnityEngine;
 using MLAgents;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 public class FoodCollectorAgent : Agent
 {
@@ -29,9 +30,8 @@ public class FoodCollectorAgent : Agent
     public bool useVectorObs;
 
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
-        base.InitializeAgent();
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<FoodCollectorArea>();
         m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
@@ -202,7 +202,7 @@ public class FoodCollectorAgent : Agent
         gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         MoveAgent(vectorAction);
     }
@@ -230,7 +230,7 @@ public class FoodCollectorAgent : Agent
         return action;
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         Unfreeze();
         Unpoison();
@@ -273,12 +273,12 @@ public class FoodCollectorAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = Academy.Instance.FloatProperties.GetPropertyWithDefault("laser_length", 1.0f);
+        m_LaserLength = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("laser_length", 1.0f);
     }
 
     public void SetAgentScale()
     {
-        float agentScale = Academy.Instance.FloatProperties.GetPropertyWithDefault("agent_scale", 1.0f);
+        float agentScale = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("agent_scale", 1.0f);
         gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 

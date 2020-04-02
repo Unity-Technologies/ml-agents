@@ -2,19 +2,22 @@
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
-import logging
 from collections import defaultdict
 
 import numpy as np
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 
 class PPOTrainer(RLTrainer):
@@ -69,6 +72,19 @@ class PPOTrainer(RLTrainer):
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
 
+    def _check_param_keys(self):
+        super()._check_param_keys()
+        # Check that batch size is greater than sequence length. Else, throw
+        # an exception.
+        if (
+            self.trainer_parameters["sequence_length"]
+            > self.trainer_parameters["batch_size"]
+            and self.trainer_parameters["use_recurrent"]
+        ):
+            raise UnityTrainerException(
+                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
+            )
+
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
@@ -77,9 +93,6 @@ class PPOTrainer(RLTrainer):
         """
         super()._process_trajectory(trajectory)
         agent_id = trajectory.agent_id  # All the agents should have the same ID
-
-        # Add to episode_steps
-        self.episode_steps[agent_id] += len(trajectory.steps)
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
@@ -94,7 +107,7 @@ class PPOTrainer(RLTrainer):
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
-            self.stats_reporter.add_stat(
+            self._stats_reporter.add_stat(
                 self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
 
@@ -199,13 +212,13 @@ class PPOTrainer(RLTrainer):
                     batch_update_stats[stat_name].append(value)
 
         for stat, stat_list in batch_update_stats.items():
-            self.stats_reporter.add_stat(stat, np.mean(stat_list))
+            self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
         if self.optimizer.bc_module:
             update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
-                self.stats_reporter.add_stat(stat, val)
-        self.clear_update_buffer()
+                self._stats_reporter.add_stat(stat, val)
+        self._clear_update_buffer()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
         """
@@ -225,10 +238,12 @@ class PPOTrainer(RLTrainer):
 
         return policy
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer.
-        :param name_behavior_id: Behavior ID that the policy should belong to.
+        :param parsed_behavior_id: Behavior identifiers that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
         if self.policy:

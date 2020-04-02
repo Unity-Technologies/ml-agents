@@ -7,7 +7,27 @@ The versions can be found in
 
 # Migrating
 
-## Migrating from 0.14 to latest
+## Migrating from 0.15 to latest
+
+### Important changes
+* The `--load` and `--train` command-line flags have been deprecated and replaced with `--resume` and `--inference`.
+* Running with the same `--run-id` twice will now throw an error.
+* The `play_against_current_self_ratio` self-play trainer hyperparameter has been renamed to `play_against_latest_model_ratio`
+
+### Steps to Migrate
+* Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
+ will happen by default. To run without training, use `--inference`.
+* To force-overwrite files from a pre-existing run, add the `--force` command-line flag.
+* The Jupyter notebooks have been removed from the repository.
+* `Academy.FloatProperties` was removed.
+* `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were removed.
+
+### Steps to Migrate
+* Replace `Academy.FloatProperties` with `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`.
+* Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
+* Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
+
+## Migrating from 0.14 to 0.15
 
 ### Important changes
 * The `Agent.CollectObservations()` virtual method now takes as input a `VectorSensor` sensor as argument. The `Agent.AddVectorObs()` methods were removed.
@@ -24,6 +44,17 @@ The versions can be found in
 * `BrainParameters` and `SpaceType` have been removed from the public API
 * `BehaviorParameters` have been removed from the public API.
 * `DecisionRequester` has been made internal (you can still use the DecisionRequesterComponent from the inspector). `RepeatAction` was renamed `TakeActionsBetweenDecisions` for clarity.
+* The following methods in the `Agent` class have been renamed. The original method names will be removed in a later release:
+  * `InitializeAgent()` was renamed to `Initialize()`
+  * `AgentAction()` was renamed to `OnActionReceived()`
+  * `AgentReset()` was renamed to `OnEpsiodeBegin()`
+  * `Done()` was renamed to `EndEpisode()`
+  * `GiveModel()` was renamed to `SetModel()`
+* The `IFloatProperties` interface has been removed.
+* The interface for SideChannels was changed:
+  * In C#, `OnMessageReceived` now takes a `IncomingMessage` argument, and `QueueMessageToSend` takes an `OutgoingMessage` argument.
+  * In python, `on_message_received` now takes a `IncomingMessage` argument, and `queue_message_to_send` takes an `OutgoingMessage` argument.
+  * Automatic stepping for Academy is now controlled from the AutomaticSteppingEnabled property.
 
 ### Steps to Migrate
 * Add the `using MLAgents.Sensors;` in addition to `using MLAgents;` on top of your Agent's script.
@@ -31,8 +62,16 @@ The versions can be found in
 * Replace your calls to `SetActionMask` on your Agent to `DiscreteActionMasker.SetActionMask` in `CollectDiscreteActionMasks`.
 * If you call `RayPerceptionSensor.PerceiveStatic()` manually, add your inputs to a `RayPerceptionInput`. To get the previous float array output,
  iterate through `RayPerceptionOutput.rayOutputs` and call `RayPerceptionOutput.RayOutput.ToFloatArray()`.
-* Re-import all of your `*.NN` files to work with the updated Barracuda package.
 * Replace all calls to `Agent.GetStepCount()` with `Agent.StepCount`
+* We strongly recommend replacing the following methods with their new equivalent as they will be removed in a later release:
+  * `InitializeAgent()` to `Initialize()`
+  * `AgentAction()` to `OnActionReceived()`
+  * `AgentReset()` to `OnEpisodeBegin()`
+  * `Done()` to `EndEpisode()`
+  * `GiveModel()` to `SetModel()`
+* Replace `IFloatProperties` variables with `FloatPropertiesChannel` variables.
+* If you implemented custom `SideChannels`, update the signatures of your methods, and add your data to the `OutgoingMessage` or read it from the `IncomingMessage`.
+* Replace calls to Academy.EnableAutomaticStepping()/DisableAutomaticStepping() with Academy.AutomaticSteppingEnabled = true/false.
 
 ## Migrating from 0.13 to 0.14
 

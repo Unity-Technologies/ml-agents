@@ -1,4 +1,3 @@
-import logging
 from typing import Any, Dict, List
 from collections import namedtuple
 import numpy as np
@@ -6,10 +5,13 @@ import abc
 
 from mlagents.tf_utils import tf
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.buffer import AgentBuffer
 
-logger = logging.getLogger("mlagents.trainers")
+
+logger = get_logger(__name__)
 
 RewardSignalResult = namedtuple(
     "RewardSignalResult", ["scaled_reward", "unscaled_reward"]
@@ -39,7 +41,7 @@ class RewardSignal(abc.ABC):
         self.strength = strength
         self.stats_name_to_update_name: Dict[str, str] = {}
 
-    def evaluate_batch(self, mini_batch: Dict[str, np.array]) -> RewardSignalResult:
+    def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         """
         Evaluates the reward for the data present in the Dict mini_batch. Use this when evaluating a reward
         function drawn straight from a Buffer.
@@ -54,7 +56,7 @@ class RewardSignal(abc.ABC):
         )
 
     def prepare_update(
-        self, policy: TFPolicy, mini_batch: Dict[str, np.ndarray], num_sequences: int
+        self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
         If the reward signal has an internal model (e.g. GAIL or Curiosity), get the feed_dict

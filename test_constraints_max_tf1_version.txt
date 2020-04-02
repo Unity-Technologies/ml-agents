@@ -3,6 +3,5 @@
 # For projects with upper bounds, we should periodically update this list to the latest release version
 grpcio>=1.23.0
 numpy>=1.17.2
-# Temporary workaround for https://github.com/tensorflow/tensorflow/issues/36179 and https://github.com/tensorflow/tensorflow/issues/36188
-tensorflow>=1.14.0,<1.15.1
+tensorflow>=1.15.2,<2.0.0
 h5py>=2.10.0

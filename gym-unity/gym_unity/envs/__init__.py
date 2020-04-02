@@ -1,4 +1,3 @@
-import logging
 import itertools
 import numpy as np
 from typing import Any, Dict, List, Optional, Tuple, Union
@@ -8,6 +7,7 @@ from gym import error, spaces
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs import logging_util
 
 
 class UnityGymException(error.Error):
@@ -18,9 +18,8 @@ class UnityGymException(error.Error):
     pass
 
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("gym_unity")
-
+logger = logging_util.get_logger(__name__)
+logging_util.set_log_level(logging_util.INFO)
 
 GymSingleStepResult = Tuple[np.ndarray, float, bool, Dict]
 GymMultiStepResult = Tuple[List[np.ndarray], List[float], List[bool], Dict]
@@ -57,7 +56,7 @@ class UnityEnv(gym.Env):
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
         """
-        base_port = 5005
+        base_port = UnityEnvironment.BASE_ENVIRONMENT_PORT
         if environment_filename is None:
             base_port = UnityEnvironment.DEFAULT_EDITOR_PORT
 
@@ -364,9 +363,8 @@ class UnityEnv(gym.Env):
 
     def _sanitize_info(self, step_result: BatchedStepResult) -> BatchedStepResult:
         n_extra_agents = step_result.n_agents() - self._n_agents
-        if n_extra_agents < 0 or n_extra_agents > self._n_agents:
+        if n_extra_agents < 0:
             # In this case, some Agents did not request a decision when expected
-            # or too many requested a decision
             raise UnityGymException(
                 "The number of agents in the scene does not match the expected number."
             )
@@ -386,6 +384,10 @@ class UnityEnv(gym.Env):
         # only cares about the ordering.
         for index, agent_id in enumerate(step_result.agent_id):
             if not self._previous_step_result.contains_agent(agent_id):
+                if step_result.done[index]:
+                    # If the Agent is already done (e.g. it ended its epsiode twice in one step)
+                    # Don't try to register it here.
+                    continue
                 # Register this agent, and get the reward of the previous agent that
                 # was in its index, so that we can return it to the gym.
                 last_reward = self.agent_mapper.register_new_agent_id(agent_id)
@@ -528,8 +530,12 @@ class AgentIdIndexMapper:
         """
         Declare the agent done with the corresponding final reward.
         """
-        gym_index = self._agent_id_to_gym_index.pop(agent_id)
-        self._done_agents_index_to_last_reward[gym_index] = reward
+        if agent_id in self._agent_id_to_gym_index:
+            gym_index = self._agent_id_to_gym_index.pop(agent_id)
+            self._done_agents_index_to_last_reward[gym_index] = reward
+        else:
+            # Agent was never registered in the first place (e.g. EndEpisode called multiple times)
+            pass
 
     def register_new_agent_id(self, agent_id: int) -> float:
         """
@@ -581,9 +587,13 @@ class AgentIdIndexMapperSlow:
         self._gym_id_order = list(agent_ids)
 
     def mark_agent_done(self, agent_id: int, reward: float) -> None:
-        gym_index = self._gym_id_order.index(agent_id)
-        self._done_agents_index_to_last_reward[gym_index] = reward
-        self._gym_id_order[gym_index] = -1
+        try:
+            gym_index = self._gym_id_order.index(agent_id)
+            self._done_agents_index_to_last_reward[gym_index] = reward
+            self._gym_id_order[gym_index] = -1
+        except ValueError:
+            # Agent was never registered in the first place (e.g. EndEpisode called multiple times)
+            pass
 
     def register_new_agent_id(self, agent_id: int) -> float:
         original_index = self._gym_id_order.index(-1)

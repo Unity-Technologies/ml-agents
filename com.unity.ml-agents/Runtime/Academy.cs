@@ -64,7 +64,7 @@ namespace MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "0.14.1-preview";
+        internal const string k_PackageVersion = "0.15.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -85,12 +85,6 @@ namespace MLAgents
         /// The singleton Academy object.
         /// </summary>
         public static Academy Instance { get { return s_Lazy.Value; } }
-
-        /// <summary>
-        /// Collection of float properties (indexed by a string).
-        /// </summary>
-        public IFloatProperties FloatProperties;
-
 
         // Fields not provided in the Inspector.
 
@@ -125,7 +119,7 @@ namespace MLAgents
         List<ModelRunner> m_ModelRunners = new List<ModelRunner>();
 
         // Flag used to keep track of the first time the Academy is reset.
-        bool m_FirstAcademyReset;
+        bool m_HadFirstReset;
 
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
@@ -215,27 +209,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Registers SideChannel to the Academy to send and receive data with Python.
-        /// If IsCommunicatorOn is false, the SideChannel will not be registered.
-        /// </summary>
-        /// <param name="channel"> The side channel to be registered.</param>
-        public void RegisterSideChannel(SideChannel channel)
-        {
-            LazyInitialize();
-            Communicator?.RegisterSideChannel(channel);
-        }
-
-        /// <summary>
-        /// Unregisters SideChannel to the Academy. If the side channel was not registered,
-        /// nothing will happen.
-        /// </summary>
-        /// <param name="channel"> The side channel to be unregistered.</param>
-        public void UnregisterSideChannel(SideChannel channel)
-        {
-            Communicator?.UnregisterSideChannel(channel);
-        }
-
-        /// <summary>
         /// Disable stepping of the Academy during the FixedUpdate phase. If this is called, the Academy must be
         /// stepped manually by the user by calling Academy.EnvironmentStep().
         /// </summary>
@@ -315,8 +288,9 @@ namespace MLAgents
         {
             EnableAutomaticStepping();
 
-            var floatProperties = new FloatPropertiesChannel();
-            FloatProperties = floatProperties;
+            SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
+            SideChannelUtils.RegisterSideChannel(new FloatPropertiesChannel());
+            SideChannelUtils.RegisterSideChannel(new StatsSideChannel());
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
@@ -332,8 +306,6 @@ namespace MLAgents
 
             if (Communicator != null)
             {
-                Communicator.RegisterSideChannel(new EngineConfigurationChannel());
-                Communicator.RegisterSideChannel(floatProperties);
                 // We try to exchange the first message with Python. If this fails, it means
                 // no Python Process is ready to train the environment. In this case, the
                 //environment must use Inference.
@@ -437,7 +409,7 @@ namespace MLAgents
         {
             EnvironmentReset();
             AgentForceReset?.Invoke();
-            m_FirstAcademyReset = true;
+            m_HadFirstReset = true;
         }
 
         /// <summary>
@@ -446,7 +418,7 @@ namespace MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_FirstAcademyReset)
+            if (!m_HadFirstReset)
             {
                 ForcedFullReset();
             }
@@ -465,6 +437,12 @@ namespace MLAgents
             using (TimerStack.Instance.Scoped("DecideAction"))
             {
                 DecideAction?.Invoke();
+            }
+
+            // If the communicator is not on, we need to clear the SideChannel sending queue
+            if (!IsCommunicatorOn)
+            {
+                SideChannelUtils.GetSideChannelMessage();
             }
 
             using (TimerStack.Instance.Scoped("AgentAct"))
@@ -518,6 +496,7 @@ namespace MLAgents
 
             Communicator?.Dispose();
             Communicator = null;
+            SideChannelUtils.UnregisterAllSideChannels();
 
             if (m_ModelRunners != null)
             {
@@ -535,8 +514,6 @@ namespace MLAgents
             // TODO - Pass worker ID or some other identifier,
             // so that multiple envs won't overwrite each others stats.
             TimerStack.Instance.SaveJsonTimers();
-
-            FloatProperties = null;
             m_Initialized = false;
 
             // Reset the Lazy instance

@@ -32,12 +32,12 @@ FoodCollector:
 
 Bouncer:
     normalize: true
-    max_steps: 7.0e6
+    max_steps: 4.0e6
     num_layers: 2
     hidden_units: 64
 
 PushBlock:
-    max_steps: 1.5e7
+    max_steps: 2.0e6
     batch_size: 128
     buffer_size: 2048
     beta: 1.0e-2
@@ -121,7 +121,7 @@ VisualPyramids:
     buffer_size: 12000
     summary_freq: 12000
     time_horizon: 1000
-    max_steps: 5.0e5
+    max_steps: 5.0e6
     beta: 0.001
     reward_signals:
         extrinsic:
@@ -138,9 +138,10 @@ Tennis:
     time_horizon: 1000
     self_play:
         window: 10
-        play_against_current_self_ratio: 0.5
+        play_against_latest_model_ratio: 0.5
         save_steps: 50000
         swap_steps: 50000
+        team_change: 100000
 
 Soccer:
     normalize: false
@@ -153,9 +154,10 @@ Soccer:
     num_layers: 2
     self_play:
         window: 10
-        play_against_current_self_ratio: 0.5
+        play_against_latest_model_ratio: 0.5
         save_steps: 50000
         swap_steps: 50000
+        team_change: 100000
 
 CrawlerStatic:
     normalize: true

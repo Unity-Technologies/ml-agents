@@ -1,4 +1,4 @@
-from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 from typing import List
 import uuid
 
@@ -13,13 +13,13 @@ class RawBytesChannel(SideChannel):
         self._received_messages: List[bytes] = []
         super().__init__(channel_id)
 
-    def on_message_received(self, data: bytes) -> None:
+    def on_message_received(self, msg: IncomingMessage) -> None:
         """
         Is called by the environment to the side channel. Can be called
         multiple times per step if multiple messages are meant for that
         SideChannel.
         """
-        self._received_messages.append(data)
+        self._received_messages.append(msg.get_raw_bytes())
 
     def get_and_clear_received_messages(self) -> List[bytes]:
         """
@@ -34,4 +34,6 @@ class RawBytesChannel(SideChannel):
         Queues a message to be sent by the environment at the next call to
         step.
         """
-        super().queue_message_to_send(data)
+        msg = OutgoingMessage()
+        msg.set_raw_bytes(data)
+        super().queue_message_to_send(msg)

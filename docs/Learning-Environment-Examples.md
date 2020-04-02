@@ -37,7 +37,7 @@ If you would like to contribute environments, please see our
 * Float Properties: None
 * Benchmark Mean Reward: 0.93
 
-## [3DBall: 3D Balance Ball](https://youtu.be/dheeCO29-EI)
+## 3DBall: 3D Balance Ball
 
 ![3D Balance Ball](images/balance.png)
 
@@ -71,7 +71,7 @@ If you would like to contribute environments, please see our
       * Recommended Maximum: 20
 * Benchmark Mean Reward: 100
 
-## [GridWorld](https://youtu.be/gu8HE9WKEVI)
+## GridWorld
 
 ![GridWorld](images/gridworld.png)
 
@@ -97,7 +97,7 @@ If you would like to contribute environments, please see our
   number of goals.
 * Benchmark Mean Reward: 0.8
 
-## [Tennis](https://youtu.be/RDaIh7JX6RI)
+## Tennis
 
 ![Tennis](images/tennis.png)
 
@@ -106,8 +106,8 @@ If you would like to contribute environments, please see our
 * Goal: The agents must hit the ball so that the opponent cannot hit a valid
 return.
 * Agents: The environment contains two agent with same Behavior Parameters.
- After training you can check the `Use Heuristic` checkbox on one of the Agents
- to play against your trained model.
+ After training you can set the `Behavior Type` to `Heuristic Only` on one of the Agent's
+ Behavior Parameters to play against your trained model.
 * Agent Reward Function (independent):
   * +1.0 To the agent that wins the point. An agent wins a point by preventing
    the opponent from hitting a valid return.
@@ -128,7 +128,7 @@ return.
       * Recommended Minimum: 0.2
       * Recommended Maximum: 5
 
-## [Push Block](https://youtu.be/jKdw216ZgoE)
+## Push Block
 
 ![Push](images/push.png)
 
@@ -167,7 +167,7 @@ return.
         * Recommended Maximum: 2000
 * Benchmark Mean Reward: 4.5
 
-## [Wall Jump](https://youtu.be/NITLug2DIWQ)
+## Wall Jump
 
 ![Wall](images/wall.png)
 
@@ -193,7 +193,7 @@ return.
 * Float Properties: Four
 * Benchmark Mean Reward (Big & Small Wall): 0.8
 
-## [Reacher](https://youtu.be/2N9EoF6pQyE)
+## Reacher
 
 ![Reacher](images/reacher.png)
 
@@ -231,7 +231,7 @@ return.
     * Recommended Maximum: 3
 * Benchmark Mean Reward: 30
 
-## [Crawler](https://youtu.be/ftLliaeooYI)
+## Crawler
 
 ![Crawler](images/crawler.png)
 
@@ -254,7 +254,7 @@ return.
 * Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 * Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
-## [Food Collector](https://youtu.be/heVMs3t9qSk)
+## Food Collector
 
 ![Collector](images/foodCollector.png)
 
@@ -290,7 +290,7 @@ return.
     * Recommended Maximum: 5
 * Benchmark Mean Reward: 10
 
-## [Hallway](https://youtu.be/53GyfpPQRUQ)
+## Hallway
 
 ![Hallway](images/hallway.png)
 
@@ -316,7 +316,7 @@ return.
 * Benchmark Mean Reward: 0.7
   * To speed up training, you can enable curiosity by adding the `curiosity` reward signal in `config/trainer_config.yaml`
 
-## [Bouncer](https://youtu.be/Tkv-c-b1b2I)
+## Bouncer
 
 ![Bouncer](images/bouncer.png)
 
@@ -341,7 +341,7 @@ return.
         * Recommended Maximum: 250
 * Benchmark Mean Reward: 10
 
-## [Soccer Twos](https://youtu.be/Hg3nmYD3DjQ)
+## Soccer Twos
 
 ![SoccerTwos](images/soccer.png)
 
@@ -349,7 +349,6 @@ return.
 * Goal:
   * Get the ball into the opponent's goal while preventing
   the ball from entering own goal.
-  * Goalie:
 * Agents: The environment contains four agents, with the same
   Behavior Parameters : Soccer.
 * Agent Reward Function (dependent):

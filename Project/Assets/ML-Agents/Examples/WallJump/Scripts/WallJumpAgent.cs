@@ -5,6 +5,7 @@ using UnityEngine;
 using MLAgents;
 using Barracuda;
 using MLAgents.Sensors;
+using MLAgents.SideChannels;
 
 public class WallJumpAgent : Agent
 {
@@ -41,7 +42,9 @@ public class WallJumpAgent : Agent
     Vector3 m_JumpTargetPos;
     Vector3 m_JumpStartingPos;
 
-    public override void InitializeAgent()
+    FloatPropertiesChannel m_FloatProperties;
+
+    public override void Initialize()
     {
         m_WallJumpSettings = FindObjectOfType<WallJumpSettings>();
         m_Configuration = Random.Range(0, 5);
@@ -53,6 +56,8 @@ public class WallJumpAgent : Agent
         m_GroundMaterial = m_GroundRenderer.material;
 
         spawnArea.SetActive(false);
+
+        m_FloatProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
     }
 
     // Begin the jump sequence
@@ -222,14 +227,14 @@ public class WallJumpAgent : Agent
         jumpingTime -= Time.fixedDeltaTime;
     }
 
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         MoveAgent(vectorAction);
         if ((!Physics.Raycast(m_AgentRb.position, Vector3.down, 20))
             || (!Physics.Raycast(m_ShortBlockRb.position, Vector3.down, 20)))
         {
             SetReward(-1f);
-            Done();
+            EndEpisode();
             ResetBlock(m_ShortBlockRb);
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_WallJumpSettings.failMaterial, .5f));
@@ -265,7 +270,7 @@ public class WallJumpAgent : Agent
         if (col.gameObject.CompareTag("goal") && DoGroundCheck(true))
         {
             SetReward(1f);
-            Done();
+            EndEpisode();
             StartCoroutine(
                 GoalScoredSwapGroundMaterial(m_WallJumpSettings.goalScoredMaterial, 2));
         }
@@ -279,7 +284,7 @@ public class WallJumpAgent : Agent
         blockRb.angularVelocity = Vector3.zero;
     }
 
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         ResetBlock(m_ShortBlockRb);
         transform.localPosition = new Vector3(
@@ -313,31 +318,31 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                Academy.Instance.FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
+                m_FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveModel("SmallWallJump", noWallBrain);
+            SetModel("SmallWallJump", noWallBrain);
         }
         else if (config == 1)
         {
             localScale = new Vector3(
                 localScale.x,
-                Academy.Instance.FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
+                m_FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveModel("SmallWallJump", smallWallBrain);
+            SetModel("SmallWallJump", smallWallBrain);
         }
         else
         {
-            var min = Academy.Instance.FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
-            var max = Academy.Instance.FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var min = m_FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
+            var max = m_FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
             var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,
                 height,
                 localScale.z);
             wall.transform.localScale = localScale;
-            GiveModel("BigWallJump", bigWallBrain);
+            SetModel("BigWallJump", bigWallBrain);
         }
     }
 }

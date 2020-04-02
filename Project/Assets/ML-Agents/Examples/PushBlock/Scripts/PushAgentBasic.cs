@@ -3,6 +3,7 @@
 using System.Collections;
 using UnityEngine;
 using MLAgents;
+using MLAgents.SideChannels;
 
 public class PushAgentBasic : Agent
 {
@@ -53,9 +54,8 @@ public class PushAgentBasic : Agent
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
     }
 
-    public override void InitializeAgent()
+    public override void Initialize()
     {
-        base.InitializeAgent();
         goalDetect = block.GetComponent<GoalDetect>();
         goalDetect.agent = this;
 
@@ -105,7 +105,7 @@ public class PushAgentBasic : Agent
         AddReward(5f);
 
         // By marking an agent as done AgentReset() will be called automatically.
-        Done();
+        EndEpisode();
 
         // Swap ground material for a bit to indicate we scored.
         StartCoroutine(GoalScoredSwapGroundMaterial(m_PushBlockSettings.goalScoredMaterial, 0.5f));
@@ -161,7 +161,7 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-    public override void AgentAction(float[] vectorAction)
+    public override void OnActionReceived(float[] vectorAction)
     {
         // Move the agent using the action.
         MoveAgent(vectorAction);
@@ -210,7 +210,7 @@ public class PushAgentBasic : Agent
     /// In the editor, if "Reset On Done" is checked then AgentReset() will be
     /// called automatically anytime we mark done = true in an agent script.
     /// </summary>
-    public override void AgentReset()
+    public override void OnEpisodeBegin()
     {
         var rotation = Random.Range(0, 4);
         var rotationAngle = rotation * 90f;
@@ -226,7 +226,7 @@ public class PushAgentBasic : Agent
 
     public void SetGroundMaterialFriction()
     {
-        var resetParams = Academy.Instance.FloatProperties;
+        var resetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         var groundCollider = ground.GetComponent<Collider>();
 
@@ -236,7 +236,7 @@ public class PushAgentBasic : Agent
 
     public void SetBlockProperties()
     {
-        var resetParams = Academy.Instance.FloatProperties;
+        var resetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
 
         var scale = resetParams.GetPropertyWithDefault("block_scale", 2);
         //Set the scale of the block

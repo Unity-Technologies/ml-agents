@@ -87,3 +87,10 @@ The ML-Agents training program saves the following statistics:
   taken between two observations.
 
 * `Losses/Cloning Loss` (BC) - The mean magnitude of the behavioral cloning loss. Corresponds to how well the model imitates the demonstration data.
+
+## Custom Metrics from C#
+To get custom metrics from a C# environment into Tensorboard, you can use the StatsSideChannel:
+```csharp
+var statsSideChannel = SideChannelUtils.GetSideChannel<StatsSideChannel>();
+statsSideChannel.AddStat("MyMetric", 1.0);
+```
