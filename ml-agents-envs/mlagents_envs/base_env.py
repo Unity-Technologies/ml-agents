@@ -123,7 +123,7 @@ class DecisionSteps(Mapping):
         )
 
     def __iter__(self) -> Iterator[Any]:
-        return iter({(agent_id, self[agent_id]) for agent_id in self.agent_id})
+        return iter({agent_id: self[agent_id] for agent_id in self.agent_id})
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "DecisionSteps":
@@ -225,7 +225,7 @@ class TerminalSteps(Mapping):
         )
 
     def __iter__(self) -> Iterator[Any]:
-        return iter({(agent_id, self[agent_id]) for agent_id in self.agent_id})
+        return iter({agent_id: self[agent_id] for agent_id in self.agent_id})
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "TerminalSteps":
