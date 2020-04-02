@@ -79,7 +79,9 @@ def test_policy_evaluate(dummy_config, rnn, visual, discrete):
     policy = create_policy_mock(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    decision_step, terminal_step = mb.create_steps_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+    decision_step, terminal_step = mb.create_steps_from_brainparams(
+        policy.brain, num_agents=NUM_AGENTS
+    )
 
     run_out = policy.evaluate(decision_step, list(decision_step.agent_id))
     if discrete:

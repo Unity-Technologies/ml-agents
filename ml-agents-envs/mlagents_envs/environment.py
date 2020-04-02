@@ -370,7 +370,8 @@ class UnityEnvironment(BaseEnv):
         expected_shape = (spec.action_size,)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The Agent {0} with BehaviorName {1} needs an input of dimension {2} but received input of dimension {3}".format(
+                f"The Agent {0} with BehaviorName {1} needs an input of dimension "
+                f"{2} but received input of dimension {3}".format(
                     agent_id, behavior_name, expected_shape, action.shape
                 )
             )
@@ -383,7 +384,9 @@ class UnityEnvironment(BaseEnv):
                 len(self._env_state[behavior_name][0])
             )
         try:
-            index = np.where(self._env_state[behavior_name].agent_id == agent_id)[0][0]
+            index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
+                0
+            ]
         except IndexError as ie:
             raise IndexError(
                 "agent_id {} is did not request a decision at the previous step".format(

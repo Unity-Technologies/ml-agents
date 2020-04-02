@@ -47,7 +47,7 @@ def create_mock_steps(
     done: bool = False,
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     """
-    Creates a mock Tuple[DecisionSteps, TerminalSteps] with observations. 
+    Creates a mock Tuple[DecisionSteps, TerminalSteps] with observations.
     Imitates constant vector/visual observations, rewards, dones, and agents.
 
     :int num_agents: Number of "agents" to imitate.
@@ -78,7 +78,7 @@ def create_mock_steps(
     max_step = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
     behavior_spec = BehaviorSpec(
-        [(84, 84, 3)] * num_vis_observations + [(num_vector_observations,)],
+        [(84, 84, 3)] * num_vis_observations + [(num_vector_observations, 0, 0)],
         ActionType.DISCRETE if discrete else ActionType.CONTINUOUS,
         action_shape if discrete else action_shape[0],
     )

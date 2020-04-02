@@ -159,7 +159,6 @@ class SimpleEnvironment(BaseEnv):
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         m_vector_obs = self._make_obs(self.goal[name])
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
         decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
@@ -228,7 +227,6 @@ class MemoryEnvironment(SimpleEnvironment):
         )
         m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
         decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
