@@ -15,6 +15,7 @@ from .yamato_utils import (
 
 
 def run_training(python_version, csharp_version):
+    test_player = "testPlayer-3DBall"
     latest = "latest"
     run_id = int(time.time() * 1000.0)
     print(
@@ -34,9 +35,11 @@ def run_training(python_version, csharp_version):
     if csharp_version is not None:
         # We can't rely on the old C# code recognizing the commandline argument to set the output
         # So rename testPlayer (containing the most recent build) to something else temporarily
-        full_player_path = os.path.join("Project", "testPlayer.app")
-        temp_player_path = os.path.join("Project", "temp_testPlayer.app")
-        final_player_path = os.path.join("Project", f"testPlayer_{csharp_version}.app")
+        full_player_path = os.path.join("Project", test_player + ".app")
+        temp_player_path = os.path.join("Project", "temp_" + test_player + ".app")
+        final_player_path = os.path.join(
+            "Project", test_player + f"_{csharp_version}.app"
+        )
 
         os.rename(full_player_path, temp_player_path)
 
@@ -50,9 +53,9 @@ def run_training(python_version, csharp_version):
         # Now rename the newly-built executable, and restore the old one
         os.rename(full_player_path, final_player_path)
         os.rename(temp_player_path, full_player_path)
-        standalone_player_path = f"testPlayer_{csharp_version}"
+        standalone_player_path = test_player + f"_{csharp_version}"
     else:
-        standalone_player_path = "testPlayer"
+        standalone_player_path = test_player
 
     venv_path = init_venv(python_version)
 
