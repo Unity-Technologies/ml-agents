@@ -336,8 +336,6 @@ namespace MLAgents
                 UpdateRewardStats();
             }
 
-            // The Agent is done, so we give it a new episode Id
-            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_Reward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
