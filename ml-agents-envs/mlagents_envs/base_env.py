@@ -93,9 +93,6 @@ class DecisionSteps(Mapping):
     def __len__(self) -> int:
         return len(self.agent_id)
 
-    def __contains__(self, item: object) -> bool:
-        return item in self.agent_id_to_index
-
     def __getitem__(self, agent_id: AgentId) -> DecisionStep:
         """
         returns the DecisionStep for a specific agent.
@@ -198,9 +195,6 @@ class TerminalSteps(Mapping):
 
     def __len__(self) -> int:
         return len(self.agent_id)
-
-    def __contains__(self, item: object) -> bool:
-        return item in self.agent_id_to_index
 
     def __getitem__(self, agent_id: AgentId) -> TerminalStep:
         """
