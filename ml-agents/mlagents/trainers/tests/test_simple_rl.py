@@ -257,7 +257,7 @@ def test_2d_sac(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
-    override_vals = {"buffer_init_steps": 2000, "max_steps": 4000}
+    override_vals = {"buffer_init_steps": 2000, "max_steps": 10000}
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config, success_threshold=0.8)
 
@@ -471,7 +471,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         step_size=0.2,
     )
     override_vals = {
-        "max_steps": 1000,
+        "max_steps": 5000,
         "learning_rate": 3.0e-4,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
         "reward_signals": {
