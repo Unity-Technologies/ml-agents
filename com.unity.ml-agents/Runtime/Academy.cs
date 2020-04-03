@@ -39,13 +39,10 @@ namespace MLAgents
     /// An Academy is where Agent objects go to train their behaviors.
     /// </summary>
     /// <remarks>
-    /// When an academy is run, it can either be in inference or training mode.
-    /// The mode is determined by the presence or absence of a Communicator. In
-    /// the presence of a communicator, the academy is run in training mode where
-    /// the states and observations of each agent are sent through the
-    /// communicator. In the absence of a communicator, the academy is run in
-    /// inference mode where the agent behavior is determined by the Policy
-    /// attached to it.
+    /// When the Academy successfully connected to the Python process, the Agents with
+    /// the Default Behavior Type will exchange their data with Python when requesting
+    /// decisions. If no Python process is available, the Agents will use an alternative
+    /// decision making method.
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design.md")]
