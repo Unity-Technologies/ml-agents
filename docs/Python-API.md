@@ -31,7 +31,7 @@ The key objects in the Python API include:
   DecisionSteps object.
 - **TerminalSteps** — contains the data from Agents belonging to the same
   "Behavior" in the simulation, such as observations and rewards. Only Agents
-  that has their episode end since the last call to `env.step()` are in the
+  whose episode ended since the last call to `env.step()` are in the
   TerminalSteps object.
 - **BehaviorSpec** — describes the shape of the observation data inside
   DecisionSteps and TerminalSteps as well as the expected action shapes.
