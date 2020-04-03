@@ -108,9 +108,9 @@ def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
     """
-    step = mb.create_batchedstep_from_brainparams(policy1.brain, num_agents=1)
-    run_out1 = policy1.evaluate(step, list(step.agent_id))
-    run_out2 = policy2.evaluate(step, list(step.agent_id))
+    decision_step, _ = mb.create_steps_from_brainparams(policy1.brain, num_agents=1)
+    run_out1 = policy1.evaluate(decision_step, list(decision_step.agent_id))
+    run_out2 = policy2.evaluate(decision_step, list(decision_step.agent_id))
 
     np.testing.assert_array_equal(run_out2["log_probs"], run_out1["log_probs"])
 
