@@ -147,9 +147,8 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 
-@mock.patch("mlagents.trainers.sac.trainer.NNPolicy")
 @mock.patch("mlagents.trainers.sac.trainer.SACOptimizer")
-def test_add_get_policy(sac_optimizer, nn_policy, dummy_config):
+def test_add_get_policy(sac_optimizer, dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
@@ -157,18 +156,23 @@ def test_add_get_policy(sac_optimizer, nn_policy, dummy_config):
     mock_optimizer.reward_signals = {}
     sac_optimizer.return_value = mock_optimizer
 
-    mock_policy = mock.Mock()
-    mock_policy.get_current_step = mock.Mock(return_value=2000)
-    nn_policy.return_value = mock_policy
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
-    trainer.add_policy(brain_params.brain_name, brain_params)
+    policy = mock.Mock(spec=NNPolicy)
+    policy.get_current_step.return_value = 2000
+
+    trainer.add_policy(brain_params.brain_name, policy)
+    assert trainer.get_policy(brain_params.brain_name) == policy
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
     assert trainer.next_summary_step > 2000
+
+    # Test incorrect class of policy
+    policy = mock.Mock()
+    with pytest.raises(RuntimeError):
+        trainer.add_policy(brain_params, policy)
 
 
 def test_process_trajectory(dummy_config):

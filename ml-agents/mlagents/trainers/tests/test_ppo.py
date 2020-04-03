@@ -233,22 +233,12 @@ def test_rl_functions():
     )
 
 
-@mock.patch("mlagents.trainers.ppo.trainer.NNPolicy")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
-def test_trainer_increment_step(ppo_optimizer, nn_policy, dummy_config):
+def test_trainer_increment_step(ppo_optimizer, dummy_config):
     trainer_params = dummy_config
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer
-
-    mock_policy = mock.Mock()
-    mock_policy.get_current_step = mock.Mock(return_value=0)
-    step_count = (
-        5
-    )  # 10 hacked because this function is no longer called through trainer
-
-    mock_policy.increment_step = mock.Mock(return_value=step_count)
-    nn_policy.return_value = mock_policy
 
     brain_params = BrainParameters(
         brain_name="test_brain",
@@ -262,12 +252,17 @@ def test_trainer_increment_step(ppo_optimizer, nn_policy, dummy_config):
     trainer = PPOTrainer(
         brain_params.brain_name, 0, trainer_params, True, False, 0, "0"
     )
-    trainer.add_policy("testbehavior", brain_params)
-    policy = trainer.get_policy("testbehavior")
+    policy_mock = mock.Mock(spec=NNPolicy)
+    policy_mock.get_current_step.return_value = 0
+    step_count = (
+        5
+    )  # 10 hacked because this function is no longer called through trainer
+    policy_mock.increment_step = mock.Mock(return_value=step_count)
+    trainer.add_policy("testbehavior", policy_mock)
 
     trainer._increment_step(5, "testbehavior")
+    policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == step_count
-    policy.increment_step.assert_called_with(5)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -366,9 +361,8 @@ def test_process_trajectory(dummy_config):
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
-@mock.patch("mlagents.trainers.ppo.trainer.NNPolicy")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
-def test_add_get_policy(ppo_optimizer, nn_policy, dummy_config):
+def test_add_get_policy(ppo_optimizer, dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
@@ -376,18 +370,23 @@ def test_add_get_policy(ppo_optimizer, nn_policy, dummy_config):
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer
 
-    mock_policy = mock.Mock()
-    mock_policy.get_current_step = mock.Mock(return_value=2000)
-    nn_policy.return_value = mock_policy
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
-
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
-    trainer.add_policy(brain_params.brain_name, brain_params)
+    policy = mock.Mock(spec=NNPolicy)
+    policy.get_current_step.return_value = 2000
+
+    trainer.add_policy(brain_params.brain_name, policy)
+    assert trainer.get_policy(brain_params.brain_name) == policy
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
     assert trainer.next_summary_step > 2000
+
+    # Test incorrect class of policy
+    policy = mock.Mock()
+    with pytest.raises(RuntimeError):
+        trainer.add_policy(brain_params, policy)
 
 
 def test_bad_config(dummy_config):
