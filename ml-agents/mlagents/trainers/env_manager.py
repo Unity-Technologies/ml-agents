@@ -112,13 +112,12 @@ class EnvManager(ABC):
                         )
                     )
                     continue
+                decision_steps, terminal_steps = step_info.current_all_step_result[
+                    name_behavior_id
+                ]
                 self.agent_managers[name_behavior_id].add_experiences(
-                    step_info.current_all_step_result[name_behavior_id][
-                        0
-                    ],  # DecisionSteps
-                    step_info.current_all_step_result[name_behavior_id][
-                        1
-                    ],  # TerminalSteps
+                    decision_steps,
+                    terminal_steps,
                     step_info.worker_id,
                     step_info.brain_name_to_action_info.get(
                         name_behavior_id, ActionInfo.empty()
