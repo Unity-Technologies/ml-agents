@@ -140,7 +140,7 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
     ) -> None:
         """
         Adds policy to trainer.
