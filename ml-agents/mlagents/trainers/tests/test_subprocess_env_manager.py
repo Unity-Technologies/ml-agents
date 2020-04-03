@@ -173,7 +173,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 
         # Test policy queue
         mock_policy = mock.Mock()
-        agent_manager_mock.policy_queue.get_nowait.return_value = mock_policy
+        agent_manager_mock.policy_queue.get.return_value = mock_policy
         env_manager.advance()
         assert env_manager.policies[brain_name] == mock_policy
         assert agent_manager_mock.policy == mock_policy
