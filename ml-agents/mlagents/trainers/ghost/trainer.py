@@ -314,55 +314,51 @@ class GhostTrainer(Trainer):
         brain_name = parsed_behavior_id.brain_name
         self.trainer.export_model(brain_name)
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         """
         Creates policy with the wrapped trainer's create_policy function
-        """
-        return self.trainer.create_policy(brain_parameters)
-
-    def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> None:
-        """
-        Adds policy to trainer. The first policy encountered sets the wrapped
+        The first policy encountered sets the wrapped
         trainer team.  This is to ensure that all agents from the same multi-agent
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
-        :param name_behavior_id: Behavior ID that the policy should belong to.
-        :param policy: Policy to associate with name_behavior_id.
         """
-        name_behavior_id = parsed_behavior_id.behavior_id
-        team_id = parsed_behavior_id.team_id
-        self.controller.subscribe_team_id(team_id, self)
-        policy = self.create_policy(brain_parameters)
+        policy = self.trainer.create_policy(parsed_behavior_id, brain_parameters)
         policy.create_tf_graph()
         policy.init_load_weights()
-        self.policies[name_behavior_id] = policy
-
-        self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
-        # for saving/swapping snapshots
+        team_id = parsed_behavior_id.team_id
+        self.controller.subscribe_team_id(team_id, self)
 
         # First policy or a new agent on the same team encountered
         if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
-            # creates an internal trainer policy. This always contains the current learning policy
-            # parameterization and is the object the wrapped trainer uses to compute gradients.
-            self.trainer.add_policy(parsed_behavior_id, brain_parameters)
-            internal_trainer_policy = self.trainer.get_policy(
-                parsed_behavior_id.brain_name
+            internal_trainer_policy = self.trainer.create_policy(
+                parsed_behavior_id, brain_parameters
             )
             internal_trainer_policy.create_tf_graph()
             internal_trainer_policy.init_load_weights()
-
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
             ] = internal_trainer_policy.get_weights()
 
-            # initialize ghost level policy to have the same weights
             policy.load_weights(internal_trainer_policy.get_weights())
-
             self._save_snapshot()  # Need to save after trainer initializes policy
+            self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
             self._learning_team = self.controller.get_learning_team
             self.wrapped_trainer_team = team_id
+        return policy
+
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
+        """
+        Adds policy to GhostTrainer.
+        :param parsed_behavior_id: Behavior ID that the policy should belong to.
+        :param policy: Policy to associate with name_behavior_id.
+        """
+        name_behavior_id = parsed_behavior_id.behavior_id
+        self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
+        self.policies[name_behavior_id] = policy
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

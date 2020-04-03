@@ -70,7 +70,7 @@ class PPOTrainer(RLTrainer):
         self._check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy: TFPolicy = None  # type: ignore
+        self.policy: NNPolicy = None  # type: ignore
 
     def _check_param_keys(self):
         super()._check_param_keys()
@@ -220,7 +220,9 @@ class PPOTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.
         :param brain_parameters: specifications for policy construction
@@ -239,7 +241,7 @@ class PPOTrainer(RLTrainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
     ) -> None:
         """
         Adds policy to trainer.
@@ -253,12 +255,14 @@ class PPOTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        self.policy = self.create_policy(brain_parameters)
+        if not isinstance(policy, NNPolicy):
+            raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
+        self.policy = policy
         self.optimizer = PPOOptimizer(self.policy, self.trainer_parameters)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
-        self.step = self.policy.get_current_step()
+        self.step = policy.get_current_step()
         self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
