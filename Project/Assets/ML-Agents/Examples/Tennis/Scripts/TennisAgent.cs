@@ -91,7 +91,7 @@ public class TennisAgent : Agent
         var action = new float[3];
 
         action[0] = Input.GetAxis("Horizontal");    // Racket Movement
-        action[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;   // Racket Jamping
+        action[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;   // Racket Jumping
         action[2] = Input.GetAxis("Vertical");   // Racket Rotation  
         return action;
     }
