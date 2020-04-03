@@ -98,6 +98,7 @@ namespace MLAgents.Tests
         public string sensorName;
         public int numWriteCalls;
         public int numCompressedCalls;
+        public int numResetCalls;
         public SensorCompressionType compressionType = SensorCompressionType.None;
 
         public TestSensor(string n)
@@ -134,6 +135,11 @@ namespace MLAgents.Tests
         }
 
         public void Update() {}
+
+        public void Reset()
+        {
+            numResetCalls++;
+        }
     }
 
     [TestFixture]
@@ -556,6 +562,7 @@ namespace MLAgents.Tests
             var expectedAgentActionForEpisode = 0;
             var expectedCollectObsCalls = 0;
             var expectedCollectObsCallsForEpisode = 0;
+            var expectedSensorResetCalls = 0;
 
             for (var i = 0; i < 15; i++)
             {
@@ -577,6 +584,7 @@ namespace MLAgents.Tests
                     expectedAgentActionForEpisode = 0;
                     expectedCollectObsCallsForEpisode = 0;
                     expectedAgentStepCount = 0;
+                    expectedSensorResetCalls++;
                 }
                 aca.EnvironmentStep();
 
@@ -586,6 +594,7 @@ namespace MLAgents.Tests
                 Assert.AreEqual(expectedAgentActionForEpisode, agent1.agentActionCallsForEpisode);
                 Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
                 Assert.AreEqual(expectedCollectObsCallsForEpisode, agent1.collectObservationsCallsForEpisode);
+                Assert.AreEqual(expectedSensorResetCalls, agent1.sensor1.numResetCalls);
             }
         }
 
