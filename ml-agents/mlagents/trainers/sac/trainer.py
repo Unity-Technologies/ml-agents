@@ -224,8 +224,9 @@ class SACTrainer(RLTrainer):
     @timed
     def _update_policy(self) -> None:
         """
-        Update the SAC policy and reward signals until the steps_per_update ratio
-        is met.
+        Update the SAC policy and reward signals. The reward signal generators are updated using different mini batches.
+        By default we imitate http://arxiv.org/abs/1809.02925 and similar papers, where the policy is updated
+        N times, then the reward signals are updated N times.
         """
         self.update_sac_policy()
         self.update_reward_signals()
@@ -259,11 +260,8 @@ class SACTrainer(RLTrainer):
 
     def update_sac_policy(self) -> None:
         """
-        Uses demonstration_buffer to update the policy.
-        The reward signal generators are updated using different mini batches.
-        If we want to imitate http://arxiv.org/abs/1809.02925 and similar papers, where the policy is updated
-        N times, then the reward signals are updated N times, then reward_signal_updates_per_train
-        is greater than 1 and the reward signals are not updated in parallel.
+        Uses update_buffer to update the policy. We sample the update_buffer and update
+        until the steps_per_update ratio is met.
         """
 
         self.cumulative_returns_since_policy_update.clear()

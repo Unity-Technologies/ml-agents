@@ -107,7 +107,7 @@ Typical Range: `1` - `5`
 
 ### Steps Per Update
 
-`steps_per_update` corresponds to the number agent steps (actions) taken for each mini-batch sampled and used during training. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
+`steps_per_update` corresponds to the number of agent steps (actions) taken for each mini-batch sampled and used during training. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
 replay buffer, and using this mini batch to update the models. Typically, this should be greater than 1.
 However, to imitate the training procedure in certain papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
