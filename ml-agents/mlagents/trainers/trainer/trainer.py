@@ -132,7 +132,9 @@ class Trainer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         """
         Creates policy
         """
@@ -140,7 +142,7 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
     ) -> None:
         """
         Adds policy to trainer.
