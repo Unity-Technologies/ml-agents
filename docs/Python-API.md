@@ -110,7 +110,7 @@ A `BaseEnv` has the following methods:
    The `DecisionSteps` contains information about the state of the agents
    **that need an action this step** and have the behavior behavior_name.
    The `TerminalSteps` contains information about the state of the agents
-   **that had their episode end** and have the behavior behavior_name.
+   **whose episode ended** and have the behavior behavior_name.
    Both `DecisionSteps` and `TerminalSteps` contain information such as
    the observations, the rewards and the agent identifiers.
    `DecisionSteps` also contains action masks for the next action while `TerminalSteps`
