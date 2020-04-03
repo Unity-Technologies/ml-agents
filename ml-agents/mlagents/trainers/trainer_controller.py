@@ -164,8 +164,10 @@ class TrainerController(object):
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
 
-        policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
-        trainer.add_policy(parsed_behavior_id, policy)
+        trainer.add_policy(
+            parsed_behavior_id, env_manager.external_brains[name_behavior_id]
+        )
+        policy = trainer.get_policy(name_behavior_id)
 
         agent_manager = AgentManager(
             policy,
