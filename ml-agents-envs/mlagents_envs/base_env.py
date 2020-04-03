@@ -93,16 +93,13 @@ class DecisionSteps(Mapping):
     def __len__(self) -> int:
         return len(self.agent_id)
 
-    def __contains__(self, item: object) -> bool:
-        return item in self.agent_id_to_index
-
     def __getitem__(self, agent_id: AgentId) -> DecisionStep:
         """
         returns the DecisionStep for a specific agent.
         :param agent_id: The id of the agent
         :returns: The DecisionStep
         """
-        if agent_id not in self:
+        if agent_id not in self.agent_id_to_index:
             raise KeyError(
                 "agent_id {} is not present in the DecisionSteps".format(agent_id)
             )
@@ -123,7 +120,7 @@ class DecisionSteps(Mapping):
         )
 
     def __iter__(self) -> Iterator[Any]:
-        return iter({agent_id: self[agent_id] for agent_id in self.agent_id})
+        yield from self.agent_id
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "DecisionSteps":
@@ -199,9 +196,6 @@ class TerminalSteps(Mapping):
     def __len__(self) -> int:
         return len(self.agent_id)
 
-    def __contains__(self, item: object) -> bool:
-        return item in self.agent_id_to_index
-
     def __getitem__(self, agent_id: AgentId) -> TerminalStep:
         """
         returns the TerminalStep for a specific agent.
@@ -209,7 +203,7 @@ class TerminalSteps(Mapping):
         :returns: obs, reward, done, agent_id and optional action mask for a
         specific agent
         """
-        if agent_id not in self:
+        if agent_id not in self.agent_id_to_index:
             raise KeyError(
                 "agent_id {} is not present in the TerminalSteps".format(agent_id)
             )
@@ -225,7 +219,7 @@ class TerminalSteps(Mapping):
         )
 
     def __iter__(self) -> Iterator[Any]:
-        return iter({agent_id: self[agent_id] for agent_id in self.agent_id})
+        yield from self.agent_id
 
     @staticmethod
     def empty(spec: "BehaviorSpec") -> "TerminalSteps":
