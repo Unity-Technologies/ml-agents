@@ -163,6 +163,7 @@ def _check_environment_trains(
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
             save_freq=save_freq,
+            threaded=False,
         )
 
         # Begin training

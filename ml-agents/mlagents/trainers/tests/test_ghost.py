@@ -219,7 +219,7 @@ def test_publish_queue(dummy_config):
     trainer._swap_snapshots()
     assert policy_queue0.empty() and not policy_queue1.empty()
     # clear
-    policy_queue1.get_nowait()
+    policy_queue1.get(block=False)
 
     mock_brain = mb.setup_mock_brain(
         False,

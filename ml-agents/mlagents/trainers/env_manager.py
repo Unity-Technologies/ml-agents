@@ -84,7 +84,7 @@ class EnvManager(ABC):
         # Get new policies if found
         for brain_name in self.external_brains:
             try:
-                _policy = self.agent_managers[brain_name].policy_queue.get_nowait()
+                _policy = self.agent_managers[brain_name].policy_queue.get(block=False)
                 self.set_policy(brain_name, _policy)
             except AgentManagerQueue.Empty:
                 pass

@@ -238,18 +238,12 @@ class AgentManagerQueue(Generic[T]):
     def empty(self) -> bool:
         return self.queue.empty()
 
-    def get_nowait(self) -> T:
-        try:
-            return self.queue.get_nowait()
-        except queue.Empty:
-            raise self.Empty("The AgentManagerQueue is empty.")
-
-    def get(self, timeout: float) -> T:
+    def get(self, block: bool = True, timeout: float = None) -> T:
         """
         Blocking get
         """
         try:
-            return self.queue.get(timeout=timeout)
+            return self.queue.get(block=block, timeout=timeout)
         except queue.Empty:
             raise self.Empty("The AgentManagerQueue is empty.")
 

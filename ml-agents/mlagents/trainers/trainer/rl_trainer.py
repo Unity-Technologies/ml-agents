@@ -145,7 +145,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 # being emptied, the trajectories in the queue are on-policy.
                 for _ in range(traj_queue.maxlen):
                     try:
-                        t = traj_queue.get(0.05)
+                        t = traj_queue.get(block=not empty_queue, timeout=0.05)
                         self._process_trajectory(t)
                         if not empty_queue:
                             break
