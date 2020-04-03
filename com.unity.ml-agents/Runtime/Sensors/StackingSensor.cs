@@ -113,7 +113,6 @@ namespace MLAgents.Sensors
             {
                 Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
             }
-
         }
 
         /// <inheritdoc/>
