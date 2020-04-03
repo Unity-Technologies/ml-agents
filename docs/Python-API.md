@@ -153,8 +153,7 @@ It also has the two following methods:
 
 A `StepResult` has the following fields:
 
- - `obs` is a list of numpy arrays observations collected by the group of
- agent. (Each array has one less dimension than the arrays in `BatchedStepResult`)
+ - `obs` is a list of numpy arrays observations collected by the agent. (Each array has one less dimension than the arrays in `BatchedStepResult`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
  - `done` is a bool. Is true if the Agent was terminated during the last
