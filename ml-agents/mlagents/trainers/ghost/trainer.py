@@ -206,7 +206,7 @@ class GhostTrainer(Trainer):
             self.change_current_elo(change)
             self._stats_reporter.add_stat("Self-play/ELO", self.current_elo)
 
-    def advance(self) -> None:
+    def advance(self, empty_queue: bool = False) -> None:
         """
         Steps the trainer, passing trajectories to wrapped trainer and calling trainer advance
         """
@@ -228,6 +228,8 @@ class GhostTrainer(Trainer):
                         # adds to wrapped trainers queue
                         internal_trajectory_queue.put(t)
                         self._process_trajectory(t)
+                        if not empty_queue:
+                            break
                 except AgentManagerQueue.Empty:
                     pass
             else:

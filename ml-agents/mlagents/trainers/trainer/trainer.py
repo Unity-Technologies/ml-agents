@@ -155,12 +155,14 @@ class Trainer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def advance(self) -> None:
+    def advance(self, empty_queue: bool = False) -> None:
         """
         Advances the trainer. Typically, this means grabbing trajectories
         from all subscribed trajectory queues (self.trajectory_queues), and updating
         a policy using the steps in them, and if needed pushing a new policy onto the right
         policy queues (self.policy_queues).
+        :param empty_queue: Whether or not to empty the queue when called. For synchronous
+            operation, we need to do so to avoid the queue filling up.
         """
         pass
 
