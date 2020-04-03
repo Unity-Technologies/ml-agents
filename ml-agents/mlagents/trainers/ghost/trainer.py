@@ -245,7 +245,7 @@ class GhostTrainer(Trainer):
                     pass
 
         self.next_summary_step = self.trainer.next_summary_step
-        self.trainer.advance()
+        self.trainer.advance(empty_queue=empty_queue)
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.change_training_team(self.get_step)
             self.last_team_change = self.get_step
