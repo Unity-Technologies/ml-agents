@@ -335,8 +335,8 @@ class GhostTrainer(Trainer):
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
         policy = self.create_policy(brain_parameters)
-        policy.init_load_weights()
         policy.create_tf_graph()
+        policy.init_load_weights()
         self.policies[name_behavior_id] = policy
 
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
@@ -350,15 +350,15 @@ class GhostTrainer(Trainer):
             internal_trainer_policy = self.trainer.get_policy(
                 parsed_behavior_id.brain_name
             )
-            internal_trainer_policy.init_load_weights()
             internal_trainer_policy.create_tf_graph()
+            internal_trainer_policy.init_load_weights()
 
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
             ] = internal_trainer_policy.get_weights()
 
             # initialize ghost level policy to have the same weights
-            policy.load(internal_trainer_policy.get_weights())
+            policy.load_weights(internal_trainer_policy.get_weights())
 
             self._save_snapshot()  # Need to save after trainer initializes policy
             self._learning_team = self.controller.get_learning_team
