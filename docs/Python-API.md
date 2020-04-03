@@ -170,8 +170,8 @@ It also has the two following methods:
 
 A `DecisionStep` has the following fields:
 
- - `obs` is a list of numpy arrays observations collected by the group of
- agent. (Each array has one less dimension than the arrays in `DecisionSteps`)
+ - `obs` is a list of numpy arrays observations collected by the agent.
+ (Each array has one less dimension than the arrays in `DecisionSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
  - `done` is a bool. Is true if the Agent was terminated during the last
@@ -215,8 +215,8 @@ It also has the two following methods:
 
 A `TerminalStep` has the following fields:
 
- - `obs` is a list of numpy arrays observations collected by the group of
- agent. (Each array has one less dimension than the arrays in `TerminalSteps`)
+ - `obs` is a list of numpy arrays observations collected by the agent.
+ (Each array has one less dimension than the arrays in `TerminalSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
  - `done` is a bool. Is true if the Agent was terminated during the last
