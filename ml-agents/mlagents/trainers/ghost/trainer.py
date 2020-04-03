@@ -301,28 +301,17 @@ class GhostTrainer(Trainer):
     def save_model(self, name_behavior_id: str) -> None:
         """
         Forwarding call to wrapped trainers save_model
-        Loads the latest policy weights, saves it, then reloads
-        the current policy weights before resuming training.
         """
         parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
         brain_name = parsed_behavior_id.brain_name
-        policy = self.trainer.get_policy(brain_name)
-        reload_weights = policy.get_weights()
-        # save current snapshot to policy
-        policy.load_weights(self.current_policy_snapshot[brain_name])
-        self.trainer.save_model(name_behavior_id)
-        # reload
-        policy.load_weights(reload_weights)
+        self.trainer.save_model(brain_name)
 
     def export_model(self, name_behavior_id: str) -> None:
         """
         Forwarding call to wrapped trainers export_model.
-        First loads the latest snapshot.
         """
         parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
         brain_name = parsed_behavior_id.brain_name
-        policy = self.trainer.get_policy(brain_name)
-        policy.load_weights(self.current_policy_snapshot[brain_name])
         self.trainer.export_model(brain_name)
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
@@ -332,7 +321,7 @@ class GhostTrainer(Trainer):
         return self.trainer.create_policy(brain_parameters)
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
     ) -> None:
         """
         Adds policy to trainer. The first policy encountered sets the wrapped
@@ -345,21 +334,33 @@ class GhostTrainer(Trainer):
         name_behavior_id = parsed_behavior_id.behavior_id
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
-        self.policies[name_behavior_id] = policy
+        policy = self.create_policy(brain_parameters)
         policy.create_tf_graph()
+        policy.init_load_weights()
+        self.policies[name_behavior_id] = policy
 
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
         # for saving/swapping snapshots
-        policy.init_load_weights()
 
         # First policy or a new agent on the same team encountered
         if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
+            # creates an internal trainer policy. This always contains the current learning policy
+            # parameterization and is the object the wrapped trainer uses to compute gradients.
+            self.trainer.add_policy(parsed_behavior_id, brain_parameters)
+            internal_trainer_policy = self.trainer.get_policy(
+                parsed_behavior_id.brain_name
+            )
+            internal_trainer_policy.create_tf_graph()
+            internal_trainer_policy.init_load_weights()
+
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
-            ] = policy.get_weights()
+            ] = internal_trainer_policy.get_weights()
+
+            # initialize ghost level policy to have the same weights
+            policy.load_weights(internal_trainer_policy.get_weights())
 
             self._save_snapshot()  # Need to save after trainer initializes policy
-            self.trainer.add_policy(parsed_behavior_id, policy)
             self._learning_team = self.controller.get_learning_team
             self.wrapped_trainer_team = team_id
 

@@ -80,7 +80,7 @@ class SACTrainer(RLTrainer):
         self._check_param_keys()
         self.load = load
         self.seed = seed
-        self.policy: NNPolicy = None  # type: ignore
+        self.policy: TFPolicy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
 
         self.step = 0
@@ -339,7 +339,7 @@ class SACTrainer(RLTrainer):
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
     ) -> None:
         """
         Adds policy to trainer.
@@ -352,14 +352,12 @@ class SACTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, NNPolicy):
-            raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
-        self.policy = policy
+        self.policy = self.create_policy(brain_parameters)
         self.optimizer = SACOptimizer(self.policy, self.trainer_parameters)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
-        self.step = policy.get_current_step()
+        self.step = self.policy.get_current_step()
         self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
