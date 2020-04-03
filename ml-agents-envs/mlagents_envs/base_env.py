@@ -1,16 +1,15 @@
 """
 Python Environment API for the ML-Agents toolkit
-The aim of this API is to expose groups of similar Agents evolving in Unity
+The aim of this API is to expose Agents evolving in a simulation
 to perform reinforcement learning on.
-There can be multiple groups of similar Agents (same observations and actions
-spaces) in the simulation. These groups are identified by their BehaviorName
-that corresponds to a single group of Agents in the simulation.
+This API supports multi-agent scenarios and groups similar Agents (same
+observations, actions spaces and behavior) together. These groups of Agents are
+identified by their BehaviorName.
 For performance reasons, the data of each group of agents is processed in a
-batched manner. When retrieving the state of a group of Agents, said state
-contains the data for a subset of the group. Agents are identified
-by a unique AgentId identifier that allows tracking of Agents across simulation
-steps. Note that there is no guarantee that the number or order of the Agents
-in the state will be consistent across simulation steps.
+batched manner. Agents are identified by a unique AgentId identifier that
+allows tracking of Agents across simulation steps. Note that there is no
+guarantee that the number or order of the Agents in the state will be
+consistent across simulation steps.
 A simulation steps corresponds to moving the simulation forward until at least
 one agent in the simulation sends its observations to Python again. Since
 Agents can request decisions at different frequencies, a simulation step does

@@ -21,16 +21,12 @@ class UnityGymException(error.Error):
 logger = logging_util.get_logger(__name__)
 logging_util.set_log_level(logging_util.INFO)
 
-GymSingleStepResult = Tuple[np.ndarray, float, bool, Dict]
-GymMultiStepResult = Tuple[List[np.ndarray], List[float], List[bool], Dict]
-GymStepResult = Union[GymSingleStepResult, GymMultiStepResult]
+GymStepResult = Tuple[np.ndarray, float, bool, Dict]
 
 
 class UnityEnv(gym.Env):
     """
     Provides Gym wrapper for Unity Learning Environments.
-    Multi-agent environments use lists for object types, as done here:
-    https://github.com/openai/multiagent-particle-envs
     """
 
     def __init__(
@@ -154,7 +150,6 @@ class UnityEnv(gym.Env):
 
     def reset(self) -> Union[List[np.ndarray], np.ndarray]:
         """Resets the state of the environment and returns an initial observation.
-        In the case of multi-agent environments, this is a list.
         Returns: observation (object/list): the initial observation of the
         space.
         """
@@ -172,14 +167,13 @@ class UnityEnv(gym.Env):
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
         Accepts an action and returns a tuple (observation, reward, done, info).
-        In the case of multi-agent environments, these are lists.
         Args:
             action (object/list): an action provided by the environment
         Returns:
             observation (object/list): agent's observation of the current environment
             reward (float/list) : amount of reward returned after previous action
             done (boolean/list): whether the episode has ended.
-            info (dict): contains auxiliary diagnostic information, including BatchedStepResult.
+            info (dict): contains auxiliary diagnostic information.
         """
         if self._flattener is not None:
             # Translate action into list
@@ -198,9 +192,7 @@ class UnityEnv(gym.Env):
         else:
             return self._single_step(decision_step)
 
-    def _single_step(
-        self, info: Union[DecisionSteps, TerminalSteps]
-    ) -> GymSingleStepResult:
+    def _single_step(self, info: Union[DecisionSteps, TerminalSteps]) -> GymStepResult:
         if self.use_visual:
             visual_obs = self._get_vis_obs_list(info)
 
@@ -222,12 +214,7 @@ class UnityEnv(gym.Env):
             )
         done = isinstance(info, TerminalSteps)
 
-        return (
-            default_observation,
-            info.reward[0],
-            done,
-            {"batched_step_result": info},
-        )
+        return (default_observation, info.reward[0], done, {"step": info})
 
     def _preprocess_single(self, single_visual_obs: np.ndarray) -> np.ndarray:
         if self.uint8_visual:
