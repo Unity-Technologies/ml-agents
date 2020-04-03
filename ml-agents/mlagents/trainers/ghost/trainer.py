@@ -301,18 +301,14 @@ class GhostTrainer(Trainer):
     def save_model(self, name_behavior_id: str) -> None:
         """
         Forwarding call to wrapped trainers save_model
-        Loads the latest policy weights, saves it, then reloads
-        the current policy weights before resuming training.
         """
         parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
         brain_name = parsed_behavior_id.brain_name
-        # save current snapshot to policy
         self.trainer.save_model(brain_name)
 
     def export_model(self, name_behavior_id: str) -> None:
         """
         Forwarding call to wrapped trainers export_model.
-        First loads the latest snapshot.
         """
         parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
         brain_name = parsed_behavior_id.brain_name
