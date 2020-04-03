@@ -380,7 +380,6 @@ def test_add_get_policy(ppo_optimizer, nn_policy, dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
 
-    # nn_policy.get_current_step.return_value = 2000
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     trainer.add_policy(brain_params.brain_name, brain_params)
 
