@@ -5,7 +5,7 @@ environments is via a wrapper provided by OpenAI called `gym`. For more
 information on the gym interface, see [here](https://github.com/openai/gym).
 
 We provide a gym wrapper and instructions for using it with existing machine
-learning algorithms which utilize gyms. Our wrapper provides interfaces on top
+learning algorithms which utilize gym. Our wrapper provides interfaces on top
 of our `UnityEnvironment` class, which is the default way of interfacing with a
 Unity environment via Python.
 
