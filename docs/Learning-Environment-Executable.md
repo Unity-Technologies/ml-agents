@@ -76,7 +76,7 @@ env = UnityEnvironment(file_name=<env_name>)
    followed the default [installation](Installation.md), then navigate to the
    `ml-agents/` folder.
 3. Run
-   `mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier>`
+   `mlagents-learn <trainer-config-file> --train --env=<env_name> --run-id=<run-identifier>`
    Where:
    * `<trainer-config-file>` is the file path of the trainer configuration yaml
    * `<env_name>` is the name and path to the executable you exported from Unity
@@ -88,13 +88,13 @@ For example, if you are training with a 3DBall executable you exported to the
 the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
-mlagents-learn ../config/trainer_config.yaml --env=3DBall --run-id=firstRun
+mlagents-learn ../config/trainer_config.yaml --train --env=3DBall --run-id=firstRun
 ```
 
 And you should see something like
 
 ```console
-ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run
+ml-agents$ mlagents-learn config/trainer_config.yaml --train --env=3DBall --run-id=first-run
 
 
                         ▄▄▄▓▓▓▓
