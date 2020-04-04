@@ -664,6 +664,36 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[4]
       value: 
       objectReference: {fileID: 2100000, guid: b0ec2cb58d3f946419d6d96c502b2b1e, type: 2}
+    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key1.b
+      value: 0.9575949
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d40a32b30361e40b49d59bdfbbdb2e8c, type: 3}
 --- !u!4 &3331463254605917318 stripped
@@ -849,7 +879,7 @@ PrefabInstance:
     - target: {fileID: 547513711375494624, guid: 3c19832ce9ed2473daa69598255a556f,
         type: 3}
       propertyPath: m_Name
-      value: CubeZilla
+      value: DragonCube
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3c19832ce9ed2473daa69598255a556f, type: 3}

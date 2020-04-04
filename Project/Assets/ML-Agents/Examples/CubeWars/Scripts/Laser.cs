@@ -14,7 +14,7 @@ public class Laser : MonoBehaviour
     {
         laserRenderer = GetComponentInChildren<LineRenderer>();
         laserRenderer.SetWidth(width, width);
-        laserRenderer.material.SetTextureScale("_MainTex", new Vector2(0.05f, 1.0f));
+        laserRenderer.material.SetTextureScale("_MainTex", new Vector2(0.07f, 1.0f));
     }
 
     // Update is called once per frame
