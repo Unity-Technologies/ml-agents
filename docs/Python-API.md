@@ -115,7 +115,7 @@ A `BaseEnv` has the following methods:
    the observations, the rewards and the agent identifiers.
    `DecisionSteps` also contains action masks for the next action while `TerminalSteps`
    contains the reason for termination (did the Agent reach its maximum step and was
-   interrupted).The data is in `np.array` of which the first dimension is always the
+   interrupted). The data is in `np.array` of which the first dimension is always the
    number of agents note that the number of agents is not guaranteed to remain constant
    during the simulation and it is not unusual to have either `DecisionSteps` or `TerminalSteps`
    contain no Agents at all.
