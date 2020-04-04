@@ -42,7 +42,7 @@ script.
 
 An Agent "Behavior" is a group of Agents identified by a `BehaviorName` that share the same
 observations and action types (described in their `BehaviorSpec`). You can think about Agent
-Behavior as a group of agents that will share the same policy. All Agents in the same
+Behavior as a group of agents that will share the same policy. All Agents with the same
 behavior have the same goal and reward signals.
 
 To communicate with an Agent in a Unity environment from a Python program, the
