@@ -147,7 +147,8 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
 
         if hvd is not None:
             adam_optimizer = tf.train.AdamOptimizer(
-                learning_rate=learning_rate, name=name)
+                learning_rate=learning_rate, name=name
+            )
             horovod_optimizer = hvd.DistributedOptimizer(adam_optimizer)
         else:
             adam_optimizer = tf.train.AdamOptimizer(
