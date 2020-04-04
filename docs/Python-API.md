@@ -233,7 +233,7 @@ it is, use `spec.is_action_discrete()` or `spec.is_action_continuous()` to see
 which one it is. If discrete, the action tensors are expected to be `np.int32`. If
 continuous, the actions are expected to be `np.float32`.
 
-An `BehaviorSpec` has the following fields :
+A `BehaviorSpec` has the following fields :
 
  - `observation_shapes` is a List of Tuples of int : Each Tuple corresponds
  to an observation's dimensions (without the number of agents dimension).
