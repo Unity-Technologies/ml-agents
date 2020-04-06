@@ -23,7 +23,7 @@ from google.protobuf.internal.encoder import _EncodeVarint  # type: ignore
 
 
 INITIAL_POS = 33
-SUPPORTED_DEMONSTRATION_VERSIONS = frozenset([1])
+SUPPORTED_DEMONSTRATION_VERSIONS = frozenset([0, 1])
 
 
 @timed
