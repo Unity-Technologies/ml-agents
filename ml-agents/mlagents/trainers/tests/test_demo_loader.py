@@ -1,6 +1,6 @@
 import io
 import os
-import mock
+from unittest import mock
 import numpy as np
 import pytest
 import tempfile
