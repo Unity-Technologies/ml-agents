@@ -16,22 +16,10 @@ slowly add to the difficulty of the task by increasing the size of the wall
 until the agent can complete the initially near-impossible task of scaling the
 wall.
 
-
 ![Wall](images/curriculum.png)
 
-_Demonstration of a curriculum training scenario in which a progressively taller
+_Demonstration of a hypothetical curriculum training scenario in which a progressively taller
 wall obstructs the path to the goal._
-
-To see curriculum learning in action, observe the two learning curves below. Each
-displays the reward over time for an agent trained using PPO with the same set of
-training hyperparameters. The difference is that one agent was trained using the
-full-height wall version of the task, and the other agent was trained using the
-curriculum version of the task. As you can see, without using curriculum
-learning the agent has a lot of difficulty. We think that by using well-crafted
-curricula, agents trained using reinforcement learning will be able to
-accomplish tasks otherwise much more difficult.
-
-![Log](images/curriculum_progress.png)
 
 ## How-To
 
