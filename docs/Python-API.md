@@ -22,24 +22,32 @@ The key objects in the Python API include:
 - **UnityEnvironment** — the main interface between the Unity application and
   your code. Use UnityEnvironment to start and control a simulation or training
   session.
-- **BatchedStepResult** — contains the data from Agents belonging to the same
-  "AgentGroup" in the simulation, such as observations and rewards.
-- **AgentGroupSpec** — describes the shape of the data inside a BatchedStepResult.
-  For example, provides the dimensions of the observations of a group.
+- **BehaviorName** - is a string that identifies a behavior in the simulation.
+- **AgentId** - is an `int` that serves as unique identifier for Agents in the
+  simulation.
+- **DecisionSteps** — contains the data from Agents belonging to the same
+  "Behavior" in the simulation, such as observations and rewards. Only Agents
+  that requested a decision since the last call to `env.step()` are in the
+  DecisionSteps object.
+- **TerminalSteps** — contains the data from Agents belonging to the same
+  "Behavior" in the simulation, such as observations and rewards. Only Agents
+  whose episode ended since the last call to `env.step()` are in the
+  TerminalSteps object.
+- **BehaviorSpec** — describes the shape of the observation data inside
+  DecisionSteps and TerminalSteps as well as the expected action shapes.
+
 
 These classes are all defined in the [base_env](../ml-agents-envs/mlagents_envs/base_env.py)
 script.
 
-An Agent Group is a group of Agents identified by a string name that share the same
-observations and action types. You can think about Agent Group as a group of agents
-that will share the same policy or behavior. All Agents in a group have the same goal
-and reward signals.
+An Agent "Behavior" is a group of Agents identified by a `BehaviorName` that share the same
+observations and action types (described in their `BehaviorSpec`). You can think about Agent
+Behavior as a group of agents that will share the same policy. All Agents with the same
+behavior have the same goal and reward signals.
 
 To communicate with an Agent in a Unity environment from a Python program, the
 Agent in the simulation must have `Behavior Parameters` set to communicate. You
 must set the `Behavior Type` to `Default` and give it a `Behavior Name`.
-
-__Note__: The `Behavior Name` corresponds to the Agent Group name on Python.
 
 _Notice: Currently communication between Unity and Python takes place over an
 open socket without authentication. As such, please make sure that the network
@@ -88,22 +96,30 @@ A `BaseEnv` has the following methods:
    move forward until an Agent in the simulation needs a input from Python to act.
  - **Close : `env.close()`** Sends a shutdown signal to the environment and terminates
    the communication.
- - **Get Agent Group Names : `env.get_agent_groups()`** Returns a list of agent group ids.
+ - **Get Behavior Names : `env.get_behavior_names()`** Returns a list of `BehaviorName`.
    Note that the number of groups can change over time in the simulation if new
-   agent groups are created in the simulation.
- - **Get Agent Group Spec : `env.get_agent_group_spec(agent_group: str)`** Returns
-   the `AgentGroupSpec` corresponding to the agent_group given as input. An
-   `AgentGroupSpec` contains information such as the observation shapes, the action
-   type (multi-discrete or continuous) and the action shape. Note that the `AgentGroupSpec`
+   Agent behaviors are created in the simulation.
+ - **Get Behavior Spec : `env.get_behavior_spec(behavior_name: str)`** Returns
+   the `BehaviorSpec` corresponding to the behavior_name given as input. A
+   `BehaviorSpec` contains information such as the observation shapes, the action
+   type (multi-discrete or continuous) and the action shape. Note that the `BehaviorSpec`
    for a specific group is fixed throughout the simulation.
- - **Get Batched Step Result for Agent Group : `env.get_step_result(agent_group: str)`**
-   Returns a `BatchedStepResult` corresponding to the agent_group given as input.
-   A `BatchedStepResult` contains information about the state of the agents in a group
-   such as the observations, the rewards, the done flags and the agent identifiers. The
-   data is in `np.array` of which the first dimension is always the number of agents which
-   requested a decision in the simulation since the last call to `env.step()` note that the
-   number of agents is not guaranteed to remain constant during the simulation.
- - **Set Actions for Agent Group :`env.set_actions(agent_group: str, action: np.array)`**
+ - **Get Steps : `env.get_steps(behavior_name: str)`**
+   Returns a tuple `DecisionSteps, TerminalSteps` corresponding to the behavior_name
+   given as input.
+   The `DecisionSteps` contains information about the state of the agents
+   **that need an action this step** and have the behavior behavior_name.
+   The `TerminalSteps` contains information about the state of the agents
+   **whose episode ended** and have the behavior behavior_name.
+   Both `DecisionSteps` and `TerminalSteps` contain information such as
+   the observations, the rewards and the agent identifiers.
+   `DecisionSteps` also contains action masks for the next action while `TerminalSteps`
+   contains the reason for termination (did the Agent reach its maximum step and was
+   interrupted). The data is in `np.array` of which the first dimension is always the
+   number of agents note that the number of agents is not guaranteed to remain constant
+   during the simulation and it is not unusual to have either `DecisionSteps` or `TerminalSteps`
+   contain no Agents at all.
+ - **Set Actions :`env.set_actions(behavior_name: str, action: np.array)`**
    Sets the actions for a whole agent group. `action` is a 2D `np.array` of `dtype=np.int32`
    in the discrete action case and `dtype=np.float32` in the continuous action case.
    The first dimension of `action` is the number of agents that requested a decision
@@ -119,9 +135,13 @@ A `BaseEnv` has the following methods:
 
 __Note:__ If no action is provided for an agent group between two calls to `env.step()` then
 the default action will be all zeros (in either discrete or continuous action space)
-#### BathedStepResult and StepResult
 
-A `BatchedStepResult` has the following fields :
+#### DecisionSteps and DecisionStep
+
+`DecisionSteps` (with `s`) contains information about a whole batch of Agents while
+`DecisionStep` (no `s`) only contains information about a single Agent.
+
+A `DecisionSteps` has the following fields :
 
  - `obs` is a list of numpy arrays observations collected by the group of
  agent. The first dimension of the array corresponds to the batch size of
@@ -131,9 +151,6 @@ A `BatchedStepResult` has the following fields :
  rewards collected by each agent since the last simulation step.
  - `done` is an array of booleans of length batch size. Is true if the
  associated Agent was terminated during the last simulation step.
- - `max_step` is an array of booleans of length batch size. Is true if the
- associated Agent reached its maximum number of steps during the last
- simulation step.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
@@ -146,21 +163,19 @@ A `BatchedStepResult` has the following fields :
 
 It also has the two following methods:
 
- - `n_agents()` Returns the number of agents requesting a decision since
- the last call to `env.step()`
- - `get_agent_step_result(agent_id: int)` Returns a `StepResult`
+ - `len(DecisionSteps)` Returns the number of agents requesting a decision since
+ the last call to `env.step()`.
+ - `DecisionSteps[agent_id]` Returns a `DecisionStep`
  for the Agent with the `agent_id` unique identifier.
 
-A `StepResult` has the following fields:
+A `DecisionStep` has the following fields:
 
- - `obs` is a list of numpy arrays observations collected by the group of
- agent. (Each array has one less dimension than the arrays in `BatchedStepResult`)
+ - `obs` is a list of numpy arrays observations collected by the agent.
+ (Each array has one less dimension than the arrays in `DecisionSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
  - `done` is a bool. Is true if the Agent was terminated during the last
  simulation step.
- - `max_step` is a bool. Is true if the Agent reached its maximum number of
- steps during the last simulation step.
  - `agent_id` is an int and an unique identifier for the corresponding Agent.
  - `action_mask` is an optional list of one dimensional array of booleans.
  Only available in multi-discrete action space type.
@@ -168,19 +183,62 @@ A `StepResult` has the following fields:
  for each action of the branch. If true, the action is not available for
  the agent during this simulation step.
 
-#### AgentGroupSpec
+#### TerminalSteps and TerminalStep
 
-An Agent group can either have discrete or continuous actions. To check which type
+Similarly to `DecisionSteps` and `DecisionStep`,
+`TerminalSteps` (with `s`) contains information about a whole batch of Agents while
+`TerminalStep` (no `s`) only contains information about a single Agent.
+
+A `TerminalSteps` has the following fields :
+
+ - `obs` is a list of numpy arrays observations collected by the group of
+ agent. The first dimension of the array corresponds to the batch size of
+ the group (number of agents requesting a decision since the last call to
+ `env.step()`).
+ - `reward` is a float vector of length batch size. Corresponds to the
+ rewards collected by each agent since the last simulation step.
+ - `done` is an array of booleans of length batch size. Is true if the
+ associated Agent was terminated during the last simulation step.
+ - `agent_id` is an int vector of length batch size containing unique
+ identifier for the corresponding Agent. This is used to track Agents
+ across simulation steps.
+ - `max_step` is an array of booleans of length batch size. Is true if the
+ associated Agent reached its maximum number of steps during the last
+ simulation step.
+
+It also has the two following methods:
+
+ - `len(TerminalSteps)` Returns the number of agents requesting a decision since
+ the last call to `env.step()`.
+ - `TerminalSteps[agent_id]` Returns a `TerminalStep`
+ for the Agent with the `agent_id` unique identifier.
+
+A `TerminalStep` has the following fields:
+
+ - `obs` is a list of numpy arrays observations collected by the agent.
+ (Each array has one less dimension than the arrays in `TerminalSteps`)
+ - `reward` is a float. Corresponds to the rewards collected by the agent
+ since the last simulation step.
+ - `done` is a bool. Is true if the Agent was terminated during the last
+ simulation step.
+ - `agent_id` is an int and an unique identifier for the corresponding Agent.
+ - `max_step` is a bool. Is true if the Agent reached its maximum number of
+ steps during the last simulation step.
+
+
+#### BehaviorSpec
+
+An Agent behavior can either have discrete or continuous actions. To check which type
 it is, use `spec.is_action_discrete()` or `spec.is_action_continuous()` to see
 which one it is. If discrete, the action tensors are expected to be `np.int32`. If
 continuous, the actions are expected to be `np.float32`.
 
-An `AgentGroupSpec` has the following fields :
+A `BehaviorSpec` has the following fields :
 
  - `observation_shapes` is a List of Tuples of int : Each Tuple corresponds
  to an observation's dimensions (without the number of agents dimension).
  The shape tuples have the same ordering as the ordering of the
- BatchedStepResult and StepResult.
+ DecisionSteps, DecisionStep, TerminalSteps and TerminalStep.
  - `action_type` is the type of data of the action. it can be discrete or
  continuous. If discrete, the action tensors are expected to be `np.int32`. If
  continuous, the actions are expected to be `np.float32`.
@@ -198,6 +256,7 @@ An `AgentGroupSpec` has the following fields :
 
 
 ### Communicating additional information with the Environment
+
 In addition to the means of communicating between Unity and python described above,
 we also provide methods for sharing agent-agnostic information. These
 additional methods are referred to as side channels. ML-Agents includes two ready-made

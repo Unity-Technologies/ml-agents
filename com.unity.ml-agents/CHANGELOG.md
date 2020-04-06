@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The Jupyter notebooks have been removed from the repository.
  - Introduced the `SideChannelUtils` to register, unregister and access side channels.
  - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
+ - Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
+ - The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
  - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
 
 ### Minor Changes

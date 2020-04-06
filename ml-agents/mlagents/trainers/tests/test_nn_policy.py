@@ -108,9 +108,9 @@ def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
     """
-    step = mb.create_batchedstep_from_brainparams(policy1.brain, num_agents=1)
-    run_out1 = policy1.evaluate(step, list(step.agent_id))
-    run_out2 = policy2.evaluate(step, list(step.agent_id))
+    decision_step, _ = mb.create_steps_from_brainparams(policy1.brain, num_agents=1)
+    run_out1 = policy1.evaluate(decision_step, list(decision_step.agent_id))
+    run_out2 = policy2.evaluate(decision_step, list(decision_step.agent_id))
 
     np.testing.assert_array_equal(run_out2["log_probs"], run_out1["log_probs"])
 
@@ -124,9 +124,11 @@ def test_policy_evaluate(dummy_config, rnn, visual, discrete):
     policy = create_policy_mock(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+    decision_step, terminal_step = mb.create_steps_from_brainparams(
+        policy.brain, num_agents=NUM_AGENTS
+    )
 
-    run_out = policy.evaluate(step, list(step.agent_id))
+    run_out = policy.evaluate(decision_step, list(decision_step.agent_id))
     if discrete:
         run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
     else:

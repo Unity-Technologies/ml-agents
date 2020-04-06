@@ -9,7 +9,7 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.models import ModelUtils
 
 
@@ -186,36 +186,36 @@ class TFPolicy(Policy):
             self.sess.run(self.assign_ops, feed_dict=feed_dict)
 
     def evaluate(
-        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+        self, decision_requests: DecisionSteps, global_agent_ids: List[str]
     ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param batched_step_result: BatchedStepResult input to network.
+        :param decision_requests: DecisionSteps input to network.
         :return: Output from policy based on self.inference_dict.
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
 
     def get_action(
-        self, batched_step_result: BatchedStepResult, worker_id: int = 0
+        self, decision_requests: DecisionSteps, worker_id: int = 0
     ) -> ActionInfo:
         """
         Decides actions given observations information, and takes them in environment.
-        :param batched_step_result: A dictionary of brain names and BatchedStepResult from environment.
+        :param decision_requests: A dictionary of brain names and DecisionSteps from environment.
         :param worker_id: In parallel environment training, the unique id of the environment worker that
-            the BatchedStepResult came from. Used to construct a globally unique id for each agent.
+            the DecisionSteps came from. Used to construct a globally unique id for each agent.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """
-        if batched_step_result.n_agents() == 0:
+        if len(decision_requests) == 0:
             return ActionInfo.empty()
 
         global_agent_ids = [
             get_global_agent_id(worker_id, int(agent_id))
-            for agent_id in batched_step_result.agent_id
+            for agent_id in decision_requests.agent_id
         ]  # For 1-D array, the iterator order is correct.
 
         run_out = self.evaluate(  # pylint: disable=assignment-from-no-return
-            batched_step_result, global_agent_ids
+            decision_requests, global_agent_ids
         )
 
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
@@ -223,7 +223,7 @@ class TFPolicy(Policy):
             action=run_out.get("action"),
             value=run_out.get("value"),
             outputs=run_out,
-            agent_ids=batched_step_result.agent_id,
+            agent_ids=decision_requests.agent_id,
         )
 
     def update(self, mini_batch, num_sequences):
@@ -254,10 +254,7 @@ class TFPolicy(Policy):
             feed_dict[self.vector_in] = vec_vis_obs.vector_observations
         if not self.use_continuous_act:
             mask = np.ones(
-                (
-                    batched_step_result.n_agents(),
-                    np.sum(self.brain.vector_action_space_size),
-                ),
+                (len(batched_step_result), np.sum(self.brain.vector_action_space_size)),
                 dtype=np.float32,
             )
             if batched_step_result.action_mask is not None:

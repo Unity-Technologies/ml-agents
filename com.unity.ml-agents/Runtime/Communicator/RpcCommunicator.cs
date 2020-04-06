@@ -293,7 +293,10 @@ namespace MLAgents
             {
                 m_OrderedAgentsRequestingDecisions[behaviorName] = new List<int>();
             }
-            m_OrderedAgentsRequestingDecisions[behaviorName].Add(info.episodeId);
+            if (!info.done)
+            {
+                m_OrderedAgentsRequestingDecisions[behaviorName].Add(info.episodeId);
+            }
             if (!m_LastActionsReceived.ContainsKey(behaviorName))
             {
                 m_LastActionsReceived[behaviorName] = new Dictionary<int, float[]>();

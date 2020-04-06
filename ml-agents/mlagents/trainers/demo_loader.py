@@ -3,16 +3,13 @@ from typing import List, Tuple
 import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
+from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents_envs.rpc_utils import (
-    agent_group_spec_from_proto,
-    batched_step_result_from_proto,
-)
-from mlagents_envs.base_env import AgentGroupSpec
+from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
@@ -25,7 +22,7 @@ from google.protobuf.internal.encoder import _EncodeVarint  # type: ignore
 @timed
 def make_demo_buffer(
     pair_infos: List[AgentInfoActionPairProto],
-    group_spec: AgentGroupSpec,
+    behavior_spec: BehaviorSpec,
     sequence_length: int,
 ) -> AgentBuffer:
     # Create and populate buffer using experiences
@@ -35,11 +32,11 @@ def make_demo_buffer(
         if idx > len(pair_infos) - 2:
             break
         next_pair_info = pair_infos[idx + 1]
-        current_step_info = batched_step_result_from_proto(
-            [current_pair_info.agent_info], group_spec
+        current_decision_step, current_terminal_step = steps_from_proto(
+            [current_pair_info.agent_info], behavior_spec
         )
-        next_step_info = batched_step_result_from_proto(
-            [next_pair_info.agent_info], group_spec
+        next_decision_step, next_terminal_step = steps_from_proto(
+            [next_pair_info.agent_info], behavior_spec
         )
         previous_action = (
             np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
@@ -48,20 +45,28 @@ def make_demo_buffer(
             previous_action = np.array(
                 pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
             )
-        curr_agent_id = current_step_info.agent_id[0]
-        current_agent_step_info = current_step_info.get_agent_step_result(curr_agent_id)
-        next_agent_id = next_step_info.agent_id[0]
-        next_agent_step_info = next_step_info.get_agent_step_result(next_agent_id)
 
-        demo_raw_buffer["done"].append(next_agent_step_info.done)
-        demo_raw_buffer["rewards"].append(next_agent_step_info.reward)
-        split_obs = SplitObservations.from_observations(current_agent_step_info.obs)
+        next_done = len(next_terminal_step) == 1
+        next_reward = 0
+        if len(next_terminal_step) == 1:
+            next_reward = next_terminal_step.reward[0]
+        else:
+            next_reward = next_decision_step.reward[0]
+        current_obs = None
+        if len(current_terminal_step) == 1:
+            current_obs = list(current_terminal_step.values())[0].obs
+        else:
+            current_obs = list(current_decision_step.values())[0].obs
+
+        demo_raw_buffer["done"].append(next_done)
+        demo_raw_buffer["rewards"].append(next_reward)
+        split_obs = SplitObservations.from_observations(current_obs)
         for i, obs in enumerate(split_obs.visual_observations):
             demo_raw_buffer["visual_obs%d" % i].append(obs)
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
         demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
         demo_raw_buffer["prev_action"].append(previous_action)
-        if next_step_info.done:
+        if next_done:
             demo_raw_buffer.resequence_and_append(
                 demo_processed_buffer, batch_size=None, training_length=sequence_length
             )
@@ -82,9 +87,9 @@ def demo_to_buffer(
     :param sequence_length: Length of trajectories to fill buffer.
     :return:
     """
-    group_spec, info_action_pair, _ = load_demonstration(file_path)
-    demo_buffer = make_demo_buffer(info_action_pair, group_spec, sequence_length)
-    brain_params = group_spec_to_brain_parameters("DemoBrain", group_spec)
+    behavior_spec, info_action_pair, _ = load_demonstration(file_path)
+    demo_buffer = make_demo_buffer(info_action_pair, behavior_spec, sequence_length)
+    brain_params = behavior_spec_to_brain_parameters("DemoBrain", behavior_spec)
     return brain_params, demo_buffer
 
 
@@ -130,7 +135,7 @@ def load_demonstration(
 
     # First 32 bytes of file dedicated to meta-data.
     file_paths = get_demo_files(file_path)
-    group_spec = None
+    behavior_spec = None
     brain_param_proto = None
     info_action_pairs = []
     total_expected = 0
@@ -153,8 +158,8 @@ def load_demonstration(
                 if obs_decoded > 1:
                     agent_info_action = AgentInfoActionPairProto()
                     agent_info_action.ParseFromString(data[pos : pos + next_pos])
-                    if group_spec is None:
-                        group_spec = agent_group_spec_from_proto(
+                    if behavior_spec is None:
+                        behavior_spec = behavior_spec_from_proto(
                             brain_param_proto, agent_info_action.agent_info
                         )
                     info_action_pairs.append(agent_info_action)
@@ -162,11 +167,11 @@ def load_demonstration(
                         break
                     pos += next_pos
                 obs_decoded += 1
-    if not group_spec:
+    if not behavior_spec:
         raise RuntimeError(
             f"No BrainParameters found in demonstration file at {file_path}."
         )
-    return group_spec, info_action_pairs, total_expected
+    return behavior_spec, info_action_pairs, total_expected
 
 
 def write_delimited(f, message):
