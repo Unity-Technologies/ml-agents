@@ -229,7 +229,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 0
+  maxStep: 3000
   ball: {fileID: 1273406647218856}
   invertX: 0
   score: 0
@@ -451,8 +451,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   areaObject: {fileID: 1541947554534326}
-  lastAgentHit: 0
-  lastFloorHit: 0
 --- !u!1 &1299636753784036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1372,7 +1370,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 0
+  maxStep: 3000
   ball: {fileID: 1273406647218856}
   invertX: 1
   score: 0
