@@ -14,6 +14,9 @@ public class TennisAgent : Agent
     public float angle;
     public float scale;
 
+    [HideInInspector]
+    public float timePenalty = 0;
+
     Text m_TextComponent;
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
@@ -82,7 +85,8 @@ public class TennisAgent : Agent
                 transform.position.y,
                 transform.position.z);
         }
-        AddReward(-1f / 3000f);
+       // AddReward(-1f / 3000f);
+       timePenalty += -1f / 3000f;
 
         m_TextComponent.text = score.ToString();
     }
@@ -100,6 +104,7 @@ public class TennisAgent : Agent
     public override void OnEpisodeBegin()
     {
 
+        timePenalty = 0;
         m_InvertMult = invertX ? -1f : 1f;
 
         transform.position = new Vector3(-m_InvertMult * Random.Range(6f, 8f), -1.5f, -1.8f) + transform.parent.transform.position;

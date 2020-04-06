@@ -236,6 +236,7 @@ MonoBehaviour:
   myArea: {fileID: 1541947554534326}
   angle: 0
   scale: 0
+  timePenalty: 0
 --- !u!114 &2449890524009497851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1378,6 +1379,7 @@ MonoBehaviour:
   myArea: {fileID: 1541947554534326}
   angle: 0
   scale: 0
+  timePenalty: 0
 --- !u!114 &6598495797138489682
 MonoBehaviour:
   m_ObjectHideFlags: 0
