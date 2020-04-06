@@ -13,7 +13,11 @@ namespace MLAgents.Tests
     internal class TestPolicy : IPolicy
     {
         public Action OnRequestDecision;
+        private WriteAdapter m_Adapter = new WriteAdapter();
         public void RequestDecision(AgentInfo info, List<ISensor> sensors) {
+            foreach(var sensor in sensors){
+                sensor.GetObservationProto(m_Adapter);
+            }
             OnRequestDecision?.Invoke();
         }
 
@@ -515,20 +519,14 @@ namespace MLAgents.Tests
 
             for (int i = 0; i < 20; i++)
             {
-                Debug.Log(i);
                 agent1.RequestDecision();
                 aca.EnvironmentStep();
+
             }
 
-            SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 20f});
-
-            policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {19f, 20f, 21f});
-
-
+            policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 21f});
             agent1.EndEpisode();
             SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f});
-
-
         }
     }
 
