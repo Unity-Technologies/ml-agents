@@ -55,7 +55,7 @@ public class SoccerFieldArea : MonoBehaviour
         {
             if (ps.agentScript.team == scoredTeam)
             {
-                ps.agentScript.AddReward(1);
+                ps.agentScript.AddReward(1 + ps.agentScript.timePenalty);
             }
             else
             {
