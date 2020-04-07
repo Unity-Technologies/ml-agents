@@ -40,7 +40,7 @@ ML-Agents provides two reward signals by default, the Extrinsic (environment) re
 Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
 environments.
 
-#### Number of Updates for Reward Signal (Optional)
+#### Steps Per Update for Reward Signal (Optional)
 
 `reward_signal_steps_per_update` for the reward signals corresponds to the number of steps per mini batch sampled
 and used for updating the reward signals. By default, we update the reward signals once every time the main policy is updated.
@@ -108,13 +108,15 @@ Typical Range: `1` - `5`
 ### Steps Per Update
 
 `steps_per_update` corresponds to the number of agent steps (actions) taken for each mini-batch sampled and used during training. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
-replay buffer, and using this mini batch to update the models. Typically, this should be greater than 1.
-However, to imitate the training procedure in certain papers (e.g.
-[Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
-we may want to update N times with different mini batches before grabbing additional samples.
-We can change `steps_per_update` to lower than 1 to accomplish this.
+replay buffer, and using this mini batch to update the models. Typically, this should be greater
+than 1. Note that setting `steps_per_update` lower will improve sample efficiency (reduce the number of steps required to train)
+but increase the CPU time spent performaing updates. For most environments where steps are fairly fast (e.g. our example
+environments) `steps_per_update` equals the number of agents in the scene is a good balance. For slow environments (steps
+take 0.1 seconds or more) reducing `steps_per_update` may improve training speed.
+We can also change `steps_per_update` to lower than 1 to update more often than once per step, though this is usually
+not neccessary.
 
-Typical Range: `10` - `20`
+Typical Range: `1` - `20`
 
 ### Tau
 

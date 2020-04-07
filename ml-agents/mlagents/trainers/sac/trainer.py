@@ -24,6 +24,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 logger = get_logger(__name__)
 
 BUFFER_TRUNCATE_PERCENT = 0.8
+DEFAULT_STEPS_PER_UPDATE = 1
 
 
 class SACTrainer(RLTrainer):
@@ -94,7 +95,7 @@ class SACTrainer(RLTrainer):
         self.steps_per_update = (
             trainer_parameters["steps_per_update"]
             if "steps_per_update" in trainer_parameters
-            else 1
+            else DEFAULT_STEPS_PER_UPDATE
         )
         self.reward_signal_steps_per_update = (
             trainer_parameters["reward_signals"]["reward_signal_steps_per_update"]
