@@ -224,7 +224,9 @@ class SACTrainer(RLTrainer):
             self.update_sac_policy()
             self.update_reward_signals()
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         policy = NNPolicy(
             self.seed,
             brain_parameters,
