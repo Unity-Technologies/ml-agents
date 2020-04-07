@@ -25,7 +25,10 @@ def get_base_path():
 
 
 def run_standalone_build(
-    base_path: str, verbose: bool = False, output_path: str = None
+    base_path: str,
+    verbose: bool = False,
+    output_path: str = None,
+    scene_path: str = None,
 ) -> int:
     """
     Run BuildStandalonePlayerOSX test to produce a player. The location defaults to Project/testPlayer.
@@ -45,6 +48,8 @@ def run_standalone_build(
         test_args += ["-logfile", "-"]
     if output_path is not None:
         test_args += ["--mlagents-build-output-path", output_path]
+    if scene_path is not None:
+        test_args += ["--mlagents-build-scene-path", scene_path]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case

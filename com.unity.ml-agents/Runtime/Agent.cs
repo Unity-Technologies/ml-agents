@@ -322,6 +322,7 @@ namespace MLAgents
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
+            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -336,8 +337,6 @@ namespace MLAgents
                 UpdateRewardStats();
             }
 
-            // The Agent is done, so we give it a new episode Id
-            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_Reward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
@@ -639,6 +638,14 @@ namespace MLAgents
             foreach (var sensor in sensors)
             {
                 sensor.Update();
+            }
+        }
+
+        void ResetSensors()
+        {
+            foreach (var sensor in sensors)
+            {
+                sensor.Reset();
             }
         }
 

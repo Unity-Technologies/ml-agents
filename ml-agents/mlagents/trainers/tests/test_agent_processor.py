@@ -53,7 +53,7 @@ def test_agentprocessor(num_vis_obs):
         "pre_action": [0.1, 0.1],
         "log_probs": [0.1, 0.1],
     }
-    mock_step = mb.create_mock_batchedstep(
+    mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=2,
         num_vector_observations=8,
         action_shape=[2],
@@ -63,13 +63,17 @@ def test_agentprocessor(num_vis_obs):
         action=[0.1, 0.1],
         value=[0.1, 0.1],
         outputs=fake_action_outputs,
-        agent_ids=mock_step.agent_id,
+        agent_ids=mock_decision_steps.agent_id,
     )
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
-    processor.add_experiences(mock_step, 0, ActionInfo.empty())
+    processor.add_experiences(
+        mock_decision_steps, mock_terminal_steps, 0, ActionInfo.empty()
+    )
     for _ in range(5):
-        processor.add_experiences(mock_step, 0, fake_action_info)
+        processor.add_experiences(
+            mock_decision_steps, mock_terminal_steps, 0, fake_action_info
+        )
 
     # Assert that two trajectories have been added to the Trainer
     assert len(tqueue.put.call_args_list) == 2
@@ -81,14 +85,16 @@ def test_agentprocessor(num_vis_obs):
     # Assert that the AgentProcessor is empty
     assert len(processor.experience_buffers[0]) == 0
 
-    # Test empty BatchedStepResult
-    mock_step = mb.create_mock_batchedstep(
+    # Test empty steps
+    mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=0,
         num_vector_observations=8,
         action_shape=[2],
         num_vis_observations=num_vis_obs,
     )
-    processor.add_experiences(mock_step, 0, ActionInfo([], [], {}, []))
+    processor.add_experiences(
+        mock_decision_steps, mock_terminal_steps, 0, ActionInfo([], [], {}, [])
+    )
     # Assert that the AgentProcessor is still empty
     assert len(processor.experience_buffers[0]) == 0
 
@@ -111,13 +117,13 @@ def test_agent_deletion():
         "pre_action": [0.1],
         "log_probs": [0.1],
     }
-    mock_step = mb.create_mock_batchedstep(
+    mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
         num_vector_observations=8,
         action_shape=[2],
         num_vis_observations=0,
     )
-    mock_done_step = mb.create_mock_batchedstep(
+    mock_done_decision_step, mock_done_terminal_step = mb.create_mock_steps(
         num_agents=1,
         num_vector_observations=8,
         action_shape=[2],
@@ -128,21 +134,27 @@ def test_agent_deletion():
         action=[0.1],
         value=[0.1],
         outputs=fake_action_outputs,
-        agent_ids=mock_step.agent_id,
+        agent_ids=mock_decision_step.agent_id,
     )
 
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
-    processor.add_experiences(mock_step, 0, ActionInfo.empty())
+    processor.add_experiences(
+        mock_decision_step, mock_terminal_step, 0, ActionInfo.empty()
+    )
 
     # Run 3 trajectories, with different workers (to simulate different agents)
     add_calls = []
     remove_calls = []
     for _ep in range(3):
         for _ in range(5):
-            processor.add_experiences(mock_step, _ep, fake_action_info)
+            processor.add_experiences(
+                mock_decision_step, mock_terminal_step, _ep, fake_action_info
+            )
             add_calls.append(mock.call([get_global_agent_id(_ep, 0)], [0.1]))
-        processor.add_experiences(mock_done_step, _ep, fake_action_info)
+        processor.add_experiences(
+            mock_done_decision_step, mock_done_terminal_step, _ep, fake_action_info
+        )
         # Make sure we don't add experiences from the prior agents after the done
         remove_calls.append(mock.call([get_global_agent_id(_ep, 0)]))
 
@@ -156,7 +168,9 @@ def test_agent_deletion():
     assert len(processor.last_step_result.keys()) == 0
 
     # check that steps with immediate dones don't add to dicts
-    processor.add_experiences(mock_done_step, 0, ActionInfo.empty())
+    processor.add_experiences(
+        mock_done_decision_step, mock_done_terminal_step, 0, ActionInfo.empty()
+    )
     assert len(processor.experience_buffers.keys()) == 0
     assert len(processor.last_take_action_outputs.keys()) == 0
     assert len(processor.episode_steps.keys()) == 0
@@ -182,7 +196,7 @@ def test_end_episode():
         "pre_action": [0.1],
         "log_probs": [0.1],
     }
-    mock_step = mb.create_mock_batchedstep(
+    mock_decision_step, mock_terminal_step = mb.create_mock_steps(
         num_agents=1,
         num_vector_observations=8,
         action_shape=[2],
@@ -192,18 +206,22 @@ def test_end_episode():
         action=[0.1],
         value=[0.1],
         outputs=fake_action_outputs,
-        agent_ids=mock_step.agent_id,
+        agent_ids=mock_decision_step.agent_id,
     )
 
     processor.publish_trajectory_queue(tqueue)
     # This is like the initial state after the env reset
-    processor.add_experiences(mock_step, 0, ActionInfo.empty())
+    processor.add_experiences(
+        mock_decision_step, mock_terminal_step, 0, ActionInfo.empty()
+    )
     # Run 3 trajectories, with different workers (to simulate different agents)
     remove_calls = []
     for _ep in range(3):
         remove_calls.append(mock.call([get_global_agent_id(_ep, 0)]))
         for _ in range(5):
-            processor.add_experiences(mock_step, _ep, fake_action_info)
+            processor.add_experiences(
+                mock_decision_step, mock_terminal_step, _ep, fake_action_info
+            )
             # Make sure we don't add experiences from the prior agents after the done
 
     # Call end episode
