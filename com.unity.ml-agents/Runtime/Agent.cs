@@ -319,9 +319,12 @@ namespace MLAgents
             m_Info.reward = m_Reward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
-            // Make sure the latest observations are being passed to training.
-            collectObservationsSensor.Reset();
-            CollectObservations(collectObservationsSensor);
+            if (collectObservationsSensor != null)
+            {
+                // Make sure the latest observations are being passed to training.
+                collectObservationsSensor.Reset();
+                CollectObservations(collectObservationsSensor);
+            }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
