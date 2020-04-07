@@ -23,6 +23,7 @@ public class TennisAgent : Agent
     TennisArea m_Area;
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
+    float m_BallTouch;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -102,10 +103,18 @@ public class TennisAgent : Agent
         return action;
     }
 
+    void OnCollisionEnter(Collision c)
+    {
+        if (c.gameObject.CompareTag("ball"))
+        {
+            AddReward(.1f * m_BallTouch);
+        }
+    }
     public override void OnEpisodeBegin()
     {
 
         timePenalty = 0;
+        m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         m_InvertMult = invertX ? -1f : 1f;
         if (m_InvertMult == 1f)
         {
