@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
  - Added a feature to allow sending stats from C# environments to TensorBoard (and other python StatsWriters). To do this from your code, use `SideChannelUtils.GetSideChannel<StatsSideChannel>().AddStat(key, value)` (#3660)
  - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
+ - SideChannel IncomingMessages methods now take an optional default argument, which is used when trying to read more data than the message contains.
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
  - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
