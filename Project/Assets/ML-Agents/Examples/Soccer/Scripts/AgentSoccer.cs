@@ -62,7 +62,7 @@ public class AgentSoccer : Agent
         }
         if (position == Position.Goalie)
         {
-            m_Power = 1f;
+            m_Power = 2000f;
             m_LateralSpeed = 1.0f;
             m_ForwardSpeed = 1.0f;
         }
@@ -199,6 +199,10 @@ public class AgentSoccer : Agent
     void OnCollisionEnter(Collision c)
     {
         var force = m_Power * m_KickPower;
+        if (position == Position.Goalie)
+        {
+            force = m_Power;
+        }
         if (c.gameObject.CompareTag("ball"))
         {
             // Generic gets curriculum
