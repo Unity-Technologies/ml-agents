@@ -28,6 +28,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Read a boolean value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
         public bool ReadBoolean(bool defaultValue = false)
         {
@@ -37,6 +38,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Read an integer value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
         public int ReadInt32(int defaultValue = 0)
         {
@@ -46,6 +48,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Read a float value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
         public float ReadFloat32(float defaultValue = 0.0f)
         {
@@ -55,6 +58,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Read a string value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
         public string ReadString(string defaultValue = default)
         {
@@ -71,6 +75,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Reads a list of floats from the message. The length of the list is stored in the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
         public IList<float> ReadFloatList(IList<float> defaultValue = default)
         {
@@ -108,6 +113,10 @@ namespace MLAgents.SideChannels
             m_Stream?.Dispose();
         }
 
+        /// <summary>
+        /// Whether or not there is more data left in the stream that can be read.
+        /// </summary>
+        /// <returns></returns>
         bool CanReadMore()
         {
             return m_Stream.Position < m_Stream.Length;
