@@ -6,11 +6,12 @@ public class TennisArea : MonoBehaviour
     public GameObject agentA;
     public GameObject agentB;
     Rigidbody m_BallRb;
-
+    HitWall m_BallScript;
     // Use this for initialization
     void Start()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
+        m_BallScript = ball.GetComponent<HitWall>();
         MatchReset();
     }
 
@@ -28,7 +29,7 @@ public class TennisArea : MonoBehaviour
         }
         m_BallRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.localScale = new Vector3(.5f, .5f, .5f);
-        ball.GetComponent<HitWall>().lastAgentHit = -1;
+        m_BallScript.ResetPoint();
     }
 
     void FixedUpdate()
