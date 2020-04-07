@@ -87,7 +87,6 @@ public class TennisAgent : Agent
                 transform.position.y,
                 transform.position.z);
         }
-       // AddReward(-1f / 3000f);
         timePenalty += -1f / 3000f;
 
         m_TextComponent.text = score.ToString();
