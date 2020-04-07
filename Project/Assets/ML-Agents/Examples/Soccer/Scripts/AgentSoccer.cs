@@ -39,6 +39,9 @@ public class AgentSoccer : Agent
     float m_ForwardSpeed;
 
     [HideInInspector]
+    public float timePenalty = 0;
+
+    [HideInInspector]
     public Rigidbody agentRb;
     SoccerSettings m_SoccerSettings;
     BehaviorParameters m_BehaviorParameters;
@@ -145,10 +148,15 @@ public class AgentSoccer : Agent
             // Existential bonus for Goalies.
             AddReward(1f / 3000f);
         }
+        else if (position == Position.Striker)
+        {
+            // Existential penalty for Strikers
+            AddReward(-1f / 3000f);
+        }
         else
         {
-            // Existential penalty for Strikers/Generic.
-            AddReward(-1f / 3000f);
+            // Existential penalty cumulant for Generic
+            timePenalty += -1f / 3000f;
         }
         MoveAgent(vectorAction);
     }
@@ -206,6 +214,8 @@ public class AgentSoccer : Agent
 
     public override void OnEpisodeBegin()
     {
+
+        timePenalty = 0;
         m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
