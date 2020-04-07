@@ -1,4 +1,5 @@
 using System.CodeDom;
+using System;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
@@ -11,7 +12,14 @@ namespace MLAgents.Tests
 {
     internal class TestPolicy : IPolicy
     {
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {}
+        public Action OnRequestDecision;
+        private WriteAdapter m_Adapter = new WriteAdapter();
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {
+            foreach(var sensor in sensors){
+                sensor.GetObservationProto(m_Adapter);
+            }
+            OnRequestDecision?.Invoke();
+        }
 
         public float[] DecideAction() { return new float[0]; }
 
@@ -69,7 +77,7 @@ namespace MLAgents.Tests
         {
             collectObservationsCalls += 1;
             collectObservationsCallsForEpisode += 1;
-            sensor.AddObservation(0f);
+            sensor.AddObservation(collectObservationsCallsForEpisode);
         }
 
         public override void OnActionReceived(float[] vectorAction)
@@ -486,6 +494,40 @@ namespace MLAgents.Tests
                 aca.EnvironmentStep();
             }
         }
+
+        [Test]
+        public void AssertStackingReset()
+        {
+            var agentGo1 = new GameObject("TestAgent");
+            agentGo1.AddComponent<TestAgent>();
+            var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
+            behaviorParameters.brainParameters.numStackedVectorObservations = 3;
+            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var aca = Academy.Instance;
+            agent1.LazyInitialize();
+            var policy = new TestPolicy();
+            agent1.SetPolicy(policy);
+
+            StackingSensor sensor = null;
+            foreach(ISensor s in agent1.sensors){
+                if (s is  StackingSensor){
+                    sensor = s as StackingSensor;
+                }
+            }
+
+            Assert.NotNull(sensor);
+
+            for (int i = 0; i < 20; i++)
+            {
+                agent1.RequestDecision();
+                aca.EnvironmentStep();
+
+            }
+
+            policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 21f});
+            agent1.EndEpisode();
+            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f});
+        }
     }
 
     [TestFixture]
@@ -585,6 +627,7 @@ namespace MLAgents.Tests
                     expectedCollectObsCallsForEpisode = 0;
                     expectedAgentStepCount = 0;
                     expectedSensorResetCalls++;
+                    expectedCollectObsCalls += 1;
                 }
                 aca.EnvironmentStep();
 
