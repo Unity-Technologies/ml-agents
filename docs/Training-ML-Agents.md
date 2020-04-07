@@ -179,7 +179,7 @@ environment, you can set the following command line options when invoking
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--cpu`: Forces training using CPU only.
 * Engine Configuration :
-  * `--width' : The width of the executable window of the environment(s) in pixels
+  * `--width` : The width of the executable window of the environment(s) in pixels
   (ignored for editor training) (Default 84)
   * `--height` : The height of the executable window of the environment(s) in pixels
   (ignored for editor training). (Default 84)
