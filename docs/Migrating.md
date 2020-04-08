@@ -29,6 +29,7 @@ The versions can be found in
 * Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
 * Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
 
+
 ## Migrating from 0.14 to 0.15
 
 ### Important changes

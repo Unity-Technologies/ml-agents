@@ -58,7 +58,7 @@ class UnityEnvironment(BaseEnv):
     # Currently we require strict equality between the communication protocol
     # on each side, although we may allow some flexibility in the future.
     # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.15.0"
+    API_VERSION = "0.16.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
