@@ -86,6 +86,7 @@ def test_timers() -> None:
                 "start_time_seconds": mock.ANY,
                 "end_time_seconds": mock.ANY,
                 "python_version": mock.ANY,
+                "command_line_arguments": mock.ANY,
             },
         }
 

@@ -228,6 +228,7 @@ namespace MLAgents
             m_Metadata.Add("timer_format_version", k_timerFormatVersion);
             m_Metadata.Add("start_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
             m_Metadata.Add("unity_version", Application.unityVersion);
+            m_Metadata.Add("command_line_arguments", String.Join(" ", Environment.GetCommandLineArgs()));
         }
 
         public void AddMetadata(string key, string value)

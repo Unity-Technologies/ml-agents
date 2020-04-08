@@ -229,6 +229,7 @@ class TimerStack:
         self.metadata["timer_format_version"] = TIMER_FORMAT_VERSION
         self.metadata["start_time_seconds"] = str(int(time.time()))
         self.metadata["python_version"] = sys.version
+        self.metadata["command_line_arguments"] = " ".join(sys.argv)
 
 
 # Global instance of a TimerStack. This is generally all that we need for profiling, but you can potentially
