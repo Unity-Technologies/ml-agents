@@ -7,7 +7,7 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
 )
 
 
-def main(env_name):
+def test_run_environment(env_name):
     """
     Run the low-level API test using the specified environment
     :param env_name: Name of the Unity environment binary to launch
@@ -87,8 +87,30 @@ def main(env_name):
         env.close()
 
 
+def test_closing(env_name):
+    """
+    Run the low-level API and close the environment
+    :param env_name: Name of the Unity environment binary to launch
+    """
+    try:
+        env1 = UnityEnvironment(
+            file_name=env_name, base_port=5006, no_graphics=True, args=["-logFile", "-"]
+        )
+        env1.close()
+        env1 = UnityEnvironment(
+            file_name=env_name, base_port=5006, no_graphics=True, args=["-logFile", "-"]
+        )
+        env2 = UnityEnvironment(
+            file_name=env_name, base_port=5007, no_graphics=True, args=["-logFile", "-"]
+        )
+        env2.reset()
+    finally:
+        env1.close()
+        env2.close()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--env", default="artifacts/testPlayer")
     args = parser.parse_args()
-    main(args.env)
+    test_run_environment(args.env)
