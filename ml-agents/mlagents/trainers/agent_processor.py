@@ -226,29 +226,47 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str, maxlen: int = 20):
+    def __init__(self, behavior_id: str, maxlen: int = 1):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self.maxlen: int = maxlen
-        self.queue: queue.Queue = queue.Queue(maxsize=maxlen)
-        self.behavior_id = behavior_id
+        self._maxlen: int = maxlen
+        self._queue: queue.Queue = queue.Queue(maxsize=maxlen)
+        self._behavior_id = behavior_id
+
+    def maxlen(self):
+        """
+        Returns the maximum length of the queue.
+        :return: Maximum length of the queue.
+        """
+        return self._maxlen
+
+    def behavior_id(self):
+        """
+        Returns the Behavior ID of this queue.
+        :return: Behavior ID associated with the queue.
+        """
+        return self._behavior_id
 
     def empty(self) -> bool:
-        return self.queue.empty()
+        return self._queue.empty()
 
     def get(self, block: bool = True, timeout: float = None) -> T:
         """
-        Blocking get
+        Gets the next item from the queue.
+        :param block: Block if the queue is empty. If False, exit immediately and
+            throw an AgentManagerQueue.Empty exception. (default = True)
+        :param timeout: Timeout for blocking get. If a positive float, wait timeout seconds
+            before throwing an AgentManagerQueue.Empty exception. (default = None)
         """
         try:
-            return self.queue.get(block=block, timeout=timeout)
+            return self._queue.get(block=block, timeout=timeout)
         except queue.Empty:
             raise self.Empty("The AgentManagerQueue is empty.")
 
     def put(self, item: T) -> None:
-        self.queue.put(item)
+        self._queue.put(item)
 
 
 class AgentManager(AgentProcessor):
