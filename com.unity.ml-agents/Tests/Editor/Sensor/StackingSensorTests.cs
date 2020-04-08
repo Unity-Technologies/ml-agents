@@ -42,5 +42,23 @@ namespace MLAgents.Tests
             // Check that if we don't call Update(), the same observations are produced
             SensorTestHelper.CompareObservation(sensor, new[] {5f, 6f, 7f, 8f, 9f, 10f});
         }
+
+        [Test]
+        public void TestStackingReset()
+        {
+            VectorSensor wrapped = new VectorSensor(2);
+            ISensor sensor = new StackingSensor(wrapped, 3);
+
+            wrapped.AddObservation(new[] {1f, 2f});
+            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f, 0f, 1f, 2f});
+
+            sensor.Update();
+            wrapped.AddObservation(new[] {3f, 4f});
+            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 1f, 2f, 3f, 4f});
+
+            sensor.Reset();
+            wrapped.AddObservation(new[] {5f, 6f});
+            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f, 0f, 5f, 6f});
+        }
     }
 }

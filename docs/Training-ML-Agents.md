@@ -113,6 +113,10 @@ If you've already trained a model using the specified `<run-identifier>` and `--
 specified, you will not be able to continue with training. Use `--force` to force ML-Agents to
 overwrite the existing data.
 
+Alternatively, you might want to start a new training run but _initialize_ it using an already-trained
+model. You may want to do this, for instance, if your environment changed and you want
+a new model, but the old behavior is still better than random. You can do this by specifying `--initialize-from=<run-identifier>`, where `<run-identifier>` is the old run ID.
+
 ### Command Line Training Options
 
 In addition to passing the path of the Unity executable containing your training
@@ -164,6 +168,9 @@ environment, you can set the following command line options when invoking
   as the current agents in your scene.
 * `--force`: Attempting to train a model with a run-id that has been used before will
   throw an error. Use `--force` to force-overwrite this run-id's summary and model data.
+* `--initialize-from=<run-identifier>`: Specify an old run-id here to initialize your model from
+  a previously trained model. Note that the previously saved models _must_ have the same behavior
+  parameters as your current environment.
 * `--no-graphics`: Specify this option to run the Unity executable in
   `-batchmode` and doesn't initialize the graphics driver. Use this only if your
   training doesn't involve visual observations (reading from Pixels). See
@@ -172,7 +179,7 @@ environment, you can set the following command line options when invoking
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--cpu`: Forces training using CPU only.
 * Engine Configuration :
-  * `--width' : The width of the executable window of the environment(s) in pixels
+  * `--width` : The width of the executable window of the environment(s) in pixels
   (ignored for editor training) (Default 84)
   * `--height` : The height of the executable window of the environment(s) in pixels
   (ignored for editor training). (Default 84)
@@ -226,6 +233,7 @@ example environments are included in the provided config file.
 | train_interval       | How often to update the agent.                                                                                                                                                          | SAC                      |
 | num_update           | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC             |
+| init_path        | Initialize trainer from a previously saved model.                                                                                       | PPO, SAC             |
 
 \*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral Cloning (Imitation), GAIL = Generative Adversarial Imitaiton Learning
 

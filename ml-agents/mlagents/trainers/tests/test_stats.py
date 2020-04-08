@@ -213,7 +213,6 @@ class ConsoleWriterTest(unittest.TestCase):
             category = "category1"
             console_writer = ConsoleWriter()
             console_writer.add_property(category, StatsPropertyType.SELF_PLAY, True)
-            console_writer.add_property(category, StatsPropertyType.SELF_PLAY_TEAM, 1)
             statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
             console_writer.write_stats(
                 category,
@@ -221,16 +220,10 @@ class ConsoleWriterTest(unittest.TestCase):
                     "Environment/Cumulative Reward": statssummary1,
                     "Is Training": statssummary1,
                     "Self-play/ELO": statssummary1,
-                    "Self-play/Mean Opponent ELO": statssummary1,
-                    "Self-play/Std Opponent ELO": statssummary1,
                 },
                 10,
             )
 
         self.assertIn(
             "Mean Reward: 1.000. Std of Reward: 1.000. Training.", cm.output[0]
-        )
-        self.assertIn(
-            "category1 Team 1: ELO: 1.000. Mean Opponent ELO: 1.000. Std Opponent ELO: 1.000.",
-            cm.output[1],
         )

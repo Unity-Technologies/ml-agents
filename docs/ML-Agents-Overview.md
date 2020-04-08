@@ -357,16 +357,6 @@ training process.
   [Training With Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
   to learn more about this feature.
 
-- **Cloud Training on AWS** - To facilitate using the ML-Agents toolkit on
-  Amazon Web Services (AWS) machines, we provide a
-  [guide](Training-on-Amazon-Web-Service.md) on how to set-up EC2 instances in
-  addition to a public pre-configured Amazon Machine Image (AMI).
-
-- **Cloud Training on Microsoft Azure** - To facilitate using the ML-Agents
-  toolkit on Azure machines, we provide a
-  [guide](Training-on-Microsoft-Azure.md) on how to set-up virtual machine
-  instances in addition to a pre-configured data science image.
-
 ## Summary and Next Steps
 
 To briefly summarize: The ML-Agents toolkit enables games and simulations built

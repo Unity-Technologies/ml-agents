@@ -18,6 +18,7 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
 logger = get_logger(__name__)
@@ -223,7 +224,9 @@ class SACTrainer(RLTrainer):
             self.update_sac_policy()
             self.update_reward_signals()
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         policy = NNPolicy(
             self.seed,
             brain_parameters,
@@ -337,7 +340,9 @@ class SACTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer.
         :param brain_parameters: specifications for policy construction

@@ -286,6 +286,17 @@ Typical Range (Continuous): `512` - `5120`
 
 Typical Range (Discrete): `32` - `512`
 
+### (Optional) Advanced: Initialize Model Path
+
+`init_path` can be specified to initialize your model from a previous run before starting.
+Note that the prior run should have used the same trainer configurations as the current run,
+and have been saved with the same version of ML-Agents. You should provide the full path
+to the folder where the checkpoints were saved, e.g. `./models/{run-id}/{behavior_name}`.
+
+This option is provided in case you want to initialize different behaviors from different runs;
+in most cases, it is sufficient to use the `--initialize-from` CLI parameter to initialize
+all models from the same run.
+
 ## Training Statistics
 
 To view training statistics, use TensorBoard. For information on launching and

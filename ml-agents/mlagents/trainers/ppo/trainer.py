@@ -14,6 +14,7 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
 logger = get_logger(__name__)
@@ -219,7 +220,9 @@ class PPOTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.
         :param brain_parameters: specifications for policy construction
@@ -237,10 +240,12 @@ class PPOTrainer(RLTrainer):
 
         return policy
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer.
-        :param name_behavior_id: Behavior ID that the policy should belong to.
+        :param parsed_behavior_id: Behavior identifiers that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
         if self.policy:

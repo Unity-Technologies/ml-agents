@@ -11,7 +11,7 @@ from mlagents_envs.exception import (
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents_envs.base_env import BaseEnv, AgentGroup
+from mlagents_envs.base_env import BaseEnv, BehaviorName
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
@@ -33,7 +33,7 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsAggregationMethod,
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
-from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
+from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
 logger = get_logger(__name__)
@@ -124,15 +124,15 @@ def worker(
 
     def _generate_all_results() -> AllStepResult:
         all_step_result: AllStepResult = {}
-        for brain_name in env.get_agent_groups():
-            all_step_result[brain_name] = env.get_step_result(brain_name)
+        for brain_name in env.get_behavior_names():
+            all_step_result[brain_name] = env.get_steps(brain_name)
         return all_step_result
 
     def external_brains():
         result = {}
-        for brain_name in env.get_agent_groups():
-            result[brain_name] = group_spec_to_brain_parameters(
-                brain_name, env.get_agent_group_spec(brain_name)
+        for brain_name in env.get_behavior_names():
+            result[brain_name] = behavior_spec_to_brain_parameters(
+                brain_name, env.get_behavior_spec(brain_name)
             )
         return result
 
@@ -291,12 +291,12 @@ class SubprocessEnvManager(EnvManager):
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
     @property
-    def external_brains(self) -> Dict[AgentGroup, BrainParameters]:
+    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         self.env_workers[0].send(EnvironmentCommand.EXTERNAL_BRAINS)
         return self.env_workers[0].recv().payload
 
     @property
-    def get_properties(self) -> Dict[AgentGroup, float]:
+    def get_properties(self) -> Dict[BehaviorName, float]:
         self.env_workers[0].send(EnvironmentCommand.GET_PROPERTIES)
         return self.env_workers[0].recv().payload
 
@@ -337,11 +337,11 @@ class SubprocessEnvManager(EnvManager):
         return step_infos
 
     @timed
-    def _take_step(self, last_step: EnvironmentStep) -> Dict[AgentGroup, ActionInfo]:
+    def _take_step(self, last_step: EnvironmentStep) -> Dict[BehaviorName, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
-        for brain_name, batch_step_result in last_step.current_all_step_result.items():
+        for brain_name, step_tuple in last_step.current_all_step_result.items():
             if brain_name in self.policies:
                 all_action_info[brain_name] = self.policies[brain_name].get_action(
-                    batch_step_result, last_step.worker_id
+                    step_tuple[0], last_step.worker_id
                 )
         return all_action_info

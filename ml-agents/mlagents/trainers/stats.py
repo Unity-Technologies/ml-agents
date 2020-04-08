@@ -28,7 +28,6 @@ class StatsSummary(NamedTuple):
 class StatsPropertyType(Enum):
     HYPERPARAMETERS = "hyperparameters"
     SELF_PLAY = "selfplay"
-    SELF_PLAY_TEAM = "selfplayteam"
 
 
 class StatsWriter(abc.ABC):
@@ -114,19 +113,7 @@ class ConsoleWriter(StatsWriter):
             )
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                mean_opponent_elo = values["Self-play/Mean Opponent ELO"]
-                std_opponent_elo = values["Self-play/Std Opponent ELO"]
-                logger.info(
-                    "{} Team {}: ELO: {:0.3f}. "
-                    "Mean Opponent ELO: {:0.3f}. "
-                    "Std Opponent ELO: {:0.3f}. ".format(
-                        category,
-                        self.self_play_team,
-                        elo_stats.mean,
-                        mean_opponent_elo.mean,
-                        std_opponent_elo.mean,
-                    )
-                )
+                logger.info("{} ELO: {:0.3f}. ".format(category, elo_stats.mean))
         else:
             logger.info(
                 "{}: Step: {}. No episode was completed since last summary. {}".format(
@@ -146,9 +133,6 @@ class ConsoleWriter(StatsWriter):
         elif property_type == StatsPropertyType.SELF_PLAY:
             assert isinstance(value, bool)
             self.self_play = value
-        elif property_type == StatsPropertyType.SELF_PLAY_TEAM:
-            assert isinstance(value, int)
-            self.self_play_team = value
 
     def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
         """

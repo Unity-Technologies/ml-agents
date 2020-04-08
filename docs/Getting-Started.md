@@ -361,6 +361,3 @@ the steps described
 - For a "Hello World" introduction to creating your own Learning Environment,
   check out the [Making a New Learning
   Environment](Learning-Environment-Create-New.md) page.
-- For a series of YouTube video tutorials, checkout the
-  [Machine Learning Agents PlayList](https://www.youtube.com/playlist?list=PLX2vGYjWbI0R08eWQkO7nQkGiicHAX7IX)
-  page.

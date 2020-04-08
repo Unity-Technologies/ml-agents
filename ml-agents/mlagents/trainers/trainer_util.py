@@ -10,6 +10,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
+from mlagents.trainers.ghost.controller import GhostController
 
 
 logger = get_logger(__name__)
@@ -26,6 +27,7 @@ class TrainerFactory:
         train_model: bool,
         load_model: bool,
         seed: int,
+        init_path: str = None,
         meta_curriculum: MetaCurriculum = None,
         multi_gpu: bool = False,
     ):
@@ -33,12 +35,14 @@ class TrainerFactory:
         self.summaries_dir = summaries_dir
         self.run_id = run_id
         self.model_path = model_path
+        self.init_path = init_path
         self.keep_checkpoints = keep_checkpoints
         self.train_model = train_model
         self.load_model = load_model
         self.seed = seed
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
+        self.ghost_controller = GhostController()
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
@@ -50,7 +54,9 @@ class TrainerFactory:
             self.keep_checkpoints,
             self.train_model,
             self.load_model,
+            self.ghost_controller,
             self.seed,
+            self.init_path,
             self.meta_curriculum,
             self.multi_gpu,
         )
@@ -65,7 +71,9 @@ def initialize_trainer(
     keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
+    ghost_controller: GhostController,
     seed: int,
+    init_path: str = None,
     meta_curriculum: MetaCurriculum = None,
     multi_gpu: bool = False,
 ) -> Trainer:
@@ -81,7 +89,9 @@ def initialize_trainer(
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
     :param load_model: Whether to load the model or randomly initialize
+    :param ghost_controller: The object that coordinates ghost trainers
     :param seed: The random seed to use
+    :param init_path: Path from which to load model, if different from model_path.
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
@@ -96,6 +106,10 @@ def initialize_trainer(
     trainer_parameters["model_path"] = "{basedir}/{name}".format(
         basedir=model_path, name=brain_name
     )
+    if init_path is not None:
+        trainer_parameters["init_path"] = "{basedir}/{name}".format(
+            basedir=init_path, name=brain_name
+        )
     trainer_parameters["keep_checkpoints"] = keep_checkpoints
     if brain_name in trainer_config:
         _brain_key: Any = brain_name
@@ -158,6 +172,7 @@ def initialize_trainer(
         trainer = GhostTrainer(
             trainer,
             brain_name,
+            ghost_controller,
             min_lesson_length,
             trainer_parameters,
             train_model,
@@ -194,7 +209,7 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
 
 
 def handle_existing_directories(
-    model_path: str, summary_path: str, resume: bool, force: bool
+    model_path: str, summary_path: str, resume: bool, force: bool, init_path: str = None
 ) -> None:
     """
     Validates that if the run_id model exists, we do not overwrite it unless --force is specified.
@@ -211,13 +226,23 @@ def handle_existing_directories(
     if model_path_exists:
         if not resume and not force:
             raise UnityTrainerException(
-                "Previous data from this run-id was found. "
-                "Either specify a new run-id, use --resume to resume this run, "
+                "Previous data from this run ID was found. "
+                "Either specify a new run ID, use --resume to resume this run, "
                 "or use the --force parameter to overwrite existing data."
             )
     else:
         if resume:
             raise UnityTrainerException(
-                "Previous data from this run-id was not found. "
+                "Previous data from this run ID was not found. "
                 "Train a new run by removing the --resume flag."
+            )
+
+    # Verify init path if specified.
+    if init_path is not None:
+        if not os.path.isdir(init_path):
+            raise UnityTrainerException(
+                "Could not initialize from {}. "
+                "Make sure models have already been saved with that run ID.".format(
+                    init_path
+                )
             )

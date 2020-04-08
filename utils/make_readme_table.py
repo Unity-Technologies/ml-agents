@@ -22,6 +22,7 @@ versions = [
     ["0.14.0", "February 13, 2020"],
     ["0.14.1", "February 26, 2020"],
     ["0.15.0", "March 18, 2020"],
+    ["0.15.1", "March 30, 2020"],
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
