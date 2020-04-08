@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
  - The internal event `Academy.AgentSetStatus` was renamed to `Academy.AgentPreStep` and made public.
  - The offset logic was removed from DecisionRequester.
+ - The communication API version has been bumped up to 1.0.0 and will use [Semantic Versioning](https://semver.org/) to do compatibility checks for communication between Unity and the Python process.
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)

@@ -61,6 +61,13 @@ namespace MLAgents
 
         #region Initialization
 
+        internal static bool CheckCommunicationVersionsAreCompatible(string unityCommunicationVersion, string pythonApiVersion)
+        {
+            var unityVersion = new Version(unityCommunicationVersion);
+            var pythonVersion = new Version(pythonApiVersion);
+            return unityVersion.Major == pythonVersion.Major;
+        }
+
         /// <summary>
         /// Sends the initialization parameters through the Communicator.
         /// Is used by the academy to send initialization parameters to the communicator.
@@ -91,10 +98,10 @@ namespace MLAgents
                 // API strings, so log an explicit warning if that's the case.
                 if (initializationInput != null && input == null)
                 {
-                    var pythonCommunicationVersion = new Version(initializationInput.RlInitializationInput.CommunicationVersion);
-                    var pythonPackageVersion = new Version(initializationInput.RlInitializationInput.PackageVersion);
-                    var unityCommunicationVersion = new Version(initParameters.unityCommunicationVersion);
-                    if (pythonCommunicationVersion.Major != unityCommunicationVersion.Major)
+                    var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
+                    var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+                    var unityCommunicationVersion = initParameters.unityCommunicationVersion;
+                    if (!CheckCommunicationVersionsAreCompatible(unityCommunicationVersion, pythonCommunicationVersion))
                     {
                         Debug.LogWarningFormat(
                             "Communication protocol between python ({0}) and Unity ({1}) have different " +
