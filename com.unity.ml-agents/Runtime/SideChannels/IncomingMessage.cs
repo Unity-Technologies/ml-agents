@@ -117,6 +117,7 @@ namespace MLAgents.SideChannels
         /// Whether or not there is more data left in the stream that can be read.
         /// </summary>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         bool CanReadMore()
         {
             return m_Stream.Position < m_Stream.Length;
