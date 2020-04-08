@@ -1,6 +1,7 @@
 import pytest
 import yaml
 import io
+import os
 from unittest.mock import patch
 
 from mlagents.trainers import trainer_util
@@ -335,3 +336,36 @@ you:
     with pytest.raises(TrainerConfigError):
         fp = io.StringIO(file_contents)
         _load_config(fp)
+
+
+def test_existing_directories(tmp_path):
+    model_path = os.path.join(tmp_path, "runid")
+    # Unused summary path
+    summary_path = os.path.join(tmp_path, "runid")
+    # Test fresh new unused path - should do nothing.
+    trainer_util.handle_existing_directories(model_path, summary_path, False, False)
+    # Test resume with fresh path - should throw an exception.
+    with pytest.raises(UnityTrainerException):
+        trainer_util.handle_existing_directories(model_path, summary_path, True, False)
+
+    # make a directory
+    os.mkdir(model_path)
+    # Test try to train w.o. force, should complain
+    with pytest.raises(UnityTrainerException):
+        trainer_util.handle_existing_directories(model_path, summary_path, False, False)
+    # Test try to train w/ resume - should work
+    trainer_util.handle_existing_directories(model_path, summary_path, True, False)
+    # Test try to train w/ force - should work
+    trainer_util.handle_existing_directories(model_path, summary_path, False, True)
+
+    # Test initialize option
+    init_path = os.path.join(tmp_path, "runid2")
+    with pytest.raises(UnityTrainerException):
+        trainer_util.handle_existing_directories(
+            model_path, summary_path, False, True, init_path
+        )
+    os.mkdir(init_path)
+    # Should pass since the directory exists now.
+    trainer_util.handle_existing_directories(
+        model_path, summary_path, False, True, init_path
+    )

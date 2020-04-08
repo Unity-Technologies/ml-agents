@@ -2,8 +2,6 @@
 import argparse
 
 import os
-import glob
-import shutil
 import numpy as np
 import json
 
@@ -14,12 +12,17 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.trainers.trainer_util import load_config, TrainerFactory
+from mlagents.trainers.trainer_util import (
+    load_config,
+    TrainerFactory,
+    handle_existing_directories,
+)
 from mlagents.trainers.stats import (
     TensorboardWriter,
     CSVWriter,
     StatsReporter,
     GaugeWriter,
+    ConsoleWriter,
 )
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
@@ -69,12 +72,34 @@ def _create_parser():
         default=False,
         dest="load_model",
         action="store_true",
-        help="Whether to load the model or randomly initialize",
+        help=argparse.SUPPRESS,  # Deprecated but still usable for now.
+    )
+    argparser.add_argument(
+        "--resume",
+        default=False,
+        dest="resume",
+        action="store_true",
+        help="Resumes training from a checkpoint. Specify a --run-id to use this option.",
+    )
+    argparser.add_argument(
+        "--force",
+        default=False,
+        dest="force",
+        action="store_true",
+        help="Force-overwrite existing models and summaries for a run ID that has been used "
+        "before.",
     )
     argparser.add_argument(
         "--run-id",
         default="ppo",
-        help="The directory name for model and summary statistics",
+        help="The run identifier for model and summary statistics.",
+    )
+    argparser.add_argument(
+        "--initialize-from",
+        metavar="RUN_ID",
+        default=None,
+        help="Specify a previously saved run ID from which to initialize the model from. "
+        "This can be used, for instance, to fine-tune an existing model on a new environment. ",
     )
     argparser.add_argument(
         "--save-freq", default=50000, type=int, help="Frequency at which to save model"
@@ -87,11 +112,19 @@ def _create_parser():
         default=False,
         dest="train_model",
         action="store_true",
-        help="Whether to train model, or only run inference",
+        help=argparse.SUPPRESS,
+    )
+    argparser.add_argument(
+        "--inference",
+        default=False,
+        dest="inference",
+        action="store_true",
+        help="Run in Python inference mode (don't train). Use with --resume to load a model trained with an "
+        "existing run ID.",
     )
     argparser.add_argument(
         "--base-port",
-        default=5005,
+        default=UnityEnvironment.BASE_ENVIRONMENT_PORT,
         type=int,
         help="Base port for environment communication",
     )
@@ -100,12 +133,6 @@ def _create_parser():
         default=1,
         type=int,
         help="Number of parallel environments to use for training",
-    )
-    argparser.add_argument(
-        "--docker-target-name",
-        default=None,
-        dest="docker_target_name",
-        help="Docker volume to store training-specific files",
     )
     argparser.add_argument(
         "--no-graphics",
@@ -174,8 +201,12 @@ class RunOptions(NamedTuple):
     seed: int = parser.get_default("seed")
     env_path: Optional[str] = parser.get_default("env_path")
     run_id: str = parser.get_default("run_id")
+    initialize_from: str = parser.get_default("initialize_from")
     load_model: bool = parser.get_default("load_model")
+    resume: bool = parser.get_default("resume")
+    force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
+    inference: bool = parser.get_default("inference")
     save_freq: int = parser.get_default("save_freq")
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
     base_port: int = parser.get_default("base_port")
@@ -185,7 +216,6 @@ class RunOptions(NamedTuple):
     no_graphics: bool = parser.get_default("no_graphics")
     multi_gpu: bool = parser.get_default("multi_gpu")
     sampler_config: Optional[Dict] = None
-    docker_target_name: Optional[str] = parser.get_default("docker_target_name")
     env_args: Optional[List[str]] = parser.get_default("env_args")
     cpu: bool = parser.get_default("cpu")
     width: int = parser.get_default("width")
@@ -204,15 +234,8 @@ class RunOptions(NamedTuple):
           configs loaded from files.
         """
         argparse_args = vars(args)
-        docker_target_name = argparse_args["docker_target_name"]
         trainer_config_path = argparse_args["trainer_config_path"]
         curriculum_config_path = argparse_args["curriculum_config_path"]
-        if docker_target_name is not None:
-            trainer_config_path = f"/{docker_target_name}/{trainer_config_path}"
-            if curriculum_config_path is not None:
-                curriculum_config_path = (
-                    f"/{docker_target_name}/{curriculum_config_path}"
-                )
         argparse_args["trainer_config"] = load_config(trainer_config_path)
         if curriculum_config_path is not None:
             argparse_args["curriculum_config"] = load_config(curriculum_config_path)
@@ -220,7 +243,8 @@ class RunOptions(NamedTuple):
             argparse_args["sampler_config"] = load_config(
                 argparse_args["sampler_file_path"]
             )
-
+        # Keep deprecated --load working, TODO: remove
+        argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
         argparse_args.pop("sampler_file_path")
@@ -251,13 +275,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
-        # Recognize and use docker volume if one is passed as an argument
-        if not options.docker_target_name:
-            model_path = f"./models/{options.run_id}"
-            summaries_dir = "./summaries"
-        else:
-            model_path = f"/{options.docker_target_name}/models/{options.run_id}"
-            summaries_dir = f"/{options.docker_target_name}/summaries"
+        model_path = f"./models/{options.run_id}"
+        maybe_init_path = (
+            f"./models/{options.initialize_from}" if options.initialize_from else None
+        )
+        summaries_dir = "./summaries"
         port = options.base_port
 
         # Configure CSV, Tensorboard Writers and StatsReporter
@@ -269,21 +291,21 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 "Environment/Episode Length",
             ],
         )
-        tb_writer = TensorboardWriter(summaries_dir)
+        handle_existing_directories(
+            model_path, summaries_dir, options.resume, options.force, maybe_init_path
+        )
+        tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
+        console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
         StatsReporter.add_writer(csv_writer)
         StatsReporter.add_writer(gauge_write)
+        StatsReporter.add_writer(console_writer)
 
         if options.env_path is None:
             port = UnityEnvironment.DEFAULT_EDITOR_PORT
         env_factory = create_environment_factory(
-            options.env_path,
-            options.docker_target_name,
-            options.no_graphics,
-            run_seed,
-            port,
-            options.env_args,
+            options.env_path, options.no_graphics, run_seed, port, options.env_args
         )
         engine_config = EngineConfig(
             options.width,
@@ -305,9 +327,10 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.run_id,
             model_path,
             options.keep_checkpoints,
-            options.train_model,
-            options.load_model,
+            not options.inference,
+            options.resume,
             run_seed,
+            maybe_init_path,
             maybe_meta_curriculum,
             options.multi_gpu,
         )
@@ -319,7 +342,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.run_id,
             options.save_freq,
             maybe_meta_curriculum,
-            options.train_model,
+            not options.inference,
             run_seed,
             sampler_manager,
             resampling_interval,
@@ -379,33 +402,10 @@ def try_create_meta_curriculum(
         return meta_curriculum
 
 
-def prepare_for_docker_run(docker_target_name, env_path):
-    for f in glob.glob(
-        "/{docker_target_name}/*".format(docker_target_name=docker_target_name)
-    ):
-        if env_path in f:
-            try:
-                b = os.path.basename(f)
-                if os.path.isdir(f):
-                    shutil.copytree(f, "/ml-agents/{b}".format(b=b))
-                else:
-                    src_f = "/{docker_target_name}/{b}".format(
-                        docker_target_name=docker_target_name, b=b
-                    )
-                    dst_f = "/ml-agents/{b}".format(b=b)
-                    shutil.copyfile(src_f, dst_f)
-                    os.chmod(dst_f, 0o775)  # Make executable
-            except Exception as e:
-                logger.info(e)
-    env_path = "/ml-agents/{env_path}".format(env_path=env_path)
-    return env_path
-
-
 def create_environment_factory(
     env_path: Optional[str],
-    docker_target_name: Optional[str],
     no_graphics: bool,
-    seed: Optional[int],
+    seed: int,
     start_port: int,
     env_args: Optional[List[str]],
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
@@ -415,29 +415,16 @@ def create_environment_factory(
             raise UnityEnvironmentException(
                 f"Couldn't launch the {env_path} environment. Provided filename does not match any environments."
             )
-    docker_training = docker_target_name is not None
-    if docker_training and env_path is not None:
-        #     Comments for future maintenance:
-        #         Some OS/VM instances (e.g. COS GCP Image) mount filesystems
-        #         with COS flag which prevents execution of the Unity scene,
-        #         to get around this, we will copy the executable into the
-        #         container.
-        # Navigate in docker path and find env_path and copy it.
-        env_path = prepare_for_docker_run(docker_target_name, env_path)
-    seed_count = 10000
-    seed_pool = [np.random.randint(0, seed_count) for _ in range(seed_count)]
 
     def create_unity_environment(
         worker_id: int, side_channels: List[SideChannel]
     ) -> UnityEnvironment:
-        env_seed = seed
-        if not env_seed:
-            env_seed = seed_pool[worker_id % len(seed_pool)]
+        # Make sure that each environment gets a different seed
+        env_seed = seed + worker_id
         return UnityEnvironment(
             file_name=env_path,
             worker_id=worker_id,
             seed=env_seed,
-            docker_training=docker_training,
             no_graphics=no_graphics,
             base_port=start_port,
             args=env_args,
@@ -482,6 +469,17 @@ def run_cli(options: RunOptions) -> None:
 
     logger.debug("Configuration for this run:")
     logger.debug(json.dumps(options._asdict(), indent=4))
+
+    # Options deprecation warnings
+    if options.load_model:
+        logger.warning(
+            "The --load option has been deprecated. Please use the --resume option instead."
+        )
+    if options.train_model:
+        logger.warning(
+            "The --train option has been deprecated. Train mode is now the default. Use "
+            "--inference to run in inference mode."
+        )
 
     run_seed = options.seed
     if options.cpu:

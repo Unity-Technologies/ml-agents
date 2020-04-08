@@ -103,8 +103,7 @@ parameters you can use with `mlagents-learn`.
 
 By installing the `mlagents` package, the dependencies listed in the
 [setup.py file](../ml-agents/setup.py) are also installed. These include
-[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support) and
-[Jupyter](Background-Jupyter.md).
+[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support).
 
 #### Advanced: Installing for Development
 
@@ -124,7 +123,7 @@ order will download `mlagents_envs` from PyPi.
 
 ## Next Steps
 
-The [Basic Guide](Basic-Guide.md) page contains several short tutorials on
+The [Getting Started](Getting-Started.md) guide contains several short tutorials on
 setting up the ML-Agents Toolkit within Unity, running a pre-trained model, in
 addition to building and training environments.
 

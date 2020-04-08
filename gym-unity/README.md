@@ -5,7 +5,7 @@ environments is via a wrapper provided by OpenAI called `gym`. For more
 information on the gym interface, see [here](https://github.com/openai/gym).
 
 We provide a gym wrapper and instructions for using it with existing machine
-learning algorithms which utilize gyms. Both wrappers provide interfaces on top
+learning algorithms which utilize gym. Our wrapper provides interfaces on top
 of our `UnityEnvironment` class, which is the default way of interfacing with a
 Unity environment via Python.
 
@@ -20,7 +20,7 @@ pip install gym_unity
 or by running the following from the `/gym-unity` directory of the repository:
 
 ```sh
-pip install .
+pip install -e .
 ```
 
 ## Using the Gym Wrapper
@@ -31,7 +31,7 @@ from the root of the project repository use:
 ```python
 from gym_unity.envs import UnityEnv
 
-env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multiagent)
+env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual)
 ```
 
 *  `environment_filename` refers to the path to the Unity environment.
@@ -47,9 +47,6 @@ env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multia
    (0-255). Many common Gym environments (e.g. Atari) do this. By default they
    will be floats (0.0-1.0). Defaults to `False`.
 
-*  `multiagent` refers to whether you intent to launch an environment which
-   contains more than one agent. Defaults to `False`.
-
 *  `flatten_branched` will flatten a branched discrete action space into a Gym Discrete.
    Otherwise, it will be converted into a MultiDiscrete. Defaults to `False`.
 
@@ -58,19 +55,17 @@ env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual, multia
 
 The returned environment `env` will function as a gym.
 
-For more on using the gym interface, see our
-[Jupyter Notebook tutorial](../notebooks/getting-started-gym.ipynb).
 
 ## Limitations
 
-* It is only possible to use an environment with a single Agent.
+* It is only possible to use an environment with a **single** Agent.
 * By default, the first visual observation is provided as the `observation`, if
   present. Otherwise, vector observations are provided. You can receive all visual
   observations by using the `allow_multiple_visual_obs=True` option in the gym
   parameters. If set to `True`, you will receive a list of `observation` instead
   of only the first one.
-* The `BatchedStepResult` output from the environment can still be accessed from the
-  `info` provided by `env.step(action)`.
+* The `TerminalSteps` or `DecisionSteps` output from the environment can still be
+accessed from the `info` provided by `env.step(action)`.
 * Stacked vector observations are not supported.
 * Environment registration for use with `gym.make()` is currently not supported.
 

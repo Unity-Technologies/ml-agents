@@ -4,7 +4,7 @@ import uuid
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 import mlagents_envs
 
@@ -13,9 +13,10 @@ from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
 
 from mlagents_envs.base_env import (
     BaseEnv,
-    BatchedStepResult,
-    AgentGroupSpec,
-    AgentGroup,
+    DecisionSteps,
+    TerminalSteps,
+    BehaviorSpec,
+    BehaviorName,
     AgentId,
 )
 from mlagents_envs.timers import timed, hierarchical_timer
@@ -27,10 +28,7 @@ from mlagents_envs.exception import (
 )
 
 from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
-from mlagents_envs.rpc_utils import (
-    agent_group_spec_from_proto,
-    batched_step_result_from_proto,
-)
+from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 
 from mlagents_envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
@@ -66,6 +64,10 @@ class UnityEnvironment(BaseEnv):
     # isn't specified, this port will be used.
     DEFAULT_EDITOR_PORT = 5004
 
+    # Default base port for environments. Each environment will be offset from this
+    # by it's worker_id.
+    BASE_ENVIRONMENT_PORT = 5005
+
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
@@ -73,9 +75,8 @@ class UnityEnvironment(BaseEnv):
         self,
         file_name: Optional[str] = None,
         worker_id: int = 0,
-        base_port: int = 5005,
+        base_port: Optional[int] = None,
         seed: int = 0,
-        docker_training: bool = False,
         no_graphics: bool = False,
         timeout_wait: int = 60,
         args: Optional[List[str]] = None,
@@ -88,8 +89,8 @@ class UnityEnvironment(BaseEnv):
 
         :string file_name: Name of Unity environment binary.
         :int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-        :int worker_id: Number to add to communication port (5005) [0]. Used for asynchronous agent scenarios.
-        :bool docker_training: Informs this class whether the process is being run within a container.
+        If no environment is specified (i.e. file_name is None), the DEFAULT_EDITOR_PORT will be used.
+        :int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
         :bool no_graphics: Whether to run the Unity simulator in no-graphics mode
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :list args: Addition Unity command line arguments
@@ -97,6 +98,12 @@ class UnityEnvironment(BaseEnv):
         """
         args = args or []
         atexit.register(self._close)
+        # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
+        # an environment, otherwise DEFAULT_EDITOR_PORT
+        if base_port is None:
+            base_port = (
+                self.BASE_ENVIRONMENT_PORT if file_name else self.DEFAULT_EDITOR_PORT
+            )
         self.port = base_port + worker_id
         self._buffer_size = 12000
         # If true, this means the environment was successfully loaded
@@ -126,7 +133,7 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, docker_training, no_graphics, args)
+            self.executable_launcher(file_name, no_graphics, args)
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -160,11 +167,11 @@ class UnityEnvironment(BaseEnv):
                 f"Connected to Unity environment with package version {aca_params.package_version} "
                 f"and communication version {aca_params.communication_version}"
             )
-        self._env_state: Dict[str, BatchedStepResult] = {}
-        self._env_specs: Dict[str, AgentGroupSpec] = {}
+        self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
+        self._env_specs: Dict[str, BehaviorSpec] = {}
         self._env_actions: Dict[str, np.ndarray] = {}
         self._is_first_message = True
-        self._update_group_specs(aca_output)
+        self._update_behavior_specs(aca_output)
 
     @staticmethod
     def get_communicator(worker_id, base_port, timeout_wait):
@@ -226,7 +233,7 @@ class UnityEnvironment(BaseEnv):
                 launch_string = candidates[0]
         return launch_string
 
-    def executable_launcher(self, file_name, docker_training, no_graphics, args):
+    def executable_launcher(self, file_name, no_graphics, args):
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
             self._close(0)
@@ -236,63 +243,30 @@ class UnityEnvironment(BaseEnv):
         else:
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
-            if not docker_training:
-                subprocess_args = [launch_string]
-                if no_graphics:
-                    subprocess_args += ["-nographics", "-batchmode"]
-                subprocess_args += [
-                    UnityEnvironment.PORT_COMMAND_LINE_ARG,
-                    str(self.port),
-                ]
-                subprocess_args += args
-                try:
-                    self.proc1 = subprocess.Popen(
-                        subprocess_args,
-                        # start_new_session=True means that signals to the parent python process
-                        # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
-                        # This is generally good since we want the environment to have a chance to shutdown,
-                        # but may be undesirable in come cases; if so, we'll add a command-line toggle.
-                        # Note that on Windows, the CTRL_C signal will still be sent.
-                        start_new_session=True,
-                    )
-                except PermissionError as perm:
-                    # This is likely due to missing read or execute permissions on file.
-                    raise UnityEnvironmentException(
-                        f"Error when trying to launch environment - make sure "
-                        f"permissions are set correctly. For example "
-                        f'"chmod -R 755 {launch_string}"'
-                    ) from perm
-
-            else:
-                # Comments for future maintenance:
-                #     xvfb-run is a wrapper around Xvfb, a virtual xserver where all
-                #     rendering is done to virtual memory. It automatically creates a
-                #     new virtual server automatically picking a server number `auto-servernum`.
-                #     The server is passed the arguments using `server-args`, we are telling
-                #     Xvfb to create Screen number 0 with width 640, height 480 and depth 24 bits.
-                #     Note that 640 X 480 are the default width and height. The main reason for
-                #     us to add this is because we'd like to change the depth from the default
-                #     of 8 bits to 24.
-                #     Unfortunately, this means that we will need to pass the arguments through
-                #     a shell which is why we set `shell=True`. Now, this adds its own
-                #     complications. E.g SIGINT can bounce off the shell and not get propagated
-                #     to the child processes. This is why we add `exec`, so that the shell gets
-                #     launched, the arguments are passed to `xvfb-run`. `exec` replaces the shell
-                #     we created with `xvfb`.
-                #
-                docker_ls = (
-                    f"exec xvfb-run --auto-servernum --server-args='-screen 0 640x480x24'"
-                    f" {launch_string} {UnityEnvironment.PORT_COMMAND_LINE_ARG} {self.port}"
-                )
-
+            subprocess_args = [launch_string]
+            if no_graphics:
+                subprocess_args += ["-nographics", "-batchmode"]
+            subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
+            subprocess_args += args
+            try:
                 self.proc1 = subprocess.Popen(
-                    docker_ls,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    shell=True,
+                    subprocess_args,
+                    # start_new_session=True means that signals to the parent python process
+                    # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
+                    # This is generally good since we want the environment to have a chance to shutdown,
+                    # but may be undesirable in come cases; if so, we'll add a command-line toggle.
+                    # Note that on Windows, the CTRL_C signal will still be sent.
+                    start_new_session=True,
                 )
+            except PermissionError as perm:
+                # This is likely due to missing read or execute permissions on file.
+                raise UnityEnvironmentException(
+                    f"Error when trying to launch environment - make sure "
+                    f"permissions are set correctly. For example "
+                    f'"chmod -R 755 {launch_string}"'
+                ) from perm
 
-    def _update_group_specs(self, output: UnityOutputProto) -> None:
+    def _update_behavior_specs(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
         for brain_param in init_output.brain_parameters:
             # Each BrainParameter in the rl_initialization_output should have at least one AgentInfo
@@ -300,7 +274,7 @@ class UnityEnvironment(BaseEnv):
             agent_infos = output.rl_output.agentInfos[brain_param.brain_name]
             if agent_infos.value:
                 agent = agent_infos.value[0]
-                new_spec = agent_group_spec_from_proto(brain_param, agent)
+                new_spec = behavior_spec_from_proto(brain_param, agent)
                 self._env_specs[brain_param.brain_name] = new_spec
                 logger.info(f"Connected new brain:\n{brain_param.brain_name}")
 
@@ -311,12 +285,13 @@ class UnityEnvironment(BaseEnv):
         for brain_name in self._env_specs.keys():
             if brain_name in output.agentInfos:
                 agent_info_list = output.agentInfos[brain_name].value
-                self._env_state[brain_name] = batched_step_result_from_proto(
+                self._env_state[brain_name] = steps_from_proto(
                     agent_info_list, self._env_specs[brain_name]
                 )
             else:
-                self._env_state[brain_name] = BatchedStepResult.empty(
-                    self._env_specs[brain_name]
+                self._env_state[brain_name] = (
+                    DecisionSteps.empty(self._env_specs[brain_name]),
+                    TerminalSteps.empty(self._env_specs[brain_name]),
                 )
         self._parse_side_channel_message(self.side_channels, output.side_channel)
 
@@ -325,7 +300,7 @@ class UnityEnvironment(BaseEnv):
             outputs = self.communicator.exchange(self._generate_reset_input())
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
-            self._update_group_specs(outputs)
+            self._update_behavior_specs(outputs)
             rl_output = outputs.rl_output
             self._update_state(rl_output)
             self._is_first_message = False
@@ -344,7 +319,7 @@ class UnityEnvironment(BaseEnv):
             if group_name not in self._env_actions:
                 n_agents = 0
                 if group_name in self._env_state:
-                    n_agents = self._env_state[group_name].n_agents()
+                    n_agents = len(self._env_state[group_name][0])
                 self._env_actions[group_name] = self._env_specs[
                     group_name
                 ].create_empty_action(n_agents)
@@ -353,77 +328,82 @@ class UnityEnvironment(BaseEnv):
             outputs = self.communicator.exchange(step_input)
         if outputs is None:
             raise UnityCommunicationException("Communicator has stopped.")
-        self._update_group_specs(outputs)
+        self._update_behavior_specs(outputs)
         rl_output = outputs.rl_output
         self._update_state(rl_output)
         self._env_actions.clear()
 
-    def get_agent_groups(self) -> List[AgentGroup]:
+    def get_behavior_names(self):
         return list(self._env_specs.keys())
 
-    def _assert_group_exists(self, agent_group: str) -> None:
-        if agent_group not in self._env_specs:
+    def _assert_behavior_exists(self, behavior_name: str) -> None:
+        if behavior_name not in self._env_specs:
             raise UnityActionException(
                 "The group {0} does not correspond to an existing agent group "
-                "in the environment".format(agent_group)
+                "in the environment".format(behavior_name)
             )
 
-    def set_actions(self, agent_group: AgentGroup, action: np.ndarray) -> None:
-        self._assert_group_exists(agent_group)
-        if agent_group not in self._env_state:
+    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+        self._assert_behavior_exists(behavior_name)
+        if behavior_name not in self._env_state:
             return
-        spec = self._env_specs[agent_group]
+        spec = self._env_specs[behavior_name]
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
-        expected_shape = (self._env_state[agent_group].n_agents(), spec.action_size)
+        expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The group {0} needs an input of dimension {1} but received input of dimension {2}".format(
-                    agent_group, expected_shape, action.shape
+                "The behavior {0} needs an input of dimension {1} but received input of dimension {2}".format(
+                    behavior_name, expected_shape, action.shape
                 )
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
-        self._env_actions[agent_group] = action
+        self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, agent_group: AgentGroup, agent_id: AgentId, action: np.ndarray
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
     ) -> None:
-        self._assert_group_exists(agent_group)
-        if agent_group not in self._env_state:
+        self._assert_behavior_exists(behavior_name)
+        if behavior_name not in self._env_state:
             return
-        spec = self._env_specs[agent_group]
+        spec = self._env_specs[behavior_name]
         expected_shape = (spec.action_size,)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The Agent {0} in group {1} needs an input of dimension {2} but received input of dimension {3}".format(
-                    agent_id, agent_group, expected_shape, action.shape
+                f"The Agent {0} with BehaviorName {1} needs an input of dimension "
+                f"{2} but received input of dimension {3}".format(
+                    agent_id, behavior_name, expected_shape, action.shape
                 )
             )
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
         if action.dtype != expected_type:
             action = action.astype(expected_type)
 
-        if agent_group not in self._env_actions:
-            self._env_actions[agent_group] = spec.create_empty_action(
-                self._env_state[agent_group].n_agents()
+        if behavior_name not in self._env_actions:
+            self._env_actions[behavior_name] = spec.create_empty_action(
+                len(self._env_state[behavior_name][0])
             )
         try:
-            index = np.where(self._env_state[agent_group].agent_id == agent_id)[0][0]
+            index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
+                0
+            ]
         except IndexError as ie:
             raise IndexError(
                 "agent_id {} is did not request a decision at the previous step".format(
                     agent_id
                 )
             ) from ie
-        self._env_actions[agent_group][index] = action
+        self._env_actions[behavior_name][index] = action
 
-    def get_step_result(self, agent_group: AgentGroup) -> BatchedStepResult:
-        self._assert_group_exists(agent_group)
-        return self._env_state[agent_group]
+    def get_steps(
+        self, behavior_name: BehaviorName
+    ) -> Tuple[DecisionSteps, TerminalSteps]:
+        self._assert_behavior_exists(behavior_name)
+        return self._env_state[behavior_name]
 
-    def get_agent_group_spec(self, agent_group: AgentGroup) -> AgentGroupSpec:
-        self._assert_group_exists(agent_group)
-        return self._env_specs[agent_group]
+    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
+        self._assert_behavior_exists(behavior_name)
+        return self._env_specs[behavior_name]
 
     def close(self):
         """
@@ -534,7 +514,7 @@ class UnityEnvironment(BaseEnv):
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
-            n_agents = self._env_state[b].n_agents()
+            n_agents = len(self._env_state[b][0])
             if n_agents == 0:
                 continue
             for i in range(n_agents):

@@ -154,18 +154,5 @@ namespace MLAgents
         /// <param name="agentId">A key to identify which Agent actions to get.</param>
         /// <returns></returns>
         float[] GetActions(string key, int agentId);
-
-        /// <summary>
-        /// Registers a side channel to the communicator. The side channel will exchange
-        /// messages with its Python equivalent.
-        /// </summary>
-        /// <param name="sideChannel"> The side channel to be registered.</param>
-        void RegisterSideChannel(SideChannel sideChannel);
-
-        /// <summary>
-        /// Unregisters a side channel from the communicator.
-        /// </summary>
-        /// <param name="sideChannel"> The side channel to be unregistered.</param>
-        void UnregisterSideChannel(SideChannel sideChannel);
     }
 }

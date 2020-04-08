@@ -1,16 +1,16 @@
-# Training Generalized Reinforcement Learning Agents
+# Training With Environment Parameter Randomization
 
 One of the challenges of training and testing agents on the same
 environment is that the agents tend to overfit. The result is that the
 agents are unable to generalize to any tweaks or variations in the environment.
 This is analogous to a model being trained and tested on an identical dataset
 in supervised learning. This becomes problematic in cases where environments
-are randomly instantiated with varying objects or properties.
+are instantiated with varying objects or properties.
 
-To make agents robust and generalizable to different environments, the agent
-should be trained over multiple variations of the environment. Using this approach
-for training, the agent will be better suited to adapt (with higher performance)
-to future unseen variations of the environment
+To help agents robust and better generalizable to changes in the environment, the agent
+can be trained over multiple variations of a given environment. We refer to this approach as **Environment Parameter Randomization**. For those familiar with Reinforcement Learning research, this approach is based on the concept of Domain Randomization (you can read more about it [here](https://arxiv.org/abs/1703.06907)). By using parameter randomization
+during training, the agent can be better suited to adapt (with higher performance)
+to future unseen variations of the environment.
 
 _Example of variations of the 3D Ball environment._
 
@@ -18,32 +18,31 @@ Ball scale of 0.5          |  Ball scale of 4
 :-------------------------:|:-------------------------:
 ![](images/3dball_small.png)  |  ![](images/3dball_big.png)
 
-## Introducing Generalization Using Reset Parameters
 
-To enable variations in the environments, we implemented `Reset Parameters`.
-`Reset Parameters` are `Academy.Instance.FloatProperties` that are used only when
-resetting the environment. We
+To enable variations in the environments, we implemented `Environment Parameters`.
+`Environment Parameters` are values in the `FloatPropertiesChannel` that can be read when setting
+up the environment. We
 also included different sampling methods and the ability to create new kinds of
-sampling methods for each `Reset Parameter`. In the 3D ball environment example displayed
-in the figure above, the reset parameters are `gravity`, `ball_mass` and `ball_scale`.
+sampling methods for each `Environment Parameter`. In the 3D ball environment example displayed
+in the figure above, the environment parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 
-## How to Enable Generalization Using Reset Parameters
+## How to Enable Environment Parameter Randomization
 
-We first need to provide a way to modify the environment by supplying a set of `Reset Parameters`
+We first need to provide a way to modify the environment by supplying a set of `Environment Parameters`
 and vary them over time. This provision can be done either deterministically or randomly.
 
-This is done by assigning each `Reset Parameter` a `sampler-type`(such as a uniform sampler),
-which determines how to sample a `Reset
+This is done by assigning each `Environment Parameter` a `sampler-type`(such as a uniform sampler),
+which determines how to sample an `Environment
 Parameter`. If a `sampler-type` isn't provided for a
-`Reset Parameter`, the parameter maintains the default value throughout the
-training procedure, remaining unchanged. The samplers for all the `Reset Parameters`
+`Environment Parameter`, the parameter maintains the default value throughout the
+training procedure, remaining unchanged. The samplers for all the `Environment Parameters`
 are handled by a **Sampler Manager**, which also handles the generation of new
-values for the reset parameters when needed.
+values for the environment parameters when needed.
 
 To setup the Sampler Manager, we create a YAML file that specifies how we wish to
-generate new samples for each `Reset Parameters`. In this file, we specify the samplers and the
-`resampling-interval` (the number of simulation steps after which reset parameters are
+generate new samples for each `Environment Parameters`. In this file, we specify the samplers and the
+`resampling-interval` (the number of simulation steps after which environment parameters are
 resampled). Below is an example of a sampler file for the 3D ball environment.
 
 ```yaml
@@ -69,26 +68,25 @@ Below is the explanation of the fields in the above example.
 
 * `resampling-interval` - Specifies the number of steps for the agent to
 train under a particular environment configuration before resetting the
-environment with a new sample of `Reset Parameters`.
+environment with a new sample of `Environment Parameters`.
 
-* `Reset Parameter` - Name of the `Reset Parameter` like `mass`, `gravity` and `scale`. This should match the name
-specified in the academy of the intended environment for which the agent is
-being trained. If a parameter specified in the file doesn't exist in the
-environment, then this parameter will be ignored.  Within each `Reset Parameter`
+* `Environment Parameter` - Name of the `Environment Parameter` like `mass`, `gravity` and `scale`. This should match the name
+specified in the `FloatPropertiesChannel` of the environment being trained. If a parameter specified in the file doesn't exist in the
+environment, then this parameter will be ignored.  Within each `Environment Parameter`
 
-    * `sampler-type` - Specify the sampler type to use for the `Reset Parameter`.
+    * `sampler-type` - Specify the sampler type to use for the `Environment Parameter`.
     This is a string that should exist in the `Sampler Factory` (explained
     below).
 
     * `sampler-type-sub-arguments` - Specify the sub-arguments depending on the `sampler-type`.
     In the example above, this would correspond to the `intervals`
-    under the `sampler-type` `"multirange_uniform"` for the `Reset Parameter` called `gravity`.
+    under the `sampler-type` `"multirange_uniform"` for the `Environment Parameter` called `gravity`.
     The key name should match the name of the corresponding argument in the sampler definition.
     (See below)
 
-The Sampler Manager allocates a sampler type for each `Reset Parameter` by using the *Sampler Factory*,
+The Sampler Manager allocates a sampler type for each `Environment Parameter` by using the *Sampler Factory*,
 which maintains a dictionary mapping of string keys to sampler objects. The available sampler types
-to be used for each `Reset Parameter` is available in the Sampler Factory.
+to be used for each `Environment Parameter` is available in the Sampler Factory.
 
 ### Included Sampler Types
 
@@ -134,7 +132,7 @@ is as follows:
 `SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
 
 Once the Sampler Factory reflects the new register, the new sampler type can be used for sample any
-`Reset Parameter`. For example, lets say a new sampler type was implemented as below and we register
+`Environment Parameter`. For example, lets say a new sampler type was implemented as below and we register
 the `CustomSampler` class with the string `custom-sampler` in the Sampler Factory.
 
 ```python
@@ -148,7 +146,7 @@ class CustomSampler(Sampler):
 ```
 
 Now we need to specify the new sampler type in the sampler YAML file. For example, we use this new
-sampler type for the `Reset Parameter` *mass*.
+sampler type for the `Environment Parameter` *mass*.
 
 ```yaml
 mass:
@@ -158,16 +156,16 @@ mass:
     argC: 3
 ```
 
-### Training with Generalization Using Reset Parameters
+### Training with Environment Parameter Randomization
 
 After the sampler YAML file is defined, we proceed by launching `mlagents-learn` and specify
 our configured sampler file with the `--sampler` flag. For example, if we wanted to train the
-3D ball agent with generalization using `Reset Parameters` with `config/3dball_generalize.yaml`
+3D ball agent with parameter randomization using `Environment Parameters` with `config/3dball_randomize.yaml`
 sampling setup, we would run
 
 ```sh
-mlagents-learn config/trainer_config.yaml --sampler=config/3dball_generalize.yaml
---run-id=3D-Ball-generalization --train
+mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
+--run-id=3D-Ball-randomize
 ```
 
 We can observe progress and metrics via Tensorboard.

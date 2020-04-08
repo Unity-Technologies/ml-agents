@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs.exception import UnityEnvironmentException, UnityActionException
 from mlagents_envs.mock_communicator import MockCommunicator
 
@@ -22,8 +22,31 @@ def test_initialization(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.get_agent_groups() == ["RealFakeBrain"]
+    assert env.get_behavior_names() == ["RealFakeBrain"]
     env.close()
+
+
+@pytest.mark.parametrize(
+    "base_port,file_name,expected",
+    [
+        # Non-None base port value will always be used
+        (6001, "foo.exe", 6001),
+        # No port specified and environment specified, so use BASE_ENVIRONMENT_PORT
+        (None, "foo.exe", UnityEnvironment.BASE_ENVIRONMENT_PORT),
+        # No port specified and no environment, so use DEFAULT_EDITOR_PORT
+        (None, None, UnityEnvironment.DEFAULT_EDITOR_PORT),
+    ],
+)
+@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+def test_port_defaults(
+    mock_communicator, mock_launcher, base_port, file_name, expected
+):
+    mock_communicator.return_value = MockCommunicator(
+        discrete_action=False, visual_inputs=0
+    )
+    env = UnityEnvironment(file_name=file_name, worker_id=0, base_port=base_port)
+    assert expected == env.port
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
@@ -33,14 +56,19 @@ def test_reset(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_agent_group_spec("RealFakeBrain")
+    spec = env.get_behavior_spec("RealFakeBrain")
     env.reset()
-    batched_step_result = env.get_step_result("RealFakeBrain")
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     env.close()
-    assert isinstance(batched_step_result, BatchedStepResult)
-    assert len(spec.observation_shapes) == len(batched_step_result.obs)
-    n_agents = batched_step_result.n_agents()
-    for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
+    assert isinstance(decision_steps, DecisionSteps)
+    assert isinstance(terminal_steps, TerminalSteps)
+    assert len(spec.observation_shapes) == len(decision_steps.obs)
+    assert len(spec.observation_shapes) == len(terminal_steps.obs)
+    n_agents = len(decision_steps)
+    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
+        assert (n_agents,) + shape == obs.shape
+    n_agents = len(terminal_steps)
+    for shape, obs in zip(spec.observation_shapes, terminal_steps.obs):
         assert (n_agents,) + shape == obs.shape
 
 
@@ -51,10 +79,10 @@ def test_step(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_agent_group_spec("RealFakeBrain")
+    spec = env.get_behavior_spec("RealFakeBrain")
     env.step()
-    batched_step_result = env.get_step_result("RealFakeBrain")
-    n_agents = batched_step_result.n_agents()
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
+    n_agents = len(decision_steps)
     env.set_actions(
         "RealFakeBrain", np.zeros((n_agents, spec.action_size), dtype=np.float32)
     )
@@ -64,20 +92,22 @@ def test_step(mock_communicator, mock_launcher):
             "RealFakeBrain",
             np.zeros((n_agents - 1, spec.action_size), dtype=np.float32),
         )
-    batched_step_result = env.get_step_result("RealFakeBrain")
-    n_agents = batched_step_result.n_agents()
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
+    n_agents = len(decision_steps)
     env.set_actions(
         "RealFakeBrain", -1 * np.ones((n_agents, spec.action_size), dtype=np.float32)
     )
     env.step()
 
     env.close()
-    assert isinstance(batched_step_result, BatchedStepResult)
-    assert len(spec.observation_shapes) == len(batched_step_result.obs)
-    for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
+    assert isinstance(decision_steps, DecisionSteps)
+    assert isinstance(terminal_steps, TerminalSteps)
+    assert len(spec.observation_shapes) == len(decision_steps.obs)
+    assert len(spec.observation_shapes) == len(terminal_steps.obs)
+    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
         assert (n_agents,) + shape == obs.shape
-    assert not batched_step_result.done[0]
-    assert batched_step_result.done[2]
+    assert 0 in decision_steps
+    assert 2 in terminal_steps
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")

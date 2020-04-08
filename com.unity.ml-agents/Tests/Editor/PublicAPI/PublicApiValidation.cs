@@ -83,6 +83,30 @@ namespace MLAgentsExamples
             }
         }
 
+        // Simple SensorComponent that sets up a StackingSensor
+        class StackingComponent : SensorComponent
+        {
+            public SensorComponent wrappedComponent;
+            public int numStacks;
+
+            public override ISensor CreateSensor()
+            {
+                var wrappedSensor = wrappedComponent.CreateSensor();
+                return new StackingSensor(wrappedSensor, numStacks);
+            }
+
+            public override int[] GetObservationShape()
+            {
+                int[] shape = (int[]) wrappedComponent.GetObservationShape().Clone();
+                for (var i = 0; i < shape.Length; i++)
+                {
+                    shape[i] *= numStacks;
+                }
+
+                return shape;
+            }
+        }
+
 
         [Test]
         public void CheckSetupAgent()
@@ -113,6 +137,12 @@ namespace MLAgentsExamples
             sensorComponent.sensorName = "ray3d";
             sensorComponent.detectableTags = new List<string> { "Player", "Respawn" };
             sensorComponent.raysPerDirection = 3;
+
+            // Make a StackingSensor that wraps the RayPerceptionSensorComponent3D
+            // This isn't necessarily practical, just to ensure that it can be done
+            var wrappingSensorComponent = gameObject.AddComponent<StackingComponent>();
+            wrappingSensorComponent.wrappedComponent = sensorComponent;
+            wrappingSensorComponent.numStacks = 3;
 
             // ISensor isn't set up yet.
             Assert.IsNull(sensorComponent.raySensor);

@@ -18,6 +18,7 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 
 logger = get_logger(__name__)
@@ -157,9 +158,6 @@ class SACTrainer(RLTrainer):
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
-        # Add to episode_steps
-        self.episode_steps[agent_id] += len(trajectory.steps)
-
         agent_buffer_trajectory = trajectory.to_agentbuffer()
 
         # Update the normalization
@@ -182,7 +180,7 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
-            self.stats_reporter.add_stat(
+            self._stats_reporter.add_stat(
                 self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
 
@@ -226,7 +224,9 @@ class SACTrainer(RLTrainer):
             self.update_sac_policy()
             self.update_reward_signals()
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         policy = NNPolicy(
             self.seed,
             brain_parameters,
@@ -298,12 +298,12 @@ class SACTrainer(RLTrainer):
             )
 
         for stat, stat_list in batch_update_stats.items():
-            self.stats_reporter.add_stat(stat, np.mean(stat_list))
+            self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
         if self.optimizer.bc_module:
             update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
-                self.stats_reporter.add_stat(stat, val)
+                self._stats_reporter.add_stat(stat, val)
 
     def update_reward_signals(self) -> None:
         """
@@ -338,9 +338,11 @@ class SACTrainer(RLTrainer):
             for stat_name, value in update_stats.items():
                 batch_update_stats[stat_name].append(value)
         for stat, stat_list in batch_update_stats.items():
-            self.stats_reporter.add_stat(stat, np.mean(stat_list))
+            self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
-    def add_policy(self, name_behavior_id: str, policy: TFPolicy) -> None:
+    def add_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+    ) -> None:
         """
         Adds policy to trainer.
         :param brain_parameters: specifications for policy construction

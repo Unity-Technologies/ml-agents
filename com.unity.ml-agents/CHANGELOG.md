@@ -18,6 +18,37 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.15.0-preview] - 2020-03-18
 ### Major Changes
+ - The `--load` and `--train` command-line flags have been deprecated. Training now happens by default, and
+ use `--resume` to resume training instead. (#3705)
+ - The Jupyter notebooks have been removed from the repository.
+ - Introduced the `SideChannelUtils` to register, unregister and access side channels.
+ - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
+ - Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
+ - The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
+ - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
+
+### Minor Changes
+ - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
+ - Added a feature to allow sending stats from C# environments to TensorBoard (and other python StatsWriters). To do this from your code, use `SideChannelUtils.GetSideChannel<StatsSideChannel>().AddStat(key, value)` (#3660)
+ - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
+ - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
+ - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
+ - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
+ - `StackingSensor` was changed from `internal` visibility to `public`
+
+## [0.15.1-preview] - 2020-03-30
+### Bug Fixes
+ - Raise the wall in CrawlerStatic scene to prevent Agent from falling off. (#3650)
+ - Fixed an issue where specifying `vis_encode_type` was required only for SAC. (#3677)
+ - Fixed the reported entropy values for continuous actions (#3684)
+ - Fixed an issue where switching models using `SetModel()` during training would use an excessive amount of memory. (#3664)
+ - Environment subprocesses now close immediately on timeout or wrong API version. (#3679)
+ - Fixed an issue in the gym wrapper that would raise an exception if an Agent called EndEpisode multiple times in the same step. (#3700)
+ - Fixed an issue where logging output was not visible; logging levels are now set consistently. (#3703)
+
+
+## [0.15.0-preview] - 2020-03-18
+### Major Changes
  - `Agent.CollectObservations` now takes a VectorSensor argument. (#3352, #3389)
  - Added `Agent.CollectDiscreteActionMasks` virtual method with a `DiscreteActionMasker` argument to specify which discrete actions are unavailable to the Agent. (#3525)
  - Beta support for ONNX export was added. If the `tf2onnx` python package is installed, models will be saved to `.onnx` as well as `.nn` format.

@@ -11,3 +11,5 @@ pack:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
+  triggers:
+    cancel_old_ci: true

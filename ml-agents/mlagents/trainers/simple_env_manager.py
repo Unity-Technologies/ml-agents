@@ -1,12 +1,12 @@
 from typing import Dict, List
 
-from mlagents_envs.base_env import BaseEnv, AgentGroup
+from mlagents_envs.base_env import BaseEnv, BehaviorName
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.brain import BrainParameters
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
-from mlagents.trainers.brain_conversion_utils import group_spec_to_brain_parameters
+from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
 class SimpleEnvManager(EnvManager):
@@ -31,49 +31,51 @@ class SimpleEnvManager(EnvManager):
         self.env.step()
         all_step_result = self._generate_all_results()
 
-        step_info = EnvironmentStep(all_step_result, 0, self.previous_all_action_info)
+        step_info = EnvironmentStep(
+            all_step_result, 0, self.previous_all_action_info, {}
+        )
         self.previous_step = step_info
         return [step_info]
 
     def _reset_env(
-        self, config: Dict[AgentGroup, float] = None
+        self, config: Dict[BehaviorName, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
         if config is not None:
             for k, v in config.items():
                 self.shared_float_properties.set_property(k, v)
         self.env.reset()
         all_step_result = self._generate_all_results()
-        self.previous_step = EnvironmentStep(all_step_result, 0, {})
+        self.previous_step = EnvironmentStep(all_step_result, 0, {}, {})
         return [self.previous_step]
 
     @property
-    def external_brains(self) -> Dict[AgentGroup, BrainParameters]:
+    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         result = {}
-        for brain_name in self.env.get_agent_groups():
-            result[brain_name] = group_spec_to_brain_parameters(
-                brain_name, self.env.get_agent_group_spec(brain_name)
+        for brain_name in self.env.get_behavior_names():
+            result[brain_name] = behavior_spec_to_brain_parameters(
+                brain_name, self.env.get_behavior_spec(brain_name)
             )
         return result
 
     @property
-    def get_properties(self) -> Dict[AgentGroup, float]:
+    def get_properties(self) -> Dict[BehaviorName, float]:
         return self.shared_float_properties.get_property_dict_copy()
 
     def close(self):
         self.env.close()
 
     @timed
-    def _take_step(self, last_step: EnvironmentStep) -> Dict[AgentGroup, ActionInfo]:
+    def _take_step(self, last_step: EnvironmentStep) -> Dict[BehaviorName, ActionInfo]:
         all_action_info: Dict[str, ActionInfo] = {}
-        for brain_name, step_info in last_step.current_all_step_result.items():
+        for brain_name, step_tuple in last_step.current_all_step_result.items():
             all_action_info[brain_name] = self.policies[brain_name].get_action(
-                step_info,
+                step_tuple[0],
                 0,  # As there is only one worker, we assign the worker_id to 0.
             )
         return all_action_info
 
     def _generate_all_results(self) -> AllStepResult:
         all_step_result: AllStepResult = {}
-        for brain_name in self.env.get_agent_groups():
-            all_step_result[brain_name] = self.env.get_step_result(brain_name)
+        for brain_name in self.env.get_behavior_names():
+            all_step_result[brain_name] = self.env.get_steps(brain_name)
         return all_step_result

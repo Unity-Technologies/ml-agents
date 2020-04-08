@@ -156,20 +156,18 @@ class TrainerController(object):
         self, env_manager: EnvManager, name_behavior_id: str
     ) -> None:
 
-        brain_name = BehaviorIdentifiers.from_name_behavior_id(
-            name_behavior_id
-        ).brain_name
+        parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
+        brain_name = parsed_behavior_id.brain_name
         try:
             trainer = self.trainers[brain_name]
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
-            self.logger.info(trainer)
-            if self.train_model:
-                trainer.write_tensorboard_text("Hyperparameters", trainer.parameters)
 
-        policy = trainer.create_policy(env_manager.external_brains[name_behavior_id])
-        trainer.add_policy(name_behavior_id, policy)
+        policy = trainer.create_policy(
+            parsed_behavior_id, env_manager.external_brains[name_behavior_id]
+        )
+        trainer.add_policy(parsed_behavior_id, policy)
 
         agent_manager = AgentManager(
             policy,
@@ -214,10 +212,20 @@ class TrainerController(object):
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
-        except (KeyboardInterrupt, UnityCommunicationException):
+        except (
+            KeyboardInterrupt,
+            UnityCommunicationException,
+            UnityEnvironmentException,
+        ) as ex:
             if self.train_model:
                 self._save_model_when_interrupted()
-            pass
+
+            if isinstance(ex, KeyboardInterrupt):
+                pass
+            else:
+                # If the environment failed, we want to make sure to raise
+                # the exception so we exit the process with an return code of 1.
+                raise ex
         if self.train_model:
             self._export_graph()
 

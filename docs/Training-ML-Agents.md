@@ -43,7 +43,7 @@ training options.
 The basic command for training is:
 
 ```sh
-mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier> --train
+mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier>
 ```
 
 where
@@ -68,7 +68,7 @@ contains agents ready to train. To perform the training:
    environment you built in step 1:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --env=../../projects/Cats/CatsOnBicycles.app --run-id=cob_1 --train
+mlagents-learn config/trainer_config.yaml --env=../../projects/Cats/CatsOnBicycles.app --run-id=cob_1
 ```
 
 During a training session, the training program prints out and saves updates at
@@ -92,8 +92,30 @@ under the assigned run-id — in the cats example, the path to the model would b
 `models/cob_1/CatsOnBicycles_cob_1.nn`.
 
 While this example used the default training hyperparameters, you can edit the
-[training_config.yaml file](#training-config-file) with a text editor to set
+[trainer_config.yaml file](#training-config-file) with a text editor to set
 different values.
+
+To interrupt training and save the current progress, hit Ctrl+C once and wait for the
+model to be saved out.
+
+### Loading an Existing Model
+
+If you've quit training early using Ctrl+C, you can resume the training run by running
+`mlagents-learn` again, specifying the same `<run-identifier>` and appending the `--resume` flag
+to the command.
+
+You can also use this mode to run inference of an already-trained model in Python.
+Append both the `--resume` and `--inference` to do this. Note that if you want to run
+inference in Unity, you should use the
+[Unity Inference Engine](Getting-started#Running-a-pre-trained-model).
+
+If you've already trained a model using the specified `<run-identifier>` and `--resume` is not
+specified, you will not be able to continue with training. Use `--force` to force ML-Agents to
+overwrite the existing data.
+
+Alternatively, you might want to start a new training run but _initialize_ it using an already-trained
+model. You may want to do this, for instance, if your environment changed and you want
+a new model, but the old behavior is still better than random. You can do this by specifying `--initialize-from=<run-identifier>`, where `<run-identifier>` is the old run ID.
 
 ### Command Line Training Options
 
@@ -106,8 +128,7 @@ environment, you can set the following command line options when invoking
   lessons for curriculum training. See [Curriculum
   Training](Training-Curriculum-Learning.md) for more information.
 * `--sampler=<file>`: Specify a sampler YAML file for defining the
-  sampler for generalization training. See [Generalization
-  Training](Training-Generalized-Reinforcement-Learning-Agents.md) for more information.
+  sampler for parameter randomization. See [Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md) for more information.
 * `--keep-checkpoints=<n>`: Specify the maximum number of model checkpoints to
   keep. Checkpoints are saved after the number of steps specified by the
   `save-freq` option. Once the maximum number of checkpoints has been reached,
@@ -116,7 +137,7 @@ environment, you can set the following command line options when invoking
   training. Defaults to 0.
 * `--num-envs=<n>`: Specifies the number of concurrent Unity environment instances to
   collect experiences from when training. Defaults to 1.
-* `--run-id=<path>`: Specifies an identifier for each training run. This
+* `--run-id=<run-identifier>`: Specifies an identifier for each training run. This
   identifier is used to name the subdirectories in which the trained model and
   summary statistics are saved as well as the saved model itself. The default id
   is "ppo". If you use TensorBoard to view the training statistics, always set a
@@ -138,13 +159,18 @@ environment, you can set the following command line options when invoking
   will use the port `(base_port + worker_id)`, where the `worker_id` is sequential IDs
   given to each instance from 0 to `num_envs - 1`. Default is 5005. __Note:__ When
   training using the Editor rather than an executable, the base port will be ignored.
-* `--train`: Specifies whether to train model or only run in inference mode.
-  When training, **always** use the `--train` option.
-* `--load`: If set, the training code loads an already trained model to
+* `--inference`: Specifies whether to only run in inference mode. Omit to train the model.
+  To load an existing model, specify a run-id and combine with `--resume`.
+* `--resume`: If set, the training code loads an already trained model to
   initialize the neural network before training. The learning code looks for the
   model in `models/<run-id>/` (which is also where it saves models at the end of
-  training). When not set (the default), the neural network weights are randomly
-  initialized and an existing model is not loaded.
+  training). This option only works when the models exist, and have the same behavior names
+  as the current agents in your scene.
+* `--force`: Attempting to train a model with a run-id that has been used before will
+  throw an error. Use `--force` to force-overwrite this run-id's summary and model data.
+* `--initialize-from=<run-identifier>`: Specify an old run-id here to initialize your model from
+  a previously trained model. Note that the previously saved models _must_ have the same behavior
+  parameters as your current environment.
 * `--no-graphics`: Specify this option to run the Unity executable in
   `-batchmode` and doesn't initialize the graphics driver. Use this only if your
   training doesn't involve visual observations (reading from Pixels). See
@@ -153,7 +179,7 @@ environment, you can set the following command line options when invoking
 * `--debug`: Specify this option to enable debug-level logging for some parts of the code.
 * `--cpu`: Forces training using CPU only.
 * Engine Configuration :
-  * `--width' : The width of the executable window of the environment(s) in pixels
+  * `--width` : The width of the executable window of the environment(s) in pixels
   (ignored for editor training) (Default 84)
   * `--height` : The height of the executable window of the environment(s) in pixels
   (ignored for editor training). (Default 84)
@@ -207,6 +233,7 @@ example environments are included in the provided config file.
 | train_interval       | How often to update the agent.                                                                                                                                                          | SAC                      |
 | num_update           | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
 | use_recurrent        | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC             |
+| init_path        | Initialize trainer from a previously saved model.                                                                                       | PPO, SAC             |
 
 \*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral Cloning (Imitation), GAIL = Generative Adversarial Imitaiton Learning
 
@@ -218,7 +245,7 @@ are conducting, see:
 * [Using Recurrent Neural Networks](Feature-Memory.md)
 * [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 * [Training with Imitation Learning](Training-Imitation-Learning.md)
-* [Training Generalized Reinforcement Learning Agents](Training-Generalized-Reinforcement-Learning-Agents.md)
+* [Training with Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
 
 You can also compare the
 [example environments](Learning-Environment-Examples.md)

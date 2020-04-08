@@ -1,0 +1,32 @@
+test_editors:
+  - version: 2019.3
+---
+{% for editor in test_editors %}
+test_gym_interface_{{ editor.version }}:
+  name: Test Mac Gym Interface {{ editor.version }}
+  agent:
+    type: Unity::VM::osx
+    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
+    flavor: b1.small
+  variables:
+    UNITY_VERSION: {{ editor.version }}
+  commands:
+    - pip install pyyaml
+    - python -u -m ml-agents.tests.yamato.setup_venv
+    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_gym.py --env=Project/testPlayer-Basic
+  dependencies:
+    - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
+  triggers:
+    cancel_old_ci: true
+    changes:
+      only:
+        - "com.unity.ml-agents/**"
+        - "Project/**"
+        - "ml-agents/**"
+        - "ml-agents-envs/**"
+        - ".yamato/gym-interface-test.yml"
+      except:
+        - "*.md"
+        - "com.unity.ml-agents/*.md"
+        - "com.unity.ml-agents/**/*.md"
+{% endfor %}
