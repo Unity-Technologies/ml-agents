@@ -20,7 +20,6 @@ public class TennisAgent : Agent
     Text m_TextComponent;
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
-    HitWall m_BallScript;
     TennisArea m_Area;
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
@@ -36,7 +35,6 @@ public class TennisAgent : Agent
     {
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
-        m_BallScript = ball.GetComponent<HitWall>();
         m_Area = myArea.GetComponent<TennisArea>();
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
@@ -66,14 +64,6 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_BallRb.velocity.y);
 
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
-        if (m_BallScript.LastFloorHit == HitWall.FloorHit.FloorHitUnset)
-        {
-            sensor.AddObservation(1.0f);
-        }
-        else
-        {
-            sensor.AddObservation(0.0f);
-        }
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -130,7 +120,7 @@ public class TennisAgent : Agent
         {
             m_Area.MatchReset();
         }
-        transform.position = new Vector3(-m_InvertMult * Random.Range(6f, 8f), -1.5f, -1.8f) + transform.parent.transform.position;
+        transform.position = new Vector3(-m_InvertMult * 14f, 5f, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
         SetResetParameters();
     }
