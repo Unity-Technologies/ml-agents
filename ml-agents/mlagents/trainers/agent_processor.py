@@ -235,16 +235,18 @@ class AgentManagerQueue(Generic[T]):
         self._queue: queue.Queue = queue.Queue(maxsize=maxlen)
         self._behavior_id = behavior_id
 
+    @property
     def maxlen(self):
         """
-        Returns the maximum length of the queue.
+        The maximum length of the queue.
         :return: Maximum length of the queue.
         """
         return self._maxlen
 
+    @property
     def behavior_id(self):
         """
-        Returns the Behavior ID of this queue.
+        The Behavior ID of this queue.
         :return: Behavior ID associated with the queue.
         """
         return self._behavior_id
