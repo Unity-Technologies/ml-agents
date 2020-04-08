@@ -289,6 +289,9 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
+            TimerStack.Instance.AddMetadata("communication_protocol_version", k_ApiVersion);
+            TimerStack.Instance.AddMetadata("package_version", k_PackageVersion);
+
             EnableAutomaticStepping();
 
             SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
