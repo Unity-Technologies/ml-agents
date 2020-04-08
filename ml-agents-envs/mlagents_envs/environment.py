@@ -156,11 +156,11 @@ class UnityEnvironment(BaseEnv):
 
         unity_communicator_version = StrictVersion(aca_params.communication_version)
         api_version = StrictVersion(UnityEnvironment.API_VERSION)
-        if unity_communicator_version[0] != api_version[0]:
+        if unity_communicator_version.version[0] != api_version.version[0]:
             self._close(0)
             raise UnityEnvironmentException(
                 f"The communication API version is not compatible between Unity and python. "
-                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {aca_params.communicator_version}.\n "
+                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {aca_params.communication_version}.\n "
                 f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
                 f"to download the latest version of ML-Agents."
             )
