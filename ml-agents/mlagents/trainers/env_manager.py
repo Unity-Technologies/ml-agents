@@ -17,7 +17,6 @@ from mlagents_envs.logging_util import get_logger
 AllStepResult = Dict[BehaviorName, Tuple[DecisionSteps, TerminalSteps]]
 AllGroupSpec = Dict[BehaviorName, BehaviorSpec]
 
-
 logger = get_logger(__name__)
 
 

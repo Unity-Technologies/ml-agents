@@ -89,7 +89,6 @@ class AgentProcessor:
             self._process_step(
                 terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
             )
-
         # Iterate over all the decision steps
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
