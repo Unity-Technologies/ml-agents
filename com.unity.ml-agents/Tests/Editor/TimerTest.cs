@@ -17,6 +17,7 @@ namespace MLAgents.Tests
                     using (myTimer.Scoped("bar"))
                     {
                         myTimer.SetGauge("my_gauge", i);
+                        myTimer.AddMetadata("i", $"{i}");
                     }
                 }
             }
@@ -30,6 +31,7 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, gauge.minValue);
             Assert.AreEqual(4, gauge.maxValue);
             Assert.AreEqual(4, gauge.value);
+            Assert.AreEqual("4", myTimer.RootNode.Metadata["i"]);
 
             var fooChildren = rootChildren["foo"].Children;
             Assert.That(fooChildren, Contains.Key("bar"));

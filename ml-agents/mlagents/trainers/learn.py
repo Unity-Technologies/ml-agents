@@ -32,7 +32,11 @@ from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.exception import UnityEnvironmentException
-from mlagents_envs.timers import hierarchical_timer, get_timer_tree
+from mlagents_envs.timers import (
+    hierarchical_timer,
+    get_timer_tree,
+    add_metadata as add_timer_metadata,
+)
 from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
@@ -484,6 +488,12 @@ def run_cli(options: RunOptions) -> None:
     run_seed = options.seed
     if options.cpu:
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+    # Add some timer metadata
+    add_timer_metadata("mlagents_version", mlagents.trainers.__version__)
+    add_timer_metadata("mlagents_envs_version", mlagents_envs.__version__)
+    add_timer_metadata("communication_protocol_version", UnityEnvironment.API_VERSION)
+    add_timer_metadata("tensorflow_version", tf_utils.tf.__version__)
 
     if options.seed == -1:
         run_seed = np.random.randint(0, 10000)
