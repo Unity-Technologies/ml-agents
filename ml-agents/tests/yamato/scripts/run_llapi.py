@@ -89,6 +89,6 @@ def main(env_name):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--env", default="Project/testPlayer")
+    parser.add_argument("--env", default="artifacts/testPlayer")
     args = parser.parse_args()
     main(args.env)
