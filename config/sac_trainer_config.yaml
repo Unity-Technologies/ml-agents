@@ -32,7 +32,7 @@ FoodCollector:
 
 Bouncer:
     normalize: true
-    max_steps: 2.0e6
+    max_steps: 1.0e6
     num_layers: 2
     hidden_units: 64
     summary_freq: 20000
@@ -160,7 +160,7 @@ CrawlerStatic:
     steps_per_update: 20
     buffer_size: 500000
     buffer_init_steps: 2000
-    max_steps: 5e6
+    max_steps: 3e6
     summary_freq: 30000
     init_entcoef: 1.0
     num_layers: 3
@@ -178,7 +178,7 @@ CrawlerDynamic:
     summary_freq: 30000
     steps_per_update: 20
     num_layers: 3
-    max_steps: 1e7
+    max_steps: 5e6
     hidden_units: 512
     reward_signals:
         extrinsic:
@@ -214,7 +214,7 @@ Hallway:
     hidden_units: 128
     memory_size: 128
     init_entcoef: 0.1
-    max_steps: 1.0e7
+    max_steps: 5.0e6
     summary_freq: 10000
     time_horizon: 64
     use_recurrent: true
