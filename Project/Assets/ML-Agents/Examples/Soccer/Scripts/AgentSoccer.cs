@@ -60,21 +60,19 @@ public class AgentSoccer : Agent
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
         }
+        m_Power = 2000f;
         if (position == Position.Goalie)
         {
-            m_Power = 2000f;
             m_LateralSpeed = 1.0f;
             m_ForwardSpeed = 1.0f;
         }
         else if (position == Position.Striker)
         {
-            m_Power = 3000f;
             m_LateralSpeed = 0.3f;
             m_ForwardSpeed = 1.3f;
         }
         else 
         {
-            m_Power = 2000f;
             m_LateralSpeed = 0.3f;
             m_ForwardSpeed = 1.0f;
         }
