@@ -19,15 +19,15 @@ public class TennisArea : MonoBehaviour
 
     public void MatchReset()
     {
-        var ballOut = Random.Range(6f, 8f);
+        var ballOut = 14f;
         var flip = Random.Range(0, 2);
         if (flip == 0)
         {
-            ball.transform.position = new Vector3(-ballOut, 6f, 0f) + transform.position;
+            ball.transform.position = new Vector3(-ballOut, 10f, 0f) + transform.position;
         }
         else
         {
-            ball.transform.position = new Vector3(ballOut, 6f, 0f) + transform.position;
+            ball.transform.position = new Vector3(ballOut, 10f, 0f) + transform.position;
         }
         m_BallRb.velocity = new Vector3(0f, 0f, 0f);
         ball.transform.localScale = new Vector3(.5f, .5f, .5f);
@@ -38,6 +38,6 @@ public class TennisArea : MonoBehaviour
     {
         m_BallRb.AddForce(down);
         var rgV = m_BallRb.velocity;
-        m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20f, 20f), Mathf.Clamp(rgV.y, -30f, 30f), rgV.z);
+        m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -30f, 30f), Mathf.Clamp(rgV.y, -35f, 35f), rgV.z);
     }
 }
