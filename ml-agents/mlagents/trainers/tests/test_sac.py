@@ -20,7 +20,7 @@ def dummy_config():
     return yaml.safe_load(
         """
         trainer: sac
-        batch_size: 32
+        batch_size: 8
         buffer_size: 10240
         buffer_init_steps: 0
         hidden_units: 32
@@ -174,18 +174,21 @@ def test_add_get_policy(sac_optimizer, dummy_config):
         trainer.add_policy(brain_params, policy)
 
 
-def test_process_trajectory(dummy_config):
+def test_advance(dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["steps_per_update"] = 20
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
 
     trajectory_queue = AgentManagerQueue("testbrain")
+    policy_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
+    trainer.publish_policy_queue(policy_queue)
 
     trajectory = make_fake_trajectory(
         length=15,
@@ -193,6 +196,7 @@ def test_process_trajectory(dummy_config):
         vec_obs_size=6,
         num_vis_obs=0,
         action_space=[2],
+        is_discrete=False,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -207,11 +211,12 @@ def test_process_trajectory(dummy_config):
 
     # Add a terminal trajectory
     trajectory = make_fake_trajectory(
-        length=15,
+        length=6,
         max_step_complete=False,
         vec_obs_size=6,
         num_vis_obs=0,
         action_space=[2],
+        is_discrete=False,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -225,6 +230,24 @@ def test_process_trajectory(dummy_config):
     assert (
         trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").mean > 0
     )
+
+    # Make sure there is a policy on the queue
+    policy_queue.get(block=False)
+
+    # Add another trajectory. Since this is less than 20 steps total (enough for)
+    # two updates, there should NOT be a policy on the queue.
+    trajectory = make_fake_trajectory(
+        length=5,
+        max_step_complete=False,
+        vec_obs_size=6,
+        num_vis_obs=0,
+        action_space=[2],
+        is_discrete=False,
+    )
+    trajectory_queue.put(trajectory)
+    trainer.advance()
+    with pytest.raises(AgentManagerQueue.Empty):
+        policy_queue.get(block=False)
 
 
 def test_bad_config(dummy_config):
