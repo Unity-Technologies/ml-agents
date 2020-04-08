@@ -71,7 +71,7 @@ def test_run_environment(env_name):
                 else:
                     # Should never happen
                     action = None
-                if tracked_agent == -1 and len(decision_steps) > 1:
+                if tracked_agent == -1 and len(decision_steps) >= 1:
                     tracked_agent = decision_steps.agent_id[0]
                 env.set_actions(group_name, action)
                 env.step()
@@ -114,3 +114,4 @@ if __name__ == "__main__":
     parser.add_argument("--env", default="artifacts/testPlayer")
     args = parser.parse_args()
     test_run_environment(args.env)
+    test_closing(args.env)
