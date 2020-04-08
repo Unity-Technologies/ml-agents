@@ -83,9 +83,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         return False
 
     @abc.abstractmethod
-    def _update_policy(self):
+    def _update_policy(self) -> bool:
         """
         Uses demonstration_buffer to update model.
+        :return: Whether or not the policy was updated.
         """
         pass
 
@@ -154,9 +155,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         if self.should_still_train:
             if self._is_ready_update():
                 with hierarchical_timer("_update_policy"):
-                    self._update_policy()
-                    for q in self.policy_queues:
-                        # Get policies that correspond to the policy queue in question
-                        q.put(self.get_policy(q.behavior_id))
+                    if self._update_policy():
+                        for q in self.policy_queues:
+                            # Get policies that correspond to the policy queue in question
+                            q.put(self.get_policy(q.behavior_id))
         else:
             self._clear_update_buffer()

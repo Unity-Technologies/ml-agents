@@ -39,7 +39,7 @@ class FakeTrainer(RLTrainer):
         return True
 
     def _update_policy(self):
-        pass
+        return True
 
     def add_policy(self):
         pass

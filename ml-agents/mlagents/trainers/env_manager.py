@@ -81,13 +81,19 @@ class EnvManager(ABC):
         if self.first_step_infos is not None:
             self._process_step_infos(self.first_step_infos)
             self.first_step_infos = None
-        # Get new policies if found
+        # Get new policies if found. Always get the latest policy.
         for brain_name in self.external_brains:
+            _policy = None
             try:
-                _policy = self.agent_managers[brain_name].policy_queue.get(block=False)
-                self.set_policy(brain_name, _policy)
+                # We make sure to empty the policy queue before continuing to produce steps.
+                # This halts the trainers until the policy queue is empty.
+                while True:
+                    _policy = self.agent_managers[brain_name].policy_queue.get(
+                        block=False
+                    )
             except AgentManagerQueue.Empty:
-                pass
+                if _policy is not None:
+                    self.set_policy(brain_name, _policy)
         # Step the environment
         new_step_infos = self._step()
         # Add to AgentProcessor
