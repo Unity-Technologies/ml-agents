@@ -17,6 +17,7 @@ from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
 from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests.test_simple_rl import (
     _check_environment_trains,
     PPO_CONFIG,
@@ -151,6 +152,12 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         external_brains_mock.return_value = [brain_name]
         agent_manager_mock = mock.Mock()
+        mock_policy = mock.Mock()
+        agent_manager_mock.policy_queue.get.side_effect = [
+            mock_policy,
+            mock_policy,
+            AgentManagerQueue.Empty(),
+        ]
         env_manager.set_agent_manager(brain_name, agent_manager_mock)
 
         step_info_dict = {brain_name: Mock()}
@@ -172,9 +179,6 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
 
         # Test policy queue
-        mock_policy = mock.Mock()
-        agent_manager_mock.policy_queue.get.return_value = mock_policy
-        env_manager.advance()
         assert env_manager.policies[brain_name] == mock_policy
         assert agent_manager_mock.policy == mock_policy
 
