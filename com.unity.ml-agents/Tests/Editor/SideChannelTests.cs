@@ -163,5 +163,31 @@ namespace MLAgents.Tests
             Assert.AreEqual(stringVal, incomingMsg.ReadString());
             Assert.AreEqual(floatListVal, incomingMsg.ReadFloatList());
         }
+
+        [Test]
+        public void TestMessageReadDefaults()
+        {
+            // Make sure reading past the end of a message will apply defaults.
+            IncomingMessage incomingMsg;
+            using (var outgoingMsg = new OutgoingMessage())
+            {
+                incomingMsg = new IncomingMessage(outgoingMsg.ToByteArray());
+            }
+
+            Assert.AreEqual(false, incomingMsg.ReadBoolean());
+            Assert.AreEqual(true, incomingMsg.ReadBoolean(defaultValue: true));
+
+            Assert.AreEqual(0, incomingMsg.ReadInt32());
+            Assert.AreEqual(42, incomingMsg.ReadInt32(defaultValue: 42));
+
+            Assert.AreEqual(0.0f, incomingMsg.ReadFloat32());
+            Assert.AreEqual(1337.0f, incomingMsg.ReadFloat32(defaultValue: 1337.0f));
+
+            Assert.AreEqual(default(string), incomingMsg.ReadString());
+            Assert.AreEqual("foo", incomingMsg.ReadString(defaultValue: "foo"));
+
+            Assert.AreEqual(default(float[]), incomingMsg.ReadFloatList());
+            Assert.AreEqual(new float[] { 1001, 1002 }, incomingMsg.ReadFloatList(new float[] { 1001, 1002 }));
+        }
     }
 }

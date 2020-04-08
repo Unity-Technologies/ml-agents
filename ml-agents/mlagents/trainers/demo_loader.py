@@ -19,6 +19,10 @@ from google.protobuf.internal.decoder import _DecodeVarint32  # type: ignore
 from google.protobuf.internal.encoder import _EncodeVarint  # type: ignore
 
 
+INITIAL_POS = 33
+SUPPORTED_DEMONSTRATION_VERSIONS = frozenset([0, 1])
+
+
 @timed
 def make_demo_buffer(
     pair_infos: List[AgentInfoActionPairProto],
@@ -120,9 +124,6 @@ def get_demo_files(path: str) -> List[str]:
         )
 
 
-INITIAL_POS = 33
-
-
 @timed
 def load_demonstration(
     file_path: str
@@ -149,6 +150,13 @@ def load_demonstration(
                 if obs_decoded == 0:
                     meta_data_proto = DemonstrationMetaProto()
                     meta_data_proto.ParseFromString(data[pos : pos + next_pos])
+                    if (
+                        meta_data_proto.api_version
+                        not in SUPPORTED_DEMONSTRATION_VERSIONS
+                    ):
+                        raise RuntimeError(
+                            f"Can't load Demonstration data from an unsupported version ({meta_data_proto.api_version})"
+                        )
                     total_expected += meta_data_proto.number_steps
                     pos = INITIAL_POS
                 if obs_decoded == 1:

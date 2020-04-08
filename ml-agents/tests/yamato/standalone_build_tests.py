@@ -15,7 +15,7 @@ def main(scene_path):
         executable_name = "testPlayer-" + executable_name
 
     returncode = run_standalone_build(
-        base_path, verbose=True, output_path=executable_name, scene_path=scene_path
+        base_path, output_path=executable_name, scene_path=scene_path
     )
 
     if returncode == 0:

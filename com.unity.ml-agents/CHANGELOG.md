@@ -15,12 +15,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
  - The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
  - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
+ - The internal event `Academy.AgentSetStatus` was renamed to `Academy.AgentPreStep` and made public.
+ - The offset logic was removed from DecisionRequester.
 
 ### Minor Changes
  - Format of console output has changed slightly and now matches the name of the model/summary directory. (#3630, #3616)
  - Added a feature to allow sending stats from C# environments to TensorBoard (and other python StatsWriters). To do this from your code, use `SideChannelUtils.GetSideChannel<StatsSideChannel>().AddStat(key, value)` (#3660)
  - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
  - Timer files now contain a dictionary of metadata, including things like the package version numbers.
+ - SideChannel IncomingMessages methods now take an optional default argument, which is used when trying to read more data than the message contains.
  - The way that UnityEnvironment decides the port was changed. If no port is specified, the behavior will depend on the `file_name` parameter. If it is `None`, 5004 (the editor port) will be used; otherwise 5005 (the base environment port) will be used.
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
  - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
