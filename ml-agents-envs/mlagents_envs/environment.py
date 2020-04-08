@@ -1,4 +1,5 @@
 import atexit
+from distutils.version import StrictVersion
 import glob
 import uuid
 import numpy as np
@@ -58,7 +59,7 @@ class UnityEnvironment(BaseEnv):
     # Currently we require strict equality between the communication protocol
     # on each side, although we may allow some flexibility in the future.
     # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.16.0"
+    API_VERSION = "1.0.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -153,12 +154,13 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             raise
 
-        unity_communicator_version = aca_params.communication_version
-        if unity_communicator_version != UnityEnvironment.API_VERSION:
+        unity_communicator_version = StrictVersion(aca_params.communication_version)
+        api_version = StrictVersion(UnityEnvironment.API_VERSION)
+        if unity_communicator_version[0] != api_version[0]:
             self._close(0)
             raise UnityEnvironmentException(
                 f"The communication API version is not compatible between Unity and python. "
-                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
+                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {aca_params.communicator_version}.\n "
                 f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
                 f"to download the latest version of ML-Agents."
             )

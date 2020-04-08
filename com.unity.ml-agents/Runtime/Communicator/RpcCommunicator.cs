@@ -91,13 +91,14 @@ namespace MLAgents
                 // API strings, so log an explicit warning if that's the case.
                 if (initializationInput != null && input == null)
                 {
-                    var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-                    var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
-                    if (pythonCommunicationVersion != initParameters.unityCommunicationVersion)
+                    var pythonCommunicationVersion = new Version(initializationInput.RlInitializationInput.CommunicationVersion);
+                    var pythonPackageVersion = new Version(initializationInput.RlInitializationInput.PackageVersion);
+                    var unityCommunicationVersion = new Version(initParameters.unityCommunicationVersion);
+                    if (pythonCommunicationVersion.Major != unityCommunicationVersion.Major)
                     {
                         Debug.LogWarningFormat(
-                            "Communication protocol between python ({0}) and Unity ({1}) don't match. " +
-                            "Python library version: {2}.",
+                            "Communication protocol between python ({0}) and Unity ({1}) have different " +
+                            "major versions and are incompatible. Python library version: {2}.",
                             pythonCommunicationVersion, initParameters.unityCommunicationVersion,
                             pythonPackageVersion
                         );
