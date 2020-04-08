@@ -13,7 +13,7 @@ test_gym_interface_{{ editor.version }}:
   commands:
     - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.setup_venv
-    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_gym.py --env=Project/testPlayer-Basic
+    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_gym.py --env=artifacts/testPlayer-Basic
   dependencies:
     - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
   triggers:

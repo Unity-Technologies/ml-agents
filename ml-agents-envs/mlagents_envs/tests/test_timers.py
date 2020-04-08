@@ -81,6 +81,13 @@ def test_timers() -> None:
                 }
             },
             "gauges": {"my_gauge": {"value": 4.0, "max": 4.0, "min": 0.0, "count": 3}},
+            "metadata": {
+                "timer_format_version": timers.TIMER_FORMAT_VERSION,
+                "start_time_seconds": mock.ANY,
+                "end_time_seconds": mock.ANY,
+                "python_version": mock.ANY,
+                "command_line_arguments": mock.ANY,
+            },
         }
 
         assert timer_tree == expected_tree

@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import yaml
 from typing import List, Optional
@@ -24,14 +25,23 @@ def get_base_path():
     return os.getcwd()
 
 
+def get_base_output_path():
+    """"
+    Returns the artifact folder to use for yamato jobs.
+    """
+    return os.path.join(get_base_path(), "artifacts")
+
+
 def run_standalone_build(
     base_path: str,
     verbose: bool = False,
     output_path: str = None,
     scene_path: str = None,
+    log_output_path: str = f"{get_base_output_path()}/standalone_build.txt",
 ) -> int:
     """
-    Run BuildStandalonePlayerOSX test to produce a player. The location defaults to Project/testPlayer.
+    Run BuildStandalonePlayerOSX test to produce a player. The location defaults to
+    artifacts/standalone_build/testPlayer.
     """
     unity_exe = get_unity_executable_path()
     print(f"Running BuildStandalonePlayerOSX via {unity_exe}")
@@ -44,16 +54,33 @@ def run_standalone_build(
         "-executeMethod",
         "MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
-    if verbose:
-        test_args += ["-logfile", "-"]
+
+    os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
+    subprocess.run(["touch", log_output_path])
+    test_args += ["-logfile", log_output_path]
+
     if output_path is not None:
+        output_path = os.path.join(get_base_output_path(), output_path)
         test_args += ["--mlagents-build-output-path", output_path]
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
     if scene_path is not None:
         test_args += ["--mlagents-build-scene-path", scene_path]
     print(f"{' '.join(test_args)} ...")
 
     timeout = 30 * 60  # 30 minutes, just in case
     res: subprocess.CompletedProcess = subprocess.run(test_args, timeout=timeout)
+
+    # Copy the default build name into the artifacts folder.
+    if output_path is None and res.returncode == 0:
+        shutil.move(
+            os.path.join(base_path, "Project", "testPlayer.app"),
+            os.path.join(get_base_output_path(), "testPlayer.app"),
+        )
+
+    # Print if we fail or want verbosity.
+    if verbose or res.returncode != 0:
+        subprocess.run(["cat", log_output_path])
+
     return res.returncode
 
 
@@ -107,8 +134,10 @@ def checkout_csharp_version(csharp_version):
     """
     if csharp_version is None:
         return
+
     csharp_dirs = ["com.unity.ml-agents", "Project"]
     for csharp_dir in csharp_dirs:
+        subprocess.check_call(f"rm -rf {csharp_dir}", shell=True)
         subprocess.check_call(
             f"git checkout {csharp_version} -- {csharp_dir}", shell=True
         )
@@ -120,6 +149,8 @@ def undo_git_checkout():
     """
     subprocess.check_call("git reset HEAD .", shell=True)
     subprocess.check_call("git checkout -- .", shell=True)
+    # Ensure the cache isn't polluted with old compiled assemblies.
+    subprocess.check_call(f"rm -rf Project/Library", shell=True)
 
 
 def override_config_file(src_path, dest_path, **kwargs):
