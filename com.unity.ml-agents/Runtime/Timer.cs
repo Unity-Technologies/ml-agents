@@ -460,8 +460,8 @@ namespace MLAgents
         public void SaveJsonTimers(Stream stream)
         {
             // Add some final metadata info
-            AddMetadata("end_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
             AddMetadata("scene_name", SceneManager.GetActiveScene().name);
+            AddMetadata("end_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
 
             var jsonSettings = new DataContractJsonSerializerSettings();
             jsonSettings.UseSimpleDictionaryFormat = true;
