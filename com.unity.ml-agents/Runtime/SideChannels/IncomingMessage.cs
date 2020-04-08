@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System;
 using System.IO;
 using System.Text;
@@ -26,38 +27,47 @@ namespace MLAgents.SideChannels
         }
 
         /// <summary>
-        /// Read a boolan value from the message.
+        /// Read a boolean value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
-        public bool ReadBoolean()
+        public bool ReadBoolean(bool defaultValue = false)
         {
-            return m_Reader.ReadBoolean();
+            return CanReadMore() ? m_Reader.ReadBoolean() : defaultValue;
         }
 
         /// <summary>
         /// Read an integer value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
-        public int ReadInt32()
+        public int ReadInt32(int defaultValue = 0)
         {
-            return m_Reader.ReadInt32();
+            return CanReadMore() ? m_Reader.ReadInt32() : defaultValue;
         }
 
         /// <summary>
         /// Read a float value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
-        public float ReadFloat32()
+        public float ReadFloat32(float defaultValue = 0.0f)
         {
-            return m_Reader.ReadSingle();
+            return CanReadMore() ? m_Reader.ReadSingle() : defaultValue;
         }
 
         /// <summary>
         /// Read a string value from the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
-        public string ReadString()
+        public string ReadString(string defaultValue = default)
         {
+            if (!CanReadMore())
+            {
+                return defaultValue;
+            }
+
             var strLength = ReadInt32();
             var str = Encoding.ASCII.GetString(m_Reader.ReadBytes(strLength));
             return str;
@@ -66,9 +76,15 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Reads a list of floats from the message. The length of the list is stored in the message.
         /// </summary>
+        /// <param name="defaultValue">Default value to use if the end of the message is reached.</param>
         /// <returns></returns>
-        public IList<float> ReadFloatList()
+        public IList<float> ReadFloatList(IList<float> defaultValue = default)
         {
+            if (!CanReadMore())
+            {
+                return defaultValue;
+            }
+
             var len = ReadInt32();
             var output = new float[len];
             for (var i = 0; i < len; i++)
@@ -96,6 +112,16 @@ namespace MLAgents.SideChannels
         {
             m_Reader?.Dispose();
             m_Stream?.Dispose();
+        }
+
+        /// <summary>
+        /// Whether or not there is more data left in the stream that can be read.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        bool CanReadMore()
+        {
+            return m_Stream.Position < m_Stream.Length;
         }
     }
 }
