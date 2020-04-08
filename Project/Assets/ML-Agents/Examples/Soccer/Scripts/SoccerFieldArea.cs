@@ -70,17 +70,9 @@ public class SoccerFieldArea : MonoBehaviour
         }
     }
 
-    public Vector3 GetBallSpawnPosition()
-    {
-        var randomSpawnPos = ground.transform.position +
-            new Vector3(0f, 0f, 0f);
-        randomSpawnPos.y = ground.transform.position.y + .5f;
-        return randomSpawnPos;
-    }
-
     public void ResetBall()
     {
-        ball.transform.position = GetBallSpawnPosition();
+        ball.transform.position = ballStartingPos;
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 

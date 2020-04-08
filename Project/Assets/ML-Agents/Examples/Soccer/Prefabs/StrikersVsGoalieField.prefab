@@ -264,6 +264,7 @@ MonoBehaviour:
   team: 0
   area: {fileID: 114559182131992928}
   position: 1
+  timePenalty: 0
   agentRb: {fileID: 0}
 --- !u!114 &114320493772006642
 MonoBehaviour:
@@ -627,6 +628,7 @@ MonoBehaviour:
   team: 1
   area: {fileID: 114559182131992928}
   position: 0
+  timePenalty: 0
   agentRb: {fileID: 0}
 --- !u!114 &114516244030127556
 MonoBehaviour:
@@ -3652,6 +3654,7 @@ MonoBehaviour:
   team: 1
   area: {fileID: 114559182131992928}
   position: 0
+  timePenalty: 0
   agentRb: {fileID: 0}
 --- !u!114 &2562571719799803906
 MonoBehaviour:
