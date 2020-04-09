@@ -72,9 +72,9 @@ public class TennisAgent : Agent
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
 
-        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.0)// && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
-            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, 7f, 0f);
+            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
         }
 
         m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
@@ -107,7 +107,7 @@ public class TennisAgent : Agent
     {
         if (c.gameObject.CompareTag("ball"))
         {
-            AddReward(.1f * m_BallTouch);
+            AddReward(.2f * m_BallTouch);
         }
     }
     public override void OnEpisodeBegin()
