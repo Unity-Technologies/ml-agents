@@ -127,7 +127,7 @@ public class TennisAgent : Agent
         {
             m_Area.MatchReset();
         }
-        transform.position = new Vector3(-m_InvertMult * 14f, 5f, -1.8f) + transform.parent.transform.position;
+        transform.position = new Vector3(-m_InvertMult * 14f, 1f, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
         SetResetParameters();
     }
