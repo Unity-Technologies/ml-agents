@@ -82,6 +82,8 @@ namespace MLAgents
             }
             else if (unityVersion.Minor != pythonVersion.Minor)
             {
+                // Even if we initialize, we still want to check to make sure that we inform users of minor version
+                // changes.  This will surface any features that may not work due to minor version incompatibilities.
                 Debug.LogWarningFormat(
                     "WARNING: The communication API versions between Unity and python differ at the minor version level. " +
                     "Python API: {0}, Unity API: {1} Python Library Version: {2} .\n" +
@@ -124,13 +126,15 @@ namespace MLAgents
                 var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
                 var unityCommunicationVersion = initParameters.unityCommunicationVersion;
 
+                var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
+                    pythonCommunicationVersion,
+                    pythonPackageVersion);
+
                 // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
                 // API strings, so log an explicit warning if that's the case.
                 if (initializationInput != null && input == null)
                 {
-                    if (!CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
-                        pythonCommunicationVersion,
-                        pythonPackageVersion))
+                    if (!communicationIsCompatible)
                     {
                         Debug.LogWarningFormat(
                             "Communication protocol between python ({0}) and Unity ({1}) have different " +
@@ -151,9 +155,6 @@ namespace MLAgents
 
                     throw new UnityAgentsException("ICommunicator.Initialize() failed.");
                 }
-
-                // Even if we initialize, we still want to check to make sure that we inform users of minor version
-                // changes.  This will surface any features that may not work due to minor version incompatibilities.
             }
             catch
             {

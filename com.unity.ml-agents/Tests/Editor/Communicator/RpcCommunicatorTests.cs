@@ -31,11 +31,25 @@ namespace MLAgents.Tests.Communicator
             // Ensure that a warning was printed.
             LogAssert.Expect(LogType.Warning, new Regex("(.\\s)+"));
 
-
             unityVerStr = "2.0.0";
             Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
                 pythonVerStr,
                 pythonPackageVerStr));
+
+            unityVerStr = "0.15.0";
+            pythonVerStr = "0.15.0";
+            Assert.IsTrue(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
+                pythonVerStr,
+                pythonPackageVerStr));
+            unityVerStr = "0.16.0";
+            Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
+                pythonVerStr,
+                pythonPackageVerStr));
+            unityVerStr = "1.15.0";
+            Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
+                pythonVerStr,
+                pythonPackageVerStr));
+
         }
     }
 }
