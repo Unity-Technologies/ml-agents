@@ -24,7 +24,7 @@ public class TennisAgent : Agent
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
     float m_BallTouch;
-    Vector3 down = new Vector3(0f, -60f, 0f);
+    Vector3 down = new Vector3(0f, -100f, 0f);
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -73,7 +73,7 @@ public class TennisAgent : Agent
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
 
-        if (moveY > 0.0)// && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < 5f)
         {
             m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
         }
