@@ -1,4 +1,5 @@
 import atexit
+from distutils.version import StrictVersion
 import glob
 import uuid
 import numpy as np
@@ -45,7 +46,6 @@ from sys import platform
 import signal
 import struct
 
-
 logger = get_logger(__name__)
 
 
@@ -70,6 +70,47 @@ class UnityEnvironment(BaseEnv):
 
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
+
+    @staticmethod
+    def _raise_version_exception(unity_com_ver: str) -> None:
+        raise UnityEnvironmentException(
+            f"The communication API version is not compatible between Unity and python. "
+            f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_com_ver}.\n "
+            f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
+            f"to download the latest version of ML-Agents."
+        )
+
+    @staticmethod
+    def check_communication_compatibility(
+        unity_com_ver: str, python_api_version: str, unity_package_version: str
+    ) -> bool:
+        unity_communicator_version = StrictVersion(unity_com_ver)
+        api_version = StrictVersion(python_api_version)
+        if unity_communicator_version.version[0] == 0:
+            if (
+                unity_communicator_version.version[0] != api_version.version[0]
+                or unity_communicator_version.version[1] != api_version.version[1]
+            ):
+                # Minor beta versions differ.
+                return False
+        elif unity_communicator_version.version[0] != api_version.version[0]:
+            # Major versions mismatch.
+            return False
+        elif unity_communicator_version.version[1] != api_version.version[1]:
+            # Non-beta minor versions mismatch.  Log a warning but allow execution to continue.
+            logger.warning(
+                f"WARNING: The communication API versions between Unity and python differ at the minor version level. "
+                f"Python API: {python_api_version}, Unity API: {unity_communicator_version}.\n"
+                f"This means that some features may not work unless you upgrade the package with the lower version."
+                f"Please find the versions that work best together from our release page.\n"
+                "https://github.com/Unity-Technologies/ml-agents/releases"
+            )
+        else:
+            logger.info(
+                f"Connected to Unity environment with package version {unity_package_version} "
+                f"and communication version {unity_com_ver}"
+            )
+        return True
 
     def __init__(
         self,
@@ -153,20 +194,14 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             raise
 
-        unity_communicator_version = aca_params.communication_version
-        if unity_communicator_version != UnityEnvironment.API_VERSION:
+        if not UnityEnvironment.check_communication_compatibility(
+            aca_params.communication_version,
+            UnityEnvironment.API_VERSION,
+            aca_params.package_version,
+        ):
             self._close(0)
-            raise UnityEnvironmentException(
-                f"The communication API version is not compatible between Unity and python. "
-                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
-                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
-                f"to download the latest version of ML-Agents."
-            )
-        else:
-            logger.info(
-                f"Connected to Unity environment with package version {aca_params.package_version} "
-                f"and communication version {aca_params.communication_version}"
-            )
+            UnityEnvironment._raise_version_exception(aca_params.communication_version)
+
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
         self._env_actions: Dict[str, np.ndarray] = {}
