@@ -144,6 +144,11 @@ public class WormAgent : Agent
         bpDict[bodySegment1].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
+
+        if (bodySegment0.position.y < -2)
+        {
+            EndEpisode();
+        }
     }
 
     void FixedUpdate()
