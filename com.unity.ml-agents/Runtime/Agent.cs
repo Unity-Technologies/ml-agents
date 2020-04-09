@@ -165,6 +165,9 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
+        /// Number of times the Agent has completed an episode.
+        int m_CompletedEpisodes;
+
         /// Episode identifier each agent receives. It is used
         /// to separate between different agents in the environment.
         /// This Id will be changed every time the Agent resets.
@@ -319,9 +322,16 @@ namespace MLAgents
             m_Info.reward = m_Reward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
+            if (collectObservationsSensor != null)
+            {
+                // Make sure the latest observations are being passed to training.
+                collectObservationsSensor.Reset();
+                CollectObservations(collectObservationsSensor);
+            }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
+            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -331,13 +341,12 @@ namespace MLAgents
 
             if (doneReason != DoneReason.Disabled)
             {
-                // We don't want to udpate the reward stats when the Agent is disabled, because this will make
+                // We don't want to update the reward stats when the Agent is disabled, because this will make
                 // the rewards look lower than they actually are during shutdown.
+                m_CompletedEpisodes++;
                 UpdateRewardStats();
             }
 
-            // The Agent is done, so we give it a new episode Id
-            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_Reward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
@@ -405,6 +414,18 @@ namespace MLAgents
         public int StepCount
         {
             get { return m_StepCount; }
+        }
+
+        /// <summary>
+        /// Returns the number of episodes that the Agent has completed (either <see cref="Agent.EndEpisode()"/>
+        /// was called, or maxSteps was reached).
+        /// </summary>
+        /// <returns>
+        /// Current episode count.
+        /// </returns>
+        public int CompletedEpisodes
+        {
+            get { return m_CompletedEpisodes; }
         }
 
         /// <summary>
@@ -639,6 +660,14 @@ namespace MLAgents
             foreach (var sensor in sensors)
             {
                 sensor.Update();
+            }
+        }
+
+        void ResetSensors()
+        {
+            foreach (var sensor in sensors)
+            {
+                sensor.Reset();
             }
         }
 

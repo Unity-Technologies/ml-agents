@@ -58,13 +58,13 @@ namespace MLAgents
         /// on each side, although we may allow some flexibility in the future.
         /// This should be incremented whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "0.15.0";
+        const string k_ApiVersion = "0.16.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "0.15.0-preview";
+        internal const string k_PackageVersion = "0.15.1-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -138,11 +138,14 @@ namespace MLAgents
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
-        // Signals to all the agents at each environment step along with the
-        // Academy's maxStepReached, done and stepCount values. The agents rely
-        // on this event to update their own values of max step reached and done
-        // in addition to aligning on the step count of the global episode.
-        internal event Action<int> AgentSetStatus;
+
+        /// <summary>
+        /// Signals to all of the <see cref="Agent"/>s that their step is about to begin.
+        /// This is a good time for an <see cref="Agent"/> to decide if it would like to
+        /// call <see cref="Agent.RequestDecision"/> or <see cref="Agent.RequestAction"/>
+        /// for this step.  Any other pre-step setup could be done during this even as well.
+        /// </summary>
+        public event Action<int> AgentPreStep;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
@@ -286,6 +289,9 @@ namespace MLAgents
         /// </summary>
         void InitializeEnvironment()
         {
+            TimerStack.Instance.AddMetadata("communication_protocol_version", k_ApiVersion);
+            TimerStack.Instance.AddMetadata("com.unity.ml-agents_version", k_PackageVersion);
+
             EnableAutomaticStepping();
 
             SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
@@ -347,7 +353,7 @@ namespace MLAgents
         {
             DecideAction = () => {};
             DestroyAction = () => {};
-            AgentSetStatus = i => {};
+            AgentPreStep = i => {};
             AgentSendState = () => {};
             AgentAct = () => {};
             AgentForceReset = () => {};
@@ -423,7 +429,7 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            AgentSetStatus?.Invoke(m_StepCount);
+            AgentPreStep?.Invoke(m_StepCount);
 
             m_StepCount += 1;
             m_TotalStepCount += 1;

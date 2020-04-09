@@ -1,4 +1,5 @@
 using System.CodeDom;
+using System;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
@@ -11,7 +12,14 @@ namespace MLAgents.Tests
 {
     internal class TestPolicy : IPolicy
     {
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {}
+        public Action OnRequestDecision;
+        private WriteAdapter m_Adapter = new WriteAdapter();
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {
+            foreach(var sensor in sensors){
+                sensor.GetObservationProto(m_Adapter);
+            }
+            OnRequestDecision?.Invoke();
+        }
 
         public float[] DecideAction() { return new float[0]; }
 
@@ -69,7 +77,7 @@ namespace MLAgents.Tests
         {
             collectObservationsCalls += 1;
             collectObservationsCallsForEpisode += 1;
-            sensor.AddObservation(0f);
+            sensor.AddObservation(collectObservationsCallsForEpisode);
         }
 
         public override void OnActionReceived(float[] vectorAction)
@@ -98,6 +106,7 @@ namespace MLAgents.Tests
         public string sensorName;
         public int numWriteCalls;
         public int numCompressedCalls;
+        public int numResetCalls;
         public SensorCompressionType compressionType = SensorCompressionType.None;
 
         public TestSensor(string n)
@@ -134,6 +143,11 @@ namespace MLAgents.Tests
         }
 
         public void Update() {}
+
+        public void Reset()
+        {
+            numResetCalls++;
+        }
     }
 
     [TestFixture]
@@ -480,6 +494,40 @@ namespace MLAgents.Tests
                 aca.EnvironmentStep();
             }
         }
+
+        [Test]
+        public void AssertStackingReset()
+        {
+            var agentGo1 = new GameObject("TestAgent");
+            agentGo1.AddComponent<TestAgent>();
+            var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
+            behaviorParameters.brainParameters.numStackedVectorObservations = 3;
+            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var aca = Academy.Instance;
+            agent1.LazyInitialize();
+            var policy = new TestPolicy();
+            agent1.SetPolicy(policy);
+
+            StackingSensor sensor = null;
+            foreach(ISensor s in agent1.sensors){
+                if (s is  StackingSensor){
+                    sensor = s as StackingSensor;
+                }
+            }
+
+            Assert.NotNull(sensor);
+
+            for (int i = 0; i < 20; i++)
+            {
+                agent1.RequestDecision();
+                aca.EnvironmentStep();
+
+            }
+
+            policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 21f});
+            agent1.EndEpisode();
+            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f});
+        }
     }
 
     [TestFixture]
@@ -556,6 +604,8 @@ namespace MLAgents.Tests
             var expectedAgentActionForEpisode = 0;
             var expectedCollectObsCalls = 0;
             var expectedCollectObsCallsForEpisode = 0;
+            var expectedCompletedEpisodes = 0;
+            var expectedSensorResetCalls = 0;
 
             for (var i = 0; i < 15; i++)
             {
@@ -577,6 +627,9 @@ namespace MLAgents.Tests
                     expectedAgentActionForEpisode = 0;
                     expectedCollectObsCallsForEpisode = 0;
                     expectedAgentStepCount = 0;
+                    expectedCompletedEpisodes++;
+                    expectedSensorResetCalls++;
+                    expectedCollectObsCalls += 1;
                 }
                 aca.EnvironmentStep();
 
@@ -586,6 +639,8 @@ namespace MLAgents.Tests
                 Assert.AreEqual(expectedAgentActionForEpisode, agent1.agentActionCallsForEpisode);
                 Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
                 Assert.AreEqual(expectedCollectObsCallsForEpisode, agent1.collectObservationsCallsForEpisode);
+                Assert.AreEqual(expectedCompletedEpisodes, agent1.CompletedEpisodes);
+                Assert.AreEqual(expectedSensorResetCalls, agent1.sensor1.numResetCalls);
             }
         }
 

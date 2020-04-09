@@ -234,7 +234,9 @@ class SACTrainer(RLTrainer):
         self._update_reward_signals()
         return policy_was_updated
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         policy = NNPolicy(
             self.seed,
             brain_parameters,

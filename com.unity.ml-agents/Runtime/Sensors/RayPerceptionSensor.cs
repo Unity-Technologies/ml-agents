@@ -334,6 +334,9 @@ namespace MLAgents.Sensors
         }
 
         /// <inheritdoc/>
+        public void Reset() { }
+
+        /// <inheritdoc/>
         public int[] GetObservationShape()
         {
             return m_Shape;
