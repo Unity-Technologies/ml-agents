@@ -72,7 +72,7 @@ class UnityEnvironment(BaseEnv):
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     @staticmethod
-    def _raise_version_exception(unity_com_ver) -> None:
+    def _raise_version_exception(unity_com_ver: str) -> None:
         raise UnityEnvironmentException(
             f"The communication API version is not compatible between Unity and python. "
             f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_com_ver}.\n "
