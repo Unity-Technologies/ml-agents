@@ -604,6 +604,7 @@ namespace MLAgents.Tests
             var expectedAgentActionForEpisode = 0;
             var expectedCollectObsCalls = 0;
             var expectedCollectObsCallsForEpisode = 0;
+            var expectedCompletedEpisodes = 0;
             var expectedSensorResetCalls = 0;
 
             for (var i = 0; i < 15; i++)
@@ -626,6 +627,7 @@ namespace MLAgents.Tests
                     expectedAgentActionForEpisode = 0;
                     expectedCollectObsCallsForEpisode = 0;
                     expectedAgentStepCount = 0;
+                    expectedCompletedEpisodes++;
                     expectedSensorResetCalls++;
                     expectedCollectObsCalls += 1;
                 }
@@ -637,6 +639,7 @@ namespace MLAgents.Tests
                 Assert.AreEqual(expectedAgentActionForEpisode, agent1.agentActionCallsForEpisode);
                 Assert.AreEqual(expectedCollectObsCalls, agent1.collectObservationsCalls);
                 Assert.AreEqual(expectedCollectObsCallsForEpisode, agent1.collectObservationsCallsForEpisode);
+                Assert.AreEqual(expectedCompletedEpisodes, agent1.CompletedEpisodes);
                 Assert.AreEqual(expectedSensorResetCalls, agent1.sensor1.numResetCalls);
             }
         }

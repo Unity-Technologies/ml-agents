@@ -165,6 +165,9 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
+        /// Number of times the Agent has completed an episode.
+        int m_CompletedEpisodes;
+
         /// Episode identifier each agent receives. It is used
         /// to separate between different agents in the environment.
         /// This Id will be changed every time the Agent resets.
@@ -338,8 +341,9 @@ namespace MLAgents
 
             if (doneReason != DoneReason.Disabled)
             {
-                // We don't want to udpate the reward stats when the Agent is disabled, because this will make
+                // We don't want to update the reward stats when the Agent is disabled, because this will make
                 // the rewards look lower than they actually are during shutdown.
+                m_CompletedEpisodes++;
                 UpdateRewardStats();
             }
 
@@ -410,6 +414,18 @@ namespace MLAgents
         public int StepCount
         {
             get { return m_StepCount; }
+        }
+
+        /// <summary>
+        /// Returns the number of episodes that the Agent has completed (either <see cref="Agent.EndEpisode()"/>
+        /// was called, or maxSteps was reached).
+        /// </summary>
+        /// <returns>
+        /// Current episode count.
+        /// </returns>
+        public int CompletedEpisodes
+        {
+            get { return m_CompletedEpisodes; }
         }
 
         /// <summary>
