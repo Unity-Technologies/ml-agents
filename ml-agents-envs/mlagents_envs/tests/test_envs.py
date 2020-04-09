@@ -125,19 +125,20 @@ def test_close(mock_communicator, mock_launcher):
 def test_check_communication_compatibility():
     unity_ver = "1.0.0"
     python_ver = "1.0.0"
-    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    unity_package_version = "0.15.0"
+    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver, unity_package_version)
     unity_ver = "1.1.0"
-    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver, unity_package_version)
     unity_ver = "2.0.0"
-    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver, unity_package_version)
 
     unity_ver = "0.16.0"
     python_ver = "0.16.0"
-    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver, unity_package_version)
     unity_ver = "0.17.0"
-    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver, unity_package_version)
     unity_ver = "1.16.0"
-    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver, unity_package_version)
 
 
 def test_returncode_to_signal_name():

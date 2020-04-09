@@ -82,7 +82,7 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def check_communication_compatibility(
-        unity_com_ver: str, unity_package_version: str
+        unity_com_ver: str, python_api_version: str, unity_package_version: str
     ) -> bool:
         unity_communicator_version = StrictVersion(unity_com_ver)
         api_version = StrictVersion(UnityEnvironment.API_VERSION)
@@ -195,7 +195,7 @@ class UnityEnvironment(BaseEnv):
             raise
 
         if not UnityEnvironment.check_communication_compatibility(
-            aca_params.communication_version, aca_params.package_version
+            aca_params.communication_version, UnityEnvironment.API_VERSION, aca_params.package_version
         ):
             self._close(0)
             UnityEnvironment._raise_version_exception(aca_params.communication_version)
