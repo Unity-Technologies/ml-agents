@@ -24,6 +24,7 @@ public class TennisAgent : Agent
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
     float m_BallTouch;
+    Vector3 down = new Vector3(0f, -60f, 0f);
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -110,6 +111,12 @@ public class TennisAgent : Agent
             AddReward(.2f * m_BallTouch);
         }
     }
+
+    void FixedUpdate()
+    {   
+        m_AgentRb.AddForce(down);
+    }   
+
     public override void OnEpisodeBegin()
     {
 
