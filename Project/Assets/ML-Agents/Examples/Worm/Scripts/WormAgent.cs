@@ -195,7 +195,8 @@ public class WormAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.forward);
+//        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.forward);
+        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.up);
         AddReward(0.01f * m_FacingDot);
     }
 
