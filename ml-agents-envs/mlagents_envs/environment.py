@@ -85,7 +85,7 @@ class UnityEnvironment(BaseEnv):
         unity_com_ver: str, python_api_version: str, unity_package_version: str
     ) -> bool:
         unity_communicator_version = StrictVersion(unity_com_ver)
-        api_version = StrictVersion(UnityEnvironment.API_VERSION)
+        api_version = StrictVersion(python_api_version)
         if unity_communicator_version.version[0] == 0:
             if (
                 unity_communicator_version.version[0] != api_version.version[0]
@@ -100,7 +100,7 @@ class UnityEnvironment(BaseEnv):
             # Non-beta minor versions mismatch.  Log a warning but allow execution to continue.
             logger.warning(
                 f"WARNING: The communication API versions between Unity and python differ at the minor version level. "
-                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n"
+                f"Python API: {python_api_version}, Unity API: {unity_communicator_version}.\n"
                 f"This means that some features may not work unless you upgrade the package with the lower version."
                 f"Please find the versions that work best together from our release page.\n"
                 "https://github.com/Unity-Technologies/ml-agents/releases"
@@ -195,7 +195,9 @@ class UnityEnvironment(BaseEnv):
             raise
 
         if not UnityEnvironment.check_communication_compatibility(
-            aca_params.communication_version, UnityEnvironment.API_VERSION, aca_params.package_version
+            aca_params.communication_version,
+            UnityEnvironment.API_VERSION,
+            aca_params.package_version,
         ):
             self._close(0)
             UnityEnvironment._raise_version_exception(aca_params.communication_version)
