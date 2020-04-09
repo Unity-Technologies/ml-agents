@@ -46,7 +46,6 @@ from sys import platform
 import signal
 import struct
 
-
 logger = get_logger(__name__)
 
 
@@ -59,7 +58,7 @@ class UnityEnvironment(BaseEnv):
     # Currently we require strict equality between the communication protocol
     # on each side, although we may allow some flexibility in the future.
     # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "1.0.0"
+    API_VERSION = "0.16.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -72,16 +71,55 @@ class UnityEnvironment(BaseEnv):
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
+    @staticmethod
+    def _raise_version_exception(aca_params: UnityRLInitializationInputProto) -> None:
+        raise UnityEnvironmentException(
+            f"The communication API version is not compatible between Unity and python. "
+            f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {aca_params.communication_version}.\n "
+            f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
+            f"to download the latest version of ML-Agents."
+        )
+
+    @staticmethod
+    def check_communication_compatibility(unity_com_ver: str, unity_package_version: str) -> bool:
+        unity_communicator_version = StrictVersion(unity_com_ver)
+        api_version = StrictVersion(UnityEnvironment.API_VERSION)
+        if unity_communicator_version.version[0] == 0:
+            if (
+                    unity_communicator_version.version[0] != api_version.version[0]
+                    or unity_communicator_version.version[1] != api_version.version[1]
+            ):
+                # Minor beta versions differ.
+                return False
+        elif unity_communicator_version.version[0] != api_version.version[0]:
+            # Major versions mismatch.
+            return False
+        elif unity_communicator_version.version[1] != api_version.version[1]:
+            # Non-beta minor versions mismatch.  Log a warning but allow execution to continue.
+            logger.warning(
+                f"WARNING: The communication API versions between Unity and python differ at the minor version level. "
+                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n"
+                f"This means that some features may not work unless you upgrade the package with the lower version."
+                f"Please find the versions that work best together from our release page.\n"
+                "https://github.com/Unity-Technologies/ml-agents/releases"
+            )
+        else:
+            logger.info(
+                f"Connected to Unity environment with package version {unity_package_version} "
+                f"and communication version {unity_com_ver}"
+            )
+        return True
+
     def __init__(
-        self,
-        file_name: Optional[str] = None,
-        worker_id: int = 0,
-        base_port: Optional[int] = None,
-        seed: int = 0,
-        no_graphics: bool = False,
-        timeout_wait: int = 60,
-        args: Optional[List[str]] = None,
-        side_channels: Optional[List[SideChannel]] = None,
+            self,
+            file_name: Optional[str] = None,
+            worker_id: int = 0,
+            base_port: Optional[int] = None,
+            seed: int = 0,
+            no_graphics: bool = False,
+            timeout_wait: int = 60,
+            args: Optional[List[str]] = None,
+            side_channels: Optional[List[SideChannel]] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -154,21 +192,12 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             raise
 
-        unity_communicator_version = StrictVersion(aca_params.communication_version)
-        api_version = StrictVersion(UnityEnvironment.API_VERSION)
-        if unity_communicator_version.version[0] != api_version.version[0]:
+        if (not UnityEnvironment.check_communication_compatibility(
+                aca_params.communication_version,
+                aca_params.package_version)):
             self._close(0)
-            raise UnityEnvironmentException(
-                f"The communication API version is not compatible between Unity and python. "
-                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {aca_params.communication_version}.\n "
-                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
-                f"to download the latest version of ML-Agents."
-            )
-        else:
-            logger.info(
-                f"Connected to Unity environment with package version {aca_params.package_version} "
-                f"and communication version {aca_params.communication_version}"
-            )
+            UnityEnvironment._raise_version_exception(aca_params)
+
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
         self._env_actions: Dict[str, np.ndarray] = {}
@@ -184,10 +213,10 @@ class UnityEnvironment(BaseEnv):
         # Strip out executable extensions if passed
         env_path = (
             env_path.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
+                .replace(".app", "")
+                .replace(".exe", "")
+                .replace(".x86_64", "")
+                .replace(".x86", "")
         )
         true_filename = os.path.basename(os.path.normpath(env_path))
         logger.debug("The true file name is {}".format(true_filename))
@@ -363,7 +392,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
+            self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
     ) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
@@ -398,7 +427,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[behavior_name][index] = action
 
     def get_steps(
-        self, behavior_name: BehaviorName
+            self, behavior_name: BehaviorName
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         self._assert_behavior_exists(behavior_name)
         return self._env_state[behavior_name]
@@ -465,16 +494,16 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _parse_side_channel_message(
-        side_channels: Dict[uuid.UUID, SideChannel], data: bytes
+            side_channels: Dict[uuid.UUID, SideChannel], data: bytes
     ) -> None:
         offset = 0
         while offset < len(data):
             try:
-                channel_id = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
+                channel_id = uuid.UUID(bytes_le=bytes(data[offset: offset + 16]))
                 offset += 16
                 message_len, = struct.unpack_from("<i", data, offset)
                 offset = offset + 4
-                message_data = data[offset : offset + message_len]
+                message_data = data[offset: offset + message_len]
                 offset = offset + message_len
             except Exception:
                 raise UnityEnvironmentException(
@@ -499,7 +528,7 @@ class UnityEnvironment(BaseEnv):
 
     @staticmethod
     def _generate_side_channel_data(
-        side_channels: Dict[uuid.UUID, SideChannel]
+            side_channels: Dict[uuid.UUID, SideChannel]
     ) -> bytearray:
         result = bytearray()
         for channel_id, channel in side_channels.items():
@@ -512,7 +541,7 @@ class UnityEnvironment(BaseEnv):
 
     @timed
     def _generate_step_input(
-        self, vector_action: Dict[str, np.ndarray]
+            self, vector_action: Dict[str, np.ndarray]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -533,7 +562,7 @@ class UnityEnvironment(BaseEnv):
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(
-        self, init_parameters: UnityRLInitializationInputProto
+            self, init_parameters: UnityRLInitializationInputProto
     ) -> UnityOutputProto:
         inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)

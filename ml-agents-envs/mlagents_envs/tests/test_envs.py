@@ -122,6 +122,24 @@ def test_close(mock_communicator, mock_launcher):
     assert comm.has_been_closed
 
 
+def test_check_communication_compatibility():
+    unity_ver = "1.0.0"
+    python_ver = "1.0.0"
+    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    unity_ver = "1.1.0"
+    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    unity_ver = "2.0.0"
+    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+
+    unity_ver = "0.16.0"
+    python_ver = "0.16.0"
+    assert UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    unity_ver = "0.17.0"
+    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+    unity_ver = "1.16.0"
+    assert not UnityEnvironment.check_communication_compatibility(unity_ver, python_ver)
+
+
 def test_returncode_to_signal_name():
     assert UnityEnvironment.returncode_to_signal_name(-2) == "SIGINT"
     assert UnityEnvironment.returncode_to_signal_name(42) is None

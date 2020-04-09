@@ -61,11 +61,37 @@ namespace MLAgents
 
         #region Initialization
 
-        internal static bool CheckCommunicationVersionsAreCompatible(string unityCommunicationVersion, string pythonApiVersion)
+        internal static bool CheckCommunicationVersionsAreCompatible(
+            string unityCommunicationVersion,
+            string pythonApiVersion,
+            string pythonLibraryVersion)
         {
             var unityVersion = new Version(unityCommunicationVersion);
             var pythonVersion = new Version(pythonApiVersion);
-            return unityVersion.Major == pythonVersion.Major;
+            if (unityVersion.Major == 0)
+            {
+                if (unityVersion.Major != pythonVersion.Major || unityVersion.Minor != pythonVersion.Minor)
+                {
+                    return false;
+                }
+
+            }
+            else if (unityVersion.Major != pythonVersion.Major)
+            {
+                return false;
+            }
+            else if (unityVersion.Minor != pythonVersion.Minor)
+            {
+                Debug.LogWarningFormat(
+                    "WARNING: The communication API versions between Unity and python differ at the minor version level. " +
+                    "Python API: {0}, Unity API: {1} Python Library Version: {2} .\n" +
+                    "This means that some features may not work unless you upgrade the package with the lower version." +
+                    "Please find the versions that work best together from our release page.\n" +
+                    "https://github.com/Unity-Technologies/ml-agents/releases",
+                    pythonApiVersion, unityCommunicationVersion, pythonLibraryVersion
+                );
+            }
+            return true;
         }
 
         /// <summary>
@@ -94,18 +120,21 @@ namespace MLAgents
                     },
                     out input);
 
+                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
+                var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+                var unityCommunicationVersion = initParameters.unityCommunicationVersion;
+
                 // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
                 // API strings, so log an explicit warning if that's the case.
                 if (initializationInput != null && input == null)
                 {
-                    var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-                    var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
-                    var unityCommunicationVersion = initParameters.unityCommunicationVersion;
-                    if (!CheckCommunicationVersionsAreCompatible(unityCommunicationVersion, pythonCommunicationVersion))
+                    if (!CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
+                        pythonCommunicationVersion,
+                        pythonPackageVersion))
                     {
                         Debug.LogWarningFormat(
                             "Communication protocol between python ({0}) and Unity ({1}) have different " +
-                            "major versions and are incompatible. Python library version: {2}.",
+                            "versions which make them incompatible. Python library version: {2}.",
                             pythonCommunicationVersion, initParameters.unityCommunicationVersion,
                             pythonPackageVersion
                         );
@@ -122,6 +151,9 @@ namespace MLAgents
 
                     throw new UnityAgentsException("ICommunicator.Initialize() failed.");
                 }
+
+                // Even if we initialize, we still want to check to make sure that we inform users of minor version
+                // changes.  This will surface any features that may not work due to minor version incompatibilities.
             }
             catch
             {
