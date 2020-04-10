@@ -200,7 +200,7 @@ SmallCubeSoldier:
     time_horizon: 1000
     num_layers: 2
     self_play:
-        window: 20
+        window: 10
         play_against_latest_model_ratio: 0.5
         save_steps: 50000
         swap_steps: 150000
@@ -216,7 +216,7 @@ LargeCubeSoldier:
     time_horizon: 1000
     num_layers: 2
     self_play:
-        window: 20
+        window: 10
         play_against_latest_model_ratio: 0.5
         save_steps: 50000
         swap_steps: 17000
