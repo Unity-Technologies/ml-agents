@@ -203,12 +203,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 9
+    vectorObservationSize: 10
     numStackedVectorObservations: 3
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: d6c5e749e4ceb4cf79640a5955706d3d, type: 3}
+  m_Model: {fileID: 11400000, guid: cb78d17a8251c4ae2b8d706543d43ffa, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
@@ -251,7 +251,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
-  offsetStep: 0
 --- !u!1 &1194790474478638
 GameObject:
   m_ObjectHideFlags: 0
@@ -451,6 +450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   areaObject: {fileID: 1541947554534326}
+  lastFloorHit: 0
 --- !u!1 &1299636753784036
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,12 +1344,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 9
+    vectorObservationSize: 10
     numStackedVectorObservations: 3
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: d6c5e749e4ceb4cf79640a5955706d3d, type: 3}
+  m_Model: {fileID: 11400000, guid: cb78d17a8251c4ae2b8d706543d43ffa, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
@@ -1392,7 +1392,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
-  offsetStep: 0
 --- !u!1 &1969551055586186
 GameObject:
   m_ObjectHideFlags: 0
