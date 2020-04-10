@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Fixed an issue where exceptions from environments provided a returncode of 0. (#3680)
  - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
  - `StackingSensor` was changed from `internal` visibility to `public`
+ - Updated Barracuda to 0.6.3-preview.
 
 ## [0.15.1-preview] - 2020-03-30
 ### Bug Fixes
