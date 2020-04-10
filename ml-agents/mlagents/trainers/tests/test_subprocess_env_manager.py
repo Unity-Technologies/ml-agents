@@ -193,7 +193,7 @@ def test_subprocess_env_endtoend(num_envs):
     env_manager = SubprocessEnvManager(
         simple_env_factory, EngineConfig.default_config(), num_envs
     )
-    trainer_config = generate_config(PPO_CONFIG)
+    trainer_config = generate_config(PPO_CONFIG, override_vals={"max_steps": 5000})
     # Run PPO using env_manager
     _check_environment_trains(
         simple_env_factory(0, []),
