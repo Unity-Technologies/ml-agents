@@ -5,6 +5,7 @@ using Barracuda;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
 using MLAgents.Policies;
+using UnityEditor;
 
 namespace MLAgents
 {
@@ -547,12 +548,10 @@ namespace MLAgents
         /// </summary>
         /// <returns> A float array corresponding to the next action of the Agent
         /// </returns>
-        public virtual float[] Heuristic()
+        public virtual void Heuristic(float[] actionsOut)
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
-            var param = m_PolicyFactory.brainParameters;
-
-            return new float[param.numActions];
+            Array.Clear(actionsOut, 0, actionsOut.Length);
         }
 
         /// <summary>

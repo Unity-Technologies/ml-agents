@@ -12,17 +12,20 @@ namespace MLAgents.Policies
     /// </summary>
     internal class HeuristicPolicy : IPolicy
     {
-        Func<float[]> m_Heuristic;
+        public delegate void ActionGenerator(float[] actionsOut);
+        ActionGenerator m_Heuristic;
         float[] m_LastDecision;
+        int m_numActions;
 
         WriteAdapter m_WriteAdapter = new WriteAdapter();
         NullList m_NullList = new NullList();
 
 
         /// <inheritdoc />
-        public HeuristicPolicy(Func<float[]> heuristic)
+        public HeuristicPolicy(ActionGenerator heuristic, int numActions)
         {
             m_Heuristic = heuristic;
+            m_numActions = numActions;
         }
 
         /// <inheritdoc />
@@ -31,7 +34,9 @@ namespace MLAgents.Policies
             StepSensors(sensors);
             if (!info.done)
             {
-                m_LastDecision = m_Heuristic.Invoke();
+                // Reset m_LastDecision each time.
+                 m_LastDecision = new float[m_numActions];
+                 m_Heuristic.Invoke(m_LastDecision);
             }
         }
 
