@@ -306,9 +306,10 @@ def test_recurrent_sac(use_discrete):
     override_vals = {
         "batch_size": 64,
         "use_recurrent": True,
-        "max_steps": 3000,
+        "max_steps": 5000,
         "learning_rate": 1e-3,
         "buffer_init_steps": 500,
+        "steps_per_update": 2,
     }
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
