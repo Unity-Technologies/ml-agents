@@ -204,7 +204,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     vectorObservationSize: 10
-    numStackedVectorObservations: 3
+    numStackedVectorObservations: 6
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
@@ -1345,7 +1345,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     vectorObservationSize: 10
-    numStackedVectorObservations: 3
+    numStackedVectorObservations: 6
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
