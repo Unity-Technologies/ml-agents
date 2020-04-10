@@ -133,9 +133,8 @@ Tennis:
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
-    hidden_units: 512
+    hidden_units: 256
     time_horizon: 1000
-    beta: 1.0e-2
     self_play:
         window: 10
         play_against_latest_model_ratio: 0.5
