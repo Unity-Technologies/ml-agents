@@ -23,7 +23,7 @@ The versions can be found in
 
 ### Steps to Migrate
 * Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
- will happen by default. To run without training, use `--inference`.
+ will happen by default. To run with inference instead of training, use `--inference`.
 * To force-overwrite files from a pre-existing run, add the `--force` command-line flag.
 * Replace `Academy.FloatProperties` with `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`.
 * Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
