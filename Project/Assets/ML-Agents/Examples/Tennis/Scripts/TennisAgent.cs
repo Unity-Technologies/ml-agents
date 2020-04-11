@@ -112,7 +112,7 @@ public class TennisAgent : Agent
     {
         if (c.gameObject.CompareTag("ball"))
         {
-            AddReward(.02f + 0.18f * m_BallTouch);
+            AddReward(.2f * m_BallTouch);
         }
     }
 
