@@ -134,6 +134,7 @@ Tennis:
     batch_size: 2048
     buffer_size: 20480
     hidden_units: 256
+    beta: 1.0e-2
     time_horizon: 1000
     self_play:
         window: 10
