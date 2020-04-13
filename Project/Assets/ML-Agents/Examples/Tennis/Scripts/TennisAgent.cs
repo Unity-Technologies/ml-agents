@@ -14,16 +14,11 @@ public class TennisAgent : Agent
     public float angle;
     public float scale;
 
-    [HideInInspector]
-    public float timePenalty = 0;
-
     Text m_TextComponent;
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
-    TennisArea m_Area;
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
-    float m_BallTouch;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -35,7 +30,6 @@ public class TennisAgent : Agent
     {
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
-        m_Area = myArea.GetComponent<TennisArea>();
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
         m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
@@ -72,9 +66,9 @@ public class TennisAgent : Agent
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
 
-        if (moveY > 0.0)// && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.5 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
-            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
+            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, 7f, 0f);
         }
 
         m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
@@ -88,7 +82,6 @@ public class TennisAgent : Agent
                 transform.position.y,
                 transform.position.z);
         }
-        timePenalty += -1f / 3000f;
 
         m_TextComponent.text = score.ToString();
     }
@@ -100,25 +93,13 @@ public class TennisAgent : Agent
         actionsOut[2] = Input.GetAxis("Vertical");   // Racket Rotation
     }
 
-    void OnCollisionEnter(Collision c)
-    {
-        if (c.gameObject.CompareTag("ball"))
-        {
-            AddReward(.2f * m_BallTouch);
-        }
-    }
     public override void OnEpisodeBegin()
     {
-
-        timePenalty = 0;
-        m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         m_InvertMult = invertX ? -1f : 1f;
-        if (m_InvertMult == 1f)
-        {
-            m_Area.MatchReset();
-        }
-        transform.position = new Vector3(-m_InvertMult * 14f, 5f, -1.8f) + transform.parent.transform.position;
+
+        transform.position = new Vector3(-m_InvertMult * Random.Range(6f, 8f), -1.5f, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
+
         SetResetParameters();
     }
 
