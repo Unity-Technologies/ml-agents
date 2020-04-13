@@ -105,7 +105,7 @@ The Ball3DAgent subclass defines the following methods:
   step.
 * `Agent.Heuristic()` - When the `Behavior Type` is set to `Heuristic Only` in the Behavior
   Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
-  the actions of the Agent. As such, the `Heuristic()` method returns an array of
+  the actions of the Agent. As such, the `Heuristic()` method takes an array of
   floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
   keyboard inputs into actions.
 

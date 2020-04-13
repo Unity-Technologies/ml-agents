@@ -108,25 +108,25 @@ public class GridAgent : Agent
         }
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(float[] actionsOut)
     {
+        actionsOut[0] = k_NoAction;
         if (Input.GetKey(KeyCode.D))
         {
-            return new float[] { k_Right };
+            actionsOut[0] = k_Right;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            return new float[] { k_Up };
+            actionsOut[0] = k_Up;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            return new float[] { k_Left };
+            actionsOut[0] = k_Left;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            return new float[] { k_Down };
+            actionsOut[0] = k_Down;
         }
-        return new float[] { k_NoAction };
     }
 
     // to be implemented by the developer
