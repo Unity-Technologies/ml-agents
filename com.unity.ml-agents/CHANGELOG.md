@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
  - The internal event `Academy.AgentSetStatus` was renamed to `Academy.AgentPreStep` and made public.
  - The offset logic was removed from DecisionRequester.
+ - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a parameter, instead of returning the array. This was done to prevent a common source of error where users would return arrays of the wrong size.
  - The communication API version has been bumped up to 1.0.0 and will use [Semantic Versioning](https://semver.org/) to do compatibility checks for communication between Unity and the Python process.
 
 ### Minor Changes

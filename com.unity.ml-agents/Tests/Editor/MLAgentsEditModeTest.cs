@@ -94,10 +94,9 @@ namespace MLAgents.Tests
             agentActionCallsForEpisode = 0;
         }
 
-        public override float[] Heuristic()
+        public override void Heuristic(float[] actionsOut)
         {
             heuristicCalls++;
-            return new float[0];
         }
     }
 
