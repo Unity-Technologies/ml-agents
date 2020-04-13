@@ -193,7 +193,7 @@ Walker:
     max_steps: 2e7
     summary_freq: 30000
     num_layers: 4
-    steps_per_update: 20
+    steps_per_update: 30
     hidden_units: 512
     reward_signals:
         extrinsic:
