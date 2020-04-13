@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
 using MLAgents.Demonstrations;
@@ -21,7 +22,7 @@ namespace MLAgents.Editor
         {
             m_BrainParameters = serializedObject.FindProperty("brainParameters");
             m_DemoMetaData = serializedObject.FindProperty("metaData");
-            m_ObservationShapes = serializedObject.FindProperty("observationShapes");
+            m_ObservationShapes = serializedObject.FindProperty("observationSummaries");
         }
 
         /// <summary>
@@ -46,9 +47,9 @@ namespace MLAgents.Editor
         }
 
         /// <summary>
-        /// Constructs label for action size array.
+        /// Constructs label for a serialized integer array.
         /// </summary>
-        static string BuildActionArrayLabel(SerializedProperty actionSizeProperty)
+        static string BuildIntArrayLabel(SerializedProperty actionSizeProperty)
         {
             var actionSize = actionSizeProperty.arraySize;
             var actionLabel = new StringBuilder("[ ");
@@ -66,7 +67,8 @@ namespace MLAgents.Editor
         }
 
         /// <summary>
-        /// Renders Inspector UI for Brain Parameters of Demonstration.
+        /// Renders Inspector UI for BrainParameters of a DemonstrationSummary.
+        /// Only the Action size and type are used from the BrainParameters.
         /// </summary>
         void MakeActionsProperty(SerializedProperty property)
         {
@@ -74,7 +76,7 @@ namespace MLAgents.Editor
             var actSpaceTypeProp = property.FindPropertyRelative("vectorActionSpaceType");
 
             var vecActSizeLabel =
-                actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
+                actSizeProperty.displayName + ": " + BuildIntArrayLabel(actSizeProperty);
             var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
                 (SpaceType)actSpaceTypeProp.enumValueIndex;
 
@@ -82,25 +84,44 @@ namespace MLAgents.Editor
             EditorGUILayout.LabelField(actSpaceTypeLabel);
         }
 
-        void MakeObservationsProperty(SerializedProperty property)
+        /// <summary>
+        /// Render the observation shapes of a DemonstrationSummary.
+        /// </summary>
+        /// <param name="obsSummariesProperty"></param>
+        void MakeObservationsProperty(SerializedProperty obsSummariesProperty)
         {
-            if (property == null)
+            var shapesLabels = new List<string>();
+            var numObservations = obsSummariesProperty.arraySize;
+            for (var i = 0; i < numObservations; i++)
             {
-                EditorGUILayout.LabelField("???");
-                return;
+                var summary = obsSummariesProperty.GetArrayElementAtIndex(i);
+                var shapeProperty = summary.FindPropertyRelative("shape");
+                shapesLabels.Add(BuildIntArrayLabel(shapeProperty));
             }
-            EditorGUILayout.LabelField(property.displayName);
+
+            var shapeLabel = $"Shapes: {string.Join(",  ", shapesLabels)}";
+            EditorGUILayout.LabelField(shapeLabel);
+
         }
 
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
+
             EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             MakeMetaDataProperty(m_DemoMetaData);
-            EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
-            MakeActionsProperty(m_BrainParameters);
+            EditorGUI.indentLevel--;
+
             EditorGUILayout.LabelField("Observations", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
             MakeObservationsProperty(m_ObservationShapes);
+            EditorGUI.indentLevel--;
+
+            EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+            MakeActionsProperty(m_BrainParameters);
+            EditorGUI.indentLevel--;
 
             serializedObject.ApplyModifiedProperties();
         }

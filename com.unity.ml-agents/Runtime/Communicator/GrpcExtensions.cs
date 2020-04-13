@@ -60,16 +60,18 @@ namespace MLAgents
             return agentInfoProto;
         }
 
-        public static List<int[]> GetObservationShapes(this AgentInfoActionPairProto infoActionPair)
+        public static List<ObservationSummary> GetObservationSummaries(this AgentInfoActionPairProto infoActionPair)
         {
-            List<int[]> shapesOut = new List<int[]>();
+            List<ObservationSummary> summariesOut = new List<ObservationSummary>();
             var agentInfo = infoActionPair.AgentInfo;
             foreach (var obs in agentInfo.Observations)
             {
-                shapesOut.Add(obs.Shape.ToArray());
+                var summary = new ObservationSummary();
+                summary.shape = obs.Shape.ToArray();
+                summariesOut.Add(summary);
             }
 
-            return shapesOut;
+            return summariesOut;
         }
 
 

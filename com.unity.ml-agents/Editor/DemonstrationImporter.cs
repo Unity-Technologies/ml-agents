@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using MLAgents.CommunicatorObjects;
 using UnityEditor;
@@ -37,14 +38,22 @@ namespace MLAgents.Editor
                 var brainParameters = brainParamsProto.ToBrainParameters();
 
                 // Read the first AgentInfoActionPair so that we can get the observation sizes.
-                // TODO handle the case where there's no infos
-                var agentInfoActionPairProto = AgentInfoActionPairProto.Parser.ParseDelimitedFrom(reader);
-                var observationShapes = agentInfoActionPairProto.GetObservationShapes();
+                List<ObservationSummary> observationSummaries;
+                try
+                {
+                    var agentInfoActionPairProto = AgentInfoActionPairProto.Parser.ParseDelimitedFrom(reader);
+                    observationSummaries = agentInfoActionPairProto.GetObservationSummaries();
+                }
+                catch
+                {
+                    // Just in case there weren't any AgentInfoActionPair or they couldn't be read.
+                    observationSummaries = new List<ObservationSummary>();
+                }
 
                 reader.Close();
 
                 var demonstrationSummary = ScriptableObject.CreateInstance<DemonstrationSummary>();
-                demonstrationSummary.Initialize(brainParameters, metaData, observationShapes);
+                demonstrationSummary.Initialize(brainParameters, metaData, observationSummaries);
                 userData = demonstrationSummary.ToString();
 
                 var texture = (Texture2D)
