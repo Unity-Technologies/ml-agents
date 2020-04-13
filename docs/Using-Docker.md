@@ -61,8 +61,6 @@ the Build Settings window:
 
 - Set the _Target Platform_ to `Linux`
 - Set the _Architecture_ to `x86_64`
-- If the environment does not contain visual observations, you can select the
-  `headless` option here.
 
 Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output
 directory to `unity-volume`. After building, ensure that the file
