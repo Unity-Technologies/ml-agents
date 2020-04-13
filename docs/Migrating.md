@@ -14,23 +14,23 @@ The versions can be found in
 * Running with the same `--run-id` twice will now throw an error.
 * Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
-* The `play_against_current_self_ratio` self-play trainer hyperparameter has been renamed to `play_against_latest_model_ratio`
-* The Jupyter notebooks have been removed from the repository.
-* `Academy.FloatProperties` was removed.
-* `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were removed.
+* The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`, `AgentAction` and `AgentReset` have been removed.
+* The signature of `Agent.Heuristic()` was changed to take a `float[]` as a parameter, instead of returning the array. This was done to prevent a common source of error where users would return arrays of the wrong size.
 * `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
-
 
 ### Steps to Migrate
 * Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
  will happen by default. To run with inference instead of training, use `--inference`.
 * To force-overwrite files from a pre-existing run, add the `--force` command-line flag.
+* The Jupyter notebooks have been removed from the repository.
+* `Academy.FloatProperties` was removed.
+* `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were removed.
 * Replace `Academy.FloatProperties` with `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`.
 * Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
 * Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
+* If your Agent class overrides `Heuristic()`, change the signature to `public override void Heuristic(float[] actionsOut)` and assign values to `actionsOut` instead of returning an array.
 * `steps_per_update` should be around equal to the number of agents in your environment, times `num_updates`
  and divided by `train_interval`.
-
 
 ## Migrating from 0.14 to 0.15
 

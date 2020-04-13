@@ -8,9 +8,9 @@ namespace MLAgents.Tests
     [TestFixture]
     public class BehaviorParameterTests
     {
-        static float[] DummyHeuristic()
+        static void DummyHeuristic(float[] actionsOut)
         {
-            return null;
+            // No-op
         }
 
         [Test]
