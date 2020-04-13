@@ -43,8 +43,8 @@ public class HitWall : MonoBehaviour
     
     void AgentAWins()
     {
-        m_AgentA.SetReward(1 + m_AgentA.timePenalty);
-        m_AgentB.SetReward(-1);
+        m_AgentA.SetReward(1);
+        m_AgentB.SetReward(-1 - m_AgentB.timePenalty);
         m_AgentA.score += 1;
         Reset();
 
@@ -52,8 +52,8 @@ public class HitWall : MonoBehaviour
 
     void AgentBWins()
     {
-        m_AgentA.SetReward(-1);
-        m_AgentB.SetReward(1 + m_AgentB.timePenalty);
+        m_AgentA.SetReward(-1 - m_AgentA.timePenalty);
+        m_AgentB.SetReward(1);
         m_AgentB.score += 1;
         Reset();
 
