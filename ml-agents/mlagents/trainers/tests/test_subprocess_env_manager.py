@@ -153,7 +153,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         external_brains_mock.return_value = [brain_name]
         agent_manager_mock = mock.Mock()
         mock_policy = mock.Mock()
-        agent_manager_mock.policy_queue.get.side_effect = [
+        agent_manager_mock.policy_queue.get_nowait.side_effect = [
             mock_policy,
             mock_policy,
             AgentManagerQueue.Empty(),
