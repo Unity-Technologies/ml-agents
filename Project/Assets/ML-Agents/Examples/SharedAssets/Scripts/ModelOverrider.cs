@@ -86,7 +86,11 @@ namespace MLAgentsExamples
         {
             if (m_MaxEpisodes > 0)
             {
-                if (m_NumSteps > m_MaxEpisodes * m_Agent.maxStep)
+                // For Agents without maxSteps, exit as soon as we've hit the target number of episodes.
+                // For Agents that specify maxStep, also make sure we've gone at least that many steps.
+                // Since we exit as soon as *any* Agent hits its target, the maxSteps condition keeps us running
+                // a bit longer in case there's an early failure.
+                if (m_Agent.CompletedEpisodes >= m_MaxEpisodes && m_NumSteps > m_MaxEpisodes * m_Agent.maxStep)
                 {
                     Application.Quit(0);
                 }

@@ -341,8 +341,7 @@ with values ranging from zero to one.
 
 Note that when you are programming actions for an agent, it is often helpful to
 test your action logic using the `Heuristic()` method of the Agent,
-which lets you map keyboard
-commands to actions.
+which lets you map keyboard commands to actions.
 
 The [3DBall](Learning-Environment-Examples.md#3dball-3d-balance-ball) and
 [Area](Learning-Environment-Examples.md#push-block) example environments are set
