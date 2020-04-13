@@ -5,7 +5,6 @@ using Barracuda;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
 using MLAgents.Policies;
-using UnityEditor;
 
 namespace MLAgents
 {
