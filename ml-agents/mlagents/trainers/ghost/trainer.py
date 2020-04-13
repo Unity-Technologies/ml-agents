@@ -206,7 +206,7 @@ class GhostTrainer(Trainer):
             self.change_current_elo(change)
             self._stats_reporter.add_stat("Self-play/ELO", self.current_elo)
 
-    def advance(self, empty_queue: bool = False) -> None:
+    def advance(self) -> None:
         """
         Steps the trainer, passing trajectories to wrapped trainer and calling trainer advance
         """
@@ -223,29 +223,25 @@ class GhostTrainer(Trainer):
                     # We grab at most the maximum length of the queue.
                     # This ensures that even if the queue is being filled faster than it is
                     # being emptied, the trajectories in the queue are on-policy.
-                    for _ in range(trajectory_queue.maxlen):
-                        t = trajectory_queue.get(block=not empty_queue, timeout=0.05)
+                    for _ in range(trajectory_queue.qsize()):
+                        t = trajectory_queue.get(block=False)
                         # adds to wrapped trainers queue
                         internal_trajectory_queue.put(t)
                         self._process_trajectory(t)
-                        if not empty_queue:
-                            break
                 except AgentManagerQueue.Empty:
                     pass
             else:
                 # Dump trajectories from non-learning policy
                 try:
-                    for _ in range(trajectory_queue.maxlen):
-                        t = trajectory_queue.get(block=not empty_queue, timeout=0.05)
+                    for _ in range(trajectory_queue.qsize()):
+                        t = trajectory_queue.get(block=False)
                         # count ghost steps
                         self.ghost_step += len(t.steps)
-                        if not empty_queue:
-                            break
                 except AgentManagerQueue.Empty:
                     pass
 
         self.next_summary_step = self.trainer.next_summary_step
-        self.trainer.advance(empty_queue=empty_queue)
+        self.trainer.advance()
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.change_training_team(self.get_step)
             self.last_team_change = self.get_step

@@ -300,7 +300,7 @@ class TrainerController(object):
         if not self.threaded:
             with hierarchical_timer("trainer_advance"):
                 for trainer in self.trainers.values():
-                    trainer.advance(empty_queue=True)
+                    trainer.advance()
 
         return num_steps
 

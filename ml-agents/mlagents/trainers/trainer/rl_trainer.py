@@ -132,24 +132,20 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         if step_after_process >= self.next_summary_step and self.get_step != 0:
             self._write_summary(self.next_summary_step)
 
-    def advance(self, empty_queue: bool = False) -> None:
+    def advance(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
         Will block and wait briefly if there are no trajectories.
-        :param empty_queue: Whether or not to empty the queue when called. For synchronous
-            operation, we need to do so to avoid the queue filling up.
         """
         with hierarchical_timer("process_trajectory"):
             for traj_queue in self.trajectory_queues:
                 # We grab at most the maximum length of the queue.
                 # This ensures that even if the queue is being filled faster than it is
                 # being emptied, the trajectories in the queue are on-policy.
-                for _ in range(traj_queue.maxlen):
+                for _ in range(traj_queue.qsize()):
                     try:
-                        t = traj_queue.get(block=not empty_queue, timeout=0.05)
+                        t = traj_queue.get(block=False)
                         self._process_trajectory(t)
-                        if not empty_queue:
-                            break
                     except AgentManagerQueue.Empty:
                         break
         if self.should_still_train:

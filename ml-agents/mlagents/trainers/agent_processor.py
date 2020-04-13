@@ -255,6 +255,13 @@ class AgentManagerQueue(Generic[T]):
         """
         return self._behavior_id
 
+    def qsize(self) -> int:
+        """
+        Returns the approximate size of the queue. Note that values may differ
+        depending on the underlying queue implementation.
+        """
+        return self._queue.qsize()
+
     def empty(self) -> bool:
         return self._queue.empty()
 
