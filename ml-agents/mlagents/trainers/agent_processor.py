@@ -265,7 +265,7 @@ class AgentManagerQueue(Generic[T]):
     def empty(self) -> bool:
         return self._queue.empty()
 
-    def get_nowait(self, block: bool = True, timeout: float = None) -> T:
+    def get_nowait(self) -> T:
         """
         Gets the next item from the queue, throwing an AgentManagerQueue.Empty exception
         if the queue is empty.
