@@ -15,6 +15,7 @@ The versions can be found in
 * The `play_against_current_self_ratio` self-play trainer hyperparameter has been renamed to `play_against_latest_model_ratio`
 * Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
+* The obsolete methods `GiveModel`, `Done`, `InitializeAgent`, `AgentAction` and `AgentReset` have been removed.
 
 ### Steps to Migrate
 * Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
