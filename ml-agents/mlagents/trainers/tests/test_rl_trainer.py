@@ -99,7 +99,7 @@ def test_advance(mocked_clear_update_buffer):
     trajectory_queue.put(trajectory)
 
     trainer.advance()
-    policy_queue.get(block=False)
+    policy_queue.get_nowait()
     # Check that get_step is correct
     assert trainer.get_step == time_horizon
     # Check that we can turn off the trainer and that the buffer is cleared
@@ -107,7 +107,7 @@ def test_advance(mocked_clear_update_buffer):
         trajectory_queue.put(trajectory)
         trainer.advance()
         # Check that there is stuff in the policy queue
-        policy_queue.get(block=False)
+        policy_queue.get_nowait()
 
     # Check that if the policy doesn't update, we don't push it to the queue
     trainer.set_is_policy_updating(False)
@@ -116,7 +116,7 @@ def test_advance(mocked_clear_update_buffer):
         trainer.advance()
         # Check that there nothing  in the policy queue
         with pytest.raises(AgentManagerQueue.Empty):
-            policy_queue.get(block=False)
+            policy_queue.get_nowait()
 
     # Check that the buffer has been cleared
     assert not trainer.should_still_train

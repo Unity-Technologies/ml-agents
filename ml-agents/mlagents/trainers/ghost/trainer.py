@@ -224,7 +224,7 @@ class GhostTrainer(Trainer):
                     # This ensures that even if the queue is being filled faster than it is
                     # being emptied, the trajectories in the queue are on-policy.
                     for _ in range(trajectory_queue.qsize()):
-                        t = trajectory_queue.get(block=False)
+                        t = trajectory_queue.get_nowait()
                         # adds to wrapped trainers queue
                         internal_trajectory_queue.put(t)
                         self._process_trajectory(t)
@@ -234,7 +234,7 @@ class GhostTrainer(Trainer):
                 # Dump trajectories from non-learning policy
                 try:
                     for _ in range(trajectory_queue.qsize()):
-                        t = trajectory_queue.get(block=False)
+                        t = trajectory_queue.get_nowait()
                         # count ghost steps
                         self.ghost_step += len(t.steps)
                 except AgentManagerQueue.Empty:
@@ -262,7 +262,7 @@ class GhostTrainer(Trainer):
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
             try:
-                policy = cast(TFPolicy, internal_policy_queue.get(block=False))
+                policy = cast(TFPolicy, internal_policy_queue.get_nowait())
                 self.current_policy_snapshot[brain_name] = policy.get_weights()
             except AgentManagerQueue.Empty:
                 pass

@@ -254,7 +254,7 @@ def test_agent_manager_queue():
     assert queue.empty()
     queue.put(trajectory)
     assert not queue.empty()
-    queue_traj = queue.get(block=False)
+    queue_traj = queue.get_nowait()
     assert isinstance(queue_traj, Trajectory)
     assert queue.empty()
 

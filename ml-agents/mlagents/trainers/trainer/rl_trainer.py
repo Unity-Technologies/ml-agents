@@ -144,7 +144,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 # being emptied, the trajectories in the queue are on-policy.
                 for _ in range(traj_queue.qsize()):
                     try:
-                        t = traj_queue.get(block=False)
+                        t = traj_queue.get_nowait()
                         self._process_trajectory(t)
                     except AgentManagerQueue.Empty:
                         break

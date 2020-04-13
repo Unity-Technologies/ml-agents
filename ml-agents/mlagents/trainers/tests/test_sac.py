@@ -232,7 +232,7 @@ def test_advance(dummy_config):
     )
 
     # Make sure there is a policy on the queue
-    policy_queue.get(block=False)
+    policy_queue.get_nowait()
 
     # Add another trajectory. Since this is less than 20 steps total (enough for)
     # two updates, there should NOT be a policy on the queue.
@@ -247,7 +247,7 @@ def test_advance(dummy_config):
     trajectory_queue.put(trajectory)
     trainer.advance()
     with pytest.raises(AgentManagerQueue.Empty):
-        policy_queue.get(block=False)
+        policy_queue.get_nowait()
 
 
 def test_bad_config(dummy_config):
