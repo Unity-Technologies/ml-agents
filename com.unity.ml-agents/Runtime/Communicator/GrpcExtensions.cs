@@ -17,6 +17,7 @@ namespace MLAgents
 {
     internal static class GrpcExtensions
     {
+        #region AgentInfo
         /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
@@ -59,6 +60,22 @@ namespace MLAgents
             return agentInfoProto;
         }
 
+        public static List<int[]> GetObservationShapes(this AgentInfoActionPairProto infoActionPair)
+        {
+            List<int[]> shapesOut = new List<int[]>();
+            var agentInfo = infoActionPair.AgentInfo;
+            foreach (var obs in agentInfo.Observations)
+            {
+                shapesOut.Add(obs.Shape.ToArray());
+            }
+
+            return shapesOut;
+        }
+
+
+        #endregion
+
+        #region BrainParameters
         /// <summary>
         /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
         /// </summary>
@@ -80,6 +97,25 @@ namespace MLAgents
             return brainParametersProto;
         }
 
+        /// <summary>
+        /// Convert a BrainParametersProto to a BrainParameters struct.
+        /// </summary>
+        /// <param name="bpp">An instance of a brain parameters protobuf object.</param>
+        /// <returns>A BrainParameters struct.</returns>
+        public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
+        {
+            var bp = new BrainParameters
+            {
+                vectorActionSize = bpp.VectorActionSize.ToArray(),
+                vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
+                vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
+            };
+            return bp;
+        }
+
+        #endregion
+
+        #region DemonstrationMetaData
         /// <summary>
         /// Convert metadata object to proto object.
         /// </summary>
@@ -114,22 +150,7 @@ namespace MLAgents
             }
             return dm;
         }
-
-        /// <summary>
-        /// Convert a BrainParametersProto to a BrainParameters struct.
-        /// </summary>
-        /// <param name="bpp">An instance of a brain parameters protobuf object.</param>
-        /// <returns>A BrainParameters struct.</returns>
-        public static BrainParameters ToBrainParameters(this BrainParametersProto bpp)
-        {
-            var bp = new BrainParameters
-            {
-                vectorActionSize = bpp.VectorActionSize.ToArray(),
-                vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
-                vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
-            };
-            return bp;
-        }
+        #endregion
 
         public static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
         {
@@ -141,6 +162,7 @@ namespace MLAgents
             };
         }
 
+        #region AgentAction
         public static AgentAction ToAgentAction(this AgentActionProto aap)
         {
             return new AgentAction
@@ -158,7 +180,9 @@ namespace MLAgents
             }
             return agentActions;
         }
+        #endregion
 
+        #region Observations
         public static ObservationProto ToProto(this Observation obs)
         {
             ObservationProto obsProto = null;
@@ -248,5 +272,6 @@ namespace MLAgents
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }
+        #endregion
     }
 }

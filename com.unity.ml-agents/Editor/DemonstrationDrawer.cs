@@ -7,19 +7,21 @@ using MLAgents.Policies;
 namespace MLAgents.Editor
 {
     /// <summary>
-    /// Renders a custom UI for Demonstration Scriptable Object.
+    /// Renders a custom UI for DemonstrationSummary ScriptableObject.
     /// </summary>
-    [CustomEditor(typeof(Demonstration))]
+    [CustomEditor(typeof(DemonstrationSummary))]
     [CanEditMultipleObjects]
     internal class DemonstrationEditor : UnityEditor.Editor
     {
         SerializedProperty m_BrainParameters;
         SerializedProperty m_DemoMetaData;
+        SerializedProperty m_ObservationShapes;
 
         void OnEnable()
         {
             m_BrainParameters = serializedObject.FindProperty("brainParameters");
             m_DemoMetaData = serializedObject.FindProperty("metaData");
+            m_ObservationShapes = serializedObject.FindProperty("observationShapes");
         }
 
         /// <summary>
@@ -28,19 +30,19 @@ namespace MLAgents.Editor
         void MakeMetaDataProperty(SerializedProperty property)
         {
             var nameProp = property.FindPropertyRelative("demonstrationName");
-            var expProp = property.FindPropertyRelative("numberExperiences");
-            var epiProp = property.FindPropertyRelative("numberEpisodes");
-            var rewProp = property.FindPropertyRelative("meanReward");
+            var experiencesProp = property.FindPropertyRelative("numberExperiences");
+            var episodesProp = property.FindPropertyRelative("numberEpisodes");
+            var rewardsProp = property.FindPropertyRelative("meanReward");
 
             var nameLabel = nameProp.displayName + ": " + nameProp.stringValue;
-            var expLabel = expProp.displayName + ": " + expProp.intValue;
-            var epiLabel = epiProp.displayName + ": " + epiProp.intValue;
-            var rewLabel = rewProp.displayName + ": " + rewProp.floatValue;
+            var experiencesLabel = experiencesProp.displayName + ": " + experiencesProp.intValue;
+            var episodesLabel = episodesProp.displayName + ": " + episodesProp.intValue;
+            var rewardsLabel = rewardsProp.displayName + ": " + rewardsProp.floatValue;
 
             EditorGUILayout.LabelField(nameLabel);
-            EditorGUILayout.LabelField(expLabel);
-            EditorGUILayout.LabelField(epiLabel);
-            EditorGUILayout.LabelField(rewLabel);
+            EditorGUILayout.LabelField(experiencesLabel);
+            EditorGUILayout.LabelField(episodesLabel);
+            EditorGUILayout.LabelField(rewardsLabel);
         }
 
         /// <summary>
@@ -66,24 +68,28 @@ namespace MLAgents.Editor
         /// <summary>
         /// Renders Inspector UI for Brain Parameters of Demonstration.
         /// </summary>
-        void MakeBrainParametersProperty(SerializedProperty property)
+        void MakeActionsProperty(SerializedProperty property)
         {
-            var vecObsSizeProp = property.FindPropertyRelative("vectorObservationSize");
-            var numStackedProp = property.FindPropertyRelative("numStackedVectorObservations");
             var actSizeProperty = property.FindPropertyRelative("vectorActionSize");
             var actSpaceTypeProp = property.FindPropertyRelative("vectorActionSpaceType");
 
-            var vecObsSizeLabel = vecObsSizeProp.displayName + ": " + vecObsSizeProp.intValue;
-            var numStackedLabel = numStackedProp.displayName + ": " + numStackedProp.intValue;
             var vecActSizeLabel =
                 actSizeProperty.displayName + ": " + BuildActionArrayLabel(actSizeProperty);
             var actSpaceTypeLabel = actSpaceTypeProp.displayName + ": " +
                 (SpaceType)actSpaceTypeProp.enumValueIndex;
 
-            EditorGUILayout.LabelField(vecObsSizeLabel);
-            EditorGUILayout.LabelField(numStackedLabel);
             EditorGUILayout.LabelField(vecActSizeLabel);
             EditorGUILayout.LabelField(actSpaceTypeLabel);
+        }
+
+        void MakeObservationsProperty(SerializedProperty property)
+        {
+            if (property == null)
+            {
+                EditorGUILayout.LabelField("???");
+                return;
+            }
+            EditorGUILayout.LabelField(property.displayName);
         }
 
         public override void OnInspectorGUI()
@@ -91,8 +97,11 @@ namespace MLAgents.Editor
             serializedObject.Update();
             EditorGUILayout.LabelField("Meta Data", EditorStyles.boldLabel);
             MakeMetaDataProperty(m_DemoMetaData);
-            EditorGUILayout.LabelField("Brain Parameters", EditorStyles.boldLabel);
-            MakeBrainParametersProperty(m_BrainParameters);
+            EditorGUILayout.LabelField("Actions", EditorStyles.boldLabel);
+            MakeActionsProperty(m_BrainParameters);
+            EditorGUILayout.LabelField("Observations", EditorStyles.boldLabel);
+            MakeObservationsProperty(m_ObservationShapes);
+
             serializedObject.ApplyModifiedProperties();
         }
     }

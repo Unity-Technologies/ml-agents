@@ -26,7 +26,7 @@ namespace MLAgents.Editor
 
             try
             {
-                // Read first two proto objects containing metadata and brain parameters.
+                // Read first three proto objects containing metadata, brain parameters, and observations.
                 Stream reader = File.OpenRead(ctx.assetPath);
 
                 var metaDataProto = DemonstrationMetaProto.Parser.ParseDelimitedFrom(reader);
@@ -36,17 +36,22 @@ namespace MLAgents.Editor
                 var brainParamsProto = BrainParametersProto.Parser.ParseDelimitedFrom(reader);
                 var brainParameters = brainParamsProto.ToBrainParameters();
 
+                // Read the first AgentInfoActionPair so that we can get the observation sizes.
+                // TODO handle the case where there's no infos
+                var agentInfoActionPairProto = AgentInfoActionPairProto.Parser.ParseDelimitedFrom(reader);
+                var observationShapes = agentInfoActionPairProto.GetObservationShapes();
+
                 reader.Close();
 
-                var demonstration = ScriptableObject.CreateInstance<Demonstration>();
-                demonstration.Initialize(brainParameters, metaData);
-                userData = demonstration.ToString();
+                var demonstrationSummary = ScriptableObject.CreateInstance<DemonstrationSummary>();
+                demonstrationSummary.Initialize(brainParameters, metaData, observationShapes);
+                userData = demonstrationSummary.ToString();
 
                 var texture = (Texture2D)
                     AssetDatabase.LoadAssetAtPath(k_IconPath, typeof(Texture2D));
 
-                ctx.AddObjectToAsset(ctx.assetPath, demonstration, texture);
-                ctx.SetMainObject(demonstration);
+                ctx.AddObjectToAsset(ctx.assetPath, demonstrationSummary, texture);
+                ctx.SetMainObject(demonstrationSummary);
             }
             catch
             {
