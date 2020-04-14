@@ -37,8 +37,7 @@ public class TennisArea : MonoBehaviour
     void FixedUpdate()
     {
         m_BallRb.AddForce(down);
-        //var rgV = m_BallRb.velocity;
-        //Debug.Log(rgV.x);
-        //m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -30f, 30f), Mathf.Clamp(rgV.y, -35f, 35f), rgV.z);
+        var rgV = m_BallRb.velocity;
+        m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -40f, 40f), Mathf.Clamp(rgV.y, -45f, 45f), rgV.z);
     }
 }
