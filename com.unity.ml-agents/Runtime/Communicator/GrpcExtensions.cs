@@ -60,6 +60,11 @@ namespace MLAgents
             return agentInfoProto;
         }
 
+        /// <summary>
+        /// Get summaries for the observations in the AgentInfo part of the AgentInfoActionPairProto.
+        /// </summary>
+        /// <param name="infoActionPair"></param>
+        /// <returns></returns>
         public static List<ObservationSummary> GetObservationSummaries(this AgentInfoActionPairProto infoActionPair)
         {
             List<ObservationSummary> summariesOut = new List<ObservationSummary>();
