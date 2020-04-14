@@ -172,7 +172,9 @@ settings.
 Note that in a single environment, there can be multiple Agents and multiple Behaviors
 at the same time. These Behaviors can communicate with Python through the communicator
 but can also use a pre-trained _Neural Network_ or a _Heuristic_. Note that it is also
-possible to communicate data with Python without using Agents through _Side Channels_. One example of using _Side Channels_ is to exchange data with Python about _Environment Parameters_. The following diagram illustrates the above.
+possible to communicate data with Python without using Agents through _Side Channels_.
+One example of using _Side Channels_ is to exchange data with Python about
+_Environment Parameters_. The following diagram illustrates the above.
 
 <p align="center">
   <img src="images/learning_environment_full.png"
