@@ -106,16 +106,18 @@ def initialize_trainer(
     trainer_parameters["model_path"] = "{basedir}/{name}".format(
         basedir=model_path, name=brain_name
     )
-    if init_path is not None:
-        trainer_parameters["init_path"] = "{basedir}/{name}".format(
-            basedir=init_path, name=brain_name
-        )
+
     trainer_parameters["keep_checkpoints"] = keep_checkpoints
     if brain_name in trainer_config:
         _brain_key: Any = brain_name
         while not isinstance(trainer_config[_brain_key], dict):
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
+
+    if init_path is not None:
+        trainer_parameters["init_path"] = "{basedir}/{name}".format(
+            basedir=init_path, name=brain_name
+        )
 
     min_lesson_length = 1
     if meta_curriculum:
