@@ -72,6 +72,16 @@ repos:
             )$
         args: [--score=n]
 
+- repo: https://github.com/prettier/prettier
+  rev: "2.0.4"
+  hooks:
+    - id: prettier
+      types: [markdown]
+      exclude: ".*localized.*"
+      # whitelist as we roll this out.
+      files: "docs/Learning-Environment-Design-Agents.md"
+      args: [--print-width=80, --prose-wrap=always]
+
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
