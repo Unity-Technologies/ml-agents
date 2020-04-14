@@ -5,7 +5,7 @@ training scenarios, methods and options within the ML-Agents Toolkit, see
 [ML-Agents Toolkit Overview](ML-Agents-Overview.md).
 
 Once your learning environment has been created and is ready for training, the next
-step is to initiate a training session. Training in the ML-Agents Toolkit is powered
+step is to initiate a training run. Training in the ML-Agents Toolkit is powered
 by a dedicated Python package, `mlagents`. This package exposes a command `mlagents-learn` that
 is the single entry point for all training workflows (e.g. reinforcement
 leaning, imitation learning, curriculum learning). Its implementation can be found at
@@ -37,7 +37,10 @@ mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier>
 
 where
 
-* `<trainer-config-file>` is the file path of the trainer configuration yaml.
+* `<trainer-config-file>` is the file path of the trainer configuration yaml. This contains all the
+  hyperparameter values. We offer a detailed guide on the structure of this file and the meaning
+  of the hyperameters (and advice on how to set them) in the dedicated
+  [Training Config File](#training-config-file) section below.
 * `<env_name>`__(Optional)__ is the name (including path) of your [Unity
   executable](Learning-Environment-Executable.md) containing the agents to be trained.
   If `<env_name>` is not passed, the training will happen in the Editor.
