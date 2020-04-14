@@ -48,7 +48,10 @@ def _create_parser():
     )
     argparser.add_argument("trainer_config_path")
     argparser.add_argument(
-        "--env", default=None, dest="env_path", help="Path to the Unity executable to train"
+        "--env",
+        default=None,
+        dest="env_path",
+        help="Path to the Unity executable to train",
     )
     argparser.add_argument(
         "--curriculum",
@@ -57,8 +60,10 @@ def _create_parser():
         help="YAML file for defining the lessons for curriculum training",
     )
     argparser.add_argument(
-        "--lesson", default=0, type=int,
-        help="The lesson to start with when performing curriculum training"
+        "--lesson",
+        default=0,
+        type=int,
+        help="The lesson to start with when performing curriculum training",
     )
     argparser.add_argument(
         "--sampler",
@@ -98,7 +103,7 @@ def _create_parser():
         action="store_true",
         help="Whether to force-overwrite this run-id's existing summary and model data. (Without "
         "this flag, attempting to train a model with a run-id that has been used before will throw "
-        "an error."
+        "an error.",
     )
     argparser.add_argument(
         "--run-id",
@@ -116,15 +121,17 @@ def _create_parser():
         help="Specify a previously saved run ID from which to initialize the model from. "
         "This can be used, for instance, to fine-tune an existing model on a new environment. "
         "Note that the previously saved models must have the same behavior parameters as your "
-        "current environment."
+        "current environment.",
     )
     argparser.add_argument(
         "--save-freq", default=50000, type=int,
         help="How often (in steps) to save the model during training"
     )
     argparser.add_argument(
-        "--seed", default=-1, type=int,
-        help="A number to use as a seed for the random number generator used by the training code"
+        "--seed",
+        default=-1,
+        type=int,
+        help="A number to use as a seed for the random number generator used by the training code",
     )
     argparser.add_argument(
         "--train",
@@ -148,7 +155,7 @@ def _create_parser():
         help="The starting port for environment communication. Each concurrent Unity environment "
         "instance will get assigned a port sequentially, starting from the base-port. Each instance "
         "will use the port (base_port + worker_id), where the worker_id is sequential IDs given to "
-        "each instance from 0 to (num_envs - 1). Note that When training using the Editor rather "
+        "each instance from 0 to (num_envs - 1). Note that when training using the Editor rather "
         "than an executable, the base port will be ignored.",
     )
     argparser.add_argument(
@@ -181,7 +188,10 @@ def _create_parser():
         "passed to the executable.",
     )
     argparser.add_argument(
-        "--cpu", default=False, action="store_true", help="Forces training using CPU only"
+        "--cpu",
+        default=False,
+        action="store_true",
+        help="Forces training using CPU only",
     )
 
     argparser.add_argument("--version", action="version", version="")
