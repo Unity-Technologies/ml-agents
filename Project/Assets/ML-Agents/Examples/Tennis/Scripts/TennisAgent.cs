@@ -69,7 +69,6 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
         
         sensor.AddObservation(System.Convert.ToInt32(m_BallScript.lastFloorHit == HitWall.FloorHit.FloorHitUnset));
-        sensor.AddObservation(-1 * timePenalty);
     }
 
     public override void OnActionReceived(float[] vectorAction)
