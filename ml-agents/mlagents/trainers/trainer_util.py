@@ -95,13 +95,13 @@ def initialize_trainer(
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
-    if "default" not in trainer_config and brain_name not in trainer_config:
+    if brain_name not in trainer_config:
         raise TrainerConfigError(
-            f'Trainer config must have either a "default" section, or a section for the brain name ({brain_name}). '
-            "See config/trainer_config.yaml for an example."
+            f"Trainer config must have a section for the brain name {brain_name}. "
+            "See the config/ directory for examples."
         )
 
-    trainer_parameters = trainer_config.get("default", {}).copy()
+    trainer_parameters: Dict[str, Any] = {}
     trainer_parameters["summary_path"] = str(run_id) + "_" + brain_name
     trainer_parameters["model_path"] = "{basedir}/{name}".format(
         basedir=model_path, name=brain_name

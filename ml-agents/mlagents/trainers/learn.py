@@ -26,7 +26,7 @@ from mlagents.trainers.stats import (
 )
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.trainers.exception import SamplerException
+from mlagents.trainers.exception import SamplerException, TrainerConfigError
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
@@ -238,15 +238,19 @@ class RunOptions(NamedTuple):
           configs loaded from files.
         """
         argparse_args = vars(args)
-        trainer_config_path = argparse_args["trainer_config_path"]
+        config_path = argparse_args["trainer_config_path"]
         curriculum_config_path = argparse_args["curriculum_config_path"]
-        argparse_args["trainer_config"] = load_config(trainer_config_path)
+        full_config = load_config(config_path)
+        try:
+            argparse_args["trainer_config"] = full_config["behaviors"]
+        except KeyError:
+            raise TrainerConfigError(
+                "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
+            )
         if curriculum_config_path is not None:
             argparse_args["curriculum_config"] = load_config(curriculum_config_path)
-        if argparse_args["sampler_file_path"] is not None:
-            argparse_args["sampler_config"] = load_config(
-                argparse_args["sampler_file_path"]
-            )
+        if "parameter_randomization" in full_config:
+            argparse_args["sampler_config"] = full_config["parameter_randomization"]
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
