@@ -124,8 +124,10 @@ def _create_parser():
         "current environment.",
     )
     argparser.add_argument(
-        "--save-freq", default=50000, type=int,
-        help="How often (in steps) to save the model during training"
+        "--save-freq",
+        default=50000,
+        type=int,
+        help="How often (in steps) to save the model during training",
     )
     argparser.add_argument(
         "--seed",
