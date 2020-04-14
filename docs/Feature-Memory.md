@@ -1,21 +1,5 @@
 # Memory-enhanced agents using Recurrent Neural Networks
 
-## What are memories used for?
-
-Have you ever entered a room to get something and immediately forgot what you
-were looking for? Don't let that happen to your agents.
-
-It is now possible to give memories to your agents. When training, the agents
-will be able to store a vector of floats to be used next time they need to make
-a decision.
-
-![Inspector](images/ml-agents-LSTM.png)
-
-Deciding what the agents should remember in order to solve a task is not easy to
-do by hand, but our training algorithms can learn to keep track of what is
-important to remember with
-[LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory).
-
 ## How to use
 
 When configuring the trainer parameters in the `config/trainer_config.yaml`

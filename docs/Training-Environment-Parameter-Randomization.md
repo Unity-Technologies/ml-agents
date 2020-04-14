@@ -1,24 +1,5 @@
 # Training With Environment Parameter Randomization
 
-One of the challenges of training and testing agents on the same
-environment is that the agents tend to overfit. The result is that the
-agents are unable to generalize to any tweaks or variations in the environment.
-This is analogous to a model being trained and tested on an identical dataset
-in supervised learning. This becomes problematic in cases where environments
-are instantiated with varying objects or properties.
-
-To help agents robust and better generalizable to changes in the environment, the agent
-can be trained over multiple variations of a given environment. We refer to this approach as **Environment Parameter Randomization**. For those familiar with Reinforcement Learning research, this approach is based on the concept of Domain Randomization (you can read more about it [here](https://arxiv.org/abs/1703.06907)). By using parameter randomization
-during training, the agent can be better suited to adapt (with higher performance)
-to future unseen variations of the environment.
-
-_Example of variations of the 3D Ball environment._
-
-Ball scale of 0.5          |  Ball scale of 4
-:-------------------------:|:-------------------------:
-![](images/3dball_small.png)  |  ![](images/3dball_big.png)
-
-
 To enable variations in the environments, we implemented `Environment Parameters`.
 `Environment Parameters` are values in the `FloatPropertiesChannel` that can be read when setting
 up the environment. We

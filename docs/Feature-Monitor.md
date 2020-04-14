@@ -1,10 +1,5 @@
 # Using the Monitor
 
-![Monitor](images/monitor.png)
-
-The monitor allows visualizing information related to the agents or training
-process within a Unity scene.
-
 You can track many different things both related and unrelated to the agents
 themselves. By default, the Monitor is only active in the *inference* phase, so
 not during training. To change this behavior, you can activate or deactivate it

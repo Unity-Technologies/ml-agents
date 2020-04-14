@@ -1,37 +1,5 @@
 # Training with Proximal Policy Optimization
 
-ML-Agents provides an implementation of a reinforcement learning algorithm called
-[Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
-PPO uses a neural network to approximate the ideal function that maps an agent's
-observations to the best action an agent can take in a given state. The
-ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
-Python process (communicating with the running Unity application over a socket).
-
-ML-Agents also provides an implementation of
-[Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/). SAC tends
-to be more _sample-efficient_, i.e. require fewer environment steps,
-than PPO, but may spend more time performing model updates. This can produce a large
-speedup on heavy or slow environments. Check out how to train with
-SAC [here](Training-SAC.md).
-
-To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
-for the available reward signals and the corresponding hyperparameters.
-
-See [Training ML-Agents](Training-ML-Agents.md) for instructions on running the
-training program, `learn.py`.
-
-If you are using the recurrent neural network (RNN) to utilize memory, see
-[Using Recurrent Neural Networks](Feature-Memory.md) for RNN-specific training
-details.
-
-If you are using curriculum training to pace the difficulty of the learning task
-presented to an agent, see [Training with Curriculum
-Learning](Training-Curriculum-Learning.md).
-
-For information about imitation learning from demonstrations, see
-[Training with Imitation Learning](Training-Imitation-Learning.md).
-
 ## Best Practices Training with PPO
 
 Successfully training a Reinforcement Learning model often involves tuning the

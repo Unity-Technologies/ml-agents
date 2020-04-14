@@ -1,34 +1,5 @@
 # Training with Curriculum Learning
 
-## Sample Environment
-
-Imagine a task in which an agent needs to scale a wall to arrive at a goal. The
-starting point when training an agent to accomplish this task will be a random
-policy. That starting policy will have the agent running in circles, and will
-likely never, or very rarely scale the wall properly to the achieve the reward.
-If we start with a simpler task, such as moving toward an unobstructed goal,
-then the agent can easily learn to accomplish the task. From there, we can
-slowly add to the difficulty of the task by increasing the size of the wall
-until the agent can complete the initially near-impossible task of scaling the
-wall. We have included an environment to demonstrate this with ML-Agents,
-called __Wall Jump__.
-
-![Wall](images/curriculum.png)
-
-_Demonstration of a curriculum training scenario in which a progressively taller
-wall obstructs the path to the goal._
-
-To see curriculum learning in action, observe the two learning curves below. Each
-displays the reward over time for an agent trained using PPO with the same set of
-training hyperparameters. The difference is that one agent was trained using the
-full-height wall version of the task, and the other agent was trained using the
-curriculum version of the task. As you can see, without using curriculum
-learning the agent has a lot of difficulty. We think that by using well-crafted
-curricula, agents trained using reinforcement learning will be able to
-accomplish tasks otherwise much more difficult.
-
-![Log](images/curriculum_progress.png)
-
 ## How-To
 
 Each group of Agents under the same `Behavior Name` in an environment can have

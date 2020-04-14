@@ -1,23 +1,5 @@
 # Training with Soft-Actor Critic
 
-In addition to [Proximal Policy Optimization (PPO)](Training-PPO.md), ML-Agents also provides
-[Soft Actor-Critic](http://bair.berkeley.edu/blog/2018/12/14/sac/) to perform
-reinforcement learning.
-
-In contrast with PPO, SAC is _off-policy_, which means it can learn from experiences collected
-at any time during the past. As experiences are collected, they are placed in an
-experience replay buffer and randomly drawn during training. This makes SAC
-significantly more sample-efficient, often requiring 5-10 times less samples to learn
-the same task as PPO. However, SAC tends to require more model updates. SAC is a
-good choice for heavier or slower environments (about 0.1 seconds per step or more).
-
-SAC is also a "maximum entropy" algorithm, and enables exploration in an intrinsic way.
-Read more about maximum entropy RL [here](https://bair.berkeley.edu/blog/2017/10/06/soft-q-learning/).
-
-To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
-for the available reward signals and the corresponding hyperparameters.
-
 ## Best Practices when training with SAC
 
 Successfully training a reinforcement learning model often involves tuning
