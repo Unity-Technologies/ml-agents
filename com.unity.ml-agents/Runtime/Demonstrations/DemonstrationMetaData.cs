@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using MLAgents.Policies;
+using UnityEngine.Serialization;
 
 namespace MLAgents.Demonstrations
 {
@@ -11,7 +12,8 @@ namespace MLAgents.Demonstrations
     [Serializable]
     internal class DemonstrationMetaData
     {
-        public int numberExperiences;
+        [FormerlySerializedAs("numberExperiences")]
+        public int numberSteps;
         public int numberEpisodes;
         public float meanReward;
         public string demonstrationName;

@@ -105,7 +105,7 @@ namespace MLAgents.Demonstrations
             }
 
             // Increment meta-data counters.
-            m_MetaData.numberExperiences++;
+            m_MetaData.numberSteps++;
             m_CumulativeReward += info.reward;
             if (info.done)
             {

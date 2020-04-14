@@ -127,7 +127,7 @@ namespace MLAgents
             {
                 ApiVersion = DemonstrationMetaData.ApiVersion,
                 MeanReward = dm.meanReward,
-                NumberSteps = dm.numberExperiences,
+                NumberSteps = dm.numberSteps,
                 NumberEpisodes = dm.numberEpisodes,
                 DemonstrationName = dm.demonstrationName
             };
@@ -142,7 +142,7 @@ namespace MLAgents
             var dm = new DemonstrationMetaData
             {
                 numberEpisodes = demoProto.NumberEpisodes,
-                numberExperiences = demoProto.NumberSteps,
+                numberSteps = demoProto.NumberSteps,
                 meanReward = demoProto.MeanReward,
                 demonstrationName = demoProto.DemonstrationName
             };

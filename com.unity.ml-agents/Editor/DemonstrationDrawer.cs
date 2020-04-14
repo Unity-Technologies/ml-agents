@@ -31,7 +31,7 @@ namespace MLAgents.Editor
         void MakeMetaDataProperty(SerializedProperty property)
         {
             var nameProp = property.FindPropertyRelative("demonstrationName");
-            var experiencesProp = property.FindPropertyRelative("numberExperiences");
+            var experiencesProp = property.FindPropertyRelative("numberSteps");
             var episodesProp = property.FindPropertyRelative("numberEpisodes");
             var rewardsProp = property.FindPropertyRelative("meanReward");
 
