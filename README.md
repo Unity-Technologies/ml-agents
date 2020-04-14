@@ -26,22 +26,23 @@ developer communities.
 
 ## Features
 
-* Unity environment control from Python
-* 15+ sample Unity environments
-* Two deep reinforcement learning algorithms,
+* 15+ [example Unity environments](docs/Learning-Environment-Examples.md)
+* Support for multiple environment configurations and training scenarios
+* Flexible Unity SDK that can be integrated into your game or custom Unity scene
+* [Training](Training-ML-Agents.md) using two deep reinforcement learning algorithms,
 [Proximal Policy Optimization](docs/Training-PPO.md)
  (PPO) and [Soft Actor-Critic](docs/Training-SAC.md)
  (SAC)
-* Support for multiple environment configurations and training scenarios
-* Self-play mechanism for training agents in adversarial scenarios
-* Train memory-enhanced agents using deep reinforcement learning
-* Easily definable Curriculum Learning and Generalization scenarios
 * Built-in support for [Imitation Learning](docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
+* [Self-play](docs/Training-Self-Play.md) mechanism for training agents in adversarial scenarios
+* Train [memory-enhanced agents](docs/Feature-Memory.md) using deep reinforcement learning
+* Easily definable [Curriculum Learning](docs/Training-Curriculum-Learning.md) scenarios for complex tasks
+* Train robust agents using [environment randomization](docs/Training-Environment-Parameter-Randomization.md)
 * Flexible agent control with On Demand Decision Making
-* Visualizing network outputs within the environment
-* Wrap learning environments as a gym
-* Utilizes the Unity Inference Engine
-* Train using concurrent Unity environment instances
+* [Visualizing](Feature-Monitor.md) network outputs within the environment
+* Unity environment [control from Python](docs/Python-API.md)
+* Wrap Unity learning environments as a [gym](gym-unity/README.md)
+* Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to provide native cross-platform support
 
 ## Releases & Documentation
 **Our latest, stable release is 0.15.1. Click
