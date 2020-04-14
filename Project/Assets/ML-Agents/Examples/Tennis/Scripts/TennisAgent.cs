@@ -69,6 +69,8 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
         
         sensor.AddObservation(System.Convert.ToInt32(m_BallScript.lastFloorHit == HitWall.FloorHit.FloorHitUnset));
+        AddReward(m_BallTouch * (1f /  Vector3.Distance(ball.transform.position, transform.position)));
+        Debug.Log(m_BallTouch * (1f /  Vector3.Distance(ball.transform.position, transform.position)));
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -112,7 +114,7 @@ public class TennisAgent : Agent
     {
         if (c.gameObject.CompareTag("ball"))
         {
-            AddReward(.2f * m_BallTouch);
+            AddReward(.4f * m_BallTouch);
         }
     }
 
