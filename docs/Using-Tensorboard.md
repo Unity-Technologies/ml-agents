@@ -11,14 +11,9 @@ In order to observe the training process, either during training or afterward,
 start TensorBoard:
 
 1. Open a terminal or console window:
-2. Navigate to the directory where the ML-Agents Toolkit is installed.
-3. From the command line run :
-
-      ```sh
-      tensorboard --logdir=summaries --port=6006
-      ```
-
-4. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
+1. Navigate to the directory where the ML-Agents Toolkit is installed.
+1. From the command line run: `tensorboard --logdir=summaries --port=6006`
+1. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
 
 **Note:** The default port TensorBoard uses is 6006. If there is an existing session
 running on port 6006 a new session can be launched on an open port using the --port

@@ -24,19 +24,6 @@ it means that there is no version of TensorFlow for your python environment. Som
 In all of these cases, the issue is a pip/python environment setup issue.  Please search the tensorflow github issues
 for similar problems and solutions before creating a new issue.
 
-## Scripting Runtime Environment not setup correctly
-
-If you haven't switched your scripting runtime version from .NET 3.5 to .NET 4.6
-or .NET 4.x, you will see such error message:
-
-```console
-error CS1061: Type `System.Text.StringBuilder' does not contain a definition for `Clear' and no extension method `Clear' of type `System.Text.StringBuilder' could be found. Are you missing an assembly reference?
-```
-
-This is because .NET 3.5 doesn't support method Clear() for StringBuilder, refer
-to [Setting Up The ML-Agents Toolkit Within
-Unity](Installation.md#setting-up-ml-agent-within-unity) for solution.
-
 ## Environment Permission Error
 
 If you directly import your Unity environment without building it in the
@@ -98,13 +85,3 @@ terminating. In order to address this, set `Max Steps` for the
 Agents within the Scene Inspector to a value greater than 0. Alternatively, it
 is possible to manually set `done` conditions for episodes from within scripts
 for custom episode-terminating events.
-
-## Problems with training on AWS
-
-Please refer to [Training on Amazon Web Service FAQ](Training-on-Amazon-Web-Service.md#faq)
-
-# Known Issues
-
-## Release 0.10.0
-* ml-agents 0.10.0 and earlier were incompatible with TensorFlow 1.15.0; the graph could contain
- an operator that `tensorflow_to_barracuda` didn't handle. This was fixed in the 0.11.0 release.
