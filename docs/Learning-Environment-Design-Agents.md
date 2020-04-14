@@ -23,6 +23,32 @@ method to make decisions which can allow you to control the Agent manually or
 write your own Policy. If the Agent has a `Model` file, its Policy will use
 the neural network `Model` to take decisions.
 
+When you create an Agent, you must extend the base Agent class. This includes implementing
+the following methods:
+* `Agent.OnEpisodeBegin()` — Called at the beginning of an Agent's episode, including at the beginning
+  of the simulation. The Ball3DAgent class uses this function to reset the
+  agent cube and ball to their starting positions. The function randomizes the reset values so that the
+  training generalizes to more than a specific starting position and agent cube
+  attitude.
+* `Agent.CollectObservations(VectorSensor sensor)` — Called every simulation step. Responsible for
+  collecting the Agent's observations of the environment. Since the Behavior
+  Parameters of the Agent are set with vector observation
+  space with a state size of 8, the `CollectObservations(VectorSensor sensor)` must call
+  `VectorSensor.AddObservation()` such that vector size adds up to 8.
+* `Agent.OnActionReceived()` — Called every time the Agent receives an action to take. Receives the action chosen
+  by the Agent. The vector action spaces result in a
+  small change in the agent cube's rotation at each step. The `OnActionReceived()` method
+  assigns a reward to the Agent; in this example, an Agent receives a small
+  positive reward for each step it keeps the ball on the agent cube's head and a larger,
+  negative reward for dropping the ball. An Agent's episode is also ended when it
+  drops the ball so that it will reset with a new ball for the next simulation
+  step.
+* `Agent.Heuristic()` - When the `Behavior Type` is set to `Heuristic Only` in the Behavior
+  Parameters of the Agent, the Agent will use the `Heuristic()` method to generate
+  the actions of the Agent. As such, the `Heuristic()` method returns an array of
+  floats. In the case of the Ball 3D Agent, the `Heuristic()` method converts the
+  keyboard inputs into actions.
+
 ## Decisions
 
 The observation-decision-action-reward cycle repeats each time the Agent request
