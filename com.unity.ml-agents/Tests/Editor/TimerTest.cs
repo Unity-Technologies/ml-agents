@@ -40,5 +40,46 @@ namespace MLAgents.Tests
             myTimer.Reset();
             Assert.AreEqual(myTimer.RootNode.Children, null);
         }
+
+        [Test]
+        public void TestGauges()
+        {
+            TimerStack myTimer = TimerStack.Instance;
+            myTimer.Reset();
+
+            // Simple test - adding 1's should keep that for the weighted and running averages.
+            myTimer.SetGauge("one", 1.0f);
+            var oneNode = myTimer.RootNode.Gauges["one"];
+            Assert.AreEqual(oneNode.weightedAverage, 1.0f);
+            Assert.AreEqual(oneNode.runningAverage, 1.0f);
+
+            for (int i = 0; i < 10; i++)
+            {
+                myTimer.SetGauge("one", 1.0f);
+            }
+
+            Assert.AreEqual(oneNode.weightedAverage, 1.0f);
+            Assert.AreEqual(oneNode.runningAverage, 1.0f);
+
+            // Try some more interesting values
+            myTimer.SetGauge("increasing", 1.0f);
+            myTimer.SetGauge("increasing", 2.0f);
+            myTimer.SetGauge("increasing", 3.0f);
+
+            myTimer.SetGauge("decreasing", 3.0f);
+            myTimer.SetGauge("decreasing", 2.0f);
+            myTimer.SetGauge("decreasing", 1.0f);
+            var increasingNode = myTimer.RootNode.Gauges["increasing"];
+            var decreasingNode = myTimer.RootNode.Gauges["decreasing"];
+
+            // Expect the running average to be (roughly) the same,
+            // but weighted averages will be biased differently.
+            Assert.AreEqual(increasingNode.runningAverage, 2.0f);
+            Assert.AreEqual(decreasingNode.runningAverage, 2.0f);
+
+            Assert.Greater(increasingNode.weightedAverage, decreasingNode.weightedAverage);
+
+
+        }
     }
 }
