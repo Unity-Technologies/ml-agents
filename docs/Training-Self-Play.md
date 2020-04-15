@@ -52,8 +52,8 @@ the exposed self-play hyperparameters and intuitions for tuning them.
 ### Reward Signals
 
 We make the assumption that the final reward in a trajectory corresponds to the outcome of an episode.
-A final reward of +1 indicates winning, -1 indicates losing and 0 indicates a draw.
-The ELO calculation (discussed below) depends on this final reward being either +1, 0, -1.
+A final reward greater than 0 indicates winning, less than 0 indicates losing and 0 indicates a draw.
+The final reward determines the result of an episode (win, loss, or draw) in the ELO calculation.
 
 The reward signal should still be used as described in the documentation for the other trainers and [reward signals.](Reward-Signals.md) However, we encourage users to be a bit more conservative when shaping reward functions due to the instability and non-stationarity of learning in adversarial games. Specifically, we encourage users to begin with the simplest possible reward function (+1 winning, -1 losing) and to allow for more iterations of training to compensate for the sparsity of reward.
 
