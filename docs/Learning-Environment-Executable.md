@@ -4,11 +4,11 @@ This section will help you create and use built environments rather than the
 Editor to interact with an environment. Using an executable has some advantages
 over using the Editor:
 
-* You can exchange executable with other people without having to share your
+- You can exchange executable with other people without having to share your
   entire repository.
-* You can put your executable on a remote machine for faster training.
-* You can use `Headless` mode for faster training.
-* You can keep using the Unity Editor for other tasks while the agents are
+- You can put your executable on a remote machine for faster training.
+- You can use `Headless` mode for faster training.
+- You can keep using the Unity Editor for other tasks while the agents are
   training.
 
 ## Building the 3DBall environment
@@ -30,28 +30,29 @@ environment:
 Next, we want the set up scene to play correctly when the training process
 launches our environment executable. This means:
 
-* The environment application runs in the background.
-* No dialogs require interaction.
-* The correct scene loads automatically.
+- The environment application runs in the background.
+- No dialogs require interaction.
+- The correct scene loads automatically.
 
 1. Open Player Settings (menu: **Edit** > **Project Settings** > **Player**).
 1. Under **Resolution and Presentation**:
-   * Ensure that **Run in Background** is Checked.
-   * Ensure that **Display Resolution Dialog** is set to Disabled.
+   - Ensure that **Run in Background** is Checked.
+   - Ensure that **Display Resolution Dialog** is set to Disabled.
 1. Open the Build Settings window (menu:**File** > **Build Settings**).
 1. Choose your target platform.
-   * (optional) Select “Development Build” to [log debug
-      messages](https://docs.unity3d.com/Manual/LogFiles.html).
+   - (optional) Select “Development Build” to
+     [log debug messages](https://docs.unity3d.com/Manual/LogFiles.html).
 1. If any scenes are shown in the **Scenes in Build** list, make sure that the
    3DBall Scene is the only one checked. (If the list is empty, then only the
    current scene is included in the build).
 1. Click **Build**:
-   * In the File dialog, navigate to your ML-Agents directory.
-   * Assign a file name and click **Save**.
-   * (For Windows）With Unity 2018.1, it will ask you to select a folder instead
+   - In the File dialog, navigate to your ML-Agents directory.
+   - Assign a file name and click **Save**.
+   - (For Windows）With Unity 2018.1, it will ask you to select a folder instead
      of a file name. Create a subfolder within the root directory and select
      that folder to build. In the following steps you will refer to this
-     subfolder's name as `env_name`. You cannot create builds in the Assets folder
+     subfolder's name as `env_name`. You cannot create builds in the Assets
+     folder
 
 ![Build Window](images/mlagents-BuildWindow.png)
 
@@ -78,10 +79,10 @@ env = UnityEnvironment(file_name=<env_name>)
 1. Run
    `mlagents-learn <trainer-config-file> --env=<env_name> --run-id=<run-identifier>`
    Where:
-   * `<trainer-config-file>` is the file path of the trainer configuration yaml
-   * `<env_name>` is the name and path to the executable you exported from Unity
+   - `<trainer-config-file>` is the file path of the trainer configuration yaml
+   - `<env_name>` is the name and path to the executable you exported from Unity
      (without extension)
-   * `<run-identifier>` is a string used to separate the results of different
+   - `<run-identifier>` is a string used to separate the results of different
      training runs
 
 For example, if you are training with a 3DBall executable you exported to the
@@ -170,18 +171,17 @@ INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 2
 ```
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<behavior_name>.nn`, which corresponds
-to your model's latest checkpoint. (**Note:** There is a known bug on Windows
-that causes the saving of the model to fail when you early terminate the
-training, it's recommended to wait until Step has reached the max_steps
-parameter you set in trainer_config.yaml.) You can now embed this trained model
-into your Agent by following the steps below:
+`models/<run-identifier>/<behavior_name>.nn`, which corresponds to your model's
+latest checkpoint. (**Note:** There is a known bug on Windows that causes the
+saving of the model to fail when you early terminate the training, it's
+recommended to wait until Step has reached the max_steps parameter you set in
+trainer_config.yaml.) You can now embed this trained model into your Agent by
+following the steps below:
 
 1. Move your model file into
    `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 1. Open the Unity Editor, and select the **3DBall** scene as described above.
 1. Select the **3DBall** prefab from the Project window and select **Agent**.
-1. Drag the `<behavior_name>.nn` file from the Project window of
-   the Editor to the **Model** placeholder in the **Ball3DAgent**
-   inspector window.
+1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
+   the **Model** placeholder in the **Ball3DAgent** inspector window.
 1. Press the :arrow_forward: button at the top of the editor.
