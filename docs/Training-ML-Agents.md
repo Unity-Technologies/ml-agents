@@ -99,7 +99,7 @@ use the `--force` flag.
 
 You can also use this mode to run inference of an already-trained model in Python by
 using both the `--resume` and `--inference` flags. Note that if you want to run
-inference in Unity, you should use the [Unity Inference Engine](Unity-Inference-Engine.md).
+inference in Unity, you should use the [Unity Inference Engine](Getting-Started.md#running-a-pre-trained-model).
 
 Alternatively, you might want to start a new training run but _initialize_ it using an already-trained
 model. You may want to do this, for instance, if your environment changed and you want
