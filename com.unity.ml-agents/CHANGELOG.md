@@ -61,6 +61,11 @@ and this project adheres to
 - `StackingSensor` was changed from `internal` visibility to `public`
 - Updated Barracuda to 0.6.3-preview.
 
+### Bug Fixes
+
+ - Fixed a display bug when viewing Demonstration files in the inspector. The
+   shapes of the observations in the file now display correctly. (#3771)
+
 ## [0.15.1-preview] - 2020-03-30
 
 ### Bug Fixes
