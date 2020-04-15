@@ -89,10 +89,10 @@ To interrupt training and save the current progress, hit `Ctrl+C` once and wait 
 model(s) to be saved out.
 
 To resume a previously interrupted or completed training run, use the `--resume` flag and
-make sure to specify the previously used `run-id`.
+make sure to specify the previously used run ID.
 
 If you would like to re-run a previously interrupted or completed training run and re-use
-the same run-id (in this case, overwriting the previously generated artifacts), then
+the same run ID (in this case, overwriting the previously generated artifacts), then
 use the `--force` flag.
 
 #### Loading an Existing Model
