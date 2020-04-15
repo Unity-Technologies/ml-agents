@@ -1,18 +1,18 @@
 # Training on Amazon Web Service
 
-:warning: **Note:** We no longer use this guide ourselves and so it may not work correctly. We've
-decided to keep it up just in case it is helpful to you.
+:warning: **Note:** We no longer use this guide ourselves and so it may not work
+correctly. We've decided to keep it up just in case it is helpful to you.
 
 This page contains instructions for setting up an EC2 instance on Amazon Web
 Service for training ML-Agents environments.
 
 ## Pre-configured AMI
 
-We've prepared a pre-configured AMI for you with the ID: `ami-016ff5559334f8619` in the
-`us-east-1` region. It was created as a modification of [Deep Learning AMI
-(Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C). The AMI has been
-tested with p2.xlarge instance. Furthermore, if you want to train without
-headless mode, you need to enable X Server.
+We've prepared a pre-configured AMI for you with the ID: `ami-016ff5559334f8619`
+in the `us-east-1` region. It was created as a modification of
+[Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C).
+The AMI has been tested with p2.xlarge instance. Furthermore, if you want to
+train without headless mode, you need to enable X Server.
 
 After launching your EC2 instance using the ami and ssh into it, run the
 following commands to enable it:
@@ -62,17 +62,17 @@ After launching your EC2 instance using the ami and ssh into it:
 
 1. Activate the python3 environment
 
-    ```sh
-    source activate python3
-    ```
+   ```sh
+   source activate python3
+   ```
 
 2. Clone the ML-Agents repo and install the required Python packages
 
-    ```sh
-    git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
-    cd ml-agents/ml-agents/
-    pip3 install -e .
-    ```
+   ```sh
+   git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
+   cd ml-agents/ml-agents/
+   pip3 install -e .
+   ```
 
 ### Setting up X Server (optional)
 
@@ -131,36 +131,36 @@ linux executables which use visual observations.
 
 #### Make sure there are no Xorg processes running:
 
-   ```sh
-   # Kill any possible running Xorg processes
-   # Note that you might have to run this command multiple times depending on
-   # how Xorg is configured.
-   $ sudo killall Xorg
+```sh
+# Kill any possible running Xorg processes
+# Note that you might have to run this command multiple times depending on
+# how Xorg is configured.
+$ sudo killall Xorg
 
-   # Check if there is any Xorg process left
-   # You will have a list of processes running on the GPU, Xorg should not be in
-   # the list, as shown below.
-   $ nvidia-smi
+# Check if there is any Xorg process left
+# You will have a list of processes running on the GPU, Xorg should not be in
+# the list, as shown below.
+$ nvidia-smi
 
-   # Thu Jun 14 20:21:11 2018
-   # +-----------------------------------------------------------------------------+
-   # | NVIDIA-SMI 390.67                 Driver Version: 390.67                    |
-   # |-------------------------------+----------------------+----------------------+
-   # | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-   # | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-   # |===============================+======================+======================|
-   # |   0  Tesla K80           On   | 00000000:00:1E.0 Off |                    0 |
-   # | N/A   37C    P8    31W / 149W |      0MiB / 11441MiB |      0%      Default |
-   # +-------------------------------+----------------------+----------------------+
-   #
-   # +-----------------------------------------------------------------------------+
-   # | Processes:                                                       GPU Memory |
-   # |  GPU       PID   Type   Process name                             Usage      |
-   # |=============================================================================|
-   # |  No running processes found                                                 |
-   # +-----------------------------------------------------------------------------+
+# Thu Jun 14 20:21:11 2018
+# +-----------------------------------------------------------------------------+
+# | NVIDIA-SMI 390.67                 Driver Version: 390.67                    |
+# |-------------------------------+----------------------+----------------------+
+# | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+# | Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+# |===============================+======================+======================|
+# |   0  Tesla K80           On   | 00000000:00:1E.0 Off |                    0 |
+# | N/A   37C    P8    31W / 149W |      0MiB / 11441MiB |      0%      Default |
+# +-------------------------------+----------------------+----------------------+
+#
+# +-----------------------------------------------------------------------------+
+# | Processes:                                                       GPU Memory |
+# |  GPU       PID   Type   Process name                             Usage      |
+# |=============================================================================|
+# |  No running processes found                                                 |
+# +-----------------------------------------------------------------------------+
 
-   ```
+```
 
 #### Start X Server and make the ubuntu use X Server for display:
 
@@ -197,40 +197,44 @@ linux executables which use visual observations.
    can use one of the example environments if you have not created your own).
 2. Open the Build Settings window (menu: File > Build Settings).
 3. Select Linux as the Target Platform, and x86_64 as the target architecture
-(the default x86 currently does not work).
+   (the default x86 currently does not work).
 4. Check Headless Mode if you have not setup the X Server. (If you do not use
-Headless Mode, you have to setup the X Server to enable training.)
+   Headless Mode, you have to setup the X Server to enable training.)
 5. Click Build to build the Unity environment executable.
 6. Upload the executable to your EC2 instance within `ml-agents` folder.
 7. Change the permissions of the executable.
 
-    ```sh
-    chmod +x <your_env>.x86_64
-    ```
+   ```sh
+   chmod +x <your_env>.x86_64
+   ```
+
 8. (Without Headless Mode) Start X Server and use it for display:
 
-    ```sh
-    # Start the X Server, press Enter to come back to the command line
-    $ sudo /usr/bin/X :0 &
+   ```sh
+   # Start the X Server, press Enter to come back to the command line
+   $ sudo /usr/bin/X :0 &
 
-    # Check if Xorg process is running
-    # You will have a list of processes running on the GPU, Xorg should be in the list.
-    $ nvidia-smi
+   # Check if Xorg process is running
+   # You will have a list of processes running on the GPU, Xorg should be in the list.
+   $ nvidia-smi
 
-    # Make the ubuntu use X Server for display
-    $ export DISPLAY=:0
-    ```
+   # Make the ubuntu use X Server for display
+   $ export DISPLAY=:0
+   ```
+
 9. Test the instance setup from Python using:
 
-    ```python
-    from mlagents_envs.environment import UnityEnvironment
+   ```python
+   from mlagents_envs.environment import UnityEnvironment
 
-    env = UnityEnvironment(<your_env>)
-    ```
+   env = UnityEnvironment(<your_env>)
+   ```
 
-    Where `<your_env>` corresponds to the path to your environment executable.
+   Where `<your_env>` corresponds to the path to your environment executable.
 
-    You should receive a message confirming that the environment was loaded successfully.
+   You should receive a message confirming that the environment was loaded
+   successfully.
+
 10. Train your models
 
     ```console
@@ -239,9 +243,10 @@ Headless Mode, you have to setup the X Server to enable training.)
 
 ## FAQ
 
-### The <Executable_Name>_Data folder hasn't been copied cover
+### The <Executable_Name>\_Data folder hasn't been copied cover
 
-If you've built your Linux executable, but forget to copy over the corresponding <Executable_Name>_Data folder, you will see error message like the following:
+If you've built your Linux executable, but forget to copy over the corresponding
+<Executable_Name>\_Data folder, you will see error message like the following:
 
 ```sh
 Set current directory to /home/ubuntu/ml-agents/ml-agents
@@ -255,7 +260,10 @@ There is no data folder
 
 ### Unity Environment not responding
 
-If you didn't setup X Server or hasn't launched it properly, or your environment somehow crashes, or you haven't `chmod +x` your Unity Environment, all of these will cause connection between Unity and Python to fail. Then you will see something like this:
+If you didn't setup X Server or hasn't launched it properly, or your environment
+somehow crashes, or you haven't `chmod +x` your Unity Environment, all of these
+will cause connection between Unity and Python to fail. Then you will see
+something like this:
 
 ```console
 Logging to /home/ubuntu/.config/unity3d/<Some_Path>/Player.log
@@ -271,7 +279,9 @@ mlagents_envs.exception.UnityTimeOutException: The Unity environment took too lo
          The environment and the Python interface have compatible versions.
 ```
 
-It would be also really helpful to check your /home/ubuntu/.config/unity3d/<Some_Path>/Player.log to see what happens with your Unity environment.
+It would be also really helpful to check your
+/home/ubuntu/.config/unity3d/<Some_Path>/Player.log to see what happens with
+your Unity environment.
 
 ### Could not launch X Server
 
@@ -312,4 +322,7 @@ You might see something like:
 ```sh
 NVIDIA-SMI has failed because it couldn't communicate with the NVIDIA driver. Make sure that the latest NVIDIA driver is installed and running.
 ```
-This means the NVIDIA's driver needs to be updated. Refer to [this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver) for more information.
+
+This means the NVIDIA's driver needs to be updated. Refer to
+[this section](Training-on-Amazon-Web-Service.md#update-and-setup-nvidia-driver)
+for more information.

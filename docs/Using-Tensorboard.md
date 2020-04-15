@@ -13,11 +13,12 @@ start TensorBoard:
 1. Open a terminal or console window:
 1. Navigate to the directory where the ML-Agents Toolkit is installed.
 1. From the command line run: `tensorboard --logdir=summaries --port=6006`
-1. Open a browser window and navigate to [localhost:6006](http://localhost:6006).
+1. Open a browser window and navigate to
+   [localhost:6006](http://localhost:6006).
 
-**Note:** The default port TensorBoard uses is 6006. If there is an existing session
-running on port 6006 a new session can be launched on an open port using the --port
-option.
+**Note:** The default port TensorBoard uses is 6006. If there is an existing
+session running on port 6006 a new session can be launched on an open port using
+the --port option.
 
 **Note:** If you don't assign a `run-id` identifier, `mlagents-learn` uses the
 default string, "ppo". All the statistics will be saved to the same sub-folder
@@ -41,50 +42,58 @@ The ML-Agents training program saves the following statistics:
 
 ### Environment Statistics
 
-* `Environment/Lesson` - Plots the progress from lesson to lesson. Only interesting when
-  performing [curriculum training](Training-Curriculum-Learning.md).
+- `Environment/Lesson` - Plots the progress from lesson to lesson. Only
+  interesting when performing
+  [curriculum training](Training-Curriculum-Learning.md).
 
-* `Environment/Cumulative Reward` - The mean cumulative episode reward over all agents. Should
-  increase during a successful training session.
+- `Environment/Cumulative Reward` - The mean cumulative episode reward over all
+  agents. Should increase during a successful training session.
 
-* `Environment/Episode Length` - The mean length of each episode in the environment for all agents.
+- `Environment/Episode Length` - The mean length of each episode in the
+  environment for all agents.
 
 ### Policy Statistics
 
-* `Policy/Entropy` (PPO; BC) - How random the decisions of the model are. Should slowly decrease
-  during a successful training process. If it decreases too quickly, the `beta`
-  hyperparameter should be increased.
+- `Policy/Entropy` (PPO; BC) - How random the decisions of the model are. Should
+  slowly decrease during a successful training process. If it decreases too
+  quickly, the `beta` hyperparameter should be increased.
 
-* `Policy/Learning Rate` (PPO; BC) - How large a step the training algorithm takes as it searches
-  for the optimal policy. Should decrease over time.
+- `Policy/Learning Rate` (PPO; BC) - How large a step the training algorithm
+  takes as it searches for the optimal policy. Should decrease over time.
 
-* `Policy/Value Estimate` (PPO) - The mean value estimate for all states visited by the agent. Should increase during a successful training session.
+- `Policy/Value Estimate` (PPO) - The mean value estimate for all states visited
+  by the agent. Should increase during a successful training session.
 
-* `Policy/Curiosity Reward` (PPO+Curiosity) - This corresponds to the mean cumulative intrinsic reward generated per-episode.
+- `Policy/Curiosity Reward` (PPO+Curiosity) - This corresponds to the mean
+  cumulative intrinsic reward generated per-episode.
 
 ### Learning Loss Functions
 
-* `Losses/Policy Loss` (PPO) - The mean magnitude of policy loss function. Correlates to how
-  much the policy (process for deciding actions) is changing. The magnitude of
-  this should decrease during a successful training session.
+- `Losses/Policy Loss` (PPO) - The mean magnitude of policy loss function.
+  Correlates to how much the policy (process for deciding actions) is changing.
+  The magnitude of this should decrease during a successful training session.
 
-* `Losses/Value Loss` (PPO) - The mean loss of the value function update. Correlates to how
-  well the model is able to predict the value of each state. This should
-  increase while the agent is learning, and then decrease once the reward
-  stabilizes.
+- `Losses/Value Loss` (PPO) - The mean loss of the value function update.
+  Correlates to how well the model is able to predict the value of each state.
+  This should increase while the agent is learning, and then decrease once the
+  reward stabilizes.
 
-* `Losses/Forward Loss` (PPO+Curiosity) - The mean magnitude of the inverse model
-  loss function. Corresponds to how well the model is able to predict the new
-  observation encoding.
+- `Losses/Forward Loss` (PPO+Curiosity) - The mean magnitude of the inverse
+  model loss function. Corresponds to how well the model is able to predict the
+  new observation encoding.
 
-* `Losses/Inverse Loss` (PPO+Curiosity) - The mean magnitude of the forward model
-  loss function. Corresponds to how well the model is able to predict the action
-  taken between two observations.
+- `Losses/Inverse Loss` (PPO+Curiosity) - The mean magnitude of the forward
+  model loss function. Corresponds to how well the model is able to predict the
+  action taken between two observations.
 
-* `Losses/Cloning Loss` (BC) - The mean magnitude of the behavioral cloning loss. Corresponds to how well the model imitates the demonstration data.
+- `Losses/Cloning Loss` (BC) - The mean magnitude of the behavioral cloning
+  loss. Corresponds to how well the model imitates the demonstration data.
 
-## Custom Metrics from C#
-To get custom metrics from a C# environment into Tensorboard, you can use the StatsSideChannel:
+## Custom Metrics from C
+
+To get custom metrics from a C# environment into Tensorboard, you can use the
+StatsSideChannel:
+
 ```csharp
 var statsSideChannel = SideChannelUtils.GetSideChannel<StatsSideChannel>();
 statsSideChannel.AddStat("MyMetric", 1.0);

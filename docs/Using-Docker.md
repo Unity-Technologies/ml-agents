@@ -1,7 +1,7 @@
 # Using Docker For ML-Agents (Deprecated)
 
-:warning: **Note:** We no longer use this guide ourselves and so it may not work correctly. We've
-decided to keep it up just in case it is helpful to you.
+:warning: **Note:** We no longer use this guide ourselves and so it may not work
+correctly. We've decided to keep it up just in case it is helpful to you.
 
 We currently offer a solution for Windows and Mac users who would like to do
 training or inference using Docker. This option may be appealing to those who
@@ -17,8 +17,8 @@ agents using camera-based visual observations might be slower.
 ## Requirements
 
 - [Docker](https://www.docker.com)
-- Unity _Linux Build Support_ Component. Make sure to select the _Linux
-Build Support_ component when installing Unity.
+- Unity _Linux Build Support_ Component. Make sure to select the _Linux Build
+  Support_ component when installing Unity.
 
 <p align="center">
   <img src="images/unity_linux_build_support.png"
@@ -47,8 +47,9 @@ Build Support_ component when installing Unity.
 Using Docker for ML-Agents involves three steps: building the Unity environment
 with specific flags, building a Docker container and, finally, running the
 container. If you are not familiar with building a Unity environment for
-ML-Agents, please read through our [Getting Started with the 3D Balance Ball
-Example](Getting-Started.md) guide first.
+ML-Agents, please read through our
+[Getting Started with the 3D Balance Ball Example](Getting-Started.md) guide
+first.
 
 ### Build the Environment (Optional)
 
@@ -61,6 +62,8 @@ the Build Settings window:
 
 - Set the _Target Platform_ to `Linux`
 - Set the _Architecture_ to `x86_64`
+- If the environment does not contain visual observations, you can select the
+  `headless` option here.
 
 Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output
 directory to `unity-volume`. After building, ensure that the file
@@ -106,11 +109,11 @@ Notes on argument values:
   random name if this is not set. _Note that this must be unique for every run
   of a Docker image._
 - `<image-name>` references the image name used when building the container.
-- `<environment-name>` __(Optional)__: If you are training with a linux
+- `<environment-name>` **(Optional)**: If you are training with a linux
   executable, this is the name of the executable. If you are training in the
   Editor, do not pass a `<environment-name>` argument and press the
-  :arrow_forward: button in Unity when the message _"Start training by pressing
-  the Play button in the Unity Editor"_ is displayed on the screen.
+  :arrow*forward: button in Unity when the message *"Start training by pressing
+  the Play button in the Unity Editor"\_ is displayed on the screen.
 - `source`: Reference to the path in your host OS where you will store the Unity
   executable.
 - `target`: Tells Docker to mount the `source` path as a disk with this name.
@@ -137,22 +140,29 @@ docker run -it --name 3DBallContainer.first.trial \
 For more detail on Docker mounts, check out
 [these](https://docs.docker.com/storage/bind-mounts/) docs from Docker.
 
-**NOTE** If you are training using docker for environments that use visual observations, you may need to increase the default memory that Docker allocates for the container. For example, see [here](https://docs.docker.com/docker-for-mac/#advanced) for instructions for Docker for Mac.
+**NOTE** If you are training using docker for environments that use visual
+observations, you may need to increase the default memory that Docker allocates
+for the container. For example, see
+[here](https://docs.docker.com/docker-for-mac/#advanced) for instructions for
+Docker for Mac.
 
 ### Running Tensorboard
 
-You can run Tensorboard to monitor your training instance on http://localhost:6006:
+You can run Tensorboard to monitor your training instance on
+http://localhost:6006:
 
 ```sh
 docker exec -it <container-name> tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
 ```
 
 With our previous 3DBall example, this command would look like this:
+
 ```sh
 docker exec -it 3DBallContainer.first.trial tensorboard --logdir=/unity-volume/summaries --host=0.0.0.0
 ```
 
-For more details on Tensorboard, check out the documentation about [Using Tensorboard](Using-Tensorboard.md).
+For more details on Tensorboard, check out the documentation about
+[Using Tensorboard](Using-Tensorboard.md).
 
 ### Stopping Container and Saving State
 
@@ -164,6 +174,6 @@ the following command:
 docker kill --signal=SIGINT <container-name>
 ```
 
-`<container-name>` is the name of the container specified in the earlier `docker
-run` command. If you didn't specify one, you can find the randomly generated
-identifier by running `docker container ls`.
+`<container-name>` is the name of the container specified in the earlier
+`docker run` command. If you didn't specify one, you can find the randomly
+generated identifier by running `docker container ls`.
