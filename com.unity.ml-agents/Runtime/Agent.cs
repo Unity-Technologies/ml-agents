@@ -353,15 +353,6 @@ namespace MLAgents
             m_RequestDecision = false;
         }
 
-        [Obsolete("GiveModel() has been deprecated, use SetModel() instead.")]
-        public void GiveModel(
-            string behaviorName,
-            NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
-        {
-            SetModel(behaviorName, model, inferenceDevice);
-        }
-
         /// <summary>
         /// Updates the Model for the agent. Any model currently assigned to the
         /// agent will be replaced with the provided one. If the arguments are
@@ -470,12 +461,6 @@ namespace MLAgents
             TimerStack.Instance.SetGauge(gaugeName, GetCumulativeReward());
         }
 
-        [Obsolete("Done() has been deprecated, use EndEpisode() instead.")]
-        public void Done()
-        {
-            EndEpisode();
-        }
-
         /// <summary>
         /// Sets the done flag to true.
         /// </summary>
@@ -519,11 +504,6 @@ namespace MLAgents
             }
         }
 
-        [Obsolete("InitializeAgent() has been deprecated, use Initialize() instead.")]
-        public virtual void InitializeAgent()
-        {
-        }
-
         /// <summary>
         /// Initializes the agent, called once when the agent is enabled. Can be
         /// left empty if there is no special, unique set-up behavior for the
@@ -533,12 +513,7 @@ namespace MLAgents
         /// One sample use is to store local references to other objects in the
         /// scene which would facilitate computing this agents observation.
         /// </remarks>
-        public virtual void Initialize()
-        {
-#pragma warning disable 0618
-            InitializeAgent();
-#pragma warning restore 0618
-        }
+        public virtual void Initialize(){}
 
         /// <summary>
         /// When the Agent uses Heuristics, it will call this method every time it
@@ -719,11 +694,6 @@ namespace MLAgents
         {
         }
 
-        [Obsolete("AgentAction() has been deprecated, use OnActionReceived() instead.")]
-        public virtual void AgentAction(float[] vectorAction)
-        {
-        }
-
         /// <summary>
         /// Specifies the agent behavior at every step based on the provided
         /// action.
@@ -732,29 +702,14 @@ namespace MLAgents
         /// Vector action. Note that for discrete actions, the provided array
         /// will be of length 1.
         /// </param>
-        public virtual void OnActionReceived(float[] vectorAction)
-        {
-#pragma warning disable 0618
-            AgentAction(m_Action.vectorActions);
-#pragma warning restore 0618
-        }
-
-        [Obsolete("AgentReset() has been deprecated, use OnEpisodeBegin() instead.")]
-        public virtual void AgentReset()
-        {
-        }
+        public virtual void OnActionReceived(float[] vectorAction){}
 
         /// <summary>
         /// Specifies the agent behavior when being reset, which can be due to
         /// the agent or Academy being done (i.e. completion of local or global
         /// episode).
         /// </summary>
-        public virtual void OnEpisodeBegin()
-        {
-#pragma warning disable 0618
-            AgentReset();
-#pragma warning restore 0618
-        }
+        public virtual void OnEpisodeBegin(){}
 
         /// <summary>
         /// Returns the last action that was decided on by the Agent
