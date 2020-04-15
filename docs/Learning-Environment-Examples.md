@@ -1,19 +1,21 @@
 # Example Learning Environments
 
-The Unity ML-Agents toolkit contains an expanding set of example environments
-which demonstrate various features of the platform. Environments are located in
+The Unity ML-Agents Toolkit includes an expanding set of example environments that highlight the
+various features of the toolkit. These environments can also serve as templates for new environments
+or as ways to test new ML algorithms. Environments are located in
 `Project/Assets/ML-Agents/Examples` and summarized below. Additionally, our
 [first ML Challenge](https://connect.unity.com/challenges/ml-agents-1) contains
 environments created by the community.
 
+For the environments that highlight specific features of the toolkit, we provide the
+pre-trained model files and the training config file that enables you to train the scene
+yourself. The environments that are designed to serve as challenges for researchers
+do not have accompanying pre-trained model files or training configs and are marked as
+_Optional_ below.
+
 This page only overviews the example environments we provide. To learn more on
-how to design and build your own environments see our [Making a New Learning
-Environment](Learning-Environment-Create-New.md) page.
-
-Note: Environment scenes marked as _optional_ do not have accompanying
-pre-trained model files, and are designed to serve as challenges for
-researchers.
-
+how to design and build your own environments see our
+[Making a New Learning Environment](Learning-Environment-Create-New.md) page.
 If you would like to contribute environments, please see our
 [contribution guidelines](../com.unity.ml-agents/CONTRIBUTING.md) page.
 

@@ -107,7 +107,7 @@ to the command.
 You can also use this mode to run inference of an already-trained model in Python.
 Append both the `--resume` and `--inference` to do this. Note that if you want to run
 inference in Unity, you should use the
-[Unity Inference Engine](Getting-started#Running-a-pre-trained-model).
+[Unity Inference Engine](Getting-started.md#running-a-pre-trained-model).
 
 If you've already trained a model using the specified `<run-identifier>` and `--resume` is not
 specified, you will not be able to continue with training. Use `--force` to force ML-Agents to
