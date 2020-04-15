@@ -248,27 +248,55 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// Tracks the most recent value of a metric. This is analogous to gauges in statsd.
+    /// Tracks the most recent value of a metric. This is analogous to gauges in statsd and Prometheus.
     /// </summary>
     [DataContract]
     internal class GaugeNode
     {
         const float k_SmoothingFactor = .25f; // weight for exponential moving average.
 
+        /// <summary>
+        /// The most recent value that the gauge was set to.
+        /// </summary>
         [DataMember]
         public float value;
+
+        /// <summary>
+        /// The smallest value that has been seen for the gauge since it was created.
+        /// </summary>
         [DataMember(Name = "min")]
         public float minValue;
+
+        /// <summary>
+        /// The largest value that has been seen for the gauge since it was created.
+        /// </summary>
         [DataMember(Name = "max")]
         public float maxValue;
+
+        /// <summary>
+        /// The exponential moving average of the gauge value. This will take all values into account,
+        /// but weights older values less as more values are added.
+        /// </summary>
         [DataMember(Name = "weightedAverage")]
         public float weightedAverage;
+
+        /// <summary>
+        /// The running average of all gauge values.
+        /// </summary>
+        [DataMember]
+        public float runningAverage;
+
+        /// <summary>
+        /// The number of times the gauge has been updated.
+        /// </summary>
         [DataMember]
         public uint count;
+
         public GaugeNode(float value)
         {
             this.value = value;
             weightedAverage = value;
+            runningAverage = value;
             minValue = value;
             maxValue = value;
             count = 1;
@@ -276,12 +304,15 @@ namespace MLAgents
 
         public void Update(float newValue)
         {
+            ++count;
             minValue = Mathf.Min(minValue, newValue);
             maxValue = Mathf.Max(maxValue, newValue);
             // update exponential moving average
             weightedAverage = (k_SmoothingFactor * newValue) + ((1f - k_SmoothingFactor) * weightedAverage);
             value = newValue;
-            ++count;
+
+            // Update running average - see https://www.johndcook.com/blog/standard_deviation/ for formula.
+            runningAverage = runningAverage + (newValue - runningAverage) / count;
         }
     }
 
