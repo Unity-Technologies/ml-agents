@@ -16,6 +16,7 @@ from mlagents.trainers.trainer_util import (
     load_config,
     TrainerFactory,
     handle_existing_directories,
+    assemble_curriculum_config,
 )
 from mlagents.trainers.stats import (
     TensorboardWriter,
@@ -49,18 +50,6 @@ def _create_parser():
     argparser.add_argument("trainer_config_path")
     argparser.add_argument(
         "--env", default=None, dest="env_path", help="Name of the Unity executable "
-    )
-    argparser.add_argument(
-        "--curriculum",
-        default=None,
-        dest="curriculum_config_path",
-        help="Curriculum config yaml file for environment",
-    )
-    argparser.add_argument(
-        "--sampler",
-        default=None,
-        dest="sampler_file_path",
-        help="Reset parameter yaml file for environment",
     )
     argparser.add_argument(
         "--keep-checkpoints",
@@ -239,7 +228,6 @@ class RunOptions(NamedTuple):
         """
         argparse_args = vars(args)
         config_path = argparse_args["trainer_config_path"]
-        curriculum_config_path = argparse_args["curriculum_config_path"]
         full_config = load_config(config_path)
         try:
             argparse_args["trainer_config"] = full_config["behaviors"]
@@ -247,16 +235,15 @@ class RunOptions(NamedTuple):
             raise TrainerConfigError(
                 "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
             )
-        if curriculum_config_path is not None:
-            argparse_args["curriculum_config"] = load_config(curriculum_config_path)
+        curriculum_config = assemble_curriculum_config(argparse_args["trainer_config"])
+        if len(curriculum_config) > 0:
+            argparse_args["curriculum_config"] = curriculum_config
         if "parameter_randomization" in full_config:
             argparse_args["sampler_config"] = full_config["parameter_randomization"]
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
-        argparse_args.pop("sampler_file_path")
-        argparse_args.pop("curriculum_config_path")
         argparse_args.pop("trainer_config_path")
         return RunOptions(**vars(args))
 
