@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - The Jupyter notebooks have been removed from the repository.
  - Introduced the `SideChannelUtils` to register, unregister and access side channels.
  - `Academy.FloatProperties` was removed, please use `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
- - Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](Python-API.md).
- - The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
+ - Removed the multi-agent gym option from the gym wrapper. For multi-agent scenarios, use the [Low Level Python API](../docs/Python-API.md).
+ - The low level Python API has changed. You can look at the document [Low Level Python API documentation](../docs/Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
  - Added ability to start training (initialize model weights) from a previous run ID. (#3710)
  - The internal event `Academy.AgentSetStatus` was renamed to `Academy.AgentPreStep` and made public.
  - The offset logic was removed from DecisionRequester.
@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Running `mlagents-learn` with the same `--run-id` twice will no longer overwrite the existing files. (#3705)
  - `StackingSensor` was changed from `internal` visibility to `public`
  - Updated Barracuda to 0.6.3-preview.
+
+ ### Bug Fixes
+ - Fixed a display bug when viewing Demonstration files in the inspector. The shapes of the observations in the file now display correctly. (#3771)
 
 ## [0.15.1-preview] - 2020-03-30
 ### Bug Fixes
