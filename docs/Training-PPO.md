@@ -300,6 +300,16 @@ This option is provided in case you want to initialize different behaviors from 
 in most cases, it is sufficient to use the `--initialize-from` CLI parameter to initialize
 all models from the same run.
 
+### (Optional) Advanced: Disable Threading
+
+By default, PPO model updates can happen while the environment is being stepped. To disable this
+behavior, for instance to maintain strict
+[on-policy](https://spinningup.openai.com/en/latest/user/algorithms.html#the-on-policy-algorithms)
+experience-gathering, set `threaded` to `false`. Expect a slowdown of approximately 10-20% in
+training time if `threaded` is disabled.
+
+Default Value: `false`
+
 ## Training Statistics
 
 To view training statistics, use TensorBoard. For information on launching and

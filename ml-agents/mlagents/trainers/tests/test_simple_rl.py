@@ -45,6 +45,7 @@ PPO_CONFIG = f"""
         sequence_length: 64
         summary_freq: 500
         use_recurrent: false
+        threaded: false
         reward_signals:
             extrinsic:
                 strength: 1.0
@@ -73,6 +74,7 @@ SAC_CONFIG = f"""
         curiosity_enc_size: 128
         demo_path: None
         vis_encode_type: simple
+        threaded: false
         reward_signals:
             extrinsic:
                 strength: 1.0

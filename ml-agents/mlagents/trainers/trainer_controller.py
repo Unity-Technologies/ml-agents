@@ -188,7 +188,7 @@ class TrainerController(object):
 
         trainer.publish_policy_queue(agent_manager.policy_queue)
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
-        if self.threaded:
+        if trainer.threaded:
             # Start trainer thread
             trainerthread = threading.Thread(
                 target=self.trainer_update_func, args=(trainer,), daemon=True
@@ -297,9 +297,9 @@ class TrainerController(object):
                         "Environment/Lesson", curr.lesson_num
                     )
 
-        if not self.threaded:
-            with hierarchical_timer("trainer_advance"):
-                for trainer in self.trainers.values():
+        for trainer in self.trainers.values():
+            if not trainer.threaded:
+                with hierarchical_timer("trainer_advance"):
                     trainer.advance()
 
         return num_steps
