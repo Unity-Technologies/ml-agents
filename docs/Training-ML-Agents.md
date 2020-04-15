@@ -70,19 +70,6 @@ See [Profiling in Python](Profiling-Python.md) for more information on the timer
 These artifacts (except the `.nn` file) are updated throughout the training process and finalized
 when training completes or is interrupted.
 
-#### Debugging
-
-If you enable the `--debug` flag in the command line, the trainer metrics are logged to a CSV file
-stored in the `summaries` directory. The metrics stored are:
-  * brain name
-  * time to update policy
-  * time since start of training
-  * time for last experience collection
-  * number of experiences used for training
-  * mean return
-
-This option is not available currently for Behavioral Cloning.
-
 #### Stopping and Resuming Training
 
 To interrupt training and save the current progress, hit `Ctrl+C` once and wait for the
