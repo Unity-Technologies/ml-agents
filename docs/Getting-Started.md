@@ -106,8 +106,9 @@ inside Unity. In this section, we will use the pre-trained model for the
 
    ![3dball learning brain](images/3dball_learning_brain.png)
 
-1. You should notice that each `Agent` under each `3DBall` in the **Hierarchy** windows now contains **3DBall** as `Model` on the `Behavior Parameters`. __Note__ : You can modify multiple game objects in a scene by selecting them all at
-   once using the search bar in the Scene Hierarchy.
+1. You should notice that each `Agent` under each `3DBall` in the **Hierarchy** windows now
+contains **3DBall** as `Model` on the `Behavior Parameters`. __Note__ : You can modify multiple
+game objects in a scene by selecting them all at once using the search bar in the Scene Hierarchy.
 1. Set the **Inference Device** to use for this model as `CPU`.
 1. Click the :arrow_forward: button in the Unity Editor and you will see the platforms balance the balls
    using the pre-trained model.
@@ -166,22 +167,22 @@ INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
         sequence_length:     64
         summary_freq:        1000
         use_recurrent:       False
-        summary_path:        ./summaries/first-3dball-run-0
+        summary_path:        ./summaries/first3DBallRun
         memory_size:         256
         use_curiosity:       False
         curiosity_strength:  0.01
         curiosity_enc_size:  128
-        model_path: ./models/first-3dball-run-0/3DBallLearning
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 4000. Mean Reward: 2.151. Std of Reward: 1.432. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 5000. Mean Reward: 3.175. Std of Reward: 2.250. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 6000. Mean Reward: 4.898. Std of Reward: 4.019. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 7000. Mean Reward: 6.716. Std of Reward: 5.125. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 8000. Mean Reward: 12.124. Std of Reward: 11.929. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 9000. Mean Reward: 18.151. Std of Reward: 16.871. Training.
-INFO:mlagents.trainers: first-3dball-run-0: 3DBallLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
+        model_path: ./models/first3DBallRun/3DBallLearning
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 4000. Mean Reward: 2.151. Std of Reward: 1.432. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 5000. Mean Reward: 3.175. Std of Reward: 2.250. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 6000. Mean Reward: 4.898. Std of Reward: 4.019. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 7000. Mean Reward: 6.716. Std of Reward: 5.125. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 8000. Mean Reward: 12.124. Std of Reward: 11.929. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 9000. Mean Reward: 18.151. Std of Reward: 16.871. Training.
+INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
 ```
 
 Note how the `Mean Reward` value printed to the screen increases as training progresses.
