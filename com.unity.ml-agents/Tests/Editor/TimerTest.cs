@@ -77,7 +77,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(increasingNode.runningAverage, 2.0f);
             Assert.AreEqual(decreasingNode.runningAverage, 2.0f);
 
-            Assert.Greater(increasingNode.weightedAverage, decreasingNode.weightedAverage);
+            // The older values are actually weighted more heavily, so we expect the
+            // increasing series to have a lower moving average.
+            Assert.Less(increasingNode.weightedAverage, decreasingNode.weightedAverage);
 
 
         }
