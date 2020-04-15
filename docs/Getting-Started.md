@@ -1,24 +1,25 @@
 # Getting Started Guide
 
 This guide walks through the end-to-end process of opening one of our
-[example environments](Learning-Environment-Examples.md)
-in Unity, training an Agent in it, and embedding the trained model into the Unity environment.
-After reading this tutorial, you should be able to train any of the example environments.
-If you are not familiar with the [Unity Engine](https://unity3d.com/unity), view our
-[Background: Unity](Background-Unity.md) page for helpful pointers. Additionally, if you're
-not familiar with machine learning, view our
+[example environments](Learning-Environment-Examples.md) in Unity, training an
+Agent in it, and embedding the trained model into the Unity environment. After
+reading this tutorial, you should be able to train any of the example
+environments. If you are not familiar with the
+[Unity Engine](https://unity3d.com/unity), view our
+[Background: Unity](Background-Unity.md) page for helpful pointers.
+Additionally, if you're not familiar with machine learning, view our
 [Background: Machine Learning](Background-Machine-Learning.md) page for a brief
 overview and helpful pointers.
 
 ![3D Balance Ball](images/balance.png)
 
-For this guide, we'll use the **3D Balance Ball** environment which
-contains a number of agent cubes and balls (which are all copies of each other).
-Each agent cube tries to keep its ball from falling by rotating either
-horizontally or vertically. In this environment, an agent cube is an **Agent** that
-receives a reward for every step that it balances the ball. An agent is also
-penalized with a negative reward for dropping the ball. The goal of the training
-process is to have the agents learn to balance the ball on their head.
+For this guide, we'll use the **3D Balance Ball** environment which contains a
+number of agent cubes and balls (which are all copies of each other). Each agent
+cube tries to keep its ball from falling by rotating either horizontally or
+vertically. In this environment, an agent cube is an **Agent** that receives a
+reward for every step that it balances the ball. An agent is also penalized with
+a negative reward for dropping the ball. The goal of the training process is to
+have the agents learn to balance the ball on their head.
 
 Let's get started!
 
@@ -29,17 +30,18 @@ Afterwards, open the Unity Project that contains all the example environments:
 
 1. Launch Unity Hub
 1. On the Projects dialog, choose the **Add** option at the top of the window.
-1. Using the file dialog that opens, locate the `Project` folder
-   within the ML-Agents Toolkit and click **Open**.
-1. In the **Project** window, go to the `Assets/ML-Agents/Examples/3DBall/Scenes` folder
-   and open the `3DBall` scene file.
+1. Using the file dialog that opens, locate the `Project` folder within the
+   ML-Agents Toolkit and click **Open**.
+1. In the **Project** window, go to the
+   `Assets/ML-Agents/Examples/3DBall/Scenes` folder and open the `3DBall` scene
+   file.
 
 ## Understanding a Unity Environment
 
 An agent is an autonomous actor that observes and interacts with an
-_environment_. In the context of Unity, an environment is a scene containing
-one or more Agent objects, and, of course, the other
-entities that an agent interacts with.
+_environment_. In the context of Unity, an environment is a scene containing one
+or more Agent objects, and, of course, the other entities that an agent
+interacts with.
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
@@ -50,9 +52,10 @@ a GameObject, select the GameObject in the Scene window, and open the Inspector
 window. The Inspector shows every component on a GameObject.
 
 The first thing you may notice after opening the 3D Balance Ball scene is that
-it contains not one, but several agent cubes.  Each agent cube in the scene is an
-independent agent, but they all share the same Behavior. 3D Balance Ball does this
-to speed up training since all twelve agents contribute to training in parallel.
+it contains not one, but several agent cubes. Each agent cube in the scene is an
+independent agent, but they all share the same Behavior. 3D Balance Ball does
+this to speed up training since all twelve agents contribute to training in
+parallel.
 
 ### Agent
 
@@ -61,11 +64,10 @@ the 3D Balance Ball environment, the Agent components are placed on the twelve
 "Agent" GameObjects. The base Agent object has a few properties that affect its
 behavior:
 
-* **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
+- **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
   determines how an Agent makes decisions.
-* **Max Step** — Defines how many simulation steps can occur before the Agent's
+- **Max Step** — Defines how many simulation steps can occur before the Agent's
   episode ends. In 3D Balance Ball, an Agent restarts after 5000 steps.
-
 
 #### Behavior Parameters : Vector Observation Space
 
@@ -80,56 +82,66 @@ eight elements: the `x` and `z` components of the agent cube's rotation and the
 
 #### Behavior Parameters : Vector Action Space
 
-An Agent is given instructions in the form of a float array of *actions*.
+An Agent is given instructions in the form of a float array of _actions_.
 ML-Agents Toolkit classifies actions into two types: continuous and discrete.
-The 3D Balance Ball example is programmed to use continuous action
-space which is a a vector of numbers that can vary continuously. More specifically,
-it uses a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply
-to itself to keep the ball balanced on its head.
+The 3D Balance Ball example is programmed to use continuous action space which
+is a a vector of numbers that can vary continuously. More specifically, it uses
+a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply to
+itself to keep the ball balanced on its head.
 
 ## Running a pre-trained model
 
 We include pre-trained models for our agents (`.nn` files) and we use the
-[Unity Inference Engine](Unity-Inference-Engine.md) to run these models
-inside Unity. In this section, we will use the pre-trained model for the
-3D Ball example.
+[Unity Inference Engine](Unity-Inference-Engine.md) to run these models inside
+Unity. In this section, we will use the pre-trained model for the 3D Ball
+example.
 
-1. In the **Project** window, go to the `Assets/ML-Agents/Examples/3DBall/Prefabs` folder.
-   Expand `3DBall` and click on the `Agent` prefab.  You should see the `Agent` prefab in the **Inspector** window.
+1. In the **Project** window, go to the
+   `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. Expand `3DBall` and click
+   on the `Agent` prefab. You should see the `Agent` prefab in the **Inspector**
+   window.
 
-   **Note**: The platforms in the `3DBall` scene were created using the `3DBall` prefab.  Instead of updating all 12 platforms individually, you can update the `3DBall` prefab instead.
+   **Note**: The platforms in the `3DBall` scene were created using the `3DBall`
+   prefab. Instead of updating all 12 platforms individually, you can update the
+   `3DBall` prefab instead.
 
    ![Platform Prefab](images/platform_prefab.png)
 
 1. In the **Project** window, drag the **3DBall** Model located in
-   `Assets/ML-Agents/Examples/3DBall/TFModels` into the `Model` property under `Behavior Parameters (Script)` component in the Agent GameObject **Inspector** window.
+   `Assets/ML-Agents/Examples/3DBall/TFModels` into the `Model` property under
+   `Behavior Parameters (Script)` component in the Agent GameObject
+   **Inspector** window.
 
    ![3dball learning brain](images/3dball_learning_brain.png)
 
-1. You should notice that each `Agent` under each `3DBall` in the **Hierarchy** windows now
-contains **3DBall** as `Model` on the `Behavior Parameters`. __Note__ : You can modify multiple
-game objects in a scene by selecting them all at once using the search bar in the Scene Hierarchy.
+1. You should notice that each `Agent` under each `3DBall` in the **Hierarchy**
+   windows now contains **3DBall** as `Model` on the `Behavior Parameters`.
+   **Note** : You can modify multiple game objects in a scene by selecting them
+   all at once using the search bar in the Scene Hierarchy.
 1. Set the **Inference Device** to use for this model as `CPU`.
-1. Click the :arrow_forward: button in the Unity Editor and you will see the platforms balance the balls
-   using the pre-trained model.
+1. Click the :arrow_forward: button in the Unity Editor and you will see the
+   platforms balance the balls using the pre-trained model.
 
 ## Training a new model with Reinforcement Learning
 
-While we provide pre-trained `.nn` files for the agents in this environment, any environment
-you make yourself will require training agents from scratch to generate a new model file. In this
-section we will demonstrate how to use the reinforcement learning algorithms that are part of the
-ML-Agents Python package to accomplish this. We have provided a convenient command `mlagents-learn`
-which accepts arguments used to configure both training and inference phases.
+While we provide pre-trained `.nn` files for the agents in this environment, any
+environment you make yourself will require training agents from scratch to
+generate a new model file. In this section we will demonstrate how to use the
+reinforcement learning algorithms that are part of the ML-Agents Python package
+to accomplish this. We have provided a convenient command `mlagents-learn` which
+accepts arguments used to configure both training and inference phases.
 
 ### Training the environment
 
 1. Open a command or terminal window.
-1. Navigate to the folder where you cloned the `ml-agents` repository.
-   **Note**: If you followed the default [installation](Installation.md), then
-   you should be able to run `mlagents-learn` from any directory.
+1. Navigate to the folder where you cloned the `ml-agents` repository. **Note**:
+   If you followed the default [installation](Installation.md), then you should
+   be able to run `mlagents-learn` from any directory.
 1. Run `mlagents-learn config/trainer_config.yaml --run-id=first3DBallRun`.
-    * `config/trainer_config.yaml` is the path to a default training configuration file that we provide. In includes training configurations for all our example environments, including 3DBall.
-    * `run-id` is a unique name for this training session.
+   - `config/trainer_config.yaml` is the path to a default training
+     configuration file that we provide. In includes training configurations for
+     all our example environments, including 3DBall.
+   - `run-id` is a unique name for this training session.
 1. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
    in Unity to start training in the Editor.
@@ -185,8 +197,8 @@ INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 9000. Mean Reward:
 INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
 ```
 
-Note how the `Mean Reward` value printed to the screen increases as training progresses.
-This is a positive sign that training is succeeding.
+Note how the `Mean Reward` value printed to the screen increases as training
+progresses. This is a positive sign that training is succeeding.
 
 ### Observing Training Progress
 
@@ -199,10 +211,11 @@ TensorBoard. From the command line run:
 tensorboard --logdir=summaries
 ```
 
-Then navigate to `localhost:6006` in your browser to view the TensorBoard summary statistics as
-shown below. For the purposes of this section, the most important statistic is
-`Environment/Cumulative Reward` which should increase throughout training, eventually converging
-close to `100` which is the maximum reward the agent can accumulate.
+Then navigate to `localhost:6006` in your browser to view the TensorBoard
+summary statistics as shown below. For the purposes of this section, the most
+important statistic is `Environment/Cumulative Reward` which should increase
+throughout training, eventually converging close to `100` which is the maximum
+reward the agent can accumulate.
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 
@@ -210,39 +223,43 @@ close to `100` which is the maximum reward the agent can accumulate.
 
 Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with compatible Agents (the Agents that generated the model).
-__Note:__ Do not just close the Unity Window once the `Saved Model` message appears.
+use it with compatible Agents (the Agents that generated the model). **Note:**
+Do not just close the Unity Window once the `Saved Model` message appears.
 Either wait for the training process to close the window or press Ctrl+C at the
-command-line prompt. If you close the window manually, the `.nn` file
-containing the trained model is not exported into the ml-agents folder.
+command-line prompt. If you close the window manually, the `.nn` file containing
+the trained model is not exported into the ml-agents folder.
 
-If you've quit the training early using Ctrl+C and want to resume training, run the
-same command again, appending the `--resume` flag:
+If you've quit the training early using Ctrl+C and want to resume training, run
+the same command again, appending the `--resume` flag:
 
 ```sh
 mlagents-learn config/trainer_config.yaml --run-id=first3DBallRun --resume
 ```
 
 Your trained model will be at `models/<run-identifier>/<behavior_name>.nn` where
-`<behavior_name>` is the name of the `Behavior Name` of the agents corresponding to the model.
-This file corresponds to your model's latest checkpoint. You can now embed this trained
-model into your Agents by following the steps below, which is similar to
-the steps described [above](#running-a-pre-trained-model).
+`<behavior_name>` is the name of the `Behavior Name` of the agents corresponding
+to the model. This file corresponds to your model's latest checkpoint. You can
+now embed this trained model into your Agents by following the steps below,
+which is similar to the steps described [above](#running-a-pre-trained-model).
 
-1. Move your model file into `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
+1. Move your model file into
+   `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 1. Open the Unity Editor, and select the **3DBall** scene as described above.
-1. Select the  **3DBall** prefab Agent object.
-1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to the **Model**
-placeholder in the **Ball3DAgent** inspector window.
+1. Select the **3DBall** prefab Agent object.
+1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
+   the **Model** placeholder in the **Ball3DAgent** inspector window.
 1. Press the :arrow_forward: button at the top of the Editor.
 
 ## Next Steps
 
-* For more information on the ML-Agents Toolkit, in addition to helpful
-background, check out the [ML-Agents Toolkit Overview](ML-Agents-Overview.md) page.
-* For a "Hello World" introduction to creating your own Learning Environment,
-check out the [Making a New Learning Environment](Learning-Environment-Create-New.md) page.
-* For an overview on the more complex example environments that are provided in this
-toolkit, check out the [Example Environments](Learning-Environment-Examples.md) page.
-* For more information on the various training options available, check out the
-[Training ML-Agents](Training-ML-Agents.md) page.
+- For more information on the ML-Agents Toolkit, in addition to helpful
+  background, check out the [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
+  page.
+- For a "Hello World" introduction to creating your own Learning Environment,
+  check out the
+  [Making a New Learning Environment](Learning-Environment-Create-New.md) page.
+- For an overview on the more complex example environments that are provided in
+  this toolkit, check out the
+  [Example Environments](Learning-Environment-Examples.md) page.
+- For more information on the various training options available, check out the
+  [Training ML-Agents](Training-ML-Agents.md) page.
