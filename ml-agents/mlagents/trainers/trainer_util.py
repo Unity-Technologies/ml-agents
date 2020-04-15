@@ -95,13 +95,13 @@ def initialize_trainer(
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
-    if brain_name not in trainer_config:
+    if "default" not in trainer_config and brain_name not in trainer_config:
         raise TrainerConfigError(
-            f"Trainer config must have a section for the brain name {brain_name}. "
+            f'Trainer config must have either a "default" section, or a section for the brain name {brain_name}. '
             "See the config/ directory for examples."
         )
 
-    trainer_parameters: Dict[str, Any] = {}
+    trainer_parameters = trainer_config.get("default", {}).copy()
     trainer_parameters["summary_path"] = str(run_id) + "_" + brain_name
     trainer_parameters["model_path"] = "{basedir}/{name}".format(
         basedir=model_path, name=brain_name
@@ -208,6 +208,21 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
             "Error parsing yaml file. Please check for formatting errors. "
             "A tool such as http://www.yamllint.com/ can be helpful with this."
         ) from e
+
+
+def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Assembles a curriculum config Dict from a trainer config. The resulting
+    dictionary should have a mapping of {brain_name: config}, where config is another
+    Dict that
+    :param trainer_config: Dict of trainer configurations (keys are brain_names).
+    :return: Dict of curriculum configurations. Returns empty dict if none are found.
+    """
+    curriculum_config: Dict[str, Any] = {}
+    for brain_name, brain_config in trainer_config.items():
+        if "curriculum" in brain_config:
+            curriculum_config[brain_name] = brain_config["curriculum"]
+    return curriculum_config
 
 
 def handle_existing_directories(
