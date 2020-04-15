@@ -1,6 +1,6 @@
 # Training on Amazon Web Service
 
-Note: We no longer use this guide ourselves and so it may not work correctly. We've
+:warning: **Note:** We no longer use this guide ourselves and so it may not work correctly. We've
 decided to keep it up just in case it is helpful to you.
 
 This page contains instructions for setting up an EC2 instance on Amazon Web

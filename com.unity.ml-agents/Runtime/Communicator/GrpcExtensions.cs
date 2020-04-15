@@ -17,6 +17,7 @@ namespace MLAgents
 {
     internal static class GrpcExtensions
     {
+        #region AgentInfo
         /// <summary>
         /// Converts a AgentInfo to a protobuf generated AgentInfoActionPairProto
         /// </summary>
@@ -60,6 +61,29 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Get summaries for the observations in the AgentInfo part of the AgentInfoActionPairProto.
+        /// </summary>
+        /// <param name="infoActionPair"></param>
+        /// <returns></returns>
+        public static List<ObservationSummary> GetObservationSummaries(this AgentInfoActionPairProto infoActionPair)
+        {
+            List<ObservationSummary> summariesOut = new List<ObservationSummary>();
+            var agentInfo = infoActionPair.AgentInfo;
+            foreach (var obs in agentInfo.Observations)
+            {
+                var summary = new ObservationSummary();
+                summary.shape = obs.Shape.ToArray();
+                summariesOut.Add(summary);
+            }
+
+            return summariesOut;
+        }
+
+
+        #endregion
+
+        #region BrainParameters
+        /// <summary>
         /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
@@ -81,41 +105,6 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Convert metadata object to proto object.
-        /// </summary>
-        public static DemonstrationMetaProto ToProto(this DemonstrationMetaData dm)
-        {
-            var demoProto = new DemonstrationMetaProto
-            {
-                ApiVersion = DemonstrationMetaData.ApiVersion,
-                MeanReward = dm.meanReward,
-                NumberSteps = dm.numberExperiences,
-                NumberEpisodes = dm.numberEpisodes,
-                DemonstrationName = dm.demonstrationName
-            };
-            return demoProto;
-        }
-
-        /// <summary>
-        /// Initialize metadata values based on proto object.
-        /// </summary>
-        public static DemonstrationMetaData ToDemonstrationMetaData(this DemonstrationMetaProto demoProto)
-        {
-            var dm = new DemonstrationMetaData
-            {
-                numberEpisodes = demoProto.NumberEpisodes,
-                numberExperiences = demoProto.NumberSteps,
-                meanReward = demoProto.MeanReward,
-                demonstrationName = demoProto.DemonstrationName
-            };
-            if (demoProto.ApiVersion != DemonstrationMetaData.ApiVersion)
-            {
-                throw new Exception("API versions of demonstration are incompatible.");
-            }
-            return dm;
-        }
-
-        /// <summary>
         /// Convert a BrainParametersProto to a BrainParameters struct.
         /// </summary>
         /// <param name="bpp">An instance of a brain parameters protobuf object.</param>
@@ -131,6 +120,45 @@ namespace MLAgents
             return bp;
         }
 
+        #endregion
+
+        #region DemonstrationMetaData
+        /// <summary>
+        /// Convert metadata object to proto object.
+        /// </summary>
+        public static DemonstrationMetaProto ToProto(this DemonstrationMetaData dm)
+        {
+            var demoProto = new DemonstrationMetaProto
+            {
+                ApiVersion = DemonstrationMetaData.ApiVersion,
+                MeanReward = dm.meanReward,
+                NumberSteps = dm.numberSteps,
+                NumberEpisodes = dm.numberEpisodes,
+                DemonstrationName = dm.demonstrationName
+            };
+            return demoProto;
+        }
+
+        /// <summary>
+        /// Initialize metadata values based on proto object.
+        /// </summary>
+        public static DemonstrationMetaData ToDemonstrationMetaData(this DemonstrationMetaProto demoProto)
+        {
+            var dm = new DemonstrationMetaData
+            {
+                numberEpisodes = demoProto.NumberEpisodes,
+                numberSteps = demoProto.NumberSteps,
+                meanReward = demoProto.MeanReward,
+                demonstrationName = demoProto.DemonstrationName
+            };
+            if (demoProto.ApiVersion != DemonstrationMetaData.ApiVersion)
+            {
+                throw new Exception("API versions of demonstration are incompatible.");
+            }
+            return dm;
+        }
+        #endregion
+
         public static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
         {
             return new UnityRLInitParameters
@@ -141,6 +169,7 @@ namespace MLAgents
             };
         }
 
+        #region AgentAction
         public static AgentAction ToAgentAction(this AgentActionProto aap)
         {
             return new AgentAction
@@ -158,7 +187,9 @@ namespace MLAgents
             }
             return agentActions;
         }
+        #endregion
 
+        #region Observations
         public static ObservationProto ToProto(this Observation obs)
         {
             ObservationProto obsProto = null;
@@ -248,5 +279,6 @@ namespace MLAgents
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }
+        #endregion
     }
 }

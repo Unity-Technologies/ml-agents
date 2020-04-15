@@ -1,7 +1,7 @@
 # Using Docker For ML-Agents (Deprecated)
 
-Note: We no longer use this guide ourselves and so it may not work correctly. We've decided to
- keep it up just in case it is helpful to you.
+:warning: **Note:** We no longer use this guide ourselves and so it may not work correctly. We've
+decided to keep it up just in case it is helpful to you.
 
 We currently offer a solution for Windows and Mac users who would like to do
 training or inference using Docker. This option may be appealing to those who
@@ -61,8 +61,6 @@ the Build Settings window:
 
 - Set the _Target Platform_ to `Linux`
 - Set the _Architecture_ to `x86_64`
-- If the environment does not contain visual observations, you can select the
-  `headless` option here.
 
 Then click `Build`, pick an environment name (e.g. `3DBall`) and set the output
 directory to `unity-volume`. After building, ensure that the file
