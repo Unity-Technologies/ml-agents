@@ -68,7 +68,7 @@ from the agent.
 
 <p align="center">
   <img src="images/demo_component.png"
-       alt="Demonstration Recorder"
+       alt="BC Teacher Helper"
        width="375" border="10" />
 </p>
 
@@ -83,7 +83,7 @@ inspector.
 
 <p align="center">
   <img src="images/demo_inspector.png"
-       alt="Demonstration Inspector"
+       alt="BC Teacher Helper"
        width="375" border="10" />
 </p>
 

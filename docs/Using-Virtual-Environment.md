@@ -3,7 +3,7 @@
 ## What is a Virtual Environment?
 A Virtual Environment is a self contained directory tree that contains a Python installation
 for a particular version of Python, plus a number of additional packages. To learn more about
-Virtual Environments see [here](https://docs.python.org/3/library/venv.html).
+Virtual Environments see [here](https://docs.python.org/3/library/venv.html)
 
 ## Why should I use a Virtual Environment?
 A Virtual Environment keeps all dependencies for the Python project separate from dependencies
@@ -30,8 +30,8 @@ python3-distutils needs to be installed. Install python3-distutils using `sudo a
 1. Create a folder where the virtual environments will reside `$ mkdir ~/python-envs`
 1. To create a new environment named `sample-env` execute `$ python3 -m venv ~/python-envs/sample-env`
 1. To activate the environment execute `$ source ~/python-envs/sample-env/bin/activate`
-1. Upgrade to the latest pip version using `$ pip3 install --upgrade pip`
-1. Upgrade to the latest setuptools version using `$ pip3 install --upgrade setuptools`
+1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the latest, upgrade to
+the latest pip version using `$ pip3 install --upgrade pip`
 1. To deactivate the environment execute `$ deactivate` (you can reactivate the environment
 using the same `activate` command listed above)
 
@@ -45,12 +45,13 @@ using the same `activate` command listed above)
 1. Create a folder where the virtual environments will reside `md python-envs`
 1. To create a new environment named `sample-env` execute `python -m venv python-envs\sample-env`
 1. To activate the environment execute `python-envs\sample-env\Scripts\activate`
-1. Upgrade to the latest pip version using `pip install --upgrade pip`
+1. Verify pip version is the same as in the __Installing Pip__ section. In case it is not the
+latest, upgrade to the latest pip version using `pip install --upgrade pip`
 1. To deactivate the environment execute `deactivate` (you can reactivate the environment
 using the same `activate` command listed above)
 
 Note:
-* Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt using `cmd` and
-execute `python --version` to verify the version.
-* Python3 installation may require admin privileges on Windows.
-* This guide is for Windows 10 using a 64-bit architecture only.
+- Verify that you are using Python 3.6 or Python 3.7. Launch a command prompt using `cmd` and
+ execute `python --version` to verify the version.
+- Python3 installation may require admin privileges on Windows.
+- This guide is for Windows 10 using a 64-bit architecture only.
