@@ -1,22 +1,22 @@
 behaviors:
-  3DBall:
+  Bouncer:
     trainer: ppo
-    batch_size: 64
-    beta: 0.001
-    buffer_size: 12000
+    batch_size: 1024
+    beta: 0.005
+    buffer_size: 10240
     epsilon: 0.2
-    hidden_units: 128
-    lambd: 0.99
+    hidden_units: 64
+    lambd: 0.95
     learning_rate: 0.0003
     learning_rate_schedule: linear
-    max_steps: 5.0e5
+    max_steps: 4.0e6
     memory_size: 128
     normalize: true
     num_epoch: 3
     num_layers: 2
-    time_horizon: 1000
+    time_horizon: 64
     sequence_length: 64
-    summary_freq: 12000
+    summary_freq: 10000
     use_recurrent: false
     vis_encode_type: simple
     reward_signals:
