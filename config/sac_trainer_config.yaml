@@ -41,7 +41,7 @@ PushBlock:
     max_steps: 2e6
     init_entcoef: 0.05
     hidden_units: 256
-    summary_freq: 60000
+    summary_freq: 100000
     time_horizon: 64
     num_layers: 2
 
