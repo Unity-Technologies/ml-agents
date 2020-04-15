@@ -110,8 +110,8 @@ Notes on argument values:
 - `<environment-name>` **(Optional)**: If you are training with a linux
   executable, this is the name of the executable. If you are training in the
   Editor, do not pass a `<environment-name>` argument and press the
-  :arrow*forward: button in Unity when the message *"Start training by pressing
-  the Play button in the Unity Editor"\_ is displayed on the screen.
+  :arrow_forward: button in Unity when the message _"Start training by pressing
+  the Play button in the Unity Editor"_ is displayed on the screen.
 - `source`: Reference to the path in your host OS where you will store the Unity
   executable.
 - `target`: Tells Docker to mount the `source` path as a disk with this name.
