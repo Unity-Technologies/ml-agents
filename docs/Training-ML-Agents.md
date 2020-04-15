@@ -49,8 +49,8 @@ where
 - `<env_name>`**(Optional)** is the name (including path) of your
   [Unity executable](Learning-Environment-Executable.md) containing the agents
   to be trained. If `<env_name>` is not passed, the training will happen in the
-  Editor. Press the :arrow*forward: button in Unity when the message *"Start
-  training by pressing the Play button in the Unity Editor"\_ is displayed on
+  Editor. Press the :arrow_forward: button in Unity when the message _"Start
+  training by pressing the Play button in the Unity Editor"_ is displayed on
   the screen.
 - `<run-identifier>` is a unique name you can use to identify the results of
   your training runs.
