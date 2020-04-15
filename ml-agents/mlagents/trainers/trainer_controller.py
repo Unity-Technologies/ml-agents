@@ -39,7 +39,6 @@ class TrainerController(object):
         training_seed: int,
         sampler_manager: SamplerManager,
         resampling_interval: Optional[int],
-        threaded: bool = True,
     ):
         """
         :param model_path: Path to save the model.
@@ -66,7 +65,6 @@ class TrainerController(object):
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
 
-        self.threaded = threaded
         self.trainer_threads: List[threading.Thread] = []
         self.kill_trainers = False
         np.random.seed(training_seed)
