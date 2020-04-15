@@ -599,6 +599,10 @@ namespace MLAgents
             }
 
             m_Info.storedVectorActions = m_Action.vectorActions;
+            if (m_Info.done)
+            {
+                Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
+            }
             m_ActionMasker.ResetMask();
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
