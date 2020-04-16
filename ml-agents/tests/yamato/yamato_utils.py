@@ -52,7 +52,7 @@ def run_standalone_build(
         f"{base_path}/Project",
         "-batchmode",
         "-executeMethod",
-        "MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
+        "Unity.MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
 
     os.makedirs(os.path.dirname(log_output_path), exist_ok=True)

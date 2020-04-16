@@ -10,6 +10,7 @@ The versions can be found in
 ## Migrating from 0.15 to latest
 
 ### Important changes
+* The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested namespaces were similarly renamed.
 * The `--load` and `--train` command-line flags have been deprecated and replaced with `--resume` and `--inference`.
 * Running with the same `--run-id` twice will now throw an error.
 * The `play_against_current_self_ratio` self-play trainer hyperparameter has been renamed to `play_against_latest_model_ratio`
@@ -19,6 +20,7 @@ The versions can be found in
 * The signature of `Agent.Heuristic()` was changed to take a `float[]` as a parameter, instead of returning the array. This was done to prevent a common source of error where users would return arrays of the wrong size.
 
 ### Steps to Migrate
+* In C# code, replace `using MLAgents` with `using Unity.MLAgents`. Replace other nested namespaces such as `using MLAgents.Sensors` with `using Unity.MLAgents.Sensors`
 * Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
  will happen by default. To run without training, use `--inference`.
 * To force-overwrite files from a pre-existing run, add the `--force` command-line flag.
