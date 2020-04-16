@@ -360,7 +360,8 @@ you would like to contribute environments, please see our
 - Agents: The environment contains four agents, with the same
   Behavior Parameters : SoccerTwos.
 - Agent Reward Function (dependent):
-    - (+1 - `accumulated time penalty`) When ball enters opponent's goal.
+    - (1 - `accumulated time penalty`) When ball enters opponent's goal `accumulated time penalty` is incremented by
+    (1 / `maxStep`) every fixed update and is reset to 0 at the beginning of an episode.
     - -1 When ball enters team's goal.
 - Behavior Parameters:
   - Vector Observation space: 336 corresponding to 11 ray-casts forward distributed over 120 degrees
