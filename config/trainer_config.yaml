@@ -136,6 +136,10 @@ Tennis:
     hidden_units: 256
     beta: 1.0e-2
     time_horizon: 1000
+    reward_signals:
+        extrinsic:
+            strength: 1.0
+            gamma: 0.999
     self_play:
         window: 10
         play_against_latest_model_ratio: 0.5
