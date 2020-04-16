@@ -78,7 +78,7 @@ public class TennisAgent : Agent
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
 
-        if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < -1.5f)
+        if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < 1f)
         {
             m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
         }
@@ -132,7 +132,9 @@ public class TennisAgent : Agent
         {
             m_Area.MatchReset();
         }
-        transform.position = new Vector3(-m_InvertMult * 14f, 1f, -1.8f) + transform.parent.transform.position;
+        var agentOutX = Random.Range(12f, 16f);
+        var agentOutY = Random.Range(-1.5f, 1f);
+        transform.position = new Vector3(-m_InvertMult * agentOutX, agentOutY, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
         SetResetParameters();
     }
