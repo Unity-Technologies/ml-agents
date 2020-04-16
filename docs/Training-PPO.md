@@ -308,7 +308,7 @@ behavior, for instance to maintain strict
 experience-gathering, set `threaded` to `false`. Expect a slowdown of approximately 10-20% in
 training time if `threaded` is disabled.
 
-Default Value: `false`
+Default Value: `true`
 
 ## Training Statistics
 
