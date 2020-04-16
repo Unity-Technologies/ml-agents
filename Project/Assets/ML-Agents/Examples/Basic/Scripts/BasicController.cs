@@ -78,6 +78,7 @@ public class BasicController : MonoBehaviour
 
     public void ResetAgent()
     {   
+        // This is a very inefficient way to reset the scene. Used here for testing.
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         m_Agent = null; // LoadScene only takes effect at the next Update.
         // We set the Agent to null to avoid using the Agent before the reload
