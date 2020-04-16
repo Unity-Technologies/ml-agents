@@ -1,10 +1,10 @@
 using NUnit.Framework;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 using Barracuda;
-using MLAgents.Inference;
+using Unity.MLAgents.Inference;
 
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class WriteAdapterTests
     {

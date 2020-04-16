@@ -1,4 +1,4 @@
-namespace MLAgents
+namespace Unity.MLAgents
 {
     internal static class EpisodeIdCounter
     {

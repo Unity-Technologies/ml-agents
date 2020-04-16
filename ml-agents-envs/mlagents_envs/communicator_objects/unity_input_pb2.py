@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_input.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n4mlagents_envs/communicator_objects/unity_input.proto\x12\x14\x63ommunicator_objects\x1a\x37mlagents_envs/communicator_objects/unity_rl_input.proto\x1a\x46mlagents_envs/communicator_objects/unity_rl_initialization_input.proto\"\xa4\x01\n\x0fUnityInputProto\x12\x39\n\x08rl_input\x18\x01 \x01(\x0b\x32\'.communicator_objects.UnityRLInputProto\x12V\n\x17rl_initialization_input\x18\x02 \x01(\x0b\x32\x35.communicator_objects.UnityRLInitializationInputProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n4mlagents_envs/communicator_objects/unity_input.proto\x12\x14\x63ommunicator_objects\x1a\x37mlagents_envs/communicator_objects/unity_rl_input.proto\x1a\x46mlagents_envs/communicator_objects/unity_rl_initialization_input.proto\"\xa4\x01\n\x0fUnityInputProto\x12\x39\n\x08rl_input\x18\x01 \x01(\x0b\x32\'.communicator_objects.UnityRLInputProto\x12V\n\x17rl_initialization_input\x18\x02 \x01(\x0b\x32\x35.communicator_objects.UnityRLInitializationInputProtoB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_unity__rl__input__pb2.DESCRIPTOR,mlagents__envs_dot_communicator__objects_dot_unity__rl__initialization__input__pb2.DESCRIPTOR,])
 
@@ -79,5 +79,5 @@ _sym_db.RegisterMessage(UnityInputProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

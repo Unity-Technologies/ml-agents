@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// Determines which dimensions the sensor will perform the casts in.

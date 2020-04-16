@@ -1,6 +1,6 @@
 using System;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Contains exceptions specific to ML-Agents.

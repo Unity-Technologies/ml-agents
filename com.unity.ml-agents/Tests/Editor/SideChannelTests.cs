@@ -2,9 +2,9 @@ using System;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
-using MLAgents.SideChannels;
+using Unity.MLAgents.SideChannels;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class SideChannelTests
     {

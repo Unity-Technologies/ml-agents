@@ -1,5 +1,5 @@
 using System;
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Determines the behavior of how multiple stats within the same summary period are combined.

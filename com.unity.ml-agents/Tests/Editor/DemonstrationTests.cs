@@ -2,12 +2,12 @@ using NUnit.Framework;
 using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
-using MLAgents.CommunicatorObjects;
-using MLAgents.Sensors;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.CommunicatorObjects;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class DemonstrationTests

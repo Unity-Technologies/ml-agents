@@ -1,8 +1,8 @@
 using System;
 using NUnit.Framework;
-using MLAgents.Inference.Utils;
+using Unity.MLAgents.Inference.Utils;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class RandomNormalTest
     {

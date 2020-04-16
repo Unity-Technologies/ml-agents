@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 
 
 public class GridArea : MonoBehaviour

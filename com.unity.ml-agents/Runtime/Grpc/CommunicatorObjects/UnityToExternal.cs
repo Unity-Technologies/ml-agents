@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_to_external.proto</summary>
   public static partial class UnityToExternalReflection {
@@ -29,10 +29,10 @@ namespace MLAgents.CommunicatorObjects {
             "dHNfZW52cy9jb21tdW5pY2F0b3Jfb2JqZWN0cy91bml0eV9tZXNzYWdlLnBy",
             "b3RvMnYKFFVuaXR5VG9FeHRlcm5hbFByb3RvEl4KCEV4Y2hhbmdlEicuY29t",
             "bXVuaWNhdG9yX29iamVjdHMuVW5pdHlNZXNzYWdlUHJvdG8aJy5jb21tdW5p",
-            "Y2F0b3Jfb2JqZWN0cy5Vbml0eU1lc3NhZ2VQcm90byIAQh+qAhxNTEFnZW50",
-            "cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "Y2F0b3Jfb2JqZWN0cy5Vbml0eU1lc3NhZ2VQcm90byIAQiWqAiJVbml0eS5N",
+            "TEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.UnityMessageReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.UnityMessageReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null));
     }
     #endregion

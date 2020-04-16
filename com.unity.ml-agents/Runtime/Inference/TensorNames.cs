@@ -1,4 +1,4 @@
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     /// <summary>
     /// Contains the names of the input and output tensors for the Inference Brain.

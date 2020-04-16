@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
-using MLAgents.Sensors;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Struct that contains all the information for an Agent, including its

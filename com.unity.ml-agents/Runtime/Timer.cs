@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using UnityEngine.SceneManagement;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     [DataContract]
     internal class TimerNode

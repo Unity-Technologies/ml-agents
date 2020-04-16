@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     /// <summary>
     /// Renders a custom UI for DemonstrationSummary ScriptableObject.

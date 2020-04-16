@@ -1,6 +1,6 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 
 public class GridSettings : MonoBehaviour
 {

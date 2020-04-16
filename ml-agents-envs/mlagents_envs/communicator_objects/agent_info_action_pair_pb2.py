@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/agent_info_action_pair.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n?mlagents_envs/communicator_objects/agent_info_action_pair.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents_envs/communicator_objects/agent_info.proto\x1a\x35mlagents_envs/communicator_objects/agent_action.proto\"\x91\x01\n\x18\x41gentInfoActionPairProto\x12\x38\n\nagent_info\x18\x01 \x01(\x0b\x32$.communicator_objects.AgentInfoProto\x12;\n\x0b\x61\x63tion_info\x18\x02 \x01(\x0b\x32&.communicator_objects.AgentActionProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n?mlagents_envs/communicator_objects/agent_info_action_pair.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents_envs/communicator_objects/agent_info.proto\x1a\x35mlagents_envs/communicator_objects/agent_action.proto\"\x91\x01\n\x18\x41gentInfoActionPairProto\x12\x38\n\nagent_info\x18\x01 \x01(\x0b\x32$.communicator_objects.AgentInfoProto\x12;\n\x0b\x61\x63tion_info\x18\x02 \x01(\x0b\x32&.communicator_objects.AgentActionProtoB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_agent__info__pb2.DESCRIPTOR,mlagents__envs_dot_communicator__objects_dot_agent__action__pb2.DESCRIPTOR,])
 
@@ -79,5 +79,5 @@ _sym_db.RegisterMessage(AgentInfoActionPairProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

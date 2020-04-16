@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "mlagents_envs/communicator_objects/unity_message.proto";
 
-option csharp_namespace = "MLAgents.CommunicatorObjects";
+option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 service UnityToExternalProto {

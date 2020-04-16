@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_rl_input.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n7mlagents_envs/communicator_objects/unity_rl_input.proto\x12\x14\x63ommunicator_objects\x1a\x35mlagents_envs/communicator_objects/agent_action.proto\x1a\x30mlagents_envs/communicator_objects/command.proto\"\xfe\x02\n\x11UnityRLInputProto\x12P\n\ragent_actions\x18\x01 \x03(\x0b\x32\x39.communicator_objects.UnityRLInputProto.AgentActionsEntry\x12\x33\n\x07\x63ommand\x18\x04 \x01(\x0e\x32\".communicator_objects.CommandProto\x12\x14\n\x0cside_channel\x18\x05 \x01(\x0c\x1aM\n\x14ListAgentActionProto\x12\x35\n\x05value\x18\x01 \x03(\x0b\x32&.communicator_objects.AgentActionProto\x1aq\n\x11\x41gentActionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12K\n\x05value\x18\x02 \x01(\x0b\x32<.communicator_objects.UnityRLInputProto.ListAgentActionProto:\x02\x38\x01J\x04\x08\x02\x10\x03J\x04\x08\x03\x10\x04\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n7mlagents_envs/communicator_objects/unity_rl_input.proto\x12\x14\x63ommunicator_objects\x1a\x35mlagents_envs/communicator_objects/agent_action.proto\x1a\x30mlagents_envs/communicator_objects/command.proto\"\xfe\x02\n\x11UnityRLInputProto\x12P\n\ragent_actions\x18\x01 \x03(\x0b\x32\x39.communicator_objects.UnityRLInputProto.AgentActionsEntry\x12\x33\n\x07\x63ommand\x18\x04 \x01(\x0e\x32\".communicator_objects.CommandProto\x12\x14\n\x0cside_channel\x18\x05 \x01(\x0c\x1aM\n\x14ListAgentActionProto\x12\x35\n\x05value\x18\x01 \x03(\x0b\x32&.communicator_objects.AgentActionProto\x1aq\n\x11\x41gentActionsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12K\n\x05value\x18\x02 \x01(\x0b\x32<.communicator_objects.UnityRLInputProto.ListAgentActionProto:\x02\x38\x01J\x04\x08\x02\x10\x03J\x04\x08\x03\x10\x04\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_agent__action__pb2.DESCRIPTOR,mlagents__envs_dot_communicator__objects_dot_command__pb2.DESCRIPTOR,])
 
@@ -173,7 +173,7 @@ _sym_db.RegisterMessage(UnityRLInputProto.AgentActionsEntry)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 _UNITYRLINPUTPROTO_AGENTACTIONSENTRY.has_options = True
 _UNITYRLINPUTPROTO_AGENTACTIONSENTRY._options = _descriptor._ParseOptions(descriptor_pb2.MessageOptions(), _b('8\001'))
 # @@protoc_insertion_point(module_scope)

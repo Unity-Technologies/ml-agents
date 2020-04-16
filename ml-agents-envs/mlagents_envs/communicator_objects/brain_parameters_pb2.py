@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/brain_parameters.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n9mlagents_envs/communicator_objects/brain_parameters.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents_envs/communicator_objects/space_type.proto\"\xd9\x01\n\x14\x42rainParametersProto\x12\x1a\n\x12vector_action_size\x18\x03 \x03(\x05\x12\"\n\x1avector_action_descriptions\x18\x05 \x03(\t\x12\x46\n\x18vector_action_space_type\x18\x06 \x01(\x0e\x32$.communicator_objects.SpaceTypeProto\x12\x12\n\nbrain_name\x18\x07 \x01(\t\x12\x13\n\x0bis_training\x18\x08 \x01(\x08J\x04\x08\x01\x10\x02J\x04\x08\x02\x10\x03J\x04\x08\x04\x10\x05\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n9mlagents_envs/communicator_objects/brain_parameters.proto\x12\x14\x63ommunicator_objects\x1a\x33mlagents_envs/communicator_objects/space_type.proto\"\xd9\x01\n\x14\x42rainParametersProto\x12\x1a\n\x12vector_action_size\x18\x03 \x03(\x05\x12\"\n\x1avector_action_descriptions\x18\x05 \x03(\t\x12\x46\n\x18vector_action_space_type\x18\x06 \x01(\x0e\x32$.communicator_objects.SpaceTypeProto\x12\x12\n\nbrain_name\x18\x07 \x01(\t\x12\x13\n\x0bis_training\x18\x08 \x01(\x08J\x04\x08\x01\x10\x02J\x04\x08\x02\x10\x03J\x04\x08\x04\x10\x05\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_space__type__pb2.DESCRIPTOR,])
 
@@ -98,5 +98,5 @@ _sym_db.RegisterMessage(BrainParametersProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

@@ -63,8 +63,8 @@ from Unity to python.
 
 ```csharp
 using UnityEngine;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 using System.Text;
 using System;
 
@@ -107,7 +107,7 @@ be live in your Unity scene.
 
 ```csharp
 using UnityEngine;
-using MLAgents;
+using Unity.MLAgents;
 
 
 public class RegisterStringLogSideChannel : MonoBehaviour

@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents;
-using MLAgents.Policies;
+using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class BehaviorParameterTests

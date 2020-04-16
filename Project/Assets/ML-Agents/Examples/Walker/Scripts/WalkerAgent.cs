@@ -1,8 +1,8 @@
 using UnityEngine;
-using MLAgents;
-using MLAgentsExamples;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgentsExamples;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.SideChannels;
 
 public class WalkerAgent : Agent
 {

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Barracuda;
-using MLAgents.Inference;
+using Unity.MLAgents.Inference;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// Allows sensors to write to both TensorProxy and float arrays/lists.

@@ -1,9 +1,9 @@
 ﻿#if UNITY_INCLUDE_TESTS
 using System.Collections;
 using System.Collections.Generic;
-using MLAgents;
-using MLAgents.Policies;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;

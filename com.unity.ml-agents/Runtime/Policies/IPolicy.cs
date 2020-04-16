@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Policies
+namespace Unity.MLAgents.Policies
 {
     /// <summary>
     /// IPolicy is connected to a single Agent. Each time the agent needs

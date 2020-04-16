@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class TimerTests
     {

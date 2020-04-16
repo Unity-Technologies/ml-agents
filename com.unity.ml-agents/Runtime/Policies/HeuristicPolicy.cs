@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System;
 using System.Collections;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Policies
+namespace Unity.MLAgents.Policies
 {
     /// <summary>
     /// The Heuristic Policy uses a hards coded Heuristic method

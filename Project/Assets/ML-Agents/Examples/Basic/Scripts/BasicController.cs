@@ -1,5 +1,5 @@
 using UnityEngine;
-using MLAgents;
+using Unity.MLAgents;
 
 /// <summary>
 /// An example of how to use ML-Agents without inheriting from the Agent class.

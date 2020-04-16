@@ -2,9 +2,9 @@ using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Demonstrations
+namespace Unity.MLAgents.Demonstrations
 {
     /// <summary>
     /// Demonstration Recorder Component.

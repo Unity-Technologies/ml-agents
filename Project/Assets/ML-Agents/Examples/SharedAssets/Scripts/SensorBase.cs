@@ -1,6 +1,6 @@
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// A simple sensor that provides a number default implementations.

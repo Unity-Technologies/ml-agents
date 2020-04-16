@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
-using MLAgents;
-using MLAgents.Policies;
+using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 
 public class AgentSoccer : Agent
 {

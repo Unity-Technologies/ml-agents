@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Agents that take discrete actions can explicitly indicate that specific actions

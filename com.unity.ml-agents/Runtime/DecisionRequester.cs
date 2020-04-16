@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// A component that when attached to an Agent will automatically request decisions from it

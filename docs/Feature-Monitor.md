@@ -12,7 +12,7 @@ by calling `SetActive(boolean)`. For example to also show the monitor during
 training, you can call it in the `Awake()` method of your `MonoBehaviour`:
 
 ```csharp
-using MLAgents;
+using Unity.MLAgents;
 
 public class MyBehaviour : MonoBehaviour {
     public void Awake()

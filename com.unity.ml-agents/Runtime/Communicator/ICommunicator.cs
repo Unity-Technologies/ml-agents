@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using MLAgents.Policies;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.SideChannels;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     internal struct CommunicatorInitParameters
     {

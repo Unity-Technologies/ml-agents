@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Build.Reporting;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     public class StandaloneBuildTest
     {

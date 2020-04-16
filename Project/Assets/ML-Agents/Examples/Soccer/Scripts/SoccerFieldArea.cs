@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 using UnityEngine;
 using UnityEngine.Serialization;
 

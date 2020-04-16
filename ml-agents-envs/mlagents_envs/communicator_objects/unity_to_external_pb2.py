@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_to_external.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n:mlagents_envs/communicator_objects/unity_to_external.proto\x12\x14\x63ommunicator_objects\x1a\x36mlagents_envs/communicator_objects/unity_message.proto2v\n\x14UnityToExternalProto\x12^\n\x08\x45xchange\x12\'.communicator_objects.UnityMessageProto\x1a\'.communicator_objects.UnityMessageProto\"\x00\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n:mlagents_envs/communicator_objects/unity_to_external.proto\x12\x14\x63ommunicator_objects\x1a\x36mlagents_envs/communicator_objects/unity_message.proto2v\n\x14UnityToExternalProto\x12^\n\x08\x45xchange\x12\'.communicator_objects.UnityMessageProto\x1a\'.communicator_objects.UnityMessageProto\"\x00\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_unity__message__pb2.DESCRIPTOR,])
 
@@ -30,7 +30,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 
 _UNITYTOEXTERNALPROTO = _descriptor.ServiceDescriptor(
   name='UnityToExternalProto',

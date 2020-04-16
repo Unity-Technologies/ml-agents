@@ -1,5 +1,5 @@
 using UnityEngine;
-using MLAgents;
+using Unity.MLAgents;
 
 public class BouncerTarget : MonoBehaviour
 {

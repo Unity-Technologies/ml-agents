@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using MLAgents.CommunicatorObjects;
+using Unity.MLAgents.CommunicatorObjects;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.Experimental.AssetImporters;
-using MLAgents.Demonstrations;
+using Unity.MLAgents.Demonstrations;
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     /// <summary>
     /// Asset Importer used to parse demonstration files.

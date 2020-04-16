@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     public static class EditorUtilities
     {

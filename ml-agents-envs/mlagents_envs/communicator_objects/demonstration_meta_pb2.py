@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/demonstration_meta.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n;mlagents_envs/communicator_objects/demonstration_meta.proto\x12\x14\x63ommunicator_objects\"\x8d\x01\n\x16\x44\x65monstrationMetaProto\x12\x13\n\x0b\x61pi_version\x18\x01 \x01(\x05\x12\x1a\n\x12\x64\x65monstration_name\x18\x02 \x01(\t\x12\x14\n\x0cnumber_steps\x18\x03 \x01(\x05\x12\x17\n\x0fnumber_episodes\x18\x04 \x01(\x05\x12\x13\n\x0bmean_reward\x18\x05 \x01(\x02\x42\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n;mlagents_envs/communicator_objects/demonstration_meta.proto\x12\x14\x63ommunicator_objects\"\x8d\x01\n\x16\x44\x65monstrationMetaProto\x12\x13\n\x0b\x61pi_version\x18\x01 \x01(\x05\x12\x1a\n\x12\x64\x65monstration_name\x18\x02 \x01(\t\x12\x14\n\x0cnumber_steps\x18\x03 \x01(\x05\x12\x17\n\x0fnumber_episodes\x18\x04 \x01(\x05\x12\x13\n\x0bmean_reward\x18\x05 \x01(\x02\x42%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -95,5 +95,5 @@ _sym_db.RegisterMessage(DemonstrationMetaProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

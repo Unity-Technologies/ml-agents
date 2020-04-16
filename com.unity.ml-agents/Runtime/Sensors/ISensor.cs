@@ -1,4 +1,4 @@
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// The compression setting for visual/camera observations.

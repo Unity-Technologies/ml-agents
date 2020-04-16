@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Side channel that is comprised of a collection of float variables, represented by

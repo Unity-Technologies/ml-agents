@@ -4,9 +4,9 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using MLAgents.Inference;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 using Barracuda;
 
 /**
@@ -22,7 +22,7 @@ using Barracuda;
  * https://github.com/Unity-Technologies/ml-agents/blob/master/docs/
  */
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     public static class SideChannelUtils
     {

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_rl_initialization_input.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nFmlagents_envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"g\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x12\x1d\n\x15\x63ommunication_version\x18\x02 \x01(\t\x12\x17\n\x0fpackage_version\x18\x03 \x01(\tB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\nFmlagents_envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"g\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x12\x1d\n\x15\x63ommunication_version\x18\x02 \x01(\t\x12\x17\n\x0fpackage_version\x18\x03 \x01(\tB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -81,5 +81,5 @@ _sym_db.RegisterMessage(UnityRLInitializationInputProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

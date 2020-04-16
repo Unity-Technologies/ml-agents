@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/space_type.proto</summary>
   internal static partial class SpaceTypeReflection {
@@ -26,11 +26,11 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CjNtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3NwYWNlX3R5",
             "cGUucHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzKi4KDlNwYWNlVHlwZVBy",
-            "b3RvEgwKCGRpc2NyZXRlEAASDgoKY29udGludW91cxABQh+qAhxNTEFnZW50",
-            "cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "b3RvEgwKCGRpc2NyZXRlEAASDgoKY29udGludW91cxABQiWqAiJVbml0eS5N",
+            "TEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.SpaceTypeProto), }, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto), }, null));
     }
     #endregion
 

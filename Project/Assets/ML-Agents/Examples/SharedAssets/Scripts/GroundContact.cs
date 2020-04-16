@@ -1,7 +1,7 @@
 using UnityEngine;
-using MLAgents;
+using Unity.MLAgents;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// This class contains logic for locomotion agents with joints which might make contact with the ground.

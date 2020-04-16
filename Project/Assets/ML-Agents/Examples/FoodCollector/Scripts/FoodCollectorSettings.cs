@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.SideChannels;
 
 public class FoodCollectorSettings : MonoBehaviour
 {
