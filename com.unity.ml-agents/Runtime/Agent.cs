@@ -318,6 +318,11 @@ namespace MLAgents
 
         void NotifyAgentDone(DoneReason doneReason)
         {
+            if (m_Info.done)
+            {
+                // The Agent was already marked as Done and should not be notified again
+                return;
+            }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
             m_Info.done = true;

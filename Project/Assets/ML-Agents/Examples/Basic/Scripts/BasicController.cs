@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using MLAgents;
 
 /// <summary>
@@ -22,10 +23,14 @@ public class BasicController : MonoBehaviour
 
     Agent m_Agent;
 
+
     public void OnEnable()
     {
         m_Agent = GetComponent<Agent>();
-        ResetAgent();
+        m_Position = 10;
+        transform.position = new Vector3(m_Position - 10f, 0f, 0f);
+        smallGoal.transform.position = new Vector3(k_SmallGoalPosition - 10f, 0f, 0f);
+        largeGoal.transform.position = new Vector3(k_LargeGoalPosition - 10f, 0f, 0f);
     }
 
     /// <summary>
@@ -72,10 +77,10 @@ public class BasicController : MonoBehaviour
     }
 
     public void ResetAgent()
-    {
-        m_Position = 10;
-        smallGoal.transform.position = new Vector3(k_SmallGoalPosition - 10f, 0f, 0f);
-        largeGoal.transform.position = new Vector3(k_LargeGoalPosition - 10f, 0f, 0f);
+    {   
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        m_Agent = null; // LoadScene only takes effect at the next Update.
+        // We set the Agent to null to avoid using the Agent before the reload
     }
 
     public void FixedUpdate()
@@ -85,11 +90,15 @@ public class BasicController : MonoBehaviour
 
     void WaitTimeInference()
     {
+        if (m_Agent == null)
+        {
+            return;
+        }
         if (Academy.Instance.IsCommunicatorOn)
         {
             // Apply the previous step's actions
             ApplyAction(m_Agent.GetAction());
-            m_Agent.RequestDecision();
+            m_Agent?.RequestDecision();
         }
         else
         {
@@ -99,7 +108,7 @@ public class BasicController : MonoBehaviour
                 ApplyAction(m_Agent.GetAction());
 
                 m_TimeSinceDecision = 0f;
-                m_Agent.RequestDecision();
+                m_Agent?.RequestDecision();
             }
             else
             {
