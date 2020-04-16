@@ -139,6 +139,8 @@ def _check_environment_trains(
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
         StatsReporter.add_writer(debug_writer)
+        # Make sure threading is turned off for determinism
+        trainer_config["threading"] = False
         if env_manager is None:
             env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
         trainer_factory = TrainerFactory(
