@@ -798,7 +798,8 @@ namespace MLAgents
             {
                 ResetData();
             }
-            else{
+            else
+            {
                 Array.Copy(action, m_Action.vectorActions, action.Length);
             }
         }
