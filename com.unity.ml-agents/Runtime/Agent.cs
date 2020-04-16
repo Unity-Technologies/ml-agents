@@ -792,11 +792,15 @@ namespace MLAgents
 
         void DecideAction()
         {
+            if (m_Action.vectorActions == null)
+            {
+                ResetData();
+            }
             var action = m_Brain?.DecideAction();
 
             if (action == null)
             {
-                ResetData();
+                Array.Clear(m_Action.vectorActions, 0, m_Action.vectorActions.Length);
             }
             else
             {
