@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using MLAgents;
 using MLAgentsExamples;
@@ -35,22 +36,31 @@ public class WormAgent : Agent
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
-    Quaternion m_LookRotation;
-    Matrix4x4 m_TargetDirMatrix;
+    Quaternion m_LookRotation; //LookRotation from m_TargetDirMatrix to Target
+    Matrix4x4 m_TargetDirMatrix; //Matrix used by agent as orientation reference
 
     public override void Initialize()
     {
         m_JdController = GetComponent<JointDriveController>();
         m_DirToTarget = target.position - bodySegment0.position;
-
+        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
+        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
         //Setup each body part
         m_JdController.SetupBodyPart(bodySegment0);
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
+        
+        //We only want the head to detect the target
+        //So we need to remove TargetContact from everything else
+        //This is a temp fix till we can redesign
+        DestroyImmediate(bodySegment1.GetComponent<TargetContact>());
+        DestroyImmediate(bodySegment2.GetComponent<TargetContact>());
+        DestroyImmediate(bodySegment3.GetComponent<TargetContact>());
     }
 
+    
     public Quaternion GetJointRotation(ConfigurableJoint joint)
     {
         return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
