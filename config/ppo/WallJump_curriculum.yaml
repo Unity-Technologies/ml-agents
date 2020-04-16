@@ -1,62 +1,65 @@
 behaviors:
-    default:
-        trainer: ppo
-        batch_size: 1024
-        beta: 5.0e-3
-        buffer_size: 10240
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 3.0e-4
-        learning_rate_schedule: linear
-        max_steps: 5.0e5
-        memory_size: 128
-        normalize: false
-        num_epoch: 3
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 10000
-        use_recurrent: false
-        vis_encode_type: simple
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
+  BigWallJump:
+    trainer: ppo
+    batch_size: 128
+    beta: 0.005
+    buffer_size: 2048
+    epsilon: 0.2
+    hidden_units: 256
+    lambd: 0.95
+    learning_rate: 0.0003
+    learning_rate_schedule: linear
+    max_steps: 2e7
+    memory_size: 128
+    normalize: false
+    num_epoch: 3
+    num_layers: 2
+    time_horizon: 128
+    sequence_length: 64
+    summary_freq: 20000
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+    curriculum:
+      measure: progress
+      thresholds: [0.1, 0.3, 0.5]
+      min_lesson_length: 100
+      signal_smoothing: true
+      parameters:
+        big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
+        big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
 
-    SmallWallJump:
-        max_steps: 5e6
-        batch_size: 128
-        buffer_size: 2048
-        beta: 5.0e-3
-        hidden_units: 256
-        summary_freq: 20000
-        time_horizon: 128
-        num_layers: 2
-        normalize: false
-        curriculum:
-            measure: progress
-            thresholds: [0.1, 0.3, 0.5]
-            min_lesson_length: 100
-            signal_smoothing: true
-            parameters:
-                small_wall_height: [1.5, 2.0, 2.5, 4.0]
-
-    BigWallJump:
-        max_steps: 2e7
-        batch_size: 128
-        buffer_size: 2048
-        beta: 5.0e-3
-        hidden_units: 256
-        summary_freq: 20000
-        time_horizon: 128
-        num_layers: 2
-        normalize: false
-        curriculum:
-            measure: progress
-            thresholds: [0.1, 0.3, 0.5]
-            min_lesson_length: 100
-            signal_smoothing: true
-            parameters:
-                big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
-                big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
+  SmallWallJump:
+    trainer: ppo
+    batch_size: 128
+    beta: 0.005
+    buffer_size: 2048
+    epsilon: 0.2
+    hidden_units: 256
+    lambd: 0.95
+    learning_rate: 0.0003
+    learning_rate_schedule: linear
+    max_steps: 5e6
+    memory_size: 128
+    normalize: false
+    num_epoch: 3
+    num_layers: 2
+    time_horizon: 128
+    sequence_length: 64
+    summary_freq: 20000
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+    curriculum:
+      measure: progress
+      thresholds: [0.1, 0.3, 0.5]
+      min_lesson_length: 100
+      signal_smoothing: true
+      parameters:
+        small_wall_height: [1.5, 2.0, 2.5, 4.0]
