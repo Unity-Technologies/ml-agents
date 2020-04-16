@@ -21,6 +21,11 @@ class EncoderType(Enum):
     RESNET = "resnet"
 
 
+class ActionType(Enum):
+    DISCRETE = "discrete"
+    CONTINUOUS = "continuous"
+
+
 class LearningRateSchedule(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
@@ -32,47 +37,43 @@ class NormalizerTensors(NamedTuple):
     running_variance: torch.Tensor
 
 
-class ObservationNormalizer(nn.Module):
-    def __init__(self, vec_obs):
-        vec_size = vec_obs.shape[1]
-        self.steps = torch.Tensor([0])
-        self.running_mean = torch.Tensor(vec_size)
-        self.running_variance = torch.Tensor(vec_size)
+class Normalizer(nn.Module):
+    def __init__(self, vec_obs_size, **kwargs):
+        super(Normalizer, self).__init__(**kwargs)
+        print(vec_obs_size)
+        self.normalization_steps = torch.tensor(1)
+        self.running_mean = torch.zeros(vec_obs_size)
+        self.running_variance = torch.ones(vec_obs_size)
 
-    def normalize_obs(self, vector_obs):
-        normalized_obs = torch.clip_by_value(
-            (vector_obs - self.running_mean)
+    def forward(self, inputs):
+        inputs = torch.from_numpy(inputs)
+        normalized_state = torch.clamp(
+            (inputs - self.running_mean)
             / torch.sqrt(
-                self.running_variance / (self.steps.astype(torch.float32) + 1)
+                self.running_variance / self.normalization_steps.type(torch.float32)
             ),
             -5,
             5,
         )
-        return normalized_obs
+        return normalized_state
 
-    def update(self, vector_obs):
-        # Based on Welford's algorithm for running mean and standard deviation, for batch updates. Discussion here:
-        # https://stackoverflow.com/questions/56402955/whats-the-formula-for-welfords-algorithm-for-variance-std-with-batch-updates
-        steps_increment = vector_obs.shape[0]
-        total_new_steps = self.steps + steps_increment
-
-        # Compute the incremental update and divide by the number of new steps.
-        input_to_old_mean = vector_obs - self.running_mean
-        new_mean = self.running_mean + torch.sum(
-            input_to_old_mean / total_new_steps.astype(torch.float32), dim=0
-        )
-        # Compute difference of input to the new mean for Welford update
-        input_to_new_mean = vector_obs - new_mean
-        new_variance = self.running_variance + torch.sum(
-            input_to_new_mean * input_to_old_mean, dim=0
+    def update(self, vector_input):
+        vector_input = torch.from_numpy(vector_input)
+        mean_current_observation = vector_input.mean(0).type(torch.float32)
+        new_mean = self.running_mean + (
+            mean_current_observation - self.running_mean
+        ) / (self.normalization_steps + 1).type(torch.float32)
+        new_variance = self.running_variance + (mean_current_observation - new_mean) * (
+            mean_current_observation - self.running_mean
         )
         self.running_mean = new_mean
         self.running_variance = new_variance
-        self.steps = total_new_steps
+        self.normalization_steps = self.normalization_steps + 1
 
 
 class ValueHeads(nn.Module):
     def __init__(self, stream_names, input_size):
+        super(ValueHeads, self).__init__()
         self.stream_names = stream_names
         self.value_heads = {}
 
@@ -84,7 +85,7 @@ class ValueHeads(nn.Module):
         value_outputs = {}
         for stream_name, _ in self.value_heads.items():
             value_outputs[stream_name] = self.value_heads[stream_name](hidden)
-        return value_outputs, torch.mean(list(value_outputs), dim=0)
+        return value_outputs, torch.mean(torch.stack(list(value_outputs)), dim=0)
 
 
 class VectorEncoder(nn.Module):
@@ -104,27 +105,25 @@ class VectorEncoder(nn.Module):
 
 
 class SimpleVisualEncoder(nn.Module):
-    def __init__(self, visual_obs):
-        image_depth = visual_obs.shape[-1]
-        self.conv1 = nn.Conv2d(image_depth, 16, [8, 8], [4, 4])
+    def __init__(self, initial_channels):
+        super(SimpleVisualEncoder, self).__init__()
+        self.conv1 = nn.Conv2d(initial_channels, 16, [8, 8], [4, 4])
         self.conv2 = nn.Conv2d(16, 32, [4, 4], [2, 2])
 
     def forward(self, visual_obs):
-        # Todo: add vector encoder here?
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
         return torch.flatten(conv_2)
 
 
 class NatureVisualEncoder(nn.Module):
-    def __init__(self, visual_obs):
-        image_depth = visual_obs.shape[-1]
-        self.conv1 = nn.Conv2d(image_depth, 32, [8, 8], [4, 4])
+    def __init__(self, initial_channels):
+        super(NatureVisualEncoder, self).__init__()
+        self.conv1 = nn.Conv2d(initial_channels, 32, [8, 8], [4, 4])
         self.conv2 = nn.Conv2d(43, 64, [4, 4], [2, 2])
         self.conv3 = nn.Conv2d(64, 64, [3, 3], [1, 1])
 
     def forward(self, visual_obs):
-        # Todo: add vector encoder here?
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
         conv_3 = torch.relu(self.conv3(conv_2))
@@ -133,10 +132,12 @@ class NatureVisualEncoder(nn.Module):
 
 class DiscreteActionMask(nn.Module):
     def __init__(self, action_size):
+        super(DiscreteActionMask, self).__init__()
         self.action_size = action_size
 
+    @staticmethod
     def break_into_branches(
-        self, concatenated_logits: torch.Tensor, action_size: List[int]
+        concatenated_logits: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:
         """
         Takes a concatenated set of logits that represent multiple discrete action branches
@@ -186,6 +187,62 @@ class DiscreteActionMask(nn.Module):
         )
 
 
+class GlobalSteps(nn.Module):
+    def __init__(self):
+        super(GlobalSteps, self).__init__()
+        self.global_step = torch.Tensor([0])
+
+    def increment(self, value):
+        self.global_step += value
+
+
+class LearningRate(nn.Module):
+    def __init__(self, lr):
+        # Todo: add learning rate decay
+        super(LearningRate, self).__init__()
+        self.learning_rate = torch.Tensor([lr])
+
+
+class ResNetVisualEncoder(nn.Module):
+    def __init__(self, initial_channels):
+        super(ResNetVisualEncoder, self).__init__()
+        n_channels = [16, 32, 32]  # channel for each stack
+        n_blocks = 2  # number of residual blocks
+        self.layers = []
+        for _, channel in enumerate(n_channels):
+            self.layers.append(nn.Conv2d(initial_channels, channel, [3, 3], [1, 1]))
+            self.layers.append(nn.MaxPool2d([3, 3], [2, 2]))
+            for _ in range(n_blocks):
+                self.layers.append(self.make_block(channel))
+        self.layers.append(nn.RELU())
+
+    @staticmethod
+    def make_block(channel):
+        block_layers = [
+            nn.ReLU(),
+            nn.Conv2d(channel, channel, [3, 3], [1, 1]),
+            nn.ReLU(),
+            nn.Conv2d(channel, channel, [3, 3], [1, 1]),
+        ]
+        return block_layers
+
+    @staticmethod
+    def forward_block(input_hidden, block_layers):
+        hidden = input_hidden
+        for layer in block_layers:
+            hidden = layer(hidden)
+        return hidden + input_hidden
+
+    def forward(self, visual_obs):
+        hidden = visual_obs
+        for layer in self.layers:
+            if layer is nn.Module:
+                hidden = layer(hidden)
+            elif layer is list:
+                hidden = self.forward_block(hidden, layer)
+        return hidden.flatten()
+
+
 class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
@@ -194,18 +251,6 @@ class ModelUtils:
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
     }
-
-    class GlobalSteps(nn.Module):
-        def __init__(self):
-            self.global_step = torch.Tensor([0])
-
-        def increment(self, value):
-            self.global_step += value
-
-    class LearningRate(nn.Module):
-        def __init__(self, lr):
-            # Todo: add learning rate decay
-            self.learning_rate = torch.Tensor([lr])
 
     # @staticmethod
     # def scaled_init(scale):
@@ -216,80 +261,12 @@ class ModelUtils:
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return torch.mul(input_activation, torch.sigmoid(input_activation))
 
-    # @staticmethod
-    # def create_resnet_visual_observation_encoder(
-    #     image_input: tf.Tensor,
-    #     h_size: int,
-    #     activation: ActivationFunction,
-    #     num_layers: int,
-    #     scope: str,
-    #     reuse: bool,
-    # ) -> tf.Tensor:
-    #     """
-    #     Builds a set of resnet visual encoders.
-    #     :param image_input: The placeholder for the image input to use.
-    #     :param h_size: Hidden layer size.
-    #     :param activation: What type of activation function to use for layers.
-    #     :param num_layers: number of hidden layers to create.
-    #     :param scope: The scope of the graph within which to create the ops.
-    #     :param reuse: Whether to re-use the weights within the same scope.
-    #     :return: List of hidden layer tensors.
-    #     """
-    #     n_channels = [16, 32, 32]  # channel for each stack
-    #     n_blocks = 2  # number of residual blocks
-    #     with tf.variable_scope(scope):
-    #         hidden = image_input
-    #         for i, ch in enumerate(n_channels):
-    #             hidden = tf.layers.conv2d(
-    #                 hidden,
-    #                 ch,
-    #                 kernel_size=[3, 3],
-    #                 strides=[1, 1],
-    #                 reuse=reuse,
-    #                 name="layer%dconv_1" % i,
-    #             )
-    #             hidden = tf.layers.max_pooling2d(
-    #                 hidden, pool_size=[3, 3], strides=[2, 2], padding="same"
-    #             )
-    #             # create residual blocks
-    #             for j in range(n_blocks):
-    #                 block_input = hidden
-    #                 hidden = tf.nn.relu(hidden)
-    #                 hidden = tf.layers.conv2d(
-    #                     hidden,
-    #                     ch,
-    #                     kernel_size=[3, 3],
-    #                     strides=[1, 1],
-    #                     padding="same",
-    #                     reuse=reuse,
-    #                     name="layer%d_%d_conv1" % (i, j),
-    #                 )
-    #                 hidden = tf.nn.relu(hidden)
-    #                 hidden = tf.layers.conv2d(
-    #                     hidden,
-    #                     ch,
-    #                     kernel_size=[3, 3],
-    #                     strides=[1, 1],
-    #                     padding="same",
-    #                     reuse=reuse,
-    #                     name="layer%d_%d_conv2" % (i, j),
-    #                 )
-    #                 hidden = tf.add(block_input, hidden)
-    #         hidden = tf.nn.relu(hidden)
-    #         hidden = tf.layers.flatten(hidden)
-
-    #     with tf.variable_scope(scope + "/" + "flat_encoding"):
-    #         hidden_flat = ModelUtils.create_vector_observation_encoder(
-    #             hidden, h_size, activation, num_layers, scope, reuse
-    #         )
-    #     return hidden_flat
-
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
         ENCODER_FUNCTION_BY_TYPE = {
             EncoderType.SIMPLE: SimpleVisualEncoder,
             EncoderType.NATURE_CNN: NatureVisualEncoder,
-            # EncoderType.RESNET: ModelUtils.create_resnet_visual_observation_encoder,
+            EncoderType.RESNET: ResNetVisualEncoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(encoder_type)
 
