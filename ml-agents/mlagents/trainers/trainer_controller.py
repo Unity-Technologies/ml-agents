@@ -220,7 +220,8 @@ class TrainerController(object):
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
                         self._save_model()
-
+            # Stop advancing trainers
+            self.kill_trainers = True
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
