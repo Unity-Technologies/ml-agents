@@ -51,6 +51,17 @@ public class WormAgent : Agent
         m_JdController.SetupBodyPart(bodySegment3);
     }
 
+    public Quaternion GetJointRotation(ConfigurableJoint joint)
+    {
+        return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
+    }
+
+//    public Quaternion GetJointRotation(ConfigurableJoint joint)
+//    {
+////        return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
+//        return(Quaternion.Inverse(joint.connectedBody.transform.rotationd) * joint.transform); joint.connectedBody.transform.rotation.eulerAngles));
+//    }
+    
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -69,12 +80,39 @@ public class WormAgent : Agent
         {
             var localPosRelToBody = bodySegment0.InverseTransformPoint(rb.position);
             sensor.AddObservation(localPosRelToBody);
-            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
-            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
-            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
+            sensor.AddObservation(GetJointRotation(bp.joint));
+
+//            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
+//            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
+//            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
+    
+//    /// <summary>
+//    /// Add relevant information on each body part to observations.
+//    /// </summary>
+//    public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
+//    {
+//        var rb = bp.rb;
+//        sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
+//
+//        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
+//        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
+//
+//        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+//        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
+//
+//        if (bp.rb.transform != bodySegment0)
+//        {
+//            var localPosRelToBody = bodySegment0.InverseTransformPoint(rb.position);
+//            sensor.AddObservation(localPosRelToBody);
+//            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
+//            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
+//            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
+//            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+//        }
+//    }
 
     public override void CollectObservations(VectorSensor sensor)
     {
@@ -94,17 +132,22 @@ public class WormAgent : Agent
         else
             sensor.AddObservation(1);
 
-        // Forward & up to help with orientation
-        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(bodySegment0.up);
-        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
-
-        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(-bodySegment0.forward);
-        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
-
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
+
+//        // Forward & up to help with orientation
+//        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(bodySegment0.up);
+//        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
+//
+//        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(-bodySegment0.forward);
+//        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
+
+        
+        //ADD ROTATION DELTA
+        Quaternion rotDelta = Quaternion.Inverse(m_TargetDirMatrix.rotation) * bodySegment0.rotation;
+        sensor.AddObservation(rotDelta);
     }
 
     /// <summary>
@@ -145,7 +188,7 @@ public class WormAgent : Agent
         bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
 
-        if (bodySegment0.position.y < -2)
+        if (bodySegment0.position.y < ground.position.y -2)
         {
             EndEpisode();
         }
@@ -187,7 +230,10 @@ public class WormAgent : Agent
     void RewardFunctionMovingTowards()
     {
         m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, m_DirToTarget.normalized);
-        AddReward(0.03f * m_MovingTowardsDot);
+//        AddReward(0.03f * m_MovingTowardsDot);
+
+//        AddReward(1/maxStep * m_MovingTowardsDot);
+        AddReward(0.01f * m_MovingTowardsDot);
     }
 
     /// <summary>
@@ -195,10 +241,31 @@ public class WormAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-//        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.forward);
-        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.up);
-        AddReward(0.01f * m_FacingDot);
+        //Discourage rotating away from target dir
+//        float currentFacingDir =((-1 * Quaternion.Dot(m_TargetDirMatrix.rotation, bodySegment0.rotation)) + 1) * .5f; //normalize. 0 good, 1 bad
+//        float currentFacingDir = -.01f * ((Quaternion.Dot(m_TargetDirMatrix.rotation, bodySegment0.rotation) + 1) * .5f); //normalize. 0 good, 1 bad
+
+            //PENALTY IF LOOKING AWAY
+        float notFacingPenalty = ((-1 * Quaternion.Dot(m_TargetDirMatrix.rotation, bodySegment0.rotation)) + 1) * .5f; //normalize. 0 good, 1 bad
+        AddReward(-.01f * notFacingPenalty);
+
+//        float currentFacingDot = (Quaternion.Dot(m_TargetDirMatrix.rotation, bodySegment0.rotation) + 1) * .5f; //normalize. 0 facing away, 1 facing
+//        AddReward(-.01f * currentFacingDot);
     }
+    
+    
+//    /// <summary>
+//    /// Reward facing target & Penalize facing away from target
+//    /// </summary>
+//    void RewardFunctionFacingTarget()
+//    {
+////        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.forward);
+//        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, bodySegment0.up);
+////        AddReward(0.01f * m_FacingDot);
+////        AddReward(1/maxStep * m_FacingDot);
+////        AddReward(0.01f * m_FacingDot);
+//        AddReward(0.01f * (m_FacingDot - 1));
+//    }
 
     /// <summary>
     /// Existential penalty for time-contrained tasks.
