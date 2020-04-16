@@ -52,7 +52,6 @@ class GymWrapper(BaseEnv):
         )
         self._g_action: np.ndarray = None
         self._current_steps: Tuple[DecisionSteps, TerminalSteps] = (None, None)
-        print(self._gym_env._max_episode_steps)
 
     def step(self) -> None:
         if self._first_message:
