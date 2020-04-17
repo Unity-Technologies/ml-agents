@@ -52,10 +52,20 @@ the exposed self-play hyperparameters and intuitions for tuning them.
 ### Reward Signals
 
 We make the assumption that the final reward in a trajectory corresponds to the outcome of an episode.
-A final reward of +1 indicates winning, -1 indicates losing and 0 indicates a draw.
-The ELO calculation (discussed below) depends on this final reward being either +1, 0, -1.
+A final reward greater than 0 indicates winning, less than 0 indicates losing and 0 indicates a draw.
+The final reward determines the result of an episode (win, loss, or draw) in the ELO calculation.
 
 The reward signal should still be used as described in the documentation for the other trainers and [reward signals.](Reward-Signals.md) However, we encourage users to be a bit more conservative when shaping reward functions due to the instability and non-stationarity of learning in adversarial games. Specifically, we encourage users to begin with the simplest possible reward function (+1 winning, -1 losing) and to allow for more iterations of training to compensate for the sparsity of reward.
+
+In problems that are too challenging to be solved by sparse rewards, it may be necessary to provide intermediate rewards to encourage useful instrumental behaviors.
+For example, it may be difficult for a soccer agent to learn that kicking a ball into the net receives a reward because this sequence has a low probability
+of occurring randomly.  However, it will have a higher probability of occurring if the agent learns generally that kicking the ball has utility. So, we may be able
+to speed up training by giving the agent intermediate reward for kicking the ball. However, we must be careful that the agent doesn't learn to undermine
+its original objective of scoring goals e.g. if it scores a goal, the episode ends and it can no longer receive reward for kicking the ball. The behavior
+that receives the most reward may be to keep the ball out of the net and to kick it indefinitely! To address this, we suggest
+using a curriculum that allows the agents to learn the necessary intermediate behavior (i.e. colliding with a ball) and then
+decays this reward signal to allow training on just the rewards of winning and losing. Please see our documentation on
+how to use curriculum learning [here](./Training-Curriculum-Learning.md) and our SoccerTwos example environment.
 
 ### Save Steps
 

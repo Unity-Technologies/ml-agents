@@ -31,10 +31,12 @@ public class AgentSoccer : Agent
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
+    // The coefficient for the reward for colliding with a ball. Set using curriculum.
     float m_BallTouch;
     public Position position;
 
-    float m_Power;
+    const float k_Power = 2000f;
+    float m_Existential;
     float m_LateralSpeed;
     float m_ForwardSpeed;
 
@@ -49,6 +51,7 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
+        m_Existential = 1f / maxStep;
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
@@ -60,7 +63,6 @@ public class AgentSoccer : Agent
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
         }
-        m_Power = 2000f;
         if (position == Position.Goalie)
         {
             m_LateralSpeed = 1.0f;
@@ -144,70 +146,64 @@ public class AgentSoccer : Agent
         if (position == Position.Goalie)
         {
             // Existential bonus for Goalies.
-            AddReward(1f / 3000f);
+            AddReward(m_Existential);
         }
         else if (position == Position.Striker)
         {
             // Existential penalty for Strikers
-            AddReward(-1f / 3000f);
+            AddReward(-m_Existential);
         }
         else
         {
             // Existential penalty cumulant for Generic
-            timePenalty += -1f / 3000f;
+            timePenalty -= m_Existential;
         }
         MoveAgent(vectorAction);
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(float[] actionsOut)
     {
-        var action = new float[3];
         //forward
         if (Input.GetKey(KeyCode.W))
         {
-            action[0] = 1f;
+            actionsOut[0] = 1f;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            action[0] = 2f;
+            actionsOut[0] = 2f;
         }
         //rotate
         if (Input.GetKey(KeyCode.A))
         {
-            action[2] = 1f;
+            actionsOut[2] = 1f;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            action[2] = 2f;
+            actionsOut[2] = 2f;
         }
         //right
         if (Input.GetKey(KeyCode.E))
         {
-            action[1] = 1f;
+            actionsOut[1] = 1f;
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            action[1] = 2f;
+            actionsOut[1] = 2f;
         }
-        return action;
     }
     /// <summary>
     /// Used to provide a "kick" to the ball.
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = m_Power * m_KickPower;
+        var force = k_Power * m_KickPower;
         if (position == Position.Goalie)
         {
-            force = m_Power;
+            force = k_Power;
         }
         if (c.gameObject.CompareTag("ball"))
         {
-            // Generic gets curriculum
-            if (position == Position.Generic)
-            {
-                AddReward(.2f * m_BallTouch);
-            }
+            AddReward(.2f * m_BallTouch);
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
