@@ -1,0 +1,32 @@
+behaviors:
+  Goalie:
+    normalize: false
+    max_steps: 5.0e7
+    learning_rate_schedule: constant
+    batch_size: 2048
+    buffer_size: 20480
+    hidden_units: 512
+    time_horizon: 1000
+    num_layers: 2
+    self_play:
+      window: 10
+      play_against_latest_model_ratio: 0.5
+      save_steps: 50000
+      swap_steps: 25000
+      team_change: 200000
+
+  Striker:
+    normalize: false
+    max_steps: 5.0e7
+    learning_rate_schedule: constant
+    batch_size: 2048
+    buffer_size: 20480
+    hidden_units: 512
+    time_horizon: 1000
+    num_layers: 2
+    self_play:
+      window: 10
+      play_against_latest_model_ratio: 0.5
+      save_steps: 50000
+      swap_steps: 100000
+      team_change: 200000

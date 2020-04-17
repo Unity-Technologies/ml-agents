@@ -5,7 +5,7 @@ ML-Agents provides the functionality to train both symmetric and asymmetric adve
 A symmetric game is one in which opposing agents are equal in form, function and objective. Examples of symmetric games
 are our Tennis and Soccer example environments. In reinforcement learning, this means both agents have the same observation and
 action spaces and learn from the same reward function and so *they can share the same policy*. In asymmetric games,
-this is not the case. An example of an asymmetric games are Hide and Seek. Agents in these
+this is not the case. An example of an asymmetric game is our Strikers Vs Goalie example environment. Agents in these
 types of games do not always have the same observation or action spaces and so sharing policy networks is not
 necessarily ideal.
 
@@ -31,9 +31,9 @@ Behavior Parameters Script.  In asymmetric games, they should have a different B
 Note, in asymmetric games, the agents must have both different Behavior Names *and* different team IDs! Then, specify the trainer configuration
 for each Behavior Name in your scene as you would normally, and remember to include the self-play hyperparameter hierarchy!
 
-For examples of how to use this feature, you can see the trainer configurations and agent prefabs for our Tennis and Soccer environments.
-Tennis and Soccer provide examples of symmetric games. To train an asymmetric game, specify trainer configurations for each of your behavior names
-and include the self-play hyperparameter hierarchy in both.
+For examples of how to use this feature, you can see the trainer configurations and agent prefabs for our Tennis, Soccer, and
+Strikers Vs Goalie environments.
+Tennis and Soccer provide examples of symmetric games and Strikers Vs Goalie provides an example of an asymmetric game.
 
 
 ## Best Practices Training with Self-Play
@@ -52,10 +52,20 @@ the exposed self-play hyperparameters and intuitions for tuning them.
 ### Reward Signals
 
 We make the assumption that the final reward in a trajectory corresponds to the outcome of an episode.
-A final reward of +1 indicates winning, -1 indicates losing and 0 indicates a draw.
-The ELO calculation (discussed below) depends on this final reward being either +1, 0, -1.
+A final reward greater than 0 indicates winning, less than 0 indicates losing and 0 indicates a draw.
+The final reward determines the result of an episode (win, loss, or draw) in the ELO calculation.
 
 The reward signal should still be used as described in the documentation for the other trainers and [reward signals.](Reward-Signals.md) However, we encourage users to be a bit more conservative when shaping reward functions due to the instability and non-stationarity of learning in adversarial games. Specifically, we encourage users to begin with the simplest possible reward function (+1 winning, -1 losing) and to allow for more iterations of training to compensate for the sparsity of reward.
+
+In problems that are too challenging to be solved by sparse rewards, it may be necessary to provide intermediate rewards to encourage useful instrumental behaviors.
+For example, it may be difficult for a soccer agent to learn that kicking a ball into the net receives a reward because this sequence has a low probability
+of occurring randomly.  However, it will have a higher probability of occurring if the agent learns generally that kicking the ball has utility. So, we may be able
+to speed up training by giving the agent intermediate reward for kicking the ball. However, we must be careful that the agent doesn't learn to undermine
+its original objective of scoring goals e.g. if it scores a goal, the episode ends and it can no longer receive reward for kicking the ball. The behavior
+that receives the most reward may be to keep the ball out of the net and to kick it indefinitely! To address this, we suggest
+using a curriculum that allows the agents to learn the necessary intermediate behavior (i.e. colliding with a ball) and then
+decays this reward signal to allow training on just the rewards of winning and losing. Please see our documentation on
+how to use curriculum learning [here](./Training-Curriculum-Learning.md) and our SoccerTwos example environment.
 
 ### Save Steps
 
@@ -87,7 +97,7 @@ Recommended Range : 4x-10x where x=`save_steps`
 
 The `swap_steps` parameter corresponds to the number of *ghost steps* (not trainer steps) between swapping the opponents policy with a different snapshot.
 A 'ghost step' refers to a step taken by an agent *that is following a fixed policy and not learning*. The reason for this distinction is that in asymmetric games,
-we may have teams with an unequal number of agents e.g. a 2v1 scenario. The team with two agents collects
+we may have teams with an unequal number of agents e.g. a 2v1 scenario like our Strikers Vs Goalie example environment. The team with two agents collects
 twice as many agent steps per environment step as the team with one agent.  Thus, these two values will need to be distinct to ensure that the same number
 of trainer steps corresponds to the same number of opponent swaps for each team. The formula for `swap_steps` if
 a user desires `x` swaps of a team with `num_agents` agents against an opponent team with `num_opponent_agents`

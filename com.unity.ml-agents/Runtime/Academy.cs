@@ -209,6 +209,12 @@ namespace MLAgents
             // Don't show this object in the hierarchy
             m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
             m_FixedUpdateStepper = m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
+            try
+            {
+                // This try-catch is because DontDestroyOnLoad cannot be used in Editor Tests
+                GameObject.DontDestroyOnLoad(m_StepperObject);
+            }
+            catch {}
         }
 
         /// <summary>
