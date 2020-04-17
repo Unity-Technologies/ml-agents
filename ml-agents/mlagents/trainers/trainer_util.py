@@ -220,7 +220,8 @@ def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]
     """
     curriculum_config: Dict[str, Any] = {}
     for brain_name, brain_config in trainer_config.items():
-        if "curriculum" in brain_config:
+        # Don't try to iterate non-Dicts. This probably means your config is malformed.
+        if isinstance(brain_config, dict) and "curriculum" in brain_config:
             curriculum_config[brain_name] = brain_config["curriculum"]
     return curriculum_config
 

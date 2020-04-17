@@ -5,7 +5,11 @@ import os
 from unittest.mock import patch
 
 from mlagents.trainers import trainer_util
-from mlagents.trainers.trainer_util import load_config, _load_config
+from mlagents.trainers.trainer_util import (
+    load_config,
+    _load_config,
+    assemble_curriculum_config,
+)
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
 from mlagents.trainers.brain import BrainParameters
@@ -336,6 +340,41 @@ you:
     with pytest.raises(TrainerConfigError):
         fp = io.StringIO(file_contents)
         _load_config(fp)
+
+
+def test_assemble_curriculum_config():
+    file_contents = """
+behavior1:
+    curriculum:
+        foo: 5
+behavior2:
+    curriculum:
+        foo: 6
+    """
+    trainer_config = _load_config(file_contents)
+    curriculum_config = assemble_curriculum_config(trainer_config)
+    assert curriculum_config == {"behavior1": {"foo": 5}, "behavior2": {"foo": 6}}
+
+    # Check that nothing is returned if no curriculum.
+    file_contents = """
+behavior1:
+    foo: 3
+behavior2:
+    foo: 4
+    """
+    trainer_config = _load_config(file_contents)
+    curriculum_config = assemble_curriculum_config(trainer_config)
+    assert curriculum_config == {}
+
+    # Check that method doesn't break if 1st level entity isn't a dict.
+    # Note: this is a malformed configuration.
+    file_contents = """
+behavior1: 3
+behavior2: 4
+    """
+    trainer_config = _load_config(file_contents)
+    curriculum_config = assemble_curriculum_config(trainer_config)
+    assert curriculum_config == {}
 
 
 def test_existing_directories(tmp_path):
