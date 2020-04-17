@@ -63,7 +63,7 @@ and this project adheres to
 - `StackingSensor` was changed from `internal` visibility to `public`
 - Updated Barracuda to 0.6.3-preview.
 - The `gym` wrapper now takes optional parameters for SideChannels and command
-  line arguments for the environment.
+  line arguments for the environment. (#3801)
 
 ### Bug Fixes
 
