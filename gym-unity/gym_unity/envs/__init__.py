@@ -7,6 +7,7 @@ from gym import error, spaces
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
+from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs import logging_util
 
 
@@ -38,6 +39,7 @@ class UnityEnv(gym.Env):
         flatten_branched: bool = False,
         no_graphics: bool = False,
         allow_multiple_visual_obs: bool = False,
+        side_channels: Optional[List[SideChannel]] = None,
     ):
         """
         Environment initialization
@@ -49,6 +51,7 @@ class UnityEnv(gym.Env):
             MultiDiscrete.
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
+        :param side_channels: Optional list of side channels for no-rl communication with Unity
         """
         base_port = UnityEnvironment.BASE_ENVIRONMENT_PORT
         if environment_filename is None:
@@ -59,6 +62,7 @@ class UnityEnv(gym.Env):
             worker_id,
             base_port=base_port,
             no_graphics=no_graphics,
+            side_channels=side_channels,
         )
 
         # Take a single step so that the brain information will be sent over
