@@ -63,7 +63,7 @@ def run_training(python_version, csharp_version):
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
     override_config_file(
-        "config/trainer_config.yaml",
+        "config/ppo/3DBall.yaml",
         "override.yaml",
         max_steps=100,
         batch_size=10,
