@@ -73,10 +73,10 @@ def test_load_and_set(dummy_config, use_discrete):
     trainer_params = dummy_config
     trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
     trainer.seed = 1
-    policy = trainer.create_policy(mock_brain)
+    policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
     policy.create_tf_graph()
     trainer.seed = 20  # otherwise graphs are the same
-    to_load_policy = trainer.create_policy(mock_brain)
+    to_load_policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
     to_load_policy.create_tf_graph()
     to_load_policy.init_load_weights()
 
@@ -126,19 +126,19 @@ def test_process_trajectory(dummy_config):
     )
 
     # first policy encountered becomes policy trained by wrapped PPO
-    policy = trainer.create_policy(brain_params_team0)
     parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(
         brain_params_team0.brain_name
     )
+    policy = trainer.create_policy(parsed_behavior_id0, brain_params_team0)
     trainer.add_policy(parsed_behavior_id0, policy)
     trajectory_queue0 = AgentManagerQueue(brain_params_team0.brain_name)
     trainer.subscribe_trajectory_queue(trajectory_queue0)
 
     # Ghost trainer should ignore this queue because off policy
-    policy = trainer.create_policy(brain_params_team1)
     parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(
         brain_params_team1.brain_name
     )
+    policy = trainer.create_policy(parsed_behavior_id1, brain_params_team1)
     trainer.add_policy(parsed_behavior_id1, policy)
     trajectory_queue1 = AgentManagerQueue(brain_params_team1.brain_name)
     trainer.subscribe_trajectory_queue(trajectory_queue1)
@@ -200,16 +200,16 @@ def test_publish_queue(dummy_config):
 
     # First policy encountered becomes policy trained by wrapped PPO
     # This queue should remain empty after swap snapshot
-    policy = trainer.create_policy(brain_params_team0)
+    policy = trainer.create_policy(parsed_behavior_id0, brain_params_team0)
     trainer.add_policy(parsed_behavior_id0, policy)
     policy_queue0 = AgentManagerQueue(brain_params_team0.brain_name)
     trainer.publish_policy_queue(policy_queue0)
 
     # Ghost trainer should use this queue for ghost policy swap
-    policy = trainer.create_policy(brain_params_team1)
     parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(
         brain_params_team1.brain_name
     )
+    policy = trainer.create_policy(parsed_behavior_id1, brain_params_team1)
     trainer.add_policy(parsed_behavior_id1, policy)
     policy_queue1 = AgentManagerQueue(brain_params_team1.brain_name)
     trainer.publish_policy_queue(policy_queue1)

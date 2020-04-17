@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using MLAgents;
 using MLAgents.Policies;
+using MLAgents.SideChannels;
 
 public class AgentSoccer : Agent
 {
@@ -18,11 +19,29 @@ public class AgentSoccer : Agent
         Purple = 1
     }
 
+    public enum Position
+    {
+        Striker,
+        Goalie,
+        Generic
+    }
+
     [HideInInspector]
     public Team team;
     float m_KickPower;
     int m_PlayerIndex;
     public SoccerFieldArea area;
+    // The coefficient for the reward for colliding with a ball. Set using curriculum.
+    float m_BallTouch;
+    public Position position;
+
+    const float k_Power = 2000f;
+    float m_Existential;
+    float m_LateralSpeed;
+    float m_ForwardSpeed;
+
+    [HideInInspector]
+    public float timePenalty = 0;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -32,6 +51,7 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
+        m_Existential = 1f / maxStep;
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {
@@ -42,6 +62,21 @@ public class AgentSoccer : Agent
         {
             team = Team.Purple;
             m_Transform = new Vector3(transform.position.x + 4f, .5f, transform.position.z);
+        }
+        if (position == Position.Goalie)
+        {
+            m_LateralSpeed = 1.0f;
+            m_ForwardSpeed = 1.0f;
+        }
+        else if (position == Position.Striker)
+        {
+            m_LateralSpeed = 0.3f;
+            m_ForwardSpeed = 1.3f;
+        }
+        else 
+        {
+            m_LateralSpeed = 0.3f;
+            m_ForwardSpeed = 1.0f;
         }
         m_SoccerSettings = FindObjectOfType<SoccerSettings>();
         agentRb = GetComponent<Rigidbody>();
@@ -72,21 +107,21 @@ public class AgentSoccer : Agent
         switch (forwardAxis)
         {
             case 1:
-                dirToGo = transform.forward * 1f;
+                dirToGo = transform.forward * m_ForwardSpeed;
                 m_KickPower = 1f;
                 break;
             case 2:
-                dirToGo = transform.forward * -1f;
+                dirToGo = transform.forward * -m_ForwardSpeed;
                 break;
         }
 
         switch (rightAxis)
         {
             case 1:
-                dirToGo = transform.right * 0.3f;
+                dirToGo = transform.right * m_LateralSpeed;
                 break;
             case 2:
-                dirToGo = transform.right * -0.3f;
+                dirToGo = transform.right * -m_LateralSpeed;
                 break;
         }
 
@@ -107,51 +142,68 @@ public class AgentSoccer : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        // Existential penalty for strikers.
-        AddReward(-1f / 3000f);
+
+        if (position == Position.Goalie)
+        {
+            // Existential bonus for Goalies.
+            AddReward(m_Existential);
+        }
+        else if (position == Position.Striker)
+        {
+            // Existential penalty for Strikers
+            AddReward(-m_Existential);
+        }
+        else
+        {
+            // Existential penalty cumulant for Generic
+            timePenalty -= m_Existential;
+        }
         MoveAgent(vectorAction);
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(float[] actionsOut)
     {
-        var action = new float[3];
         //forward
         if (Input.GetKey(KeyCode.W))
         {
-            action[0] = 1f;
+            actionsOut[0] = 1f;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            action[0] = 2f;
+            actionsOut[0] = 2f;
         }
         //rotate
         if (Input.GetKey(KeyCode.A))
         {
-            action[2] = 1f;
+            actionsOut[2] = 1f;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            action[2] = 2f;
+            actionsOut[2] = 2f;
         }
         //right
         if (Input.GetKey(KeyCode.E))
         {
-            action[1] = 1f;
+            actionsOut[1] = 1f;
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            action[1] = 2f;
+            actionsOut[1] = 2f;
         }
-        return action;
     }
     /// <summary>
     /// Used to provide a "kick" to the ball.
     /// </summary>
     void OnCollisionEnter(Collision c)
     {
-        var force = 2000f * m_KickPower;
+        var force = k_Power * m_KickPower;
+        if (position == Position.Goalie)
+        {
+            force = k_Power;
+        }
         if (c.gameObject.CompareTag("ball"))
         {
+            AddReward(.2f * m_BallTouch);
             var dir = c.contacts[0].point - transform.position;
             dir = dir.normalized;
             c.gameObject.GetComponent<Rigidbody>().AddForce(dir * force);
@@ -160,6 +212,9 @@ public class AgentSoccer : Agent
 
     public override void OnEpisodeBegin()
     {
+
+        timePenalty = 0;
+        m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);

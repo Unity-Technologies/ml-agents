@@ -302,56 +302,63 @@ class GhostTrainer(Trainer):
         """
         Forwarding call to wrapped trainers save_model
         """
-        self.trainer.save_model(name_behavior_id)
+        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
+        brain_name = parsed_behavior_id.brain_name
+        self.trainer.save_model(brain_name)
 
     def export_model(self, name_behavior_id: str) -> None:
         """
         Forwarding call to wrapped trainers export_model.
-        First loads the current snapshot.
         """
         parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
         brain_name = parsed_behavior_id.brain_name
-        policy = self.trainer.get_policy(brain_name)
-        policy.load_weights(self.current_policy_snapshot[brain_name])
         self.trainer.export_model(brain_name)
 
-    def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TFPolicy:
         """
         Creates policy with the wrapped trainer's create_policy function
+        The first policy encountered sets the wrapped
+        trainer team.  This is to ensure that all agents from the same multi-agent
+        team are grouped. All policies associated with this team are added to the
+        wrapped trainer to be trained.
         """
-        return self.trainer.create_policy(brain_parameters)
+        policy = self.trainer.create_policy(parsed_behavior_id, brain_parameters)
+        policy.create_tf_graph()
+        policy.initialize_or_load()
+        policy.init_load_weights()
+        team_id = parsed_behavior_id.team_id
+        self.controller.subscribe_team_id(team_id, self)
+
+        # First policy or a new agent on the same team encountered
+        if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
+            internal_trainer_policy = self.trainer.create_policy(
+                parsed_behavior_id, brain_parameters
+            )
+            self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
+            internal_trainer_policy.init_load_weights()
+            self.current_policy_snapshot[
+                parsed_behavior_id.brain_name
+            ] = internal_trainer_policy.get_weights()
+
+            policy.load_weights(internal_trainer_policy.get_weights())
+            self._save_snapshot()  # Need to save after trainer initializes policy
+            self._learning_team = self.controller.get_learning_team
+            self.wrapped_trainer_team = team_id
+        return policy
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
     ) -> None:
         """
-        Adds policy to trainer. The first policy encountered sets the wrapped
-        trainer team.  This is to ensure that all agents from the same multi-agent
-        team are grouped. All policies associated with this team are added to the
-        wrapped trainer to be trained.
-        :param name_behavior_id: Behavior ID that the policy should belong to.
+        Adds policy to GhostTrainer.
+        :param parsed_behavior_id: Behavior ID that the policy should belong to.
         :param policy: Policy to associate with name_behavior_id.
         """
         name_behavior_id = parsed_behavior_id.behavior_id
-        team_id = parsed_behavior_id.team_id
-        self.controller.subscribe_team_id(team_id, self)
-        self.policies[name_behavior_id] = policy
-        policy.create_tf_graph()
-
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
-        # for saving/swapping snapshots
-        policy.init_load_weights()
-
-        # First policy or a new agent on the same team encountered
-        if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
-            self.current_policy_snapshot[
-                parsed_behavior_id.brain_name
-            ] = policy.get_weights()
-
-            self._save_snapshot()  # Need to save after trainer initializes policy
-            self.trainer.add_policy(parsed_behavior_id, policy)
-            self._learning_team = self.controller.get_learning_team
-            self.wrapped_trainer_team = team_id
+        self.policies[name_behavior_id] = policy
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

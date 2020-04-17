@@ -1,4 +1,9 @@
-from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.base_env import (
+    BehaviorSpec,
+    ActionType,
+    DecisionSteps,
+    TerminalSteps,
+)
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
 from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
@@ -13,14 +18,14 @@ from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
 from PIL import Image
 
 
-def agent_group_spec_from_proto(
+def behavior_spec_from_proto(
     brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
-) -> AgentGroupSpec:
+) -> BehaviorSpec:
     """
-    Converts brain parameter and agent info proto to AgentGroupSpec object.
+    Converts brain parameter and agent info proto to BehaviorSpec object.
     :param brain_param_proto: protobuf object.
     :param agent_info: protobuf object.
-    :return: AgentGroupSpec object.
+    :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
     action_type = (
@@ -34,7 +39,7 @@ def agent_group_spec_from_proto(
         ] = brain_param_proto.vector_action_size[0]
     else:
         action_shape = tuple(brain_param_proto.vector_action_size)
-    return AgentGroupSpec(observation_shape, action_type, action_shape)
+    return BehaviorSpec(observation_shape, action_type, action_shape)
 
 
 @timed
@@ -149,44 +154,75 @@ def _process_vector_observation(
 
 
 @timed
-def batched_step_result_from_proto(
+def steps_from_proto(
     agent_info_list: Collection[
         AgentInfoProto
     ],  # pylint: disable=unsubscriptable-object
-    group_spec: AgentGroupSpec,
-) -> BatchedStepResult:
-    obs_list: List[np.ndarray] = []
-    for obs_index, obs_shape in enumerate(group_spec.observation_shapes):
+    behavior_spec: BehaviorSpec,
+) -> Tuple[DecisionSteps, TerminalSteps]:
+    decision_agent_info_list = [
+        agent_info for agent_info in agent_info_list if not agent_info.done
+    ]
+    terminal_agent_info_list = [
+        agent_info for agent_info in agent_info_list if agent_info.done
+    ]
+    decision_obs_list: List[np.ndarray] = []
+    terminal_obs_list: List[np.ndarray] = []
+    for obs_index, obs_shape in enumerate(behavior_spec.observation_shapes):
         is_visual = len(obs_shape) == 3
         if is_visual:
             obs_shape = cast(Tuple[int, int, int], obs_shape)
-            obs_list.append(
-                _process_visual_observation(obs_index, obs_shape, agent_info_list)
+            decision_obs_list.append(
+                _process_visual_observation(
+                    obs_index, obs_shape, decision_agent_info_list
+                )
+            )
+            terminal_obs_list.append(
+                _process_visual_observation(
+                    obs_index, obs_shape, terminal_agent_info_list
+                )
             )
         else:
-            obs_list.append(
-                _process_vector_observation(obs_index, obs_shape, agent_info_list)
+            decision_obs_list.append(
+                _process_vector_observation(
+                    obs_index, obs_shape, decision_agent_info_list
+                )
             )
-    rewards = np.array(
-        [agent_info.reward for agent_info in agent_info_list], dtype=np.float32
+            terminal_obs_list.append(
+                _process_vector_observation(
+                    obs_index, obs_shape, terminal_agent_info_list
+                )
+            )
+    decision_rewards = np.array(
+        [agent_info.reward for agent_info in decision_agent_info_list], dtype=np.float32
+    )
+    terminal_rewards = np.array(
+        [agent_info.reward for agent_info in terminal_agent_info_list], dtype=np.float32
     )
 
-    _raise_on_nan_and_inf(rewards, "rewards")
+    _raise_on_nan_and_inf(decision_rewards, "rewards")
+    _raise_on_nan_and_inf(terminal_rewards, "rewards")
 
-    done = np.array([agent_info.done for agent_info in agent_info_list], dtype=np.bool)
     max_step = np.array(
-        [agent_info.max_step_reached for agent_info in agent_info_list], dtype=np.bool
+        [agent_info.max_step_reached for agent_info in terminal_agent_info_list],
+        dtype=np.bool,
     )
-    agent_id = np.array(
-        [agent_info.id for agent_info in agent_info_list], dtype=np.int32
+    decision_agent_id = np.array(
+        [agent_info.id for agent_info in decision_agent_info_list], dtype=np.int32
+    )
+    terminal_agent_id = np.array(
+        [agent_info.id for agent_info in terminal_agent_info_list], dtype=np.int32
     )
     action_mask = None
-    if group_spec.is_action_discrete():
-        if any([agent_info.action_mask is not None] for agent_info in agent_info_list):
-            n_agents = len(agent_info_list)
-            a_size = np.sum(group_spec.discrete_action_branches)
+    if behavior_spec.is_action_discrete():
+        if any(
+            [agent_info.action_mask is not None]
+            for agent_info in decision_agent_info_list
+        ):
+            n_agents = len(decision_agent_info_list)
+            a_size = np.sum(behavior_spec.discrete_action_branches)
             mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
-            for agent_index, agent_info in enumerate(agent_info_list):
+            for agent_index, agent_info in enumerate(decision_agent_info_list):
                 if agent_info.action_mask is not None:
                     if len(agent_info.action_mask) == a_size:
                         mask_matrix[agent_index, :] = [
@@ -194,9 +230,14 @@ def batched_step_result_from_proto(
                             for k in range(a_size)
                         ]
             action_mask = (1 - mask_matrix).astype(np.bool)
-            indices = _generate_split_indices(group_spec.discrete_action_branches)
+            indices = _generate_split_indices(behavior_spec.discrete_action_branches)
             action_mask = np.split(action_mask, indices, axis=1)
-    return BatchedStepResult(obs_list, rewards, done, max_step, agent_id, action_mask)
+    return (
+        DecisionSteps(
+            decision_obs_list, decision_rewards, decision_agent_id, action_mask
+        ),
+        TerminalSteps(terminal_obs_list, terminal_rewards, max_step, terminal_agent_id),
+    )
 
 
 def _generate_split_indices(dims):

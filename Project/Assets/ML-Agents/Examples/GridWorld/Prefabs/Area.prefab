@@ -304,6 +304,7 @@ GameObject:
   - component: {fileID: 114935253044749092}
   - component: {fileID: 114650561397225712}
   - component: {fileID: 114889700908650620}
+  - component: {fileID: 7980686505185502968}
   m_Layer: 8
   m_Name: Agent
   m_TagString: agent
@@ -372,8 +373,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridWorld
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114650561397225712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -386,6 +387,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 857707f3f352541d5b858efca4479b95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 100
   area: {fileID: 114704252266302846}
   timeBetweenDecisionsAtInference: 0.15
@@ -403,12 +407,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20743940359151984}
-  sensorName: CameraSensor
-  width: 84
-  height: 64
-  grayscale: 0
-  compression: 1
+  m_Camera: {fileID: 20743940359151984}
+  m_SensorName: CameraSensor
+  m_Width: 84
+  m_Height: 64
+  m_Grayscale: 0
+  m_Compression: 1
+--- !u!114 &7980686505185502968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488387672112076}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1625008366184734
 GameObject:
   m_ObjectHideFlags: 0

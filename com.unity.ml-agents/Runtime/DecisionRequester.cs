@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,12 +18,12 @@ namespace MLAgents
     /// <seealso cref="Agent.RequestDecision"/> function.
     /// </remarks>
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
-    internal class DecisionRequester : MonoBehaviour
+    [RequireComponent(typeof(Agent))]
+    public class DecisionRequester : MonoBehaviour
     {
         /// <summary>
         /// The frequency with which the agent requests a decision. A DecisionPeriod of 5 means
-        /// that the Agent will request a decision every 5 Academy steps.
-        /// </summary>
+        /// that the Agent will request a decision every 5 Academy steps. /// </summary>
         [Range(1, 20)]
         [Tooltip("The frequency with which the agent requests a decision. A DecisionPeriod " +
                  "of 5 means that the Agent will request a decision every 5 Academy steps.")]
@@ -50,27 +51,32 @@ namespace MLAgents
         [Tooltip("Whether or not Agent decisions should start at an offset.")]
         public bool offsetStep;
 
+        [NonSerialized]
         Agent m_Agent;
-        int m_Offset;
 
         internal void Awake()
         {
-            m_Offset = offsetStep ? gameObject.GetInstanceID() : 0;
             m_Agent = gameObject.GetComponent<Agent>();
-            Academy.Instance.AgentSetStatus += MakeRequests;
+            Debug.Assert(m_Agent != null, "Agent component was not found on this gameObject and is required.");
+            Academy.Instance.AgentPreStep += MakeRequests;
         }
 
         void OnDestroy()
         {
             if (Academy.IsInitialized)
             {
-                Academy.Instance.AgentSetStatus -= MakeRequests;
+                Academy.Instance.AgentPreStep -= MakeRequests;
             }
         }
 
-        void MakeRequests(int count)
+        /// <summary>
+        /// Method that hooks into the Academy in order inform the Agent on whether or not it should request a
+        /// decision, and whether or not it should take actions between decisions.
+        /// </summary>
+        /// <param name="academyStepCount">The current step count of the academy.</param>
+        void MakeRequests(int academyStepCount)
         {
-            if ((count + m_Offset) % DecisionPeriod == 0)
+            if (academyStepCount % DecisionPeriod == 0)
             {
                 m_Agent?.RequestDecision();
             }

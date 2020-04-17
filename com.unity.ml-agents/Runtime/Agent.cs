@@ -240,6 +240,9 @@ namespace MLAgents
         /// their own experience.
         int m_StepCount;
 
+        /// Number of times the Agent has completed an episode.
+        int m_CompletedEpisodes;
+
         /// Episode identifier each agent receives. It is used
         /// to separate between different agents in the environment.
         /// This Id will be changed every time the Agent resets.
@@ -455,13 +458,25 @@ namespace MLAgents
 
         void NotifyAgentDone(DoneReason doneReason)
         {
+            if (m_Info.done)
+            {
+                // The Agent was already marked as Done and should not be notified again
+                return;
+            }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
             m_Info.done = true;
             m_Info.maxStepReached = doneReason == DoneReason.MaxStepReached;
+            if (collectObservationsSensor != null)
+            {
+                // Make sure the latest observations are being passed to training.
+                collectObservationsSensor.Reset();
+                CollectObservations(collectObservationsSensor);
+            }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
             m_Brain?.RequestDecision(m_Info, sensors);
+            ResetSensors();
 
             // We also have to write any to any DemonstationStores so that they get the "done" flag.
             foreach (var demoWriter in DemonstrationWriters)
@@ -471,26 +486,17 @@ namespace MLAgents
 
             if (doneReason != DoneReason.Disabled)
             {
-                // We don't want to udpate the reward stats when the Agent is disabled, because this will make
+                // We don't want to update the reward stats when the Agent is disabled, because this will make
                 // the rewards look lower than they actually are during shutdown.
+                m_CompletedEpisodes++;
                 UpdateRewardStats();
             }
 
-            // The Agent is done, so we give it a new episode Id
-            m_EpisodeId = EpisodeIdCounter.GetEpisodeId();
             m_Reward = 0f;
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
-        }
-
-        [Obsolete("GiveModel() has been deprecated, use SetModel() instead.")]
-        public void GiveModel(
-            string behaviorName,
-            NNModel model,
-            InferenceDevice inferenceDevice = InferenceDevice.CPU)
-        {
-            SetModel(behaviorName, model, inferenceDevice);
+            Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
         }
 
         /// <summary>
@@ -554,6 +560,18 @@ namespace MLAgents
         public int StepCount
         {
             get { return m_StepCount; }
+        }
+
+        /// <summary>
+        /// Returns the number of episodes that the Agent has completed (either <see cref="Agent.EndEpisode()"/>
+        /// was called, or maxSteps was reached).
+        /// </summary>
+        /// <returns>
+        /// Current episode count.
+        /// </returns>
+        public int CompletedEpisodes
+        {
+            get { return m_CompletedEpisodes; }
         }
 
         /// <summary>
@@ -630,12 +648,6 @@ namespace MLAgents
         {
             var gaugeName = $"{m_PolicyFactory.behaviorName}.CumulativeReward";
             TimerStack.Instance.SetGauge(gaugeName, GetCumulativeReward());
-        }
-
-        [Obsolete("Done() has been deprecated, use EndEpisode() instead.")]
-        public void Done()
-        {
-            EndEpisode();
         }
 
         /// <summary>
@@ -717,11 +729,6 @@ namespace MLAgents
             }
         }
 
-        [Obsolete("InitializeAgent() has been deprecated, use Initialize() instead.")]
-        public virtual void InitializeAgent()
-        {
-        }
-
         /// <summary>
         /// Implement `Initialize()` to perform one-time initialization or set up of the
         /// Agent instance.
@@ -737,12 +744,7 @@ namespace MLAgents
         /// 
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
-        public virtual void Initialize()
-        {
-#pragma warning disable 0618
-            InitializeAgent();
-#pragma warning restore 0618
-        }
+        public virtual void Initialize(){}
 
         /// <summary>
         /// Implement `Heuristic()` to choose an action for this agent using a custom heuristic.
@@ -784,26 +786,21 @@ namespace MLAgents
         /// You can also use the [Input System package], which provides a more flexible and
         /// configurable input system.
         /// <code>
-        ///     public override float[] Heuristic()
+        ///     public override void Heuristic(float[] actionsOut)
         ///     {
-        ///         var action = new float[3];
-        /// 
-        ///         action[0] = Input.GetAxis("Horizontal");
-        ///         action[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
-        ///         action[2] = Input.GetAxis("Vertical");
-        ///         return action;
+        ///         actionsOut[0] = Input.GetAxis("Horizontal");
+        ///         actionsOut[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        ///         actionsOut[2] = Input.GetAxis("Vertical");
         ///     }
         /// </code>
         /// [Input Manager]: https://docs.unity3d.com/Manual/class-InputManager.html
         /// [Input System package]: https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html
         /// </example>
         /// <seealso cref="OnActionReceived(float[])"/>
-        public virtual float[] Heuristic()
+        public virtual void Heuristic(float[] actionsOut)
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
-            var param = m_PolicyFactory.brainParameters;
-
-            return new float[param.numActions];
+            Array.Clear(actionsOut, 0, actionsOut.Length);
         }
 
         /// <summary>
@@ -876,7 +873,14 @@ namespace MLAgents
                 return;
             }
 
-            m_Info.storedVectorActions = m_Action.vectorActions;
+            if (m_Info.done)
+            {
+                Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
+            }
+            else
+            {
+                Array.Copy(m_Action.vectorActions, m_Info.storedVectorActions, m_Action.vectorActions.Length);
+            }
             m_ActionMasker.ResetMask();
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -911,6 +915,14 @@ namespace MLAgents
             foreach (var sensor in sensors)
             {
                 sensor.Update();
+            }
+        }
+
+        void ResetSensors()
+        {
+            foreach (var sensor in sensors)
+            {
+                sensor.Reset();
             }
         }
 
@@ -978,11 +990,6 @@ namespace MLAgents
         /// </remarks>
         /// <seealso cref="OnActionReceived(float[])"/>
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
-        {
-        }
-
-        [Obsolete("AgentAction() has been deprecated, use OnActionReceived() instead.")]
-        public virtual void AgentAction(float[] vectorAction)
         {
         }
 
@@ -1057,17 +1064,7 @@ namespace MLAgents
         /// by the <see cref="BrainParameters"/> of the agent's associated
         /// <see cref="BehaviorParameters"/> component.
         /// </param>
-        public virtual void OnActionReceived(float[] vectorAction)
-        {
-#pragma warning disable 0618
-            AgentAction(m_Action.vectorActions);
-#pragma warning restore 0618
-        }
-
-        [Obsolete("AgentReset() has been deprecated, use OnEpisodeBegin() instead.")]
-        public virtual void AgentReset()
-        {
-        }
+        public virtual void OnActionReceived(float[] vectorAction){}
 
         /// <summary>
         /// Implement `OnEpisodeBegin()` to set up an Agent instance at the beginning
@@ -1075,12 +1072,7 @@ namespace MLAgents
         /// </summary>
         /// <seealso cref="Initialize"/>
         /// <seealso cref="EndEpisode"/>
-        public virtual void OnEpisodeBegin()
-        {
-#pragma warning disable 0618
-            AgentReset();
-#pragma warning restore 0618
-        }
+        public virtual void OnEpisodeBegin() {}
 
         /// <summary>
         /// Returns the last action that was decided on by the Agent.
@@ -1096,7 +1088,7 @@ namespace MLAgents
 
         /// <summary>
         /// An internal reset method that updates internal data structures in
-        /// addition to calling <see cref="AgentReset"/>.
+        /// addition to calling <see cref="OnEpisodeBegin"/>.
         /// </summary>
         void _AgentReset()
         {
@@ -1157,10 +1149,19 @@ namespace MLAgents
 
         void DecideAction()
         {
-            m_Action.vectorActions = m_Brain?.DecideAction();
             if (m_Action.vectorActions == null)
             {
                 ResetData();
+            }
+            var action = m_Brain?.DecideAction();
+
+            if (action == null)
+            {
+                Array.Clear(m_Action.vectorActions, 0, m_Action.vectorActions.Length);
+            }
+            else
+            {
+                Array.Copy(action, m_Action.vectorActions, action.Length);
             }
         }
     }

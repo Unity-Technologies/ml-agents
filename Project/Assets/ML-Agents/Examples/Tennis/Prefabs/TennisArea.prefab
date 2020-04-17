@@ -93,6 +93,7 @@ GameObject:
   - component: {fileID: 114176423636690854}
   - component: {fileID: 114915946461826994}
   - component: {fileID: 2449890524009497851}
+  - component: {fileID: 6467897465973556822}
   m_Layer: 0
   m_Name: AgentA
   m_TagString: agent
@@ -212,8 +213,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114915946461826994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,6 +227,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51a3fb0b3186433ea84fc1e0549cc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 0
   ball: {fileID: 1273406647218856}
   invertX: 0
@@ -246,8 +250,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
+--- !u!114 &6467897465973556822
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1170495812642400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1194790474478638
 GameObject:
   m_ObjectHideFlags: 0
@@ -1233,6 +1249,7 @@ GameObject:
   - component: {fileID: 114399072728845634}
   - component: {fileID: 114800310164848628}
   - component: {fileID: 6598495797138489682}
+  - component: {fileID: 1420140102966759323}
   m_Layer: 0
   m_Name: AgentB
   m_TagString: agent
@@ -1352,8 +1369,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
-  m_TeamID: 1
-  m_useChildSensors: 1
+  TeamId: 1
+  m_UseChildSensors: 1
 --- !u!114 &114800310164848628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1366,6 +1383,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e51a3fb0b3186433ea84fc1e0549cc91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 0
   ball: {fileID: 1273406647218856}
   invertX: 1
@@ -1386,8 +1406,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
+--- !u!114 &1420140102966759323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1882383181950958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1969551055586186
 GameObject:
   m_ObjectHideFlags: 0

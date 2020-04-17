@@ -403,6 +403,7 @@ GameObject:
   - component: {fileID: 114731167133171590}
   - component: {fileID: 114955921823023820}
   - component: {fileID: 6226801880261327134}
+  - component: {fileID: 7840105453417110232}
   m_Layer: 0
   m_Name: Agent
   m_TagString: Untagged
@@ -450,8 +451,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Reacher
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114955921823023820
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -464,6 +465,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 220b156e3b142406c8b76d4db981d044, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 4000
   pendulumA: {fileID: 1644872085946016}
   pendulumB: {fileID: 1053261483945176}
@@ -482,8 +486,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 4
-  RepeatAction: 1
+  TakeActionsBetweenDecisions: 1
   offsetStep: 0
+--- !u!114 &7840105453417110232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395682910799436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1644872085946016
 GameObject:
   m_ObjectHideFlags: 0

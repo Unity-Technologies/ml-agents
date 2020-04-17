@@ -138,12 +138,12 @@ namespace MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(Func<float[]> heuristic)
+        internal IPolicy GeneratePolicy(HeuristicPolicy.ActionGenerator heuristic)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return new HeuristicPolicy(heuristic);
+                    return new HeuristicPolicy(heuristic, m_BrainParameters.numActions);
                 case BehaviorType.InferenceOnly:
                 {
                     if (m_Model == null)
@@ -167,10 +167,10 @@ namespace MLAgents.Policies
                     }
                     else
                     {
-                        return new HeuristicPolicy(heuristic);
+                        return new HeuristicPolicy(heuristic, m_BrainParameters.numActions);
                     }
                 default:
-                    return new HeuristicPolicy(heuristic);
+                    return new HeuristicPolicy(heuristic, m_BrainParameters.numActions);
             }
         }
 
