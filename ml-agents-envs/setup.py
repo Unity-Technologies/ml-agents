@@ -47,6 +47,7 @@ setup(
         "gym",
         "cmake",
         "atari-py",
+        "opencv-python",
         "gym[atari]",
         "cloudpickle",
         "grpcio>=1.11.0",
