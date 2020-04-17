@@ -215,7 +215,7 @@ double-check that the versions are in the same. The versions can be found in
 - If you have a model trained which uses RayPerceptionSensor and has non-1.0
   scale in the Agent's transform, it must be retrained.
 
-## Migrating from ML-Agents toolkit v0.12.0 to v0.13.0
+## Migrating from ML-Agents Toolkit v0.12.0 to v0.13.0
 
 ### Important changes
 
@@ -264,7 +264,7 @@ double-check that the versions are in the same. The versions can be found in
   `--target-frame-rate` instead.
 - Any imports from `mlagents.envs` should be replaced with `mlagents_envs`.
 
-## Migrating from ML-Agents toolkit v0.11.0 to v0.12.0
+## Migrating from ML-Agents Toolkit v0.11.0 to v0.12.0
 
 ### Important Changes
 
@@ -306,7 +306,7 @@ double-check that the versions are in the same. The versions can be found in
   `The type or namespace 'Google' could not be found`, you will need to
   [install the Barracuda preview package](Installation.md#package-installation).
 
-## Migrating from ML-Agents toolkit v0.10 to v0.11.0
+## Migrating from ML-Agents Toolkit v0.10 to v0.11.0
 
 ### Important Changes
 
@@ -345,7 +345,7 @@ double-check that the versions are in the same. The versions can be found in
   to complete the fields on the new `Behavior Parameters` component with the
   BrainParameters of the old Brain.
 
-## Migrating from ML-Agents toolkit v0.9 to v0.10
+## Migrating from ML-Agents Toolkit v0.9 to v0.10
 
 ### Important Changes
 
@@ -375,7 +375,7 @@ double-check that the versions are in the same. The versions can be found in
   the Python API, change `from mlagents_envs import UnityEnvironment` to
   `from mlagents_envs.environment import UnityEnvironment`.
 
-## Migrating from ML-Agents toolkit v0.8 to v0.9
+## Migrating from ML-Agents Toolkit v0.8 to v0.9
 
 ### Important Changes
 
@@ -403,7 +403,7 @@ double-check that the versions are in the same. The versions can be found in
   v0.8 step count by `num_envs` for an approximate comparison. You may need to
   change `max_steps` in your config as appropriate as well.
 
-## Migrating from ML-Agents toolkit v0.7 to v0.8
+## Migrating from ML-Agents Toolkit v0.7 to v0.8
 
 ### Important Changes
 
@@ -419,7 +419,7 @@ double-check that the versions are in the same. The versions can be found in
   check the Installing for Development in the
   [Installation documentation](Installation.md).
 
-## Migrating from ML-Agents toolkit v0.6 to v0.7
+## Migrating from ML-Agents Toolkit v0.6 to v0.7
 
 ### Important Changes
 
@@ -431,7 +431,7 @@ double-check that the versions are in the same. The versions can be found in
 - Make sure to remove the `ENABLE_TENSORFLOW` flag in your Unity Project
   settings
 
-## Migrating from ML-Agents toolkit v0.5 to v0.6
+## Migrating from ML-Agents Toolkit v0.5 to v0.6
 
 ### Important Changes
 
@@ -472,7 +472,7 @@ double-check that the versions are in the same. The versions can be found in
     `LearningBrain` ScriptableObjects used in your scene into entries into this
     list.
 
-## Migrating from ML-Agents toolkit v0.4 to v0.5
+## Migrating from ML-Agents Toolkit v0.4 to v0.5
 
 ### Important
 
@@ -533,7 +533,7 @@ double-check that the versions are in the same. The versions can be found in
   - It is no longer necessary to specify the `Max Steps` of the Academy to use
     curriculum learning.
 
-## Migrating from ML-Agents toolkit v0.3 to v0.4
+## Migrating from ML-Agents Toolkit v0.3 to v0.4
 
 ### Unity API
 
@@ -546,7 +546,7 @@ double-check that the versions are in the same. The versions can be found in
   file. Make sure to run `pip3 install -e .` within your `ml-agents/python`
   folder to update your Python packages.
 
-## Migrating from ML-Agents toolkit v0.2 to v0.3
+## Migrating from ML-Agents Toolkit v0.2 to v0.3
 
 There are a large number of new features and improvements in the ML-Agents
 toolkit v0.3 which change both the training process and Unity API in ways which
@@ -556,7 +556,7 @@ in order to ensure a smooth transition.
 
 ### Important
 
-- The ML-Agents toolkit is no longer compatible with Python 2.
+- The ML-Agents Toolkit is no longer compatible with Python 2.
 
 ### Python Training
 
