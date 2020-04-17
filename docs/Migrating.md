@@ -31,9 +31,10 @@ a single YAML file.
 * Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
 * Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
 * If your Agent class overrides `Heuristic()`, change the signature to `public override void Heuristic(float[] actionsOut)` and assign values to `actionsOut` instead of returning an array.
-* Before upgrading, move your environment-specific `Behavior Name` sections from `trainer_config.yaml` into
+* Before upgrading, move your `Behavior Name` sections from `trainer_config.yaml` into
 a separate trainer configuration file, under the `behaviors:` section. You can move the `default` section too
-if it's being used.
+if it's being used. This file should be specific to your environment, and not contain configurations for
+multiple environments (unless they have the same Behavior Names).
   * If your training uses [curriculum](Training-Curriculum-Learning.md), move those configurations under
   the `Behavior Name` section.
   * If your training uses [parameter randomization](Training-Environment-Parameter-Randomization.md), move

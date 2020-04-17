@@ -36,6 +36,9 @@ and this project adheres to
   communication between Unity and the Python process.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
+- Curriculum and Parameter Randomization configurations have been merged
+  into the main training configuration file. Note that this means training
+  configuration files are environment-specific. (#3791)
 
 ### Minor Changes
 
