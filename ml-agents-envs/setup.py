@@ -45,6 +45,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "gym",
+        "cmake",
         "atari-py",
         "gym[atari]",
         "cloudpickle",

@@ -62,8 +62,8 @@ class GymWrapper(BaseEnv):
             self._current_steps = (
                 DecisionSteps(
                     obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
-                    reward=np.array([rew]),
-                    agent_id=np.array([self._AGENT_ID]),
+                    reward=np.array([rew], dtype=np.float32),
+                    agent_id=np.array([self._AGENT_ID], dtype=np.int32),
                     action_mask=None,
                 ),
                 TerminalSteps.empty(self._behavior_specs),
@@ -74,9 +74,11 @@ class GymWrapper(BaseEnv):
                 DecisionSteps.empty(self._behavior_specs),
                 TerminalSteps(
                     obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
-                    reward=np.array([rew]),
-                    max_step=np.array([info.get("TimeLimit.truncated", False)]),
-                    agent_id=np.array([self._AGENT_ID]),
+                    reward=np.array([rew], dtype=np.float32),
+                    max_step=np.array(
+                        [info.get("TimeLimit.truncated", False)], dtype=np.bool
+                    ),
+                    agent_id=np.array([self._AGENT_ID], dtype=np.int32),
                 ),
             )
 
@@ -86,8 +88,8 @@ class GymWrapper(BaseEnv):
         self._current_steps = (
             DecisionSteps(
                 obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
-                reward=np.array([0]),
-                agent_id=np.array([self._AGENT_ID]),
+                reward=np.array([0], dtype=np.float32),
+                agent_id=np.array([self._AGENT_ID], dtype=np.int32),
                 action_mask=None,
             ),
             TerminalSteps.empty(self._behavior_specs),
