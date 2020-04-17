@@ -194,7 +194,7 @@ WormDynamic:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 5e6
+    max_steps: 3e6
     summary_freq: 30000
     num_layers: 3
     hidden_units: 512
@@ -209,7 +209,7 @@ WormStatic:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 5e6
+    max_steps: 3e6
     summary_freq: 30000
     num_layers: 3
     hidden_units: 512
