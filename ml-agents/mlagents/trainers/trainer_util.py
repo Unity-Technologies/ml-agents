@@ -219,10 +219,10 @@ def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]
     :return: Dict of curriculum configurations. Returns empty dict if none are found.
     """
     curriculum_config: Dict[str, Any] = {}
-    for brain_name, brain_config in trainer_config.items():
+    for behavior_name, behavior_config in trainer_config.items():
         # Don't try to iterate non-Dicts. This probably means your config is malformed.
-        if isinstance(brain_config, dict) and "curriculum" in brain_config:
-            curriculum_config[brain_name] = brain_config["curriculum"]
+        if isinstance(behavior_config, dict) and "curriculum" in behavior_config:
+            curriculum_config[behavior_name] = behavior_config["curriculum"]
     return curriculum_config
 
 
