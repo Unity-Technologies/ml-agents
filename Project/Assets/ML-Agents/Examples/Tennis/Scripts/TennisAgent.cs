@@ -77,13 +77,16 @@ public class TennisAgent : Agent
         var moveX = Mathf.Clamp(vectorAction[0], -1f, 1f) * m_InvertMult;
         var moveY = Mathf.Clamp(vectorAction[1], -1f, 1f);
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
-
+        
+        var upward = 0.0f;
         if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < 1f)
         {
-            m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
+            upward = moveY;
+            //m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
         }
 
-        m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
+        m_AgentRb.AddForce(new Vector3(moveX * 30f, upward * 20f, 0f), ForceMode.VelocityChange);
+        //m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
 
         m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
 
@@ -94,7 +97,9 @@ public class TennisAgent : Agent
                 transform.position.y,
                 transform.position.z);
         }
-        timePenalty += -1f / 3000f;
+        var rgV = m_AgentRb.velocity;
+        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -35f, 35f), Mathf.Clamp(rgV.y, -25f, 25f), rgV.z);
+        //timePenalty += -1f / 3000f;
 
         m_TextComponent.text = score.ToString();
     }
@@ -106,13 +111,13 @@ public class TennisAgent : Agent
         actionsOut[2] = Input.GetAxis("Vertical");   // Racket Rotation
     }
 
-    void OnCollisionEnter(Collision c)
-    {
-        if (c.gameObject.CompareTag("ball"))
-        {
-            AddReward(.4f * m_BallTouch);
-        }
-    }
+    //void OnCollisionEnter(Collision c)
+    //{
+    //    if (c.gameObject.CompareTag("ball"))
+    //    {
+    //        AddReward(.4f * m_BallTouch);
+    //    }
+    //}
 
     void FixedUpdate()
     {   
