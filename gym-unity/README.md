@@ -337,7 +337,7 @@ the training buffer, and no learning happens.
 
 We provide results from our PPO implementation and the DQN from Baselines as reference.
 Note that all runs used the same greyscale GridWorld as Dopamine. For PPO, `num_layers`
-was set to 2, and all other hyperparameters are the default for GridWorld in `trainer_config.yaml`.
+was set to 2, and all other hyperparameters are the default for GridWorld in `config/ppo/GridWorld.yaml`.
 For Baselines DQN, the provided hyperparameters in the previous section are used. Note
 that Baselines implements certain features (e.g. dueling-Q) that are not enabled
 in Dopamine DQN.

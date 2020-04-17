@@ -181,6 +181,5 @@ are conducting, see:
 
 You can also compare the
 [example environments](Learning-Environment-Examples.md) to the corresponding
-sections of the `config/trainer_config.yaml` file for each example to see how
-the hyperparameters and other configuration variables have been changed from the
-defaults.
+files in the `config/ppo/` file for each example to see how
+the hyperparameters and other configuration variables have been changed from environment to environment.

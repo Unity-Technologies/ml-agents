@@ -87,7 +87,8 @@ inspector.
        width="375" border="10" />
 </p>
 
-You can then specify the path to this file as the `demo_path` in your `trainer_config.yaml` file
+You can then specify the path to this file as the `demo_path` in your
+[training configuration file](Training-ML-Agents.md#training-config-file).
 when using BC or GAIL. For instance, for BC:
 
 ```
