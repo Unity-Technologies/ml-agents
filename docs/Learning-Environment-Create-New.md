@@ -393,16 +393,13 @@ RollerBall:
     lambd: 0.95
     learning_rate: 3.0e-4
     learning_rate_schedule: linear
-    max_steps: 5.0e5
-    memory_size: 128
+    max_steps: 5.0e4
     normalize: false
     num_epoch: 3
     num_layers: 2
     time_horizon: 64
-    sequence_length: 64
     summary_freq: 10000
     use_recurrent: false
-    vis_encode_type: simple
     reward_signals:
         extrinsic:
             strength: 1.0
@@ -418,8 +415,7 @@ hyperparameter values. In addition to setting these hyperparameter values, the A
 A larger value reduces the number of decisions the training algorithm has to consider and,
 in this simple environment, speeds up training.
 
-Similar to the steps outlined in the [Getting Started](Getting-Started.md)
-guide, to train your agent, run the following command before pressing
+To train your agent, run the following command before pressing
 :arrow_forward: in the Editor:
 
     mlagents-learn config/rollerball_config.yaml --run-id=RollerBall
@@ -439,15 +435,11 @@ has successfully *solved* the problem.
 In many of the [example environments](Learning-Environment-Examples.md), many
 copies of the training area are instantiated in the scene. This generally speeds
 up training, allowing the environment to gather many experiences in parallel.
-This can be achieved simply by instantiating many Agents which share the
-`Behavior Parameters`. Use the following steps to parallelize your RollerBall
-environment.
-
-### Instantiating Multiple Training Areas
-
-Note that we've already simplified our transition to using multiple areas by
+This can be achieved simply by instantiating many Agents with the same
+`Behavior Name`. Note that we've already simplified our transition to using multiple areas by
 creating the `TrainingArea` GameObject and relying on local positions in
-`RollerAgent.cs`.
+`RollerAgent.cs`. Use the following steps to parallelize your RollerBall
+environment:
 
 1. Drag the TrainingArea GameObject, along with its attached GameObjects, into
 your Assets browser, turning it into a prefab.
