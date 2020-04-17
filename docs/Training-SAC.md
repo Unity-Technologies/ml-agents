@@ -110,7 +110,7 @@ Typical Range: `1` - `5`
 `steps_per_update` corresponds to the number of agent steps (actions) taken for each mini-batch sampled and used during training. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
 replay buffer, and using this mini batch to update the models. Typically, this should be greater
 than 1. Note that setting `steps_per_update` lower will improve sample efficiency (reduce the number of steps required to train)
-but increase the CPU time spent performaing updates. For most environments where steps are fairly fast (e.g. our example
+but increase the CPU time spent performing updates. For most environments where steps are fairly fast (e.g. our example
 environments) `steps_per_update` equals the number of agents in the scene is a good balance. For slow environments (steps
 take 0.1 seconds or more) reducing `steps_per_update` may improve training speed.
 We can also change `steps_per_update` to lower than 1 to update more often than once per step, though this is usually
