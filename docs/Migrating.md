@@ -17,6 +17,8 @@ The versions can be found in
 * The low level Python API has changed. You can look at the document [Low Level Python API documentation](Python-API.md) for more information. If you use `mlagents-learn` for training, this should be a transparent change.
 * The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`, `AgentAction` and `AgentReset` have been removed.
 * The signature of `Agent.Heuristic()` was changed to take a `float[]` as a parameter, instead of returning the array. This was done to prevent a common source of error where users would return arrays of the wrong size.
+* Trainer configuration, curriculum configuration, and parameter randomization configuration have all been moved to
+a single YAML file.
 
 ### Steps to Migrate
 * Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and don't use the `--train` flag as training
@@ -29,6 +31,13 @@ The versions can be found in
 * Replace `Academy.RegisterSideChannel` with `SideChannelUtils.RegisterSideChannel()`.
 * Replace `Academy.UnregisterSideChannel` with `SideChannelUtils.UnregisterSideChannel`.
 * If your Agent class overrides `Heuristic()`, change the signature to `public override void Heuristic(float[] actionsOut)` and assign values to `actionsOut` instead of returning an array.
+* Before upgrading, move your environment-specific `Behavior Name` sections from `trainer_config.yaml` into
+a separate trainer configuration file, under the `behaviors:` section. You can move the `default` section too
+if it's being used.
+  * If your training uses [curriculum](Training-Curriculum-Learning.md), move those configurations under
+  the `Behavior Name` section.
+  * If your training uses [parameter randomization](Training-Environment-Parameter-Randomization.md), move
+  the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
 
 
 ## Migrating from 0.14 to 0.15
