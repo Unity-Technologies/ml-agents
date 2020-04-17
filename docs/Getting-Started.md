@@ -184,8 +184,8 @@ has been shown to be both stable and sample-efficient.
 For more information on SAC, see UC Berkeley's
 [blog post](https://bair.berkeley.edu/blog/2018/12/14/sac/) and
 [our page](Training-SAC.md) for more guidance on when to use SAC vs. PPO. To
-use SAC to train Balance Ball, replace all references to `config/trainer_config.yaml`
-with `config/sac_trainer_config.yaml` below.
+use SAC to train Balance Ball, replace all references to `config/ppo/3DBall.yaml`
+with `config/sac/3DBall.yaml` below.
 
 To train the agents within the Balance Ball environment, we will be using the
 ML-Agents Python package. We have provided a convenient command called `mlagents-learn`
@@ -201,13 +201,13 @@ which accepts arguments used to configure both training and inference phases.
    where:
     - `<trainer-config-path>` is the relative or absolute filepath of the
       trainer configuration. The defaults used by example environments included
-      in `MLAgentsSDK` can be found in `config/trainer_config.yaml`.
+      in `MLAgentsSDK` can be found in the `config/ppo/` and `config/sac` folders.
     - `<run-identifier>` is a string used to separate the results of different
       training runs. Make sure to use one that hasn't been used already!
 4. If you cloned the ML-Agents repo, then you can simply run
 
       ```sh
-      mlagents-learn config/trainer_config.yaml --run-id=firstRun
+      mlagents-learn config/ppo/3DBall.yaml --run-id=firstRun
       ```
 
 5. When the message _"Start training by pressing the Play button in the Unity
@@ -331,14 +331,14 @@ If you've quit the training early using Ctrl+C and want to resume training, run 
 same command again, appending the `--resume` flag:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --run-id=firstRun --resume
+mlagents-learn config/ppo/3DBall.yaml --run-id=firstRun --resume
 ```
 
 Your trained model will be at `models/<run-identifier>/<behavior_name>.nn` where
 `<behavior_name>` is the name of the `Behavior Name` of the agents corresponding to the model.
 (**Note:** There is a known bug on Windows that causes the saving of the model to
 fail when you early terminate the training, it's recommended to wait until Step
-has reached the max_steps parameter you set in trainer_config.yaml.) This file
+has reached the max_steps parameter you set in your config YAML.) This file
 corresponds to your model's latest checkpoint. You can now embed this trained
 model into your Agents by following the steps below, which is similar to
 the steps described

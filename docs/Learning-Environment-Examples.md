@@ -314,7 +314,7 @@ return.
      training parameters.__
 * Float Properties: None
 * Benchmark Mean Reward: 0.7
-  * To speed up training, you can enable curiosity by adding the `curiosity` reward signal in `config/trainer_config.yaml`
+  * To train this environment, you can enable curiosity by adding the `curiosity` reward signal in `config/ppo/Hallway.yaml`
 
 ## Bouncer
 

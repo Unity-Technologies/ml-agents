@@ -393,13 +393,14 @@ status information in the Game window.
 
 The process is
 the same as described in [Training ML-Agents](Training-ML-Agents.md). Note that the
-models will be created in the original ml-agents project folder, `ml-agents/models`.
+models will be created in the original ml-agents project folder, under `models`.
 
 The hyperparameters for training are specified in the configuration file that you
-pass to the `mlagents-learn` program. Using the default settings specified
-in the original `ml-agents/config/trainer_config.yaml` file, the
-RollerAgent takes about 300,000 steps to train. However, you can change the
-following hyperparameters  to speed up training considerably (to under 20,000 steps):
+pass to the `mlagents-learn` program. You can create a config file just for your environment
+by copying an existing file. For this example, copy `config/ppo/3DBall.yaml` into a new file,
+let's say called `config/ppo/RollerBall.yaml` (the name isn't important). Using the settings specified
+in the original file, the RollerAgent takes about 300,000 steps to train. However, you can change the
+following hyperparameters to speed up training considerably (to under 20,000 steps):
 
     batch_size: 10
     buffer_size: 100
@@ -418,9 +419,9 @@ in this simple environment, speeds up training.
 To train in the editor, run the following Python command from a Terminal or Console
 window before pressing play:
 
-    mlagents-learn config/config.yaml --run-id=RollerBall-1
+    mlagents-learn config/ppo/RollerBall.yaml --run-id=RollerBall-1
 
-(where `config.yaml` is a copy of `trainer_config.yaml` that you have edited
+(where `RollerBall.yaml` is the copy of `3DBall.yaml` that you have edited
 to change the `batch_size` and `buffer_size` hyperparameters for your trainer.)
 
 **Note:** If you get a `command not found` error when running this command,  make sure

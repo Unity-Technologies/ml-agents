@@ -18,7 +18,7 @@ important to remember with
 
 ## How to use
 
-When configuring the trainer parameters in the `config/trainer_config.yaml`
+When configuring the trainer parameters in the config YAML
 file, add the following parameters to the Behavior you want to use.
 
 ```json
