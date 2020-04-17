@@ -103,7 +103,8 @@ class GymWrapper(BaseEnv):
         assert behavior_name == self._behavior_name
         spec = self._behavior_specs
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
-        expected_shape = (1, spec.action_size)
+        n_agents = len(self._current_steps[0])
+        expected_shape = (n_agents, spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
                 "The behavior {0} needs an input of dimension {1} but received input of dimension {2}".format(
@@ -112,6 +113,8 @@ class GymWrapper(BaseEnv):
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
+        if n_agents == 0:
+            return
         if isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             self._g_action = int(action[0, 0])
         elif isinstance(self._gym_env.action_space, gym.spaces.Box):

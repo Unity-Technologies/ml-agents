@@ -45,6 +45,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "gym",
+        "gym[atari]",
         "cloudpickle",
         "grpcio>=1.11.0",
         "numpy>=1.14.1,<2.0",
