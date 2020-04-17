@@ -9,7 +9,7 @@ state, then the agent receives no reward or a negative reward (punishment). As
 the agent learns during training, it optimizes its decision making so that it
 receives the maximum reward over time.
 
-The ML-Agents toolkit uses a reinforcement learning technique called
+The ML-Agents Toolkit uses a reinforcement learning technique called
 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
 PPO uses a neural network to approximate the ideal function that maps an agent's
 observations to the best action an agent can take in a given state. The
@@ -59,7 +59,7 @@ information.
 
 ## Organizing the Unity Scene
 
-To train and use the ML-Agents toolkit in a Unity scene, the scene as many Agent subclasses as you need.
+To train and use the ML-Agents Toolkit in a Unity scene, the scene as many Agent subclasses as you need.
 Agent instances should be attached to the GameObject representing that Agent.
 
 ### Academy
@@ -125,7 +125,7 @@ about programming your own Agents.
 
 ## Environments
 
-An _environment_ in the ML-Agents toolkit can be any scene built in Unity. The
+An _environment_ in the ML-Agents Toolkit can be any scene built in Unity. The
 Unity scene provides the environment in which agents observe, act, and learn.
 How you set up the Unity scene to serve as a learning environment really depends
 on your goal. You may be trying to solve a specific reinforcement learning

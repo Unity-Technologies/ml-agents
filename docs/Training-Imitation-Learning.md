@@ -27,7 +27,7 @@ See Behavioral Cloning + GAIL + Curiosity + RL below.
        width="700" border="0" />
 </p>
 
-The ML-Agents toolkit provides two features that enable your agent to learn from demonstrations.
+The ML-Agents Toolkit provides two features that enable your agent to learn from demonstrations.
 In most scenarios, you can combine these two features.
 
 * GAIL (Generative Adversarial Imitation Learning) uses an adversarial approach to
