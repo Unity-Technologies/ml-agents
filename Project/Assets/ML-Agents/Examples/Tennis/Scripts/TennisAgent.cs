@@ -86,14 +86,11 @@ public class TennisAgent : Agent
         m_TextComponent.text = score.ToString();
     }
 
-    public override float[] Heuristic()
+    public override void Heuristic(float[] actionsOut)
     {
-        var action = new float[3];
-
-        action[0] = Input.GetAxis("Horizontal");    // Racket Movement
-        action[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;   // Racket Jumping
-        action[2] = Input.GetAxis("Vertical");   // Racket Rotation  
-        return action;
+        actionsOut[0] = Input.GetAxis("Horizontal");    // Racket Movement
+        actionsOut[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;   // Racket Jumping
+        actionsOut[2] = Input.GetAxis("Vertical");   // Racket Rotation
     }
 
     public override void OnEpisodeBegin()

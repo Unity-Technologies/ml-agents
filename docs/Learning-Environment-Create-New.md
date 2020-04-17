@@ -364,12 +364,10 @@ direct keyboard control.
 The `Heuristic()` method will look like this :
 
 ```csharp
-    public override float[] Heuristic()
+    public override void Heuristic(float[] actionsOut)
     {
-        var action = new float[2];
-        action[0] = Input.GetAxis("Horizontal");
-        action[1] = Input.GetAxis("Vertical");
-        return action;
+        actionsOut[0] = Input.GetAxis("Horizontal");
+        actionsOut[1] = Input.GetAxis("Vertical");
     }
 ```
 

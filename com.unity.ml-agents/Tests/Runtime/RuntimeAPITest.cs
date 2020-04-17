@@ -15,12 +15,14 @@ namespace Tests
     {
         public int numHeuristicCalls;
 
-        public override float[] Heuristic()
+        public override void Heuristic(float[] actionsOut)
         {
             numHeuristicCalls++;
-            return base.Heuristic();
+            base.Heuristic(actionsOut);
         }
-    }// Simple SensorComponent that sets up a StackingSensor
+    }
+
+    // Simple SensorComponent that sets up a StackingSensor
     public class StackingComponent : SensorComponent
     {
         public SensorComponent wrappedComponent;
