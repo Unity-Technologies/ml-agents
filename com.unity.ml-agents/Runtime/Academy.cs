@@ -36,16 +36,20 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// An Academy is where Agent objects go to train their behaviors.
+    /// The Academy singleton manages agent training and decision making.
     /// </summary>
     /// <remarks>
-    /// When an academy is run, it can either be in inference or training mode.
-    /// The mode is determined by the presence or absence of a Communicator. In
-    /// the presence of a communicator, the academy is run in training mode where
-    /// the states and observations of each agent are sent through the
-    /// communicator. In the absence of a communicator, the academy is run in
-    /// inference mode where the agent behavior is determined by the Policy
-    /// attached to it.
+    /// Access the Academy singleton through the <see cref="Instance"/>
+    /// property. The Academy instance is initialized the first time it is accessed (which will
+    /// typically be by the first <see cref="Agent"/> updated in a scene).
+    /// 
+    /// At initialization, the Academy attempts to connect to the Python training process through
+    /// the external communicator. If successful, the training process can train <see cref="Agent"/>
+    /// instances. When you set an agent's <see cref="BehaviorParameters.behaviorType"/> setting
+    /// to <see cref="BehaviorType.Default"/>, the agent exchanges data with the training process
+    /// to make decisions. If no training process is available, agents with the default behavior
+    /// fall back to inference or heuristic decisions. (You can also set agents to always use
+    /// inference or heuristics.)
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design.md")]
@@ -74,8 +78,9 @@ namespace MLAgents
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
 
         /// <summary>
-        /// True if the Academy is initialized, false otherwise.
+        ///Reports whether the Academy has been initialized yet.
         /// </summary>
+        /// <value><c>True</c> if the Academy is initialized, <c>false</c> otherwise.</value>
         public static bool IsInitialized
         {
             get { return s_Lazy.IsValueCreated; }
@@ -84,16 +89,18 @@ namespace MLAgents
         /// <summary>
         /// The singleton Academy object.
         /// </summary>
+        /// <value>Getting the instance initializes the Academy, if necessary.</value>
         public static Academy Instance { get { return s_Lazy.Value; } }
 
         // Fields not provided in the Inspector.
 
         /// <summary>
-        /// Returns whether or not the communicator is on.
+        /// Reports whether or not the communicator is on.
         /// </summary>
-        /// <returns>
-        /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
-        /// </returns>
+        /// <seealso cref="ICommunicator"/>
+        /// <value>
+        /// <c>True</c>, if communicator is on, <c>false</c> otherwise.
+        /// </value>
         public bool IsCommunicatorOn
         {
             get { return Communicator != null; }
@@ -122,8 +129,8 @@ namespace MLAgents
         bool m_HadFirstReset;
 
         // The Academy uses a series of events to communicate with agents
-        // to facilitate synchronization. More specifically, it ensure
-        // that all the agents performs their steps in a consistent order (i.e. no
+        // to facilitate synchronization. More specifically, it ensures
+        // that all the agents perform their steps in a consistent order (i.e. no
         // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
@@ -134,7 +141,7 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
-        // Signals the Agent that a new step is about to start.
+        // Signals to the Agent that a new step is about to start.
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
@@ -235,6 +242,7 @@ namespace MLAgents
         /// <summary>
         /// Determines whether or not the Academy is automatically stepped during the FixedUpdate phase.
         /// </summary>
+        /// <value>Set <c>true</c> to enable automatic stepping; <c>false</c> to disable.</value>
         public bool AutomaticSteppingEnabled
         {
             get { return m_FixedUpdateStepper != null; }
@@ -282,7 +290,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Initializes the environment, configures it and initialized the Academy.
+        /// Initializes the environment, configures it and initializes the Academy.
         /// </summary>
         void InitializeEnvironment()
         {
@@ -368,33 +376,33 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current episode counter.
+        /// The current episode count.
         /// </summary>
-        /// <returns>
+        /// <value>
         /// Current episode number.
-        /// </returns>
+        /// </value>
         public int EpisodeCount
         {
             get { return m_EpisodeCount; }
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current episode).
+        /// The current step count (within the current episode).
         /// </summary>
-        /// <returns>
+        /// <value>
         /// Current step count.
-        /// </returns>
+        /// </value>
         public int StepCount
         {
             get { return m_StepCount; }
         }
 
         /// <summary>
-        /// Returns the total step counter.
+        /// Returns the total step count.
         /// </summary>
-        /// <returns>
+        /// <value>
         /// Total step count.
-        /// </returns>
+        /// </value>
         public int TotalStepCount
         {
             get { return m_TotalStepCount; }
@@ -413,7 +421,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Performs a single environment update to the Academy, and Agent
+        /// Performs a single environment update of the Academy and Agent
         /// objects within the environment.
         /// </summary>
         public void EnvironmentStep()

@@ -4,9 +4,18 @@ using UnityEngine.Serialization;
 namespace MLAgents
 {
     /// <summary>
-    /// A component that when attached to an Agent will automatically request decisions from it
-    /// at regular intervals.
+    /// The DecisionRequestor component automatically request decisions for an
+    /// <see cref="Agent"/> instance at regular intervals.
     /// </summary>
+    /// <remarks>
+    /// Attach a DecisionRequestor component to the same [GameObject] as the
+    /// <see cref="Agent"/> component.
+    ///
+    /// The DecisionRequestor component provides a convenient and flexible way to
+    /// trigger the agent decision making process. Without a DecisionRequestor,
+    /// your <see cref="Agent"/> implmentation must manually call its
+    /// <seealso cref="Agent.RequestDecision"/> function.
+    /// </remarks>
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
     internal class DecisionRequester : MonoBehaviour
     {
@@ -31,11 +40,13 @@ namespace MLAgents
 
         /// <summary>
         /// Whether or not the Agent decisions should start at an offset (different for each agent).
+        /// </summary>
+        /// <remarks>
         /// This does not affect <see cref="DecisionPeriod"/>. Turning this on will distribute
         /// the decision-making computations for all the agents across multiple Academy steps.
         /// This can be valuable in scenarios where you have many agents in the scene, particularly
         /// during the inference phase.
-        /// </summary>
+        /// </remarks>
         [Tooltip("Whether or not Agent decisions should start at an offset.")]
         public bool offsetStep;
 

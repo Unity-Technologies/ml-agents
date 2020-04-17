@@ -7,8 +7,19 @@ using MLAgents.Policies;
 namespace MLAgents.Demonstrations
 {
     /// <summary>
-    /// Demonstration Recorder Component.
+    /// The Demonstration Recorder component facilitates the recording of demonstrations
+    /// used for imitation learning.
     /// </summary>
+    /// <remarks>Add this component to the [GameObject] containing an <see cref="Agent"/>
+    /// to enable recording the agent for imitation learning. You must implement the
+    /// <see cref="Agent.Heuristic"/> function of the agent to provide manual control
+    /// in order to record demonstrations.
+    ///
+    /// See [Imitation Learning - Recording Demonstrations] for more information.
+    ///
+    /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
+    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Imitation-Learning.md#recording-demonstrations
+    /// </remarks>
     [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
     public class DemonstrationRecorder : MonoBehaviour
