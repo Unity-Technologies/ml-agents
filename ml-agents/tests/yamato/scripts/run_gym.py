@@ -8,7 +8,13 @@ def test_run_environment(env_name):
     Run the gym test using the specified environment
     :param env_name: Name of the Unity environment binary to launch
     """
-    env = UnityEnv(env_name, worker_id=1, use_visual=False, no_graphics=True)
+    env = UnityEnv(
+        env_name,
+        worker_id=1,
+        use_visual=False,
+        no_graphics=True,
+        env_args=["-logFile", "-"],
+    )
 
     try:
         # Examine environment parameters

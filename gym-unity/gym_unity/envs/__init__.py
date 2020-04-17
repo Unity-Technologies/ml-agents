@@ -39,6 +39,7 @@ class UnityEnv(gym.Env):
         flatten_branched: bool = False,
         no_graphics: bool = False,
         allow_multiple_visual_obs: bool = False,
+        env_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
     ):
         """
@@ -51,6 +52,7 @@ class UnityEnv(gym.Env):
             MultiDiscrete.
         :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
+        :param env_args: Optional list of additional arguments that are passed on the command line to the environment.
         :param side_channels: Optional list of side channels for no-rl communication with Unity
         """
         base_port = UnityEnvironment.BASE_ENVIRONMENT_PORT
@@ -62,6 +64,7 @@ class UnityEnv(gym.Env):
             worker_id,
             base_port=base_port,
             no_graphics=no_graphics,
+            args=env_args,
             side_channels=side_channels,
         )
 
