@@ -61,6 +61,7 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml",
+        "six>=1.12.0",
         "tensorflow==2.1.0",
         'pypiwin32==223;platform_system=="Windows"',
     ],
