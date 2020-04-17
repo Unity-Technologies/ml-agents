@@ -115,19 +115,24 @@ configurations and may generate different artifacts and TensorBoard statistics.
 This section offers a detailed guide into how to manage the different training
 set-ups withing the toolkit.
 
-The training config files `config/trainer_config.yaml`,
-`config/sac_trainer_config.yaml`, `config/gail_config.yaml` and
-`config/offline_bc_config.yaml` specifies the training method, the
-hyperparameters, and a few additional values to use when training with Proximal
-Policy Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial
-Imitation Learning) with PPO/SAC, and Behavioral Cloning(BC)/Imitation with
-PPO/SAC. These files are divided into sections. The **default** section defines
-the default values for all the available training with PPO, SAC, GAIL (with
-PPO), and BC. These files are divided into sections. The **default** section
-defines the default values for all the available settings. You can also add new
-sections to override these defaults to train specific Behaviors. Name each of
-these override sections after the appropriate `Behavior Name`. Sections for the
-example environments are included in the provided config file.
+For each training run, create a YAML file that contains the the training method and the
+hyperparameters for each of the Behaviors found in your environment. Example files for
+Policy Optimization (PPO) and Soft Actor-Critic (SAC) are provided in `config/ppo/` and
+`config/sac/`, respectively. Examples for imitation learning through GAIL (Generative Adversarial
+Imitation Learning) and Behavioral Cloning (BC) can be found in `config/imitiation/`.
+
+Each file is divided into sections. The `behaviors` section defines the hyperparameters
+for each Behavior found in your environment. A section should be created for each `Behavior Name`.
+The available parameters for PPO and SAC are listed below. Alternatively, if there are many
+different Behaviors that all use similar hyperparameters, you can create a `default` behavior name
+that specifies all hyperparameters that are not specified in the Behavior-specific sections.
+To use [Curriculum Learning](Training-Curriculum-Learning.md) for a particular Behavior, add a
+section under that `Behavior Name` called `curriculum`.
+See the [Curriculum Learning](Training-Curriculum-Learning.md) page for more information.
+
+To use Parameter Randomization, add a `parameter_randomization` section in the configuration
+file. See the [Parameter Randomization](Training-Environment-Parameter-Randomization.md) docs
+for more information.
 
 \*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral
 Cloning (Imitation), GAIL = Generative Adversarial Imitation Learning

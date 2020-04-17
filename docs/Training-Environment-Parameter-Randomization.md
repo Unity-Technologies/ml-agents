@@ -40,27 +40,34 @@ training procedure, remaining unchanged. The samplers for all the `Environment P
 are handled by a **Sampler Manager**, which also handles the generation of new
 values for the environment parameters when needed.
 
-To setup the Sampler Manager, we create a YAML file that specifies how we wish to
-generate new samples for each `Environment Parameters`. In this file, we specify the samplers and the
+To setup the Sampler Manager, we edit our [training configuration file](Training-ML-Agents.md#training-config-file).
+Add a `parameter_randomization` section that specifies how we wish to generate new samples for each `Environment
+Parameters`. In this section, we specify the samplers and the
 `resampling-interval` (the number of simulation steps after which environment parameters are
-resampled). Below is an example of a sampler file for the 3D ball environment.
+resampled). Below is an example of a sampler file for the 3D ball environment. The full file is provided in
+`config/ppo/3DBall_randomize.yaml`.
 
 ```yaml
-resampling-interval: 5000
+behaviors:
+  # Trainer hyperparameters
 
-mass:
-    sampler-type: "uniform"
-    min_value: 0.5
-    max_value: 10
+# New section
+parameter_randomization:
+    resampling-interval: 5000
 
-gravity:
-    sampler-type: "multirange_uniform"
-    intervals: [[7, 10], [15, 20]]
+    mass:
+        sampler-type: "uniform"
+        min_value: 0.5
+        max_value: 10
 
-scale:
-    sampler-type: "uniform"
-    min_value: 0.75
-    max_value: 3
+    gravity:
+        sampler-type: "multirange_uniform"
+        intervals: [[7, 10], [15, 20]]
+
+    scale:
+        sampler-type: "uniform"
+        min_value: 0.75
+        max_value: 3
 
 ```
 
@@ -145,7 +152,7 @@ class CustomSampler(Sampler):
         return np.random.choice(self.possible_vals)
 ```
 
-Now we need to specify the new sampler type in the sampler YAML file. For example, we use this new
+Now we need to specify the new sampler type in the trainer configuration file. For example, we use this new
 sampler type for the `Environment Parameter` *mass*.
 
 ```yaml
@@ -158,14 +165,13 @@ mass:
 
 ### Training with Environment Parameter Randomization
 
-After the sampler YAML file is defined, we proceed by launching `mlagents-learn` and specify
-our configured sampler file with the `--sampler` flag. For example, if we wanted to train the
-3D ball agent with parameter randomization using `Environment Parameters` with `config/3dball_randomize.yaml`
-sampling setup, we would run
+After the parameter variations are defined in the training config file, we proceed by launching the file with
+`mlagents-learn` as usual. For example, if we wanted to train the
+3D ball agent with parameter randomization using `Environment Parameters` as specified in
+`config/ppo/3DBall_randomize.yaml` sampling setup, we would run
 
 ```sh
-mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
---run-id=3D-Ball-randomize
+mlagents-learn config/ppo/3DBall_randomize.yaml --run-id=3D-Ball-randomize
 ```
 
-We can observe progress and metrics via Tensorboard.
+We can observe progress and metrics via Tensorboard as usual.

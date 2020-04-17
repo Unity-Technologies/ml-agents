@@ -89,13 +89,13 @@ For example, if you are training with a 3DBall executable you exported to the
 the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
-mlagents-learn ../config/trainer_config.yaml --env=3DBall --run-id=firstRun
+mlagents-learn ../config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
 ```
 
 And you should see something like
 
 ```console
-ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run
+ml-agents$ mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=first-run
 
 
                         ▄▄▄▓▓▓▓
@@ -175,7 +175,7 @@ You can press Ctrl+C to stop the training, and your trained model will be at
 latest checkpoint. (**Note:** There is a known bug on Windows that causes the
 saving of the model to fail when you early terminate the training, it's
 recommended to wait until Step has reached the max_steps parameter you set in
-trainer_config.yaml.) You can now embed this trained model into your Agent by
+your config YAML.) You can now embed this trained model into your Agent by
 following the steps below:
 
 1. Move your model file into

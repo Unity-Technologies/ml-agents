@@ -43,34 +43,53 @@ the environment will vary. In the case of the Wall Jump environment,
 the height of the wall is what varies. We define this as a `Shared Float Property`
 that can be accessed in `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`, and by doing
 so it becomes adjustable via the Python API.
-Rather than adjusting it by hand, we will create a YAML file which
+Rather than adjusting it by hand, we will add a section to our YAML configuration file that
 describes the structure of the curricula. Within it, we can specify which
 points in the training process our wall height will change, either based on the
 percentage of training steps which have taken place, or what the average reward
 the agent has received in the recent past is. Below is an example config for the
-curricula for the Wall Jump environment.
+curricula for the Wall Jump environment. You can find the full file in `config/ppo/WallJump_curriculum.yaml`.
 
 ```yaml
-BigWallJump:
-  measure: progress
-  thresholds: [0.1, 0.3, 0.5]
-  min_lesson_length: 100
-  signal_smoothing: true
-  parameters:
-    big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
-    big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
-SmallWallJump:
-  measure: progress
-  thresholds: [0.1, 0.3, 0.5]
-  min_lesson_length: 100
-  signal_smoothing: true
-  parameters:
-    small_wall_height: [1.5, 2.0, 2.5, 4.0]
+behaviors:
+  BigWallJump:
+    trainer: ppo
+    ... # The rest of the hyperparameters
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+    curriculum: # Add this section for curriculum
+      measure: progress
+      thresholds: [0.1, 0.3, 0.5]
+      min_lesson_length: 100
+      signal_smoothing: true
+      parameters:
+        big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
+        big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
+
+  SmallWallJump:
+    trainer: ppo
+    ... # The rest of the hyperparameters
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+    curriculum: # Add this section for curriculum
+      measure: progress
+      thresholds: [0.1, 0.3, 0.5]
+      min_lesson_length: 100
+      signal_smoothing: true
+      parameters:
+        small_wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
-At the top level of the config is the behavior name. Note that this must be the
+For each Behavior Name described in your training configuration file, we can specify a curriculum
+by adding a `curriculum:` section under that particular Behavior Name.
+Note that these must be the
 same as the Behavior Name in the [Agent's Behavior Parameters](Learning-Environment-Design-Agents.md#agent-properties).
- The curriculum for each
+The curriculum for each
 behavior has the following parameters:
 * `measure` - What to measure learning progress, and advancement in lessons by.
   * `reward` - Uses a measure received reward.
@@ -88,7 +107,7 @@ behavior has the following parameters:
   cumulative reward of the last `100` episodes exceeds the current threshold.
   The mean reward logged to the console is dictated by the `summary_freq`
   parameter in the
-  [trainer configuration file](Training-ML-Agents.md#training-config-file).
+  [training configuration file](Training-ML-Agents.md#training-config-file).
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).
@@ -110,7 +129,7 @@ for our curricula and PPO will train using Curriculum Learning. For example,
 to train agents in the Wall Jump environment with curriculum learning, we can run:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum
+mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
 ```
 
 We can then keep track of the current lessons and progresses via TensorBoard.
