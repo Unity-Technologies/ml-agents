@@ -39,7 +39,12 @@ to your project.
 
 Your Unity **Project** window should contain the following assets:
 
-![Project window](images/mlagents-NewProject.png)
+<p align="left">
+  <img src="images/roller-ball-projects.png"
+       alt="Project window"
+       width="250" border="10" />
+</p>
+
 
 ## Create the Environment
 
@@ -55,7 +60,11 @@ agent to seek, and a Sphere to represent the Agent itself.
 1. Select the Floor Plane to view its properties in the Inspector window.
 1. Set Transform to Position = (0, 0, 0), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 
-![The Floor in the Inspector window](images/mlagents-NewTutFloor.png)
+<p align="left">
+  <img src="images/roller-ball-floor.png"
+       alt="The Floor in the Inspector window"
+       width="400" border="10" />
+</p>
 
 ### Add the Target Cube
 
@@ -64,7 +73,11 @@ agent to seek, and a Sphere to represent the Agent itself.
 1. Select the Target Cube to view its properties in the Inspector window.
 1. Set Transform to Position = (3, 0.5, 3), Rotation = (0, 0, 0), Scale = (1, 1, 1).
 
-![The Target Cube in the Inspector window](images/mlagents-NewTutBlock.png)
+<p align="left">
+  <img src="images/roller-ball-target.png"
+       alt="The Target Cube in the Inspector window"
+       width="400" border="10" />
+</p>
 
 ### Add the Agent Sphere
 
@@ -75,10 +88,29 @@ agent to seek, and a Sphere to represent the Agent itself.
 1. Click **Add Component**.
 1. Add the `Rigidbody` component to the Sphere.
 
-![The Agent GameObject in the Inspector window](images/mlagents-NewTutSphere.png)
+<p align="left">
+  <img src="images/roller-ball-agent.png"
+       alt="The Agent GameObject in the Inspector window"
+       width="400" border="10" />
+</p>
 
-Note that we will create an Agent subclass to add to this GameObject as a
-component later in the tutorial.
+Note that the screenshot above includes the `Roller Agent` script, which we will
+create in the next section. However, before we do that, we'll first
+group the floor, target and agent under a single, empty, GameObject. This
+will simplify some of our subsequent steps.
+
+<p align="left">
+  <img src="images/roller-ball-hierarchy.png"
+       alt="The Hierarchy window"
+       width="250" border="10" />
+</p>
+
+To do so:
+
+1. Right-click on your Project Hierarchy and create a new empty GameObject. Name it TrainingArea.
+1. Reset the TrainingArea’s Transform so that it is at (0,0,0) with Rotation (0,0,0) and Scale (1,1,1).
+1. Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the TrainingArea GameObject.
+
 
 ## Implement an Agent
 
@@ -94,7 +126,8 @@ Then, edit the new `RollerAgent` script:
 
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
 in your code editor.
-1. In the editor, add the `using MLAgents;` and `using MLAgents.Sensors` statements and then change the base class from `MonoBehaviour` to `Agent`.
+1. In the editor, add the `using MLAgents;` and `using MLAgents.Sensors`
+statements and then change the base class from `MonoBehaviour` to `Agent`.
 1. Delete the `Update()` method, but we will use the `Start()` function, so
 leave it alone for now.
 
@@ -110,9 +143,18 @@ We overview each of these in more detail in the dedicated subsections below.
 
 ### Initialization and Resetting the Agent
 
-When the Agent (Sphere) reaches its target (Cube), its episode ends and the `OnEpisodeBegin()`
-method moves the target (Cube) to a new random location. In addition, if the Agent rolls
-off the platform, the `OnEpisodeBegin()` method puts it back onto the floor.
+The process of training in the ML-Agents Toolkit involves running episodes
+where the Agent (Sphere) attempts to solve the task. Each episode lasts until
+the Agents solves the task (i.e. reaches the cube), fails (rolls off the platform)
+or times out (takes too long to solve or fail at the task). At the start of
+each episode, the `OnEpisodeBegin()` method is called to set-up the environment
+for a new episode. Typically the scene is initialized in a random manner
+to enable the agent to learn to solve the task under a variety of conditions.
+
+In this example, each time the Agent (Sphere) reaches its target (Cube), its
+episode ends and the method moves the target (Cube) to a new random location.
+In addition, if the Agent rolls off the platform, the `OnEpisodeBegin()` method
+puts it back onto the floor.
 
 To move the target (Cube), we need a reference to its Transform (which
 stores a GameObject's position, orientation and scale in the 3D world). To get
@@ -149,18 +191,18 @@ public class RollerAgent : Agent
     public Transform Target;
     public override void OnEpisodeBegin()
     {
-        if (this.transform.position.y < 0)
+        if (this.transform.localPosition.y < 0)
         {
             // If the Agent fell, zero its momentum
             this.rBody.angularVelocity = Vector3.zero;
             this.rBody.velocity = Vector3.zero;
-            this.transform.position = new Vector3( 0, 0.5f, 0);
+            this.transform.localPosition = new Vector3( 0, 0.5f, 0);
         }
 
         // Move the target to a new spot
-        Target.position = new Vector3(Random.value * 8 - 4,
-                                      0.5f,
-                                      Random.value * 8 - 4);
+        Target.localPosition = new Vector3(Random.value * 8 - 4,
+                                           0.5f,
+                                           Random.value * 8 - 4);
     }
 }
 ```
@@ -185,8 +227,8 @@ In total, the agent observation contains 8 values as implemented below:
 public override void CollectObservations(VectorSensor sensor)
 {
     // Target and Agent positions
-    sensor.AddObservation(Target.position);
-    sensor.AddObservation(this.transform.position);
+    sensor.AddObservation(Target.localPosition);
+    sensor.AddObservation(this.transform.localPosition);
 
     // Agent velocity
     sensor.AddObservation(rBody.velocity.x);
@@ -204,7 +246,8 @@ receives actions and assigns the reward.
 To solve the task of moving towards the target, the Agent (Sphere) needs to be able to
 move in the `x` and `z` directions. As such, we will provide 2 actions to the agent.
 The first determines the force applied along the x-axis; the second
-determines the force applied along the z-axis. (If we allowed the Agent to move in three dimensions, then we would need a third action.
+determines the force applied along the z-axis. (If we allowed the Agent to move
+in three dimensions, then we would need a third action.
 
 The RollerAgent applies the values from the `action[]` array to its Rigidbody
 component, `rBody`, using the `Rigidbody.AddForce` function:
@@ -231,7 +274,7 @@ reward of 1.0 and marks the agent as finished by calling the `EndEpisode()` meth
 on the Agent.
 
 ```csharp
-float distanceToTarget = Vector3.Distance(this.transform.position, Target.position);
+float distanceToTarget = Vector3.Distance(this.transform.localPosition, Target.localPosition);
 // Reached target
 if (distanceToTarget < 1.42f)
 {
@@ -244,7 +287,7 @@ Finally, if the Agent falls off the platform, end the episode so that it can res
 
 ```csharp
 // Fell off platform
-if (this.transform.position.y < 0)
+if (this.transform.localPosition.y < 0)
 {
     EndEpisode();
 }
@@ -266,7 +309,7 @@ public override void OnActionReceived(float[] vectorAction)
     rBody.AddForce(controlSignal * speed);
 
     // Rewards
-    float distanceToTarget = Vector3.Distance(this.transform.position, Target.position);
+    float distanceToTarget = Vector3.Distance(this.transform.localPosition, Target.localPosition);
 
     // Reached target
     if (distanceToTarget < 1.42f)
@@ -276,7 +319,7 @@ public override void OnActionReceived(float[] vectorAction)
     }
 
     // Fell off platform
-    if (this.transform.position.y < 0)
+    if (this.transform.localPosition.y < 0)
     {
         EndEpisode();
     }
@@ -314,12 +357,10 @@ the heuristic will generate an action corresponding to the values of the "Horizo
 input axis (which correspond to the keyboard arrow keys):
 
 ```csharp
-public override float[] Heuristic()
+public override void Heuristic(float[] actionsOut)
 {
-    var action = new float[2];
-    action[0] = Input.GetAxis("Horizontal");
-    action[1] = Input.GetAxis("Vertical");
-    return action;
+    actionsOut[0] = Input.GetAxis("Horizontal");
+    actionsOut[1] = Input.GetAxis("Vertical");
 }
 ```
 
@@ -377,10 +418,11 @@ hyperparameter values. In addition to setting these hyperparameter values, the A
 A larger value reduces the number of decisions the training algorithm has to consider and,
 in this simple environment, speeds up training.
 
-To train in the Editor, run the following Python command from a Terminal or Console
-window before pressing :arrow_forward::
+Similar to the steps outlined in the [Getting Started](Getting-Started.md)
+guide, to train your agent, run the following command before pressing
+:arrow_forward: in the Editor:
 
-    mlagents-learn config/rollerball_config.yaml --run-id=RollerBall-1
+    mlagents-learn config/rollerball_config.yaml --run-id=RollerBall
 
 To monitor the statistics of Agent performance during training, use
 [TensorBoard](Using-Tensorboard.md).
@@ -394,33 +436,20 @@ has successfully *solved* the problem.
 
 ## Optional: Multiple Training Areas within the Same Scene
 
-In many of the [example environments](Learning-Environment-Examples.md), many copies of
-the training area are instantiated in the scene. This generally speeds up training,
-allowing the environment to gather many experiences in parallel. This can be achieved
-simply by instantiating many Agents which share the `Behavior Parameters`. Use the following steps to
-parallelize your RollerBall environment.
+In many of the [example environments](Learning-Environment-Examples.md), many
+copies of the training area are instantiated in the scene. This generally speeds
+up training, allowing the environment to gather many experiences in parallel.
+This can be achieved simply by instantiating many Agents which share the
+`Behavior Parameters`. Use the following steps to parallelize your RollerBall
+environment.
 
 ### Instantiating Multiple Training Areas
 
-1. Right-click on your Project Hierarchy and create a new empty GameObject. Name it TrainingArea.
-1. Reset the TrainingArea’s Transform so that it is at (0,0,0) with Rotation (0,0,0) and Scale (1,1,1).
-1. Drag the Floor, Target, and RollerAgent GameObjects in the Hierarchy into the TrainingArea GameObject.
-1. Drag the TrainingArea GameObject, along with its attached GameObjects, into your Assets browser, turning it into a prefab.
-1. You can now instantiate copies of the TrainingArea prefab. Drag them into your scene, positioning them so that they do not overlap.
+Note that we've already simplified our transition to using multiple areas by
+creating the `TrainingArea` GameObject and relying on local positions in
+`RollerAgent.cs`.
 
-### Editing the Scripts
-
-You will notice that in the previous section, we wrote our scripts assuming that our
-TrainingArea was at (0,0,0), performing checks such as `this.transform.position.y < 0`
-to determine whether our agent has fallen off the platform. We will need to change
-this if we are to use multiple TrainingAreas throughout the scene.
-
-A quick way to adapt our current code is to use
-localPosition rather than position, so that our position reference is in reference
-to the prefab TrainingArea's location, and not global coordinates.
-
-1. Replace all references of `this.transform.position` in RollerAgent.cs with `this.transform.localPosition`.
-1. Replace all references of `Target.position` in RollerAgent.cs with `Target.localPosition`.
-
-This is only one way to achieve this objective. Refer to the
-[example environments](Learning-Environment-Examples.md) for other ways we can achieve relative positioning.
+1. Drag the TrainingArea GameObject, along with its attached GameObjects, into
+your Assets browser, turning it into a prefab.
+1. You can now instantiate copies of the TrainingArea prefab. Drag them into
+your scene, positioning them so that they do not overlap.
