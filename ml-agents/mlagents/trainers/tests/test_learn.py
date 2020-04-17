@@ -15,6 +15,25 @@ def basic_options(extra_args=None):
     return parse_command_line(args)
 
 
+MOCK_YAML = """
+    behaviors:
+        {}
+    """
+
+MOCK_SAMPLER_CURRICULUM_YAML = """
+    behaviors:
+        behavior1:
+            curriculum:
+                curriculum1
+        behavior2:
+            curriculum:
+                curriculum2
+
+    parameter_randomization:
+        sampler1
+    """
+
+
 @patch("mlagents.trainers.learn.handle_existing_directories")
 @patch("mlagents.trainers.learn.TrainerFactory")
 @patch("mlagents.trainers.learn.SamplerManager")
@@ -69,7 +88,7 @@ def test_bad_env_path():
         )
 
 
-@patch("builtins.open", new_callable=mock_open, read_data="{}")
+@patch("builtins.open", new_callable=mock_open, read_data=MOCK_YAML)
 def test_commandline_args(mock_file):
 
     # No args raises
@@ -98,8 +117,6 @@ def test_commandline_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--curriculum=./mycurriculum",
-        "--sampler=./mysample",
         "--keep-checkpoints=42",
         "--lesson=3",
         "--resume",
@@ -117,8 +134,8 @@ def test_commandline_args(mock_file):
     opt = parse_command_line(full_args)
     assert opt.trainer_config == {}
     assert opt.env_path == "./myenvfile"
-    assert opt.curriculum_config == {}
-    assert opt.sampler_config == {}
+    assert opt.curriculum_config is None
+    assert opt.sampler_config is None
     assert opt.keep_checkpoints == 42
     assert opt.lesson == 3
     assert opt.run_id == "myawesomerun"
@@ -132,7 +149,17 @@ def test_commandline_args(mock_file):
     assert opt.resume is True
 
 
-@patch("builtins.open", new_callable=mock_open, read_data="{}")
+@patch("builtins.open", new_callable=mock_open, read_data=MOCK_SAMPLER_CURRICULUM_YAML)
+def test_sampler_curriculum_configs(mock_file):
+    opt = parse_command_line(["mytrainerpath"])
+    assert opt.curriculum_config == {
+        "behavior1": "curriculum1",
+        "behavior2": "curriculum2",
+    }
+    assert opt.sampler_config == "sampler1"
+
+
+@patch("builtins.open", new_callable=mock_open, read_data=MOCK_YAML)
 def test_env_args(mock_file):
     full_args = [
         "mytrainerpath",
