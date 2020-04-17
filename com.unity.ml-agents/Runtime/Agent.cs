@@ -351,6 +351,7 @@ namespace MLAgents
             m_CumulativeReward = 0f;
             m_RequestAction = false;
             m_RequestDecision = false;
+            Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
         }
 
         /// <summary>
@@ -598,7 +599,14 @@ namespace MLAgents
                 return;
             }
 
-            m_Info.storedVectorActions = m_Action.vectorActions;
+            if (m_Info.done)
+            {
+                Array.Clear(m_Info.storedVectorActions, 0, m_Info.storedVectorActions.Length);
+            }
+            else
+            {
+                Array.Copy(m_Action.vectorActions, m_Info.storedVectorActions, m_Action.vectorActions.Length);
+            }
             m_ActionMasker.ResetMask();
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
@@ -784,10 +792,19 @@ namespace MLAgents
 
         void DecideAction()
         {
-            m_Action.vectorActions = m_Brain?.DecideAction();
             if (m_Action.vectorActions == null)
             {
                 ResetData();
+            }
+            var action = m_Brain?.DecideAction();
+
+            if (action == null)
+            {
+                Array.Clear(m_Action.vectorActions, 0, m_Action.vectorActions.Length);
+            }
+            else
+            {
+                Array.Copy(action, m_Action.vectorActions, action.Length);
             }
         }
     }
