@@ -102,7 +102,7 @@ public class TennisAgent : Agent
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -35f, 35f), Mathf.Min(rgV.y, 15f), rgV.z);
 
         // energy usage penalty cumulant
-        energyPenalty += -0.0001f * (Mathf.Abs(moveX) + upward);
+        energyPenalty += -0.001f * (Mathf.Abs(moveX) + upward);
 
         m_TextComponent.text = score.ToString();
     }
