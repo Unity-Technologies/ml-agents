@@ -15,7 +15,8 @@ public class TennisAgent : Agent
     public float scale;
 
     [HideInInspector]
-    public float timePenalty = 0;
+    // accumulator of energy penalty
+    public float energyPenalty = 0;
 
     Text m_TextComponent;
     Rigidbody m_AgentRb;
@@ -99,7 +100,9 @@ public class TennisAgent : Agent
         }
         var rgV = m_AgentRb.velocity;
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -35f, 35f), Mathf.Min(rgV.y, 15f), rgV.z);
-        //timePenalty += -1f / 3000f;
+
+        // energy usage penalty cumulant
+        energyPenalty += -0.0001f * (Mathf.Abs(moveX) + upward);
 
         m_TextComponent.text = score.ToString();
     }
@@ -127,7 +130,7 @@ public class TennisAgent : Agent
     public override void OnEpisodeBegin()
     {
 
-        timePenalty = 0;
+        energyPenalty = 0;
         m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         m_InvertMult = invertX ? -1f : 1f;
         if (m_InvertMult == 1f)
