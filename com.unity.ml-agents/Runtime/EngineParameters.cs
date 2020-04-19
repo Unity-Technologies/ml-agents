@@ -98,5 +98,11 @@ namespace MLAgents
         {
             return s_Instance.GetCaptureFrameRate();
         }
+
+        internal void Dispose()
+        {
+            SideChannelUtils.UnregisterSideChannel(m_Channel);
+            s_Instance = null;
+        }
     }
 }

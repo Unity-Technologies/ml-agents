@@ -78,5 +78,11 @@ namespace MLAgents
         {
             m_Channel.AddStat(key, value, aggregationMethod);
         }
+
+        internal void Dispose()
+        {
+            SideChannelUtils.UnregisterSideChannel(m_Channel);
+            s_Instance = null;
+        }
     }
 }

@@ -545,7 +545,11 @@ namespace MLAgents
 
             Communicator?.Dispose();
             Communicator = null;
-            SideChannelUtils.UnregisterAllSideChannels();
+
+            EngineParameters.Dispose();
+            EnvironmentParameters.Dispose();
+            StatsRecorder.Dispose();
+            SideChannelUtils.UnregisterAllSideChannels();  // unregister custom side channels
 
             if (m_ModelRunners != null)
             {

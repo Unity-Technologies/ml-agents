@@ -77,5 +77,11 @@ namespace MLAgents
         {
             return m_Channel.ListParameters();
         }
+
+        internal void Dispose()
+        {
+            SideChannelUtils.UnregisterSideChannel(m_Channel);
+            s_Instance = null;
+        }
     }
 }
