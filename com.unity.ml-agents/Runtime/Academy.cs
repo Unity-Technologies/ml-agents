@@ -290,7 +290,19 @@ namespace MLAgents
             }
         }
 
+        private static EngineParameters s_EngineParameters;
         private static EnvironmentParameters s_EnvironmentParameters;
+
+        /// <summary>
+        /// Returns the <see cref="EngineParameters"/> singleton instance. It contains the
+        /// Engine configurations that were specified at the start of training and that have
+        /// been applied to the Unity Engine.
+        /// </summary>
+        /// <returns></returns>
+        public static EngineParameters EngineParameters
+        {
+            get { return s_EngineParameters; }
+        }
 
         /// <summary>
         /// Returns the <see cref="EnvironmentParameters"/> singleton instance. If training
@@ -314,8 +326,8 @@ namespace MLAgents
 
             EnableAutomaticStepping();
 
-            SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
             SideChannelUtils.RegisterSideChannel(new StatsSideChannel());
+            s_EngineParameters = EngineParameters.Instance;
             s_EnvironmentParameters = EnvironmentParameters.Instance;
 
             // Try to launch the communicator by using the arguments passed at launch
