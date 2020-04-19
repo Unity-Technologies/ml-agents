@@ -293,7 +293,7 @@ namespace MLAgents
         private static EnvironmentParameters s_EnvironmentParameters;
 
         /// <summary>
-        /// Returns the <see cref="EnvironmentProperties"/> singleton instance. If training
+        /// Returns the <see cref="EnvironmentParameters"/> singleton instance. If training
         /// features such as Curriculum Learning or Environment Parameter Randomization are used,
         /// then the values of the parameters generated from the training process can be
         /// retrieved here.
