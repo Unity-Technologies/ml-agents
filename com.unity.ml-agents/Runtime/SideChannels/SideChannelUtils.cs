@@ -29,7 +29,6 @@ namespace MLAgents.SideChannels
         public static void RegisterSideChannel(SideChannel sideChannel)
         {
             var channelId = sideChannel.ChannelId;
-            Debug.Log($"adding {channelId}");
             if (RegisteredChannels.ContainsKey(channelId))
             {
                 throw new UnityAgentsException(
