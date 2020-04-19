@@ -290,6 +290,20 @@ namespace MLAgents
             }
         }
 
+        private static EnvironmentParameters s_EnvironmentParameters;
+
+        /// <summary>
+        /// Returns the <see cref="EnvironmentProperties"/> singleton instance. If training
+        /// features such as Curriculum Learning or Environment Parameter Randomization are used,
+        /// then the values of the parameters generated from the training process can be
+        /// retrieved here.
+        /// </summary>
+        /// <returns></returns>
+        public static EnvironmentParameters EnvironmentParameters
+        {
+            get { return s_EnvironmentParameters; }
+        }
+
         /// <summary>
         /// Initializes the environment, configures it and initialized the Academy.
         /// </summary>
@@ -301,8 +315,8 @@ namespace MLAgents
             EnableAutomaticStepping();
 
             SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
-            SideChannelUtils.RegisterSideChannel(new FloatPropertiesChannel());
             SideChannelUtils.RegisterSideChannel(new StatsSideChannel());
+            s_EnvironmentParameters = EnvironmentParameters.Instance;
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();

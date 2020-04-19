@@ -49,6 +49,8 @@ public class AgentSoccer : Agent
     BehaviorParameters m_BehaviorParameters;
     Vector3 m_Transform;
 
+    private EnvironmentParameters m_ResetParams;
+
     public override void Initialize()
     {
         m_Existential = 1f / maxStep;
@@ -73,7 +75,7 @@ public class AgentSoccer : Agent
             m_LateralSpeed = 0.3f;
             m_ForwardSpeed = 1.3f;
         }
-        else 
+        else
         {
             m_LateralSpeed = 0.3f;
             m_ForwardSpeed = 1.0f;
@@ -91,6 +93,8 @@ public class AgentSoccer : Agent
         area.playerStates.Add(playerState);
         m_PlayerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = m_PlayerIndex;
+
+        m_ResetParams = Academy.EnvironmentParameters;
     }
 
     public void MoveAgent(float[] act)
@@ -214,7 +218,7 @@ public class AgentSoccer : Agent
     {
 
         timePenalty = 0;
-        m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
+        m_BallTouch = m_ResetParams.GetParameterWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);
