@@ -62,7 +62,7 @@ setup(
         "protobuf>=3.6",
         "pyyaml",
         "six>=1.12.0",
-        "tensorflow==2.1.0",
+        "tensorflow==2.2rc3",
         'pypiwin32==223;platform_system=="Windows"',
     ],
     python_requires=">=3.6.1",
