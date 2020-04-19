@@ -93,7 +93,7 @@ public class TennisAgent : Agent
             //m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
         }
 
-        m_AgentRb.AddForce(new Vector3(moveX * 30f, upward * 10f, 0f), ForceMode.VelocityChange);
+        m_AgentRb.AddForce(new Vector3(moveX * 20f, upward * 10f, 0f), ForceMode.VelocityChange);
         //m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
 
         m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
@@ -106,7 +106,7 @@ public class TennisAgent : Agent
                 transform.position.z);
         }
         var rgV = m_AgentRb.velocity;
-        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -30, 30), Mathf.Min(rgV.y, 20f), rgV.z);
+        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 20f), rgV.z);
 
         // energy usage penalty cumulant
         energyPenalty += -0.001f * (Mathf.Abs(moveX) + upward);
