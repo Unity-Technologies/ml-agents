@@ -137,10 +137,10 @@ Tennis:
     beta: 1.0e-2
     time_horizon: 1000
     self_play:
-        window: 10
+        window: 50
         play_against_latest_model_ratio: 0.5
         save_steps: 50000
-        swap_steps: 50000
+        swap_steps: 10000
         team_change: 100000
 
 Goalie:
