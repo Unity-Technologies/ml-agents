@@ -37,7 +37,7 @@ namespace MLAgents
         /// Internal Getter for the singleton instance. Initializes if not already initialized.
         /// This method is kept internal to ensure that the initialization is managed by the
         /// Academy. Projects that import the ML-Agents SDK can retrieve the instance via
-        /// <see cref="Academy.GetEnvironmentParameters()"/>.
+        /// <see cref="Academy.EnvironmentParameters"/>.
         /// </summary>
         internal static EnvironmentParameters Instance
         {
