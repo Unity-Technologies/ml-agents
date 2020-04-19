@@ -292,6 +292,7 @@ namespace MLAgents
 
         private static EngineParameters s_EngineParameters;
         private static EnvironmentParameters s_EnvironmentParameters;
+        private static StatsRecorder s_StatsRecorder;
 
         /// <summary>
         /// Returns the <see cref="EngineParameters"/> singleton instance. It contains the
@@ -317,6 +318,16 @@ namespace MLAgents
         }
 
         /// <summary>
+        /// Returns the <see cref="StatsRecorder"/> singleton instance. This instance can be used
+        /// to record any statistics from the Unity environment.
+        /// </summary>
+        /// <returns></returns>
+        public static StatsRecorder StatsRecorder
+        {
+            get { return s_StatsRecorder; }
+        }
+
+        /// <summary>
         /// Initializes the environment, configures it and initialized the Academy.
         /// </summary>
         void InitializeEnvironment()
@@ -326,9 +337,9 @@ namespace MLAgents
 
             EnableAutomaticStepping();
 
-            SideChannelUtils.RegisterSideChannel(new StatsSideChannel());
             s_EngineParameters = EngineParameters.Instance;
             s_EnvironmentParameters = EnvironmentParameters.Instance;
+            s_StatsRecorder = StatsRecorder.Instance;
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
