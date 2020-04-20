@@ -230,7 +230,7 @@ parser = _create_parser()
 
 
 class RunOptions(NamedTuple):
-    trainer_config: Dict
+    behaviors: Dict
     debug: bool = parser.get_default("debug")
     seed: int = parser.get_default("seed")
     env_path: Optional[str] = parser.get_default("env_path")
@@ -249,7 +249,7 @@ class RunOptions(NamedTuple):
     lesson: int = parser.get_default("lesson")
     no_graphics: bool = parser.get_default("no_graphics")
     multi_gpu: bool = parser.get_default("multi_gpu")
-    sampler_config: Optional[Dict] = None
+    parameter_randomization: Optional[Dict] = None
     env_args: Optional[List[str]] = parser.get_default("env_args")
     cpu: bool = parser.get_default("cpu")
     width: int = parser.get_default("width")
@@ -269,23 +269,24 @@ class RunOptions(NamedTuple):
         """
         argparse_args = vars(args)
         config_path = argparse_args["trainer_config_path"]
-        full_config = load_config(config_path)
+        # Load YAML and apply overrides as needed
+        yaml_config = load_config(config_path)
         try:
-            argparse_args["trainer_config"] = full_config["behaviors"]
+            argparse_args["behaviors"] = yaml_config["behaviors"]
         except KeyError:
             raise TrainerConfigError(
                 "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
             )
-        curriculum_config = assemble_curriculum_config(argparse_args["trainer_config"])
-        if len(curriculum_config) > 0:
-            argparse_args["curriculum_config"] = curriculum_config
-        if "parameter_randomization" in full_config:
-            argparse_args["sampler_config"] = full_config["parameter_randomization"]
+
+        argparse_args["parameter_randomization"] = yaml_config.get(
+            "parameter_randomization", None
+        )
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
         argparse_args.pop("trainer_config_path")
+
         return RunOptions(**vars(args))
 
 
@@ -351,14 +352,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.target_frame_rate,
         )
         env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
+        curriculum_config = assemble_curriculum_config(options.behaviors)
         maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum_config, env_manager, options.lesson
+            curriculum_config, env_manager, options.lesson
         )
         sampler_manager, resampling_interval = create_sampler_manager(
-            options.sampler_config, run_seed
+            options.parameter_randomization, run_seed
         )
         trainer_factory = TrainerFactory(
-            options.trainer_config,
+            options.behaviors,
             summaries_dir,
             options.run_id,
             model_path,
@@ -428,7 +430,7 @@ def create_sampler_manager(sampler_config, run_seed=None):
 def try_create_meta_curriculum(
     curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
 ) -> Optional[MetaCurriculum]:
-    if curriculum_config is None:
+    if curriculum_config is None or len(curriculum_config) <= 0:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_config)
