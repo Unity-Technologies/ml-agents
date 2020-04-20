@@ -28,6 +28,7 @@ public class TennisAgent : Agent
     FloatPropertiesChannel m_ResetParams;
     float m_BallTouch;
     Vector3 down = new Vector3(0f, -100f, 0f);
+    Vector3 zAxis = new Vector3(0f, 0f, 1f);
     const float k_Angle = 90f;
     const float k_MaxAngle = 145f;
     const float k_MinAngle = 35f;
@@ -98,9 +99,11 @@ public class TennisAgent : Agent
 
         // calculate angle between m_InvertMult * 35 and m_InvertMult * 145
         var angle = 55f * rotate + m_InvertMult * k_Angle;
-        var rotateZ = angle - gameObject.transform.rotation.eulerAngles.z;
-        gameObject.transform.Rotate(0f, 0f, rotateZ);
-        //m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
+        // maps inverse agents rotation into -35 to -145
+        var rotateZ = angle - (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f);
+        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ * .5f);
+        m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
+        //gameObject.transform.Rotate(0f, 0f, rotateZ);
 
         if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)
