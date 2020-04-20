@@ -54,6 +54,9 @@ namespace MLAgents.Policies
         /// </summary>
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
+        /// <summary>
+        /// The number of actions specified by this Brain.
+        /// </summary>
         public int numActions
         {
             get
