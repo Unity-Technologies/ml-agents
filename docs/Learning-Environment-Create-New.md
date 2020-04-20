@@ -13,7 +13,7 @@ avoiding falling off the platform.
 
 ## Overview
 
-Using the ML-Agents toolkit in a Unity project involves the following basic
+Using the ML-Agents Toolkit in a Unity project involves the following basic
 steps:
 
 1. Create an environment for your agents to live in. An environment can range
