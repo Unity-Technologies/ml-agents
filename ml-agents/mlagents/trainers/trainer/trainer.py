@@ -43,7 +43,6 @@ class Trainer(abc.ABC):
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
         self.summary_path = trainer_parameters["summary_path"]
-        self._threaded = trainer_parameters.get("threaded", True)
         self._stats_reporter = StatsReporter(self.summary_path)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
@@ -90,15 +89,6 @@ class Trainer(abc.ABC):
         :return: the step count of the trainer
         """
         return self.step
-
-    @property
-    def threaded(self) -> bool:
-        """
-        Whether or not to run the trainer in a thread. True allows the trainer to
-        update the policy while the environment is taking steps. Set to False to
-        enforce strict on-policy updates (i.e. don't update the policy when taking steps.)
-        """
-        return self._threaded
 
     @property
     def should_still_train(self) -> bool:

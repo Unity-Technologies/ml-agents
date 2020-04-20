@@ -149,6 +149,8 @@ A `DecisionSteps` has the following fields :
  `env.step()`).
  - `reward` is a float vector of length batch size. Corresponds to the
  rewards collected by each agent since the last simulation step.
+ - `done` is an array of booleans of length batch size. Is true if the
+ associated Agent was terminated during the last simulation step.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
@@ -172,6 +174,8 @@ A `DecisionStep` has the following fields:
  (Each array has one less dimension than the arrays in `DecisionSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
+ - `done` is a bool. Is true if the Agent was terminated during the last
+ simulation step.
  - `agent_id` is an int and an unique identifier for the corresponding Agent.
  - `action_mask` is an optional list of one dimensional array of booleans.
  Only available in multi-discrete action space type.
@@ -193,6 +197,8 @@ A `TerminalSteps` has the following fields :
  `env.step()`).
  - `reward` is a float vector of length batch size. Corresponds to the
  rewards collected by each agent since the last simulation step.
+ - `done` is an array of booleans of length batch size. Is true if the
+ associated Agent was terminated during the last simulation step.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
@@ -213,6 +219,8 @@ A `TerminalStep` has the following fields:
  (Each array has one less dimension than the arrays in `TerminalSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
+ - `done` is a bool. Is true if the Agent was terminated during the last
+ simulation step.
  - `agent_id` is an int and an unique identifier for the corresponding Agent.
  - `max_step` is a bool. Is true if the Agent reached its maximum number of
  steps during the last simulation step.

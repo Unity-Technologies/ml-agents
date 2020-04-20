@@ -4,8 +4,7 @@
 
 import os
 import sys
-import threading
-from typing import Dict, Optional, Set, List
+from typing import Dict, Optional, Set
 from collections import defaultdict
 
 import numpy as np
@@ -50,7 +49,6 @@ class TrainerController(object):
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
         :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
         :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
-        :param threaded: Whether or not to run trainers in a separate thread. Disable for testing/debugging.
         """
         self.trainers: Dict[str, Trainer] = {}
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
@@ -64,9 +62,6 @@ class TrainerController(object):
         self.meta_curriculum = meta_curriculum
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
-
-        self.trainer_threads: List[threading.Thread] = []
-        self.kill_trainers = False
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
@@ -186,13 +181,6 @@ class TrainerController(object):
 
         trainer.publish_policy_queue(agent_manager.policy_queue)
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
-        if trainer.threaded:
-            # Start trainer thread
-            trainerthread = threading.Thread(
-                target=self.trainer_update_func, args=(trainer,), daemon=True
-            )
-            trainerthread.start()
-            self.trainer_threads.append(trainerthread)
 
     def _create_trainers_and_managers(
         self, env_manager: EnvManager, behavior_ids: Set[str]
@@ -220,8 +208,7 @@ class TrainerController(object):
                     self.reset_env_if_ready(env_manager, global_step)
                     if self._should_save_model(global_step):
                         self._save_model()
-            # Stop advancing trainers
-            self.kill_trainers = True
+
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
@@ -230,7 +217,6 @@ class TrainerController(object):
             UnityCommunicationException,
             UnityEnvironmentException,
         ) as ex:
-            self.kill_trainers = True
             if self.train_model:
                 self._save_model_when_interrupted()
 
@@ -296,14 +282,9 @@ class TrainerController(object):
                         "Environment/Lesson", curr.lesson_num
                     )
 
-        for trainer in self.trainers.values():
-            if not trainer.threaded:
-                with hierarchical_timer("trainer_advance"):
-                    trainer.advance()
+        # Advance trainers. This can be done in a separate loop in the future.
+        with hierarchical_timer("trainer_advance"):
+            for trainer in self.trainers.values():
+                trainer.advance()
 
         return num_steps
-
-    def trainer_update_func(self, trainer: Trainer) -> None:
-        while not self.kill_trainers:
-            with hierarchical_timer("trainer_advance"):
-                trainer.advance()

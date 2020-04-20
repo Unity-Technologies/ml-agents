@@ -147,5 +147,4 @@ def test_advance_adds_experiences_to_trainer_and_trains(
 
     env_mock.reset.assert_not_called()
     env_mock.advance.assert_called_once()
-    # May have been called many times due to thread
-    trainer_mock.advance.call_count > 0
+    trainer_mock.advance.assert_called_once()

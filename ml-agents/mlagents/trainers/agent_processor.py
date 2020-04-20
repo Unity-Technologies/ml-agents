@@ -1,7 +1,6 @@
 import sys
-from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
-from collections import defaultdict, Counter
-import queue
+from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Any, Union
+from collections import defaultdict, Counter, deque
 
 from mlagents_envs.base_env import (
     DecisionSteps,
@@ -230,53 +229,26 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str, maxlen: int = 20):
+    def __init__(self, behavior_id: str, maxlen: int = 1000):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self._maxlen: int = maxlen
-        self._queue: queue.Queue = queue.Queue(maxsize=maxlen)
-        self._behavior_id = behavior_id
-
-    @property
-    def maxlen(self):
-        """
-        The maximum length of the queue.
-        :return: Maximum length of the queue.
-        """
-        return self._maxlen
-
-    @property
-    def behavior_id(self):
-        """
-        The Behavior ID of this queue.
-        :return: Behavior ID associated with the queue.
-        """
-        return self._behavior_id
-
-    def qsize(self) -> int:
-        """
-        Returns the approximate size of the queue. Note that values may differ
-        depending on the underlying queue implementation.
-        """
-        return self._queue.qsize()
+        self.maxlen: int = maxlen
+        self.queue: Deque[T] = deque(maxlen=self.maxlen)
+        self.behavior_id = behavior_id
 
     def empty(self) -> bool:
-        return self._queue.empty()
+        return len(self.queue) == 0
 
     def get_nowait(self) -> T:
-        """
-        Gets the next item from the queue, throwing an AgentManagerQueue.Empty exception
-        if the queue is empty.
-        """
         try:
-            return self._queue.get_nowait()
-        except queue.Empty:
+            return self.queue.popleft()
+        except IndexError:
             raise self.Empty("The AgentManagerQueue is empty.")
 
     def put(self, item: T) -> None:
-        self._queue.put(item)
+        self.queue.append(item)
 
 
 class AgentManager(AgentProcessor):
@@ -296,10 +268,8 @@ class AgentManager(AgentProcessor):
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
             self.behavior_id
         )
-        # NOTE: we make policy queues of infinite length to avoid lockups of the trainers.
-        # In the environment manager, we make sure to empty the policy queue before continuing to produce steps.
         self.policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
-            self.behavior_id, maxlen=0
+            self.behavior_id
         )
         self.publish_trajectory_queue(self.trajectory_queue)
 

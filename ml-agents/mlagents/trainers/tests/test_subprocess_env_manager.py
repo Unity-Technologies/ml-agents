@@ -17,7 +17,6 @@ from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
 from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests.test_simple_rl import (
     _check_environment_trains,
     PPO_CONFIG,
@@ -152,12 +151,6 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
         external_brains_mock.return_value = [brain_name]
         agent_manager_mock = mock.Mock()
-        mock_policy = mock.Mock()
-        agent_manager_mock.policy_queue.get_nowait.side_effect = [
-            mock_policy,
-            mock_policy,
-            AgentManagerQueue.Empty(),
-        ]
         env_manager.set_agent_manager(brain_name, agent_manager_mock)
 
         step_info_dict = {brain_name: (Mock(), Mock())}
@@ -180,6 +173,9 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         )
 
         # Test policy queue
+        mock_policy = mock.Mock()
+        agent_manager_mock.policy_queue.get_nowait.return_value = mock_policy
+        env_manager.advance()
         assert env_manager.policies[brain_name] == mock_policy
         assert agent_manager_mock.policy == mock_policy
 
@@ -193,7 +189,7 @@ def test_subprocess_env_endtoend(num_envs):
     env_manager = SubprocessEnvManager(
         simple_env_factory, EngineConfig.default_config(), num_envs
     )
-    trainer_config = generate_config(PPO_CONFIG, override_vals={"max_steps": 5000})
+    trainer_config = generate_config(PPO_CONFIG)
     # Run PPO using env_manager
     _check_environment_trains(
         simple_env_factory(0, []),
