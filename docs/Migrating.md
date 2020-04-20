@@ -33,6 +33,8 @@ double-check that the versions are in the same. The versions can be found in
 - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size.
+- `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
+
 
 ### Steps to Migrate
 
@@ -54,6 +56,8 @@ double-check that the versions are in the same. The versions can be found in
 - If your Agent class overrides `Heuristic()`, change the signature to
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
+- Set `steps_per_update` to be around equal to the number of agents in your environment,
+  times `num_updates` and divided by `train_interval`.
 
 ## Migrating from 0.14 to 0.15
 

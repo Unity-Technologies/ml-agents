@@ -83,9 +83,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         return False
 
     @abc.abstractmethod
-    def _update_policy(self):
+    def _update_policy(self) -> bool:
         """
         Uses demonstration_buffer to update model.
+        :return: Whether or not the policy was updated.
         """
         pass
 
@@ -134,13 +135,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def advance(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
+        Will block and wait briefly if there are no trajectories.
         """
         with hierarchical_timer("process_trajectory"):
             for traj_queue in self.trajectory_queues:
                 # We grab at most the maximum length of the queue.
                 # This ensures that even if the queue is being filled faster than it is
                 # being emptied, the trajectories in the queue are on-policy.
-                for _ in range(traj_queue.maxlen):
+                for _ in range(traj_queue.qsize()):
                     try:
                         t = traj_queue.get_nowait()
                         self._process_trajectory(t)
@@ -149,9 +151,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         if self.should_still_train:
             if self._is_ready_update():
                 with hierarchical_timer("_update_policy"):
-                    self._update_policy()
-                    for q in self.policy_queues:
-                        # Get policies that correspond to the policy queue in question
-                        q.put(self.get_policy(q.behavior_id))
+                    if self._update_policy():
+                        for q in self.policy_queues:
+                            # Get policies that correspond to the policy queue in question
+                            q.put(self.get_policy(q.behavior_id))
         else:
             self._clear_update_buffer()
