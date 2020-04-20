@@ -753,11 +753,12 @@ namespace MLAgents
         /// Implement this function to provide custom decision making logic or to support manual
         /// control of an agent using keyboard, mouse, or game controller input.
         ///
-        /// Your heuristic implementation can use any decision making logic you specify. The function
-        /// must return a float[] array containing the array of action values. The array you
-        /// return must conform to your <seealso cref="OnActionReceived(float[])"/> function,
-        /// which receives this array and implements the corresponding agent behavior. See [Actions] for more
-        /// information about agent actions.
+        /// Your heuristic implementation can use any decision making logic you specify. Assign decision
+        /// values to the float[] array, <paramref cref="actionsOut"/>, passed to your function as a parameter.
+        /// Add values to the array at the same indexes as they are used in your 
+        /// <seealso cref="OnActionReceived(float[])"/> function, which receives this array and 
+        /// implements the corresponding agent behavior. See [Actions] for more information
+        /// about agent actions.
         /// 
         /// An agent calls this `Heuristic()` function to make a decision when you set its behavior
         /// type to <see cref="BehaviorType.HeuristicOnly"/>. The agent also calls this function if
@@ -778,7 +779,6 @@ namespace MLAgents
         /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
-        /// <returns> A float array defining the next action of the agent.</returns>
         /// <example>
         /// The following example illustrates a `Heuristic()` function that provides WASD-style
         /// keyboard control for an agent that can move in two dimensions as well as jump. See

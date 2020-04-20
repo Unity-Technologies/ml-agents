@@ -72,7 +72,7 @@ namespace MLAgents.Policies
         public SpaceType vectorActionSpaceType = SpaceType.Discrete;
 
         /// <summary>
-        /// The effective action space size.
+        /// The number of actions specified by this Brain.
         /// </summary>
         public int numActions
         {

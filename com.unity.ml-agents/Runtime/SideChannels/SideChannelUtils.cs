@@ -5,6 +5,10 @@ using System.IO;
 
 namespace MLAgents.SideChannels
 {
+    /// <summary>
+    /// Collection of static utilities for managing the registering/unregistering of
+    /// <see cref="SideChannels"/> and the sending/receiving of messages for all the channels.
+    /// </summary>
     public static class SideChannelUtils
     {
 

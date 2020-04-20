@@ -4,8 +4,7 @@ using System;
 namespace MLAgents.SideChannels
 {
     /// <summary>
-    /// Side channel that is comprised of a collection of float variables, represented by
-    /// <see cref="IFloatProperties"/>
+    /// Side channel that is comprised of a collection of float variables.
     /// </summary>
     public class FloatPropertiesChannel : SideChannel
     {
@@ -58,7 +57,6 @@ namespace MLAgents.SideChannels
             action?.Invoke(value);
         }
 
-        /// <inheritdoc/>
         public float GetPropertyWithDefault(string key, float defaultValue)
         {
             float valueOut;
@@ -66,13 +64,11 @@ namespace MLAgents.SideChannels
             return hasKey ? valueOut : defaultValue;
         }
 
-        /// <inheritdoc/>
         public void RegisterCallback(string key, Action<float> action)
         {
             m_RegisteredActions[key] = action;
         }
 
-        /// <inheritdoc/>
         public IList<string> ListProperties()
         {
             return new List<string>(m_FloatProperties.Keys);
