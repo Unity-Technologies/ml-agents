@@ -39,18 +39,6 @@ namespace MLAgents
         [FormerlySerializedAs("RepeatAction")]
         public bool TakeActionsBetweenDecisions = true;
 
-        /// <summary>
-        /// Whether or not the Agent decisions should start at an offset (different for each agent).
-        /// </summary>
-        /// <remarks>
-        /// This does not affect <see cref="DecisionPeriod"/>. Turning this on will distribute
-        /// the decision-making computations for all the agents across multiple Academy steps.
-        /// This can be valuable in scenarios where you have many agents in the scene, particularly
-        /// during the inference phase.
-        /// </remarks>
-        [Tooltip("Whether or not Agent decisions should start at an offset.")]
-        public bool offsetStep;
-
         [NonSerialized]
         Agent m_Agent;
 
