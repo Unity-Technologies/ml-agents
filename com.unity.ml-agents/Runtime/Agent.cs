@@ -318,6 +318,11 @@ namespace MLAgents
 
         void NotifyAgentDone(DoneReason doneReason)
         {
+            if (m_Info.done)
+            {
+                // The Agent was already marked as Done and should not be notified again
+                return;
+            }
             m_Info.episodeId = m_EpisodeId;
             m_Info.reward = m_Reward;
             m_Info.done = true;
@@ -519,10 +524,9 @@ namespace MLAgents
         /// <summary>
         /// When the Agent uses Heuristics, it will call this method every time it
         /// needs an action. This can be used for debugging or controlling the agent
-        /// with keyboard.
+        /// with keyboard. This can also be useful to record demonstrations for imitation learning.
         /// </summary>
-        /// <returns> A float array corresponding to the next action of the Agent
-        /// </returns>
+        /// <param name="actionsOut">An array corresponding to the next action of the Agent</param>
         public virtual void Heuristic(float[] actionsOut)
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");

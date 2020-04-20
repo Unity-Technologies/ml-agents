@@ -18,6 +18,9 @@ namespace MLAgents.Sensors
         [HideInInspector, SerializeField, FormerlySerializedAs("renderTexture")]
         RenderTexture m_RenderTexture;
 
+        /// <summary>
+        /// Stores the <see cref="RenderTexture"/> associated with this sensor.
+        /// </summary>
         public RenderTexture renderTexture
         {
             get { return m_RenderTexture;  }
@@ -38,7 +41,7 @@ namespace MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
-        public bool m_Grayscale;
+        bool m_Grayscale;
 
         /// <summary>
         /// Whether the RenderTexture observation should be converted to grayscale or not.

@@ -158,10 +158,10 @@ Cloning (Imitation), GAIL = Generative Adversarial Imitation Learning
 | tau                    | How aggressively to update the target network used for bootstrapping value estimation in SAC.                                                                                           | SAC                      |
 | time_horizon           | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC                 |
 | trainer                | The type of training to perform: "ppo", "sac", "offline_bc" or "online_bc".                                                                                                             | PPO, SAC                 |
-| train_interval         | How often to update the agent.                                                                                                                                                          | SAC                      |
-| num_update             | Number of mini-batches to update the agent with during each update.                                                                                                                     | SAC                      |
+| steps_per_update           | Ratio of agent steps per mini-batch update.                                                                                                                     | SAC                      |
 | use_recurrent          | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC                 |
 | init_path              | Initialize trainer from a previously saved model.                                                                                                                                       | PPO, SAC                 |
+| threaded              | Run the trainer in a parallel thread from the environment steps. (Default: true)                                                                                                                                      | PPO, SAC                 |
 
 For specific advice on setting hyperparameters based on the type of training you
 are conducting, see:
