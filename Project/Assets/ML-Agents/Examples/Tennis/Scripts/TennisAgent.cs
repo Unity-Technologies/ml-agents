@@ -140,15 +140,16 @@ public class TennisAgent : Agent
         energyPenalty = 0;
         m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         m_InvertMult = invertX ? -1f : 1f;
-        if (m_InvertMult == 1f)
-        {
-            m_Area.MatchReset();
-        }
         var agentOutX = Random.Range(12f, 16f);
         var agentOutY = Random.Range(-1.5f, 0f);
         transform.position = new Vector3(-m_InvertMult * agentOutX, agentOutY, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
         SetResetParameters();
+        if (m_InvertMult == 1f)
+        {
+            m_Area.MatchReset();
+        }
+
     }
 
     public void SetRacket()

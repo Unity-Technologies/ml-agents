@@ -36,9 +36,9 @@ public class HitWall : MonoBehaviour
 
     void Reset()
     {
-        m_AgentA.EndEpisode();
         m_AgentB.EndEpisode();
-        m_Area.MatchReset();
+        m_AgentA.EndEpisode();
+        //m_Area.MatchReset();
     }
     
     void AgentAWins()
