@@ -369,12 +369,12 @@ def test_simple_asymm_ghost(use_discrete):
         [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], use_discrete=use_discrete
     )
     override_vals = {
-        "max_steps": 2000,
+        "max_steps": 4000,
         "self_play": {
             "play_against_latest_model_ratio": 1.0,
-            "save_steps": 5000,
-            "swap_steps": 5000,
-            "team_change": 2000,
+            "save_steps": 10000,
+            "swap_steps": 10000,
+            "team_change": 4000,
         },
     }
     config = generate_config(PPO_CONFIG, override_vals)

@@ -5,17 +5,16 @@ highly recommend the [Unity Manual](https://docs.unity3d.com/Manual/index.html)
 and [Tutorials page](https://unity3d.com/learn/tutorials). The
 [Roll-a-ball tutorial](https://unity3d.com/learn/tutorials/s/roll-ball-tutorial)
 is a fantastic resource to learn all the basic concepts of Unity to get started
-with the ML-Agents toolkit:
+with the ML-Agents Toolkit:
 
-* [Editor](https://docs.unity3d.com/Manual/UsingTheEditor.html)
-* [Interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
-* [Scene](https://docs.unity3d.com/Manual/CreatingScenes.html)
-* [GameObject](https://docs.unity3d.com/Manual/GameObjects.html)
-* [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html)
-* [Camera](https://docs.unity3d.com/Manual/Cameras.html)
-* [Scripting](https://docs.unity3d.com/Manual/ScriptingSection.html)
-* [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html)
-* [Ordering of event functions](https://docs.unity3d.com/Manual/ExecutionOrder.html)
+- [Editor](https://docs.unity3d.com/Manual/UsingTheEditor.html)
+- [Interface](https://docs.unity3d.com/Manual/LearningtheInterface.html)
+- [Scene](https://docs.unity3d.com/Manual/CreatingScenes.html)
+- [GameObject](https://docs.unity3d.com/Manual/GameObjects.html)
+- [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html)
+- [Camera](https://docs.unity3d.com/Manual/Cameras.html)
+- [Scripting](https://docs.unity3d.com/Manual/ScriptingSection.html)
+- [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html)
+- [Ordering of event functions](https://docs.unity3d.com/Manual/ExecutionOrder.html)
   (e.g. FixedUpdate, Update)
-* [Prefabs](https://docs.unity3d.com/Manual/Prefabs.html)
-
+- [Prefabs](https://docs.unity3d.com/Manual/Prefabs.html)

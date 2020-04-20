@@ -3,15 +3,15 @@
 :warning: **Note:** We no longer use this guide ourselves and so it may not work
 correctly. We've decided to keep it up just in case it is helpful to you.
 
-The ML-Agents toolkit supports Windows 10. While it might be possible to run the
-ML-Agents toolkit using other versions of Windows, it has not been tested on
-other versions. Furthermore, the ML-Agents toolkit has not been tested on a
+The ML-Agents Toolkit supports Windows 10. While it might be possible to run the
+ML-Agents Toolkit using other versions of Windows, it has not been tested on
+other versions. Furthermore, the ML-Agents Toolkit has not been tested on a
 Windows VM such as Bootcamp or Parallels.
 
-To use the ML-Agents toolkit, you install Python and the required Python
+To use the ML-Agents Toolkit, you install Python and the required Python
 packages as outlined below. This guide also covers how set up GPU-based training
 (for advanced users). GPU-based training is not currently required for the
-ML-Agents toolkit. However, training on a GPU might be required by future
+ML-Agents Toolkit. However, training on a GPU might be required by future
 versions and features.
 
 ## Step 1: Install Python via Anaconda
@@ -71,7 +71,7 @@ following new paths.
 ## Step 2: Setup and Activate a New Conda Environment
 
 You will create a new [Conda environment](https://conda.io/docs/) to be used
-with the ML-Agents toolkit. This means that all the packages that you install
+with the ML-Agents Toolkit. This means that all the packages that you install
 are localized to just this environment. It will not affect any other
 installation of Python or other environments. Whenever you want to run
 ML-Agents, you will need activate this Conda environment.
@@ -113,7 +113,7 @@ pip install tensorflow==1.7.1
 
 ## Step 3: Install Required Python Packages
 
-The ML-Agents toolkit depends on a number of Python packages. Use `pip` to
+The ML-Agents Toolkit depends on a number of Python packages. Use `pip` to
 install these Python dependencies.
 
 If you haven't already, clone the ML-Agents Toolkit Github repository to your
@@ -155,7 +155,7 @@ pip install mlagents
 ```
 
 This will complete the installation of all the required Python packages to run
-the ML-Agents toolkit.
+the ML-Agents Toolkit.
 
 Sometimes on Windows, when you use pip to install certain Python packages, the
 pip will get stuck when trying to read the cache of the package. If you see
@@ -199,13 +199,13 @@ to install these packages in this order as the `mlagents` package depends on
 
 ## (Optional) Step 4: GPU Training using The ML-Agents Toolkit
 
-GPU is not required for the ML-Agents toolkit and won't speed up the PPO
+GPU is not required for the ML-Agents Toolkit and won't speed up the PPO
 algorithm a lot during training(but something in the future will benefit from
 GPU). This is a guide for advanced users who want to train using GPUs.
 Additionally, you will need to check if your GPU is CUDA compatible. Please
 check Nvidia's page [here](https://developer.nvidia.com/cuda-gpus).
 
-Currently for the ML-Agents toolkit, only CUDA v9.0 and cuDNN v7.0.5 is
+Currently for the ML-Agents Toolkit, only CUDA v9.0 and cuDNN v7.0.5 is
 supported.
 
 ### Install Nvidia CUDA toolkit
@@ -213,7 +213,7 @@ supported.
 [Download](https://developer.nvidia.com/cuda-toolkit-archive) and install the
 CUDA toolkit 9.0 from Nvidia's archive. The toolkit includes GPU-accelerated
 libraries, debugging and optimization tools, a C/C++ (Step Visual Studio 2017)
-compiler and a runtime library and is needed to run the ML-Agents toolkit. In
+compiler and a runtime library and is needed to run the ML-Agents Toolkit. In
 this guide, we are using version
 [9.0.176](https://developer.nvidia.com/compute/cuda/9.0/Prod/network_installers/cuda_9.0.176_win10_network-exe)).
 
