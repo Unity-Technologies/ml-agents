@@ -5,7 +5,7 @@ import os
 import numpy as np
 import json
 
-from typing import Callable, Optional, List, NamedTuple, Dict
+from typing import Callable, Optional, List, NamedTuple, Dict, Set
 
 import mlagents.trainers
 import mlagents_envs
@@ -43,6 +43,31 @@ from mlagents_envs import logging_util
 logger = logging_util.get_logger(__name__)
 
 
+class DetectDefault(argparse.Action):
+    """
+    Internal class to help detect arguments that aren't default.
+    """
+
+    non_default_args: Set[str] = set()
+
+    def __call__(self, arg_parser, namespace, values, option_string=None):
+        setattr(namespace, self.dest, values)
+        DetectDefault.non_default_args.add(self.dest)
+
+
+class DetectDefaultStoreTrue(DetectDefault):
+    """
+    Internal class to help detect arguments that aren't default.
+    Used for store_true arguments.
+    """
+
+    def __init__(self, nargs=0, **kwargs):
+        super().__init__(nargs=nargs, **kwargs)
+
+    def __call__(self, arg_parser, namespace, values, option_string=None):
+        super().__call__(arg_parser, namespace, True, option_string)
+
+
 def _create_parser():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -53,12 +78,14 @@ def _create_parser():
         default=None,
         dest="env_path",
         help="Path to the Unity executable to train",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--lesson",
         default=0,
         type=int,
         help="The lesson to start with when performing curriculum training",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--keep-checkpoints",
@@ -67,19 +94,20 @@ def _create_parser():
         help="The maximum number of model checkpoints to keep. Checkpoints are saved after the"
         "number of steps specified by the save-freq option. Once the maximum number of checkpoints"
         "has been reached, the oldest checkpoint is deleted when saving a new checkpoint.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--load",
         default=False,
         dest="load_model",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help=argparse.SUPPRESS,  # Deprecated but still usable for now.
     )
     argparser.add_argument(
         "--resume",
         default=False,
         dest="resume",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to resume training from a checkpoint. Specify a --run-id to use this option. "
         "If set, the training code loads an already trained model to initialize the neural network "
         "before resuming training. This option is only valid when the models exist, and have the same "
@@ -89,7 +117,7 @@ def _create_parser():
         "--force",
         default=False,
         dest="force",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to force-overwrite this run-id's existing summary and model data. (Without "
         "this flag, attempting to train a model with a run-id that has been used before will throw "
         "an error.",
@@ -102,6 +130,7 @@ def _create_parser():
         "as the saved model itself. If you use TensorBoard to view the training statistics, "
         "always set a unique run-id for each training run. (The statistics for all runs with the "
         "same id are combined as if they were produced by a the same session.)",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--initialize-from",
@@ -111,31 +140,34 @@ def _create_parser():
         "This can be used, for instance, to fine-tune an existing model on a new environment. "
         "Note that the previously saved models must have the same behavior parameters as your "
         "current environment.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--save-freq",
         default=50000,
         type=int,
         help="How often (in steps) to save the model during training",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--seed",
         default=-1,
         type=int,
         help="A number to use as a seed for the random number generator used by the training code",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--train",
         default=False,
         dest="train_model",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help=argparse.SUPPRESS,
     )
     argparser.add_argument(
         "--inference",
         default=False,
         dest="inference",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to run in Python inference mode (i.e. no training). Use with --resume to load "
         "a model trained with an existing run ID.",
     )
@@ -148,6 +180,7 @@ def _create_parser():
         "will use the port (base_port + worker_id), where the worker_id is sequential IDs given to "
         "each instance from 0 to (num_envs - 1). Note that when training using the Editor rather "
         "than an executable, the base port will be ignored.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--num-envs",
@@ -155,18 +188,19 @@ def _create_parser():
         type=int,
         help="The number of concurrent Unity environment instances to collect experiences "
         "from when training",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--no-graphics",
         default=False,
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
         "the graphics driver. Use this only if your agents don't use visual observations.",
     )
     argparser.add_argument(
         "--debug",
         default=False,
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to enable debug-level logging for some parts of the code",
     )
     argparser.add_argument(
@@ -177,11 +211,12 @@ def _create_parser():
         "process these as Unity Command Line Arguments. You should choose different argument names if "
         "you want to create environment-specific arguments. All arguments after this flag will be "
         "passed to the executable.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--cpu",
         default=False,
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Forces training using CPU only",
     )
 
@@ -194,6 +229,7 @@ def _create_parser():
         type=int,
         help="The width of the executable window of the environment(s) in pixels "
         "(ignored for editor training).",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--height",
@@ -201,6 +237,7 @@ def _create_parser():
         type=int,
         help="The height of the executable window of the environment(s) in pixels "
         "(ignored for editor training)",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--quality-level",
@@ -208,6 +245,7 @@ def _create_parser():
         type=int,
         help="The quality level of the environment(s). Equivalent to calling "
         "QualitySettings.SetQualityLevel in Unity.",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--time-scale",
@@ -215,6 +253,7 @@ def _create_parser():
         type=float,
         help="The time scale of the Unity environment(s). Equivalent to setting "
         "Time.timeScale in Unity.",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--target-frame-rate",
@@ -222,6 +261,7 @@ def _create_parser():
         type=int,
         help="The target frame rate of the Unity environment(s). Equivalent to setting "
         "Application.targetFrameRate in Unity.",
+        action=DetectDefault,
     )
     return argparser
 
@@ -268,26 +308,36 @@ class RunOptions(NamedTuple):
           configs loaded from files.
         """
         argparse_args = vars(args)
+        full_config = {}
+        full_config.update(argparse_args)
+        # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
+        # these keys will need to be deleted to use the **/splat operator below.
+        full_config.pop("trainer_config_path")
         config_path = argparse_args["trainer_config_path"]
-        # Load YAML and apply overrides as needed
+
+        # Load YAML
         yaml_config = load_config(config_path)
-        try:
-            argparse_args["behaviors"] = yaml_config["behaviors"]
-        except KeyError:
+        # This is the only option that is not optional and has no defaults.
+        if "behaviors" not in yaml_config:
             raise TrainerConfigError(
                 "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
             )
+        # Use the YAML file values for all values not specified in the CLI.
+        for key, val in yaml_config.items():
+            # Detect bad config options
+            if not hasattr(RunOptions, key):
+                raise TrainerConfigError(
+                    "The option {} was specified in your YAML file, but is invalid.".format(
+                        key
+                    )
+                )
+            if key not in DetectDefault.non_default_args:
+                full_config[key] = val
 
-        argparse_args["parameter_randomization"] = yaml_config.get(
-            "parameter_randomization", None
-        )
         # Keep deprecated --load working, TODO: remove
-        argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
-        # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
-        # these keys will need to be deleted to use the **/splat operator below.
-        argparse_args.pop("trainer_config_path")
+        full_config["resume"] = full_config["resume"] or full_config["load_model"]
 
-        return RunOptions(**vars(args))
+        return RunOptions(**full_config)
 
 
 def get_version_string() -> str:
