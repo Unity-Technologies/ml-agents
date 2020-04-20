@@ -40,19 +40,18 @@ ML-Agents provides two reward signals by default, the Extrinsic (environment) re
 Curiosity reward, which can be used to encourage exploration in sparse extrinsic reward
 environments.
 
-#### Number of Updates for Reward Signal (Optional)
+#### Steps Per Update for Reward Signal (Optional)
 
-`reward_signal_num_update` for the reward signals corresponds to the number of mini batches sampled
-and used for updating the reward signals during each
-update. By default, we update the reward signals once every time the main policy is updated.
+`reward_signal_steps_per_update` for the reward signals corresponds to the number of steps per mini batch sampled
+and used for updating the reward signals. By default, we update the reward signals once every time the main policy is updated.
 However, to imitate the training procedure in certain imitation learning papers (e.g.
 [Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
-we may want to update the policy N times, then update the reward signal (GAIL) M times.
-We can change `train_interval` and `num_update` of SAC to N, as well as `reward_signal_num_update`
-under `reward_signals` to M to accomplish this. By default, `reward_signal_num_update` is set to
-`num_update`.
+we may want to update the reward signal (GAIL) M times for every update of the policy.
+We can change `steps_per_update` of SAC to N, as well as `reward_signal_steps_per_update`
+under `reward_signals` to N / M to accomplish this. By default, `reward_signal_steps_per_update` is set to
+`steps_per_update`.
 
-Typical Range: `num_update`
+Typical Range: `steps_per_update`
 
 ### Buffer Size
 
@@ -106,17 +105,22 @@ there may not be any new interesting information between steps, and `train_inter
 
 Typical Range: `1` - `5`
 
-### Number of Updates
+### Steps Per Update
 
-`num_update` corresponds to the number of mini batches sampled and used for training during each
-training event. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
-replay buffer, and using this mini batch to update the models. Typically, this can be left at 1.
-However, to imitate the training procedure in certain papers (e.g.
-[Kostrikov et. al](http://arxiv.org/abs/1809.02925), [Blondé et. al](http://arxiv.org/abs/1809.02064)),
-we may want to update N times with different mini batches before grabbing additional samples.
-We can change `train_interval` and `num_update` to N to accomplish this.
+`steps_per_update` corresponds to the average ratio of agent steps (actions) taken to updates made of the agent's
+policy. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
+replay buffer, and using this mini batch to update the models. Note that it is not guaranteed that after
+exactly `steps_per_update` steps an update will be made, only that the ratio will hold true over many steps.
 
-Typical Range: `1`
+Typically, `steps_per_update` should be greater than or equal to 1. Note that setting `steps_per_update` lower will
+improve sample efficiency (reduce the number of steps required to train)
+but increase the CPU time spent performing updates. For most environments where steps are fairly fast (e.g. our example
+environments) `steps_per_update` equal to the number of agents in the scene is a good balance.
+For slow environments (steps take 0.1 seconds or more) reducing `steps_per_update` may improve training speed.
+We can also change `steps_per_update` to lower than 1 to update more often than once per step, though this will
+usually result in a slowdown unless the environment is very slow.
+
+Typical Range: `1` - `20`
 
 ### Tau
 
