@@ -44,7 +44,7 @@ def test_closing(env_name):
 
     try:
         env1 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=1), no_graphics=True, use_visual=False
+            UnityEnvironment(env_name, worker_id=1, no_graphics=True), use_visual=False
         )
         env1.close()
         env1 = UnityToGymWrapper(
