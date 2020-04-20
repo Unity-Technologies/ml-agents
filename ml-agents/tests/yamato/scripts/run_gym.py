@@ -9,7 +9,7 @@ def test_run_environment(env_name):
     Run the gym test using the specified environment
     :param env_name: Name of the Unity environment binary to launch
     """
-    u_env = UnityEnvironment(env_name, worker_id=1)
+    u_env = UnityEnvironment(env_name, worker_id=1, no_graphics=True)
     env = UnityToGymWrapper(u_env, use_visual=False)
 
     try:
@@ -44,14 +44,14 @@ def test_closing(env_name):
 
     try:
         env1 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=1), use_visual=False
+            UnityEnvironment(env_name, worker_id=1), no_graphics=True, use_visual=False
         )
         env1.close()
         env1 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=1), use_visual=False
+            UnityEnvironment(env_name, worker_id=1, no_graphics=True), use_visual=False
         )
         env2 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=2), use_visual=False
+            UnityEnvironment(env_name, worker_id=2, no_graphics=True), use_visual=False
         )
         env2.reset()
     finally:
