@@ -55,7 +55,7 @@ SAC_CONFIG = f"""
     {BRAIN_NAME}:
         trainer: sac
         batch_size: 8
-        buffer_size: 500
+        buffer_size: 5000
         buffer_init_steps: 100
         hidden_units: 16
         init_entcoef: 0.01
