@@ -63,7 +63,7 @@ namespace MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
-        public bool m_Grayscale;
+        bool m_Grayscale;
 
         /// <summary>
         /// Whether to generate grayscale images or color.
