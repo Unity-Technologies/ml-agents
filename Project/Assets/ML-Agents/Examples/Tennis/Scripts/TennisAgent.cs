@@ -99,7 +99,6 @@ public class TennisAgent : Agent
         // calculate angle between m_InvertMult * 35 and m_InvertMult * 145
         var angle = 55f * rotate + m_InvertMult * k_Angle;
         var rotateZ = angle - gameObject.transform.rotation.eulerAngles.z;
-        Debug.Log(rotateZ);
         gameObject.transform.Rotate(0f, 0f, rotateZ);
         //m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
 
