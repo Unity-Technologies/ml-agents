@@ -13,10 +13,13 @@ from typing import List, Tuple
 
 import numpy as np
 
-import gym
+try:
+    import gym
+except ImportError:
+    raise ImportError("gym is not installed, gym required to use the GymToUnityWrapper")
 
 
-class GymWrapper(BaseEnv):
+class GymToUnityWrapper(BaseEnv):
     _DEFAULT_BEHAVIOR_NAME = "gym_behavior_name"
     _AGENT_ID = 1
 

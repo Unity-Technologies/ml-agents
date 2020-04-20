@@ -1,21 +1,27 @@
-from mlagents_envs.gym_wrapper import GymWrapper
+from mlagents_envs.gym_wrapper import GymToUnityWrapper
 from mlagents_envs.base_env import ActionType
-import gym
+
+try:
+    import gym
+except ImportError:
+    raise ImportError(
+        "gym is not installed, please call `pip install gym` before running this test"
+    )
 import pytest
 
-GYM_ENVS = ["CartPole-v1", "MountainCar-v0", "AirRaid-v0"]
+GYM_ENVS = ["CartPole-v1", "MountainCar-v0"]
 
 
 @pytest.mark.parametrize("name", GYM_ENVS, ids=GYM_ENVS)
 def test_creation(name):
-    env = GymWrapper(gym.make(name), name)
+    env = GymToUnityWrapper(gym.make(name), name)
     env.close()
 
 
 @pytest.mark.parametrize("name", GYM_ENVS, ids=GYM_ENVS)
 def test_specs(name):
     gym_env = gym.make(name)
-    env = GymWrapper(gym_env, name)
+    env = GymToUnityWrapper(gym_env, name)
     assert env.get_behavior_names()[0] == name
     if isinstance(gym_env.action_space, gym.spaces.Box):
         assert env.get_behavior_spec(name).action_type == ActionType.CONTINUOUS
@@ -28,7 +34,7 @@ def test_specs(name):
 
 @pytest.mark.parametrize("name", GYM_ENVS, ids=GYM_ENVS)
 def test_steps(name):
-    env = GymWrapper(gym.make(name), name)
+    env = GymToUnityWrapper(gym.make(name), name)
     spec = env.get_behavior_spec(name)
     env.reset()
     for _ in range(200):
