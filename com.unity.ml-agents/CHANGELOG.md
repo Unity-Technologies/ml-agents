@@ -37,6 +37,9 @@ and this project adheres to
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
 - The GhostTrainer has been extended to support asymmetric games and the asymmetric example environment Strikers Vs. Goalie has been added.
+- The `UnityEnv` class from the `gym-unity` package was renamed `UnityToGymWrapper` and no longer
+creates the `UnityEnvironment`. Instead, the `UnityEnvironment` must be passed as input to the
+constructor of `UnityToGymWrapper`
 
 ### Minor Changes
 

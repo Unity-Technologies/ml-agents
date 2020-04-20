@@ -33,6 +33,9 @@ double-check that the versions are in the same. The versions can be found in
 - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size.
+- The `UnityEnv` class from the `gym-unity` package was renamed `UnityToGymWrapper` and no longer
+  creates the `UnityEnvironment`. Instead, the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
 
 ### Steps to Migrate
 
@@ -54,6 +57,8 @@ double-check that the versions are in the same. The versions can be found in
 - If your Agent class overrides `Heuristic()`, change the signature to
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
+- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor no longer takes
+  a file name as input but a fully constructed `UnityEnvironment` instead.
 
 ## Migrating from 0.14 to 0.15
 
