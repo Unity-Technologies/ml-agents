@@ -35,7 +35,7 @@ double-check that the versions are in the same. The versions can be found in
   source of error where users would return arrays of the wrong size.
 - `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
 - The `UnityEnv` class from the `gym-unity` package was renamed
-  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead, 
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
   the `UnityEnvironment` must be passed as input to the
   constructor of `UnityToGymWrapper`
 
