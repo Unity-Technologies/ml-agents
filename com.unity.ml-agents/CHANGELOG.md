@@ -36,7 +36,10 @@ and this project adheres to
   communication between Unity and the Python process.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
-- The GhostTrainer has been extended to support asymmetric games and the asymmetric example environment Strikers Vs. Goalie has been added.
+- The GhostTrainer has been extended to support asymmetric games and the
+  asymmetric example environment Strikers Vs. Goalie has been added.
+- CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
+  were changed from `public` to `private` (#3808).
 
 ### Minor Changes
 
