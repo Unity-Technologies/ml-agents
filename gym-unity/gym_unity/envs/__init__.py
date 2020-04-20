@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import gym
 from gym import error, spaces
 
-from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs import logging_util
 
@@ -24,42 +24,29 @@ logging_util.set_log_level(logging_util.INFO)
 GymStepResult = Tuple[np.ndarray, float, bool, Dict]
 
 
-class UnityEnv(gym.Env):
+class UnityToGymWrapper(gym.Env):
     """
     Provides Gym wrapper for Unity Learning Environments.
     """
 
     def __init__(
         self,
-        environment_filename: str,
-        worker_id: int = 0,
+        unity_env: BaseEnv,
         use_visual: bool = False,
         uint8_visual: bool = False,
         flatten_branched: bool = False,
-        no_graphics: bool = False,
         allow_multiple_visual_obs: bool = False,
     ):
         """
         Environment initialization
-        :param environment_filename: The UnityEnvironment path or file to be wrapped in the gym.
-        :param worker_id: Worker number for environment.
+        :param unity_env: The Unity BaseEnv to be wrapped in the gym.
         :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than
             MultiDiscrete.
-        :param no_graphics: Whether to run the Unity simulator in no-graphics mode
         :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
         """
-        base_port = UnityEnvironment.BASE_ENVIRONMENT_PORT
-        if environment_filename is None:
-            base_port = UnityEnvironment.DEFAULT_EDITOR_PORT
-
-        self._env = UnityEnvironment(
-            environment_filename,
-            worker_id,
-            base_port=base_port,
-            no_graphics=no_graphics,
-        )
+        self._env = unity_env
 
         # Take a single step so that the brain information will be sent over
         if not self._env.get_behavior_names():

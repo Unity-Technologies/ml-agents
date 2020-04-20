@@ -1,6 +1,7 @@
 import argparse
 
-from gym_unity.envs import UnityEnv
+from mlagents_envs.environment import UnityEnvironment
+from gym_unity.envs import UnityToGymWrapper
 
 
 def test_run_environment(env_name):
@@ -8,7 +9,8 @@ def test_run_environment(env_name):
     Run the gym test using the specified environment
     :param env_name: Name of the Unity environment binary to launch
     """
-    env = UnityEnv(env_name, worker_id=1, use_visual=False, no_graphics=True)
+    u_env = UnityEnvironment(env_name, worker_id=1)
+    env = UnityToGymWrapper(u_env, use_visual=False)
 
     try:
         # Examine environment parameters
@@ -41,10 +43,16 @@ def test_closing(env_name):
     """
 
     try:
-        env1 = UnityEnv(env_name, worker_id=1, use_visual=False, no_graphics=True)
+        env1 = UnityToGymWrapper(
+            UnityEnvironment(env_name, worker_id=1), use_visual=False
+        )
         env1.close()
-        env1 = UnityEnv(env_name, worker_id=1, use_visual=False, no_graphics=True)
-        env2 = UnityEnv(env_name, worker_id=2, use_visual=False, no_graphics=True)
+        env1 = UnityToGymWrapper(
+            UnityEnvironment(env_name, worker_id=1), use_visual=False
+        )
+        env2 = UnityToGymWrapper(
+            UnityEnvironment(env_name, worker_id=2), use_visual=False
+        )
         env2.reset()
     finally:
         env1.close()
