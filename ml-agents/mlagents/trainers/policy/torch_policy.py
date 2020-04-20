@@ -9,8 +9,6 @@ from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
-from mlagents.trainers.models import ModelUtils
-
 
 logger = get_logger(__name__)
 
@@ -46,6 +44,7 @@ class TorchPolicy(Policy):
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
+        self.global_step = 0
         self.seed = seed
         self.brain = brain
 
@@ -85,7 +84,6 @@ class TorchPolicy(Policy):
                         brain.brain_name, self.m_size
                     )
                 )
-        self._initialize_tensorflow_references()
         self.load = load
 
     def _initialize_graph(self):
@@ -301,8 +299,7 @@ class TorchPolicy(Policy):
         Gets current model step.
         :return: current model step.
         """
-        step = self.sess.run(self.global_step)
-        return step
+        return self.global_step
 
     def _set_step(self, step: int) -> int:
         """
@@ -318,12 +315,8 @@ class TorchPolicy(Policy):
         """
         Increments model step.
         """
-        out_dict = {
-            "global_step": self.global_step,
-            "increment_step": self.increment_step_op,
-        }
-        feed_dict = {self.steps_to_increment: n_steps}
-        return self.sess.run(out_dict, feed_dict=feed_dict)["global_step"]
+        self.global_step += n_steps
+        return self.global_step
 
     def get_inference_vars(self):
         """
@@ -355,10 +348,7 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        if self.use_vec_obs and self.normalize:
-            self.sess.run(
-                self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
-            )
+        return None
 
     @property
     def use_vis_obs(self):
@@ -367,93 +357,3 @@ class TorchPolicy(Policy):
     @property
     def use_vec_obs(self):
         return self.vec_obs_size > 0
-
-    def _initialize_tensorflow_references(self):
-        self.value_heads: Dict[str, tf.Tensor] = {}
-        self.normalization_steps: Optional[tf.Variable] = None
-        self.running_mean: Optional[tf.Variable] = None
-        self.running_variance: Optional[tf.Variable] = None
-        self.update_normalization_op: Optional[tf.Operation] = None
-        self.value: Optional[tf.Tensor] = None
-        self.all_log_probs: tf.Tensor = None
-        self.total_log_probs: Optional[tf.Tensor] = None
-        self.entropy: Optional[tf.Tensor] = None
-        self.output_pre: Optional[tf.Tensor] = None
-        self.output: Optional[tf.Tensor] = None
-        self.selected_actions: tf.Tensor = None
-        self.action_masks: Optional[tf.Tensor] = None
-        self.prev_action: Optional[tf.Tensor] = None
-        self.memory_in: Optional[tf.Tensor] = None
-        self.memory_out: Optional[tf.Tensor] = None
-
-    def create_input_placeholders(self):
-        with self.graph.as_default():
-            (
-                self.global_step,
-                self.increment_step_op,
-                self.steps_to_increment,
-            ) = ModelUtils.create_global_steps()
-            self.visual_in = ModelUtils.create_visual_input_placeholders(
-                self.brain.camera_resolutions
-            )
-            self.vector_in = ModelUtils.create_vector_input(self.vec_obs_size)
-            if self.normalize:
-                normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
-                self.update_normalization_op = normalization_tensors.update_op
-                self.normalization_steps = normalization_tensors.steps
-                self.running_mean = normalization_tensors.running_mean
-                self.running_variance = normalization_tensors.running_variance
-                self.processed_vector_in = ModelUtils.normalize_vector_obs(
-                    self.vector_in,
-                    self.running_mean,
-                    self.running_variance,
-                    self.normalization_steps,
-                )
-            else:
-                self.processed_vector_in = self.vector_in
-                self.update_normalization_op = None
-
-            self.batch_size_ph = tf.placeholder(
-                shape=None, dtype=tf.int32, name="batch_size"
-            )
-            self.sequence_length_ph = tf.placeholder(
-                shape=None, dtype=tf.int32, name="sequence_length"
-            )
-            self.mask_input = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="masks"
-            )
-            # Only needed for PPO, but needed for BC module
-            self.epsilon = tf.placeholder(
-                shape=[None, self.act_size[0]], dtype=tf.float32, name="epsilon"
-            )
-            self.mask = tf.cast(self.mask_input, tf.int32)
-
-            tf.Variable(
-                int(self.brain.vector_action_space_type == "continuous"),
-                name="is_continuous_control",
-                trainable=False,
-                dtype=tf.int32,
-            )
-            tf.Variable(
-                self._version_number_,
-                name="version_number",
-                trainable=False,
-                dtype=tf.int32,
-            )
-            tf.Variable(
-                self.m_size, name="memory_size", trainable=False, dtype=tf.int32
-            )
-            if self.brain.vector_action_space_type == "continuous":
-                tf.Variable(
-                    self.act_size[0],
-                    name="action_output_shape",
-                    trainable=False,
-                    dtype=tf.int32,
-                )
-            else:
-                tf.Variable(
-                    sum(self.act_size),
-                    name="action_output_shape",
-                    trainable=False,
-                    dtype=tf.int32,
-                )

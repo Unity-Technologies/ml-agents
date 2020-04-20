@@ -156,13 +156,13 @@ class DiscreteActionMask(nn.Module):
     def forward(self, branches_logits, action_masks):
         branch_masks = self.break_into_branches(action_masks, self.action_size)
         raw_probs = [
-            torch.multiply(
+            torch.mul(
                 torch.softmax(branches_logits[k], dim=-1) + EPSILON, branch_masks[k]
             )
             for k in range(len(self.action_size))
         ]
         normalized_probs = [
-            torch.divide(raw_probs[k], torch.sum(raw_probs[k], dim=1, keepdims=True))
+            torch.div(raw_probs[k], torch.sum(raw_probs[k], dim=1, keepdims=True))
             for k in range(len(self.action_size))
         ]
         output = torch.cat(
@@ -214,7 +214,7 @@ class ResNetVisualEncoder(nn.Module):
             self.layers.append(nn.MaxPool2d([3, 3], [2, 2]))
             for _ in range(n_blocks):
                 self.layers.append(self.make_block(channel))
-        self.layers.append(nn.RELU())
+        self.layers.append(nn.ReLU())
 
     @staticmethod
     def make_block(channel):
@@ -252,10 +252,6 @@ class ModelUtils:
         EncoderType.RESNET: 15,
     }
 
-    # @staticmethod
-    # def scaled_init(scale):
-    #    return tf.initializers.variance_scaling(scale)
-
     @staticmethod
     def swish(input_activation: torch.Tensor) -> torch.Tensor:
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
@@ -282,95 +278,3 @@ class ModelUtils:
                 f"Visual observation resolution ({width}x{height}) is too small for"
                 f"the provided EncoderType ({vis_encoder_type.value}). The min dimension is {min_res}"
             )
-
-    # @staticmethod
-    # def compose_streams(
-    #     visual_in: List[torch.Tensor],
-    #     vector_in: torch.Tensor,
-    #     num_streams: int,
-    #     h_size: int,
-    #     num_layers: int,
-    #     vis_encode_type: EncoderType = EncoderType.SIMPLE,
-    #     stream_scopes: List[str] = None,
-    # ) -> List[torch.Tensor]:
-    #     """
-    #     Creates encoding stream for observations.
-    #     :param num_streams: Number of streams to create.
-    #     :param h_size: Size of hidden linear layers in stream.
-    #     :param num_layers: Number of hidden linear layers in stream.
-    #     :param stream_scopes: List of strings (length == num_streams), which contains
-    #         the scopes for each of the streams. None if all under the same TF scope.
-    #     :return: List of encoded streams.
-    #     """
-    #     activation_fn = ModelUtils.swish
-    #     vector_observation_input = vector_in
-
-    #     final_hiddens = []
-    #     for i in range(num_streams):
-    #         # Pick the encoder function based on the EncoderType
-    #         create_encoder_func = ModelUtils.get_encoder_for_type(vis_encode_type)
-
-    #         visual_encoders = []
-    #         hidden_state, hidden_visual = None, None
-    #         _scope_add = stream_scopes[i] if stream_scopes else ""
-    #         if len(visual_in) > 0:
-    #             for j, vis_in in enumerate(visual_in):
-    #                 ModelUtils._check_resolution_for_encoder(vis_in, vis_encode_type)
-    #                 encoded_visual = create_encoder_func(
-    #                     vis_in,
-    #                     h_size,
-    #                     activation_fn,
-    #                     num_layers,
-    #                     f"{_scope_add}main_graph_{i}_encoder{j}",  # scope
-    #                     False,  # reuse
-    #                 )
-    #                 visual_encoders.append(encoded_visual)
-    #             hidden_visual = torch.cat(visual_encoders, axis=1)
-    #         if vector_in.get_shape()[-1] > 0:  # Don't encode 0-shape inputs
-    #             hidden_state = ModelUtils.create_vector_observation_encoder(
-    #                 vector_observation_input,
-    #                 h_size,
-    #                 activation_fn,
-    #                 num_layers,
-    #                 scope=f"{_scope_add}main_graph_{i}",
-    #                 reuse=False,
-    #             )
-    #         if hidden_state is not None and hidden_visual is not None:
-    #             final_hidden = torch.cat([hidden_visual, hidden_state], axis=1)
-    #         elif hidden_state is None and hidden_visual is not None:
-    #             final_hidden = hidden_visual
-    #         elif hidden_state is not None and hidden_visual is None:
-    #             final_hidden = hidden_state
-    #         else:
-    #             raise Exception(
-    #                 "No valid network configuration possible. "
-    #                 "There are no states or observations in this brain"
-    #             )
-    #         final_hiddens.append(final_hidden)
-    #     return final_hiddens
-
-    # @staticmethod
-    # def create_recurrent_encoder(input_state, memory_in, sequence_length, name="lstm"):
-    #     """
-    #     Builds a recurrent encoder for either state or observations (LSTM).
-    #     :param sequence_length: Length of sequence to unroll.
-    #     :param input_state: The input tensor to the LSTM cell.
-    #     :param memory_in: The input memory to the LSTM cell.
-    #     :param name: The scope of the LSTM cell.
-    #     """
-    #     s_size = input_state.get_shape().as_list()[1]
-    #     m_size = memory_in.get_shape().as_list()[1]
-    #     lstm_input_state = tf.reshape(input_state, shape=[-1, sequence_length, s_size])
-    #     memory_in = tf.reshape(memory_in[:, :], [-1, m_size])
-    #     half_point = int(m_size / 2)
-    #     with tf.variable_scope(name):
-    #         rnn_cell = tf.nn.rnn_cell.BasicLSTMCell(half_point)
-    #         lstm_vector_in = tf.nn.rnn_cell.LSTMStateTuple(
-    #             memory_in[:, :half_point], memory_in[:, half_point:]
-    #         )
-    #         recurrent_output, lstm_state_out = tf.nn.dynamic_rnn(
-    #             rnn_cell, lstm_input_state, initial_state=lstm_vector_in
-    #         )
-
-    #     recurrent_output = tf.reshape(recurrent_output, shape=[-1, half_point])
-    #     return recurrent_output, tf.concat([lstm_state_out.c, lstm_state_out.h], axis=1)

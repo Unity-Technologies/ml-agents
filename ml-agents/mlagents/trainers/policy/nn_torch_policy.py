@@ -11,9 +11,9 @@ from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models_torch import (
     ActionType,
     VectorEncoder,
-    SimpleVisualEncoder,
     ValueHeads,
     Normalizer,
+    ModelUtils,
 )
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.distributions_torch import (
@@ -24,66 +24,48 @@ from mlagents.trainers.distributions_torch import (
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
-class Critic(nn.Module):
-    def __init__(self, stream_names, hidden_size, encoder, **kwargs):
-        super(Critic, self).__init__(**kwargs)
-        self.stream_names = stream_names
-        self.encoder = encoder
-        self.value_heads = ValueHeads(stream_names, hidden_size)
-
-    def forward(self, inputs):
-        hidden = self.encoder(inputs)
-        return self.value_heads(hidden)
-
-
-class ActorCriticPolicy(nn.Module):
+class NetworkBody(nn.Module):
     def __init__(
         self,
-        h_size,
         vector_sizes,
         visual_sizes,
-        act_size,
+        h_size,
         normalize,
         num_layers,
         m_size,
-        stream_names,
         vis_encode_type,
-        act_type,
         use_lstm,
     ):
-        super(ActorCriticPolicy, self).__init__()
+        super(NetworkBody, self).__init__()
+        self.normalize = normalize
         self.visual_encoders = []
         self.vector_encoders = []
         self.vector_normalizers = []
-        self.act_type = act_type
         self.use_lstm = use_lstm
         self.h_size = h_size
+        self.m_size = m_size
+
+        visual_encoder = ModelUtils.get_encoder_for_type(vis_encode_type)
         for vector_size in vector_sizes:
             self.vector_normalizers.append(Normalizer(vector_size))
             self.vector_encoders.append(VectorEncoder(vector_size, h_size, num_layers))
         for visual_size in visual_sizes:
-            self.visual_encoders.append(SimpleVisualEncoder(visual_size))
+            self.visual_encoders.append(visual_encoder(visual_size))
 
         if use_lstm:
             self.lstm = nn.LSTM(h_size, h_size, 1)
 
-        if self.act_type == ActionType.CONTINUOUS:
-            self.distribution = GaussianDistribution(h_size, act_size)
-        else:
-            self.distribution = MultiCategoricalDistribution(h_size, act_size)
-
-        self.critic = Critic(
-            stream_names, h_size, VectorEncoder(vector_sizes[0], h_size, num_layers)
-        )
-        self.act_size = act_size
-
     def clear_memory(self, batch_size):
         self.memory = (
-            torch.zeros(1, batch_size, self.h_size),
-            torch.zeros(1, batch_size, self.h_size),
+            torch.zeros(1, batch_size, self.m_size),
+            torch.zeros(1, batch_size, self.m_size),
         )
 
-    def forward(self, vec_inputs, vis_inputs, masks=None):
+    def update_normalization(self, inputs):
+        if self.normalize:
+            self.normalizer.update(inputs)
+
+    def forward(self, vec_inputs, vis_inputs):
         vec_embeds = []
         for idx, encoder in enumerate(self.vector_encoders):
             vec_input = vec_inputs[idx]
@@ -102,21 +84,80 @@ class ActorCriticPolicy(nn.Module):
         embedding = torch.cat([vec_embeds, vis_embeds])
         if self.use_lstm:
             embedding, self.memory = self.lstm(embedding, self.memory)
+        return embedding
 
+
+class Actor(nn.Module):
+    def __init__(
+        self,
+        h_size,
+        vector_sizes,
+        visual_sizes,
+        act_size,
+        normalize,
+        num_layers,
+        m_size,
+        vis_encode_type,
+        act_type,
+        use_lstm,
+    ):
+        super(Actor, self).__init__()
+        self.act_type = act_type
+        self.act_size = act_size
+        self.network_body = NetworkBody(
+            vector_sizes,
+            visual_sizes,
+            h_size,
+            normalize,
+            num_layers,
+            m_size,
+            vis_encode_type,
+            use_lstm,
+        )
+        if self.act_type == ActionType.CONTINUOUS:
+            self.distribution = GaussianDistribution(h_size, act_size)
+        else:
+            self.distribution = MultiCategoricalDistribution(h_size, act_size)
+
+    def forward(self, vec_inputs, vis_inputs, masks=None):
+        embedding = self.network_body(vec_inputs, vis_inputs)
         if self.act_type == ActionType.CONTINUOUS:
             dist = self.distribution(embedding)
         else:
             dist = self.distribution(embedding, masks=masks)
         return dist
 
-    def update_normalization(self, inputs):
-        if self.normalize:
-            self.normalizer.update(inputs)
 
-    def get_values(self, vec_inputs, vis_inputs):
-        if self.normalize:
-            vec_inputs = self.normalizer(vec_inputs)
-        return self.critic(vec_inputs)
+class Critic(nn.Module):
+    def __init__(
+        self,
+        stream_names,
+        h_size,
+        vector_sizes,
+        visual_sizes,
+        normalize,
+        num_layers,
+        m_size,
+        vis_encode_type,
+        use_lstm,
+    ):
+        super(Critic, self).__init__()
+        self.stream_names = stream_names
+        self.network_body = NetworkBody(
+            vector_sizes,
+            visual_sizes,
+            h_size,
+            normalize,
+            num_layers,
+            m_size,
+            vis_encode_type,
+            use_lstm,
+        )
+        self.value_heads = ValueHeads(stream_names, h_size)
+
+    def forward(self, vec_inputs, vis_inputs):
+        embedding = self.network_body(vec_inputs, vis_inputs)
+        return self.value_heads(embedding)
 
 
 class NNPolicy(TorchPolicy):
@@ -125,12 +166,10 @@ class NNPolicy(TorchPolicy):
         seed: int,
         brain: BrainParameters,
         trainer_params: Dict[str, Any],
-        is_training: bool,
         load: bool,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
-        create_tf_graph: bool = True,
     ):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
@@ -139,7 +178,6 @@ class NNPolicy(TorchPolicy):
         :param seed: Random seed.
         :param brain: Assigned BrainParameters object.
         :param trainer_params: Defined training parameters.
-        :param is_training: Whether the model should be trained.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
         :param reparameterize: Whether we are using the resampling trick to update the policy in continuous output.
@@ -174,11 +212,24 @@ class NNPolicy(TorchPolicy):
             "Losses/Policy Loss": "policy_loss",
         }
 
-        self.model = ActorCriticPolicy(
+        self.model = Actor(
             h_size=int(trainer_params["hidden_units"]),
             act_type=ActionType.CONTINUOUS,
             vector_sizes=[brain.vector_observation_space_size],
             act_size=sum(brain.vector_action_space_size),
+            normalize=trainer_params["normalize"],
+            num_layers=int(trainer_params["num_layers"]),
+            m_size=trainer_params["memory_size"],
+            use_lstm=self.use_recurrent,
+            visual_sizes=brain.camera_resolutions,
+            vis_encode_type=EncoderType(
+                trainer_params.get("vis_encode_type", "simple")
+            ),
+        )
+
+        self.critic = Critic(
+            h_size=int(trainer_params["hidden_units"]),
+            vector_sizes=[brain.vector_observation_space_size],
             normalize=trainer_params["normalize"],
             num_layers=int(trainer_params["num_layers"]),
             m_size=trainer_params["memory_size"],
@@ -214,7 +265,7 @@ class NNPolicy(TorchPolicy):
     def evaluate(self, decision_requests: DecisionSteps) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param decision_step: DecisionStep object containing inputs.
+        :param decision_requests: DecisionStep object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
@@ -230,110 +281,5 @@ class NNPolicy(TorchPolicy):
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
-        self.model.update_normalization(decision_requests.vec_obs)
+        self.model.update_normalization(vec_obs)
         return run_out
-
-    # def _create_cc_actor(
-    #     self,
-    #     encoded: tf.Tensor,
-    #     tanh_squash: bool = False,
-    #     reparameterize: bool = False,
-    #     condition_sigma_on_obs: bool = True,
-    # ) -> None:
-    #     """
-    #     Creates Continuous control actor-critic model.
-    #     :param h_size: Size of hidden linear layers.
-    #     :param num_layers: Number of hidden linear layers.
-    #     :param vis_encode_type: Type of visual encoder to use if visual input.
-    #     :param tanh_squash: Whether to use a tanh function, or a clipped output.
-    #     :param reparameterize: Whether we are using the resampling trick to update the policy.
-    #     """
-    #     if self.use_recurrent:
-    #         self.memory_in = tf.placeholder(
-    #             shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-    #         )
-    #         hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
-    #             encoded, self.memory_in, self.sequence_length_ph, name="lstm_policy"
-    #         )
-    #
-    #         self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
-    #     else:
-    #         hidden_policy = encoded
-    #
-    #     with tf.variable_scope("policy"):
-    #         distribution = GaussianDistribution(
-    #             hidden_policy,
-    #             self.act_size,
-    #             reparameterize=reparameterize,
-    #             tanh_squash=tanh_squash,
-    #             condition_sigma=condition_sigma_on_obs,
-    #         )
-    #
-    #     if tanh_squash:
-    #         self.output_pre = distribution.sample
-    #         self.output = tf.identity(self.output_pre, name="action")
-    #     else:
-    #         self.output_pre = distribution.sample
-    #         # Clip and scale output to ensure actions are always within [-1, 1] range.
-    #         output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
-    #         self.output = tf.identity(output_post, name="action")
-    #
-    #     self.selected_actions = tf.stop_gradient(self.output)
-    #
-    #     self.all_log_probs = tf.identity(distribution.log_probs, name="action_probs")
-    #     self.entropy = distribution.entropy
-    #
-    #     # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
-    #     self.total_log_probs = distribution.total_log_probs
-    #
-    # def _create_dc_actor(self, encoded: tf.Tensor) -> None:
-    #     """
-    #     Creates Discrete control actor-critic model.
-    #     :param h_size: Size of hidden linear layers.
-    #     :param num_layers: Number of hidden linear layers.
-    #     :param vis_encode_type: Type of visual encoder to use if visual input.
-    #     """
-    #     if self.use_recurrent:
-    #         self.prev_action = tf.placeholder(
-    #             shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
-    #         )
-    #         prev_action_oh = tf.concat(
-    #             [
-    #                 tf.one_hot(self.prev_action[:, i], self.act_size[i])
-    #                 for i in range(len(self.act_size))
-    #             ],
-    #             axis=1,
-    #         )
-    #         hidden_policy = tf.concat([encoded, prev_action_oh], axis=1)
-    #
-    #         self.memory_in = tf.placeholder(
-    #             shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-    #         )
-    #         hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
-    #             hidden_policy,
-    #             self.memory_in,
-    #             self.sequence_length_ph,
-    #             name="lstm_policy",
-    #         )
-    #
-    #         self.memory_out = tf.identity(memory_policy_out, "recurrent_out")
-    #     else:
-    #         hidden_policy = encoded
-    #
-    #     self.action_masks = tf.placeholder(
-    #         shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
-    #     )
-    #
-    #     with tf.variable_scope("policy"):
-    #         distribution = MultiCategoricalDistribution(
-    #             hidden_policy, self.act_size, self.action_masks
-    #         )
-    #     # It's important that we are able to feed_dict a value into this tensor to get the
-    #     # right one-hot encoding, so we can't do identity on it.
-    #     self.output = distribution.sample
-    #     self.all_log_probs = tf.identity(distribution.log_probs, name="action")
-    #     self.selected_actions = tf.stop_gradient(
-    #         distribution.sample_onehot
-    #     )  # In discrete, these are onehot
-    #     self.entropy = distribution.entropy
-    #     self.total_log_probs = distribution.total_log_probs
