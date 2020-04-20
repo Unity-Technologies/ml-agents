@@ -12,7 +12,6 @@ public class TennisAgent : Agent
     public bool invertX;
     public int score;
     public GameObject myArea;
-    public float angle;
     public float scale;
 
     [HideInInspector]
@@ -29,6 +28,9 @@ public class TennisAgent : Agent
     FloatPropertiesChannel m_ResetParams;
     float m_BallTouch;
     Vector3 down = new Vector3(0f, -100f, 0f);
+    const float k_Angle = 90f;
+    const float k_MaxAngle = 145f;
+    const float k_MinAngle = 35f;
 
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
@@ -76,7 +78,7 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_OpponentRb.velocity.y);
 
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
-        
+
         sensor.AddObservation(System.Convert.ToInt32(m_BallScript.lastFloorHit == HitWall.FloorHit.FloorHitUnset));
     }
 
@@ -90,13 +92,16 @@ public class TennisAgent : Agent
         if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < 0f)
         {
             upward = moveY;
-            //m_AgentRb.velocity = new Vector3(m_AgentRb.velocity.x, moveY * 20f, 0f);
         }
 
         m_AgentRb.AddForce(new Vector3(moveX * 20f, upward * 10f, 0f), ForceMode.VelocityChange);
-        //m_AgentRb.velocity = new Vector3(moveX * 30f, m_AgentRb.velocity.y, 0f);
 
-        m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
+        // calculate angle between m_InvertMult * 35 and m_InvertMult * 145
+        var angle = 55f * rotate + m_InvertMult * k_Angle;
+        var rotateZ = angle - gameObject.transform.rotation.eulerAngles.z;
+        Debug.Log(rotateZ);
+        gameObject.transform.Rotate(0f, 0f, rotateZ);
+        //m_AgentRb.transform.rotation = Quaternion.Euler(0f, -180f, 55f * rotate + m_InvertMult * 90f);
 
         if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)
@@ -154,11 +159,10 @@ public class TennisAgent : Agent
 
     public void SetRacket()
     {
-        angle = m_ResetParams.GetPropertyWithDefault("angle", 55);
         gameObject.transform.eulerAngles = new Vector3(
             gameObject.transform.eulerAngles.x,
             gameObject.transform.eulerAngles.y,
-            m_InvertMult * angle
+            m_InvertMult * k_Angle
         );
     }
 
