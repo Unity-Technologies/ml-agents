@@ -15,8 +15,10 @@ import numpy as np
 
 try:
     import gym
+
+    _GYM_IMPORTED = True
 except ImportError:
-    raise ImportError("gym is not installed, gym required to use the GymToUnityWrapper")
+    _GYM_IMPORTED = False
 
 
 class GymToUnityWrapper(BaseEnv):
@@ -24,6 +26,10 @@ class GymToUnityWrapper(BaseEnv):
     _AGENT_ID = 1
 
     def __init__(self, gym_env, name=None):
+        if not _GYM_IMPORTED:
+            raise RuntimeError(
+                "gym is not installed, gym required to use the GymToUnityWrapper"
+            )
         self._gym_env = gym_env
         self._first_message = True
         self._behavior_name = name
