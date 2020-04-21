@@ -145,7 +145,7 @@ class GAILRewardSignal(RewardSignal):
         self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
-        Prepare inputs for update. .
+        Prepare inputs for update.
         :param policy: The policy learning from GAIL signal
         :param mini_batch: A mini batch from trajectories sampled from the current policy
         :param num_sequences: Number of samples in batch
