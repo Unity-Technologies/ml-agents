@@ -61,6 +61,20 @@ This version of the Unity ML-Agents package is compatible with the following ver
 ### Training
 Training is limited to the Unity Editor and Standalone builds on Windows, MacOS, and Linux.  Your environment will default to inference mode if training is not supported or is not currently running.
 
+### Inference
+Inference is executed via the [Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html).
+
+####CPU
+- All platforms supported.
+
+####GPU
+- All platforms supported except:
+  - WebGL and GLES 3/2 on Android / iPhone
+  
+ *NOTE:* Mobile platform support includes:
+ - Vulkan for Android
+ - Metal for iOS.
+
 ### Headless Mode
 
 If you enable Headless mode, you will not be able to collect visual observations
