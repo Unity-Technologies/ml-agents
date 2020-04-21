@@ -5,7 +5,7 @@ from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepRe
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.brain import BrainParameters
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParameters
 from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
@@ -15,9 +15,9 @@ class SimpleEnvManager(EnvManager):
     This is generally only useful for testing; see SubprocessEnvManager for a production-quality implementation.
     """
 
-    def __init__(self, env: BaseEnv, float_prop_channel: FloatPropertiesChannel):
+    def __init__(self, env: BaseEnv, environment_parameters_channel: EnvironmentParameters):
         super().__init__()
-        self.shared_float_properties = float_prop_channel
+        self.environment_parameters_channel = environment_parameters_channel
         self.env = env
         self.previous_step: EnvironmentStep = EnvironmentStep.empty(0)
         self.previous_all_action_info: Dict[str, ActionInfo] = {}

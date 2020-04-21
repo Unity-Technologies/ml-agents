@@ -4,6 +4,14 @@ using System;
 namespace MLAgents.SideChannels
 {
     /// <summary>
+    /// Lists the different data types supported.
+    /// </summary>
+    internal enum EnvironmentDataTypes
+    {
+        Float = 0
+    }
+
+    /// <summary>
     /// A side channel that manages the environment parameter values from Python. Currently
     /// limited to parameters of type float.
     /// </summary>
@@ -28,13 +36,21 @@ namespace MLAgents.SideChannels
         public override void OnMessageReceived(IncomingMessage msg)
         {
             var key = msg.ReadString();
-            var value = msg.ReadFloat32();
+            var type = msg.ReadInt32();
+            if ((int)EnvironmentDataTypes.Float == type)
+            {
+                var value = msg.ReadFloat32();
 
-            m_Parameters[key] = value;
+                m_Parameters[key] = value;
 
-            Action<float> action;
-            m_RegisteredActions.TryGetValue(key, out action);
-            action?.Invoke(value);
+                Action<float> action;
+                m_RegisteredActions.TryGetValue(key, out action);
+                action?.Invoke(value);
+            }
+            else
+            {
+                throw new UnityAgentsException("EnvironmentParametersChannel only supports floats.");
+            }
         }
 
         /// <summary>
