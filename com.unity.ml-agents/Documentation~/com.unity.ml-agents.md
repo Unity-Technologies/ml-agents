@@ -59,7 +59,7 @@ This version of the Unity ML-Agents package is compatible with the following ver
 ## Known limitations
 
 ### Training
-Training is limited to the Unity Editor and Standalone builds on Windows, MacOS, and Linux.  Your environment will default to inference mode if training is not supported or is not currenlty running.
+Training is limited to the Unity Editor and Standalone builds on Windows, MacOS, and Linux.  Your environment will default to inference mode if training is not supported or is not currently running.
 
 ### Headless Mode
 
