@@ -274,8 +274,8 @@ return.
     rotations for joints.
   * Visual Observations: None
 * Float Properties: None
-* Benchmark Mean Reward for `WormStaticTarget`: *need to add*
-* Benchmark Mean Reward for `WormDynamicTarget`: *need to add*
+* Benchmark Mean Reward for `WormStaticTarget`: 150
+* Benchmark Mean Reward for `WormDynamicTarget`: 150
 
 ## Food Collector
 
