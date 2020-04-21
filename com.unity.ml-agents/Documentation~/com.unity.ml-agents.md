@@ -70,7 +70,7 @@ Inference is executed via the [Unity Inference Engine](https://docs.unity3d.com/
 **GPU**
 - All platforms supported except:
   - WebGL and GLES 3/2 on Android / iPhone
-  
+
  **NOTE:** Mobile platform support includes:
  - Vulkan for Android
  - Metal for iOS.
