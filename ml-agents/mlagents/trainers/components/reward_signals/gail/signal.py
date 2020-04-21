@@ -42,6 +42,46 @@ class GAILRewardSignal(RewardSignal):
             policy, 128, learning_rate, encoding_size, use_actions, use_vail
         )
         _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
+
+        # check number of visual observations in demmonstration match
+        for i in range(self.policy.vis_obs_size):
+            if ("visual_obs%d" % i) not in self.demonstration_buffer:
+                raise RuntimeError(
+                    "Number of visual observations in demonstrations are less than policy expects."
+                )
+        if ("visual_obs%d" % self.policy.vis_obs_size) in self.demonstration_buffer:
+            raise RuntimeError(
+                "Number of visual observations in demonstrations are greater than policy expects."
+            )
+        # check action dimensions in demmonstration match
+        if self.policy.use_continuous_act:
+            if len(self.demonstration_buffer["actions"][0]) != self.policy.act_size[0]:
+                raise RuntimeError(
+                    "The action dimensions {} in demonstration do not match the policy's {}.".format(
+                        len(self.demonstration_buffer["actions"][0]),
+                        self.policy.act_size[0],
+                    )
+                )
+        else:
+            if (
+                self.demonstration_buffer["actions"][0].shape
+                != np.array(self.policy.act_size).shape
+            ):
+                raise RuntimeError(
+                    "The action dimensions {} in demonstration do not match the policy's {}.".format(
+                        self.demonstration_buffer["actions"][0].shape,
+                        np.array(self.policy.act_size).shape,
+                    )
+                )
+        # check observation dimensions in demmonstration match
+        if len(self.demonstration_buffer["vector_obs"][0]) != self.policy.vec_obs_size:
+            raise RuntimeError(
+                "The vector observation dimensions {} in demonstration do not match the policy's {}.".format(
+                    len(self.demonstration_buffer["vector_obs"][0]),
+                    self.policy.vec_obs_size,
+                )
+            )
+
         self.has_updated = False
         self.update_dict: Dict[str, tf.Tensor] = {
             "gail_loss": self.model.loss,
@@ -106,8 +146,9 @@ class GAILRewardSignal(RewardSignal):
     ) -> Dict[tf.Tensor, Any]:
         """
         Prepare inputs for update. .
-        :param mini_batch_demo: A mini batch of expert trajectories
-        :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
+        :param policy: The policy learning from GAIL signal
+        :param mini_batch: A mini batch from trajectories sampled from the current policy
+        :param num_sequences: Number of samples in batch
         :return: Feed_dict for update process.
         """
         # Get batch from demo buffer. Even if demo buffer is smaller, we sample with replacement
