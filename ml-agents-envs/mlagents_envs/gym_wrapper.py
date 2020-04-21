@@ -60,8 +60,8 @@ class GymToUnityWrapper(BaseEnv):
         if self._first_message:
             self.reset()
             return
-        obs, rew, don, info = self._gym_env.step(self._g_action)
-        if not don:
+        obs, rew, done, info = self._gym_env.step(self._g_action)
+        if not done:
             self._current_steps = (
                 DecisionSteps(
                     obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
