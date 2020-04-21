@@ -9,34 +9,33 @@ from mlagents_envs.base_env import (
 )
 from mlagents_envs.exception import UnityActionException, UnityObservationException
 
-from typing import List, Tuple
+from typing import List, Tuple, Union, Optional
 
 import numpy as np
 
-try:
-    import gym
-
-    _GYM_IMPORTED = True
-except ImportError:
-    _GYM_IMPORTED = False
+import gym
 
 
 class GymToUnityWrapper(BaseEnv):
     _DEFAULT_BEHAVIOR_NAME = "gym_behavior_name"
     _AGENT_ID = 1
 
-    def __init__(self, gym_env, name=None):
-        if not _GYM_IMPORTED:
-            raise RuntimeError(
-                "gym is not installed, gym required to use the GymToUnityWrapper"
-            )
+    def __init__(self, gym_env: gym.Env, name: Optional[str] = None):
+        """
+        Wrapper construction. Creates an implementation of a Unity BaseEnv from a gym
+        environment.
+        :gym.Env gym_env: The gym environment that will be wrapped.
+        :str name: [Optional] The name of the gym environment. This will become the
+        name of the behavior for the BaseEnv.
+        """
         self._gym_env = gym_env
         self._first_message = True
-        self._behavior_name = name
-        if self._behavior_name is None:
+        if name is None:
             self._behavior_name = self._DEFAULT_BEHAVIOR_NAME
+        else:
+            self._behavior_name = name
         action_type = ActionType.CONTINUOUS
-        action_shape = 0
+        action_shape: Union[Tuple[int, ...], int] = 0
         if isinstance(self._gym_env.action_space, gym.spaces.Box):
             action_type = ActionType.CONTINUOUS
             action_shape = np.prod(self._gym_env.action_space.shape)
@@ -60,7 +59,10 @@ class GymToUnityWrapper(BaseEnv):
             action_shape=action_shape,
         )
         self._g_action: np.ndarray = None
-        self._current_steps: Tuple[DecisionSteps, TerminalSteps] = (None, None)
+        self._current_steps: Tuple[DecisionSteps, TerminalSteps] = (
+            DecisionSteps.empty(self._behavior_specs),
+            TerminalSteps.empty(self._behavior_specs),
+        )
 
     def step(self) -> None:
         if self._first_message:
