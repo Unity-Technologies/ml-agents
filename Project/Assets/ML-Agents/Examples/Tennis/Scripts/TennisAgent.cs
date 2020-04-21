@@ -96,12 +96,13 @@ public class TennisAgent : Agent
         }
 
         m_AgentRb.AddForce(new Vector3(moveX * 5f, upward * 10f, 0f), ForceMode.VelocityChange);
+        //m_AgentRb.AddForce(new Vector3(moveX * 20f, upward * 10f, 0f), ForceMode.VelocityChange);
 
         // calculate angle between m_InvertMult * 35 and m_InvertMult * 145
         var angle = 55f * rotate + m_InvertMult * k_Angle;
         // maps inverse agents rotation into -35 to -145
         var rotateZ = angle - (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f);
-        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ * .5f);
+        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ);// * .5f);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
         //gameObject.transform.Rotate(0f, 0f, rotateZ);
 
