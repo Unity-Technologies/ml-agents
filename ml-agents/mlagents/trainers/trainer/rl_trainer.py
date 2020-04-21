@@ -2,6 +2,7 @@
 from typing import Dict, List
 from collections import defaultdict
 import abc
+import time
 
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
@@ -142,12 +143,17 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 # We grab at most the maximum length of the queue.
                 # This ensures that even if the queue is being filled faster than it is
                 # being emptied, the trajectories in the queue are on-policy.
+                _queried = False
                 for _ in range(traj_queue.qsize()):
+                    _queried = True
                     try:
                         t = traj_queue.get_nowait()
                         self._process_trajectory(t)
                     except AgentManagerQueue.Empty:
                         break
+                if self.threaded and not _queried:
+                    # Avoid busy-waiting
+                    time.sleep(0.05)
         if self.should_still_train:
             if self._is_ready_update():
                 with hierarchical_timer("_update_policy"):
