@@ -212,7 +212,7 @@ MonoBehaviour:
     vectorActionSize: 09000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 30738a3f6868a41b6ad10649fd8eb443, type: 3}
+  m_Model: {fileID: 11400000, guid: c4a21970807da404ab0c7e5ff8dd1b0e, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: WormStatic
