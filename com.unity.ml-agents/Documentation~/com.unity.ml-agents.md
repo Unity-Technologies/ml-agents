@@ -64,10 +64,10 @@ Training is limited to the Unity Editor and Standalone builds on Windows, MacOS,
 ### Inference
 Inference is executed via the [Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html).
 
-####CPU
+**CPU**
 - All platforms supported.
 
-####GPU
+**GPU**
 - All platforms supported except:
   - WebGL and GLES 3/2 on Android / iPhone
   
