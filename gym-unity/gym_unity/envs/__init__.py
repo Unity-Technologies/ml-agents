@@ -39,7 +39,7 @@ class UnityToGymWrapper(gym.Env):
     ):
         """
         Environment initialization
-        :param unity_env: The Unity BaseEnv to be wrapped in the gym.
+        :param unity_env: The Unity BaseEnv to be wrapped in the gym. Will be closed when the UnityToGymWrapper closes.
         :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than
