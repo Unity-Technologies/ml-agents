@@ -29,15 +29,14 @@ The gym interface is available from `gym_unity.envs`. To launch an environment
 from the root of the project repository use:
 
 ```python
+from mlagents_envs.environment import UnityEnvironment
 from gym_unity.envs import UnityEnv
 
-env = UnityEnv(environment_filename, worker_id, use_visual, uint8_visual)
+base_env = UnityEnvironment(environment_filename, worker_id=worker_id)
+env = UnityEnv(base_env, use_visual, uint8_visual)
 ```
 
 *  `environment_filename` refers to the path to the Unity environment.
-
-*  `worker_id` refers to the port to use for communication with the environment.
-   Defaults to `0`.
 
 *  `use_visual` refers to whether to use visual observations (True) or vector
    observations (False) as the default observation provided by the `reset` and
@@ -103,10 +102,12 @@ import gym
 from baselines import deepq
 from baselines import logger
 
+from mlagents_envs.environment import UnityEnvironment
 from gym_unity.envs import UnityEnv
 
 def main():
-    env = UnityEnv("./envs/GridWorld", 0, use_visual=True, uint8_visual=True)
+    base_env = UnityEnvironment("./envs/GridWorld", worker_id=0)
+    env = UnityEnv(base_env, use_visual=True, uint8_visual=True)
     logger.configure('./logs') # Çhange to log in a different directory
     act = deepq.learn(
         env,
@@ -157,6 +158,7 @@ functions. You can define a similar function for Unity environments.  An example
 such a method using the PPO2 baseline:
 
 ```python
+from mlagents_envs.environment import UnityEnvironment
 from gym_unity.envs import UnityEnv
 from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
 from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
@@ -177,7 +179,8 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
     """
     def make_env(rank, use_visual=True): # pylint: disable=C0111
         def _thunk():
-            env = UnityEnv(env_directory, rank, use_visual=use_visual, uint8_visual=True)
+            base_env = UnityEnvironment(env_directory, rank)
+            env = UnityEnv(base_env, use_visual=use_visual, uint8_visual=True)
             env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
             return env
         return _thunk
@@ -229,6 +232,7 @@ instantiated, just as in the Baselines example. At the top of the file, insert
 
 ```python
 from gym_unity.envs import UnityEnv
+from mlagents_envs.environment import UnityEnvironment
 ```
 
 to import the Gym Wrapper. Navigate to the `create_atari_environment` method
@@ -238,7 +242,8 @@ the method with the following code.
 ```python
     game_version = 'v0' if sticky_actions else 'v4'
     full_game_name = '{}NoFrameskip-{}'.format(game_name, game_version)
-    env = UnityEnv('./envs/GridWorld', 0, use_visual=True, uint8_visual=True)
+    base_env = UnityEnvironment('./envs/GridWorld', 0)
+    env = UnityEnv(base_env, use_visual=True, uint8_visual=True)
     return env
 ```
 
