@@ -90,19 +90,18 @@ public class TennisAgent : Agent
         var rotate = Mathf.Clamp(vectorAction[2], -1f, 1f) * m_InvertMult;
         
         var upward = 0.0f;
-        if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < 0f)
+        if (moveY > 0.0 && transform.position.y - transform.parent.transform.position.y < -1.5f)
         {
             upward = moveY;
         }
 
         m_AgentRb.AddForce(new Vector3(moveX * 5f, upward * 10f, 0f), ForceMode.VelocityChange);
-        //m_AgentRb.AddForce(new Vector3(moveX * 20f, upward * 10f, 0f), ForceMode.VelocityChange);
 
         // calculate angle between m_InvertMult * 35 and m_InvertMult * 145
         var angle = 55f * rotate + m_InvertMult * k_Angle;
         // maps inverse agents rotation into -35 to -145
         var rotateZ = angle - (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f);
-        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ);// * .5f);
+        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ * .5f);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
         //gameObject.transform.Rotate(0f, 0f, rotateZ);
 
@@ -114,7 +113,7 @@ public class TennisAgent : Agent
                 transform.position.z);
         }
         var rgV = m_AgentRb.velocity;
-        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 20f), rgV.z);
+        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
 
         // energy usage penalty cumulant
         energyPenalty += -0.001f * (Mathf.Abs(moveX) + upward);
