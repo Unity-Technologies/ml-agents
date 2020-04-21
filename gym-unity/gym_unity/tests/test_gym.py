@@ -20,7 +20,6 @@ def test_gym_wrapper():
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
 
-    print(mock_env.get_behavior_names())
 
     env = UnityToGymWrapper(mock_env, use_visual=False)
     assert isinstance(env, UnityToGymWrapper)
