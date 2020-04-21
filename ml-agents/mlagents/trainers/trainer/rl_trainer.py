@@ -153,7 +153,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                         break
                 if self.threaded and not _queried:
                     # Avoid busy-waiting
-                    time.sleep(0.05)
+                    time.sleep(0.0001)
         if self.should_still_train:
             if self._is_ready_update():
                 with hierarchical_timer("_update_policy"):
