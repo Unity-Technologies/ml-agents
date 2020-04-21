@@ -179,8 +179,10 @@ class NNPolicy(TorchPolicy):
         :param brain: Assigned BrainParameters object.
         :param trainer_params: Defined training parameters.
         :param load: Whether a pre-trained model will be loaded or a new one created.
-        :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
-        :param reparameterize: Whether we are using the resampling trick to update the policy in continuous output.
+        :param tanh_squash: Whether to use a tanh function on the continuous output,
+        or a clipped output.
+        :param reparameterize: Whether we are using the resampling trick to update the policy
+        in continuous output.
         """
         super().__init__(seed, brain, trainer_params, load)
         self.grads = None
@@ -212,7 +214,7 @@ class NNPolicy(TorchPolicy):
             "Losses/Policy Loss": "policy_loss",
         }
 
-        self.model = Actor(
+        self.actor = Actor(
             h_size=int(trainer_params["hidden_units"]),
             act_type=ActionType.CONTINUOUS,
             vector_sizes=[brain.vector_observation_space_size],
@@ -254,11 +256,11 @@ class NNPolicy(TorchPolicy):
         return vec_vis_obs.vector_observations, vec_vis_obs.visual_observations, mask
 
     def execute_model(self, vec_obs, vis_obs, masks):
-        action_dist = self.model(vec_obs, vis_obs, masks)
+        action_dist = self.actor(vec_obs, vis_obs, masks)
         action = action_dist.sample()
         log_probs = action_dist.log_prob(action)
         entropy = action_dist.entropy()
-        value_heads = self.model.get_values(vec_obs, vis_obs)
+        value_heads = self.critic(vec_obs, vis_obs)
         return action, log_probs, entropy, value_heads
 
     @timed
@@ -281,5 +283,6 @@ class NNPolicy(TorchPolicy):
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
-        self.model.update_normalization(vec_obs)
+        self.actor.network_body.update_normalization(vec_obs)
+        self.critic.network_body.update_normalization(vec_obs)
         return run_out
