@@ -14,10 +14,6 @@ public class TennisAgent : Agent
     public GameObject myArea;
     public float scale;
 
-    [HideInInspector]
-    // accumulator of energy penalty
-    public float energyPenalty = 0;
-
     Text m_TextComponent;
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
@@ -26,7 +22,6 @@ public class TennisAgent : Agent
     TennisArea m_Area;
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
-    float m_BallTouch;
     Vector3 down = new Vector3(0f, -100f, 0f);
     Vector3 zAxis = new Vector3(0f, 0f, 1f);
     const float k_Angle = 90f;
@@ -103,7 +98,6 @@ public class TennisAgent : Agent
         var rotateZ = angle - (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f);
         Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ * .5f);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
-        //gameObject.transform.Rotate(0f, 0f, rotateZ);
 
         if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
             !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)
@@ -114,9 +108,6 @@ public class TennisAgent : Agent
         }
         var rgV = m_AgentRb.velocity;
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
-
-        // energy usage penalty cumulant
-        energyPenalty += -0.001f * (Mathf.Abs(moveX) + upward);
 
         m_TextComponent.text = score.ToString();
     }
@@ -144,8 +135,6 @@ public class TennisAgent : Agent
     public override void OnEpisodeBegin()
     {
 
-        energyPenalty = 0;
-        m_BallTouch = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("ball_touch", 0);
         m_InvertMult = invertX ? -1f : 1f;
         var agentOutX = Random.Range(12f, 16f);
         var agentOutY = Random.Range(-1.5f, 0f);
