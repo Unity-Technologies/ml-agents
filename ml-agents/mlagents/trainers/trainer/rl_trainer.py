@@ -152,7 +152,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                     except AgentManagerQueue.Empty:
                         break
                 if self.threaded and not _queried:
-                    # Avoid busy-waiting
+                    # Yield thread to avoid busy-waiting
                     time.sleep(0.0001)
         if self.should_still_train:
             if self._is_ready_update():
