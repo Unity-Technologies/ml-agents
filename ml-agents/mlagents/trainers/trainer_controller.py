@@ -163,11 +163,18 @@ class TrainerController(object):
 
         parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
         brain_name = parsed_behavior_id.brain_name
+        trainerthread = None
         try:
             trainer = self.trainers[brain_name]
         except KeyError:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
+            if trainer.threaded:
+                # Only create trainer thread for new trainers
+                trainerthread = threading.Thread(
+                    target=self.trainer_update_func, args=(trainer,), daemon=True
+                )
+                self.trainer_threads.append(trainerthread)
 
         policy = trainer.create_policy(
             parsed_behavior_id, env_manager.external_brains[name_behavior_id]
@@ -186,13 +193,10 @@ class TrainerController(object):
 
         trainer.publish_policy_queue(agent_manager.policy_queue)
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
-        if trainer.threaded:
-            # Start trainer thread
-            trainerthread = threading.Thread(
-                target=self.trainer_update_func, args=(trainer,), daemon=True
-            )
+
+        # Only start new trainers
+        if trainerthread is not None:
             trainerthread.start()
-            self.trainer_threads.append(trainerthread)
 
     def _create_trainers_and_managers(
         self, env_manager: EnvManager, behavior_ids: Set[str]
