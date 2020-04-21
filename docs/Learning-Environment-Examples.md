@@ -275,7 +275,7 @@ return.
   * Visual Observations: None
 * Float Properties: None
 * Benchmark Mean Reward for `WormStaticTarget`: 150
-* Benchmark Mean Reward for `WormDynamicTarget`: 150
+* Benchmark Mean Reward for `WormDynamicTarget`: 200
 
 ## Food Collector
 
