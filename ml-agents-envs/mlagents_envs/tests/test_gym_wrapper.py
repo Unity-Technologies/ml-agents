@@ -1,4 +1,4 @@
-from mlagents_envs.gym_wrapper import GymToUnityWrapper
+from mlagents_envs.gym_to_unity_wrapper import GymToUnityWrapper
 from mlagents_envs.base_env import ActionType
 
 try:
