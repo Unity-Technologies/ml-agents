@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MLAgents.Policies
 {
@@ -30,43 +31,48 @@ namespace MLAgents.Policies
         /// If continuous : The length of the float vector that represents the state.
         /// If discrete : The number of possible values the state can take.
         /// </summary>
-        public int vectorObservationSize = 1;
+        [FormerlySerializedAs("vectorObservationSize")]
+        public int VectorObservationSize = 1;
 
         /// <summary>
         /// Stacking refers to concatenating the observations across multiple frames. This field
         /// indicates the number of frames to concatenate across.
         /// </summary>
-        [Range(1, 50)] public int numStackedVectorObservations = 1;
+        [FormerlySerializedAs("numStackedVectorObservations")]
+        [Range(1, 50)] public int NumStackedVectorObservations = 1;
 
         /// <summary>
         /// If continuous : The length of the float vector that represents the action.
         /// If discrete : The number of possible values the action can take.
         /// </summary>
-        public int[] vectorActionSize = new[] {1};
+        [FormerlySerializedAs("vectorActionSize")]
+        public int[] VectorActionSize = new[] {1};
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.
         /// </summary>
-        public string[] vectorActionDescriptions;
+        [FormerlySerializedAs("vectorActionDescriptions")]
+        public string[] VectorActionDescriptions;
 
         /// <summary>
         /// Defines if the action is discrete or continuous.
         /// </summary>
-        public SpaceType vectorActionSpaceType = SpaceType.Discrete;
+        [FormerlySerializedAs("vectorActionSpaceType")]
+        public SpaceType VectorActionSpaceType = SpaceType.Discrete;
 
         /// <summary>
         /// The number of actions specified by this Brain.
         /// </summary>
-        public int numActions
+        public int NumActions
         {
             get
             {
-                switch (vectorActionSpaceType)
+                switch (VectorActionSpaceType)
                 {
                     case SpaceType.Discrete:
-                        return vectorActionSize.Length;
+                        return VectorActionSize.Length;
                     case SpaceType.Continuous:
-                        return vectorActionSize[0];
+                        return VectorActionSize[0];
                     default:
                         return 0;
                 }
@@ -81,11 +87,11 @@ namespace MLAgents.Policies
         {
             return new BrainParameters
             {
-                vectorObservationSize = vectorObservationSize,
-                numStackedVectorObservations = numStackedVectorObservations,
-                vectorActionSize = (int[])vectorActionSize.Clone(),
-                vectorActionDescriptions = (string[])vectorActionDescriptions.Clone(),
-                vectorActionSpaceType = vectorActionSpaceType
+                VectorObservationSize = VectorObservationSize,
+                NumStackedVectorObservations = NumStackedVectorObservations,
+                VectorActionSize = (int[])VectorActionSize.Clone(),
+                VectorActionDescriptions = (string[])VectorActionDescriptions.Clone(),
+                VectorActionSpaceType = VectorActionSpaceType
             };
         }
     }

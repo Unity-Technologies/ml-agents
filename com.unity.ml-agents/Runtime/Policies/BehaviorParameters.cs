@@ -139,7 +139,7 @@ namespace MLAgents.Policies
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return new HeuristicPolicy(heuristic, m_BrainParameters.numActions);
+                    return new HeuristicPolicy(heuristic, m_BrainParameters.NumActions);
                 case BehaviorType.InferenceOnly:
                 {
                     if (m_Model == null)
@@ -163,10 +163,10 @@ namespace MLAgents.Policies
                     }
                     else
                     {
-                        return new HeuristicPolicy(heuristic, m_BrainParameters.numActions);
+                        return new HeuristicPolicy(heuristic, m_BrainParameters.NumActions);
                     }
                 default:
-                    return new HeuristicPolicy(heuristic, m_BrainParameters.numActions);
+                    return new HeuristicPolicy(heuristic, m_BrainParameters.NumActions);
             }
         }
 

@@ -507,8 +507,8 @@ namespace MLAgents
             // should stay the previous action before the Done(), so that it is properly recorded.
             if (m_Action.vectorActions == null)
             {
-                m_Action.vectorActions = new float[param.numActions];
-                m_Info.storedVectorActions = new float[param.numActions];
+                m_Action.vectorActions = new float[param.NumActions];
+                m_Info.storedVectorActions = new float[param.NumActions];
             }
         }
 
@@ -560,13 +560,13 @@ namespace MLAgents
 
             // Support legacy CollectObservations
             var param = m_PolicyFactory.BrainParameters;
-            if (param.vectorObservationSize > 0)
+            if (param.VectorObservationSize > 0)
             {
-                collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
-                if (param.numStackedVectorObservations > 1)
+                collectObservationsSensor = new VectorSensor(param.VectorObservationSize);
+                if (param.NumStackedVectorObservations > 1)
                 {
                     var stackingSensor = new StackingSensor(
-                        collectObservationsSensor, param.numStackedVectorObservations);
+                        collectObservationsSensor, param.NumStackedVectorObservations);
                     sensors.Add(stackingSensor);
                 }
                 else
@@ -621,7 +621,7 @@ namespace MLAgents
             }
             using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
             {
-                if (m_PolicyFactory.BrainParameters.vectorActionSpaceType == SpaceType.Discrete)
+                if (m_PolicyFactory.BrainParameters.VectorActionSpaceType == SpaceType.Discrete)
                 {
                     CollectDiscreteActionMasks(m_ActionMasker);
                 }
@@ -685,7 +685,7 @@ namespace MLAgents
         /// Depending on your environment, any combination of these helpers can
         /// be used. They just need to be used in the exact same order each time
         /// this method is called and the resulting size of the vector observation
-        /// needs to match the vectorObservationSize attribute of the linked Brain.
+        /// needs to match the VectorObservationSize attribute of the linked Brain.
         /// Visual observations are implicitly added from the cameras attached to
         /// the Agent.
         /// </remarks>

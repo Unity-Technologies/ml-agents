@@ -43,11 +43,11 @@ namespace MLAgents.Tests
             var gameobj = new GameObject("gameObj");
 
             var bp = gameobj.AddComponent<BehaviorParameters>();
-            bp.BrainParameters.vectorObservationSize = 3;
-            bp.BrainParameters.numStackedVectorObservations = 2;
-            bp.BrainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            bp.BrainParameters.vectorActionSize = new[] { 2, 2 };
-            bp.BrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            bp.BrainParameters.VectorObservationSize = 3;
+            bp.BrainParameters.NumStackedVectorObservations = 2;
+            bp.BrainParameters.VectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            bp.BrainParameters.VectorActionSize = new[] { 2, 2 };
+            bp.BrainParameters.VectorActionSpaceType = SpaceType.Discrete;
 
             var agent = gameobj.AddComponent<TestAgent>();
 
@@ -100,11 +100,11 @@ namespace MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bpA = agentGo1.AddComponent<BehaviorParameters>();
-            bpA.BrainParameters.vectorObservationSize = 3;
-            bpA.BrainParameters.numStackedVectorObservations = 1;
-            bpA.BrainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            bpA.BrainParameters.vectorActionSize = new[] { 2, 2 };
-            bpA.BrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            bpA.BrainParameters.VectorObservationSize = 3;
+            bpA.BrainParameters.NumStackedVectorObservations = 1;
+            bpA.BrainParameters.VectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            bpA.BrainParameters.VectorActionSize = new[] { 2, 2 };
+            bpA.BrainParameters.VectorActionSpaceType = SpaceType.Discrete;
 
             agentGo1.AddComponent<ObservationAgent>();
             var agent1 = agentGo1.GetComponent<ObservationAgent>();
@@ -139,7 +139,7 @@ namespace MLAgents.Tests
             var obs = agentInfoProto.Observations[2]; // skip dummy sensors
             {
                 var vecObs = obs.FloatData.Data;
-                Assert.AreEqual(bpA.BrainParameters.vectorObservationSize, vecObs.Count);
+                Assert.AreEqual(bpA.BrainParameters.VectorObservationSize, vecObs.Count);
                 for (var i = 0; i < vecObs.Count; i++)
                 {
                     Assert.AreEqual((float)i + 1, vecObs[i]);

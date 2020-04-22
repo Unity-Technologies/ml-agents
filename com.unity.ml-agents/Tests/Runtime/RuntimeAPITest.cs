@@ -60,11 +60,11 @@ namespace Tests
             var gameObject = new GameObject();
 
             var behaviorParams = gameObject.AddComponent<BehaviorParameters>();
-            behaviorParams.BrainParameters.vectorObservationSize = 3;
-            behaviorParams.BrainParameters.numStackedVectorObservations = 2;
-            behaviorParams.BrainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            behaviorParams.BrainParameters.vectorActionSize = new[] { 2, 2 };
-            behaviorParams.BrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            behaviorParams.BrainParameters.VectorObservationSize = 3;
+            behaviorParams.BrainParameters.NumStackedVectorObservations = 2;
+            behaviorParams.BrainParameters.VectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            behaviorParams.BrainParameters.VectorActionSize = new[] { 2, 2 };
+            behaviorParams.BrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             behaviorParams.BehaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
             behaviorParams.UseChildSensors = true;

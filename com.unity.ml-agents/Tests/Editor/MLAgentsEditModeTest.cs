@@ -500,7 +500,7 @@ namespace MLAgents.Tests
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
-            behaviorParameters.BrainParameters.numStackedVectorObservations = 3;
+            behaviorParameters.BrainParameters.NumStackedVectorObservations = 3;
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
             agent1.LazyInitialize();

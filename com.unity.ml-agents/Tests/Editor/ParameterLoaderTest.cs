@@ -84,20 +84,20 @@ namespace MLAgents.Tests
         private BrainParameters GetContinuous2vis8vec2actionBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
-            validBrainParameters.vectorObservationSize = 8;
-            validBrainParameters.vectorActionSize = new int[] { 2 };
-            validBrainParameters.numStackedVectorObservations = 1;
-            validBrainParameters.vectorActionSpaceType = SpaceType.Continuous;
+            validBrainParameters.VectorObservationSize = 8;
+            validBrainParameters.VectorActionSize = new int[] { 2 };
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             return validBrainParameters;
         }
 
         private BrainParameters GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
-            validBrainParameters.vectorObservationSize = 0;
-            validBrainParameters.vectorActionSize = new int[] { 2, 3 };
-            validBrainParameters.numStackedVectorObservations = 1;
-            validBrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            validBrainParameters.VectorObservationSize = 0;
+            validBrainParameters.VectorActionSize = new int[] { 2, 3 };
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
         }
 
@@ -197,12 +197,12 @@ namespace MLAgents.Tests
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.vectorObservationSize = 9; // Invalid observation
+            brainParameters.VectorObservationSize = 9; // Invalid observation
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.numStackedVectorObservations = 2;// Invalid stacking
+            brainParameters.NumStackedVectorObservations = 2;// Invalid stacking
             errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
             Assert.Greater(errors.Count(), 0);
         }
@@ -213,7 +213,7 @@ namespace MLAgents.Tests
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
-            brainParameters.vectorObservationSize = 1; // Invalid observation
+            brainParameters.VectorObservationSize = 1; // Invalid observation
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
             Assert.Greater(errors.Count(), 0);
         }
@@ -224,12 +224,12 @@ namespace MLAgents.Tests
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.vectorActionSize = new int[] { 3 }; // Invalid action
+            brainParameters.VectorActionSize = new int[] { 3 }; // Invalid action
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.vectorActionSpaceType = SpaceType.Discrete;// Invalid SpaceType
+            brainParameters.VectorActionSpaceType = SpaceType.Discrete;// Invalid SpaceType
             errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
             Assert.Greater(errors.Count(), 0);
         }
@@ -240,12 +240,12 @@ namespace MLAgents.Tests
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
-            brainParameters.vectorActionSize = new int[] { 3, 3 }; // Invalid action
+            brainParameters.VectorActionSize = new int[] { 3, 3 }; // Invalid action
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.vectorActionSpaceType = SpaceType.Continuous;// Invalid SpaceType
+            brainParameters.VectorActionSpaceType = SpaceType.Continuous;// Invalid SpaceType
             errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
             Assert.Greater(errors.Count(), 0);
         }
