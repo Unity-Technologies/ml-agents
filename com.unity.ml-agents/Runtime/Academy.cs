@@ -480,7 +480,7 @@ namespace MLAgents
             // If the communicator is not on, we need to clear the SideChannel sending queue
             if (!IsCommunicatorOn)
             {
-                SideChannelUtils.GetSideChannelMessage();
+                SideChannelsManager.GetSideChannelMessage();
             }
 
             using (TimerStack.Instance.Scoped("AgentAct"))
@@ -538,7 +538,7 @@ namespace MLAgents
             s_EngineParameters.Dispose();
             s_EnvironmentParameters.Dispose();
             s_StatsRecorder.Dispose();
-            SideChannelUtils.UnregisterAllSideChannels();  // unregister custom side channels
+            SideChannelsManager.UnregisterAllSideChannels();  // unregister custom side channels
 
             if (m_ModelRunners != null)
             {

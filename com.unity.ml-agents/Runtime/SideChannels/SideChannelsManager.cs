@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MLAgents.SideChannels
 {
-    public static class SideChannelUtils
+    public static class SideChannelsManager
     {
         private static Dictionary<Guid, SideChannel> RegisteredChannels = new Dictionary<Guid, SideChannel>();
 
@@ -35,7 +35,7 @@ namespace MLAgents.SideChannels
                     $"A side channel with id {channelId} is already registered. " +
                     "You cannot register multiple side channels of the same id.");
             }
-            
+
             // Process any messages that we've already received for this channel ID.
             var numMessages = m_CachedMessages.Count;
             for (var i = 0; i < numMessages; i++)

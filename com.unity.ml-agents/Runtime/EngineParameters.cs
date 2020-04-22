@@ -24,12 +24,12 @@ namespace MLAgents
         public EngineParameters()
         {
             m_Channel = new EngineConfigurationChannel();
-            SideChannelUtils.RegisterSideChannel(m_Channel);
+            SideChannelsManager.RegisterSideChannel(m_Channel);
         }
 
         internal void Dispose()
         {
-            SideChannelUtils.UnregisterSideChannel(m_Channel);
+            SideChannelsManager.UnregisterSideChannel(m_Channel);
         }
     }
 }

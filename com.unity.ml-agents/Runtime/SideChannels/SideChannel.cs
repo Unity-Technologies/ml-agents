@@ -11,8 +11,8 @@ namespace MLAgents.SideChannels
     /// To create your own, you'll need to create two, new mirrored classes, one in Unity (by
     /// extending <see cref="SideChannel"/>) and another in Python by extending a Python class
     /// also called SideChannel. Then, within your project, use
-    /// <see cref="SideChannelUtils.RegisterSideChannel"/> and
-    /// <see cref="SideChannelUtils.UnregisterSideChannel"/> to register and unregister your
+    /// <see cref="SideChannelsManager.RegisterSideChannel"/> and
+    /// <see cref="SideChannelsManager.UnregisterSideChannel"/> to register and unregister your
     /// custom side channel.
     /// </summary>
     public abstract class SideChannel

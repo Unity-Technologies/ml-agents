@@ -25,7 +25,7 @@ namespace MLAgents
         internal EnvironmentParameters()
         {
             m_Channel = new EnvironmentParametersChannel();
-            SideChannelUtils.RegisterSideChannel(m_Channel);
+            SideChannelsManager.RegisterSideChannel(m_Channel);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace MLAgents
 
         internal void Dispose()
         {
-            SideChannelUtils.UnregisterSideChannel(m_Channel);
+            SideChannelsManager.UnregisterSideChannel(m_Channel);
         }
     }
 }
