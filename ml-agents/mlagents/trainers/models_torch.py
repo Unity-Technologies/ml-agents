@@ -189,7 +189,6 @@ class Critic(nn.Module):
 class Normalizer(nn.Module):
     def __init__(self, vec_obs_size, **kwargs):
         super(Normalizer, self).__init__(**kwargs)
-        print(vec_obs_size)
         self.normalization_steps = torch.tensor(1)
         self.running_mean = torch.zeros(vec_obs_size)
         self.running_variance = torch.ones(vec_obs_size)
@@ -247,7 +246,6 @@ class VectorEncoder(nn.Module):
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
             self.layers.append(nn.ReLU())
-        print(self.layers)
 
     def forward(self, inputs):
         x = inputs
