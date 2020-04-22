@@ -62,14 +62,24 @@ namespace MLAgents
     /// within the environment. 
     /// </summary>
     /// <remarks>
-    /// Create an agent by extending the Agent class. Add your Agent subclass to
-    /// a [GameObject] in the [Unity scene] that serves as the agent's environment.
+    /// Use the Agent class as the subclass for implementing your own agents. Add
+    /// your Agent implementation to a [GameObject] in the [Unity scene] that serves
+    /// as the agent's environment.
     /// 
-    /// Agents in an environment operate in *steps*. The <see cref="Academy"/> object controls
-    /// step progression and each Agent instance tracks its own step count. A step
-    /// corresponds to one Unity [FixedUpdate] cycle. At each step, an agent collects
-    /// observations, passes them to its decision-making policy, and receives an
-    /// action vector in response. (You can make observations at a lower frequency, if desired.)
+    /// Agents in an environment operate in *steps*. At each step, an agent collects observations,
+    /// passes them to its decision-making policy, and receives an action vector in response.
+    /// 
+    /// Agents make observations using <see cref="ISensor"/> implementations. The ML-Agents
+    /// API provides implementations for visual observations (<see cref="CameraSensor"/>)
+    /// raycast observations (<see cref="RayPerceptionSensor"/>), and arbitrary 
+    /// data observations (<see cref="VectorSensor"/>). You can add the
+    /// <see cref="CameraSensorComponent"/> and <see cref="RayPerceptionSensorComponent2D"/> or
+    /// <see cref="RayPerceptionSensorComponent3D"/> components to an agent's [GameObject] to use
+    /// those sensor types. You can implement the <see cref="CollectObservations(VectorSensor)"/>
+    /// function in your Agent subclass to use a vector observation. The Agent class calls this
+    /// function before it uses the observation vector to make a decision. (If you only use
+    /// visual or raycast observations, you do not need to implement
+    /// <see cref="CollectObservations"/>.)
     /// 
     /// Assign a decision making policy to an agent using a <see cref="BehaviorParameters"/>
     /// component attached to the agent's [GameObject]. The <see cref="BehaviorType"/> setting
@@ -93,18 +103,6 @@ namespace MLAgents
     /// can only take an action when it touches the ground, so several frames might elapse between
     /// one decision and the need for the next.
     ///
-    /// Agents make observations using <see cref="ISensor"/> implementations. The ML-Agents
-    /// API provides implementations for visual observations (<see cref="CameraSensor"/>)
-    /// raycast observations (<see cref="RayPerceptionSensor"/>), and arbitrary 
-    /// data observations (<see cref="VectorSensor"/>). You can add the
-    /// <see cref="CameraSensorComponent"/> and <see cref="RayPerceptionSensorComponent2D"/> or
-    /// <see cref="RayPerceptionSensorComponent3D"/> components to an agent's [GameObject] to use
-    /// those sensor types. You can implement the <see cref="CollectObservations(VectorSensor)"/>
-    /// function in your Agent subclass to use a vector observation. The Agent class calls this
-    /// function before it uses the observation vector to make a decision. (If you only use
-    /// visual or raycast observations, you do not need to implement
-    /// <see cref="CollectObservations"/>.)
-    /// 
     /// Use the <see cref="OnActionReceived"/> function to implement the actions your agent can take,
     /// such as moving to reach a goal or interacting with its environment. Both
     /// <see cref="CollectObservations"/> and <see cref="OnActionReceived"/> are called during the Unity
