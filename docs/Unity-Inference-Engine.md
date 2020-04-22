@@ -1,12 +1,12 @@
 # Unity Inference Engine
 
-The ML-Agents toolkit allows you to use pre-trained neural network models
+The ML-Agents Toolkit allows you to use pre-trained neural network models
 inside your Unity games. This support is possible thanks to the Unity Inference
 Engine. The Unity Inference Engine is using
 [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html)
 to run the neural network within Unity.
 
-__Note__: The ML-Agents toolkit only supports the models created with our
+__Note__: The ML-Agents Toolkit only supports the models created with our
 trainers.
 
 ## Supported devices
@@ -40,6 +40,6 @@ tf2onnx does not currently support tensorflow 2.0.0 or later, or earlier than 1.
 When using a model, drag the model file into the **Model** field in the Inspector of the Agent.
 Select the **Inference Device** : CPU or GPU you want to use for Inference.
 
-**Note:** For most of the models generated with the ML-Agents toolkit, CPU will be faster than GPU.
+**Note:** For most of the models generated with the ML-Agents Toolkit, CPU will be faster than GPU.
 You should use the GPU only if you use the
 ResNet visual encoder or have a large number of agents with visual observations.
