@@ -19,63 +19,23 @@ namespace MLAgents.SideChannels
             ChannelId = new Guid(k_EngineConfigId);
         }
 
-        // internal storage of the configs received from Python
-        int width;
-        int height;
-        int qualityLevel;
-        float timeScale;
-        int targetFrameRate;
-        const int k_CaptureFramerate = 60;
-
         /// <inheritdoc/>
         public override void OnMessageReceived(IncomingMessage msg)
         {
-            width = msg.ReadInt32();
-            height = msg.ReadInt32();
-            qualityLevel = msg.ReadInt32();
-            timeScale = msg.ReadFloat32();
-            targetFrameRate = msg.ReadInt32();
+            var width = msg.ReadInt32();
+            var height = msg.ReadInt32();
+            var qualityLevel = msg.ReadInt32();
+            var timeScale = msg.ReadFloat32();
+            var targetFrameRate = msg.ReadInt32();
+            var captureFrameRate = msg.ReadInt32();
 
             timeScale = Mathf.Clamp(timeScale, 1, 100);
 
             Screen.SetResolution(width, height, false);
             QualitySettings.SetQualityLevel(qualityLevel, true);
             Time.timeScale = timeScale;
-            Time.captureFramerate = k_CaptureFramerate;
+            Time.captureFramerate = captureFrameRate;
             Application.targetFrameRate = targetFrameRate;
-        }
-
-        // accessors for all the engine configs. For each new config added, we'll need to add
-        // a new accessor.
-
-        public int GetScreenWidth()
-        {
-            return width;
-        }
-
-        public int GetScreenHeight()
-        {
-            return height;
-        }
-
-        public int GetQualityLevel()
-        {
-            return qualityLevel;
-        }
-
-        public float GetTimeScale()
-        {
-            return timeScale;
-        }
-
-        public int GetTargetFrameRate()
-        {
-            return targetFrameRate;
-        }
-
-        public int GetCaptureFrameRate()
-        {
-            return k_CaptureFramerate;
         }
     }
 }
