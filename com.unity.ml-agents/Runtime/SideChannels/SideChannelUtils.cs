@@ -35,17 +35,7 @@ namespace MLAgents.SideChannels
                     $"A side channel with id {channelId} is already registered. " +
                     "You cannot register multiple side channels of the same id.");
             }
-
-            foreach (var sc in RegisteredChannels.Values)
-            {
-                if (sc.GetType() == sideChannel.GetType())
-                {
-                    throw new UnityAgentsException(
-                        $"A side channel with type {sc.GetType()} is already registered. " +
-                        "You cannot register multiple side channels of the same type.");
-                }
-            }
-
+            
             // Process any messages that we've already received for this channel ID.
             var numMessages = m_CachedMessages.Count;
             for (var i = 0; i < numMessages; i++)
