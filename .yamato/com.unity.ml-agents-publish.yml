@@ -20,7 +20,7 @@ test_platforms:
 ---
 {% for platform in test_platforms %}
 test_{{ platform.name }}_trunk:
-  name : com.unity.ml-agents test {{ editor.version }} on {{ platform.name }}
+  name : com.unity.ml-agents test trunk on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
