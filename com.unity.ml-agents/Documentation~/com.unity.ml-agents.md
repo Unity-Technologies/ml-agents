@@ -23,10 +23,6 @@ behaviors. The *ML-Agents* package only supports instrumenting a Unity scene, se
 training, and then embedding the trained model back into your Unity scene. The machine learning
 algorithms that orchestrate training are part of the companion [Python package].
 
-## Preview package
-The *ML-Agents* package is available as a preview, so it is not ready for production use.
-The features and documentation in this package might change before it is verified for release.
-
 
 ## Package contents
 
