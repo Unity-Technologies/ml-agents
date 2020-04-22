@@ -44,7 +44,6 @@ namespace MLAgentsExamples
             Physics.defaultSolverVelocityIterations = solverVelocityIterations;
 
             // Make sure the Academy singleton is initialized first, since it will create the SideChannels.
-            var academy = Academy.Instance;
             Academy.Instance.EnvironmentParameters.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
         }
 
