@@ -11,7 +11,7 @@ namespace MLAgents.SideChannels
     {
         private enum ConfigurationType : int
         {
-            Screen = 0,
+            ScreenResolution = 0,
             QualityLevel = 1,
             TimeScale = 2,
             TargetFrameRate = 3,
@@ -35,7 +35,7 @@ namespace MLAgents.SideChannels
             var messageType = (ConfigurationType)msg.ReadInt32();
             switch (messageType)
             {
-                case ConfigurationType.Screen:
+                case ConfigurationType.ScreenResolution:
                     var width = msg.ReadInt32();
                     var height = msg.ReadInt32();
                     Screen.SetResolution(width, height, false);
@@ -56,6 +56,11 @@ namespace MLAgents.SideChannels
                 case ConfigurationType.CaptureFrameRate:
                     var captureFrameRate = msg.ReadInt32();
                     Time.captureFramerate = captureFrameRate;
+                    break;
+                default:
+                    Debug.LogWarning(
+                        "Unknown engine configuration received from Python. Make sure" +
+                        " your Unity and Python versions are compatible.");
                     break;
             }
         }

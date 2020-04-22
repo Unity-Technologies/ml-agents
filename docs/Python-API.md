@@ -286,6 +286,7 @@ The `EngineConfiguration` side channel allows you to modify the time-scale, reso
    * `quality_level`: Defines the quality level of the simulation.
    * `time_scale`: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics may perform unpredictably.
    *  `target_frame_rate`: Instructs simulation to try to render at a specified frame rate.
+   *  `capture_frame_rate` Instructs the simulation to consider time between updates to always be constant, regardless of the actual frame rate.
  * `set_configuration` with argument config which is an `EngineConfig`
  NamedTuple object.
 

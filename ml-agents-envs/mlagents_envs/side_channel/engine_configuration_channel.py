@@ -1,5 +1,8 @@
 from mlagents_envs.side_channel import SideChannel, OutgoingMessage, IncomingMessage
-from mlagents_envs.exception import UnityCommunicationException
+from mlagents_envs.exception import (
+    UnityCommunicationException,
+    UnitySideChannelException,
+)
 import uuid
 from typing import NamedTuple, Optional
 from enum import IntEnum
@@ -31,10 +34,10 @@ class EngineConfigurationChannel(SideChannel):
     """
 
     class ConfigurationType(IntEnum):
-        SCREEN = (0,)
-        QUALITY_LEVEL = (1,)
-        TIME_SCALE = (2,)
-        TARGET_FRAME_RATE = (3,)
+        SCREEN_RESOLUTION = 0
+        QUALITY_LEVEL = 1
+        TIME_SCALE = 2
+        TARGET_FRAME_RATE = 3
         CAPTURE_FRAME_RATE = 4
 
     def __init__(self) -> None:
@@ -76,9 +79,17 @@ class EngineConfigurationChannel(SideChannel):
         :param capture_frame_rate: Instructs the simulation to consider time between
         updates to always be constant, regardless of the actual frame rate.
         """
+
+        if (width is None and height is not None) or (
+            width is not None and height is None
+        ):
+            raise UnitySideChannelException(
+                "You cannot set the width/height of the screen resolution without also setting the height/width"
+            )
+
         if width is not None and height is not None:
             screen_msg = OutgoingMessage()
-            screen_msg.write_int32(self.ConfigurationType.SCREEN)
+            screen_msg.write_int32(self.ConfigurationType.SCREEN_RESOLUTION)
             screen_msg.write_int32(width)
             screen_msg.write_int32(height)
             super().queue_message_to_send(screen_msg)
