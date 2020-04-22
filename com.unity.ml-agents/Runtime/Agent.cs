@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 using Barracuda;
 using MLAgents.Sensors;
@@ -689,6 +690,17 @@ namespace MLAgents
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
+        }
+
+        /// <summary>
+        /// Returns a read-only view of the observations that were generated in
+        /// <see cref="CollectObservations(VectorSensor)"/>. This is mainly useful inside of a
+        /// <see cref="Heuristic(float[])"/> method to avoid recomputing the observations.
+        /// </summary>
+        /// <returns>A read-only view of the observations list.</returns>
+        public ReadOnlyCollection<float> GetObservations()
+        {
+            return collectObservationsSensor.GetObservations();
         }
 
         /// <summary>
