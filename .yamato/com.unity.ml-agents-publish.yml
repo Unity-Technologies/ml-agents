@@ -53,7 +53,7 @@ publish:
     - .yamato/com.unity.ml-agents-pack.yml#pack
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
-    {% if test_editors.version == "trunk" %}
+    {% if test_editor.version == "trunk" %}
     - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
     {% else %}
     - .yamato/com.unity.ml-agents-publish.yml#test_{{ platform.name }}_{{ editor.version }}
