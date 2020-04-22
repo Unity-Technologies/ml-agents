@@ -1,77 +1,58 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 import numpy as np
-from mlagents import tf_utils
-from mlagents.tf_utils import tf
-from mlagents_envs.exception import UnityException
-from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.policy import Policy
+import torch
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.brain_conversion_utils import get_global_agent_id
+
+from mlagents.trainers.policy import Policy
 from mlagents_envs.base_env import DecisionSteps
+from mlagents.tf_utils import tf
+from mlagents_envs.timers import timed
 
-logger = get_logger(__name__)
+from mlagents.trainers.policy.policy import UnityPolicyException
+from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.models_torch import ActionType, EncoderType, Actor, Critic
 
-
-class UnityPolicyException(UnityException):
-    """
-    Related to errors with the Trainer.
-    """
-
-    pass
+EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
 class TorchPolicy(Policy):
-    """
-    Contains a learning model, and the necessary
-    functions to save/load models and create the input placeholders.
-    """
-
-    def __init__(self, seed, brain, trainer_parameters, load=False):
+    def __init__(
+        self,
+        seed: int,
+        brain: BrainParameters,
+        trainer_params: Dict[str, Any],
+        load: bool,
+        tanh_squash: bool = False,
+        reparameterize: bool = False,
+        condition_sigma_on_obs: bool = True,
+    ):
         """
-        Initialized the policy.
-        :param seed: Random seed to use for TensorFlow.
-        :param brain: The corresponding Brain for this policy.
-        :param trainer_parameters: The trainer parameters.
+        Policy that uses a multilayer perceptron to map the observations to actions. Could
+        also use a CNN to encode visual input prior to the MLP. Supports discrete and
+        continuous action spaces, as well as recurrent networks.
+        :param seed: Random seed.
+        :param brain: Assigned BrainParameters object.
+        :param trainer_params: Defined training parameters.
+        :param load: Whether a pre-trained model will be loaded or a new one created.
+        :param tanh_squash: Whether to use a tanh function on the continuous output,
+        or a clipped output.
+        :param reparameterize: Whether we are using the resampling trick to update the policy
+        in continuous output.
         """
-        self._version_number_ = 2
-        self.m_size = 0
-
-        # for ghost trainer save/load snapshots
-        self.assign_phs = []
-        self.assign_ops = []
-
-        self.inference_dict = {}
-        self.update_dict = {}
-        self.sequence_length = 1
-        self.global_step = 0
+        super(TorchPolicy, self).__init__(brain, seed)
+        self.grads = None
+        num_layers = trainer_params["num_layers"]
+        self.h_size = trainer_params["hidden_units"]
+        self.normalize = trainer_params["normalize"]
         self.seed = seed
         self.brain = brain
 
         self.act_size = brain.vector_action_space_size
-        self.vec_obs_size = brain.vector_observation_space_size
-        self.vis_obs_size = brain.number_visual_observations
-
-        self.use_recurrent = trainer_parameters["use_recurrent"]
-        self.memory_dict: Dict[str, np.ndarray] = {}
-        self.num_branches = len(self.brain.vector_action_space_size)
-        self.previous_action_dict: Dict[str, np.array] = {}
-        self.normalize = trainer_parameters.get("normalize", False)
-        self.use_continuous_act = brain.vector_action_space_type == "continuous"
-        if self.use_continuous_act:
-            self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = trainer_parameters["model_path"]
-        self.initialize_path = trainer_parameters.get("init_path", None)
-        self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
-        self.graph = tf.Graph()
-        self.sess = tf.Session(
-            config=tf_utils.generate_session_config(), graph=self.graph
-        )
-        self.saver = None
-        self.seed = seed
+        self.sequence_length = 1
         if self.use_recurrent:
-            self.m_size = trainer_parameters["memory_size"]
-            self.sequence_length = trainer_parameters["sequence_length"]
+            self.m_size = trainer_params["memory_size"]
+            self.sequence_length = trainer_params["sequence_length"]
             if self.m_size == 0:
                 raise UnityPolicyException(
                     "The memory size for brain {0} is 0 even "
@@ -84,271 +65,153 @@ class TorchPolicy(Policy):
                         brain.brain_name, self.m_size
                     )
                 )
-        self.load = load
 
-    def _initialize_graph(self):
-        with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            init = tf.global_variables_initializer()
-            self.sess.run(init)
+        if num_layers < 1:
+            num_layers = 1
+        self.num_layers = num_layers
+        self.vis_encode_type = EncoderType(
+            trainer_params.get("vis_encode_type", "simple")
+        )
+        self.tanh_squash = tanh_squash
+        self.reparameterize = reparameterize
+        self.condition_sigma_on_obs = condition_sigma_on_obs
 
-    def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
-        with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            logger.info(
-                "Loading model for brain {} from {}.".format(
-                    self.brain.brain_name, model_path
-                )
-            )
-            ckpt = tf.train.get_checkpoint_state(model_path)
-            if ckpt is None:
-                raise UnityPolicyException(
-                    "The model {0} could not be loaded. Make "
-                    "sure you specified the right "
-                    "--run-id and that the previous run you are loading from had the same "
-                    "behavior names.".format(model_path)
-                )
-            try:
-                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
-            except tf.errors.NotFoundError:
-                raise UnityPolicyException(
-                    "The model {0} was found but could not be loaded. Make "
-                    "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
-                    "and is using the same trainer configuration as the current run.".format(
-                        model_path
-                    )
-                )
-            if reset_global_steps:
-                logger.info(
-                    "Starting training from step 0 and saving to {}.".format(
-                        self.model_path
-                    )
-                )
-            else:
-                logger.info(
-                    "Resuming training from step {}.".format(self.get_current_step())
-                )
+        # Non-exposed parameters; these aren't exposed because they don't have a
+        # good explanation and usually shouldn't be touched.
+        self.log_std_min = -20
+        self.log_std_max = 2
 
-    def initialize_or_load(self):
-        # If there is an initialize path, load from that. Else, load from the set model path.
-        # If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
-        # e.g., resume from an initialize path.
-        reset_steps = not self.load
-        if self.initialize_path is not None:
-            self._load_graph(self.initialize_path, reset_global_steps=reset_steps)
-        elif self.load:
-            self._load_graph(self.model_path, reset_global_steps=reset_steps)
-        else:
-            self._initialize_graph()
+        self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.update_dict: Dict[str, tf.Tensor] = {}
+        # TF defaults to 32-bit, so we use the same here.
+        torch.set_default_tensor_type(torch.DoubleTensor)
 
-    def get_weights(self):
-        with self.graph.as_default():
-            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
-            values = [v.eval(session=self.sess) for v in _vars]
-            return values
+        reward_signal_configs = trainer_params["reward_signals"]
+        self.stats_name_to_update_name = {
+            "Losses/Value Loss": "value_loss",
+            "Losses/Policy Loss": "policy_loss",
+        }
 
-    def init_load_weights(self):
-        with self.graph.as_default():
-            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
-            values = [v.eval(session=self.sess) for v in _vars]
-            for var, value in zip(_vars, values):
-                assign_ph = tf.placeholder(var.dtype, shape=value.shape)
-                self.assign_phs.append(assign_ph)
-                self.assign_ops.append(tf.assign(var, assign_ph))
-
-    def load_weights(self, values):
-        if len(self.assign_ops) == 0:
-            logger.warning(
-                "Calling load_weights in tf_policy but assign_ops is empty. Did you forget to call init_load_weights?"
-            )
-        with self.graph.as_default():
-            feed_dict = {}
-            for assign_ph, value in zip(self.assign_phs, values):
-                feed_dict[assign_ph] = value
-            self.sess.run(self.assign_ops, feed_dict=feed_dict)
-
-    def evaluate(self, decision_requests: DecisionSteps) -> Dict[str, Any]:
-        """
-        Evaluates policy for the agent experiences provided.
-        :param decision_requests: DecisionSteps input to network.
-        :return: Output from policy based on self.inference_dict.
-        """
-        raise UnityPolicyException("The evaluate function was not implemented.")
-
-    def get_action(
-        self, decision_requests: DecisionSteps, worker_id: int = 0
-    ) -> ActionInfo:
-        """
-        Decides actions given observations information, and takes them in environment.
-        :param decision_requests: A dictionary of brain names and DecisionSteps from environment.
-        :param worker_id: In parallel environment training, the unique id of the environment worker that
-            the DecisionSteps came from. Used to construct a globally unique id for each agent.
-        :return: an ActionInfo containing action, memories, values and an object
-        to be passed to add experiences
-        """
-        if len(decision_requests) == 0:
-            return ActionInfo.empty()
-
-        global_agent_ids = [
-            get_global_agent_id(worker_id, int(agent_id))
-            for agent_id in decision_requests.agent_id
-        ]  # For 1-D array, the iterator order is correct.
-
-        run_out = self.evaluate(  # pylint: disable=assignment-from-no-return
-            decision_requests
+        self.actor = Actor(
+            h_size=int(trainer_params["hidden_units"]),
+            act_type=ActionType.CONTINUOUS,
+            vector_sizes=[brain.vector_observation_space_size],
+            act_size=sum(brain.vector_action_space_size),
+            normalize=trainer_params["normalize"],
+            num_layers=int(trainer_params["num_layers"]),
+            m_size=trainer_params["memory_size"],
+            use_lstm=self.use_recurrent,
+            visual_sizes=brain.camera_resolutions,
+            vis_encode_type=EncoderType(
+                trainer_params.get("vis_encode_type", "simple")
+            ),
         )
 
-        self.save_memories(global_agent_ids, run_out.get("memory_out"))
-        return ActionInfo(
-            action=run_out.get("action"),
-            value=run_out.get("value"),
-            outputs=run_out,
-            agent_ids=decision_requests.agent_id,
+        self.critic = Critic(
+            h_size=int(trainer_params["hidden_units"]),
+            vector_sizes=[brain.vector_observation_space_size],
+            normalize=trainer_params["normalize"],
+            num_layers=int(trainer_params["num_layers"]),
+            m_size=trainer_params["memory_size"],
+            use_lstm=self.use_recurrent,
+            visual_sizes=brain.camera_resolutions,
+            stream_names=list(reward_signal_configs.keys()),
+            vis_encode_type=EncoderType(
+                trainer_params.get("vis_encode_type", "simple")
+            ),
         )
 
-    def update(self, mini_batch, num_sequences):
-        """
-        Performs update of the policy.
-        :param num_sequences: Number of experience trajectories in batch.
-        :param mini_batch: Batch of experiences.
-        :return: Results of update.
-        """
-        raise UnityPolicyException("The update function was not implemented.")
-
-    def _execute_model(self, feed_dict, out_dict):
-        """
-        Executes model.
-        :param feed_dict: Input dictionary mapping nodes to input data.
-        :param out_dict: Output dictionary mapping names to nodes.
-        :return: Dictionary mapping names to input data.
-        """
-        network_out = self.sess.run(list(out_dict.values()), feed_dict=feed_dict)
-        run_out = dict(zip(list(out_dict.keys()), network_out))
-        return run_out
-
-    def fill_eval_dict(self, batched_step_result):
-        vec_vis_obs = SplitObservations.from_observations(batched_step_result.obs)
+    def split_decision_step(self, decision_requests):
+        vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
         if not self.use_continuous_act:
             mask = np.ones(
-                (len(batched_step_result), np.sum(self.brain.vector_action_space_size)),
+                (len(decision_requests), np.sum(self.brain.vector_action_space_size)),
                 dtype=np.float32,
             )
-            if batched_step_result.action_mask is not None:
-                mask = 1 - np.concatenate(batched_step_result.action_mask, axis=1)
+            if decision_requests.action_mask is not None:
+                mask = 1 - np.concatenate(decision_requests.action_mask, axis=1)
         return vec_vis_obs.vector_observations, vec_vis_obs.visual_observations, mask
-
-    def make_empty_memory(self, num_agents):
-        """
-        Creates empty memory for use with RNNs
-        :param num_agents: Number of agents.
-        :return: Numpy array of zeros.
-        """
-        return np.zeros((num_agents, self.m_size), dtype=np.float32)
-
-    def save_memories(
-        self, agent_ids: List[str], memory_matrix: Optional[np.ndarray]
-    ) -> None:
-        if memory_matrix is None:
-            return
-        for index, agent_id in enumerate(agent_ids):
-            self.memory_dict[agent_id] = memory_matrix[index, :]
-
-    def retrieve_memories(self, agent_ids: List[str]) -> np.ndarray:
-        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
-        for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.memory_dict:
-                memory_matrix[index, :] = self.memory_dict[agent_id]
-        return memory_matrix
-
-    def remove_memories(self, agent_ids):
-        for agent_id in agent_ids:
-            if agent_id in self.memory_dict:
-                self.memory_dict.pop(agent_id)
-
-    def make_empty_previous_action(self, num_agents):
-        """
-        Creates empty previous action for use with RNNs and discrete control
-        :param num_agents: Number of agents.
-        :return: Numpy array of zeros.
-        """
-        return np.zeros((num_agents, self.num_branches), dtype=np.int)
-
-    def save_previous_action(
-        self, agent_ids: List[str], action_matrix: Optional[np.ndarray]
-    ) -> None:
-        if action_matrix is None:
-            return
-        for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_matrix[index, :]
-
-    def retrieve_previous_action(self, agent_ids: List[str]) -> np.ndarray:
-        action_matrix = np.zeros((len(agent_ids), self.num_branches), dtype=np.int)
-        for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.previous_action_dict:
-                action_matrix[index, :] = self.previous_action_dict[agent_id]
-        return action_matrix
-
-    def remove_previous_action(self, agent_ids):
-        for agent_id in agent_ids:
-            if agent_id in self.previous_action_dict:
-                self.previous_action_dict.pop(agent_id)
-
-    def get_current_step(self):
-        """
-        Gets current model step.
-        :return: current model step.
-        """
-        return self.global_step
-
-    def _set_step(self, step: int) -> int:
-        """
-        Sets current model step to step without creating additional ops.
-        :param step: Step to set the current model step to.
-        :return: The step the model was set to.
-        """
-        current_step = self.get_current_step()
-        # Increment a positive or negative number of steps.
-        return self.increment_step(step - current_step)
-
-    def increment_step(self, n_steps):
-        """
-        Increments model step.
-        """
-        self.global_step += n_steps
-        return self.global_step
-
-    def get_inference_vars(self):
-        """
-        :return:list of inference var names
-        """
-        return list(self.inference_dict.keys())
-
-    def get_update_vars(self):
-        """
-        :return:list of update var names
-        """
-        return list(self.update_dict.keys())
-
-    def save_model(self, steps):
-        """
-        Saves the model
-        :param steps: The number of steps the model was trained for
-        :return:
-        """
-        with self.graph.as_default():
-            last_checkpoint = self.model_path + "/model-" + str(steps) + ".ckpt"
-            self.saver.save(self.sess, last_checkpoint)
-            tf.train.write_graph(
-                self.graph, self.model_path, "raw_graph_def.pb", as_text=False
-            )
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        return None
+        if self.use_vec_obs and self.normalize:
+            self.critic.network_body.normalize(vector_obs)
+            self.actor.network_body.normalize(vector_obs)
+
+    def execute_model(self, vec_obs, vis_obs, masks=None):
+        action_dists = self.actor(vec_obs, vis_obs, masks)
+        actions = []
+        log_probs = []
+        entropies = []
+        for action_dist in action_dists:
+            action = action_dist.sample()
+            actions.append(action)
+            log_probs.append(action_dist.log_prob(action))
+            entropies.append(action_dist.entropy())
+        actions = torch.stack(actions)
+        log_probs = torch.stack(log_probs)
+        entropies = torch.stack(entropies)
+
+        value_heads = self.critic(vec_obs, vis_obs)
+        return actions, log_probs, entropies, value_heads
+
+    @timed
+    def evaluate(self, decision_requests: DecisionSteps) -> Dict[str, Any]:
+        """
+        Evaluates policy for the agent experiences provided.
+        :param decision_requests: DecisionStep object containing inputs.
+        :return: Outputs from network as defined by self.inference_dict.
+        """
+        vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
+        run_out = {}
+        action, log_probs, entropy, value_heads = self.execute_model(
+            vec_obs, vis_obs, masks
+        )
+        run_out["action"] = np.array(action.detach())
+        run_out["log_probs"] = np.array(log_probs.detach())
+        run_out["entropy"] = np.array(entropy.detach())
+        run_out["value_heads"] = {
+            name: np.array(t.detach()) for name, t in value_heads.items()
+        }
+        run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
+        run_out["learning_rate"] = 0.0
+        self.actor.network_body.update_normalization(vec_obs)
+        self.critic.network_body.update_normalization(vec_obs)
+        return run_out
+
+    def get_action(
+        self, decision_requests: DecisionSteps, worker_id: int = 0
+    ) -> ActionInfo:
+        """
+        Decides actions given observations information, and takes them in environment.
+        :param worker_id:
+        :param decision_requests: A dictionary of brain names and BrainInfo from environment.
+        :return: an ActionInfo containing action, memories, values and an object
+        to be passed to add experiences
+        """
+        if len(decision_requests) == 0:
+            return ActionInfo.empty()
+        run_out = self.evaluate(
+            decision_requests
+        )  # pylint: disable=assignment-from-no-return
+        return ActionInfo(
+            action=run_out.get("action"),
+            value=run_out.get("value"),
+            outputs=run_out,
+            agent_ids=list(decision_requests.agent_id),
+        )
+
+    @property
+    def vis_obs_size(self):
+        return self.brain.number_visual_observations
+
+    @property
+    def vec_obs_size(self):
+        return self.brain.vector_observation_space_size
 
     @property
     def use_vis_obs(self):
@@ -357,3 +220,32 @@ class TorchPolicy(Policy):
     @property
     def use_vec_obs(self):
         return self.vec_obs_size > 0
+
+    @property
+    def use_recurrent(self):
+        return False
+
+    @property
+    def use_continuous_act(self):
+        return True
+
+    def get_current_step(self):
+        """
+        Gets current model step.
+        :return: current model step.
+        """
+        step = self.global_step.detach().numpy()
+        return step
+
+    def increment_step(self, n_steps):
+        """
+        Increments model step.
+        """
+        self.global_step = self.global_step + n_steps
+        return self.get_current_step()
+
+    def save_model(self, step):
+        pass
+
+    def export_model(self):
+        pass

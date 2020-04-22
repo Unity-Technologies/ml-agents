@@ -5,6 +5,10 @@ import numpy as np
 import torch
 from torch import nn
 
+from mlagents.trainers.distributions_torch import (
+    GaussianDistribution,
+    MultiCategoricalDistribution,
+)
 from mlagents.trainers.exception import UnityTrainerException
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
@@ -35,6 +39,142 @@ class NormalizerTensors(NamedTuple):
     steps: torch.Tensor
     running_mean: torch.Tensor
     running_variance: torch.Tensor
+
+
+class NetworkBody(nn.Module):
+    def __init__(
+        self,
+        vector_sizes,
+        visual_sizes,
+        h_size,
+        normalize,
+        num_layers,
+        m_size,
+        vis_encode_type,
+        use_lstm,
+    ):
+        super(NetworkBody, self).__init__()
+        self.normalize = normalize
+        self.visual_encoders = []
+        self.vector_encoders = []
+        self.vector_normalizers = []
+        self.use_lstm = use_lstm
+        self.h_size = h_size
+        self.m_size = m_size
+
+        visual_encoder = ModelUtils.get_encoder_for_type(vis_encode_type)
+        for vector_size in vector_sizes:
+            self.vector_normalizers.append(Normalizer(vector_size))
+            self.vector_encoders.append(VectorEncoder(vector_size, h_size, num_layers))
+        for visual_size in visual_sizes:
+            self.visual_encoders.append(visual_encoder(visual_size))
+
+        if use_lstm:
+            self.lstm = nn.LSTM(h_size, h_size, 1)
+
+    def clear_memory(self, batch_size):
+        self.memory = (
+            torch.zeros(1, batch_size, self.m_size),
+            torch.zeros(1, batch_size, self.m_size),
+        )
+
+    def update_normalization(self, inputs):
+        if self.normalize:
+            self.normalizer.update(inputs)
+
+    def forward(self, vec_inputs, vis_inputs):
+        vec_embeds = []
+        for idx, encoder in enumerate(self.vector_encoders):
+            vec_input = vec_inputs[idx]
+            if self.normalize:
+                vec_input = self.normalizers[idx](vec_inputs[idx])
+            hidden = encoder(vec_input)
+            vec_embeds.append(hidden)
+
+        vis_embeds = []
+        for idx, encoder in enumerate(self.visual_encoders):
+            hidden = encoder(vis_inputs[idx])
+            vis_embeds.append(hidden)
+
+        vec_embeds = torch.cat(vec_embeds)
+        vis_embeds = torch.cat(vis_embeds)
+        embedding = torch.cat([vec_embeds, vis_embeds])
+        if self.use_lstm:
+            embedding, self.memory = self.lstm(embedding, self.memory)
+        return embedding
+
+
+class Actor(nn.Module):
+    def __init__(
+        self,
+        h_size,
+        vector_sizes,
+        visual_sizes,
+        act_size,
+        normalize,
+        num_layers,
+        m_size,
+        vis_encode_type,
+        act_type,
+        use_lstm,
+    ):
+        super(Actor, self).__init__()
+        self.act_type = act_type
+        self.act_size = act_size
+        self.network_body = NetworkBody(
+            vector_sizes,
+            visual_sizes,
+            h_size,
+            normalize,
+            num_layers,
+            m_size,
+            vis_encode_type,
+            use_lstm,
+        )
+        if self.act_type == ActionType.CONTINUOUS:
+            self.distribution = GaussianDistribution(h_size, act_size)
+        else:
+            self.distribution = MultiCategoricalDistribution(h_size, act_size)
+
+    def forward(self, vec_inputs, vis_inputs, masks=None):
+        embedding = self.network_body(vec_inputs, vis_inputs)
+        if self.act_type == ActionType.CONTINUOUS:
+            dist = self.distribution(embedding)
+        else:
+            dist = self.distribution(embedding, masks=masks)
+        return dist
+
+
+class Critic(nn.Module):
+    def __init__(
+        self,
+        stream_names,
+        h_size,
+        vector_sizes,
+        visual_sizes,
+        normalize,
+        num_layers,
+        m_size,
+        vis_encode_type,
+        use_lstm,
+    ):
+        super(Critic, self).__init__()
+        self.stream_names = stream_names
+        self.network_body = NetworkBody(
+            vector_sizes,
+            visual_sizes,
+            h_size,
+            normalize,
+            num_layers,
+            m_size,
+            vis_encode_type,
+            use_lstm,
+        )
+        self.value_heads = ValueHeads(stream_names, h_size)
+
+    def forward(self, vec_inputs, vis_inputs):
+        embedding = self.network_body(vec_inputs, vis_inputs)
+        return self.value_heads(embedding)
 
 
 class Normalizer(nn.Module):

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 import numpy as np
 import torch
 
@@ -7,15 +7,12 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents_envs.base_env import DecisionSteps
 
 from mlagents_envs.timers import timed
-from mlagents.trainers.policy.nn_torch_policy import NNPolicy
+from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
-from mlagents.trainers.components.reward_signals.reward_signal_factory import (
-    create_reward_signal,
-)
 
 
 class PPOOptimizer(TorchOptimizer):
-    def __init__(self, policy: NNPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TorchPolicy, trainer_params: Dict[str, Any]):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
@@ -38,19 +35,6 @@ class PPOOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
         self.create_reward_signals(reward_signal_configs)
-
-    def create_reward_signals(self, reward_signal_configs):
-        """
-        Create reward signals
-        :param reward_signal_configs: Reward signal config.
-        """
-        self.reward_signals = {}
-        # Create reward signals
-        for reward_signal, config in reward_signal_configs.items():
-            self.reward_signals[reward_signal] = create_reward_signal(
-                self.policy, reward_signal, config
-            )
-            self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 
     def ppo_value_loss(self, values, old_values, returns):
         """
@@ -109,15 +93,15 @@ class PPOOptimizer(TorchOptimizer):
             returns[name] = batch["{}_returns".format(name)]
             old_values[name] = batch["{}_value_estimates".format(name)]
 
-        obs = np.array(batch["vector_obs"])
-        values = self.policy.critic(obs)
-        dist = self.policy.actor(obs)
-        probs = dist.log_prob(torch.from_numpy(np.array(batch["actions"])))
-        entropy = dist.entropy()
+        vec_obs = np.array(batch["vector_obs"])
+        vis_obs = np.array(batch["visual_obs"])
+        actions, log_probs, entropy, values = self.policy.execute_model(
+            vec_obs, vis_obs
+        )
         value_loss = self.ppo_value_loss(values, old_values, returns)
         policy_loss = self.ppo_policy_loss(
             np.array(batch["advantages"]),
-            probs,
+            log_probs,
             np.array(batch["action_probs"]),
             np.array(batch["masks"], dtype=np.uint32),
         )
@@ -165,3 +149,8 @@ class PPOOptimizer(TorchOptimizer):
                     value_estimates[k] = 0.0
 
         return value_estimates
+
+    def get_trajectory_value_estimates(
+        self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
+    ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
+        return ({"": np.zeros(0)}), {"": 0.0}

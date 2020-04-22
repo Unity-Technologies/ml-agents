@@ -16,7 +16,9 @@ class GaussianDistribution(nn.Module):
     def forward(self, inputs):
         mu = self.mu(inputs)
         log_sig = self.log_sigma_sq(inputs)
-        return distributions.normal.Normal(loc=mu, scale=torch.sqrt(torch.exp(log_sig)))
+        return [
+            distributions.normal.Normal(loc=mu, scale=torch.sqrt(torch.exp(log_sig)))
+        ]
 
 
 class MultiCategoricalDistribution(nn.Module):

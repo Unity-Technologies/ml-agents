@@ -3,7 +3,7 @@ from typing import Dict, List
 from collections import defaultdict
 import abc
 
-from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException
@@ -51,7 +51,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
-    def _update_end_episode_stats(self, agent_id: str, optimizer: TFOptimizer) -> None:
+    def _update_end_episode_stats(
+        self, agent_id: str, optimizer: TorchOptimizer
+    ) -> None:
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
                 self.stats_reporter.add_stat(

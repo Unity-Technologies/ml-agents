@@ -3,10 +3,10 @@ import abc
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
-from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
+from mlagents.trainers.policy.policy import UnityPolicyException
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
@@ -14,14 +14,6 @@ from mlagents.trainers.models import ModelUtils
 
 
 logger = get_logger(__name__)
-
-
-class UnityPolicyException(UnityException):
-    """
-    Related to errors with the Trainer.
-    """
-
-    pass
 
 
 class TFPolicy(Policy):
@@ -37,6 +29,7 @@ class TFPolicy(Policy):
         :param brain: The corresponding Brain for this policy.
         :param trainer_parameters: The trainer parameters.
         """
+        super(TFPolicy, self).__init__(brain, seed)
         self._version_number_ = 2
         self.m_size = 0
 
@@ -47,8 +40,6 @@ class TFPolicy(Policy):
         self.inference_dict = {}
         self.update_dict = {}
         self.sequence_length = 1
-        self.seed = seed
-        self.brain = brain
 
         self.act_size = brain.vector_action_space_size
         self.vec_obs_size = brain.vector_observation_space_size
@@ -359,14 +350,14 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def save_model(self, steps):
+    def save_model(self, step):
         """
         Saves the model
-        :param steps: The number of steps the model was trained for
+        :param step: The number of steps the model was trained for
         :return:
         """
         with self.graph.as_default():
-            last_checkpoint = self.model_path + "/model-" + str(steps) + ".ckpt"
+            last_checkpoint = self.model_path + "/model-" + str(step) + ".ckpt"
             self.saver.save(self.sess, last_checkpoint)
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
