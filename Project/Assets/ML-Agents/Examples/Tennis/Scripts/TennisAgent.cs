@@ -96,7 +96,7 @@ public class TennisAgent : Agent
         var angle = 55f * rotate + m_InvertMult * k_Angle;
         // maps inverse agents rotation into -35 to -145
         var rotateZ = angle - (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f);
-        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ * .5f);
+        Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
 
         if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
