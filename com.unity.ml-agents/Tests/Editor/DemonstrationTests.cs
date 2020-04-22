@@ -54,9 +54,9 @@ namespace MLAgents.Tests
             Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirectory));
 
             var demoRec = gameobj.AddComponent<DemonstrationRecorder>();
-            demoRec.record = true;
-            demoRec.demonstrationName = k_DemoName;
-            demoRec.demonstrationDirectory = k_DemoDirectory;
+            demoRec.Record = true;
+            demoRec.DemonstrationName = k_DemoName;
+            demoRec.DemonstrationDirectory = k_DemoDirectory;
             var demoWriter = demoRec.LazyInitialize(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
@@ -112,9 +112,9 @@ namespace MLAgents.Tests
             agentGo1.AddComponent<DemonstrationRecorder>();
             var demoRecorder = agentGo1.GetComponent<DemonstrationRecorder>();
             var fileSystem = new MockFileSystem();
-            demoRecorder.demonstrationDirectory = k_DemoDirectory;
-            demoRecorder.demonstrationName = "TestBrain";
-            demoRecorder.record = true;
+            demoRecorder.DemonstrationDirectory = k_DemoDirectory;
+            demoRecorder.DemonstrationName = "TestBrain";
+            demoRecorder.Record = true;
             demoRecorder.LazyInitialize(fileSystem);
 
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnable",

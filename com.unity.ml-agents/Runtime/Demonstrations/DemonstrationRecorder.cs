@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
 using MLAgents.Policies;
+using UnityEngine.Serialization;
 
 namespace MLAgents.Demonstrations
 {
@@ -16,24 +17,27 @@ namespace MLAgents.Demonstrations
         /// <summary>
         /// Whether or not to record demonstrations.
         /// </summary>
+        [FormerlySerializedAs("record")]
         [Tooltip("Whether or not to record demonstrations.")]
-        public bool record;
+        public bool Record;
 
         /// <summary>
         /// Base demonstration file name. If multiple files are saved, the additional filenames
         /// will have a sequence of unique numbers appended.
         /// </summary>
+        [FormerlySerializedAs("demonstrationName")]
         [Tooltip("Base demonstration file name. If multiple files are saved, the additional " +
                  "filenames will have a unique number appended.")]
-        public string demonstrationName;
+        public string DemonstrationName;
 
         /// <summary>
         /// Directory to save the demo files. Will default to a "Demonstrations/" folder in the
         /// Application data path if not specified.
         /// </summary>
+        [FormerlySerializedAs("demonstrationDirectory")]
         [Tooltip("Directory to save the demo files. Will default to " +
                  "{Application.dataPath}/Demonstrations if not specified.")]
-        public string demonstrationDirectory;
+        public string DemonstrationDirectory;
 
         DemonstrationWriter m_DemoWriter;
         internal const int MaxNameLength = 16;
@@ -51,7 +55,7 @@ namespace MLAgents.Demonstrations
 
         void Update()
         {
-            if (record)
+            if (Record)
             {
                 LazyInitialize();
             }
@@ -75,17 +79,17 @@ namespace MLAgents.Demonstrations
 
             m_FileSystem = fileSystem ?? new FileSystem();
             var behaviorParams = GetComponent<BehaviorParameters>();
-            if (string.IsNullOrEmpty(demonstrationName))
+            if (string.IsNullOrEmpty(DemonstrationName))
             {
-                demonstrationName = behaviorParams.behaviorName;
+                DemonstrationName = behaviorParams.behaviorName;
             }
-            if (string.IsNullOrEmpty(demonstrationDirectory))
+            if (string.IsNullOrEmpty(DemonstrationDirectory))
             {
-                demonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultDirectoryName);
+                DemonstrationDirectory = Path.Combine(Application.dataPath, k_DefaultDirectoryName);
             }
 
-            demonstrationName = SanitizeName(demonstrationName, MaxNameLength);
-            var filePath = MakeDemonstrationFilePath(m_FileSystem, demonstrationDirectory, demonstrationName);
+            DemonstrationName = SanitizeName(DemonstrationName, MaxNameLength);
+            var filePath = MakeDemonstrationFilePath(m_FileSystem, DemonstrationDirectory, DemonstrationName);
             var stream = m_FileSystem.File.Create(filePath);
             m_DemoWriter = new DemonstrationWriter(stream);
 
@@ -111,7 +115,7 @@ namespace MLAgents.Demonstrations
         }
 
         /// <summary>
-        /// Gets a unique path for the demonstrationName in the demonstrationDirectory.
+        /// Gets a unique path for the DemonstrationName in the DemonstrationDirectory.
         /// </summary>
         /// <param name="fileSystem"></param>
         /// <param name="demonstrationDirectory"></param>
@@ -174,7 +178,7 @@ namespace MLAgents.Demonstrations
         {
             var behaviorParams = GetComponent<BehaviorParameters>();
             demoWriter.Initialize(
-                demonstrationName,
+                DemonstrationName,
                 behaviorParams.brainParameters,
                 behaviorParams.fullyQualifiedBehaviorName
             );

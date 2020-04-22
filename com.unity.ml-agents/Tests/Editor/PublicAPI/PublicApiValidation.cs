@@ -25,17 +25,17 @@ namespace MLAgentsExamples
             var height = 16;
 
             var sensorComponent = gameObject.AddComponent<CameraSensorComponent>();
-            sensorComponent.camera = Camera.main;
-            sensorComponent.sensorName = "camera1";
-            sensorComponent.width = width;
-            sensorComponent.height = height;
-            sensorComponent.grayscale = true;
+            sensorComponent.Camera = Camera.main;
+            sensorComponent.SensorName = "camera1";
+            sensorComponent.Width = width;
+            sensorComponent.Height = height;
+            sensorComponent.Grayscale = true;
 
             // Make sure the sets actually applied
-            Assert.AreEqual("camera1", sensorComponent.sensorName);
-            Assert.AreEqual(width, sensorComponent.width);
-            Assert.AreEqual(height, sensorComponent.height);
-            Assert.IsTrue(sensorComponent.grayscale);
+            Assert.AreEqual("camera1", sensorComponent.SensorName);
+            Assert.AreEqual(width, sensorComponent.Width);
+            Assert.AreEqual(height, sensorComponent.Height);
+            Assert.IsTrue(sensorComponent.Grayscale);
         }
 
         [Test]

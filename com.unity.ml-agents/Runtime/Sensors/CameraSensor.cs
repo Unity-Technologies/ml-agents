@@ -18,7 +18,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// The Camera used for rendering the sensor observations.
         /// </summary>
-        public Camera camera
+        public Camera Camera
         {
             get { return m_Camera; }
             set { m_Camera = value; }
@@ -27,7 +27,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// The compression type used by the sensor.
         /// </summary>
-        public SensorCompressionType compressionType
+        public SensorCompressionType CompressionType
         {
             get { return m_CompressionType;  }
             set { m_CompressionType = value; }
