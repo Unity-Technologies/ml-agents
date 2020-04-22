@@ -40,6 +40,10 @@ and this project adheres to
   asymmetric example environment Strikers Vs. Goalie has been added.
 - CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
   were changed from `public` to `private` (#3808).
+- The `UnityEnv` class from the `gym-unity` package was renamed
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
+  Instead, the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
 
 ### Minor Changes
 
