@@ -164,6 +164,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
+      objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -334,6 +339,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
+      objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -440,6 +450,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 3}
 --- !u!4 &986425173 stripped
@@ -498,6 +513,11 @@ PrefabInstance:
     - target: {fileID: 4595975114078986, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 3}
       propertyPath: m_LocalPosition.z
       value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
       objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -627,6 +647,11 @@ PrefabInstance:
     - target: {fileID: 4595975114078986, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
       objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -955,6 +980,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
+      objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1084,6 +1114,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
+      objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1203,6 +1238,11 @@ PrefabInstance:
       propertyPath: m_LocalPosition.x
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_BrainParameters.vectorObservationSize
+      value: 132
+      objectReference: {fileID: 0}
     - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1319,7 +1359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec51f47c5ed0478080c449c74fd9c154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityMultiplier: 1
+  gravityMultiplier: 1.5
   fixedDeltaTime: 0.01333
   maximumDeltaTime: 0.15
   solverIterations: 12

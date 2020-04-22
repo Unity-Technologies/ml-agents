@@ -179,7 +179,8 @@ CrawlerDynamic:
     time_horizon: 1000
     batch_size: 2024
     buffer_size: 20240
-    max_steps: 1e7
+    max_steps: 3.5e6
+    # max_steps: 1e7
     summary_freq: 30000
     num_layers: 3
     hidden_units: 512

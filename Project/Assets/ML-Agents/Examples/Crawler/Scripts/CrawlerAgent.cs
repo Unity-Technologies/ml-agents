@@ -69,6 +69,13 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
     }
+    
+    //Get Joint Rotation Relative to the Connected Rigidbody
+    //We want to collect this info because it is the actual rotation, not the "target rotation"
+    public Quaternion GetJointRotation(ConfigurableJoint joint)
+    {
+        return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
+    }
 
     /// <summary>
     /// Add relevant information on each body part to observations.
@@ -88,9 +95,11 @@ public class CrawlerAgent : Agent
         {
             var localPosRelToBody = body.InverseTransformPoint(rb.position);
             sensor.AddObservation(localPosRelToBody);
-            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
-            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
-            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
+            sensor.AddObservation(GetJointRotation(bp.joint));
+
+//            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
+//            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
+//            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
@@ -105,24 +114,34 @@ public class CrawlerAgent : Agent
         m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
         RaycastHit hit;
-        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        float maxDist = 10;
+        if (Physics.Raycast(body.position, Vector3.down, out hit, maxDist))
         {
-            sensor.AddObservation(hit.distance);
+            sensor.AddObservation(hit.distance/maxDist);
         }
         else
-            sensor.AddObservation(10.0f);
-
-        // Forward & up to help with orientation
-        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
-        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
-
-        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
-        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
+            sensor.AddObservation(1);
 
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
+
+//        // Forward & up to help with orientation
+//        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
+//        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
+//
+//        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
+//        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
+
+        //Rotation delta between the matrix and the head
+        Quaternion headRotationDeltaFromMatrixRot = Quaternion.Inverse(m_TargetDirMatrix.rotation) * body.rotation;
+        sensor.AddObservation(headRotationDeltaFromMatrixRot);
+        
+//        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+//        {
+//            CollectObservationBodyPart(bodyPart, sensor);
+//        }
     }
 
     /// <summary>
@@ -172,6 +191,24 @@ public class CrawlerAgent : Agent
         bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
         bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
         bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
+        
+        // Set reward for this step according to mixture of the following elements.
+        if (rewardMovingTowardsTarget)
+        {
+            RewardFunctionMovingTowards();
+        }
+
+        if (rewardFacingTarget)
+        {
+            RewardFunctionFacingTarget();
+        }
+
+        if (rewardUseTimePenalty)
+        {
+            RewardFunctionTimePenalty();
+        }
+        
+        
     }
 
     void FixedUpdate()
@@ -205,30 +242,35 @@ public class CrawlerAgent : Agent
                 : unGroundedMaterial;
         }
 
-        // Set reward for this step according to mixture of the following elements.
-        if (rewardMovingTowardsTarget)
-        {
-            RewardFunctionMovingTowards();
-        }
 
-        if (rewardFacingTarget)
-        {
-            RewardFunctionFacingTarget();
-        }
-
-        if (rewardUseTimePenalty)
-        {
-            RewardFunctionTimePenalty();
-        }
     }
 
+//    /// <summary>
+//    /// Reward moving towards target & Penalize moving away from target.
+//    /// </summary>
+//    void RewardFunctionMovingTowards()
+//    {
+//        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
+//        AddReward(0.03f * m_MovingTowardsDot);
+//    }
+//
+//    /// <summary>
+//    /// Reward facing target & Penalize facing away from target
+//    /// </summary>
+//    void RewardFunctionFacingTarget()
+//    {
+//        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, body.forward);
+//        AddReward(0.01f * m_FacingDot);
+//    }
+    
+    
     /// <summary>
     /// Reward moving towards target & Penalize moving away from target.
     /// </summary>
     void RewardFunctionMovingTowards()
     {
         m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
-        AddReward(0.03f * m_MovingTowardsDot);
+        AddReward(0.01f * m_MovingTowardsDot);
     }
 
     /// <summary>
@@ -236,9 +278,12 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, body.forward);
-        AddReward(0.01f * m_FacingDot);
+        float bodyRotRelativeToMatrixDot = Quaternion.Dot(m_TargetDirMatrix.rotation, body.rotation);
+        AddReward(0.01f * bodyRotRelativeToMatrixDot);
     }
+
+    
+    
 
     /// <summary>
     /// Existential penalty for time-contrained tasks.
@@ -253,16 +298,16 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        {
+            bodyPart.Reset(bodyPart);
+        }
         if (m_DirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(m_DirToTarget);
         }
         transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            bodyPart.Reset(bodyPart);
-        }
         if (!targetIsStatic)
         {
             GetRandomTargetPos();
