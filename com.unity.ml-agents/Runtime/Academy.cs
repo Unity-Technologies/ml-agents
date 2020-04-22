@@ -121,6 +121,19 @@ namespace MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
+        // Random seed used for inference.
+        int m_InferenceSeed;
+
+        /// <summary>
+        /// Set the random seed used for inference. This should be set before any Agents are added
+        /// to the scene. The seed is passed to the ModelRunner constructor, and incremented each
+        /// time a new ModelRunner is created.
+        /// </summary>
+        public int InferenceSeed
+        {
+            set { m_InferenceSeed = value; }
+        }
+
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensure
         // that all the agents performs their steps in a consistent order (i.e. no
@@ -331,6 +344,8 @@ namespace MLAgents
                             name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
+                    // We might have inference-only Agents, so set the seed for them too.
+                    m_InferenceSeed = unityRlInitParameters.seed;
                 }
                 catch
                 {
@@ -489,9 +504,9 @@ namespace MLAgents
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
             {
-                modelRunner = new ModelRunner(
-                    model, brainParameters, inferenceDevice);
+                modelRunner = new ModelRunner(model, brainParameters, inferenceDevice, m_InferenceSeed);
                 m_ModelRunners.Add(modelRunner);
+                m_InferenceSeed++;
             }
             return modelRunner;
         }
