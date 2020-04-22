@@ -32,7 +32,7 @@ public class ReacherAgent : Agent
         m_RbA = pendulumA.GetComponent<Rigidbody>();
         m_RbB = pendulumB.GetComponent<Rigidbody>();
 
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
     }

@@ -5,7 +5,7 @@ using MLAgents.SideChannels;
 namespace MLAgents
 {
     /// <summary>
-    /// A singleton container for the Environment Parameters that may be modified during training.
+    /// A container for the Environment Parameters that may be modified during training.
     /// The keys for those parameters are defined in the trainer configurations and the
     /// the values are generated from the training process in features such as Curriculum Learning
     /// and Environment Parameter Randomization.
@@ -20,28 +20,12 @@ namespace MLAgents
         readonly EnvironmentParametersChannel m_Channel;
 
         /// <summary>
-        /// The singleton instance for this class.
+        /// Constructor.
         /// </summary>
-        private static EnvironmentParameters s_Instance;
-
-        /// <summary>
-        /// Constructor, kept private to make this class a singleton.
-        /// </summary>
-        private EnvironmentParameters()
+        internal EnvironmentParameters()
         {
             m_Channel = new EnvironmentParametersChannel();
             SideChannelUtils.RegisterSideChannel(m_Channel);
-        }
-
-        /// <summary>
-        /// Internal Getter for the singleton instance. Initializes if not already initialized.
-        /// This method is kept internal to ensure that the initialization is managed by the
-        /// Academy. Projects that import the ML-Agents SDK can retrieve the instance via
-        /// <see cref="Academy.EnvironmentParameters"/>.
-        /// </summary>
-        internal static EnvironmentParameters Instance
-        {
-            get { return s_Instance ?? (s_Instance = new EnvironmentParameters()); }
         }
 
         /// <summary>
@@ -81,7 +65,6 @@ namespace MLAgents
         internal void Dispose()
         {
             SideChannelUtils.UnregisterSideChannel(m_Channel);
-            s_Instance = null;
         }
     }
 }

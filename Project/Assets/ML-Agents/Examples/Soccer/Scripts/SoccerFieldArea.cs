@@ -43,7 +43,7 @@ public class SoccerFieldArea : MonoBehaviour
         m_BallController.area = this;
         ballStartingPos = ball.transform.position;
 
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
     IEnumerator ShowGoalUI()

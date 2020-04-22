@@ -33,7 +33,7 @@ public class GridAgent : Agent
 
     public override void Initialize()
     {
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)

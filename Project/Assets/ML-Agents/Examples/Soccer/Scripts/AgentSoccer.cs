@@ -94,7 +94,7 @@ public class AgentSoccer : Agent
         m_PlayerIndex = area.playerStates.IndexOf(playerState);
         playerState.playerIndex = m_PlayerIndex;
 
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
     public void MoveAgent(float[] act)

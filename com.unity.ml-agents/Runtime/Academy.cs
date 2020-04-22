@@ -290,20 +290,9 @@ namespace MLAgents
             }
         }
 
-        private static EngineParameters s_EngineParameters;
-        private static EnvironmentParameters s_EnvironmentParameters;
-        private static StatsRecorder s_StatsRecorder;
-
-        /// <summary>
-        /// Returns the <see cref="EngineParameters"/> singleton instance. It contains the
-        /// Engine configurations that were specified at the start of training and that have
-        /// been applied to the Unity Engine.
-        /// </summary>
-        /// <returns></returns>
-        public static EngineParameters EngineParameters
-        {
-            get { return s_EngineParameters; }
-        }
+        private EngineParameters s_EngineParameters;
+        private EnvironmentParameters s_EnvironmentParameters;
+        private StatsRecorder s_StatsRecorder;
 
         /// <summary>
         /// Returns the <see cref="EnvironmentParameters"/> singleton instance. If training
@@ -312,7 +301,7 @@ namespace MLAgents
         /// retrieved here.
         /// </summary>
         /// <returns></returns>
-        public static EnvironmentParameters EnvironmentParameters
+        public EnvironmentParameters EnvironmentParameters
         {
             get { return s_EnvironmentParameters; }
         }
@@ -322,7 +311,7 @@ namespace MLAgents
         /// to record any statistics from the Unity environment.
         /// </summary>
         /// <returns></returns>
-        public static StatsRecorder StatsRecorder
+        public StatsRecorder StatsRecorder
         {
             get { return s_StatsRecorder; }
         }
@@ -337,9 +326,9 @@ namespace MLAgents
 
             EnableAutomaticStepping();
 
-            s_EngineParameters = EngineParameters.Instance;
-            s_EnvironmentParameters = EnvironmentParameters.Instance;
-            s_StatsRecorder = StatsRecorder.Instance;
+            s_EngineParameters = new EngineParameters();
+            s_EnvironmentParameters = new EnvironmentParameters();
+            s_StatsRecorder = new StatsRecorder();
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
@@ -546,9 +535,9 @@ namespace MLAgents
             Communicator?.Dispose();
             Communicator = null;
 
-            EngineParameters.Dispose();
-            EnvironmentParameters.Dispose();
-            StatsRecorder.Dispose();
+            s_EngineParameters.Dispose();
+            s_EnvironmentParameters.Dispose();
+            s_StatsRecorder.Dispose();
             SideChannelUtils.UnregisterAllSideChannels();  // unregister custom side channels
 
             if (m_ModelRunners != null)

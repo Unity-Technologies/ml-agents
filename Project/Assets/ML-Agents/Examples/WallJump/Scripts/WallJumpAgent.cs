@@ -57,7 +57,7 @@ public class WallJumpAgent : Agent
 
         spawnArea.SetActive(false);
 
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
     // Begin the jump sequence

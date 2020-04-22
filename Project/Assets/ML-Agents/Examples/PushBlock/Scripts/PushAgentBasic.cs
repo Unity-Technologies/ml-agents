@@ -72,7 +72,7 @@ public class PushAgentBasic : Agent
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
 
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
     }

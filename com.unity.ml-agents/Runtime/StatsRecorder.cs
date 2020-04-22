@@ -37,28 +37,12 @@ namespace MLAgents
         readonly StatsSideChannel m_Channel;
 
         /// <summary>
-        /// The singleton instance for this class.
+        /// Constructor.
         /// </summary>
-        private static StatsRecorder s_Instance;
-
-        /// <summary>
-        /// Constructor, kept private to make this class a singleton.
-        /// </summary>
-        private StatsRecorder()
+        internal StatsRecorder()
         {
             m_Channel = new StatsSideChannel();
             SideChannelUtils.RegisterSideChannel(m_Channel);
-        }
-
-        /// <summary>
-        /// Internal Getter for the singleton instance. Initializes if not already initialized.
-        /// This method is kept internal to ensure that the initialization is managed by the
-        /// Academy. Projects that import the ML-Agents SDK can retrieve the instance via
-        /// <see cref="Academy.StatsRecorder"/>.
-        /// </summary>
-        internal static StatsRecorder Instance
-        {
-            get { return s_Instance ?? (s_Instance = new StatsRecorder()); }
         }
 
         /// <summary>
@@ -82,7 +66,6 @@ namespace MLAgents
         internal void Dispose()
         {
             SideChannelUtils.UnregisterSideChannel(m_Channel);
-            s_Instance = null;
         }
     }
 }

@@ -32,7 +32,7 @@ public class GridArea : MonoBehaviour
 
     public void Start()
     {
-        m_ResetParams = Academy.EnvironmentParameters;
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         m_Objects = new[] { goalPref, pitPref };
 
