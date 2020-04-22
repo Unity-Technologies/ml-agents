@@ -455,6 +455,12 @@ PrefabInstance:
       propertyPath: m_BrainParameters.vectorObservationSize
       value: 132
       objectReference: {fileID: 0}
+    - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: 3ea6002831b994df98e7be0f5bf1eaf3,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 3}
 --- !u!4 &986425173 stripped
