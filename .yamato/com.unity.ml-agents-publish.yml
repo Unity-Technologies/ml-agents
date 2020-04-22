@@ -19,7 +19,7 @@ test_platforms:
     flavor: b1.medium
 ---
 {% for platform in test_platforms %}
-test_{{ platform.name }}_{{ editor.version }}:
+test_{{ platform.name }}_trunk:
   name : com.unity.ml-agents test {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
