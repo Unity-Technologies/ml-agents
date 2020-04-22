@@ -33,6 +33,11 @@ double-check that the versions are in the same. The versions can be found in
 - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size.
+- `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
+- The `UnityEnv` class from the `gym-unity` package was renamed
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
+  the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
 - Trainer configuration, curriculum configuration, and parameter randomization
   configuration have all been moved to a single YAML file.
 
@@ -56,14 +61,20 @@ double-check that the versions are in the same. The versions can be found in
 - If your Agent class overrides `Heuristic()`, change the signature to
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
-- Before upgrading, move your `Behavior Name` sections from `trainer_config.yaml` into
-  a separate trainer configuration file, under the `behaviors:` section. You can move the `default` section too
+- Set `steps_per_update` to be around equal to the number of agents in your environment,
+  times `num_updates` and divided by `train_interval`.
+- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor
+  no longer takes a file name as input but a fully constructed
+  `UnityEnvironment` instead.
+  - Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
+  a separate trainer configuration file, under a `behaviors` section. You can move the `default` section too
   if it's being used. This file should be specific to your environment, and not contain configurations for
   multiple environments (unless they have the same Behavior Names).
   - If your training uses [curriculum](Training-Curriculum-Learning.md), move those configurations under
   the `Behavior Name` section.
   - If your training uses [parameter randomization](Training-Environment-Parameter-Randomization.md), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
+
 
 ## Migrating from 0.14 to 0.15
 

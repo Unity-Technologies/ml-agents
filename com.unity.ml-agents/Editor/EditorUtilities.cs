@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace MLAgents.Editor
 {
+    /// <summary>
+    /// A static helper class for the Editor components of the ML-Agents SDK.
+    /// </summary>
     public static class EditorUtilities
     {
         /// <summary>
