@@ -42,10 +42,7 @@ namespace MLAgents.SideChannels
                 var cachedMessage = m_CachedMessages.Dequeue();
                 if (channelId == cachedMessage.ChannelId)
                 {
-                    using (var incomingMsg = new IncomingMessage(cachedMessage.Message))
-                    {
-                        sideChannel.OnMessageReceived(incomingMsg);
-                    }
+                    sideChannel.ProcessMessage(cachedMessage.Message);
                 }
                 else
                 {
@@ -160,10 +157,7 @@ namespace MLAgents.SideChannels
                 var cachedMessage = m_CachedMessages.Dequeue();
                 if (sideChannels.ContainsKey(cachedMessage.ChannelId))
                 {
-                    using (var incomingMsg = new IncomingMessage(cachedMessage.Message))
-                    {
-                        sideChannels[cachedMessage.ChannelId].OnMessageReceived(incomingMsg);
-                    }
+                    sideChannels[cachedMessage.ChannelId].ProcessMessage(cachedMessage.Message);
                 }
                 else
                 {
@@ -200,10 +194,7 @@ namespace MLAgents.SideChannels
                         }
                         if (sideChannels.ContainsKey(channelId))
                         {
-                            using (var incomingMsg = new IncomingMessage(message))
-                            {
-                                sideChannels[channelId].OnMessageReceived(incomingMsg);
-                            }
+                            sideChannels[channelId].ProcessMessage(message);
                         }
                         else
                         {

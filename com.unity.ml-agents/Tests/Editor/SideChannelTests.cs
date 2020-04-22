@@ -18,7 +18,7 @@ namespace MLAgents.Tests
                 ChannelId = new Guid("6afa2c06-4f82-11ea-b238-784f4387d1f7");
             }
 
-            public override void OnMessageReceived(IncomingMessage msg)
+            protected override void OnMessageReceived(IncomingMessage msg)
             {
                 messagesReceived.Add(msg.ReadInt32());
             }

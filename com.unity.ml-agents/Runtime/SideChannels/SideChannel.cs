@@ -32,12 +32,20 @@ namespace MLAgents.SideChannels
             protected set;
         }
 
+        internal void ProcessMessage(byte[] msg)
+        {
+            using (var incomingMsg = new IncomingMessage(msg))
+            {
+                OnMessageReceived(incomingMsg);
+            }
+        }
+
         /// <summary>
         /// Is called by the communicator every time a message is received from Python by the SideChannel.
         /// Can be called multiple times per simulation step if multiple messages were sent.
         /// </summary>
         /// <param name="msg">The incoming message.</param>
-        public abstract void OnMessageReceived(IncomingMessage msg);
+        protected abstract void OnMessageReceived(IncomingMessage msg);
 
         /// <summary>
         /// Queues a message to be sent to Python during the next simulation step.
