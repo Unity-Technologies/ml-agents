@@ -108,6 +108,7 @@ jobs:
           name: Install Dependencies
           command: |
             # Need ruby for search-and-replace
+            sudo apt-get udpate
             sudo apt-get install ruby-full
             python3 -m venv venv
             . venv/bin/activate
