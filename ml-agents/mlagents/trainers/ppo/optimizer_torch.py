@@ -23,9 +23,12 @@ class PPOOptimizer(TorchOptimizer):
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
         super(PPOOptimizer, self).__init__(policy, trainer_params)
+        params = list(self.policy.actor.parameters()) + list(
+            self.policy.critic.parameters()
+        )
+
         self.optimizer = torch.optim.Adam(
-            self.policy.actor.parameters() + self.policy.critic.parameters(),
-            lr=self.trainer_params["learning_rate"],
+            params, lr=self.trainer_params["learning_rate"]
         )
         reward_signal_configs = trainer_params["reward_signals"]
         self.stats_name_to_update_name = {

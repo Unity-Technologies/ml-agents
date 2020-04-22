@@ -78,16 +78,17 @@ class NetworkBody(nn.Module):
             torch.zeros(1, batch_size, self.m_size),
         )
 
-    def update_normalization(self, inputs):
+    def update_normalization(self, vec_inputs):
         if self.normalize:
-            self.normalizer.update(inputs)
+            for idx, vec_input in enumerate(vec_inputs):
+                self.vector_normalizers[idx].update(vec_input)
 
     def forward(self, vec_inputs, vis_inputs):
         vec_embeds = []
         for idx, encoder in enumerate(self.vector_encoders):
             vec_input = vec_inputs[idx]
             if self.normalize:
-                vec_input = self.normalizers[idx](vec_inputs[idx])
+                vec_input = self.vector_normalizers[idx](vec_input)
             hidden = encoder(vec_input)
             vec_embeds.append(hidden)
 
@@ -96,9 +97,17 @@ class NetworkBody(nn.Module):
             hidden = encoder(vis_inputs[idx])
             vis_embeds.append(hidden)
 
-        vec_embeds = torch.cat(vec_embeds)
-        vis_embeds = torch.cat(vis_embeds)
-        embedding = torch.cat([vec_embeds, vis_embeds])
+        if len(vec_embeds) > 0:
+            vec_embeds = torch.cat(vec_embeds)
+        if len(vis_embeds) > 0:
+            vis_embeds = torch.cat(vis_embeds)
+        if len(vec_embeds) > 0 and len(vis_embeds) > 0:
+            embedding = torch.cat([vec_embeds, vis_embeds])
+        elif len(vec_embeds) > 0:
+            embedding = vec_embeds
+        else:
+            embedding = vis_embeds
+
         if self.use_lstm:
             embedding, self.memory = self.lstm(embedding, self.memory)
         return embedding
@@ -225,7 +234,10 @@ class ValueHeads(nn.Module):
         value_outputs = {}
         for stream_name, _ in self.value_heads.items():
             value_outputs[stream_name] = self.value_heads[stream_name](hidden)
-        return value_outputs, torch.mean(torch.stack(list(value_outputs)), dim=0)
+        return (
+            value_outputs,
+            torch.mean(torch.stack(list(value_outputs.values())), dim=0),
+        )
 
 
 class VectorEncoder(nn.Module):

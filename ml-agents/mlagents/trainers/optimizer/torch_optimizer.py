@@ -22,6 +22,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         self.m_size: int = 0
         self.global_step = torch.tensor(0)
         self.bc_module: Optional[BCModule] = None
+        self.create_reward_signals(trainer_params["reward_signals"])
 
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass

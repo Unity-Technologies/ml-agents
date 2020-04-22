@@ -47,6 +47,7 @@ class TorchPolicy(Policy):
         self.normalize = trainer_params["normalize"]
         self.seed = seed
         self.brain = brain
+        self.global_step = 0
 
         self.act_size = brain.vector_action_space_size
         self.sequence_length = 1
@@ -156,7 +157,7 @@ class TorchPolicy(Policy):
         log_probs = torch.stack(log_probs)
         entropies = torch.stack(entropies)
 
-        value_heads = self.critic(vec_obs, vis_obs)
+        value_heads, mean_value = self.critic(vec_obs, vis_obs)
         return actions, log_probs, entropies, value_heads
 
     @timed
@@ -167,6 +168,7 @@ class TorchPolicy(Policy):
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
+        vec_obs = [vec_obs]  # For consistency with visual observations
         run_out = {}
         action, log_probs, entropy, value_heads = self.execute_model(
             vec_obs, vis_obs, masks
@@ -234,14 +236,14 @@ class TorchPolicy(Policy):
         Gets current model step.
         :return: current model step.
         """
-        step = self.global_step.detach().numpy()
+        step = self.global_step
         return step
 
     def increment_step(self, n_steps):
         """
         Increments model step.
         """
-        self.global_step = self.global_step + n_steps
+        self.global_step += n_steps
         return self.get_current_step()
 
     def save_model(self, step):
