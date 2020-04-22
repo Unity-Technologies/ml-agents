@@ -113,7 +113,7 @@ def worker(
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
-    environment_parameters_channel = EnvironmentParametersChannel()
+    shared_float_properties = FloatPropertiesChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
     stats_channel = StatsSideChannel()
@@ -139,7 +139,7 @@ def worker(
     try:
         env = env_factory(
             worker_id,
-            [environment_parameters_channel, engine_configuration_channel, stats_channel],
+            [shared_float_properties, engine_configuration_channel, stats_channel],
         )
         while True:
             req: EnvironmentRequest = parent_conn.recv()
@@ -168,9 +168,11 @@ def worker(
             elif req.cmd == EnvironmentCommand.EXTERNAL_BRAINS:
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
             elif req.cmd == EnvironmentCommand.GET_PROPERTIES:
-                reset_params = environment_parameters_channel.get_property_dict_copy()
+                reset_params = shared_float_properties.get_property_dict_copy()
                 _send_response(EnvironmentCommand.GET_PROPERTIES, reset_params)
             elif req.cmd == EnvironmentCommand.RESET:
+                for k, v in req.payload.items():
+                    shared_float_properties.set_property(k, v)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)
