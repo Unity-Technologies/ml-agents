@@ -17,7 +17,7 @@ public class FoodCollectorSettings : MonoBehaviour
     public void Awake()
     {
         Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-        m_Recorder = Academy.StatsRecorder;
+        m_Recorder = Academy.Instance.StatsRecorder;
     }
 
     private void EnvironmentReset()

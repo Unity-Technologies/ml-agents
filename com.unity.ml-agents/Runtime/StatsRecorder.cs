@@ -15,7 +15,7 @@ namespace MLAgents
 
         /// <summary>
         /// Only the most recent value is reported.
-        /// To avoid conflicts when training with multiple concurrent environments,  only
+        /// To avoid conflicts when training with multiple concurrent environments, only
         /// stats from worker index 0 will be tracked.
         /// </summary>
         MostRecent = 1
