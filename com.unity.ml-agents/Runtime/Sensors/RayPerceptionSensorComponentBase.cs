@@ -242,15 +242,15 @@ namespace MLAgents.Sensors
             var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
 
             var rayPerceptionInput = new RayPerceptionInput();
-            rayPerceptionInput.rayLength = rayLength;
-            rayPerceptionInput.detectableTags = detectableTags;
-            rayPerceptionInput.angles = rayAngles;
-            rayPerceptionInput.startOffset = GetStartVerticalOffset();
-            rayPerceptionInput.endOffset = GetEndVerticalOffset();
-            rayPerceptionInput.castRadius = sphereCastRadius;
-            rayPerceptionInput.transform = transform;
-            rayPerceptionInput.castType = GetCastType();
-            rayPerceptionInput.layerMask = rayLayerMask;
+            rayPerceptionInput.RayLength = rayLength;
+            rayPerceptionInput.DetectableTags = detectableTags;
+            rayPerceptionInput.Angles = rayAngles;
+            rayPerceptionInput.StartOffset = GetStartVerticalOffset();
+            rayPerceptionInput.EndOffset = GetEndVerticalOffset();
+            rayPerceptionInput.CastRadius = sphereCastRadius;
+            rayPerceptionInput.Transform = transform;
+            rayPerceptionInput.CastType = GetCastType();
+            rayPerceptionInput.LayerMask = rayLayerMask;
 
             return rayPerceptionInput;
         }
@@ -281,7 +281,7 @@ namespace MLAgents.Sensors
             else
             {
                 var rayInput = GetRayPerceptionInput();
-                for (var rayIndex = 0; rayIndex < rayInput.angles.Count; rayIndex++)
+                for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
                 {
                     DebugDisplayInfo.RayInfo debugRay;
                     RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex, out debugRay);
@@ -298,17 +298,17 @@ namespace MLAgents.Sensors
             var startPositionWorld = rayInfo.worldStart;
             var endPositionWorld = rayInfo.worldEnd;
             var rayDirection = endPositionWorld - startPositionWorld;
-            rayDirection *= rayInfo.rayOutput.hitFraction;
+            rayDirection *= rayInfo.rayOutput.HitFraction;
 
             // hit fraction ^2 will shift "far" hits closer to the hit color
-            var lerpT = rayInfo.rayOutput.hitFraction * rayInfo.rayOutput.hitFraction;
+            var lerpT = rayInfo.rayOutput.HitFraction * rayInfo.rayOutput.HitFraction;
             var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
             color.a *= alpha;
             Gizmos.color = color;
             Gizmos.DrawRay(startPositionWorld, rayDirection);
 
             // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-            if (rayInfo.rayOutput.hasHit)
+            if (rayInfo.rayOutput.HasHit)
             {
                 var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
                 Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
