@@ -12,8 +12,8 @@ namespace MLAgents
     /// <remarks>
     /// Agents that take discrete actions can explicitly indicate that specific actions
     /// are not allowed at a point in time. This enables the agent to indicate that some actions
-    /// may be illegal (e.g. the King in Chess taking a move to the left if it is already in the
-    /// left side of the board). 
+    /// may be illegal. For example, if an agent is adjacent to a wall or other obstacle
+    /// you could mask any actions that direct the agent to move into the blocked space.
     /// </remarks>
     public class DiscreteActionMasker
     {
@@ -40,7 +40,7 @@ namespace MLAgents
         /// 
         /// See [Agents - Actions] for more information on masking actions.
         /// 
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="branch">The branch for which the actions will be masked.</param>
         /// <param name="actionIndices">The indices of the masked actions.</param>

@@ -92,19 +92,25 @@ namespace MLAgents
     /// callback, but could be less frequent. For example, an agent that hops around its environment
     /// can only take an action when it touches the ground, so several frames might elapse between
     /// one decision and the need for the next.
-    /// 
-    /// Build the vector containing an agent's observations in the <see cref="CollectObservations"/>
-    /// function. The Agent class calls this function before it uses the observation vector
-    /// to make a decision. Note that you can use visual and raycast observations instead of, or in
-    /// addition to, vector observations. If you only use visual or raycast observations, you do
-    /// not need to implement <see cref="CollectObservations"/>.
+    ///
+    /// Agents make observations using <see cref="ISensor"/> implementations. The ML-Agents
+    /// API provides implementations for visual observations (<see cref="CameraSensor"/>)
+    /// raycast observations (<see cref="RayPerceptionSensor"/>), and arbitrary 
+    /// data observations (<see cref="VectorSensor"/>). You can add the
+    /// <see cref="CameraSensorComponent"/> and <see cref="RayPerceptionSensorComponent2D"/> or
+    /// <see cref="RayPerceptionSensorComponent3D"/> components to an agent's [GameObject] to use
+    /// those sensor types. You can implement the <see cref="CollectObservations(VectorSensor)"/>
+    /// function in your Agent subclass to use a vector observation. The Agent class calls this
+    /// function before it uses the observation vector to make a decision. (If you only use
+    /// visual or raycast observations, you do not need to implement
+    /// <see cref="CollectObservations"/>.)
     /// 
     /// Use the <see cref="OnActionReceived"/> function to implement the actions your agent can take,
     /// such as moving to reach a goal or interacting with its environment. Both
     /// <see cref="CollectObservations"/> and <see cref="OnActionReceived"/> are called during the Unity
     /// [FixedUpdate] phase.
     /// 
-    /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches it's <see cref="maxStep"/> count,
+    /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="maxStep"/> count,
     /// its current episode ends. You can reset the agent -- or remove it from the
     /// environment -- by implementing the <see cref="OnEpisodeBegin"/> function. An agent also
     /// becomes done when the <see cref="Academy"/> resets the environment, which only happens when
@@ -140,10 +146,10 @@ namespace MLAgents
     /// [OnDisable()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html]
     /// [OnBeforeSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnBeforeSerialize.html
     /// [OnAfterSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnAfterSerialize.html
-    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md
-    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design.md
+    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md
+    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design.md
     /// [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md
+    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Readme.md
     /// 
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
@@ -175,14 +181,14 @@ namespace MLAgents
         /// <value>The maximum steps for an agent to take before it resets; or 0 for
         /// unlimited steps.</value>
         /// <remarks>
-        /// The max step value determines the maximum length of an agent’s episodes.
+        /// The max step value determines the maximum length of an agent's episodes.
         /// Set to a positive integer to limit the episode length to that many steps.
         /// Set to 0 for unlimited episode length. 
         ///
-        /// When an episode ends and a new one begins, the Agent object’s
+        /// When an episode ends and a new one begins, the Agent object's
         /// <seealso cref="OnEpisodeBegin"/> function is called. You can implement
         /// <see cref="OnEpisodeBegin"/> to reset the agent or remove it from the
-        /// environment. An agent’s episode can also end if you call it’s <seealso cref="EndEpisode"/>
+        /// environment. An agent's episode can also end if you call its <seealso cref="EndEpisode"/>
         /// method or an external process resets the environment through the <see cref="Academy"/>.
         ///
         /// Consider limiting the number of steps in an episode to avoid wasting time during
@@ -592,8 +598,8 @@ namespace MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         /// 
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Reward-Signals.md
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Reward-Signals.md
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -622,8 +628,8 @@ namespace MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         /// 
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Reward-Signals.md
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Reward-Signals.md
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -768,15 +774,15 @@ namespace MLAgents
         /// 
         /// To perform imitation learning, implement manual control of the agent in the `Heuristic()`
         /// function so that you can record the demonstrations required for the imitation learning
-        /// algorithms. (Attach a [Demonstration Recorder] component to the agent’s [GameObject] to
+        /// algorithms. (Attach a [Demonstration Recorder] component to the agent's [GameObject] to
         /// record the demonstration session to a file.)
         /// 
         /// Even when you don’t plan to use heuristic decisions for an agent or imitation learning,
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Imitation-Learning.md#recording-demonstrations
-        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Training-Imitation-Learning.md#recording-demonstrations
+        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
         /// <example>
@@ -966,7 +972,7 @@ namespace MLAgents
         /// For more information about observations, see [Observations and Sensors].
         /// 
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
+        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
@@ -999,22 +1005,22 @@ namespace MLAgents
         /// </summary>
         /// <remarks>
         /// An action is passed to this function in the form of an array vector. Your
-        /// implementation must use the array to direct the agent’s behavior for the
+        /// implementation must use the array to direct the agent's behavior for the
         /// current step.
         /// 
         /// You decide how many elements you need in the action array to control your
         /// agent and what each element means. For example, if you want to apply a
         /// force to move an agent around the environment, you can arbitrarily pick
         /// three values in the action array to use as the force components. During
-        /// training, the agent’s  policy learns to set those particular elements of
+        /// training, the agent's  policy learns to set those particular elements of
         /// the array to maximize the training rewards the agent receives. (Of course,
         /// if you implement a <seealso cref="Heuristic"/> function, it must use the same
-        /// elements of the action array it creates for the same purpose since there
-        /// is no learning involved.)
+        /// elements of the action array for the same purpose since there is no learning
+        /// involved.)
         /// 
         /// Actions for an agent can be either *Continuous* or *Discrete*. Specify which
         /// type of action space an agent uses, along with the size of the action array,
-        /// in the <see cref="BrainParameters"/> of the agent’s associated
+        /// in the <see cref="BrainParameters"/> of the agent's associated
         /// <see cref="BehaviorParameters"/> component. 
         /// 
         /// When an agent uses the continuous action space, the values in the action
@@ -1051,13 +1057,12 @@ namespace MLAgents
         /// When you use the discrete action space, you can prevent the training process
         /// or the neural network model from choosing specific actions in a step by
         /// implementing the <see cref="CollectDiscreteActionMasks(DiscreteActionMasker)"/>
-        /// function. For example, if your agent was learning to play chess, you could
-        /// mask out any actions that represent illegal moves given the current position
-        /// of the pieces. 
+        /// function. For example, if your agent is next to a wall, you could mask out any
+        /// actions that would result in the agent trying to move into the wall. 
         /// 
         /// For more information about implementing agent actions see [Agents - Actions]. 
         /// 
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="vectorAction">
         /// An array containing the action vector. The length of the array is specified

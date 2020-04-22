@@ -19,7 +19,7 @@ using Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/blob/master/docs/
+ * https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/
  */
 
 namespace MLAgents

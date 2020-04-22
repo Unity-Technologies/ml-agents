@@ -18,7 +18,7 @@ namespace MLAgents.Demonstrations
     /// See [Imitation Learning - Recording Demonstrations] for more information.
     ///
     /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Imitation-Learning.md#recording-demonstrations
+    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Training-Imitation-Learning.md#recording-demonstrations
     /// </remarks>
     [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
