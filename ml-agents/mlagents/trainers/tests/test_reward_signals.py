@@ -40,7 +40,7 @@ def ppo_dummy_config():
 
 def sac_dummy_config():
     return yaml.safe_load(
-        f"""
+        """
         trainer: sac
         batch_size: 128
         buffer_size: 50000
