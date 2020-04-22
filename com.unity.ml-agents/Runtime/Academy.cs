@@ -478,7 +478,7 @@ namespace MLAgents
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
         /// <param name="model">The NNModel the ModelRunner must use.</param>
-        /// <param name="brainParameters">The brainParameters used to create the ModelRunner.</param>
+        /// <param name="brainParameters">The BrainParameters used to create the ModelRunner.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
         /// </param>

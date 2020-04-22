@@ -81,7 +81,7 @@ namespace MLAgents.Demonstrations
             var behaviorParams = GetComponent<BehaviorParameters>();
             if (string.IsNullOrEmpty(DemonstrationName))
             {
-                DemonstrationName = behaviorParams.behaviorName;
+                DemonstrationName = behaviorParams.BehaviorName;
             }
             if (string.IsNullOrEmpty(DemonstrationDirectory))
             {
@@ -179,8 +179,8 @@ namespace MLAgents.Demonstrations
             var behaviorParams = GetComponent<BehaviorParameters>();
             demoWriter.Initialize(
                 DemonstrationName,
-                behaviorParams.brainParameters,
-                behaviorParams.fullyQualifiedBehaviorName
+                behaviorParams.BrainParameters,
+                behaviorParams.FullyQualifiedBehaviorName
             );
             m_Agent.DemonstrationWriters.Add(demoWriter);
         }

@@ -30,7 +30,6 @@ namespace MLAgents.Policies
         InferenceOnly
     }
 
-
     /// <summary>
     /// The Factory to generate policies.
     /// </summary>
@@ -41,9 +40,9 @@ namespace MLAgents.Policies
         BrainParameters m_BrainParameters = new BrainParameters();
 
         /// <summary>
-        /// The associated <see cref="BrainParameters"/> for this behavior.
+        /// The associated <see cref="Policies.BrainParameters"/> for this behavior.
         /// </summary>
-        public BrainParameters brainParameters
+        public BrainParameters BrainParameters
         {
             get { return m_BrainParameters; }
             internal set { m_BrainParameters = value; }
@@ -54,10 +53,10 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The neural network model used when in inference mode.
-        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
-        public NNModel model
+        public NNModel Model
         {
             get { return m_Model; }
             set { m_Model = value; UpdateAgentPolicy(); }
@@ -68,10 +67,10 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// How inference is performed for this Agent's model.
-        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
-        public InferenceDevice inferenceDevice
+        public InferenceDevice InferenceDevice
         {
             get { return m_InferenceDevice; }
             set { m_InferenceDevice = value; UpdateAgentPolicy();}
@@ -83,7 +82,7 @@ namespace MLAgents.Policies
         /// <summary>
         /// The BehaviorType for the Agent.
         /// </summary>
-        public BehaviorType behaviorType
+        public BehaviorType BehaviorType
         {
             get { return m_BehaviorType; }
             set { m_BehaviorType = value; UpdateAgentPolicy(); }
@@ -94,11 +93,11 @@ namespace MLAgents.Policies
 
         /// <summary>
         /// The name of this behavior, which is used as a base name. See
-        /// <see cref="fullyQualifiedBehaviorName"/> for the full name.
-        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,InferenceDevice)"/>
+        /// <see cref="FullyQualifiedBehaviorName"/> for the full name.
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
-        public string behaviorName
+        public string BehaviorName
         {
             get { return m_BehaviorName; }
             set { m_BehaviorName = value; UpdateAgentPolicy(); }
@@ -121,7 +120,7 @@ namespace MLAgents.Policies
         /// Whether or not to use all the sensor components attached to child GameObjects of the agent.
         /// Note that changing this after the Agent has been initialized will not have any effect.
         /// </summary>
-        public bool useChildSensors
+        public bool UseChildSensors
         {
             get { return m_UseChildSensors; }
             set { m_UseChildSensors = value; }
@@ -130,7 +129,7 @@ namespace MLAgents.Policies
         /// <summary>
         /// Returns the behavior name, concatenated with any other metadata (i.e. team id).
         /// </summary>
-        public string fullyQualifiedBehaviorName
+        public string FullyQualifiedBehaviorName
         {
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
@@ -156,7 +155,7 @@ namespace MLAgents.Policies
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, fullyQualifiedBehaviorName);
+                        return new RemotePolicy(m_BrainParameters, FullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {

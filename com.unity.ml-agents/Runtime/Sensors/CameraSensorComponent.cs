@@ -17,7 +17,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Camera object that provides the data to the sensor.
         /// </summary>
-        public new Camera Camera
+        public Camera Camera
         {
             get { return m_Camera;  }
             set { m_Camera = value; UpdateSensor(); }

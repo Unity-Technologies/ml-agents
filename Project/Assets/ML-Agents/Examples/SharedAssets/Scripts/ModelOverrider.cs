@@ -87,10 +87,10 @@ namespace MLAgentsExamples
             if (m_MaxEpisodes > 0)
             {
                 // For Agents without maxSteps, exit as soon as we've hit the target number of episodes.
-                // For Agents that specify maxStep, also make sure we've gone at least that many steps.
+                // For Agents that specify MaxStep, also make sure we've gone at least that many steps.
                 // Since we exit as soon as *any* Agent hits its target, the maxSteps condition keeps us running
                 // a bit longer in case there's an early failure.
-                if (m_Agent.CompletedEpisodes >= m_MaxEpisodes && m_NumSteps > m_MaxEpisodes * m_Agent.maxStep)
+                if (m_Agent.CompletedEpisodes >= m_MaxEpisodes && m_NumSteps > m_MaxEpisodes * m_Agent.MaxStep)
                 {
                     Application.Quit(0);
                 }
@@ -107,7 +107,7 @@ namespace MLAgentsExamples
 
             if (!m_BehaviorNameOverrides.ContainsKey(behaviorName))
             {
-                Debug.Log($"No override for behaviorName {behaviorName}");
+                Debug.Log($"No override for BehaviorName {behaviorName}");
                 return null;
             }
 
@@ -142,7 +142,7 @@ namespace MLAgentsExamples
         {
             m_Agent.LazyInitialize();
             var bp = m_Agent.GetComponent<BehaviorParameters>();
-            var name = bp.behaviorName;
+            var name = bp.BehaviorName;
 
             var nnModel = GetModelForBehaviorName(name);
             Debug.Log($"Overriding behavior {name} for agent with model {nnModel?.name}");

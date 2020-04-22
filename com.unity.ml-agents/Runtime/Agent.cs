@@ -5,6 +5,7 @@ using Barracuda;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
 using MLAgents.Policies;
+using UnityEngine.Serialization;
 
 namespace MLAgents
 {
@@ -110,7 +111,7 @@ namespace MLAgents
         IPolicy m_Brain;
         BehaviorParameters m_PolicyFactory;
 
-        /// This code is here to make the upgrade path for users using maxStep
+        /// This code is here to make the upgrade path for users using MaxStep
         /// easier. We will hook into the Serialization code and make sure that
         /// agentParameters.maxStep and this.maxStep are in sync.
         [Serializable]
@@ -134,7 +135,8 @@ namespace MLAgents
         /// that many steps. Note that setting the max step to a value greater
         /// than the academy max step value renders it useless.
         /// </remarks>
-        [HideInInspector] public int maxStep;
+        [FormerlySerializedAs("maxStep")]
+        [HideInInspector] public int MaxStep;
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
@@ -211,11 +213,11 @@ namespace MLAgents
         /// </summary>
         public void OnBeforeSerialize()
         {
-            // Manages a serialization upgrade issue from v0.13 to v0.14 where maxStep moved
+            // Manages a serialization upgrade issue from v0.13 to v0.14 where MaxStep moved
             // from AgentParameters (since removed) to Agent
-            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            if (MaxStep == 0 && MaxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
-                maxStep = agentParameters.maxStep;
+                MaxStep = agentParameters.maxStep;
             }
             hasUpgradedFromAgentParameters = true;
         }
@@ -225,11 +227,11 @@ namespace MLAgents
         /// </summary>
         public void OnAfterDeserialize()
         {
-            // Manages a serialization upgrade issue from v0.13 to v0.14 where maxStep moved
+            // Manages a serialization upgrade issue from v0.13 to v0.14 where MaxStep moved
             // from AgentParameters (since removed) to Agent
-            if (maxStep == 0 && maxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
+            if (MaxStep == 0 && MaxStep != agentParameters.maxStep && !hasUpgradedFromAgentParameters)
             {
-                maxStep = agentParameters.maxStep;
+                MaxStep = agentParameters.maxStep;
             }
             hasUpgradedFromAgentParameters = true;
         }
@@ -376,17 +378,17 @@ namespace MLAgents
             NNModel model,
             InferenceDevice inferenceDevice = InferenceDevice.CPU)
         {
-            if (behaviorName == m_PolicyFactory.behaviorName &&
-                model == m_PolicyFactory.model &&
-                inferenceDevice == m_PolicyFactory.inferenceDevice)
+            if (behaviorName == m_PolicyFactory.BehaviorName &&
+                model == m_PolicyFactory.Model &&
+                inferenceDevice == m_PolicyFactory.InferenceDevice)
             {
                 // If everything is the same, don't make any changes.
                 return;
             }
             NotifyAgentDone(DoneReason.Disabled);
-            m_PolicyFactory.model = model;
-            m_PolicyFactory.inferenceDevice = inferenceDevice;
-            m_PolicyFactory.behaviorName = behaviorName;
+            m_PolicyFactory.Model = model;
+            m_PolicyFactory.InferenceDevice = inferenceDevice;
+            m_PolicyFactory.BehaviorName = behaviorName;
             ReloadPolicy();
         }
 
@@ -463,7 +465,7 @@ namespace MLAgents
 
         void UpdateRewardStats()
         {
-            var gaugeName = $"{m_PolicyFactory.behaviorName}.CumulativeReward";
+            var gaugeName = $"{m_PolicyFactory.BehaviorName}.CumulativeReward";
             TimerStack.Instance.SetGauge(gaugeName, GetCumulativeReward());
         }
 
@@ -498,7 +500,7 @@ namespace MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            var param = m_PolicyFactory.brainParameters;
+            var param = m_PolicyFactory.BrainParameters;
             m_ActionMasker = new DiscreteActionMasker(param);
             // If we haven't initialized vectorActions, initialize to 0. This should only
             // happen during the creation of the Agent. In subsequent episodes, vectorAction
@@ -541,7 +543,7 @@ namespace MLAgents
         {
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
-            if (m_PolicyFactory.useChildSensors)
+            if (m_PolicyFactory.UseChildSensors)
             {
                 attachedSensorComponents = GetComponentsInChildren<SensorComponent>();
             }
@@ -557,7 +559,7 @@ namespace MLAgents
             }
 
             // Support legacy CollectObservations
-            var param = m_PolicyFactory.brainParameters;
+            var param = m_PolicyFactory.BrainParameters;
             if (param.vectorObservationSize > 0)
             {
                 collectObservationsSensor = new VectorSensor(param.vectorObservationSize);
@@ -619,7 +621,7 @@ namespace MLAgents
             }
             using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
             {
-                if (m_PolicyFactory.brainParameters.vectorActionSpaceType == SpaceType.Discrete)
+                if (m_PolicyFactory.BrainParameters.vectorActionSpaceType == SpaceType.Discrete)
                 {
                     CollectDiscreteActionMasks(m_ActionMasker);
                 }
@@ -787,7 +789,7 @@ namespace MLAgents
                 OnActionReceived(m_Action.vectorActions);
             }
 
-            if ((m_StepCount >= maxStep) && (maxStep > 0))
+            if ((m_StepCount >= MaxStep) && (MaxStep > 0))
             {
                 NotifyAgentDone(DoneReason.MaxStepReached);
                 _AgentReset();

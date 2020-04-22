@@ -60,23 +60,23 @@ namespace Tests
             var gameObject = new GameObject();
 
             var behaviorParams = gameObject.AddComponent<BehaviorParameters>();
-            behaviorParams.brainParameters.vectorObservationSize = 3;
-            behaviorParams.brainParameters.numStackedVectorObservations = 2;
-            behaviorParams.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            behaviorParams.brainParameters.vectorActionSize = new[] { 2, 2 };
-            behaviorParams.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
-            behaviorParams.behaviorName = "TestBehavior";
+            behaviorParams.BrainParameters.vectorObservationSize = 3;
+            behaviorParams.BrainParameters.numStackedVectorObservations = 2;
+            behaviorParams.BrainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            behaviorParams.BrainParameters.vectorActionSize = new[] { 2, 2 };
+            behaviorParams.BrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            behaviorParams.BehaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
-            behaviorParams.useChildSensors = true;
+            behaviorParams.UseChildSensors = true;
 
 
             // Can't actually create an Agent with InferenceOnly and no model, so change back
-            behaviorParams.behaviorType = BehaviorType.Default;
+            behaviorParams.BehaviorType = BehaviorType.Default;
 
             var sensorComponent = gameObject.AddComponent<RayPerceptionSensorComponent3D>();
-            sensorComponent.sensorName = "ray3d";
-            sensorComponent.detectableTags = new List<string> { "Player", "Respawn" };
-            sensorComponent.raysPerDirection = 3;
+            sensorComponent.SensorName = "ray3d";
+            sensorComponent.DetectableTags = new List<string> { "Player", "Respawn" };
+            sensorComponent.RaysPerDirection = 3;
 
             // Make a StackingSensor that wraps the RayPerceptionSensorComponent3D
             // This isn't necessarily practical, just to ensure that it can be done
@@ -85,12 +85,12 @@ namespace Tests
             wrappingSensorComponent.numStacks = 3;
 
             // ISensor isn't set up yet.
-            Assert.IsNull(sensorComponent.raySensor);
+            Assert.IsNull(sensorComponent.RaySensor);
 
 
             // Make sure we can set the behavior type correctly after the agent is initialized
             // (this creates a new policy).
-            behaviorParams.behaviorType = BehaviorType.HeuristicOnly;
+            behaviorParams.BehaviorType = BehaviorType.HeuristicOnly;
 
             // Agent needs to be added after everything else is setup.
             var agent = gameObject.AddComponent<PublicApiAgent>();
@@ -102,11 +102,11 @@ namespace Tests
 
 
             // Initialization should set up the sensors
-            Assert.IsNotNull(sensorComponent.raySensor);
+            Assert.IsNotNull(sensorComponent.RaySensor);
 
             // Let's change the inference device
-            var otherDevice = behaviorParams.inferenceDevice == InferenceDevice.CPU ? InferenceDevice.GPU : InferenceDevice.CPU;
-            agent.SetModel(behaviorParams.behaviorName, behaviorParams.model, otherDevice);
+            var otherDevice = behaviorParams.InferenceDevice == InferenceDevice.CPU ? InferenceDevice.GPU : InferenceDevice.CPU;
+            agent.SetModel(behaviorParams.BehaviorName, behaviorParams.Model, otherDevice);
 
             agent.AddReward(1.0f);
 

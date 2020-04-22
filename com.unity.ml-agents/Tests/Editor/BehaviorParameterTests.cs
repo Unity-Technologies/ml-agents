@@ -18,7 +18,7 @@ namespace MLAgents.Tests
         {
             var gameObj = new GameObject();
             var bp = gameObj.AddComponent<BehaviorParameters>();
-            bp.behaviorType = BehaviorType.InferenceOnly;
+            bp.BehaviorType = BehaviorType.InferenceOnly;
 
             Assert.Throws<UnityAgentsException>(() =>
             {

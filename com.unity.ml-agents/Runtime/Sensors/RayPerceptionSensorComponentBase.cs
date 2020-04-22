@@ -17,7 +17,7 @@ namespace MLAgents.Sensors
         /// The name of the Sensor that this component wraps.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
-        public string sensorName
+        public string SensorName
         {
             get { return m_SensorName; }
             set { m_SensorName = value; }
@@ -31,7 +31,7 @@ namespace MLAgents.Sensors
         /// List of tags in the scene to compare against.
         /// Note that this should not be changed at runtime.
         /// </summary>
-        public List<string> detectableTags
+        public List<string> DetectableTags
         {
             get { return m_DetectableTags; }
             set { m_DetectableTags = value; }
@@ -46,7 +46,7 @@ namespace MLAgents.Sensors
         /// Number of rays to the left and right of center.
         /// Note that this should not be changed at runtime.
         /// </summary>
-        public int raysPerDirection
+        public int RaysPerDirection
         {
             get { return m_RaysPerDirection; }
             // Note: can't change at runtime
@@ -63,7 +63,7 @@ namespace MLAgents.Sensors
         /// Cone size for rays. Using 90 degrees will cast rays to the left and right.
         /// Greater than 90 degrees will go backwards.
         /// </summary>
-        public float maxRayDegrees
+        public float MaxRayDegrees
         {
             get => m_MaxRayDegrees;
             set { m_MaxRayDegrees = value; UpdateSensor(); }
@@ -77,7 +77,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Radius of sphere to cast. Set to zero for raycasts.
         /// </summary>
-        public float sphereCastRadius
+        public float SphereCastRadius
         {
             get => m_SphereCastRadius;
             set { m_SphereCastRadius = value; UpdateSensor(); }
@@ -91,7 +91,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Length of the rays to cast.
         /// </summary>
-        public float rayLength
+        public float RayLength
         {
             get => m_RayLength;
             set { m_RayLength = value; UpdateSensor(); }
@@ -104,7 +104,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Controls which layers the rays can hit.
         /// </summary>
-        public LayerMask rayLayerMask
+        public LayerMask RayLayerMask
         {
             get => m_RayLayerMask;
             set { m_RayLayerMask = value; UpdateSensor(); }
@@ -119,7 +119,7 @@ namespace MLAgents.Sensors
         /// Whether to stack previous observations. Using 1 means no previous observations.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public int observationStacks
+        public int ObservationStacks
         {
             get { return m_ObservationStacks; }
             set { m_ObservationStacks = value; }
@@ -146,7 +146,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Get the RayPerceptionSensor that was created.
         /// </summary>
-        public RayPerceptionSensor raySensor
+        public RayPerceptionSensor RaySensor
         {
             get => m_RaySensor;
         }
@@ -185,9 +185,9 @@ namespace MLAgents.Sensors
 
             m_RaySensor = new RayPerceptionSensor(m_SensorName, rayPerceptionInput);
 
-            if (observationStacks != 1)
+            if (ObservationStacks != 1)
             {
-                var stackingSensor = new StackingSensor(m_RaySensor, observationStacks);
+                var stackingSensor = new StackingSensor(m_RaySensor, ObservationStacks);
                 return stackingSensor;
             }
 
@@ -226,10 +226,10 @@ namespace MLAgents.Sensors
         /// <returns></returns>
         public override int[] GetObservationShape()
         {
-            var numRays = 2 * raysPerDirection + 1;
+            var numRays = 2 * RaysPerDirection + 1;
             var numTags = m_DetectableTags?.Count ?? 0;
             var obsSize = (numTags + 2) * numRays;
-            var stacks = observationStacks > 1 ? observationStacks : 1;
+            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
             return new[] { obsSize * stacks };
         }
 
@@ -239,18 +239,18 @@ namespace MLAgents.Sensors
         /// <returns></returns>
         public RayPerceptionInput GetRayPerceptionInput()
         {
-            var rayAngles = GetRayAngles(raysPerDirection, maxRayDegrees);
+            var rayAngles = GetRayAngles(RaysPerDirection, MaxRayDegrees);
 
             var rayPerceptionInput = new RayPerceptionInput();
-            rayPerceptionInput.RayLength = rayLength;
-            rayPerceptionInput.DetectableTags = detectableTags;
+            rayPerceptionInput.RayLength = RayLength;
+            rayPerceptionInput.DetectableTags = DetectableTags;
             rayPerceptionInput.Angles = rayAngles;
             rayPerceptionInput.StartOffset = GetStartVerticalOffset();
             rayPerceptionInput.EndOffset = GetEndVerticalOffset();
-            rayPerceptionInput.CastRadius = sphereCastRadius;
+            rayPerceptionInput.CastRadius = SphereCastRadius;
             rayPerceptionInput.Transform = transform;
             rayPerceptionInput.CastType = GetCastType();
-            rayPerceptionInput.LayerMask = rayLayerMask;
+            rayPerceptionInput.LayerMask = RayLayerMask;
 
             return rayPerceptionInput;
         }

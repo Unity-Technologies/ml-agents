@@ -500,7 +500,7 @@ namespace MLAgents.Tests
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
-            behaviorParameters.brainParameters.numStackedVectorObservations = 3;
+            behaviorParameters.BrainParameters.numStackedVectorObservations = 3;
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
             agent1.LazyInitialize();
@@ -557,7 +557,7 @@ namespace MLAgents.Tests
             decisionRequester.Awake();
 
 
-            agent1.maxStep = 20;
+            agent1.MaxStep = 20;
 
             agent2.LazyInitialize();
             agent1.LazyInitialize();
@@ -568,7 +568,7 @@ namespace MLAgents.Tests
             for (var i = 0; i < 50; i++)
             {
                 expectedAgent1ActionForEpisode += 1;
-                if (expectedAgent1ActionForEpisode == agent1.maxStep || i == 0)
+                if (expectedAgent1ActionForEpisode == agent1.MaxStep || i == 0)
                 {
                     expectedAgent1ActionForEpisode = 0;
                 }
@@ -594,7 +594,7 @@ namespace MLAgents.Tests
             decisionRequester.Awake();
 
             const int maxStep = 6;
-            agent1.maxStep = maxStep;
+            agent1.MaxStep = maxStep;
             agent1.LazyInitialize();
 
             var expectedAgentStepCount = 0;

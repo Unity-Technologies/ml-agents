@@ -90,7 +90,7 @@ namespace MLAgents.Editor
             var model = (NNModel)serializedObject.FindProperty("m_Model").objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
             SensorComponent[] sensorComponents;
-            if (behaviorParameters.useChildSensors)
+            if (behaviorParameters.UseChildSensors)
             {
                 sensorComponents = behaviorParameters.GetComponentsInChildren<SensorComponent>();
             }
@@ -98,7 +98,7 @@ namespace MLAgents.Editor
             {
                 sensorComponents = behaviorParameters.GetComponents<SensorComponent>();
             }
-            var brainParameters = behaviorParameters.brainParameters;
+            var brainParameters = behaviorParameters.BrainParameters;
             if (model != null)
             {
                 barracudaModel = ModelLoader.Load(model);
@@ -106,7 +106,7 @@ namespace MLAgents.Editor
             if (brainParameters != null)
             {
                 var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters, sensorComponents, behaviorParameters.behaviorType
+                    barracudaModel, brainParameters, sensorComponents, behaviorParameters.BehaviorType
                 );
                 foreach (var check in failedChecks)
                 {
