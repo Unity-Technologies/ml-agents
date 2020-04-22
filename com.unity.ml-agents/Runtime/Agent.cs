@@ -104,9 +104,7 @@ namespace MLAgents
     /// one decision and the need for the next.
     ///
     /// Use the <see cref="OnActionReceived"/> function to implement the actions your agent can take,
-    /// such as moving to reach a goal or interacting with its environment. Both
-    /// <see cref="CollectObservations"/> and <see cref="OnActionReceived"/> are called during the Unity
-    /// [FixedUpdate] phase.
+    /// such as moving to reach a goal or interacting with its environment. 
     /// 
     /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="maxStep"/> count,
     /// its current episode ends. You can reset the agent -- or remove it from the
@@ -117,7 +115,7 @@ namespace MLAgents
     /// 
     /// The Agent class extends the Unity [MonoBehaviour] class. You can implement the
     /// standard [MonoBehaviour] functions as needed for your agent. Since an agent's
-    /// observations and actions take place during the [FixedUpdate] phase, you should
+    /// observations and actions typically take place during the [FixedUpdate] phase, you should
     /// only use the [MonoBehaviour.Update] function for cosmetic purposes. If you override the [MonoBehaviour]
     /// methods, [OnEnable()] or [OnDisable()], always call the base Agent class implementations.
     /// 
@@ -212,6 +210,8 @@ namespace MLAgents
         ///     }
         /// }
         /// </code>
+        /// **Note:** in general, you should limit the differences between the code you execute
+        /// during training and the code you run during inference.
         /// </example>
         [HideInInspector] public int maxStep;
 
@@ -510,9 +510,6 @@ namespace MLAgents
         /// If the agent already has an assigned model, that model is replaced with the 
         /// the provided one. However, if you call this function with arguments that are
         /// identical to the current parameters of the agent, then no changes are made.
-        ///
-        /// When you set a new model, the Agent instance is marked as done, it is reset, and then
-        /// its <see cref="OnEpisodeBegin"/> method is called.
         ///
         /// **Note:** the <paramref name="behaviorName"/> parameter is ignored when not training.
         /// The <paramref name="model"/> and <paramref name="inferenceDevice"/> parameters

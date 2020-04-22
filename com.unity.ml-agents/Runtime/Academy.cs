@@ -41,7 +41,7 @@ namespace MLAgents
     /// <remarks>
     /// Access the Academy singleton through the <see cref="Instance"/>
     /// property. The Academy instance is initialized the first time it is accessed (which will
-    /// typically be by the first <see cref="Agent"/> updated in a scene).
+    /// typically be by the first <see cref="Agent"/> initialized in a scene).
     /// 
     /// At initialization, the Academy attempts to connect to the Python training process through
     /// the external communicator. If successful, the training process can train <see cref="Agent"/>
