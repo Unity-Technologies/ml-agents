@@ -230,7 +230,7 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str, maxlen: int = 20):
+    def __init__(self, behavior_id: str, maxlen: int = 0):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
@@ -291,10 +291,12 @@ class AgentManager(AgentProcessor):
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
+        threaded: bool = True,
     ):
         super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length)
+        trajectory_queue_len = 20 if threaded else 0
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
-            self.behavior_id
+            self.behavior_id, maxlen=trajectory_queue_len
         )
         # NOTE: we make policy queues of infinite length to avoid lockups of the trainers.
         # In the environment manager, we make sure to empty the policy queue before continuing to produce steps.

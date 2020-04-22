@@ -186,6 +186,7 @@ class TrainerController(object):
             name_behavior_id,
             trainer.stats_reporter,
             trainer.parameters.get("time_horizon", sys.maxsize),
+            threaded=trainer.threaded,
         )
         env_manager.set_agent_manager(name_behavior_id, agent_manager)
         env_manager.set_policy(name_behavior_id, policy)
