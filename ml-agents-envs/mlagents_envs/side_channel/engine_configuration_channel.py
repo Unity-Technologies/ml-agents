@@ -15,7 +15,7 @@ class EngineConfig(NamedTuple):
 
     @staticmethod
     def default_config():
-        return EngineConfig(80, 80, 1, 20.0, -1)
+        return EngineConfig(80, 80, 1, 20.0, -1, 60)
 
 
 class EngineConfigurationChannel(SideChannel):

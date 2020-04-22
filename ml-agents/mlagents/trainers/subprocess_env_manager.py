@@ -23,7 +23,9 @@ from mlagents_envs.timers import (
 )
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.action_info import ActionInfo
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
 from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
@@ -113,7 +115,7 @@ def worker(
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
-    shared_float_properties = FloatPropertiesChannel()
+    env_parameters = EnvironmentParametersChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
     stats_channel = StatsSideChannel()
@@ -138,8 +140,7 @@ def worker(
 
     try:
         env = env_factory(
-            worker_id,
-            [shared_float_properties, engine_configuration_channel, stats_channel],
+            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
         )
         while True:
             req: EnvironmentRequest = parent_conn.recv()
@@ -167,12 +168,9 @@ def worker(
                 reset_timers()
             elif req.cmd == EnvironmentCommand.EXTERNAL_BRAINS:
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
-            elif req.cmd == EnvironmentCommand.GET_PROPERTIES:
-                reset_params = shared_float_properties.get_property_dict_copy()
-                _send_response(EnvironmentCommand.GET_PROPERTIES, reset_params)
             elif req.cmd == EnvironmentCommand.RESET:
                 for k, v in req.payload.items():
-                    shared_float_properties.set_property(k, v)
+                    env_parameters.set_float_property(k, v)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)
@@ -293,11 +291,6 @@ class SubprocessEnvManager(EnvManager):
     @property
     def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         self.env_workers[0].send(EnvironmentCommand.EXTERNAL_BRAINS)
-        return self.env_workers[0].recv().payload
-
-    @property
-    def get_properties(self) -> Dict[BehaviorName, float]:
-        self.env_workers[0].send(EnvironmentCommand.GET_PROPERTIES)
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:
