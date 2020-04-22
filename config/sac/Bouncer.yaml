@@ -8,11 +8,10 @@ behaviors:
     init_entcoef: 1.0
     learning_rate: 0.0003
     learning_rate_schedule: constant
-    max_steps: 2.0e6
+    max_steps: 1.0e6
     memory_size: 128
     normalize: true
-    num_update: 1
-    train_interval: 1
+    steps_per_update: 10
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
