@@ -75,7 +75,7 @@ def gail_dummy_config():
             "gamma": 0.9,
             "encoding_size": 128,
             "use_vail": True,
-            "demo_path": DISCRETE_PATH,
+            "demo_path": CONTINUOUS_PATH,
         }
     }
 
@@ -142,7 +142,6 @@ def reward_signal_update(optimizer, reward_signal_name):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_cc(trainer_config, gail_dummy_config):
-    gail_dummy_config["gail"]["demo_path"] = CONTINUOUS_PATH
     trainer_config.update(
         {
             "behavioral_cloning": {
@@ -184,7 +183,6 @@ def test_gail_dc_visual(trainer_config, gail_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_rnn(trainer_config, gail_dummy_config):
-    gail_dummy_config["gail"]["demo_path"] = CONTINUOUS_PATH
     trainer_config.update(
         {
             "behavioral_cloning": {
