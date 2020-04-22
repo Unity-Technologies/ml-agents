@@ -72,11 +72,6 @@ class EnvManager(ABC):
     def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         pass
 
-    @property
-    @abstractmethod
-    def get_properties(self) -> Dict[BehaviorName, float]:
-        pass
-
     @abstractmethod
     def close(self):
         pass

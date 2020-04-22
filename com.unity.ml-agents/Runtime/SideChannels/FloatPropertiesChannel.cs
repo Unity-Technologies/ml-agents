@@ -30,7 +30,7 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public override void OnMessageReceived(IncomingMessage msg)
+        protected override void OnMessageReceived(IncomingMessage msg)
         {
             var key = msg.ReadString();
             var value = msg.ReadFloat32();

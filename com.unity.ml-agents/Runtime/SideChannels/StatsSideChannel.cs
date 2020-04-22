@@ -35,7 +35,7 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public override void OnMessageReceived(IncomingMessage msg)
+        protected override void OnMessageReceived(IncomingMessage msg)
         {
             throw new UnityAgentsException("StatsSideChannel should never receive messages.");
         }

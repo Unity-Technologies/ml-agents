@@ -281,11 +281,12 @@ The `EngineConfiguration` side channel allows you to modify the time-scale, reso
 `EngineConfigurationChannel` has two methods :
 
  * `set_configuration_parameters` which takes the following arguments:
-   * `width`: Defines the width of the display. Default 80.
-   * `height`: Defines the height of the display. Default 80.
-   * `quality_level`: Defines the quality level of the simulation. Default 1.
-   * `time_scale`: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics may perform unpredictably. Default 20.
-   *  `target_frame_rate`: Instructs simulation to try to render at a specified frame rate. Default -1.
+   * `width`: Defines the width of the display. (Must be set alongside height)
+   * `height`: Defines the height of the display. (Must be set alongside width)
+   * `quality_level`: Defines the quality level of the simulation.
+   * `time_scale`: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics may perform unpredictably.
+   *  `target_frame_rate`: Instructs simulation to try to render at a specified frame rate.
+   *  `capture_frame_rate` Instructs the simulation to consider time between updates to always be constant, regardless of the actual frame rate.
  * `set_configuration` with argument config which is an `EngineConfig`
  NamedTuple object.
 
