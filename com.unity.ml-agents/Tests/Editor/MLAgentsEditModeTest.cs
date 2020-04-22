@@ -96,6 +96,8 @@ namespace MLAgents.Tests
 
         public override void Heuristic(float[] actionsOut)
         {
+            var obs = GetObservations();
+            actionsOut[0] = obs[0];
             heuristicCalls++;
         }
     }
@@ -667,6 +669,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.heuristicCalls);
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
+
+            // Make sure the Heuristic method read the observation and set the action
+            Assert.AreEqual(agent1.collectObservationsCallsForEpisode, agent1.GetAction()[0]);
         }
     }
 

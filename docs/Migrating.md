@@ -34,7 +34,10 @@ double-check that the versions are in the same. The versions can be found in
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size.
 - `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
-
+- The `UnityEnv` class from the `gym-unity` package was renamed
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
+  the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
 
 ### Steps to Migrate
 
@@ -58,6 +61,9 @@ double-check that the versions are in the same. The versions can be found in
   `actionsOut` instead of returning an array.
 - Set `steps_per_update` to be around equal to the number of agents in your environment,
   times `num_updates` and divided by `train_interval`.
+- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor
+  no longer takes a file name as input but a fully constructed
+  `UnityEnvironment` instead.
 
 ## Migrating from 0.14 to 0.15
 

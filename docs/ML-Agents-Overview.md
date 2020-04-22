@@ -10,14 +10,14 @@ game developers and hobbyists to easily train intelligent agents for 2D, 3D and
 VR/AR games. These trained agents can be used for multiple purposes, including
 controlling NPC behavior (in a variety of settings such as multi-agent and
 adversarial), automated testing of game builds and evaluating different game
-design decisions pre-release. The ML-Agents toolkit is mutually beneficial for
+design decisions pre-release. The ML-Agents Toolkit is mutually beneficial for
 both game developers and AI researchers as it provides a central platform where
 advances in AI can be evaluated on Unity’s rich environments and then made
 accessible to the wider research and game developer communities.
 
 Depending on your background (i.e. researcher, game developer, hobbyist), you
 may have very different questions on your mind at the moment. To make your
-transition to the ML-Agents toolkit easier, we provide several background pages
+transition to the ML-Agents Toolkit easier, we provide several background pages
 that include overviews and helpful resources on the [Unity
 Engine](Background-Unity.md), [machine learning](Background-Machine-Learning.md)
 and [TensorFlow](Background-TensorFlow.md). We **strongly** recommend browsing
@@ -26,7 +26,7 @@ machine learning concepts or have not previously heard of TensorFlow.
 
 The remainder of this page contains a deep dive into ML-Agents, its key
 components, different training modes and scenarios. By the end of it, you should
-have a good sense of _what_ the ML-Agents toolkit allows you to do. The
+have a good sense of _what_ the ML-Agents Toolkit allows you to do. The
 subsequent documentation pages provide examples of _how_ to use ML-Agents.
 
 ## Running Example: Training NPC Behaviors
@@ -104,14 +104,14 @@ the process of learning a policy through running simulations is called the
 **training phase**, while playing the game with an NPC that is using its learned
 policy is called the **inference phase**.
 
-The ML-Agents toolkit provides all the necessary tools for using Unity as the
+The ML-Agents Toolkit provides all the necessary tools for using Unity as the
 simulation engine for learning the policies of different objects in a Unity
-environment. In the next few sections, we discuss how the ML-Agents toolkit
+environment. In the next few sections, we discuss how the ML-Agents Toolkit
 achieves this and what features it provides.
 
 ## Key Components
 
-The ML-Agents toolkit is a Unity plugin that contains three high-level
+The ML-Agents Toolkit is a Unity plugin that contains three high-level
 components:
 
 - **Learning Environment** - which contains the Unity scene and all the game
@@ -157,9 +157,9 @@ medics (medics and drivers have different actions).
        border="10" />
 </p>
 
-_Example block diagram of ML-Agents toolkit for our sample game._
+_Example block diagram of ML-Agents Toolkit for our sample game._
 
-We have yet to discuss how the ML-Agents toolkit trains behaviors, and what role
+We have yet to discuss how the ML-Agents Toolkit trains behaviors, and what role
 the Python API and External Communicator play. Before we dive into those
 details, let's summarize the earlier components. Each character is attached to
 an Agent, and each Agent has a Behavior. The Behavior can be thought as a function
@@ -189,7 +189,7 @@ inference can proceed.
 
 ### Built-in Training and Inference
 
-As mentioned previously, the ML-Agents toolkit ships with several
+As mentioned previously, the ML-Agents Toolkit ships with several
 implementations of state-of-the-art algorithms for training intelligent agents.
 More specifically, during training, all the medics in the
 scene send their observations to the Python API through the External
@@ -217,7 +217,7 @@ tutorial covers this training mode with the **3D Balance Ball** sample environme
 
 In the previous mode, the Agents were used for training to generate
 a TensorFlow model that the Agents can later use. However,
-any user of the ML-Agents toolkit can leverage their own algorithms for
+any user of the ML-Agents Toolkit can leverage their own algorithms for
 training. In this case, the behaviors of all the Agents in the scene
 will be controlled within Python.
 You can even turn your environment into a [gym.](../gym-unity/README.md)
@@ -260,7 +260,7 @@ update the random policy to a more meaningful one that is successively improved
 as the environment gradually increases in complexity. In our example, we can
 imagine first training the medic when each team only contains one player, and
 then iteratively increasing the number of players (i.e. the environment
-complexity). The ML-Agents toolkit supports setting custom environment
+complexity). The ML-Agents Toolkit supports setting custom environment
 parameters within the Academy. This allows elements of the environment related
 to difficulty or complexity to be dynamically adjusted based on training
 progress.
@@ -330,7 +330,7 @@ inspiration:
 
 ## Additional Features
 
-Beyond the flexible training scenarios available, the ML-Agents toolkit includes
+Beyond the flexible training scenarios available, the ML-Agents Toolkit includes
 additional features which improve the flexibility and interpretability of the
 training process.
 
@@ -370,7 +370,7 @@ training process.
 
 ## Summary and Next Steps
 
-To briefly summarize: The ML-Agents toolkit enables games and simulations built
+To briefly summarize: The ML-Agents Toolkit enables games and simulations built
 in Unity to serve as the platform for training intelligent agents. It is
 designed to enable a large variety of training modes and scenarios and comes
 packed with several features to enable researchers and developers to leverage

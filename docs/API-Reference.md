@@ -10,7 +10,7 @@ and run the following command within the `docs/` directory:
 doxygen dox-ml-agents.conf
 ```
 
-`dox-ml-agents.conf` is a Doxygen configuration file for the ML-Agents toolkit
+`dox-ml-agents.conf` is a Doxygen configuration file for the ML-Agents Toolkit
 that includes the classes that have been properly formatted. The generated HTML
 files will be placed in the `html/` subdirectory. Open `index.html` within that
 subdirectory to navigate to the API reference home. Note that `html/` is already

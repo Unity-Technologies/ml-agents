@@ -40,6 +40,10 @@ and this project adheres to
   asymmetric example environment Strikers Vs. Goalie has been added.
 - CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
   were changed from `public` to `private` (#3808).
+- The `UnityEnv` class from the `gym-unity` package was renamed
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
+  Instead, the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
 
 ### Minor Changes
 
@@ -63,9 +67,13 @@ and this project adheres to
 - Running `mlagents-learn` with the same `--run-id` twice will no longer
   overwrite the existing files. (#3705)
 - `StackingSensor` was changed from `internal` visibility to `public`
+- Academy.InferenceSeed property was added. This is used to initialize the
+  random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
 - Updated Barracuda to 0.6.3-preview.
- - Model updates can now happen asynchronously with environment steps for better performance. (#3690)
- - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
+- Added `Agent.GetObservations(), which returns a read-only view of the observations
+  added in `CollectObservations()`. (#3825)
+- Model updates can now happen asynchronously with environment steps for better performance. (#3690)
+- `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
 
 ### Bug Fixes
 

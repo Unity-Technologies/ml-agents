@@ -41,7 +41,9 @@ class GAILRewardSignal(RewardSignal):
         self.model = GAILModel(
             policy, 128, learning_rate, encoding_size, use_actions, use_vail
         )
-        _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
+        _, self.demonstration_buffer = demo_to_buffer(
+            demo_path, policy.sequence_length, policy.brain
+        )
         self.has_updated = False
         self.update_dict: Dict[str, tf.Tensor] = {
             "gail_loss": self.model.loss,
@@ -105,9 +107,10 @@ class GAILRewardSignal(RewardSignal):
         self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
         """
-        Prepare inputs for update. .
-        :param mini_batch_demo: A mini batch of expert trajectories
-        :param mini_batch_policy: A mini batch of trajectories sampled from the current policy
+        Prepare inputs for update.
+        :param policy: The policy learning from GAIL signal
+        :param mini_batch: A mini batch from trajectories sampled from the current policy
+        :param num_sequences: Number of samples in batch
         :return: Feed_dict for update process.
         """
         # Get batch from demo buffer. Even if demo buffer is smaller, we sample with replacement
