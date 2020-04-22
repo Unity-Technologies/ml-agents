@@ -114,7 +114,7 @@ namespace MLAgents
     /// its current episode ends. You can reset the agent -- or remove it from the
     /// environment -- by implementing the <see cref="OnEpisodeBegin"/> function. An agent also
     /// becomes done when the <see cref="Academy"/> resets the environment, which only happens when
-    /// the <see cref="Academy"/> receives a reste signal from an external process via the
+    /// the <see cref="Academy"/> receives a reset signal from an external process via the
     /// <see cref="Academy.Communicator"/>.
     /// 
     /// The Agent class extends the Unity [MonoBehaviour] class. You can implement the
