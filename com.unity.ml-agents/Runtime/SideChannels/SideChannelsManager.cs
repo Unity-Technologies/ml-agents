@@ -23,7 +23,6 @@ namespace MLAgents.SideChannels
         /// available for environments that have custom side channels. All built-in side
         /// channels within the ML-Agents Toolkit are managed internally and do not need to
         /// be explicitly registered/unregistered. A side channel may only be registered once.
-        /// Additionally, only one side channel of each type is allowed.
         /// </summary>
         /// <param name="sideChannel">The side channel to register.</param>
         public static void RegisterSideChannel(SideChannel sideChannel)
@@ -60,9 +59,10 @@ namespace MLAgents.SideChannels
         /// Unregister a side channel to stop sending and receiving messages. This method is
         /// available for environments that have custom side channels. All built-in side
         /// channels within the ML-Agents Toolkit are managed internally and do not need to
-        /// be explicitly registered/unregistered. A side channel may only be unregistered
-        /// multiple times. Note that unregistering a side channel may not stop the Python side
-        /// from sending them, but it does mean that sent messages with not result in a call
+        /// be explicitly registered/unregistered. Unregistering a side channel that has already
+        /// been unregistered (or never registered in the first place) has no negative side effects.
+        /// Note that unregistering a side channel may not stop the Python side
+        /// from sending messages, but it does mean that sent messages with not result in a call
         /// to <see cref="SideChannel.OnMessageReceived(IncomingMessage)"/>. Furthermore,
         /// those messages will not be buffered and will, in essence, be lost.
         /// </summary>
