@@ -46,7 +46,7 @@ and this project adheres to
   constructor of `UnityToGymWrapper`
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
-  configuration files are environment-specific. (#3791)
+  configuration files are now environment-specific. (#3791)
 
 ### Minor Changes
 
