@@ -40,11 +40,10 @@ class TorchPolicy(Policy):
         :param reparameterize: Whether we are using the resampling trick to update the policy
         in continuous output.
         """
-        super(TorchPolicy, self).__init__(brain, seed)
+        super(TorchPolicy, self).__init__(brain, seed, trainer_params)
         self.grads = None
         num_layers = trainer_params["num_layers"]
         self.h_size = trainer_params["hidden_units"]
-        self.normalize = trainer_params["normalize"]
         self.seed = seed
         self.brain = brain
         self.global_step = 0
@@ -139,9 +138,11 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
+        print(vector_obs.shape)
+        vector_obs = [vector_obs]
         if self.use_vec_obs and self.normalize:
-            self.critic.network_body.normalize(vector_obs)
-            self.actor.network_body.normalize(vector_obs)
+            self.critic.network_body.update_normalization(vector_obs)
+            self.actor.network_body.update_normalization(vector_obs)
 
     def execute_model(self, vec_obs, vis_obs, masks=None):
         action_dists = self.actor(vec_obs, vis_obs, masks)
@@ -153,9 +154,9 @@ class TorchPolicy(Policy):
             actions.append(action)
             log_probs.append(action_dist.log_prob(action))
             entropies.append(action_dist.entropy())
-        actions = torch.stack(actions)
-        log_probs = torch.stack(log_probs)
-        entropies = torch.stack(entropies)
+        actions = torch.stack(actions).squeeze(0)
+        log_probs = torch.stack(log_probs).squeeze(0)
+        entropies = torch.stack(entropies).squeeze(0)
 
         value_heads, mean_value = self.critic(vec_obs, vis_obs)
         return actions, log_probs, entropies, value_heads
@@ -168,12 +169,16 @@ class TorchPolicy(Policy):
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
-        vec_obs = [vec_obs]  # For consistency with visual observations
+        vec_obs = [torch.Tensor(vec_obs)]
+        vis_obs = [torch.Tensor(vis_ob) for vis_ob in vis_obs]
         run_out = {}
         action, log_probs, entropy, value_heads = self.execute_model(
             vec_obs, vis_obs, masks
         )
         run_out["action"] = np.array(action.detach())
+        run_out["pre_action"] = np.array(
+            action.detach()
+        )  # Todo - make pre_action difference
         run_out["log_probs"] = np.array(log_probs.detach())
         run_out["entropy"] = np.array(entropy.detach())
         run_out["value_heads"] = {
@@ -222,14 +227,6 @@ class TorchPolicy(Policy):
     @property
     def use_vec_obs(self):
         return self.vec_obs_size > 0
-
-    @property
-    def use_recurrent(self):
-        return False
-
-    @property
-    def use_continuous_act(self):
-        return True
 
     def get_current_step(self):
         """
