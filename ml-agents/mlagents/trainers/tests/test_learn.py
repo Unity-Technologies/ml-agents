@@ -1,4 +1,5 @@
 import pytest
+import yaml
 from unittest.mock import MagicMock, patch, mock_open
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
@@ -52,8 +53,7 @@ def test_run_training(
     mock_env.external_brain_names = []
     mock_env.academy_name = "TestAcademyName"
     create_environment_factory.return_value = mock_env
-    trainer_config_mock = MagicMock()
-    load_config.return_value = trainer_config_mock
+    load_config.return_value = yaml.safe_load(MOCK_YAML)
 
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
@@ -97,10 +97,9 @@ def test_commandline_args(mock_file):
 
     # Test with defaults
     opt = parse_command_line(["mytrainerpath"])
-    assert opt.trainer_config == {}
+    assert opt.behaviors == {}
     assert opt.env_path is None
-    assert opt.curriculum_config is None
-    assert opt.sampler_config is None
+    assert opt.parameter_randomization is None
     assert opt.keep_checkpoints == 5
     assert opt.lesson == 0
     assert opt.resume is False
@@ -132,10 +131,9 @@ def test_commandline_args(mock_file):
     ]
 
     opt = parse_command_line(full_args)
-    assert opt.trainer_config == {}
+    assert opt.behaviors == {}
     assert opt.env_path == "./myenvfile"
-    assert opt.curriculum_config is None
-    assert opt.sampler_config is None
+    assert opt.parameter_randomization is None
     assert opt.keep_checkpoints == 42
     assert opt.lesson == 3
     assert opt.run_id == "myawesomerun"
@@ -150,13 +148,9 @@ def test_commandline_args(mock_file):
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_SAMPLER_CURRICULUM_YAML)
-def test_sampler_curriculum_configs(mock_file):
+def test_sampler_configs(mock_file):
     opt = parse_command_line(["mytrainerpath"])
-    assert opt.curriculum_config == {
-        "behavior1": "curriculum1",
-        "behavior2": "curriculum2",
-    }
-    assert opt.sampler_config == "sampler1"
+    assert opt.parameter_randomization == "sampler1"
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_YAML)
