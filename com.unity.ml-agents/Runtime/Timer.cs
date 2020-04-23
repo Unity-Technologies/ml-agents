@@ -29,12 +29,6 @@ namespace MLAgents
         Dictionary<string, TimerNode> m_Children;
 
         /// <summary>
-        /// Gauge Nodes to measure arbitrary values.
-        /// </summary>
-        [DataMember(Name = "gauges", EmitDefaultValue = false)]
-        Dictionary<string, GaugeNode> m_Gauges;
-
-        /// <summary>
         /// Custom sampler used to add timings to the profiler.
         /// </summary>
         CustomSampler m_Sampler;
@@ -84,11 +78,6 @@ namespace MLAgents
             set {}  // Serialization needs this, but unused.
         }
 
-        public Dictionary<string, GaugeNode> Gauges
-        {
-            get { return m_Gauges; }
-        }
-
         /// <summary>
         /// Total seconds spent in this block, excluding it's children.
         /// </summary>
@@ -132,7 +121,6 @@ namespace MLAgents
                 // The root node doesn't have a sampler since that could interfere with the profiler.
                 m_NumCalls = 1;
                 m_TickStart = DateTime.Now.Ticks;
-                m_Gauges = new Dictionary<string, GaugeNode>();
             }
             else
             {
@@ -220,28 +208,95 @@ namespace MLAgents
         }
     }
 
+    [DataContract]
+    internal class RootNode : TimerNode
+    {
+        // Timer output format version
+        internal const string k_timerFormatVersion = "0.1.0";
+
+        [DataMember(Name = "metadata", Order = 0)]
+        Dictionary<string, string> m_Metadata = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Gauge Nodes to measure arbitrary values.
+        /// </summary>
+        [DataMember(Name = "gauges", EmitDefaultValue = false)]
+        Dictionary<string, GaugeNode> m_Gauges = new Dictionary<string, GaugeNode>();
+
+        public RootNode(string name="root") : base(name, true)
+        {
+            m_Metadata.Add("timer_format_version", k_timerFormatVersion);
+            m_Metadata.Add("start_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
+            m_Metadata.Add("unity_version", Application.unityVersion);
+            m_Metadata.Add("command_line_arguments", String.Join(" ", Environment.GetCommandLineArgs()));
+        }
+
+        public void AddMetadata(string key, string value)
+        {
+            m_Metadata[key] = value;
+        }
+
+        public Dictionary<string, GaugeNode> Gauges
+        {
+            get { return m_Gauges; }
+        }
+
+        public Dictionary<string, string> Metadata
+        {
+            get { return m_Metadata; }
+        }
+    }
+
     /// <summary>
-    /// Tracks the most recent value of a metric. This is analogous to gauges in statsd.
+    /// Tracks the most recent value of a metric. This is analogous to gauges in statsd and Prometheus.
     /// </summary>
     [DataContract]
     internal class GaugeNode
     {
         const float k_SmoothingFactor = .25f; // weight for exponential moving average.
 
+        /// <summary>
+        /// The most recent value that the gauge was set to.
+        /// </summary>
         [DataMember]
         public float value;
+
+        /// <summary>
+        /// The smallest value that has been seen for the gauge since it was created.
+        /// </summary>
         [DataMember(Name = "min")]
         public float minValue;
+
+        /// <summary>
+        /// The largest value that has been seen for the gauge since it was created.
+        /// </summary>
         [DataMember(Name = "max")]
         public float maxValue;
+
+        /// <summary>
+        /// The exponential moving average of the gauge value. This will take all values into account,
+        /// but weights older values less as more values are added.
+        /// </summary>
         [DataMember(Name = "weightedAverage")]
         public float weightedAverage;
+
+        /// <summary>
+        /// The running average of all gauge values.
+        /// </summary>
+        [DataMember]
+        public float runningAverage;
+
+        /// <summary>
+        /// The number of times the gauge has been updated.
+        /// </summary>
         [DataMember]
         public uint count;
+
         public GaugeNode(float value)
         {
             this.value = value;
             weightedAverage = value;
+            runningAverage = value;
             minValue = value;
             maxValue = value;
             count = 1;
@@ -249,12 +304,15 @@ namespace MLAgents
 
         public void Update(float newValue)
         {
+            ++count;
             minValue = Mathf.Min(minValue, newValue);
             maxValue = Mathf.Max(maxValue, newValue);
             // update exponential moving average
             weightedAverage = (k_SmoothingFactor * newValue) + ((1f - k_SmoothingFactor) * weightedAverage);
             value = newValue;
-            ++count;
+
+            // Update running average - see https://www.johndcook.com/blog/standard_deviation/ for formula.
+            runningAverage = runningAverage + (newValue - runningAverage) / count;
         }
     }
 
@@ -286,7 +344,8 @@ namespace MLAgents
         static readonly TimerStack k_Instance = new TimerStack();
 
         Stack<TimerNode> m_Stack;
-        TimerNode m_RootNode;
+        RootNode m_RootNode;
+        Dictionary<string, string> m_Metadata;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
@@ -306,7 +365,7 @@ namespace MLAgents
         public void Reset(string name = "root")
         {
             m_Stack = new Stack<TimerNode>();
-            m_RootNode = new TimerNode(name, true);
+            m_RootNode = new RootNode(name);
             m_Stack.Push(m_RootNode);
         }
 
@@ -318,7 +377,7 @@ namespace MLAgents
             get { return k_Instance; }
         }
 
-        internal TimerNode RootNode
+        internal RootNode RootNode
         {
             get { return m_RootNode; }
         }
@@ -342,6 +401,11 @@ namespace MLAgents
                     m_RootNode.Gauges[name] = new GaugeNode(value);
                 }
             }
+        }
+
+        public void AddMetadata(string key, string value)
+        {
+            m_RootNode.AddMetadata(key, value);
         }
 
         void Push(string name)
@@ -427,9 +491,13 @@ namespace MLAgents
         /// <param name="stream"></param>
         public void SaveJsonTimers(Stream stream)
         {
+            // Add some final metadata info
+            AddMetadata("scene_name", SceneManager.GetActiveScene().name);
+            AddMetadata("end_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
+
             var jsonSettings = new DataContractJsonSerializerSettings();
             jsonSettings.UseSimpleDictionaryFormat = true;
-            var ser = new DataContractJsonSerializer(typeof(TimerNode), jsonSettings);
+            var ser = new DataContractJsonSerializer(typeof(RootNode), jsonSettings);
             ser.WriteObject(stream, m_RootNode);
         }
     }

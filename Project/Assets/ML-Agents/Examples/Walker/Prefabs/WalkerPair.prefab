@@ -3773,6 +3773,7 @@ GameObject:
   - component: {fileID: 114363722412740164}
   - component: {fileID: 114614375190687060}
   - component: {fileID: 7095046440131842424}
+  - component: {fileID: 526281586680617836}
   m_Layer: 0
   m_Name: WalkerAgent
   m_TagString: Untagged
@@ -3832,8 +3833,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Walker
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114363722412740164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3846,6 +3847,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccb0f85f0009540d7ad997952e2aed7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 5000
   target: {fileID: 4085853164035250}
   hips: {fileID: 4333477265252406}
@@ -3893,8 +3897,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 0
+  TakeActionsBetweenDecisions: 0
   offsetStep: 0
+--- !u!114 &526281586680617836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1800913799254612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1907539933197724
 GameObject:
   m_ObjectHideFlags: 0

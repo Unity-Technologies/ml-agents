@@ -4,11 +4,12 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     BaseEnv,
-    AgentGroupSpec,
-    BatchedStepResult,
+    BehaviorSpec,
+    DecisionSteps,
+    TerminalSteps,
     ActionType,
 )
-from mlagents_envs.tests.test_rpc_utils import proto_from_batched_step_result_and_action
+from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
@@ -50,7 +51,7 @@ class SimpleEnvironment(BaseEnv):
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
-        self.group_spec = AgentGroupSpec(
+        self.behavior_spec = BehaviorSpec(
             self._make_obs_spec(),
             action_type,
             tuple(2 for _ in range(action_size)) if use_discrete else action_size,
@@ -59,12 +60,12 @@ class SimpleEnvironment(BaseEnv):
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
-        self.random = random.Random(str(self.group_spec))
+        self.random = random.Random(str(self.behavior_spec))
         self.goal: Dict[str, int] = {}
         self.action = {}
         self.rewards: Dict[str, float] = {}
         self.final_rewards: Dict[str, List[float]] = {}
-        self.step_result: Dict[str, BatchedStepResult] = {}
+        self.step_result: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
 
@@ -93,20 +94,20 @@ class SimpleEnvironment(BaseEnv):
             obs.append(np.ones((1,) + self.vis_obs_size, dtype=np.float32) * value)
         return obs
 
-    def get_agent_groups(self):
+    def get_behavior_names(self):
         return self.names
 
-    def get_agent_group_spec(self, name):
-        return self.group_spec
+    def get_behavior_spec(self, behavior_name):
+        return self.behavior_spec
 
-    def set_action_for_agent(self, name, id, data):
+    def set_action_for_agent(self, behavior_name, agent_id, action):
         pass
 
-    def set_actions(self, name, data):
-        self.action[name] = data
+    def set_actions(self, behavior_name, action):
+        self.action[behavior_name] = action
 
-    def get_step_result(self, name):
-        return self.step_result[name]
+    def get_steps(self, behavior_name):
+        return self.step_result[behavior_name]
 
     def _take_action(self, name: str) -> bool:
         deltas = []
@@ -155,68 +156,39 @@ class SimpleEnvironment(BaseEnv):
 
     def _make_batched_step(
         self, name: str, done: bool, reward: float
-    ) -> BatchedStepResult:
+    ) -> Tuple[DecisionSteps, TerminalSteps]:
         m_vector_obs = self._make_obs(self.goal[name])
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
-
+        decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
+        terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self._reset_agent(name)
             new_vector_obs = self._make_obs(self.goal[name])
             (
-                m_vector_obs,
-                m_reward,
-                m_done,
-                m_agent_id,
-                action_mask,
-            ) = self._construct_reset_step(
-                m_vector_obs,
-                new_vector_obs,
-                m_reward,
-                m_done,
-                m_agent_id,
-                action_mask,
-                name,
+                new_reward,
+                new_done,
+                new_agent_id,
+                new_action_mask,
+            ) = self._construct_reset_step(name)
+
+            decision_step = DecisionSteps(
+                new_vector_obs, new_reward, new_agent_id, new_action_mask
             )
-        return BatchedStepResult(
-            m_vector_obs,
-            m_reward,
-            m_done,
-            np.zeros(m_done.shape, dtype=bool),
-            m_agent_id,
-            action_mask,
-        )
+            terminal_step = TerminalSteps(
+                m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id
+            )
+        return (decision_step, terminal_step)
 
     def _construct_reset_step(
-        self,
-        vector_obs: List[np.ndarray],
-        new_vector_obs: List[np.ndarray],
-        reward: np.ndarray,
-        done: np.ndarray,
-        agent_id: np.ndarray,
-        action_mask: List[np.ndarray],
-        name: str,
-    ) -> Tuple[List[np.ndarray], np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        self, name: str
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
         new_reward = np.array([0.0], dtype=np.float32)
         new_done = np.array([False], dtype=np.bool)
         new_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         new_action_mask = self._generate_mask()
-
-        m_vector_obs = [
-            np.concatenate((old, new), axis=0)
-            for old, new in zip(vector_obs, new_vector_obs)
-        ]
-        m_reward = np.concatenate((reward, new_reward), axis=0)
-        m_done = np.concatenate((done, new_done), axis=0)
-        m_agent_id = np.concatenate((agent_id, new_agent_id), axis=0)
-        if action_mask is not None:
-            action_mask = [
-                np.concatenate((old, new), axis=0)
-                for old, new in zip(action_mask, new_action_mask)
-            ]
-        return m_vector_obs, m_reward, m_done, m_agent_id, action_mask
+        return new_reward, new_done, new_agent_id, new_action_mask
 
     def step(self) -> None:
         assert all(action is not None for action in self.action.values())
@@ -249,15 +221,16 @@ class MemoryEnvironment(SimpleEnvironment):
 
     def _make_batched_step(
         self, name: str, done: bool, reward: float
-    ) -> BatchedStepResult:
+    ) -> Tuple[DecisionSteps, TerminalSteps]:
         recurrent_obs_val = (
             self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
         )
         m_vector_obs = self._make_obs(recurrent_obs_val)
         m_reward = np.array([reward], dtype=np.float32)
-        m_done = np.array([done], dtype=np.bool)
         m_agent_id = np.array([self.agent_id[name]], dtype=np.int32)
         action_mask = self._generate_mask()
+        decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
+        terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
             self._reset_agent(name)
             recurrent_obs_val = (
@@ -265,28 +238,18 @@ class MemoryEnvironment(SimpleEnvironment):
             )
             new_vector_obs = self._make_obs(recurrent_obs_val)
             (
-                m_vector_obs,
-                m_reward,
-                m_done,
-                m_agent_id,
-                action_mask,
-            ) = self._construct_reset_step(
-                m_vector_obs,
-                new_vector_obs,
-                m_reward,
-                m_done,
-                m_agent_id,
-                action_mask,
-                name,
+                new_reward,
+                new_done,
+                new_agent_id,
+                new_action_mask,
+            ) = self._construct_reset_step(name)
+            decision_step = DecisionSteps(
+                new_vector_obs, new_reward, new_agent_id, new_action_mask
             )
-        return BatchedStepResult(
-            m_vector_obs,
-            m_reward,
-            m_done,
-            np.zeros(m_done.shape, dtype=bool),
-            m_agent_id,
-            action_mask,
-        )
+            terminal_step = TerminalSteps(
+                m_vector_obs, m_reward, np.array([False], dtype=np.bool), m_agent_id
+            )
+        return (decision_step, terminal_step)
 
 
 class RecordEnvironment(SimpleEnvironment):
@@ -314,10 +277,8 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
-            self.demonstration_protos[
-                name
-            ] += proto_from_batched_step_result_and_action(
-                self.step_result[name], self.action[name]
+            self.demonstration_protos[name] += proto_from_steps_and_action(
+                self.step_result[name][0], self.step_result[name][1], self.action[name]
             )
             self.demonstration_protos[name] = self.demonstration_protos[name][
                 -self.n_demos :

@@ -4,6 +4,7 @@ using MLAgents.Policies;
 using MLAgents.Sensors;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace MLAgentsExamples
 {
@@ -24,17 +25,17 @@ namespace MLAgentsExamples
             var height = 16;
 
             var sensorComponent = gameObject.AddComponent<CameraSensorComponent>();
-            sensorComponent.camera = Camera.main;
-            sensorComponent.sensorName = "camera1";
-            sensorComponent.width = width;
-            sensorComponent.height = height;
-            sensorComponent.grayscale = true;
+            sensorComponent.Camera = Camera.main;
+            sensorComponent.SensorName = "camera1";
+            sensorComponent.Width = width;
+            sensorComponent.Height = height;
+            sensorComponent.Grayscale = true;
 
             // Make sure the sets actually applied
-            Assert.AreEqual("camera1", sensorComponent.sensorName);
-            Assert.AreEqual(width, sensorComponent.width);
-            Assert.AreEqual(height, sensorComponent.height);
-            Assert.IsTrue(sensorComponent.grayscale);
+            Assert.AreEqual("camera1", sensorComponent.SensorName);
+            Assert.AreEqual(width, sensorComponent.Width);
+            Assert.AreEqual(height, sensorComponent.Height);
+            Assert.IsTrue(sensorComponent.Grayscale);
         }
 
         [Test]
@@ -46,13 +47,13 @@ namespace MLAgentsExamples
             var width = 24;
             var height = 16;
             var texture = new RenderTexture(width, height, 0);
-            sensorComponent.renderTexture = texture;
-            sensorComponent.sensorName = "rtx1";
-            sensorComponent.grayscale = true;
+            sensorComponent.RenderTexture = texture;
+            sensorComponent.SensorName = "rtx1";
+            sensorComponent.Grayscale = true;
 
             // Make sure the sets actually applied
-            Assert.AreEqual("rtx1", sensorComponent.sensorName);
-            Assert.IsTrue(sensorComponent.grayscale);
+            Assert.AreEqual("rtx1", sensorComponent.SensorName);
+            Assert.IsTrue(sensorComponent.Grayscale);
         }
 
         [Test]
@@ -61,116 +62,15 @@ namespace MLAgentsExamples
             var gameObject = new GameObject();
 
             var sensorComponent = gameObject.AddComponent<RayPerceptionSensorComponent3D>();
-            sensorComponent.sensorName = "ray3d";
-            sensorComponent.detectableTags = new List<string> { "Player", "Respawn" };
-            sensorComponent.raysPerDirection = 3;
-            sensorComponent.maxRayDegrees = 30;
-            sensorComponent.sphereCastRadius = .1f;
-            sensorComponent.rayLayerMask = 0;
-            sensorComponent.observationStacks = 2;
+            sensorComponent.SensorName = "ray3d";
+            sensorComponent.DetectableTags = new List<string> { "Player", "Respawn" };
+            sensorComponent.RaysPerDirection = 3;
+            sensorComponent.MaxRayDegrees = 30;
+            sensorComponent.SphereCastRadius = .1f;
+            sensorComponent.RayLayerMask = 0;
+            sensorComponent.ObservationStacks = 2;
 
             sensorComponent.CreateSensor();
-        }
-
-        class PublicApiAgent : Agent
-        {
-            public int numHeuristicCalls;
-
-            public override float[] Heuristic()
-            {
-                numHeuristicCalls++;
-                return base.Heuristic();
-            }
-        }
-
-        // Simple SensorComponent that sets up a StackingSensor
-        class StackingComponent : SensorComponent
-        {
-            public SensorComponent wrappedComponent;
-            public int numStacks;
-
-            public override ISensor CreateSensor()
-            {
-                var wrappedSensor = wrappedComponent.CreateSensor();
-                return new StackingSensor(wrappedSensor, numStacks);
-            }
-
-            public override int[] GetObservationShape()
-            {
-                int[] shape = (int[]) wrappedComponent.GetObservationShape().Clone();
-                for (var i = 0; i < shape.Length; i++)
-                {
-                    shape[i] *= numStacks;
-                }
-
-                return shape;
-            }
-        }
-
-
-        [Test]
-        public void CheckSetupAgent()
-        {
-            var gameObject = new GameObject();
-
-            var behaviorParams = gameObject.AddComponent<BehaviorParameters>();
-            behaviorParams.brainParameters.vectorObservationSize = 3;
-            behaviorParams.brainParameters.numStackedVectorObservations = 2;
-            behaviorParams.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            behaviorParams.brainParameters.vectorActionSize = new[] { 2, 2 };
-            behaviorParams.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
-            behaviorParams.behaviorName = "TestBehavior";
-            behaviorParams.TeamId = 42;
-            behaviorParams.useChildSensors = true;
-
-            var agent = gameObject.AddComponent<PublicApiAgent>();
-            // Make sure we can set the behavior type correctly after the agent is added
-            behaviorParams.behaviorType = BehaviorType.InferenceOnly;
-            // Can't actually create an Agent with InferenceOnly and no model, so change back
-            behaviorParams.behaviorType = BehaviorType.Default;
-
-            // TODO -  not internal yet
-            // var decisionRequester = gameObject.AddComponent<DecisionRequester>();
-            // decisionRequester.DecisionPeriod = 2;
-
-            var sensorComponent = gameObject.AddComponent<RayPerceptionSensorComponent3D>();
-            sensorComponent.sensorName = "ray3d";
-            sensorComponent.detectableTags = new List<string> { "Player", "Respawn" };
-            sensorComponent.raysPerDirection = 3;
-
-            // Make a StackingSensor that wraps the RayPerceptionSensorComponent3D
-            // This isn't necessarily practical, just to ensure that it can be done
-            var wrappingSensorComponent = gameObject.AddComponent<StackingComponent>();
-            wrappingSensorComponent.wrappedComponent = sensorComponent;
-            wrappingSensorComponent.numStacks = 3;
-
-            // ISensor isn't set up yet.
-            Assert.IsNull(sensorComponent.raySensor);
-
-            agent.LazyInitialize();
-            // Make sure we can set the behavior type correctly after the agent is initialized
-            // (this creates a new policy).
-            behaviorParams.behaviorType = BehaviorType.HeuristicOnly;
-
-            // Initialization should set up the sensors
-            Assert.IsNotNull(sensorComponent.raySensor);
-
-            // Let's change the inference device
-            var otherDevice = behaviorParams.inferenceDevice == InferenceDevice.CPU ? InferenceDevice.GPU : InferenceDevice.CPU;
-            agent.SetModel(behaviorParams.behaviorName, behaviorParams.model, otherDevice);
-
-            agent.AddReward(1.0f);
-
-            agent.RequestAction();
-            agent.RequestDecision();
-
-            Academy.Instance.AutomaticSteppingEnabled = false;
-            Academy.Instance.EnvironmentStep();
-
-            var actions = agent.GetAction();
-            // default Heuristic implementation should return zero actions.
-            Assert.AreEqual(new[] {0.0f, 0.0f}, actions);
-            Assert.AreEqual(1, agent.numHeuristicCalls);
         }
     }
 }

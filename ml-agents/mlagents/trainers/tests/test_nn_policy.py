@@ -1,4 +1,6 @@
 import pytest
+import os
+from typing import Dict, Any
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -54,7 +56,14 @@ BUFFER_INIT_SAMPLES = 32
 NUM_AGENTS = 12
 
 
-def create_policy_mock(dummy_config, use_rnn, use_discrete, use_visual):
+def create_policy_mock(
+    dummy_config: Dict[str, Any],
+    use_rnn: bool = False,
+    use_discrete: bool = True,
+    use_visual: bool = False,
+    load: bool = False,
+    seed: int = 0,
+) -> NNPolicy:
     mock_brain = mb.setup_mock_brain(
         use_discrete,
         use_visual,
@@ -66,8 +75,44 @@ def create_policy_mock(dummy_config, use_rnn, use_discrete, use_visual):
     trainer_parameters = dummy_config
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
-    policy = NNPolicy(0, mock_brain, trainer_parameters, False, False)
+    policy = NNPolicy(seed, mock_brain, trainer_parameters, False, load)
     return policy
+
+
+def test_load_save(dummy_config, tmp_path):
+    path1 = os.path.join(tmp_path, "runid1")
+    path2 = os.path.join(tmp_path, "runid2")
+    trainer_params = dummy_config
+    trainer_params["model_path"] = path1
+    policy = create_policy_mock(trainer_params)
+    policy.initialize_or_load()
+    policy.save_model(2000)
+
+    assert len(os.listdir(tmp_path)) > 0
+
+    # Try load from this path
+    policy2 = create_policy_mock(trainer_params, load=True, seed=1)
+    policy2.initialize_or_load()
+    _compare_two_policies(policy, policy2)
+
+    # Try initialize from path 1
+    trainer_params["model_path"] = path2
+    trainer_params["init_path"] = path1
+    policy3 = create_policy_mock(trainer_params, load=False, seed=2)
+    policy3.initialize_or_load()
+
+    _compare_two_policies(policy2, policy3)
+
+
+def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
+    """
+    Make sure two policies have the same output for the same input.
+    """
+    decision_step, _ = mb.create_steps_from_brainparams(policy1.brain, num_agents=1)
+    run_out1 = policy1.evaluate(decision_step, list(decision_step.agent_id))
+    run_out2 = policy2.evaluate(decision_step, list(decision_step.agent_id))
+
+    np.testing.assert_array_equal(run_out2["log_probs"], run_out1["log_probs"])
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
@@ -79,9 +124,11 @@ def test_policy_evaluate(dummy_config, rnn, visual, discrete):
     policy = create_policy_mock(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    step = mb.create_batchedstep_from_brainparams(policy.brain, num_agents=NUM_AGENTS)
+    decision_step, terminal_step = mb.create_steps_from_brainparams(
+        policy.brain, num_agents=NUM_AGENTS
+    )
 
-    run_out = policy.evaluate(step, list(step.agent_id))
+    run_out = policy.evaluate(decision_step, list(decision_step.agent_id))
     if discrete:
         run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
     else:

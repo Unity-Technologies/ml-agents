@@ -1,8 +1,8 @@
 # Background: Machine Learning
 
-Given that a number of users of the ML-Agents toolkit might not have a formal
+Given that a number of users of the ML-Agents Toolkit might not have a formal
 machine learning background, this page provides an overview to facilitate the
-understanding of the ML-Agents toolkit. However, we will not attempt to provide
+understanding of the ML-Agents Toolkit. However, we will not attempt to provide
 a thorough treatment of machine learning as there are fantastic resources
 online.
 
@@ -15,23 +15,23 @@ well as introductory examples.
 
 ## Unsupervised Learning
 
-The goal of [unsupervised
-learning](https://en.wikipedia.org/wiki/Unsupervised_learning) is to group or
-cluster similar items in a data set. For example, consider the players of a
-game. We may want to group the players depending on how engaged they are with
-the game. This would enable us to target different groups (e.g. for
-highly-engaged players we might invite them to be beta testers for new features,
-while for unengaged players we might email them helpful tutorials). Say that we
-wish to split our players into two groups. We would first define basic
-attributes of the players, such as the number of hours played, total money spent
-on in-app purchases and number of levels completed. We can then feed this data
-set (three attributes for every player) to an unsupervised learning algorithm
-where we specify the number of groups to be two. The algorithm would then split
-the data set of players into two groups where the players within each group
-would be similar to each other. Given the attributes we used to describe each
-player, in this case, the output would be a split of all the players into two
-groups, where one group would semantically represent the engaged players and the
-second group would semantically represent the unengaged players.
+The goal of
+[unsupervised learning](https://en.wikipedia.org/wiki/Unsupervised_learning) is
+to group or cluster similar items in a data set. For example, consider the
+players of a game. We may want to group the players depending on how engaged
+they are with the game. This would enable us to target different groups (e.g.
+for highly-engaged players we might invite them to be beta testers for new
+features, while for unengaged players we might email them helpful tutorials).
+Say that we wish to split our players into two groups. We would first define
+basic attributes of the players, such as the number of hours played, total money
+spent on in-app purchases and number of levels completed. We can then feed this
+data set (three attributes for every player) to an unsupervised learning
+algorithm where we specify the number of groups to be two. The algorithm would
+then split the data set of players into two groups where the players within each
+group would be similar to each other. Given the attributes we used to describe
+each player, in this case, the output would be a split of all the players into
+two groups, where one group would semantically represent the engaged players and
+the second group would semantically represent the unengaged players.
 
 With unsupervised learning, we did not provide specific examples of which
 players are considered engaged and which are considered unengaged. We just
@@ -76,7 +76,7 @@ areas of machine learning research and, in practice, require several iterations
 to achieve good performance.
 
 We now switch to reinforcement learning, the third class of machine learning
-algorithms, and arguably the one most relevant for the ML-Agents toolkit.
+algorithms, and arguably the one most relevant for the ML-Agents Toolkit.
 
 ## Reinforcement Learning
 
@@ -128,9 +128,9 @@ strong parallels between robots and characters in a game. In fact, in many ways,
 one can view a non-playable character (NPC) as a virtual robot, with its own
 observations about the environment, its own set of actions and a specific
 objective. Thus it is natural to explore how we can train behaviors within Unity
-using reinforcement learning. This is precisely what the ML-Agents toolkit
+using reinforcement learning. This is precisely what the ML-Agents Toolkit
 offers. The video linked below includes a reinforcement learning demo showcasing
-training character behaviors using the ML-Agents toolkit.
+training character behaviors using the ML-Agents Toolkit.
 
 <p align="center">
   <a href="http://www.youtube.com/watch?feature=player_embedded&v=fiQsmdwEGT8" target="_blank">
@@ -155,14 +155,14 @@ high-level, the training phase involves building a model using the provided
 data, while the inference phase involves applying this model to new, previously
 unseen, data. More specifically:
 
-* For our unsupervised learning example, the training phase learns the optimal
+- For our unsupervised learning example, the training phase learns the optimal
   two clusters based on the data describing existing players, while the
   inference phase assigns a new player to one of these two clusters.
-* For our supervised learning example, the training phase learns the mapping
+- For our supervised learning example, the training phase learns the mapping
   from player attributes to player label (whether they churned or not), and the
   inference phase predicts whether a new player will churn or not based on that
   learned mapping.
-* For our reinforcement learning example, the training phase learns the optimal
+- For our reinforcement learning example, the training phase learns the optimal
   policy through guided trials, and in the inference phase, the agent observes
   and tales actions in the wild using its learned policy.
 
@@ -181,9 +181,9 @@ algorithms that can be used to address any of the problems introduced above.
 More specifically, they can be used to solve both attribute and model selection
 tasks. Deep learning has gained popularity in recent years due to its
 outstanding performance on several challenging machine learning tasks. One
-example is [AlphaGo](https://en.wikipedia.org/wiki/AlphaGo), a  [computer
-Go](https://en.wikipedia.org/wiki/Computer_Go) program, that leverages deep
-learning, that was able to beat Lee Sedol (a Go world champion).
+example is [AlphaGo](https://en.wikipedia.org/wiki/AlphaGo), a
+[computer Go](https://en.wikipedia.org/wiki/Computer_Go) program, that leverages
+deep learning, that was able to beat Lee Sedol (a Go world champion).
 
 A key characteristic of deep learning algorithms is their ability learn very
 complex functions from large amounts of training data. This makes them a natural

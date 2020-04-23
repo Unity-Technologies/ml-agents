@@ -14,14 +14,19 @@ from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
 from mlagents_envs.communicator_objects.agent_action_pb2 import AgentActionProto
-from mlagents_envs.base_env import AgentGroupSpec, ActionType, BatchedStepResult
+from mlagents_envs.base_env import (
+    BehaviorSpec,
+    ActionType,
+    DecisionSteps,
+    TerminalSteps,
+)
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.rpc_utils import (
-    agent_group_spec_from_proto,
+    behavior_spec_from_proto,
     process_pixels,
     _process_visual_observation,
     _process_vector_observation,
-    batched_step_result_from_proto,
+    steps_from_proto,
 )
 from PIL import Image
 
@@ -37,7 +42,7 @@ def generate_list_agent_proto(
         ap = AgentInfoProto()
         ap.reward = float("inf") if infinite_rewards else agent_index
         ap.done = agent_index % 2 == 0
-        ap.max_step_reached = agent_index % 2 == 1
+        ap.max_step_reached = agent_index % 4 == 0
         ap.id = agent_index
         ap.action_mask.extend([True, False] * 5)
         obs_proto_list = []
@@ -79,24 +84,25 @@ def generate_uncompressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
     return obs_proto
 
 
-def proto_from_batched_step_result(
-    batched_step_result: BatchedStepResult
+def proto_from_steps(
+    decision_steps: DecisionSteps, terminal_steps: TerminalSteps
 ) -> List[AgentInfoProto]:
     agent_info_protos: List[AgentInfoProto] = []
-    for agent_id in batched_step_result.agent_id:
-        agent_id_index = batched_step_result.agent_id_to_index[agent_id]
-        reward = batched_step_result.reward[agent_id_index]
-        done = batched_step_result.done[agent_id_index]
-        max_step_reached = batched_step_result.max_step[agent_id_index]
+    # Take care of the DecisionSteps first
+    for agent_id in decision_steps.agent_id:
+        agent_id_index = decision_steps.agent_id_to_index[agent_id]
+        reward = decision_steps.reward[agent_id_index]
+        done = False
+        max_step_reached = False
         agent_mask = None
-        if batched_step_result.action_mask is not None:
+        if decision_steps.action_mask is not None:
             agent_mask = []  # type: ignore
-            for _branch in batched_step_result.action_mask:
+            for _branch in decision_steps.action_mask:
                 agent_mask = np.concatenate(
                     (agent_mask, _branch[agent_id_index, :]), axis=0
                 )
         observations: List[ObservationProto] = []
-        for all_observations_of_type in batched_step_result.obs:
+        for all_observations_of_type in decision_steps.obs:
             observation = all_observations_of_type[agent_id_index]
             if len(observation.shape) == 3:
                 observations.append(generate_uncompressed_proto_obs(observation))
@@ -108,7 +114,6 @@ def proto_from_batched_step_result(
                         compression_type=NONE,
                     )
                 )
-
         agent_info_proto = AgentInfoProto(
             reward=reward,
             done=done,
@@ -118,14 +123,44 @@ def proto_from_batched_step_result(
             observations=observations,
         )
         agent_info_protos.append(agent_info_proto)
+    # Take care of the TerminalSteps second
+    for agent_id in terminal_steps.agent_id:
+        agent_id_index = terminal_steps.agent_id_to_index[agent_id]
+        reward = terminal_steps.reward[agent_id_index]
+        done = True
+        max_step_reached = terminal_steps.max_step[agent_id_index]
+
+        final_observations: List[ObservationProto] = []
+        for all_observations_of_type in terminal_steps.obs:
+            observation = all_observations_of_type[agent_id_index]
+            if len(observation.shape) == 3:
+                final_observations.append(generate_uncompressed_proto_obs(observation))
+            else:
+                final_observations.append(
+                    ObservationProto(
+                        float_data=ObservationProto.FloatData(data=observation),
+                        shape=[len(observation)],
+                        compression_type=NONE,
+                    )
+                )
+        agent_info_proto = AgentInfoProto(
+            reward=reward,
+            done=done,
+            id=agent_id,
+            max_step_reached=max_step_reached,
+            action_mask=None,
+            observations=final_observations,
+        )
+        agent_info_protos.append(agent_info_proto)
+
     return agent_info_protos
 
 
-# The arguments here are the BatchedStepResult and actions for a single agent name
-def proto_from_batched_step_result_and_action(
-    batched_step_result: BatchedStepResult, actions: np.ndarray
+# The arguments here are the DecisionSteps, TerminalSteps and actions for a single agent name
+def proto_from_steps_and_action(
+    decision_steps: DecisionSteps, terminal_steps: TerminalSteps, actions: np.ndarray
 ) -> List[AgentInfoActionPairProto]:
-    agent_info_protos = proto_from_batched_step_result(batched_step_result)
+    agent_info_protos = proto_from_steps(decision_steps, terminal_steps)
     agent_action_protos = [
         AgentActionProto(vector_actions=action) for action in actions
     ]
@@ -195,29 +230,42 @@ def test_process_visual_observation_bad_shape():
 def test_batched_step_result_from_proto():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 3)
+    spec = BehaviorSpec(shapes, ActionType.CONTINUOUS, 3)
     ap_list = generate_list_agent_proto(n_agents, shapes)
-    result = batched_step_result_from_proto(ap_list, group_spec)
-    assert list(result.reward) == list(range(n_agents))
-    assert list(result.agent_id) == list(range(n_agents))
-    for index in range(n_agents):
-        assert result.done[index] == (index % 2 == 0)
-        assert result.max_step[index] == (index % 2 == 1)
-    assert list(result.obs[0].shape) == [n_agents] + list(shapes[0])
-    assert list(result.obs[1].shape) == [n_agents] + list(shapes[1])
+    decision_steps, terminal_steps = steps_from_proto(ap_list, spec)
+    for agent_id in range(n_agents):
+        if agent_id in decision_steps:
+            # we set the reward equal to the agent id in generate_list_agent_proto
+            assert decision_steps[agent_id].reward == agent_id
+        elif agent_id in terminal_steps:
+            assert terminal_steps[agent_id].reward == agent_id
+        else:
+            raise Exception("Missing agent from the steps")
+    # We sort the AgentId since they are split between DecisionSteps and TerminalSteps
+    combined_agent_id = list(decision_steps.agent_id) + list(terminal_steps.agent_id)
+    combined_agent_id.sort()
+    assert combined_agent_id == list(range(n_agents))
+    for agent_id in range(n_agents):
+        assert (agent_id in terminal_steps) == (agent_id % 2 == 0)
+        if agent_id in terminal_steps:
+            assert terminal_steps[agent_id].max_step == (agent_id % 4 == 0)
+    assert decision_steps.obs[0].shape[1] == shapes[0][0]
+    assert decision_steps.obs[1].shape[1] == shapes[1][0]
+    assert terminal_steps.obs[0].shape[1] == shapes[0][0]
+    assert terminal_steps.obs[1].shape[1] == shapes[1][0]
 
 
 def test_action_masking_discrete():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.DISCRETE, (7, 3))
+    behavior_spec = BehaviorSpec(shapes, ActionType.DISCRETE, (7, 3))
     ap_list = generate_list_agent_proto(n_agents, shapes)
-    result = batched_step_result_from_proto(ap_list, group_spec)
-    masks = result.action_mask
+    decision_steps, terminal_steps = steps_from_proto(ap_list, behavior_spec)
+    masks = decision_steps.action_mask
     assert isinstance(masks, list)
     assert len(masks) == 2
-    assert masks[0].shape == (n_agents, 7)
-    assert masks[1].shape == (n_agents, 3)
+    assert masks[0].shape == (n_agents / 2, 7)  # half agents are done
+    assert masks[1].shape == (n_agents / 2, 3)  # half agents are done
     assert masks[0][0, 0]
     assert not masks[1][0, 0]
     assert masks[1][0, 1]
@@ -226,74 +274,74 @@ def test_action_masking_discrete():
 def test_action_masking_discrete_1():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.DISCRETE, (10,))
+    behavior_spec = BehaviorSpec(shapes, ActionType.DISCRETE, (10,))
     ap_list = generate_list_agent_proto(n_agents, shapes)
-    result = batched_step_result_from_proto(ap_list, group_spec)
-    masks = result.action_mask
+    decision_steps, terminal_steps = steps_from_proto(ap_list, behavior_spec)
+    masks = decision_steps.action_mask
     assert isinstance(masks, list)
     assert len(masks) == 1
-    assert masks[0].shape == (n_agents, 10)
+    assert masks[0].shape == (n_agents / 2, 10)
     assert masks[0][0, 0]
 
 
 def test_action_masking_discrete_2():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.DISCRETE, (2, 2, 6))
+    behavior_spec = BehaviorSpec(shapes, ActionType.DISCRETE, (2, 2, 6))
     ap_list = generate_list_agent_proto(n_agents, shapes)
-    result = batched_step_result_from_proto(ap_list, group_spec)
-    masks = result.action_mask
+    decision_steps, terminal_steps = steps_from_proto(ap_list, behavior_spec)
+    masks = decision_steps.action_mask
     assert isinstance(masks, list)
     assert len(masks) == 3
-    assert masks[0].shape == (n_agents, 2)
-    assert masks[1].shape == (n_agents, 2)
-    assert masks[2].shape == (n_agents, 6)
+    assert masks[0].shape == (n_agents / 2, 2)
+    assert masks[1].shape == (n_agents / 2, 2)
+    assert masks[2].shape == (n_agents / 2, 6)
     assert masks[0][0, 0]
 
 
 def test_action_masking_continuous():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 10)
+    behavior_spec = BehaviorSpec(shapes, ActionType.CONTINUOUS, 10)
     ap_list = generate_list_agent_proto(n_agents, shapes)
-    result = batched_step_result_from_proto(ap_list, group_spec)
-    masks = result.action_mask
+    decision_steps, terminal_steps = steps_from_proto(ap_list, behavior_spec)
+    masks = decision_steps.action_mask
     assert masks is None
 
 
-def test_agent_group_spec_from_proto():
+def test_agent_behavior_spec_from_proto():
     agent_proto = generate_list_agent_proto(1, [(3,), (4,)])[0]
     bp = BrainParametersProto()
     bp.vector_action_size.extend([5, 4])
     bp.vector_action_space_type = 0
-    group_spec = agent_group_spec_from_proto(bp, agent_proto)
-    assert group_spec.is_action_discrete()
-    assert not group_spec.is_action_continuous()
-    assert group_spec.observation_shapes == [(3,), (4,)]
-    assert group_spec.discrete_action_branches == (5, 4)
-    assert group_spec.action_size == 2
+    behavior_spec = behavior_spec_from_proto(bp, agent_proto)
+    assert behavior_spec.is_action_discrete()
+    assert not behavior_spec.is_action_continuous()
+    assert behavior_spec.observation_shapes == [(3,), (4,)]
+    assert behavior_spec.discrete_action_branches == (5, 4)
+    assert behavior_spec.action_size == 2
     bp = BrainParametersProto()
     bp.vector_action_size.extend([6])
     bp.vector_action_space_type = 1
-    group_spec = agent_group_spec_from_proto(bp, agent_proto)
-    assert not group_spec.is_action_discrete()
-    assert group_spec.is_action_continuous()
-    assert group_spec.action_size == 6
+    behavior_spec = behavior_spec_from_proto(bp, agent_proto)
+    assert not behavior_spec.is_action_discrete()
+    assert behavior_spec.is_action_continuous()
+    assert behavior_spec.action_size == 6
 
 
 def test_batched_step_result_from_proto_raises_on_infinite():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 3)
+    behavior_spec = BehaviorSpec(shapes, ActionType.CONTINUOUS, 3)
     ap_list = generate_list_agent_proto(n_agents, shapes, infinite_rewards=True)
     with pytest.raises(RuntimeError):
-        batched_step_result_from_proto(ap_list, group_spec)
+        steps_from_proto(ap_list, behavior_spec)
 
 
 def test_batched_step_result_from_proto_raises_on_nan():
     n_agents = 10
     shapes = [(3,), (4,)]
-    group_spec = AgentGroupSpec(shapes, ActionType.CONTINUOUS, 3)
+    behavior_spec = BehaviorSpec(shapes, ActionType.CONTINUOUS, 3)
     ap_list = generate_list_agent_proto(n_agents, shapes, nan_observations=True)
     with pytest.raises(RuntimeError):
-        batched_step_result_from_proto(ap_list, group_spec)
+        steps_from_proto(ap_list, behavior_spec)

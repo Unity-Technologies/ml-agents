@@ -1713,6 +1713,7 @@ GameObject:
   - component: {fileID: 114590693924030052}
   - component: {fileID: 114423363226357902}
   - component: {fileID: 8520694362683208207}
+  - component: {fileID: 1267665179144855710}
   m_Layer: 0
   m_Name: Crawler
   m_TagString: Untagged
@@ -1765,8 +1766,8 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: CrawlerDynamic
-  m_TeamID: 0
-  m_useChildSensors: 1
+  TeamId: 0
+  m_UseChildSensors: 1
 --- !u!114 &114590693924030052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1779,6 +1780,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
   maxStep: 5000
   target: {fileID: 4490950947783742}
   ground: {fileID: 4684408634944056}
@@ -1834,8 +1838,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 0
+  TakeActionsBetweenDecisions: 0
   offsetStep: 0
+--- !u!114 &1267665179144855710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1515093357607024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1520563409393552
 GameObject:
   m_ObjectHideFlags: 0

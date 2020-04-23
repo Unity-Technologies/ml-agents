@@ -1,8 +1,14 @@
 import sys
-from typing import List, Dict, Deque, TypeVar, Generic, Tuple, Any
-from collections import defaultdict, Counter, deque
+from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
+from collections import defaultdict, Counter
+import queue
 
-from mlagents_envs.base_env import BatchedStepResult, StepResult
+from mlagents_envs.base_env import (
+    DecisionSteps,
+    DecisionStep,
+    TerminalSteps,
+    TerminalStep,
+)
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -37,7 +43,7 @@ class AgentProcessor:
         :param stats_category: The category under which to write the stats. Usually, this comes from the Trainer.
         """
         self.experience_buffers: Dict[str, List[AgentExperience]] = defaultdict(list)
-        self.last_step_result: Dict[str, Tuple[StepResult, int]] = {}
+        self.last_step_result: Dict[str, Tuple[DecisionStep, int]] = {}
         # last_take_action_outputs stores the action a_t taken before the current observation s_(t+1), while
         # grabbing previous_action from the policy grabs the action PRIOR to that, a_(t-1).
         self.last_take_action_outputs: Dict[str, ActionInfoOutputs] = {}
@@ -53,13 +59,15 @@ class AgentProcessor:
 
     def add_experiences(
         self,
-        batched_step_result: BatchedStepResult,
+        decision_steps: DecisionSteps,
+        terminal_steps: TerminalSteps,
         worker_id: int,
         previous_action: ActionInfo,
     ) -> None:
         """
         Adds experiences to each agent's experience history.
-        :param batched_step_result: current BatchedStepResult.
+        :param decision_steps: current DecisionSteps.
+        :param terminal_steps: current TerminalSteps.
         :param previous_action: The outputs of the Policy's get_action method.
         """
         take_action_outputs = previous_action.outputs
@@ -75,92 +83,20 @@ class AgentProcessor:
             if global_id in self.last_step_result:  # Don't store if agent just reset
                 self.last_take_action_outputs[global_id] = take_action_outputs
 
-        for _id in batched_step_result.agent_id:  # Assume agent_id is 1-D
-            local_id = int(
-                _id
-            )  # Needed for mypy to pass since ndarray has no content type
-            curr_agent_step = batched_step_result.get_agent_step_result(local_id)
+        # Iterate over all the terminal steps
+        for terminal_step in terminal_steps.values():
+            local_id = terminal_step.agent_id
             global_id = get_global_agent_id(worker_id, local_id)
-            stored_agent_step, idx = self.last_step_result.get(global_id, (None, None))
-            stored_take_action_outputs = self.last_take_action_outputs.get(
-                global_id, None
+            self._process_step(
+                terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
             )
-
-            if stored_agent_step is not None and stored_take_action_outputs is not None:
-                # We know the step is from the same worker, so use the local agent id.
-                obs = stored_agent_step.obs
-                if not stored_agent_step.done:
-                    if self.policy.use_recurrent:
-                        memory = self.policy.retrieve_memories([global_id])[0, :]
-                    else:
-                        memory = None
-
-                    done = curr_agent_step.done
-                    max_step = curr_agent_step.max_step
-
-                    # Add the outputs of the last eval
-                    action = stored_take_action_outputs["action"][idx]
-                    if self.policy.use_continuous_act:
-                        action_pre = stored_take_action_outputs["pre_action"][idx]
-                    else:
-                        action_pre = None
-                    action_probs = stored_take_action_outputs["log_probs"][idx]
-                    action_mask = stored_agent_step.action_mask
-                    prev_action = self.policy.retrieve_previous_action([global_id])[
-                        0, :
-                    ]
-
-                    experience = AgentExperience(
-                        obs=obs,
-                        reward=curr_agent_step.reward,
-                        done=done,
-                        action=action,
-                        action_probs=action_probs,
-                        action_pre=action_pre,
-                        action_mask=action_mask,
-                        prev_action=prev_action,
-                        max_step=max_step,
-                        memory=memory,
-                    )
-                    # Add the value outputs if needed
-                    self.experience_buffers[global_id].append(experience)
-                    self.episode_rewards[global_id] += curr_agent_step.reward
-                if (
-                    curr_agent_step.done
-                    or (
-                        len(self.experience_buffers[global_id])
-                        >= self.max_trajectory_length
-                    )
-                ) and len(self.experience_buffers[global_id]) > 0:
-                    # Make next AgentExperience
-                    next_obs = curr_agent_step.obs
-                    trajectory = Trajectory(
-                        steps=self.experience_buffers[global_id],
-                        agent_id=global_id,
-                        next_obs=next_obs,
-                        behavior_id=self.behavior_id,
-                    )
-                    for traj_queue in self.trajectory_queues:
-                        traj_queue.put(trajectory)
-                    self.experience_buffers[global_id] = []
-                    if curr_agent_step.done:
-                        # Record episode length for agents which have had at least
-                        # 1 step. Done after reset ignored.
-                        self.stats_reporter.add_stat(
-                            "Environment/Episode Length",
-                            self.episode_steps.get(global_id, 0),
-                        )
-                elif not curr_agent_step.done:
-                    self.episode_steps[global_id] += 1
-
-            # Index is needed to grab from last_take_action_outputs
-            self.last_step_result[global_id] = (
-                curr_agent_step,
-                batched_step_result.agent_id_to_index[_id],
+        # Iterate over all the decision steps
+        for ongoing_step in decision_steps.values():
+            local_id = ongoing_step.agent_id
+            global_id = get_global_agent_id(worker_id, local_id)
+            self._process_step(
+                ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
             )
-            # Delete all done agents, regardless of if they had a 0-length episode.
-            if curr_agent_step.done:
-                self._clean_agent_data(global_id)
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,
@@ -170,6 +106,75 @@ class AgentProcessor:
                     self.policy.save_previous_action(
                         [_gid], take_action_outputs["action"]
                     )
+
+    def _process_step(
+        self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
+    ) -> None:
+        terminated = isinstance(step, TerminalStep)
+        stored_decision_step, idx = self.last_step_result.get(global_id, (None, None))
+        stored_take_action_outputs = self.last_take_action_outputs.get(global_id, None)
+        if not terminated:
+            # Index is needed to grab from last_take_action_outputs
+            self.last_step_result[global_id] = (step, index)
+
+        # This state is the consequence of a past action
+        if stored_decision_step is not None and stored_take_action_outputs is not None:
+            obs = stored_decision_step.obs
+            if self.policy.use_recurrent:
+                memory = self.policy.retrieve_memories([global_id])[0, :]
+            else:
+                memory = None
+            done = terminated  # Since this is an ongoing step
+            max_step = step.max_step if terminated else False
+            # Add the outputs of the last eval
+            action = stored_take_action_outputs["action"][idx]
+            if self.policy.use_continuous_act:
+                action_pre = stored_take_action_outputs["pre_action"][idx]
+            else:
+                action_pre = None
+            action_probs = stored_take_action_outputs["log_probs"][idx]
+            action_mask = stored_decision_step.action_mask
+            prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
+            experience = AgentExperience(
+                obs=obs,
+                reward=step.reward,
+                done=done,
+                action=action,
+                action_probs=action_probs,
+                action_pre=action_pre,
+                action_mask=action_mask,
+                prev_action=prev_action,
+                max_step=max_step,
+                memory=memory,
+            )
+            # Add the value outputs if needed
+            self.experience_buffers[global_id].append(experience)
+            self.episode_rewards[global_id] += step.reward
+            if not terminated:
+                self.episode_steps[global_id] += 1
+
+            # if the trajectory is too long, we truncate it
+            if (
+                len(self.experience_buffers[global_id]) >= self.max_trajectory_length
+                or terminated
+            ):
+                # Make next AgentExperience
+                next_obs = step.obs
+                trajectory = Trajectory(
+                    steps=self.experience_buffers[global_id],
+                    agent_id=global_id,
+                    next_obs=next_obs,
+                    behavior_id=self.behavior_id,
+                )
+                for traj_queue in self.trajectory_queues:
+                    traj_queue.put(trajectory)
+                self.experience_buffers[global_id] = []
+            if terminated:
+                # Record episode length.
+                self.stats_reporter.add_stat(
+                    "Environment/Episode Length", self.episode_steps.get(global_id, 0)
+                )
+                self._clean_agent_data(global_id)
 
     def _clean_agent_data(self, global_id: str) -> None:
         """
@@ -225,26 +230,53 @@ class AgentManagerQueue(Generic[T]):
 
         pass
 
-    def __init__(self, behavior_id: str, maxlen: int = 1000):
+    def __init__(self, behavior_id: str, maxlen: int = 0):
         """
         Initializes an AgentManagerQueue. Note that we can give it a behavior_id so that it can be identified
         separately from an AgentManager.
         """
-        self.maxlen: int = maxlen
-        self.queue: Deque[T] = deque(maxlen=self.maxlen)
-        self.behavior_id = behavior_id
+        self._maxlen: int = maxlen
+        self._queue: queue.Queue = queue.Queue(maxsize=maxlen)
+        self._behavior_id = behavior_id
+
+    @property
+    def maxlen(self):
+        """
+        The maximum length of the queue.
+        :return: Maximum length of the queue.
+        """
+        return self._maxlen
+
+    @property
+    def behavior_id(self):
+        """
+        The Behavior ID of this queue.
+        :return: Behavior ID associated with the queue.
+        """
+        return self._behavior_id
+
+    def qsize(self) -> int:
+        """
+        Returns the approximate size of the queue. Note that values may differ
+        depending on the underlying queue implementation.
+        """
+        return self._queue.qsize()
 
     def empty(self) -> bool:
-        return len(self.queue) == 0
+        return self._queue.empty()
 
     def get_nowait(self) -> T:
+        """
+        Gets the next item from the queue, throwing an AgentManagerQueue.Empty exception
+        if the queue is empty.
+        """
         try:
-            return self.queue.popleft()
-        except IndexError:
+            return self._queue.get_nowait()
+        except queue.Empty:
             raise self.Empty("The AgentManagerQueue is empty.")
 
     def put(self, item: T) -> None:
-        self.queue.append(item)
+        self._queue.put(item)
 
 
 class AgentManager(AgentProcessor):
@@ -259,13 +291,17 @@ class AgentManager(AgentProcessor):
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
+        threaded: bool = True,
     ):
         super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length)
+        trajectory_queue_len = 20 if threaded else 0
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
-            self.behavior_id
+            self.behavior_id, maxlen=trajectory_queue_len
         )
+        # NOTE: we make policy queues of infinite length to avoid lockups of the trainers.
+        # In the environment manager, we make sure to empty the policy queue before continuing to produce steps.
         self.policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
-            self.behavior_id
+            self.behavior_id, maxlen=0
         )
         self.publish_trajectory_queue(self.trajectory_queue)
 

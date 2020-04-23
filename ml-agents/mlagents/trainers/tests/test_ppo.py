@@ -285,7 +285,7 @@ def test_trainer_update_policy(dummy_config, use_discrete):
     trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
 
     trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
-    policy = trainer.create_policy(mock_brain)
+    policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_brain)
@@ -314,7 +314,7 @@ def test_process_trajectory(dummy_config):
     dummy_config["summary_path"] = "./summaries/test_trainer_summary"
     dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
-    policy = trainer.create_policy(brain_params)
+    policy = trainer.create_policy(brain_params.brain_name, brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
     trajectory_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)

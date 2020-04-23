@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs.exception import UnityEnvironmentException, UnityActionException
 from mlagents_envs.mock_communicator import MockCommunicator
 
@@ -22,7 +22,7 @@ def test_initialization(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.get_agent_groups() == ["RealFakeBrain"]
+    assert env.get_behavior_names() == ["RealFakeBrain"]
     env.close()
 
 
@@ -56,14 +56,19 @@ def test_reset(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_agent_group_spec("RealFakeBrain")
+    spec = env.get_behavior_spec("RealFakeBrain")
     env.reset()
-    batched_step_result = env.get_step_result("RealFakeBrain")
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     env.close()
-    assert isinstance(batched_step_result, BatchedStepResult)
-    assert len(spec.observation_shapes) == len(batched_step_result.obs)
-    n_agents = batched_step_result.n_agents()
-    for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
+    assert isinstance(decision_steps, DecisionSteps)
+    assert isinstance(terminal_steps, TerminalSteps)
+    assert len(spec.observation_shapes) == len(decision_steps.obs)
+    assert len(spec.observation_shapes) == len(terminal_steps.obs)
+    n_agents = len(decision_steps)
+    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
+        assert (n_agents,) + shape == obs.shape
+    n_agents = len(terminal_steps)
+    for shape, obs in zip(spec.observation_shapes, terminal_steps.obs):
         assert (n_agents,) + shape == obs.shape
 
 
@@ -74,10 +79,10 @@ def test_step(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_agent_group_spec("RealFakeBrain")
+    spec = env.get_behavior_spec("RealFakeBrain")
     env.step()
-    batched_step_result = env.get_step_result("RealFakeBrain")
-    n_agents = batched_step_result.n_agents()
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
+    n_agents = len(decision_steps)
     env.set_actions(
         "RealFakeBrain", np.zeros((n_agents, spec.action_size), dtype=np.float32)
     )
@@ -87,20 +92,22 @@ def test_step(mock_communicator, mock_launcher):
             "RealFakeBrain",
             np.zeros((n_agents - 1, spec.action_size), dtype=np.float32),
         )
-    batched_step_result = env.get_step_result("RealFakeBrain")
-    n_agents = batched_step_result.n_agents()
+    decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
+    n_agents = len(decision_steps)
     env.set_actions(
         "RealFakeBrain", -1 * np.ones((n_agents, spec.action_size), dtype=np.float32)
     )
     env.step()
 
     env.close()
-    assert isinstance(batched_step_result, BatchedStepResult)
-    assert len(spec.observation_shapes) == len(batched_step_result.obs)
-    for shape, obs in zip(spec.observation_shapes, batched_step_result.obs):
+    assert isinstance(decision_steps, DecisionSteps)
+    assert isinstance(terminal_steps, TerminalSteps)
+    assert len(spec.observation_shapes) == len(decision_steps.obs)
+    assert len(spec.observation_shapes) == len(terminal_steps.obs)
+    for shape, obs in zip(spec.observation_shapes, decision_steps.obs):
         assert (n_agents,) + shape == obs.shape
-    assert not batched_step_result.done[0]
-    assert batched_step_result.done[2]
+    assert 0 in decision_steps
+    assert 2 in terminal_steps
 
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
@@ -113,6 +120,37 @@ def test_close(mock_communicator, mock_launcher):
     env.close()
     assert not env._loaded
     assert comm.has_been_closed
+
+
+def test_check_communication_compatibility():
+    unity_ver = "1.0.0"
+    python_ver = "1.0.0"
+    unity_package_version = "0.15.0"
+    assert UnityEnvironment.check_communication_compatibility(
+        unity_ver, python_ver, unity_package_version
+    )
+    unity_ver = "1.1.0"
+    assert UnityEnvironment.check_communication_compatibility(
+        unity_ver, python_ver, unity_package_version
+    )
+    unity_ver = "2.0.0"
+    assert not UnityEnvironment.check_communication_compatibility(
+        unity_ver, python_ver, unity_package_version
+    )
+
+    unity_ver = "0.16.0"
+    python_ver = "0.16.0"
+    assert UnityEnvironment.check_communication_compatibility(
+        unity_ver, python_ver, unity_package_version
+    )
+    unity_ver = "0.17.0"
+    assert not UnityEnvironment.check_communication_compatibility(
+        unity_ver, python_ver, unity_package_version
+    )
+    unity_ver = "1.16.0"
+    assert not UnityEnvironment.check_communication_compatibility(
+        unity_ver, python_ver, unity_package_version
+    )
 
 
 def test_returncode_to_signal_name():

@@ -19,7 +19,7 @@ using Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/blob/master/docs/
+ * https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/
  */
 
 namespace MLAgents
@@ -36,16 +36,20 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// An Academy is where Agent objects go to train their behaviors.
+    /// The Academy singleton manages agent training and decision making.
     /// </summary>
     /// <remarks>
-    /// When an academy is run, it can either be in inference or training mode.
-    /// The mode is determined by the presence or absence of a Communicator. In
-    /// the presence of a communicator, the academy is run in training mode where
-    /// the states and observations of each agent are sent through the
-    /// communicator. In the absence of a communicator, the academy is run in
-    /// inference mode where the agent behavior is determined by the Policy
-    /// attached to it.
+    /// Access the Academy singleton through the <see cref="Instance"/>
+    /// property. The Academy instance is initialized the first time it is accessed (which will
+    /// typically be by the first <see cref="Agent"/> initialized in a scene).
+    /// 
+    /// At initialization, the Academy attempts to connect to the Python training process through
+    /// the external communicator. If successful, the training process can train <see cref="Agent"/>
+    /// instances. When you set an agent's <see cref="BehaviorParameters.behaviorType"/> setting
+    /// to <see cref="BehaviorType.Default"/>, the agent exchanges data with the training process
+    /// to make decisions. If no training process is available, agents with the default behavior
+    /// fall back to inference or heuristic decisions. (You can also set agents to always use
+    /// inference or heuristics.)
     /// </remarks>
     [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
         "docs/Learning-Environment-Design.md")]
@@ -58,13 +62,13 @@ namespace MLAgents
         /// on each side, although we may allow some flexibility in the future.
         /// This should be incremented whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "0.15.0";
+        const string k_ApiVersion = "0.16.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "0.15.0-preview";
+        internal const string k_PackageVersion = "0.15.1-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -74,8 +78,9 @@ namespace MLAgents
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
 
         /// <summary>
-        /// True if the Academy is initialized, false otherwise.
+        ///Reports whether the Academy has been initialized yet.
         /// </summary>
+        /// <value><c>True</c> if the Academy is initialized, <c>false</c> otherwise.</value>
         public static bool IsInitialized
         {
             get { return s_Lazy.IsValueCreated; }
@@ -84,16 +89,18 @@ namespace MLAgents
         /// <summary>
         /// The singleton Academy object.
         /// </summary>
+        /// <value>Getting the instance initializes the Academy, if necessary.</value>
         public static Academy Instance { get { return s_Lazy.Value; } }
 
         // Fields not provided in the Inspector.
 
         /// <summary>
-        /// Returns whether or not the communicator is on.
+        /// Reports whether or not the communicator is on.
         /// </summary>
-        /// <returns>
-        /// <c>true</c>, if communicator is on, <c>false</c> otherwise.
-        /// </returns>
+        /// <seealso cref="ICommunicator"/>
+        /// <value>
+        /// <c>True</c>, if communicator is on, <c>false</c> otherwise.
+        /// </value>
         public bool IsCommunicatorOn
         {
             get { return Communicator != null; }
@@ -121,9 +128,22 @@ namespace MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
+        // Random seed used for inference.
+        int m_InferenceSeed;
+
+        /// <summary>
+        /// Set the random seed used for inference. This should be set before any Agents are added
+        /// to the scene. The seed is passed to the ModelRunner constructor, and incremented each
+        /// time a new ModelRunner is created.
+        /// </summary>
+        public int InferenceSeed
+        {
+            set { m_InferenceSeed = value; }
+        }
+
         // The Academy uses a series of events to communicate with agents
-        // to facilitate synchronization. More specifically, it ensure
-        // that all the agents performs their steps in a consistent order (i.e. no
+        // to facilitate synchronization. More specifically, it ensures
+        // that all the agents perform their steps in a consistent order (i.e. no
         // agent can act based on a decision before another agent has had a chance
         // to request a decision).
 
@@ -134,15 +154,18 @@ namespace MLAgents
         // Signals to all the listeners that the academy is being destroyed
         internal event Action DestroyAction;
 
-        // Signals the Agent that a new step is about to start.
+        // Signals to the Agent that a new step is about to start.
         // This will mark the Agent as Done if it has reached its maxSteps.
         internal event Action AgentIncrementStep;
 
-        // Signals to all the agents at each environment step along with the
-        // Academy's maxStepReached, done and stepCount values. The agents rely
-        // on this event to update their own values of max step reached and done
-        // in addition to aligning on the step count of the global episode.
-        internal event Action<int> AgentSetStatus;
+
+        /// <summary>
+        /// Signals to all of the <see cref="Agent"/>s that their step is about to begin.
+        /// This is a good time for an <see cref="Agent"/> to decide if it would like to
+        /// call <see cref="Agent.RequestDecision"/> or <see cref="Agent.RequestAction"/>
+        /// for this step.  Any other pre-step setup could be done during this even as well.
+        /// </summary>
+        public event Action<int> AgentPreStep;
 
         // Signals to all the agents at each environment step so they can send
         // their state to their Policy if they have requested a decision.
@@ -206,6 +229,12 @@ namespace MLAgents
             // Don't show this object in the hierarchy
             m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
             m_FixedUpdateStepper = m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
+            try
+            {
+                // This try-catch is because DontDestroyOnLoad cannot be used in Editor Tests
+                GameObject.DontDestroyOnLoad(m_StepperObject);
+            }
+            catch {}
         }
 
         /// <summary>
@@ -235,6 +264,7 @@ namespace MLAgents
         /// <summary>
         /// Determines whether or not the Academy is automatically stepped during the FixedUpdate phase.
         /// </summary>
+        /// <value>Set <c>true</c> to enable automatic stepping; <c>false</c> to disable.</value>
         public bool AutomaticSteppingEnabled
         {
             get { return m_FixedUpdateStepper != null; }
@@ -282,10 +312,13 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Initializes the environment, configures it and initialized the Academy.
+        /// Initializes the environment, configures it and initializes the Academy.
         /// </summary>
         void InitializeEnvironment()
         {
+            TimerStack.Instance.AddMetadata("communication_protocol_version", k_ApiVersion);
+            TimerStack.Instance.AddMetadata("com.unity.ml-agents_version", k_PackageVersion);
+
             EnableAutomaticStepping();
 
             SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
@@ -319,6 +352,8 @@ namespace MLAgents
                             name = "AcademySingleton",
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
+                    // We might have inference-only Agents, so set the seed for them too.
+                    m_InferenceSeed = unityRlInitParameters.seed;
                 }
                 catch
                 {
@@ -347,7 +382,7 @@ namespace MLAgents
         {
             DecideAction = () => {};
             DestroyAction = () => {};
-            AgentSetStatus = i => {};
+            AgentPreStep = i => {};
             AgentSendState = () => {};
             AgentAct = () => {};
             AgentForceReset = () => {};
@@ -368,33 +403,33 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Returns the current episode counter.
+        /// The current episode count.
         /// </summary>
-        /// <returns>
+        /// <value>
         /// Current episode number.
-        /// </returns>
+        /// </value>
         public int EpisodeCount
         {
             get { return m_EpisodeCount; }
         }
 
         /// <summary>
-        /// Returns the current step counter (within the current episode).
+        /// The current step count (within the current episode).
         /// </summary>
-        /// <returns>
+        /// <value>
         /// Current step count.
-        /// </returns>
+        /// </value>
         public int StepCount
         {
             get { return m_StepCount; }
         }
 
         /// <summary>
-        /// Returns the total step counter.
+        /// Returns the total step count.
         /// </summary>
-        /// <returns>
+        /// <value>
         /// Total step count.
-        /// </returns>
+        /// </value>
         public int TotalStepCount
         {
             get { return m_TotalStepCount; }
@@ -413,7 +448,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Performs a single environment update to the Academy, and Agent
+        /// Performs a single environment update of the Academy and Agent
         /// objects within the environment.
         /// </summary>
         public void EnvironmentStep()
@@ -423,7 +458,7 @@ namespace MLAgents
                 ForcedFullReset();
             }
 
-            AgentSetStatus?.Invoke(m_StepCount);
+            AgentPreStep?.Invoke(m_StepCount);
 
             m_StepCount += 1;
             m_TotalStepCount += 1;
@@ -466,7 +501,7 @@ namespace MLAgents
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
         /// <param name="model">The NNModel the ModelRunner must use.</param>
-        /// <param name="brainParameters">The brainParameters used to create the ModelRunner.</param>
+        /// <param name="brainParameters">The BrainParameters used to create the ModelRunner.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
         /// </param>
@@ -477,9 +512,9 @@ namespace MLAgents
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
             {
-                modelRunner = new ModelRunner(
-                    model, brainParameters, inferenceDevice);
+                modelRunner = new ModelRunner(model, brainParameters, inferenceDevice, m_InferenceSeed);
                 m_ModelRunners.Add(modelRunner);
+                m_InferenceSeed++;
             }
             return modelRunner;
         }

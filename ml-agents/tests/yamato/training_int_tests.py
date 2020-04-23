@@ -6,6 +6,7 @@ import time
 
 from .yamato_utils import (
     get_base_path,
+    get_base_output_path,
     run_standalone_build,
     init_venv,
     override_config_file,
@@ -34,9 +35,12 @@ def run_training(python_version, csharp_version):
     if csharp_version is not None:
         # We can't rely on the old C# code recognizing the commandline argument to set the output
         # So rename testPlayer (containing the most recent build) to something else temporarily
-        full_player_path = os.path.join("Project", "testPlayer.app")
-        temp_player_path = os.path.join("Project", "temp_testPlayer.app")
-        final_player_path = os.path.join("Project", f"testPlayer_{csharp_version}.app")
+        artifact_path = get_base_output_path()
+        full_player_path = os.path.join(artifact_path, "testPlayer.app")
+        temp_player_path = os.path.join(artifact_path, "temp_testPlayer.app")
+        final_player_path = os.path.join(
+            artifact_path, f"testPlayer_{csharp_version}.app"
+        )
 
         os.rename(full_player_path, temp_player_path)
 
@@ -67,7 +71,8 @@ def run_training(python_version, csharp_version):
     )
 
     mla_learn_cmd = (
-        f"mlagents-learn override.yaml --train --env=Project/{standalone_player_path} "
+        f"mlagents-learn override.yaml --train --env="
+        f"{os.path.join(get_base_output_path(), standalone_player_path)} "
         f"--run-id={run_id} --no-graphics --env-args -logFile -"
     )  # noqa
     res = subprocess.run(

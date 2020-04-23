@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional, List
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import ModelUtils
@@ -121,16 +121,16 @@ class NNPolicy(TFPolicy):
 
     @timed
     def evaluate(
-        self, batched_step_result: BatchedStepResult, global_agent_ids: List[str]
+        self, decision_requests: DecisionSteps, global_agent_ids: List[str]
     ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param batched_step_result: BatchedStepResult object containing inputs.
+        :param decision_requests: DecisionSteps object containing inputs.
         :param global_agent_ids: The global (with worker ID) agent ids of the data in the batched_step_result.
         :return: Outputs from network as defined by self.inference_dict.
         """
         feed_dict = {
-            self.batch_size_ph: batched_step_result.n_agents(),
+            self.batch_size_ph: len(decision_requests),
             self.sequence_length_ph: 1,
         }
         if self.use_recurrent:
@@ -139,7 +139,7 @@ class NNPolicy(TFPolicy):
                     global_agent_ids
                 )
             feed_dict[self.memory_in] = self.retrieve_memories(global_agent_ids)
-        feed_dict = self.fill_eval_dict(feed_dict, batched_step_result)
+        feed_dict = self.fill_eval_dict(feed_dict, decision_requests)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 

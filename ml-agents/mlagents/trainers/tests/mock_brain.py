@@ -1,11 +1,16 @@
 from unittest import mock
-from typing import List
+from typing import List, Tuple
 import numpy as np
 
 from mlagents.trainers.brain import CameraResolution, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents_envs.base_env import BatchedStepResult
+from mlagents_envs.base_env import (
+    DecisionSteps,
+    TerminalSteps,
+    BehaviorSpec,
+    ActionType,
+)
 
 
 def create_mock_brainparams(
@@ -33,23 +38,24 @@ def create_mock_brainparams(
     return mock_brain()
 
 
-def create_mock_batchedstep(
+def create_mock_steps(
     num_agents: int = 1,
     num_vector_observations: int = 0,
     num_vis_observations: int = 0,
     action_shape: List[int] = None,
     discrete: bool = False,
     done: bool = False,
-) -> BatchedStepResult:
+) -> Tuple[DecisionSteps, TerminalSteps]:
     """
-    Creates a mock BatchedStepResult with observations. Imitates constant
-    vector/visual observations, rewards, dones, and agents.
+    Creates a mock Tuple[DecisionSteps, TerminalSteps] with observations.
+    Imitates constant vector/visual observations, rewards, dones, and agents.
 
     :int num_agents: Number of "agents" to imitate.
     :int num_vector_observations: Number of "observations" in your observation space
     :int num_vis_observations: Number of "observations" in your observation space
     :int num_vector_acts: Number of actions in your action space
     :bool discrete: Whether or not action space is discrete
+    :bool done: Whether all the agents in the batch are done
     """
     if action_shape is None:
         action_shape = [2]
@@ -69,17 +75,29 @@ def create_mock_batchedstep(
         ]
 
     reward = np.array(num_agents * [1.0], dtype=np.float32)
-    done = np.array(num_agents * [done], dtype=np.bool)
     max_step = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
+    behavior_spec = BehaviorSpec(
+        [(84, 84, 3)] * num_vis_observations + [(num_vector_observations, 0, 0)],
+        ActionType.DISCRETE if discrete else ActionType.CONTINUOUS,
+        action_shape if discrete else action_shape[0],
+    )
+    if done:
+        return (
+            DecisionSteps.empty(behavior_spec),
+            TerminalSteps(obs_list, reward, max_step, agent_id),
+        )
+    else:
+        return (
+            DecisionSteps(obs_list, reward, agent_id, action_mask),
+            TerminalSteps.empty(behavior_spec),
+        )
 
-    return BatchedStepResult(obs_list, reward, done, max_step, agent_id, action_mask)
 
-
-def create_batchedstep_from_brainparams(
+def create_steps_from_brainparams(
     brain_params: BrainParameters, num_agents: int = 1
-) -> BatchedStepResult:
-    return create_mock_batchedstep(
+) -> Tuple[DecisionSteps, TerminalSteps]:
+    return create_mock_steps(
         num_agents=num_agents,
         num_vector_observations=brain_params.vector_observation_space_size,
         num_vis_observations=brain_params.number_visual_observations,

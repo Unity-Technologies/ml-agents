@@ -1,3 +1,5 @@
+using System;
+
 namespace MLAgents.Sensors
 {
     /// <summary>
@@ -100,6 +102,17 @@ namespace MLAgents.Sensors
         {
             m_WrappedSensor.Update();
             m_CurrentIndex = (m_CurrentIndex + 1) % m_NumStackedObservations;
+        }
+
+        /// <inheritdoc/>
+        public void Reset()
+        {
+            m_WrappedSensor.Reset();
+            // Zero out the buffer.
+            for (var i = 0; i < m_NumStackedObservations; i++)
+            {
+                Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
+            }
         }
 
         /// <inheritdoc/>

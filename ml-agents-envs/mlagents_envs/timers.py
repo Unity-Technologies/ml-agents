@@ -29,10 +29,13 @@ over the timer name, or are splitting up multiple sections of a large function.
 """
 
 import math
-from time import perf_counter
+import sys
+import time
 
 from contextlib import contextmanager
 from typing import Any, Callable, Dict, Generator, TypeVar
+
+TIMER_FORMAT_VERSION = "0.1.0"
 
 
 class TimerNode:
@@ -123,19 +126,23 @@ class TimerStack:
     sure that pushes and pops are already matched.
     """
 
-    __slots__ = ["root", "stack", "start_time", "gauges"]
+    __slots__ = ["root", "stack", "start_time", "gauges", "metadata"]
 
     def __init__(self):
         self.root = TimerNode()
         self.stack = [self.root]
-        self.start_time = perf_counter()
+        self.start_time = time.perf_counter()
         self.gauges: Dict[str, GaugeNode] = {}
+        self.metadata: Dict[str, str] = {}
+        self._add_default_metadata()
 
     def reset(self):
         self.root = TimerNode()
         self.stack = [self.root]
-        self.start_time = perf_counter()
+        self.start_time = time.perf_counter()
         self.gauges: Dict[str, GaugeNode] = {}
+        self.metadata: Dict[str, str] = {}
+        self._add_default_metadata()
 
     def push(self, name: str) -> TimerNode:
         """
@@ -157,7 +164,7 @@ class TimerStack:
         Update the total time and count of the root name, and return it.
         """
         root = self.root
-        root.total = perf_counter() - self.start_time
+        root.total = time.perf_counter() - self.start_time
         root.count = 1
         return root
 
@@ -174,6 +181,10 @@ class TimerStack:
             # Only output gauges at top level
             if self.gauges:
                 res["gauges"] = self._get_gauges()
+
+            if self.metadata:
+                self.metadata["end_time_seconds"] = str(int(time.time()))
+                res["metadata"] = self.metadata
 
         res["total"] = node.total
         res["count"] = node.count
@@ -205,11 +216,20 @@ class TimerStack:
         else:
             self.gauges[name] = GaugeNode(value)
 
+    def add_metadata(self, key: str, value: str) -> None:
+        self.metadata[key] = value
+
     def _get_gauges(self) -> Dict[str, Dict[str, float]]:
         gauges = {}
         for gauge_name, gauge_node in self.gauges.items():
             gauges[gauge_name] = gauge_node.as_dict()
         return gauges
+
+    def _add_default_metadata(self):
+        self.metadata["timer_format_version"] = TIMER_FORMAT_VERSION
+        self.metadata["start_time_seconds"] = str(int(time.time()))
+        self.metadata["python_version"] = sys.version
+        self.metadata["command_line_arguments"] = " ".join(sys.argv)
 
 
 # Global instance of a TimerStack. This is generally all that we need for profiling, but you can potentially
@@ -225,7 +245,7 @@ def hierarchical_timer(name: str, timer_stack: TimerStack = None) -> Generator:
     """
     timer_stack = timer_stack or _global_timer_stack
     timer_node = timer_stack.push(name)
-    start_time = perf_counter()
+    start_time = time.perf_counter()
 
     try:
         # The wrapped code block will run here.
@@ -233,7 +253,7 @@ def hierarchical_timer(name: str, timer_stack: TimerStack = None) -> Generator:
     finally:
         # This will trigger either when the context manager exits, or an exception is raised.
         # We'll accumulate the time, and the exception (if any) gets raised automatically.
-        elapsed = perf_counter() - start_time
+        elapsed = time.perf_counter() - start_time
         timer_node.add_time(elapsed)
         timer_stack.pop()
 
@@ -266,6 +286,11 @@ def set_gauge(name: str, value: float, timer_stack: TimerStack = None) -> None:
     """
     timer_stack = timer_stack or _global_timer_stack
     timer_stack.set_gauge(name, value)
+
+
+def add_metadata(key: str, value: str, timer_stack: TimerStack = None) -> None:
+    timer_stack = timer_stack or _global_timer_stack
+    timer_stack.add_metadata(key, value)
 
 
 def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:

@@ -1,10 +1,11 @@
 import atexit
+from distutils.version import StrictVersion
 import glob
 import uuid
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Tuple
 
 import mlagents_envs
 
@@ -13,9 +14,10 @@ from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
 
 from mlagents_envs.base_env import (
     BaseEnv,
-    BatchedStepResult,
-    AgentGroupSpec,
-    AgentGroup,
+    DecisionSteps,
+    TerminalSteps,
+    BehaviorSpec,
+    BehaviorName,
     AgentId,
 )
 from mlagents_envs.timers import timed, hierarchical_timer
@@ -27,10 +29,7 @@ from mlagents_envs.exception import (
 )
 
 from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
-from mlagents_envs.rpc_utils import (
-    agent_group_spec_from_proto,
-    batched_step_result_from_proto,
-)
+from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 
 from mlagents_envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputProto
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
@@ -47,7 +46,6 @@ from sys import platform
 import signal
 import struct
 
-
 logger = get_logger(__name__)
 
 
@@ -60,7 +58,7 @@ class UnityEnvironment(BaseEnv):
     # Currently we require strict equality between the communication protocol
     # on each side, although we may allow some flexibility in the future.
     # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.15.0"
+    API_VERSION = "0.16.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -72,6 +70,47 @@ class UnityEnvironment(BaseEnv):
 
     # Command line argument used to pass the port to the executable environment.
     PORT_COMMAND_LINE_ARG = "--mlagents-port"
+
+    @staticmethod
+    def _raise_version_exception(unity_com_ver: str) -> None:
+        raise UnityEnvironmentException(
+            f"The communication API version is not compatible between Unity and python. "
+            f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_com_ver}.\n "
+            f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
+            f"to download the latest version of ML-Agents."
+        )
+
+    @staticmethod
+    def check_communication_compatibility(
+        unity_com_ver: str, python_api_version: str, unity_package_version: str
+    ) -> bool:
+        unity_communicator_version = StrictVersion(unity_com_ver)
+        api_version = StrictVersion(python_api_version)
+        if unity_communicator_version.version[0] == 0:
+            if (
+                unity_communicator_version.version[0] != api_version.version[0]
+                or unity_communicator_version.version[1] != api_version.version[1]
+            ):
+                # Minor beta versions differ.
+                return False
+        elif unity_communicator_version.version[0] != api_version.version[0]:
+            # Major versions mismatch.
+            return False
+        elif unity_communicator_version.version[1] != api_version.version[1]:
+            # Non-beta minor versions mismatch.  Log a warning but allow execution to continue.
+            logger.warning(
+                f"WARNING: The communication API versions between Unity and python differ at the minor version level. "
+                f"Python API: {python_api_version}, Unity API: {unity_communicator_version}.\n"
+                f"This means that some features may not work unless you upgrade the package with the lower version."
+                f"Please find the versions that work best together from our release page.\n"
+                "https://github.com/Unity-Technologies/ml-agents/releases"
+            )
+        else:
+            logger.info(
+                f"Connected to Unity environment with package version {unity_package_version} "
+                f"and communication version {unity_com_ver}"
+            )
+        return True
 
     def __init__(
         self,
@@ -155,25 +194,19 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             raise
 
-        unity_communicator_version = aca_params.communication_version
-        if unity_communicator_version != UnityEnvironment.API_VERSION:
+        if not UnityEnvironment.check_communication_compatibility(
+            aca_params.communication_version,
+            UnityEnvironment.API_VERSION,
+            aca_params.package_version,
+        ):
             self._close(0)
-            raise UnityEnvironmentException(
-                f"The communication API version is not compatible between Unity and python. "
-                f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_communicator_version}.\n "
-                f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
-                f"to download the latest version of ML-Agents."
-            )
-        else:
-            logger.info(
-                f"Connected to Unity environment with package version {aca_params.package_version} "
-                f"and communication version {aca_params.communication_version}"
-            )
-        self._env_state: Dict[str, BatchedStepResult] = {}
-        self._env_specs: Dict[str, AgentGroupSpec] = {}
+            UnityEnvironment._raise_version_exception(aca_params.communication_version)
+
+        self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
+        self._env_specs: Dict[str, BehaviorSpec] = {}
         self._env_actions: Dict[str, np.ndarray] = {}
         self._is_first_message = True
-        self._update_group_specs(aca_output)
+        self._update_behavior_specs(aca_output)
 
     @staticmethod
     def get_communicator(worker_id, base_port, timeout_wait):
@@ -268,7 +301,7 @@ class UnityEnvironment(BaseEnv):
                     f'"chmod -R 755 {launch_string}"'
                 ) from perm
 
-    def _update_group_specs(self, output: UnityOutputProto) -> None:
+    def _update_behavior_specs(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
         for brain_param in init_output.brain_parameters:
             # Each BrainParameter in the rl_initialization_output should have at least one AgentInfo
@@ -276,7 +309,7 @@ class UnityEnvironment(BaseEnv):
             agent_infos = output.rl_output.agentInfos[brain_param.brain_name]
             if agent_infos.value:
                 agent = agent_infos.value[0]
-                new_spec = agent_group_spec_from_proto(brain_param, agent)
+                new_spec = behavior_spec_from_proto(brain_param, agent)
                 self._env_specs[brain_param.brain_name] = new_spec
                 logger.info(f"Connected new brain:\n{brain_param.brain_name}")
 
@@ -287,12 +320,13 @@ class UnityEnvironment(BaseEnv):
         for brain_name in self._env_specs.keys():
             if brain_name in output.agentInfos:
                 agent_info_list = output.agentInfos[brain_name].value
-                self._env_state[brain_name] = batched_step_result_from_proto(
+                self._env_state[brain_name] = steps_from_proto(
                     agent_info_list, self._env_specs[brain_name]
                 )
             else:
-                self._env_state[brain_name] = BatchedStepResult.empty(
-                    self._env_specs[brain_name]
+                self._env_state[brain_name] = (
+                    DecisionSteps.empty(self._env_specs[brain_name]),
+                    TerminalSteps.empty(self._env_specs[brain_name]),
                 )
         self._parse_side_channel_message(self.side_channels, output.side_channel)
 
@@ -301,7 +335,7 @@ class UnityEnvironment(BaseEnv):
             outputs = self.communicator.exchange(self._generate_reset_input())
             if outputs is None:
                 raise UnityCommunicationException("Communicator has stopped.")
-            self._update_group_specs(outputs)
+            self._update_behavior_specs(outputs)
             rl_output = outputs.rl_output
             self._update_state(rl_output)
             self._is_first_message = False
@@ -320,7 +354,7 @@ class UnityEnvironment(BaseEnv):
             if group_name not in self._env_actions:
                 n_agents = 0
                 if group_name in self._env_state:
-                    n_agents = self._env_state[group_name].n_agents()
+                    n_agents = len(self._env_state[group_name][0])
                 self._env_actions[group_name] = self._env_specs[
                     group_name
                 ].create_empty_action(n_agents)
@@ -329,77 +363,82 @@ class UnityEnvironment(BaseEnv):
             outputs = self.communicator.exchange(step_input)
         if outputs is None:
             raise UnityCommunicationException("Communicator has stopped.")
-        self._update_group_specs(outputs)
+        self._update_behavior_specs(outputs)
         rl_output = outputs.rl_output
         self._update_state(rl_output)
         self._env_actions.clear()
 
-    def get_agent_groups(self) -> List[AgentGroup]:
+    def get_behavior_names(self):
         return list(self._env_specs.keys())
 
-    def _assert_group_exists(self, agent_group: str) -> None:
-        if agent_group not in self._env_specs:
+    def _assert_behavior_exists(self, behavior_name: str) -> None:
+        if behavior_name not in self._env_specs:
             raise UnityActionException(
                 "The group {0} does not correspond to an existing agent group "
-                "in the environment".format(agent_group)
+                "in the environment".format(behavior_name)
             )
 
-    def set_actions(self, agent_group: AgentGroup, action: np.ndarray) -> None:
-        self._assert_group_exists(agent_group)
-        if agent_group not in self._env_state:
+    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+        self._assert_behavior_exists(behavior_name)
+        if behavior_name not in self._env_state:
             return
-        spec = self._env_specs[agent_group]
+        spec = self._env_specs[behavior_name]
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
-        expected_shape = (self._env_state[agent_group].n_agents(), spec.action_size)
+        expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The group {0} needs an input of dimension {1} but received input of dimension {2}".format(
-                    agent_group, expected_shape, action.shape
+                "The behavior {0} needs an input of dimension {1} but received input of dimension {2}".format(
+                    behavior_name, expected_shape, action.shape
                 )
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
-        self._env_actions[agent_group] = action
+        self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, agent_group: AgentGroup, agent_id: AgentId, action: np.ndarray
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
     ) -> None:
-        self._assert_group_exists(agent_group)
-        if agent_group not in self._env_state:
+        self._assert_behavior_exists(behavior_name)
+        if behavior_name not in self._env_state:
             return
-        spec = self._env_specs[agent_group]
+        spec = self._env_specs[behavior_name]
         expected_shape = (spec.action_size,)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The Agent {0} in group {1} needs an input of dimension {2} but received input of dimension {3}".format(
-                    agent_id, agent_group, expected_shape, action.shape
+                f"The Agent {0} with BehaviorName {1} needs an input of dimension "
+                f"{2} but received input of dimension {3}".format(
+                    agent_id, behavior_name, expected_shape, action.shape
                 )
             )
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
         if action.dtype != expected_type:
             action = action.astype(expected_type)
 
-        if agent_group not in self._env_actions:
-            self._env_actions[agent_group] = spec.create_empty_action(
-                self._env_state[agent_group].n_agents()
+        if behavior_name not in self._env_actions:
+            self._env_actions[behavior_name] = spec.create_empty_action(
+                len(self._env_state[behavior_name][0])
             )
         try:
-            index = np.where(self._env_state[agent_group].agent_id == agent_id)[0][0]
+            index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
+                0
+            ]
         except IndexError as ie:
             raise IndexError(
                 "agent_id {} is did not request a decision at the previous step".format(
                     agent_id
                 )
             ) from ie
-        self._env_actions[agent_group][index] = action
+        self._env_actions[behavior_name][index] = action
 
-    def get_step_result(self, agent_group: AgentGroup) -> BatchedStepResult:
-        self._assert_group_exists(agent_group)
-        return self._env_state[agent_group]
+    def get_steps(
+        self, behavior_name: BehaviorName
+    ) -> Tuple[DecisionSteps, TerminalSteps]:
+        self._assert_behavior_exists(behavior_name)
+        return self._env_state[behavior_name]
 
-    def get_agent_group_spec(self, agent_group: AgentGroup) -> AgentGroupSpec:
-        self._assert_group_exists(agent_group)
-        return self._env_specs[agent_group]
+    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
+        self._assert_behavior_exists(behavior_name)
+        return self._env_specs[behavior_name]
 
     def close(self):
         """
@@ -510,7 +549,7 @@ class UnityEnvironment(BaseEnv):
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
-            n_agents = self._env_state[b].n_agents()
+            n_agents = len(self._env_state[b][0])
             if n_agents == 0:
                 continue
             for i in range(n_agents):

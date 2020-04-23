@@ -42,6 +42,9 @@ namespace MLAgentsExamples
         public void Update() {}
 
         /// <inheritdoc/>
+        public void Reset() { }
+
+        /// <inheritdoc/>
         public virtual byte[] GetCompressedObservation()
         {
             return null;

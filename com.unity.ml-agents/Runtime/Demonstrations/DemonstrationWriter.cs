@@ -9,10 +9,11 @@ namespace MLAgents.Demonstrations
     /// <summary>
     /// Responsible for writing demonstration data to stream (typically a file stream).
     /// </summary>
+    /// <seealso cref="DemonstrationRecorder"/>
     public class DemonstrationWriter
     {
         /// <summary>
-        /// Number of bytes reserved for the Demonstration metadata at the start of the demo file.
+        /// Number of bytes reserved for the <see cref="Demonstration"/> metadata at the start of the demo file.
         /// </summary>
         internal const int MetaDataBytes = 32;
 
@@ -105,7 +106,7 @@ namespace MLAgents.Demonstrations
             }
 
             // Increment meta-data counters.
-            m_MetaData.numberExperiences++;
+            m_MetaData.numberSteps++;
             m_CumulativeReward += info.reward;
             if (info.done)
             {

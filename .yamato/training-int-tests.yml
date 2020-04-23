@@ -17,8 +17,8 @@ test_mac_training_int_{{ editor.version }}:
     # Backwards-compatibility tests.
     # If we make a breaking change to the communication protocol, these will need
     # to be disabled until the next release.
-    - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.15.0
-    - python -u -m ml-agents.tests.yamato.training_int_tests --csharp=0.15.0
+    # - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.15.0
+    # - python -u -m ml-agents.tests.yamato.training_int_tests --csharp=0.15.0
   dependencies:
     - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
   triggers:
@@ -35,7 +35,10 @@ test_mac_training_int_{{ editor.version }}:
         - "com.unity.ml-agents/*.md"
         - "com.unity.ml-agents/**/*.md"
   artifacts:
-    unit:
+    logs:
       paths:
-        - "artifacts/**"
+        - "artifacts/standalone_build.txt"
+    standalonebuild:
+      paths:
+        - "artifacts/testplayer*/**"
 {% endfor %}

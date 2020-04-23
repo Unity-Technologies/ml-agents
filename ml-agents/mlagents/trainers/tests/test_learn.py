@@ -53,7 +53,7 @@ def test_run_training(
                 None,
             )
             handle_dir_mock.assert_called_once_with(
-                "./models/ppo", "./summaries", False, False
+                "./models/ppo", "./summaries", False, False, None
             )
     StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 

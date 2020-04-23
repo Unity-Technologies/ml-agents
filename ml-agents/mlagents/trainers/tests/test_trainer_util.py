@@ -357,3 +357,15 @@ def test_existing_directories(tmp_path):
     trainer_util.handle_existing_directories(model_path, summary_path, True, False)
     # Test try to train w/ force - should work
     trainer_util.handle_existing_directories(model_path, summary_path, False, True)
+
+    # Test initialize option
+    init_path = os.path.join(tmp_path, "runid2")
+    with pytest.raises(UnityTrainerException):
+        trainer_util.handle_existing_directories(
+            model_path, summary_path, False, True, init_path
+        )
+    os.mkdir(init_path)
+    # Should pass since the directory exists now.
+    trainer_util.handle_existing_directories(
+        model_path, summary_path, False, True, init_path
+    )

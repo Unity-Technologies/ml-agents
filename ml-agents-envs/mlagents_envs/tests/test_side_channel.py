@@ -95,6 +95,10 @@ def test_message_bool():
         read_vals.append(msg_in.read_bool())
     assert vals == read_vals
 
+    # Test reading with defaults
+    assert msg_in.read_bool() is False
+    assert msg_in.read_bool(default_value=True) is True
+
 
 def test_message_int32():
     val = 1337
@@ -104,6 +108,10 @@ def test_message_int32():
     msg_in = IncomingMessage(msg_out.buffer)
     read_val = msg_in.read_int32()
     assert val == read_val
+
+    # Test reading with defaults
+    assert 0 == msg_in.read_int32()
+    assert val == msg_in.read_int32(default_value=val)
 
 
 def test_message_float32():
@@ -116,6 +124,10 @@ def test_message_float32():
     # These won't be exactly equal in general, since python floats are 64-bit.
     assert val == read_val
 
+    # Test reading with defaults
+    assert 0.0 == msg_in.read_float32()
+    assert val == msg_in.read_float32(default_value=val)
+
 
 def test_message_string():
     val = "mlagents!"
@@ -125,6 +137,10 @@ def test_message_string():
     msg_in = IncomingMessage(msg_out.buffer)
     read_val = msg_in.read_string()
     assert val == read_val
+
+    # Test reading with defaults
+    assert "" == msg_in.read_string()
+    assert val == msg_in.read_string(default_value=val)
 
 
 def test_message_float_list():
@@ -136,3 +152,7 @@ def test_message_float_list():
     read_val = msg_in.read_float32_list()
     # These won't be exactly equal in general, since python floats are 64-bit.
     assert val == read_val
+
+    # Test reading with defaults
+    assert [] == msg_in.read_float32_list()
+    assert val == msg_in.read_float32_list(default_value=val)
