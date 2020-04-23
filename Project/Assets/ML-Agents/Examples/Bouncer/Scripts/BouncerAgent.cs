@@ -121,7 +121,7 @@ public class BouncerAgent : Agent
 
     public void SetTargetScale()
     {
-        var targetScale = m_ResetParams.GetParameterWithDefault("target_scale", 1.0f);
+        var targetScale = m_ResetParams.GetWithDefault("target_scale", 1.0f);
         target.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
     }
 

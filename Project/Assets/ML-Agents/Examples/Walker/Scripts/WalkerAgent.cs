@@ -179,9 +179,9 @@ public class WalkerAgent : Agent
 
     public void SetTorsoMass()
     {
-        m_ChestRb.mass = m_ResetParams.GetParameterWithDefault("chest_mass", 8);
-        m_SpineRb.mass = m_ResetParams.GetParameterWithDefault("spine_mass", 10);
-        m_HipsRb.mass = m_ResetParams.GetParameterWithDefault("hip_mass", 15);
+        m_ChestRb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
+        m_SpineRb.mass = m_ResetParams.GetWithDefault("spine_mass", 10);
+        m_HipsRb.mass = m_ResetParams.GetWithDefault("hip_mass", 15);
     }
 
     public void SetResetParameters()

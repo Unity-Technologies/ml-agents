@@ -52,21 +52,21 @@ public class GridArea : MonoBehaviour
 
     private void SetEnvironment()
     {
-        transform.position = m_InitialPosition * (m_ResetParams.GetParameterWithDefault("gridSize", 5f) + 1);
+        transform.position = m_InitialPosition * (m_ResetParams.GetWithDefault("gridSize", 5f) + 1);
         var playersList = new List<int>();
 
-        for (var i = 0; i < (int)m_ResetParams.GetParameterWithDefault("numObstacles", 1); i++)
+        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numObstacles", 1); i++)
         {
             playersList.Add(1);
         }
 
-        for (var i = 0; i < (int)m_ResetParams.GetParameterWithDefault("numGoals", 1f); i++)
+        for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numGoals", 1f); i++)
         {
             playersList.Add(0);
         }
         players = playersList.ToArray();
 
-        var gridSize = (int)m_ResetParams.GetParameterWithDefault("gridSize", 5f);
+        var gridSize = (int)m_ResetParams.GetWithDefault("gridSize", 5f);
         m_Plane.transform.localScale = new Vector3(gridSize / 10.0f, 1f, gridSize / 10.0f);
         m_Plane.transform.localPosition = new Vector3((gridSize - 1) / 2f, -0.5f, (gridSize - 1) / 2f);
         m_Sn.transform.localScale = new Vector3(1, 1, gridSize + 2);
@@ -84,7 +84,7 @@ public class GridArea : MonoBehaviour
 
     public void AreaReset()
     {
-        var gridSize = (int)m_ResetParams.GetParameterWithDefault("gridSize", 5f);
+        var gridSize = (int)m_ResetParams.GetWithDefault("gridSize", 5f);
         foreach (var actor in actorObjs)
         {
             DestroyImmediate(actor);

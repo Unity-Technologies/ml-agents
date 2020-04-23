@@ -80,7 +80,7 @@ public class SoccerFieldArea : MonoBehaviour
         ballRb.velocity = Vector3.zero;
         ballRb.angularVelocity = Vector3.zero;
 
-        var ballScale = m_ResetParams.GetParameterWithDefault("ball_scale", 0.015f);
+        var ballScale = m_ResetParams.GetWithDefault("ball_scale", 0.015f);
         ballRb.transform.localScale = new Vector3(ballScale, ballScale, ballScale);
     }
 }

@@ -272,12 +272,12 @@ public class FoodCollectorAgent : Agent
 
     public void SetLaserLengths()
     {
-        m_LaserLength = m_ResetParams.GetParameterWithDefault("laser_length", 1.0f);
+        m_LaserLength = m_ResetParams.GetWithDefault("laser_length", 1.0f);
     }
 
     public void SetAgentScale()
     {
-        float agentScale = m_ResetParams.GetParameterWithDefault("agent_scale", 1.0f);
+        float agentScale = m_ResetParams.GetWithDefault("agent_scale", 1.0f);
         gameObject.transform.localScale = new Vector3(agentScale, agentScale, agentScale);
     }
 

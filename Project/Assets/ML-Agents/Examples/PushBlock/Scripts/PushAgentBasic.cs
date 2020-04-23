@@ -232,18 +232,18 @@ public class PushAgentBasic : Agent
     {
         var groundCollider = ground.GetComponent<Collider>();
 
-        groundCollider.material.dynamicFriction = m_ResetParams.GetParameterWithDefault("dynamic_friction", 0);
-        groundCollider.material.staticFriction = m_ResetParams.GetParameterWithDefault("static_friction", 0);
+        groundCollider.material.dynamicFriction = m_ResetParams.GetWithDefault("dynamic_friction", 0);
+        groundCollider.material.staticFriction = m_ResetParams.GetWithDefault("static_friction", 0);
     }
 
     public void SetBlockProperties()
     {
-        var scale = m_ResetParams.GetParameterWithDefault("block_scale", 2);
+        var scale = m_ResetParams.GetWithDefault("block_scale", 2);
         //Set the scale of the block
         m_BlockRb.transform.localScale = new Vector3(scale, 0.75f, scale);
 
         // Set the drag of the block
-        m_BlockRb.drag = m_ResetParams.GetParameterWithDefault("block_drag", 0.5f);
+        m_BlockRb.drag = m_ResetParams.GetWithDefault("block_drag", 0.5f);
     }
 
     private void SetResetParameters()

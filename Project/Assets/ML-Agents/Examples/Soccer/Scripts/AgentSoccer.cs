@@ -218,7 +218,7 @@ public class AgentSoccer : Agent
     {
 
         timePenalty = 0;
-        m_BallTouch = m_ResetParams.GetParameterWithDefault("ball_touch", 0);
+        m_BallTouch = m_ResetParams.GetWithDefault("ball_touch", 0);
         if (team == Team.Purple)
         {
             transform.rotation = Quaternion.Euler(0f, -90f, 0f);

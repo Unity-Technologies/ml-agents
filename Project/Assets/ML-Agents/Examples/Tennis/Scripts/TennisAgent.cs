@@ -105,7 +105,7 @@ public class TennisAgent : Agent
 
     public void SetRacket()
     {
-        angle = m_ResetParams.GetParameterWithDefault("angle", 55);
+        angle = m_ResetParams.GetWithDefault("angle", 55);
         gameObject.transform.eulerAngles = new Vector3(
             gameObject.transform.eulerAngles.x,
             gameObject.transform.eulerAngles.y,
@@ -115,7 +115,7 @@ public class TennisAgent : Agent
 
     public void SetBall()
     {
-        scale = m_ResetParams.GetParameterWithDefault("scale", .5f);
+        scale = m_ResetParams.GetWithDefault("scale", .5f);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

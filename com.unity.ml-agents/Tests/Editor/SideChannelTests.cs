@@ -109,12 +109,12 @@ namespace MLAgents.Tests
             SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
             Assert.AreEqual(wasCalled, 1);
 
-            var keysA = propA.List();
+            var keysA = propA.Keys();
             Assert.AreEqual(2, keysA.Count);
             Assert.IsTrue(keysA.Contains(k1));
             Assert.IsTrue(keysA.Contains(k2));
 
-            var keysB = propA.List();
+            var keysB = propA.Keys();
             Assert.AreEqual(2, keysB.Count);
             Assert.IsTrue(keysB.Contains(k1));
             Assert.IsTrue(keysB.Contains(k2));

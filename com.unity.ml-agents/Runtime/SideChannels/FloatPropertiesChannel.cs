@@ -89,7 +89,7 @@ namespace MLAgents.SideChannels
         /// Returns a list of all the string identifiers of the properties currently present.
         /// </summary>
         /// <returns> The list of string identifiers </returns>
-        public IList<string> List()
+        public IList<string> Keys()
         {
             return new List<string>(m_FloatProperties.Keys);
         }

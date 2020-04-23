@@ -36,7 +36,7 @@ namespace MLAgents
         /// <param name="key">The parameter key</param>
         /// <param name="defaultValue">Default value for this parameter.</param>
         /// <returns></returns>
-        public float GetParameterWithDefault(string key, float defaultValue)
+        public float GetWithDefault(string key, float defaultValue)
         {
             return m_Channel.GetWithDefault(key, defaultValue);
         }
@@ -57,7 +57,7 @@ namespace MLAgents
         /// Returns a list of all the parameter keys that have received values.
         /// </summary>
         /// <returns>List of parameter keys.</returns>
-        public IList<string> ListParameters()
+        public IList<string> Keys()
         {
             return m_Channel.ListParameters();
         }
