@@ -105,7 +105,7 @@ def create_optimizer_mock(
     )
     trainer_parameters = trainer_config
     model_path = "testpath"
-    trainer_parameters["model_path"] = model_path
+    trainer_parameters["output_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["reward_signals"].update(reward_signal_config)
     trainer_parameters["use_recurrent"] = use_rnn

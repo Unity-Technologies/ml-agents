@@ -10,7 +10,7 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 def dummy_config():
     return yaml.safe_load(
         """
-        summary_path: "test/"
+        output_path: "test/"
         summary_freq: 1000
         max_steps: 100
         reward_signals:

@@ -39,8 +39,7 @@ def dummy_config():
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
+        output_path: test
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -83,7 +82,7 @@ def test_load_save(dummy_config, tmp_path):
     path1 = os.path.join(tmp_path, "runid1")
     path2 = os.path.join(tmp_path, "runid2")
     trainer_params = dummy_config
-    trainer_params["model_path"] = path1
+    trainer_params["output_path"] = path1
     policy = create_policy_mock(trainer_params)
     policy.initialize_or_load()
     policy.save_model(2000)

@@ -65,7 +65,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
 
     trainer_parameters = dummy_config
     model_path = "testmodel"
-    trainer_parameters["model_path"] = model_path
+    trainer_parameters["output_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
     policy = NNPolicy(
@@ -127,8 +127,7 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
     trainer_params = dummy_config
-    trainer_params["summary_path"] = str(tmpdir)
-    trainer_params["model_path"] = str(tmpdir)
+    trainer_params["output_path"] = str(tmpdir)
     trainer_params["save_replay_buffer"] = True
     trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
     policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
@@ -155,8 +154,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     mock_optimizer.reward_signals = {}
     sac_optimizer.return_value = mock_optimizer
 
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
@@ -178,8 +176,7 @@ def test_advance(dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     dummy_config["steps_per_update"] = 20
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)

@@ -42,8 +42,7 @@ def test_run_training(
             learn.run_training(0, basic_options())
             mock_init.assert_called_once_with(
                 trainer_factory_mock.return_value,
-                "./models/ppo",
-                "./summaries",
+                "./results/ppo",
                 "ppo",
                 50000,
                 None,
@@ -52,9 +51,7 @@ def test_run_training(
                 sampler_manager_mock.return_value,
                 None,
             )
-            handle_dir_mock.assert_called_once_with(
-                "./models/ppo", "./summaries", False, False, None
-            )
+            handle_dir_mock.assert_called_once_with("./results/ppo", False, False, None)
     StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 
 

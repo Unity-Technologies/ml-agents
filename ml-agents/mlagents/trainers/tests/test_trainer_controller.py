@@ -10,8 +10,7 @@ from mlagents.trainers.sampler_class import SamplerManager
 def basic_trainer_controller():
     return TrainerController(
         trainer_factory=None,
-        model_path="test_model_path",
-        summaries_dir="test_summaries_dir",
+        output_path="test_model_path",
         run_id="test_run_id",
         save_freq=100,
         meta_curriculum=None,
@@ -28,8 +27,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
     TrainerController(
         trainer_factory=None,
-        model_path="",
-        summaries_dir="",
+        output_path="",
         run_id="1",
         save_freq=1,
         meta_curriculum=None,

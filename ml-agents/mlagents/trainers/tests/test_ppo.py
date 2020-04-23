@@ -45,8 +45,7 @@ def dummy_config():
         memory_size: 10
         curiosity_strength: 0.0
         curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
+        output_path: test
         reward_signals:
           extrinsic:
             strength: 1.0
