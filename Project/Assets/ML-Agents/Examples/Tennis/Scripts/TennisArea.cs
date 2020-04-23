@@ -19,7 +19,7 @@ public class TennisArea : MonoBehaviour
 
     public void MatchReset()
     {
-        var ballOut = Random.Range(12f, 14f);
+        var ballOut = Random.Range(12.5f, 14f);
         var flip = Random.Range(0, 2);
         if (flip == 0)
         {
