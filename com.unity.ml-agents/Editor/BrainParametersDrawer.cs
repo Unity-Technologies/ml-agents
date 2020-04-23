@@ -14,11 +14,11 @@ namespace MLAgents.Editor
         // The height of a line in the Unity Inspectors
         const float k_LineHeight = 17f;
         const int k_VecObsNumLine = 3;
-        const string k_ActionSizePropName = "vectorActionSize";
-        const string k_ActionTypePropName = "vectorActionSpaceType";
-        const string k_ActionDescriptionPropName = "vectorActionDescriptions";
-        const string k_VecObsPropName = "vectorObservationSize";
-        const string k_NumVecObsPropName = "numStackedVectorObservations";
+        const string k_ActionSizePropName = "VectorActionSize";
+        const string k_ActionTypePropName = "VectorActionSpaceType";
+        const string k_ActionDescriptionPropName = "VectorActionDescriptions";
+        const string k_VecObsPropName = "VectorObservationSize";
+        const string k_NumVecObsPropName = "NumStackedVectorObservations";
 
         /// <inheritdoc />
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)

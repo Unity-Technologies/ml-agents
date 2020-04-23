@@ -44,6 +44,10 @@ and this project adheres to
   `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
   Instead, the `UnityEnvironment` must be passed as input to the
   constructor of `UnityToGymWrapper`
+- Public fields and properties on several classes were renamed to follow Unity's
+  C# style conventions. All public fields and properties now use "PascalCase"
+  instead of "camelCase"; for example, `Agent.maxStep` was renamed to
+  `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 
 ### Minor Changes
 

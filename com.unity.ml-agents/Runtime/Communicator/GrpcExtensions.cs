@@ -94,13 +94,13 @@ namespace MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSize = { bp.vectorActionSize },
+                VectorActionSize = { bp.VectorActionSize },
                 VectorActionSpaceType =
-                    (SpaceTypeProto)bp.vectorActionSpaceType,
+                    (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
-            brainParametersProto.VectorActionDescriptions.AddRange(bp.vectorActionDescriptions);
+            brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
             return brainParametersProto;
         }
 
@@ -113,9 +113,9 @@ namespace MLAgents
         {
             var bp = new BrainParameters
             {
-                vectorActionSize = bpp.VectorActionSize.ToArray(),
-                vectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
-                vectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
+                VectorActionSize = bpp.VectorActionSize.ToArray(),
+                VectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
+                VectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
             };
             return bp;
         }
