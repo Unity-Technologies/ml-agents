@@ -68,12 +68,12 @@ namespace MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("RenderTextureSensor.Write"))
             {
                 var texture = ObservationToTexture(m_RenderTexture);
-                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
+                var numWritten = Utilities.TextureToTensorProxy(texture, writer, m_Grayscale);
                 DestroyTexture(texture);
                 return numWritten;
             }

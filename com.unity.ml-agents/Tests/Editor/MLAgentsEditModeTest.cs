@@ -13,10 +13,10 @@ namespace MLAgents.Tests
     internal class TestPolicy : IPolicy
     {
         public Action OnRequestDecision;
-        private WriteAdapter m_Adapter = new WriteAdapter();
+        ObservationWriter m_ObsWriter = new ObservationWriter();
         public void RequestDecision(AgentInfo info, List<ISensor> sensors) {
             foreach(var sensor in sensors){
-                sensor.GetObservationProto(m_Adapter);
+                sensor.GetObservationProto(m_ObsWriter);
             }
             OnRequestDecision?.Invoke();
         }
@@ -120,7 +120,7 @@ namespace MLAgents.Tests
             return new[] { 0 };
         }
 
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             numWriteCalls++;
             // No-op

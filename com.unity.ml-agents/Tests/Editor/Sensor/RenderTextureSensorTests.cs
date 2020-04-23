@@ -20,8 +20,8 @@ namespace MLAgents.Tests
                     var texture = new RenderTexture(width, height, 0);
                     var sensor = new RenderTextureSensor(texture, grayscale, "TestCameraSensor", compression);
 
-                    var writeAdapter = new WriteAdapter();
-                    var obs = sensor.GetObservationProto(writeAdapter);
+                    var obsWriter = new ObservationWriter();
+                    var obs = sensor.GetObservationProto(obsWriter);
 
                     Assert.AreEqual((int)compression, (int)obs.CompressionType);
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
