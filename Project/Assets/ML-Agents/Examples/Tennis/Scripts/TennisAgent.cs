@@ -28,6 +28,10 @@ public class TennisAgent : Agent
     const float k_MaxAngle = 145f;
     const float k_MinAngle = 35f;
 
+    [HideInInspector]
+    public float timePenalty = 0;
+    float m_Existential;
+
     // Looks for the scoreboard based on the name of the gameObjects.
     // Do not modify the names of the Score GameObjects
     const string k_CanvasName = "Canvas";
@@ -36,6 +40,7 @@ public class TennisAgent : Agent
 
     public override void Initialize()
     {
+        m_Existential = 1f / maxStep;
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_OpponentRb = opponent.GetComponent<Rigidbody>();
@@ -110,6 +115,7 @@ public class TennisAgent : Agent
         var rgV = m_AgentRb.velocity;
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
 
+        timePenalty -= m_Existential;
         m_TextComponent.text = score.ToString();
     }
 
@@ -136,6 +142,7 @@ public class TennisAgent : Agent
     public override void OnEpisodeBegin()
     {
 
+        timePenalty = 0;
         m_InvertMult = invertX ? -1f : 1f;
         var agentOutX = Random.Range(14f, 16f);
         var agentOutY = Random.Range(-1.5f, 0f);
