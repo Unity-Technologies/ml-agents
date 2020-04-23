@@ -203,7 +203,7 @@ class PPOTrainer(RLTrainer):
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.update_buffer
-            max_num_batch = buffer_length // batch_size
+            max_num_batch = self.trainer_parameters["buffer_size"] // batch_size
             for l in range(0, max_num_batch * batch_size, batch_size):
                 update_stats = self.optimizer.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences
