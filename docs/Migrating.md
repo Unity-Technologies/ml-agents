@@ -41,7 +41,6 @@ double-check that the versions are in the same. The versions can be found in
   `Academy.Instance.EnvironmentParameters` on C# and create an
   `EnvironmentParametersChannel` on Python
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
-  - The `Academy` instance now has a `StatsRecorder` property
   - SideChannel IncomingMessages methods now take an optional default argument,
   which is used when trying to read more data than the message contains.
   - Added a feature to allow sending stats from C# environments to TensorBoard
