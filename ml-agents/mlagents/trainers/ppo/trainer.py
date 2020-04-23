@@ -198,6 +198,9 @@ class PPOTrainer(RLTrainer):
         self.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
+
+        # increment steps when training instead of when generating from environment
+        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
         num_epoch = self.trainer_parameters["num_epoch"]
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):

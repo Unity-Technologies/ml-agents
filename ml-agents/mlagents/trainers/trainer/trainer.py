@@ -14,7 +14,6 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-import horovod.tensorflow as hvd
 
 
 logger = get_logger(__name__)
@@ -98,10 +97,7 @@ class Trainer(abc.ABC):
         stop training if it wasn't training to begin with, or if max_steps
         is reached.
         """
-        if hvd.rank() == 0:
-            return self.is_training and self.get_step <= self.get_max_steps
-        else:
-            return True
+        return self.is_training and self.get_step <= self.get_max_steps
 
     @property
     def reward_buffer(self) -> Deque[float]:

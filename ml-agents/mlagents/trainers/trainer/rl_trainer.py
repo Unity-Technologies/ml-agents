@@ -120,7 +120,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         self._maybe_write_summary(self.get_step + len(trajectory.steps))
-        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
+        # self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
