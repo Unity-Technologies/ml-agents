@@ -38,6 +38,8 @@ double-check that the versions are in the same. The versions can be found in
   `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
   the `UnityEnvironment` must be passed as input to the
   constructor of `UnityToGymWrapper`
+- Training artifacts (trained models, summaries) are now found under `results/`
+  instead of `summaries/` and `models/`.
 
 ### Steps to Migrate
 

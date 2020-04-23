@@ -44,6 +44,8 @@ and this project adheres to
   `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
   Instead, the `UnityEnvironment` must be passed as input to the
   constructor of `UnityToGymWrapper`
+- Training artifacts (trained models, summaries) are now found in the `results/`
+  directory. (#3829)
 
 ### Minor Changes
 
