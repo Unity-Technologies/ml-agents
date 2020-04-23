@@ -9,7 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 ### Major Changes
-
+- Added new 3-joint Worm ragdoll environment. (#3798)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
 - The Jupyter notebooks have been removed from the repository.
@@ -36,10 +36,21 @@ and this project adheres to
   communication between Unity and the Python process.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
-- The GhostTrainer has been extended to support asymmetric games and the asymmetric example environment Strikers Vs.   Goalie has been added.
+- The GhostTrainer has been extended to support asymmetric games and the
+  asymmetric example environment Strikers Vs. Goalie has been added.
+- CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
+  were changed from `public` to `private` (#3808).
+- The `UnityEnv` class from the `gym-unity` package was renamed
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
+  Instead, the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
+- Public fields and properties on several classes were renamed to follow Unity's
+  C# style conventions. All public fields and properties now use "PascalCase"
+  instead of "camelCase"; for example, `Agent.maxStep` was renamed to
+  `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
-  configuration files are environment-specific. (#3791)
+  configuration files are now environment-specific. (#3791)
 
 ### Minor Changes
 
@@ -63,7 +74,13 @@ and this project adheres to
 - Running `mlagents-learn` with the same `--run-id` twice will no longer
   overwrite the existing files. (#3705)
 - `StackingSensor` was changed from `internal` visibility to `public`
+- Academy.InferenceSeed property was added. This is used to initialize the
+  random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
 - Updated Barracuda to 0.6.3-preview.
+- Added `Agent.GetObservations(), which returns a read-only view of the observations
+  added in `CollectObservations()`. (#3825)
+- Model updates can now happen asynchronously with environment steps for better performance. (#3690)
+- `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
 
 ### Bug Fixes
 

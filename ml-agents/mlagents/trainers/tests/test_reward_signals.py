@@ -6,6 +6,9 @@ from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 
+CONTINUOUS_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
+DISCRETE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
+
 
 def ppo_dummy_config():
     return yaml.safe_load(
@@ -28,9 +31,9 @@ def ppo_dummy_config():
         use_recurrent: false
         memory_size: 8
         reward_signals:
-          extrinsic:
-            strength: 1.0
-            gamma: 0.99
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
         """
     )
 
@@ -48,8 +51,7 @@ def sac_dummy_config():
         max_steps: 5.0e4
         memory_size: 256
         normalize: false
-        num_update: 1
-        train_interval: 1
+        steps_per_update: 1
         num_layers: 2
         time_horizon: 64
         sequence_length: 64
@@ -57,10 +59,6 @@ def sac_dummy_config():
         tau: 0.005
         use_recurrent: false
         vis_encode_type: simple
-        behavioral_cloning:
-            demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-            strength: 1.0
-            steps: 10000000
         reward_signals:
             extrinsic:
                 strength: 1.0
@@ -77,7 +75,7 @@ def gail_dummy_config():
             "gamma": 0.9,
             "encoding_size": 128,
             "use_vail": True,
-            "demo_path": os.path.dirname(os.path.abspath(__file__)) + "/test.demo",
+            "demo_path": CONTINUOUS_PATH,
         }
     }
 
@@ -105,7 +103,6 @@ def create_optimizer_mock(
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-
     trainer_parameters = trainer_config
     model_path = "testpath"
     trainer_parameters["model_path"] = model_path
@@ -145,6 +142,15 @@ def reward_signal_update(optimizer, reward_signal_name):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_cc(trainer_config, gail_dummy_config):
+    trainer_config.update(
+        {
+            "behavioral_cloning": {
+                "demo_path": CONTINUOUS_PATH,
+                "strength": 1.0,
+                "steps": 10000000,
+            }
+        }
+    )
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config, False, False, False
     )
@@ -156,8 +162,15 @@ def test_gail_cc(trainer_config, gail_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_dc_visual(trainer_config, gail_dummy_config):
-    gail_dummy_config["gail"]["demo_path"] = (
-        os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
+    gail_dummy_config["gail"]["demo_path"] = DISCRETE_PATH
+    trainer_config.update(
+        {
+            "behavioral_cloning": {
+                "demo_path": DISCRETE_PATH,
+                "strength": 1.0,
+                "steps": 10000000,
+            }
+        }
     )
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config, False, True, True
@@ -170,6 +183,15 @@ def test_gail_dc_visual(trainer_config, gail_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_rnn(trainer_config, gail_dummy_config):
+    trainer_config.update(
+        {
+            "behavioral_cloning": {
+                "demo_path": CONTINUOUS_PATH,
+                "strength": 1.0,
+                "steps": 10000000,
+            }
+        }
+    )
     policy = create_optimizer_mock(
         trainer_config, gail_dummy_config, True, False, False
     )

@@ -51,7 +51,7 @@ public class AgentSoccer : Agent
 
     public override void Initialize()
     {
-        m_Existential = 1f / maxStep;
+        m_Existential = 1f / MaxStep;
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
         if (m_BehaviorParameters.TeamId == (int)Team.Blue)
         {

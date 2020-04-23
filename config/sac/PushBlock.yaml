@@ -11,12 +11,11 @@ behaviors:
     max_steps: 2e6
     memory_size: 128
     normalize: false
-    num_update: 1
-    train_interval: 1
+    steps_per_update: 10
     num_layers: 2
     time_horizon: 64
     sequence_length: 64
-    summary_freq: 60000
+    summary_freq: 100000
     tau: 0.005
     use_recurrent: false
     vis_encode_type: simple

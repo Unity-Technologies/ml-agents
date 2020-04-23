@@ -213,7 +213,7 @@ def test_yaml_args(mock_file):
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_SAMPLER_CURRICULUM_YAML)
-def test_sampler_curriculum_configs(mock_file):
+def test_sampler_configs(mock_file):
     opt = parse_command_line(["mytrainerpath"])
     assert opt.parameter_randomization == "sampler1"
 

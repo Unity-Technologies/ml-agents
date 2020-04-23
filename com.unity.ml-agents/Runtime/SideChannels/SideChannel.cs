@@ -35,7 +35,7 @@ namespace MLAgents.SideChannels
         /// <summary>
         /// Queues a message to be sent to Python during the next simulation step.
         /// </summary>
-        /// <param name="data"> The byte array of data to be sent to Python.</param>
+        /// <param name="msg"> The byte array of data to be sent to Python.</param>
         protected void QueueMessageToSend(OutgoingMessage msg)
         {
             MessageQueue.Add(msg.ToByteArray());
