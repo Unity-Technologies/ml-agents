@@ -255,8 +255,7 @@ def test_bad_config(dummy_config):
     dummy_config["sequence_length"] = 64
     dummy_config["batch_size"] = 32
     dummy_config["use_recurrent"] = True
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     with pytest.raises(UnityTrainerException):
         _ = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
 
