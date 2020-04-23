@@ -30,8 +30,7 @@ class TrainerController(object):
     def __init__(
         self,
         trainer_factory: TrainerFactory,
-        model_path: str,
-        summaries_dir: str,
+        output_path: str,
         run_id: str,
         save_freq: int,
         meta_curriculum: Optional[MetaCurriculum],
@@ -41,7 +40,7 @@ class TrainerController(object):
         resampling_interval: Optional[int],
     ):
         """
-        :param model_path: Path to save the model.
+        :param output_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
@@ -55,8 +54,7 @@ class TrainerController(object):
         self.trainers: Dict[str, Trainer] = {}
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
         self.trainer_factory = trainer_factory
-        self.model_path = model_path
-        self.summaries_dir = summaries_dir
+        self.output_path = output_path
         self.logger = get_logger(__name__)
         self.run_id = run_id
         self.save_freq = save_freq
@@ -119,16 +117,16 @@ class TrainerController(object):
                 self.trainers[brain_name].export_model(name_behavior_id)
 
     @staticmethod
-    def _create_model_path(model_path):
+    def _create_output_path(output_path):
         try:
-            if not os.path.exists(model_path):
-                os.makedirs(model_path)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
         except Exception:
             raise UnityEnvironmentException(
                 "The folder {} containing the "
                 "generated model could not be "
                 "accessed. Please make sure the "
-                "permissions are set correctly.".format(model_path)
+                "permissions are set correctly.".format(output_path)
             )
 
     @timed
@@ -207,7 +205,7 @@ class TrainerController(object):
 
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
-        self._create_model_path(self.model_path)
+        self._create_output_path(self.output_path)
         tf.reset_default_graph()
         global_step = 0
         last_brain_behavior_ids: Set[str] = set()

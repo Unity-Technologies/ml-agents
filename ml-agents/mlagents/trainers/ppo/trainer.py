@@ -62,9 +62,8 @@ class PPOTrainer(RLTrainer):
             "sequence_length",
             "summary_freq",
             "use_recurrent",
-            "summary_path",
             "memory_size",
-            "model_path",
+            "output_path",
             "reward_signals",
         ]
         self._check_param_keys()

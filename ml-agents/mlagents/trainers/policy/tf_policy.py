@@ -62,7 +62,7 @@ class TFPolicy(Policy):
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = trainer_parameters["model_path"]
+        self.model_path = trainer_parameters["output_path"]
         self.initialize_path = trainer_parameters.get("init_path", None)
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()

@@ -320,9 +320,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
-        model_path = f"./models/{options.run_id}"
+        write_path = f"./results/{options.run_id}"
         maybe_init_path = (
-            f"./models/{options.initialize_from}" if options.initialize_from else None
+            f"./results/{options.initialize_from}" if options.initialize_from else None
         )
         summaries_dir = "./summaries"
         port = options.base_port
@@ -330,16 +330,16 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
-            summaries_dir,
+            write_path,
             required_fields=[
                 "Environment/Cumulative Reward",
                 "Environment/Episode Length",
             ],
         )
         handle_existing_directories(
-            model_path, summaries_dir, options.resume, options.force, maybe_init_path
+            write_path, options.resume, options.force, maybe_init_path
         )
-        tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
+        tb_writer = TensorboardWriter(write_path, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
@@ -368,9 +368,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         trainer_factory = TrainerFactory(
             options.trainer_config,
-            summaries_dir,
             options.run_id,
-            model_path,
+            write_path,
             options.keep_checkpoints,
             not options.inference,
             options.resume,
@@ -382,8 +381,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         # Create controller and begin training.
         tc = TrainerController(
             trainer_factory,
-            model_path,
-            summaries_dir,
+            write_path,
             options.run_id,
             options.save_freq,
             maybe_meta_curriculum,

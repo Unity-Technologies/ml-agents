@@ -42,9 +42,8 @@ class Trainer(abc.ABC):
         self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
-        self.summary_path = trainer_parameters["summary_path"]
         self._threaded = trainer_parameters.get("threaded", True)
-        self._stats_reporter = StatsReporter(self.summary_path)
+        self._stats_reporter = StatsReporter(brain_name)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
