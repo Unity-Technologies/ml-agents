@@ -145,7 +145,6 @@ class PPOTrainer(RLTrainer):
                 lambd=self.trainer_parameters["lambd"],
             )
             local_return = local_advantage + local_value_estimates
-
             # This is later use as target for the different value estimates
             agent_buffer_trajectory["{}_returns".format(name)].set(local_return)
             agent_buffer_trajectory["{}_advantage".format(name)].set(local_advantage)

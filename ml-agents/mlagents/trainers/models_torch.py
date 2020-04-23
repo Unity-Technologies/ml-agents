@@ -248,7 +248,7 @@ class VectorEncoder(nn.Module):
         self.layers = [nn.Linear(input_size, hidden_size)]
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
-            self.layers.append(nn.ReLU())
+            self.layers.append(nn.Tanh())
         self.layers = nn.ModuleList(self.layers)
 
     def forward(self, inputs):

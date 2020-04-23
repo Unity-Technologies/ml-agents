@@ -83,6 +83,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
             visual_obs = batch["visual_obs"]
         else:
             visual_obs = []
+
         next_obs = [torch.Tensor(next_obs[0])]
 
         value_estimates, mean_value = self.policy.critic(vector_obs, visual_obs)
