@@ -64,16 +64,17 @@ for a sample execution of the `mlagents-learn` command.
 Regardless of which training methods, configurations or hyperparameters you
 provide, the training process will always generate three artifacts:
 
-1. Summaries (under the `summaries/` folder): these are training metrics that
+1. Summaries (under the `results/<run-identifier>/<behavior-name>` folder):
+   these are training metrics that
    are updated throughout the training process. They are helpful to monitor your
    training performance and may help inform how to update your hyperparameter
    values. See [Using TensorBoard](Using-Tensorboard.md) for more details on how
    to visualize the training metrics.
-1. Models (under the `models/` folder): these contain the model checkpoints that
+1. Models (under the `results/<run-identifier>/` folder): these contain the model checkpoints that
    are updated throughout training and the final model file (`.nn`). This final
    model file is generated once either when training completes or is
    interrupted.
-1. Timers file (also under the `summaries/` folder): this contains aggregated
+1. Timers file (also under the `results/<run-identifier>` folder): this contains aggregated
    metrics on your training process, including time spent on specific code
    blocks. See [Profiling in Python](Profiling-Python.md) for more information
    on the timers generated.
