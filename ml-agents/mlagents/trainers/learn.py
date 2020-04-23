@@ -1,5 +1,6 @@
 # # Unity ML-Agents Toolkit
 import argparse
+import yaml
 
 import os
 import numpy as np
@@ -398,11 +399,23 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
+        write_run_options(base_path, options)
         write_timing_tree(run_logs_dir)
 
 
-def write_timing_tree(summaries_dir: str) -> None:
-    timing_path = f"{summaries_dir}/timers.json"
+def write_run_options(output_dir: str, run_options: RunOptions) -> None:
+    run_options_path = os.path.join(output_dir, "configuration.yaml")
+    try:
+        with open(run_options_path, "w") as f:
+            yaml.dump(dict(run_options._asdict()), f, sort_keys=False)
+    except FileNotFoundError:
+        logger.warning(
+            f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
+        )
+
+
+def write_timing_tree(output_dir: str) -> None:
+    timing_path = f"{output_dir}/timers.json"
     try:
         with open(timing_path, "w") as f:
             json.dump(get_timer_tree(), f, indent=4)
