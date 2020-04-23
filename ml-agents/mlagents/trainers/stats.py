@@ -92,7 +92,7 @@ class ConsoleWriter(StatsWriter):
     ) -> None:
         is_training = "Not Training."
         if "Is Training" in values:
-            stats_summary = stats_summary = values["Is Training"]
+            stats_summary = values["Is Training"]
             if stats_summary.mean > 0.0:
                 is_training = "Training."
 
