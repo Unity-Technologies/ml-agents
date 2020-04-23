@@ -42,7 +42,7 @@ namespace MLAgents
     /// Access the Academy singleton through the <see cref="Instance"/>
     /// property. The Academy instance is initialized the first time it is accessed (which will
     /// typically be by the first <see cref="Agent"/> initialized in a scene).
-    /// 
+    ///
     /// At initialization, the Academy attempts to connect to the Python training process through
     /// the external communicator. If successful, the training process can train <see cref="Agent"/>
     /// instances. When you set an agent's <see cref="BehaviorParameters.behaviorType"/> setting
@@ -68,7 +68,7 @@ namespace MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "0.15.1-preview";
+        internal const string k_PackageVersion = "0.16.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
