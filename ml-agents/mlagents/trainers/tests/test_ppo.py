@@ -7,7 +7,7 @@ from mlagents.tf_utils import tf
 import yaml
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.agent_processor import AgentManagerQueue

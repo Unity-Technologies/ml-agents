@@ -69,6 +69,8 @@ class NetworkBody(nn.Module):
         for visual_size in visual_sizes:
             self.visual_encoders.append(visual_encoder(visual_size))
 
+        self.vector_encoders = nn.ModuleList(self.vector_encoders)
+        self.visual_encoders = nn.ModuleList(self.visual_encoders)
         if use_lstm:
             self.lstm = nn.LSTM(h_size, h_size, 1)
 
@@ -168,7 +170,6 @@ class Critic(nn.Module):
         use_lstm,
     ):
         super(Critic, self).__init__()
-        self.stream_names = stream_names
         self.network_body = NetworkBody(
             vector_sizes,
             visual_sizes,
@@ -179,6 +180,7 @@ class Critic(nn.Module):
             vis_encode_type,
             use_lstm,
         )
+        self.stream_names = stream_names
         self.value_heads = ValueHeads(stream_names, h_size)
 
     def forward(self, vec_inputs, vis_inputs):
@@ -228,6 +230,7 @@ class ValueHeads(nn.Module):
         for name in stream_names:
             value = nn.Linear(input_size, 1)
             self.value_heads[name] = value
+        self.value_heads = nn.ModuleDict(self.value_heads)
 
     def forward(self, hidden):
         value_outputs = {}
@@ -246,6 +249,7 @@ class VectorEncoder(nn.Module):
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
             self.layers.append(nn.ReLU())
+        self.layers = nn.ModuleList(self.layers)
 
     def forward(self, inputs):
         x = inputs

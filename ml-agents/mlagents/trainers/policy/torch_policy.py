@@ -139,7 +139,6 @@ class TorchPolicy(Policy):
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
         vector_obs = np.array(vector_obs)
-        print(vector_obs.shape)
         vector_obs = [vector_obs]
         if self.use_vec_obs and self.normalize:
             self.critic.network_body.update_normalization(vector_obs)

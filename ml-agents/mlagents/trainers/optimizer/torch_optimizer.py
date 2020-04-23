@@ -78,12 +78,21 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        vector_obs = torch.Tensor(np.array(batch["vector_obs"]))
-        visual_obs = batch["visual_obs"]
+        vector_obs = [torch.Tensor(np.array(batch["vector_obs"]))]
+        if self.policy.use_vis_obs:
+            visual_obs = batch["visual_obs"]
+        else:
+            visual_obs = []
+        next_obs = [torch.Tensor(next_obs[0])]
 
         value_estimates, mean_value = self.policy.critic(vector_obs, visual_obs)
 
-        for name, estimate in value_estimates.items():
-            value_estimates[name] = estimate.detach()
+        next_value_estimate, next_value = self.policy.critic(next_obs, next_obs)
 
-        return value_estimates, value_estimates
+        for name, estimate in value_estimates.items():
+            value_estimates[name] = estimate.squeeze(-1).detach().numpy()
+            next_value_estimate[name] = (
+                next_value_estimate[name].squeeze(-1).detach().numpy()
+            )
+
+        return value_estimates, next_value_estimate

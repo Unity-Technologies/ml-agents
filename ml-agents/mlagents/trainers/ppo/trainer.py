@@ -105,6 +105,7 @@ class PPOTrainer(RLTrainer):
             trajectory.next_obs,
             trajectory.done_reached and not trajectory.max_step_reached,
         )
+
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
             self._stats_reporter.add_stat(

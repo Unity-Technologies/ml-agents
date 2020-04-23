@@ -4,7 +4,7 @@ import os
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 
 
 def ppo_dummy_config():

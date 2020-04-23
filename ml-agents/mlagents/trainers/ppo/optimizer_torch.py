@@ -48,11 +48,12 @@ class PPOOptimizer(TorchOptimizer):
         value_losses = []
         for name, head in values.items():
             old_val_tensor = torch.DoubleTensor(old_values[name])
+            returns_tensor = torch.DoubleTensor(returns[name])
             clipped_value_estimate = old_val_tensor + torch.clamp(
                 torch.sum(head, dim=1) - old_val_tensor, -decay_epsilon, decay_epsilon
             )
-            v_opt_a = (torch.DoubleTensor(returns[name]) - torch.sum(head, dim=1)) ** 2
-            v_opt_b = (torch.DoubleTensor(returns[name]) - clipped_value_estimate) ** 2
+            v_opt_a = (returns_tensor - torch.sum(head, dim=1)) ** 2
+            v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
             value_loss = torch.mean(torch.max(v_opt_a, v_opt_b))
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
@@ -89,11 +90,15 @@ class PPOOptimizer(TorchOptimizer):
         returns = {}
         old_values = {}
         for name in self.reward_signals:
-            returns[name] = batch["{}_returns".format(name)]
-            old_values[name] = batch["{}_value_estimates".format(name)]
+            old_values[name] = np.array(batch["{}_value_estimates".format(name)])
+            returns[name] = np.array(batch["{}_returns".format(name)])
 
         vec_obs = np.array(batch["vector_obs"])
-        vis_obs = np.array(batch["visual_obs"])
+        vec_obs = [torch.Tensor(vec_obs)]
+        if self.policy.use_vis_obs:
+            vis_obs = np.array(batch["visual_obs"])
+        else:
+            vis_obs = []
         actions, log_probs, entropy, values = self.policy.execute_model(
             vec_obs, vis_obs
         )
