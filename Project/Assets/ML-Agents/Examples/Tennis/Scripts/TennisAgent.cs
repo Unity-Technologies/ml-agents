@@ -22,7 +22,7 @@ public class TennisAgent : Agent
     TennisArea m_Area;
     float m_InvertMult;
     FloatPropertiesChannel m_ResetParams;
-    Vector3 down = new Vector3(0f, -100f, 0f);
+    Vector3 m_Down = new Vector3(0f, -100f, 0f);
     Vector3 zAxis = new Vector3(0f, 0f, 1f);
     const float k_Angle = 90f;
     const float k_MaxAngle = 145f;
@@ -100,7 +100,7 @@ public class TennisAgent : Agent
 
         // calculate angle between m_InvertMult * 55 and m_InvertMult * 125
         var angle = 35f * rotate + m_InvertMult * k_Angle;
-        // maps inverse agents rotation into -35 to -145
+        // maps agents rotation into m_InvertMult * 55 and m_InvertMult * 125
         var rotateZ = angle - (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f);
         Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
@@ -136,7 +136,7 @@ public class TennisAgent : Agent
 
     void FixedUpdate()
     {   
-        m_AgentRb.AddForce(down);
+        m_AgentRb.AddForce(m_Down);
     }   
 
     public override void OnEpisodeBegin()

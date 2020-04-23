@@ -7,7 +7,7 @@ public class TennisArea : MonoBehaviour
     public GameObject agentB;
     Rigidbody m_BallRb;
     HitWall m_BallScript;
-    Vector3 down = new Vector3(0f, -45f, 0f);
+    Vector3 m_Down = new Vector3(0f, -45f, 0f);
 
     // Use this for initialization
     void Start()
@@ -36,7 +36,7 @@ public class TennisArea : MonoBehaviour
 
     void FixedUpdate()
     {
-        m_BallRb.AddForce(down);
+        m_BallRb.AddForce(m_Down);
         var rgV = m_BallRb.velocity;
         m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -40f, 40f), Mathf.Min(rgV.y, 35f), rgV.z);
     }
