@@ -203,7 +203,7 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
 
 
 def handle_existing_directories(
-    model_path: str, resume: bool, force: bool, init_path: str = None
+    output_path: str, resume: bool, force: bool, init_path: str = None
 ) -> None:
     """
     Validates that if the run_id model exists, we do not overwrite it unless --force is specified.
@@ -215,9 +215,9 @@ def handle_existing_directories(
     :param force: Whether or not the --force flag was passed.
     """
 
-    model_path_exists = os.path.isdir(model_path)
+    output_path_exists = os.path.isdir(output_path)
 
-    if model_path_exists:
+    if output_path_exists:
         if not resume and not force:
             raise UnityTrainerException(
                 "Previous data from this run ID was found. "

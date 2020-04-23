@@ -327,9 +327,13 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             os.path.join(base_path, options.run_id) if options.initialize_from else None
         )
         run_logs_dir = os.path.join(write_path, "run_logs")
-        os.makedirs(run_logs_dir, exist_ok=True)
         port = options.base_port
-
+        # Check if directory exists
+        handle_existing_directories(
+            write_path, options.resume, options.force, maybe_init_path
+        )
+        # Make run logs directory
+        os.makedirs(run_logs_dir, exist_ok=True)
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
@@ -338,9 +342,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 "Environment/Cumulative Reward",
                 "Environment/Episode Length",
             ],
-        )
-        handle_existing_directories(
-            write_path, options.resume, options.force, maybe_init_path
         )
         tb_writer = TensorboardWriter(write_path, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
