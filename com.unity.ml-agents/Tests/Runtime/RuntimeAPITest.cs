@@ -57,6 +57,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator RuntimeApiTestWithEnumeratorPasses()
         {
+            Academy.Instance.InferenceSeed = 1337;
             var gameObject = new GameObject();
 
             var behaviorParams = gameObject.AddComponent<BehaviorParameters>();

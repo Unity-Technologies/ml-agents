@@ -6,12 +6,15 @@ using MLAgents.Policies;
 namespace MLAgents
 {
     /// <summary>
+    /// The DiscreteActionMasker class represents a set of masked (disallowed) actions and
+    /// provides utilities for setting and retrieving them.
+    /// </summary>
+    /// <remarks>
     /// Agents that take discrete actions can explicitly indicate that specific actions
     /// are not allowed at a point in time. This enables the agent to indicate that some actions
-    /// may be illegal (e.g. the King in Chess taking a move to the left if it is already in the
-    /// left side of the board). This class represents the set of masked actions and provides
-    /// the utilities for setting and retrieving them.
-    /// </summary>
+    /// may be illegal. For example, if an agent is adjacent to a wall or other obstacle
+    /// you could mask any actions that direct the agent to move into the blocked space.
+    /// </remarks>
     public class DiscreteActionMasker
     {
         /// When using discrete control, is the starting indices of the actions
@@ -28,13 +31,19 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Modifies an action mask for discrete control agents. When used, the agent will not be
-        /// able to perform the actions passed as argument at the next decision for the specified
-        /// action branch. The actionIndices correspond to the action options the agent will
-        /// be unable to perform.
+        /// Modifies an action mask for discrete control agents.
         /// </summary>
-        /// <param name="branch">The branch for which the actions will be masked</param>
-        /// <param name="actionIndices">The indices of the masked actions</param>
+        /// <remarks>
+        /// When used, the agent will not be able to perform the actions passed as argument
+        /// at the next decision for the specified action branch. The actionIndices correspond
+        /// to the action options the agent will be unable to perform.
+        /// 
+        /// See [Agents - Actions] for more information on masking actions.
+        /// 
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
+        /// </remarks>
+        /// <param name="branch">The branch for which the actions will be masked.</param>
+        /// <param name="actionIndices">The indices of the masked actions.</param>
         public void SetMask(int branch, IEnumerable<int> actionIndices)
         {
             // If the branch does not exist, raise an error
@@ -71,7 +80,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Get the current mask for an agent
+        /// Get the current mask for an agent.
         /// </summary>
         /// <returns>A mask for the agent. A boolean array of length equal to the total number of
         /// actions.</returns>
@@ -109,7 +118,7 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Resets the current mask for an agent
+        /// Resets the current mask for an agent.
         /// </summary>
         internal void ResetMask()
         {
@@ -120,10 +129,10 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Checks if all the actions in the input branch are masked
+        /// Checks if all the actions in the input branch are masked.
         /// </summary>
-        /// <param name="branch"> The index of the branch to check</param>
-        /// <returns> True if all the actions of the branch are masked</returns>
+        /// <param name="branch"> The index of the branch to check.</param>
+        /// <returns> True if all the actions of the branch are masked.</returns>
         bool AreAllActionsMasked(int branch)
         {
             if (m_CurrentMask == null)

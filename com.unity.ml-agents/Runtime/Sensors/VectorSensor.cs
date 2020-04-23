@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace MLAgents.Sensors
@@ -58,6 +59,15 @@ namespace MLAgents.Sensors
             }
             adapter.AddRange(m_Observations);
             return expectedObservations;
+        }
+
+        /// <summary>
+        /// Returns a read-only view of the observations that added.
+        /// </summary>
+        /// <returns>A read-only view of the observations list.</returns>
+        internal ReadOnlyCollection<float> GetObservations()
+        {
+            return m_Observations.AsReadOnly();
         }
 
         /// <inheritdoc/>
