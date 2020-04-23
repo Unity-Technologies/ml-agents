@@ -5,9 +5,18 @@ using UnityEngine.Serialization;
 namespace MLAgents
 {
     /// <summary>
-    /// A component that when attached to an Agent will automatically request decisions from it
-    /// at regular intervals.
+    /// The DecisionRequester component automatically request decisions for an
+    /// <see cref="Agent"/> instance at regular intervals.
     /// </summary>
+    /// <remarks>
+    /// Attach a DecisionRequester component to the same [GameObject] as the
+    /// <see cref="Agent"/> component.
+    ///
+    /// The DecisionRequester component provides a convenient and flexible way to
+    /// trigger the agent decision making process. Without a DecisionRequester,
+    /// your <see cref="Agent"/> implmentation must manually call its
+    /// <seealso cref="Agent.RequestDecision"/> function.
+    /// </remarks>
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
     [RequireComponent(typeof(Agent))]
     public class DecisionRequester : MonoBehaviour
