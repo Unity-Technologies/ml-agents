@@ -128,12 +128,11 @@ VisualPyramids:
             gamma: 0.995
 
 Tennis:
-    normalize: true
     max_steps: 5.0e7
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
-    hidden_units: 256
+    hidden_units: 512
     beta: 1.0e-2
     threaded: false
     time_horizon: 1000

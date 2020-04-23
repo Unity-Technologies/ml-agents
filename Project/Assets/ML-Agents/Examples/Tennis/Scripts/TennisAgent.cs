@@ -58,22 +58,23 @@ public class TennisAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(m_InvertMult * (transform.position.x - myArea.transform.position.x));
-        sensor.AddObservation(transform.position.y - myArea.transform.position.y);
-        sensor.AddObservation(m_InvertMult * m_AgentRb.velocity.x);
-        sensor.AddObservation(m_AgentRb.velocity.y);
+        sensor.AddObservation(m_InvertMult * (transform.position.x - myArea.transform.position.x) / -25f);
+        sensor.AddObservation((transform.position.y - myArea.transform.position.y) / -7f);
+        sensor.AddObservation(m_InvertMult * m_AgentRb.velocity.x / 20f);
+        sensor.AddObservation(m_AgentRb.velocity.y / 20f);
 
-        sensor.AddObservation(m_InvertMult * (ball.transform.position.x - myArea.transform.position.x));
-        sensor.AddObservation(ball.transform.position.y - myArea.transform.position.y);
-        sensor.AddObservation(m_InvertMult * m_BallRb.velocity.x);
-        sensor.AddObservation(m_BallRb.velocity.y);
+        sensor.AddObservation(m_InvertMult * (ball.transform.position.x - myArea.transform.position.x) / 25f);
+        sensor.AddObservation((ball.transform.position.y - myArea.transform.position.y) / 20f);
+        sensor.AddObservation(m_InvertMult * m_BallRb.velocity.x / 40f);
+        sensor.AddObservation(m_BallRb.velocity.y / 60f);
 
-        sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x));
-        sensor.AddObservation(opponent.transform.position.y - myArea.transform.position.y);
-        //sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x);
-        //sensor.AddObservation(m_OpponentRb.velocity.y);
+        sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x) / -25f);
+        sensor.AddObservation((opponent.transform.position.y - myArea.transform.position.y) / -7f);
+        sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x / 20f);
+        sensor.AddObservation(m_OpponentRb.velocity.y / 20f);
 
-        sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
+        //sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
+        sensor.AddObservation((m_InvertMult * (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f) - 35f) / 125f);
 
         sensor.AddObservation(System.Convert.ToInt32(m_BallScript.lastFloorHit == HitWall.FloorHit.FloorHitUnset));
     }
