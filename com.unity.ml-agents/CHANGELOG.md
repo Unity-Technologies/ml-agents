@@ -9,7 +9,7 @@ and this project adheres to
 ## [Unreleased]
 
 ### Major Changes
-
+- Added new 3-joint Worm ragdoll environment. (#3798)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
 - The Jupyter notebooks have been removed from the repository.
