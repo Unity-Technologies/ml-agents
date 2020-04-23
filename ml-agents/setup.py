@@ -60,7 +60,7 @@ setup(
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
-        "pyyaml",
+        "pyyaml>=5.1",
         "tensorflow>=1.7,<2.1",
         'pypiwin32==223;platform_system=="Windows"',
     ],

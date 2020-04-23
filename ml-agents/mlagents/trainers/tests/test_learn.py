@@ -15,6 +15,8 @@ def basic_options(extra_args=None):
     return parse_command_line(args)
 
 
+@patch("mlagents.trainers.learn.write_timing_tree")
+@patch("mlagents.trainers.learn.write_run_options")
 @patch("mlagents.trainers.learn.handle_existing_directories")
 @patch("mlagents.trainers.learn.TrainerFactory")
 @patch("mlagents.trainers.learn.SamplerManager")
@@ -28,6 +30,8 @@ def test_run_training(
     sampler_manager_mock,
     trainer_factory_mock,
     handle_dir_mock,
+    write_run_options_mock,
+    write_timing_tree_mock,
 ):
     mock_env = MagicMock()
     mock_env.external_brain_names = []
@@ -39,10 +43,11 @@ def test_run_training(
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
         with patch.object(TrainerController, "start_learning", MagicMock()):
-            learn.run_training(0, basic_options())
+            options = basic_options()
+            learn.run_training(0, options)
             mock_init.assert_called_once_with(
                 trainer_factory_mock.return_value,
-                "./results/ppo",
+                "results/ppo",
                 "ppo",
                 50000,
                 None,
@@ -51,7 +56,9 @@ def test_run_training(
                 sampler_manager_mock.return_value,
                 None,
             )
-            handle_dir_mock.assert_called_once_with("./results/ppo", False, False, None)
+            handle_dir_mock.assert_called_once_with("results/ppo", False, False, None)
+            write_timing_tree_mock.assert_called_once_with("results/ppo/run_logs")
+            write_run_options_mock.assert_called_once_with("results/ppo", options)
     StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 
 

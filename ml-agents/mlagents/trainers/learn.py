@@ -399,7 +399,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
-        write_run_options(base_path, options)
+        write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
 
 
