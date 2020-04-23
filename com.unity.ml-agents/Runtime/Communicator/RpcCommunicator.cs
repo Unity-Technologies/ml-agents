@@ -27,7 +27,7 @@ namespace MLAgents
 
         List<string> m_BehaviorNames = new List<string>();
         bool m_NeedCommunicateThisStep;
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        ObservationWriter m_ObservationWriter = new ObservationWriter();
         Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
         Dictionary<string, List<int>> m_OrderedAgentsRequestingDecisions = new Dictionary<string, List<int>>();
 
@@ -322,7 +322,7 @@ namespace MLAgents
                 {
                     foreach (var sensor in sensors)
                     {
-                        var obsProto = sensor.GetObservationProto(m_WriteAdapter);
+                        var obsProto = sensor.GetObservationProto(m_ObservationWriter);
                         agentInfoProto.Observations.Add(obsProto);
                     }
                 }

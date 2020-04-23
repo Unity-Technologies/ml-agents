@@ -8,7 +8,7 @@ namespace MLAgents.Sensors
     /// <summary>
     /// Allows sensors to write to both TensorProxy and float arrays/lists.
     /// </summary>
-    public class WriteAdapter
+    public class ObservationWriter
     {
         IList<float> m_Data;
         int m_Offset;
@@ -18,10 +18,10 @@ namespace MLAgents.Sensors
 
         TensorShape m_TensorShape;
 
-        internal WriteAdapter() { }
+        internal ObservationWriter() { }
 
         /// <summary>
-        /// Set the adapter to write to an IList at the given channelOffset.
+        /// Set the writer to write to an IList at the given channelOffset.
         /// </summary>
         /// <param name="data">Float array or list that will be written to.</param>
         /// <param name="shape">Shape of the observations to be written.</param>
@@ -44,7 +44,7 @@ namespace MLAgents.Sensors
         }
 
         /// <summary>
-        /// Set the adapter to write to a TensorProxy at the given batch and channel offset.
+        /// Set the writer to write to a TensorProxy at the given batch and channel offset.
         /// </summary>
         /// <param name="tensorProxy">Tensor proxy that will be written to.</param>
         /// <param name="batchIndex">Batch index in the tensor proxy (i.e. the index of the Agent).</param>

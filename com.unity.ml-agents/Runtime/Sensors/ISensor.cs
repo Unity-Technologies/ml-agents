@@ -31,15 +31,15 @@ namespace MLAgents.Sensors
         int[] GetObservationShape();
 
         /// <summary>
-        /// Write the observation data directly to the <see cref="WriteAdapter"/>.
+        /// Write the observation data directly to the <see cref="ObservationWriter"/>.
         /// This is considered an advanced interface; for a simpler approach, use
         /// <see cref="SensorBase"/> and override <see cref="SensorBase.WriteObservation"/> instead.
         /// Note that this (and  <see cref="GetCompressedObservation"/>) may
         /// be called multiple times per agent step, so should not mutate any internal state.
         /// </summary>
-        /// <param name="adapter">Where the observations will be written to.</param>
+        /// <param name="writer">Where the observations will be written to.</param>
         /// <returns>The number of elements written.</returns>
-        int Write(WriteAdapter adapter);
+        int Write(ObservationWriter writer);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations,

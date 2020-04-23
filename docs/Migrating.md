@@ -42,6 +42,7 @@ double-check that the versions are in the same. The versions can be found in
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
+- `WriteAdapter` was renamed to `ObservationWriter`. (#3834)
 
 ### Steps to Migrate
 
@@ -69,6 +70,8 @@ double-check that the versions are in the same. The versions can be found in
   no longer takes a file name as input but a fully constructed
   `UnityEnvironment` instead.
 - Update uses of "camelCase" fields and properties to "PascalCase".
+- If you have a custom `ISensor` implementation, you will need to change the signature of
+  its `Write()` method to use `ObservationWriter` instead of `WriteAdapter`.
 
 ## Migrating from 0.14 to 0.15
 

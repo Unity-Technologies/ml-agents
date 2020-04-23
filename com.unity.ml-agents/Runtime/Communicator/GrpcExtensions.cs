@@ -227,14 +227,14 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Generate an ObservationProto for the sensor using the provided WriteAdapter.
+        /// Generate an ObservationProto for the sensor using the provided ObservationWriter.
         /// This is equivalent to producing an Observation and calling Observation.ToProto(),
         /// but avoid some intermediate memory allocations.
         /// </summary>
         /// <param name="sensor"></param>
-        /// <param name="writeAdapter"></param>
+        /// <param name="observationWriter"></param>
         /// <returns></returns>
-        public static ObservationProto GetObservationProto(this ISensor sensor, WriteAdapter writeAdapter)
+        public static ObservationProto GetObservationProto(this ISensor sensor, ObservationWriter observationWriter)
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
@@ -249,8 +249,8 @@ namespace MLAgents
                     floatDataProto.Data.Add(0.0f);
                 }
 
-                writeAdapter.SetTarget(floatDataProto.Data, sensor.GetObservationShape(), 0);
-                sensor.Write(writeAdapter);
+                observationWriter.SetTarget(floatDataProto.Data, sensor.GetObservationShape(), 0);
+                sensor.Write(observationWriter);
 
                 observationProto = new ObservationProto
                 {

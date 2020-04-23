@@ -286,11 +286,11 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Computes the ray perception observations and saves them to the provided
-        /// <see cref="WriteAdapter"/>.
+        /// <see cref="ObservationWriter"/>.
         /// </summary>
-        /// <param name="adapter">Where the ray perception observations are written to.</param>
+        /// <param name="writer">Where the ray perception observations are written to.</param>
         /// <returns></returns>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
@@ -322,8 +322,8 @@ namespace MLAgents.Sensors
 
                     rayOutput.ToFloatArray(numDetectableTags, rayIndex, m_Observations);
                 }
-                // Finally, add the observations to the WriteAdapter
-                adapter.AddRange(m_Observations);
+                // Finally, add the observations to the ObservationWriter
+                writer.AddRange(m_Observations);
             }
             return m_Observations.Length;
         }

@@ -43,11 +43,11 @@ namespace MLAgents.Tests
             return new int[] {m_Height, m_Width, m_Channels };
         }
 
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             for (int i = 0; i < m_Width * m_Height * m_Channels; i++)
             {
-                adapter[i] = 0.0f;
+                writer[i] = 0.0f;
             }
             return m_Width * m_Height * m_Channels;
         }

@@ -91,16 +91,16 @@ namespace MLAgents.Sensors
         }
 
         /// <summary>
-        /// Writes out the generated, uncompressed image to the provided <see cref="WriteAdapter"/>.
+        /// Writes out the generated, uncompressed image to the provided <see cref="ObservationWriter"/>.
         /// </summary>
-        /// <param name="adapter">Where the observation is written to.</param>
+        /// <param name="writer">Where the observation is written to.</param>
         /// <returns></returns>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
+                var numWritten = Utilities.TextureToTensorProxy(texture, writer, m_Grayscale);
                 DestroyTexture(texture);
                 return numWritten;
             }
