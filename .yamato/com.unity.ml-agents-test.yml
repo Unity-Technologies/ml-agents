@@ -30,6 +30,17 @@ test_platforms:
     flavor: b1.medium
 ---
 
+all_package_tests:
+  name: Run All Combinations of Editors/Platforms Tests
+  dependencies:
+  {% for editor in test_editors %}
+  {% for platform in test_platforms %}
+  - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
+  {% endfor %}
+  {% endfor %}
+  triggers:
+    cancel_old_ci: true
+
 {% for editor in test_editors %}
   {% for platform in test_platforms %}
 test_{{ platform.name }}_{{ editor.version }}:
