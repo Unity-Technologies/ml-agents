@@ -90,31 +90,31 @@ namespace MLAgents.Tests
             var dictSender = new Dictionary<Guid, SideChannel> { { propB.ChannelId, propB } };
 
             propA.RegisterCallback(k1, f => { wasCalled++; });
-            var tmp = propB.GetPropertyWithDefault(k2, 3.0f);
+            var tmp = propB.GetWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 3.0f);
-            propB.SetProperty(k2, 1.0f);
-            tmp = propB.GetPropertyWithDefault(k2, 3.0f);
+            propB.Set(k2, 1.0f);
+            tmp = propB.GetWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 1.0f);
 
             byte[] fakeData = SideChannelsManager.GetSideChannelMessage(dictSender);
             SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
 
-            tmp = propA.GetPropertyWithDefault(k2, 3.0f);
+            tmp = propA.GetWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 1.0f);
 
             Assert.AreEqual(wasCalled, 0);
-            propB.SetProperty(k1, 1.0f);
+            propB.Set(k1, 1.0f);
             Assert.AreEqual(wasCalled, 0);
             fakeData = SideChannelsManager.GetSideChannelMessage(dictSender);
             SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
             Assert.AreEqual(wasCalled, 1);
 
-            var keysA = propA.ListProperties();
+            var keysA = propA.List();
             Assert.AreEqual(2, keysA.Count);
             Assert.IsTrue(keysA.Contains(k1));
             Assert.IsTrue(keysA.Contains(k2));
 
-            var keysB = propA.ListProperties();
+            var keysB = propA.List();
             Assert.AreEqual(2, keysB.Count);
             Assert.IsTrue(keysB.Contains(k1));
             Assert.IsTrue(keysB.Contains(k2));

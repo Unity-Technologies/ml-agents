@@ -95,6 +95,6 @@ To get custom metrics from a C# environment into Tensorboard, you can use the
 StatsSideChannel:
 
 ```csharp
-var statsSideChannel = SideChannelUtils.GetSideChannel<StatsSideChannel>();
-statsSideChannel.AddStat("MyMetric", 1.0);
+var statsRecorder = Academy.Instance.StatsRecorder;
+statsSideChannel.Add("MyMetric", 1.0);
 ```

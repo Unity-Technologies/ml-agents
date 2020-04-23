@@ -306,41 +306,34 @@ i = env.reset()
 ...
 ```
 
-#### FloatPropertiesChannel
-The `FloatPropertiesChannel` will allow you to get and set pre-defined numerical values in the environment. This can be useful for adjusting environment-specific settings, or for reading non-agent related information from the environment. You can call `get_property` and `set_property` on the side channel to read and write properties.
+#### EnvironmentParameters
+The `EnvironmentParameters` will allow you to get and set pre-defined numerical values in the environment. This can be useful for adjusting environment-specific settings, or for reading non-agent related information from the environment. You can call `get_property` and `set_property` on the side channel to read and write properties.
 
-`FloatPropertiesChannel` has three methods:
+`EnvironmentParametersChannel` has one methods:
 
- * `set_property` Sets a property in the Unity Environment.
+ * `set_float_parameter` Sets a float parameter in the Unity Environment.
     * key: The string identifier of the property.
     * value: The float value of the property.
 
- * `get_property` Gets a property in the Unity Environment. If the property was not found, will return None.
-    * key: The string identifier of the property.
-
- * `list_properties` Returns a list of all the string identifiers of the properties
-
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 
-channel = FloatPropertiesChannel()
+channel = EnvironmentParametersChannel()
 
 env = UnityEnvironment(side_channels=[channel])
 
-channel.set_property("parameter_1", 2.0)
+channel.set_float_parameter("parameter_1", 2.0)
 
 i = env.reset()
-
-readout_value = channel.get_property("parameter_2")
 ...
 ```
 
 Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
 
 ```csharp
-var sharedProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
-float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
+var envParameters = Academy.Instance.EnvironmentParameters;
+float property1 = envParameters.GetWithDefault("parameter_1", 0.0f);
 ```
 
 #### Custom side channels

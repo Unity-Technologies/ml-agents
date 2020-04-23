@@ -43,7 +43,7 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public void SetProperty(string key, float value)
+        public void Set(string key, float value)
         {
             m_FloatProperties[key] = value;
             using (var msgOut = new OutgoingMessage())
@@ -59,7 +59,7 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public float GetPropertyWithDefault(string key, float defaultValue)
+        public float GetWithDefault(string key, float defaultValue)
         {
             float valueOut;
             bool hasKey = m_FloatProperties.TryGetValue(key, out valueOut);
@@ -73,7 +73,7 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public IList<string> ListProperties()
+        public IList<string> List()
         {
             return new List<string>(m_FloatProperties.Keys);
         }

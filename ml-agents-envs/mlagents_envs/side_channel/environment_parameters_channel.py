@@ -8,7 +8,7 @@ class EnvironmentParametersChannel(SideChannel):
     """
     This is the SideChannel for sending environment parameters to Unity.
     You can send parameters to an environment with the command
-    set_float_property.
+    set_float_parameter.
     """
 
     class EnvironmentDataTypes(IntEnum):
@@ -24,7 +24,7 @@ class EnvironmentParametersChannel(SideChannel):
             + "this should not have happend."
         )
 
-    def set_float_property(self, key: str, value: float) -> None:
+    def set_float_parameter(self, key: str, value: float) -> None:
         """
         Sets a float environment parameter in the Unity Environment.
         :param key: The string identifier of the parameter.
