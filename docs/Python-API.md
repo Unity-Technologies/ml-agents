@@ -333,7 +333,7 @@ Once a property has been modified in Python, you can access it in C# after the n
 
 ```csharp
 var envParameters = Academy.Instance.EnvironmentParameters;
-float property1 = envParameters.GetPropertyWithDefault("parameter_1", 0.0f);
+float property1 = envParameters.GetWithDefault("parameter_1", 0.0f);
 ```
 
 #### Custom side channels
