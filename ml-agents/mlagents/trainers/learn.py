@@ -320,11 +320,13 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
-        write_path = f"./results/{options.run_id}"
+        base_path = "results"
+        write_path = os.path.join(base_path, options.run_id)
         maybe_init_path = (
-            f"./results/{options.initialize_from}" if options.initialize_from else None
+            os.path.join(base_path, options.run_id) if options.initialize_from else None
         )
-        summaries_dir = "./summaries"
+        run_logs_dir = os.path.join(write_path, "run_logs")
+        os.makedirs(run_logs_dir, exist_ok=True)
         port = options.base_port
 
         # Configure CSV, Tensorboard Writers and StatsReporter
@@ -396,7 +398,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
-        write_timing_tree(summaries_dir, options.run_id)
+        write_timing_tree(run_logs_dir, options.run_id)
 
 
 def write_timing_tree(summaries_dir: str, run_id: str) -> None:
