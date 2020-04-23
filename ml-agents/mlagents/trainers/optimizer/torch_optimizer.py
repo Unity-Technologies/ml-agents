@@ -90,9 +90,12 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         next_value_estimate, next_value = self.policy.critic(next_obs, next_obs)
 
         for name, estimate in value_estimates.items():
-            value_estimates[name] = estimate.squeeze(-1).detach().numpy()
-            next_value_estimate[name] = (
-                next_value_estimate[name].squeeze(-1).detach().numpy()
-            )
+            value_estimates[name] = estimate.detach().numpy()
+            next_value_estimate[name] = next_value_estimate[name].detach().numpy()
+
+        if done:
+            for k in next_value_estimate:
+                if self.reward_signals[k].use_terminal_states:
+                    next_value_estimate[k] = 0.0
 
         return value_estimates, next_value_estimate

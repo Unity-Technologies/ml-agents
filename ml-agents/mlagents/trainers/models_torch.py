@@ -196,7 +196,6 @@ class Normalizer(nn.Module):
         self.running_variance = torch.ones(vec_obs_size)
 
     def forward(self, inputs):
-        inputs = torch.from_numpy(inputs)
         normalized_state = torch.clamp(
             (inputs - self.running_mean)
             / torch.sqrt(
@@ -208,7 +207,6 @@ class Normalizer(nn.Module):
         return normalized_state
 
     def update(self, vector_input):
-        vector_input = torch.from_numpy(vector_input)
         mean_current_observation = vector_input.mean(0).type(torch.float32)
         new_mean = self.running_mean + (
             mean_current_observation - self.running_mean
@@ -235,7 +233,9 @@ class ValueHeads(nn.Module):
     def forward(self, hidden):
         value_outputs = {}
         for stream_name, _ in self.value_heads.items():
-            value_outputs[stream_name] = self.value_heads[stream_name](hidden)
+            value_outputs[stream_name] = self.value_heads[stream_name](hidden).squeeze(
+                -1
+            )
         return (
             value_outputs,
             torch.mean(torch.stack(list(value_outputs.values())), dim=0),

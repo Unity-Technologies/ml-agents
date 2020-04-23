@@ -47,31 +47,32 @@ class PPOOptimizer(TorchOptimizer):
 
         value_losses = []
         for name, head in values.items():
-            old_val_tensor = torch.DoubleTensor(old_values[name])
-            returns_tensor = torch.DoubleTensor(returns[name])
+            old_val_tensor = torch.Tensor(old_values[name])
+            returns_tensor = torch.Tensor(returns[name])
             clipped_value_estimate = old_val_tensor + torch.clamp(
-                torch.sum(head, dim=1) - old_val_tensor, -decay_epsilon, decay_epsilon
+                head - old_val_tensor, -decay_epsilon, decay_epsilon
             )
-            v_opt_a = (returns_tensor - torch.sum(head, dim=1)) ** 2
+            v_opt_a = (returns_tensor - head) ** 2
             v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
             value_loss = torch.mean(torch.max(v_opt_a, v_opt_b))
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
 
-    def ppo_policy_loss(self, advantages, probs, old_probs, masks):
+    def ppo_policy_loss(self, advantages, log_probs, old_log_probs, masks):
         """
         Creates training-specific Tensorflow ops for PPO models.
         :param masks:
         :param advantages:
-        :param probs: Current policy probabilities
-        :param old_probs: Past policy probabilities
+        :param log_probs: Current policy probabilities
+        :param old_log_probs: Past policy probabilities
         """
-        advantage = torch.from_numpy(np.expand_dims(advantages, -1))
+        advantage = torch.Tensor(advantages).unsqueeze(-1)
+        old_log_probs = torch.Tensor(old_log_probs)
 
         decay_epsilon = self.trainer_params["epsilon"]
 
-        r_theta = torch.exp(probs - torch.DoubleTensor(old_probs))
+        r_theta = torch.exp(log_probs - old_log_probs)
         p_opt_a = r_theta * advantage
         p_opt_b = (
             torch.clamp(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * advantage

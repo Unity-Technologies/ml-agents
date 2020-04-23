@@ -9,16 +9,15 @@ class GaussianDistribution(nn.Module):
     def __init__(self, hidden_size, num_outputs, **kwargs):
         super(GaussianDistribution, self).__init__(**kwargs)
         self.mu = nn.Linear(hidden_size, num_outputs)
-        self.log_sigma_sq = nn.Linear(hidden_size, num_outputs)
-        nn.init.xavier_uniform(self.mu.weight, gain=0.01)
-        nn.init.xavier_uniform(self.log_sigma_sq.weight, gain=0.01)
+        # self.log_sigma_sq = nn.Linear(hidden_size, num_outputs)
+        self.log_sigma = nn.Parameter(torch.zeros(1, num_outputs, requires_grad=True))
+        nn.init.xavier_uniform_(self.mu.weight, gain=0.01)
+        # nn.init.xavier_uniform(self.log_sigma_sq.weight, gain=0.01)
 
     def forward(self, inputs):
         mu = self.mu(inputs)
-        log_sig = self.log_sigma_sq(inputs)
-        return [
-            distributions.normal.Normal(loc=mu, scale=torch.sqrt(torch.exp(log_sig)))
-        ]
+        # log_sig = torch.tanh(self.log_sigma_sq(inputs)) * 3.0
+        return [distributions.normal.Normal(loc=mu, scale=torch.exp(self.log_sigma))]
 
 
 class MultiCategoricalDistribution(nn.Module):

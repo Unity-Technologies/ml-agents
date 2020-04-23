@@ -136,6 +136,7 @@ class PPOTrainer(RLTrainer):
             local_value_estimates = agent_buffer_trajectory[
                 "{}_value_estimates".format(name)
             ].get_batch()
+
             local_advantage = get_gae(
                 rewards=local_rewards,
                 value_estimates=local_value_estimates,
@@ -144,6 +145,7 @@ class PPOTrainer(RLTrainer):
                 lambd=self.trainer_parameters["lambd"],
             )
             local_return = local_advantage + local_value_estimates
+
             # This is later use as target for the different value estimates
             agent_buffer_trajectory["{}_returns".format(name)].set(local_return)
             agent_buffer_trajectory["{}_advantage".format(name)].set(local_advantage)

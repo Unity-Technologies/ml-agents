@@ -138,7 +138,7 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        vector_obs = np.array(vector_obs)
+        vector_obs = torch.Tensor(vector_obs)
         vector_obs = [vector_obs]
         if self.use_vec_obs and self.normalize:
             self.critic.network_body.update_normalization(vector_obs)

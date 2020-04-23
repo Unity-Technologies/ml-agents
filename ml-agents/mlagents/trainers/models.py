@@ -485,8 +485,8 @@ class ModelUtils:
         :param action_masks: The mask for the logits. Must be of dimension [None x total_number_of_action]
         :param action_size: A list containing the number of possible actions for each branch
         :return: The action output dimension [batch_size, num_branches], the concatenated
-            normalized probs (after softmax)
-        and the concatenated normalized log probs
+            normalized log_probs (after softmax)
+        and the concatenated normalized log log_probs
         """
         branch_masks = ModelUtils.break_into_branches(action_masks, action_size)
         raw_probs = [
