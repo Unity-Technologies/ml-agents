@@ -42,6 +42,5 @@ publish:
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
     - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
-    {% endif %}
     {% endfor %}
     {% endfor %}
