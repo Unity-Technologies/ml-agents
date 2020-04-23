@@ -10,6 +10,7 @@ import time
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
+import horovod.tensorflow as hvd
 
 
 logger = get_logger(__name__)
@@ -97,12 +98,14 @@ class ConsoleWriter(StatsWriter):
 
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
+            rank = hvd.rank()
             logger.info(
-                "{}: Step: {}. "
+                "Horovod Rank: {}, {}: Step: {}. "
                 "Time Elapsed: {:0.3f} s "
                 "Mean "
                 "Reward: {:0.3f}"
                 ". Std of Reward: {:0.3f}. {}".format(
+                    rank,
                     category,
                     step,
                     time.time() - self.training_start_time,
