@@ -748,7 +748,7 @@ namespace MLAgents
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
-        public virtual void Initialize(){}
+        public virtual void Initialize() {}
 
         /// <summary>
         /// Implement `Heuristic()` to choose an action for this agent using a custom heuristic.
@@ -800,6 +800,7 @@ namespace MLAgents
         /// [Input Manager]: https://docs.unity3d.com/Manual/class-InputManager.html
         /// [Input System package]: https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html
         /// </example>
+        /// <param name="actionsOut">Array for the output actions.</param>
         /// <seealso cref="OnActionReceived(float[])"/>
         public virtual void Heuristic(float[] actionsOut)
         {
@@ -1078,7 +1079,7 @@ namespace MLAgents
         /// by the <see cref="BrainParameters"/> of the agent's associated
         /// <see cref="BehaviorParameters"/> component.
         /// </param>
-        public virtual void OnActionReceived(float[] vectorAction){}
+        public virtual void OnActionReceived(float[] vectorAction) {}
 
         /// <summary>
         /// Implement `OnEpisodeBegin()` to set up an Agent instance at the beginning
