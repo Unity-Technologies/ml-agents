@@ -33,6 +33,11 @@ double-check that the versions are in the same. The versions can be found in
 - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size.
+- The SideChannel API has changed:
+  - `EnvironmentParameters` replaces the default `FloatPropertiesChannel`. You can access the `EnvironmentParameters` with `Academy.Instance.EnvironmentParameters`
+  - `SideChannelUtils` was renamed `SideChannelManager`
+  - The `Academy` instance now has a `StatsRecorder` property
+  - `SideChannelManager.GetSideChannel(s)` has been removed from the API
 
 ### Steps to Migrate
 
@@ -54,6 +59,10 @@ double-check that the versions are in the same. The versions can be found in
 - If your Agent class overrides `Heuristic()`, change the signature to
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
+- If you used `SideChannels` you must:
+  - Replace `SideChannelUtils` with `SideChannelManager`
+  - Replace `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` with `Academy.Instance.EnvironmentParameters`
+  - Replace `SideChannelUtils.GetSideChannel<StatsSideChannel>()` with `Academy.Instance.StatsRecorder`
 
 ## Migrating from 0.14 to 0.15
 

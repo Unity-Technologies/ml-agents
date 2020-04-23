@@ -37,6 +37,11 @@ and this project adheres to
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
 - The GhostTrainer has been extended to support asymmetric games and the asymmetric example environment Strikers Vs. Goalie has been added.
+- The SideChannel API has changed:
+  - `EnvironmentParameters` replaces the default `FloatPropertiesChannel`. You can access the `EnvironmentParameters` with `Academy.Instance.EnvironmentParameters` on C# and create an `EnvironmentParametersChannel` on Python
+  - `SideChannelUtils` was renamed `SideChannelManager`
+  - The `Academy` instance now has a `StatsRecorder` property
+  - `SideChannelManager.GetSideChannel(s)` has been removed from the API
 
 ### Minor Changes
 

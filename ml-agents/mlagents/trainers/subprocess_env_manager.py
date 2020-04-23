@@ -170,7 +170,7 @@ def worker(
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
             elif req.cmd == EnvironmentCommand.RESET:
                 for k, v in req.payload.items():
-                    env_parameters.set_float_property(k, v)
+                    env_parameters.set_float_parameter(k, v)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)

@@ -44,7 +44,7 @@ class SimpleEnvManager(EnvManager):
     ) -> List[EnvironmentStep]:  # type: ignore
         if config is not None:
             for k, v in config.items():
-                self.env_params.set_float_property(k, v)
+                self.env_params.set_float_parameter(k, v)
         self.env.reset()
         all_step_result = self._generate_all_results()
         self.previous_step = EnvironmentStep(all_step_result, 0, {}, {})
