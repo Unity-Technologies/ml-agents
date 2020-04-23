@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System;
+using UnityEngine;
 
 namespace MLAgents.SideChannels
 {
@@ -49,7 +50,7 @@ namespace MLAgents.SideChannels
             }
             else
             {
-                throw new UnityAgentsException("EnvironmentParametersChannel only supports floats.");
+                Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.")
             }
         }
 
@@ -60,7 +61,7 @@ namespace MLAgents.SideChannels
         /// <param name="key">Parameter key.</param>
         /// <param name="defaultValue">Default value to return.</param>
         /// <returns></returns>
-        public float GetParameterWithDefault(string key, float defaultValue)
+        public float GetWithDefault(string key, float defaultValue)
         {
             float valueOut;
             bool hasKey = m_Parameters.TryGetValue(key, out valueOut);

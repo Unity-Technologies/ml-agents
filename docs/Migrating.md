@@ -33,11 +33,20 @@ double-check that the versions are in the same. The versions can be found in
 - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size.
-- The SideChannel API has changed:
-  - `EnvironmentParameters` replaces the default `FloatPropertiesChannel`. You can access the `EnvironmentParameters` with `Academy.Instance.EnvironmentParameters`
-  - `SideChannelUtils` was renamed `SideChannelManager`
+- The SideChannel API has changed (#3833, #3660) :
+  - Introduced the `SideChannelManager` to register, unregister and access side
+  channels.
+  - `EnvironmentParameters` replaces the default `FloatProperties`.
+  You can access the `EnvironmentParameters` with
+  `Academy.Instance.EnvironmentParameters` on C# and create an
+  `EnvironmentParametersChannel` on Python
+  - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - The `Academy` instance now has a `StatsRecorder` property
-  - `SideChannelManager.GetSideChannel(s)` has been removed from the API
+  - SideChannel IncomingMessages methods now take an optional default argument,
+  which is used when trying to read more data than the message contains.
+  - Added a feature to allow sending stats from C# environments to TensorBoard
+  (and other python StatsWriters). To do this from your code, use
+  `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
 
 ### Steps to Migrate
 
@@ -47,22 +56,14 @@ double-check that the versions are in the same. The versions can be found in
 - To force-overwrite files from a pre-existing run, add the `--force`
   command-line flag.
 - The Jupyter notebooks have been removed from the repository.
-- `Academy.FloatProperties` was removed.
-- `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were
-  removed.
-- Replace `Academy.FloatProperties` with
-  `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`.
-- Replace `Academy.RegisterSideChannel` with
-  `SideChannelUtils.RegisterSideChannel()`.
-- Replace `Academy.UnregisterSideChannel` with
-  `SideChannelUtils.UnregisterSideChannel`.
 - If your Agent class overrides `Heuristic()`, change the signature to
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
 - If you used `SideChannels` you must:
-  - Replace `SideChannelUtils` with `SideChannelManager`
-  - Replace `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` with `Academy.Instance.EnvironmentParameters`
-  - Replace `SideChannelUtils.GetSideChannel<StatsSideChannel>()` with `Academy.Instance.StatsRecorder`
+  - Replace `Academy.FloatProperties` with `Academy.Instance.EnvironmentParameters`.
+  - `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were
+  removed. Use `SideChannelManager.RegisterSideChannel` and
+  `SideChannelManager.UnregisterSideChannel` instead.
 
 ## Migrating from 0.14 to 0.15
 

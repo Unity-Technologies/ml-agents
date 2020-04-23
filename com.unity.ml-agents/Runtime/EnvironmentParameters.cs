@@ -38,7 +38,7 @@ namespace MLAgents
         /// <returns></returns>
         public float GetParameterWithDefault(string key, float defaultValue)
         {
-            return m_Channel.GetParameterWithDefault(key, defaultValue);
+            return m_Channel.GetWithDefault(key, defaultValue);
         }
 
         /// <summary>
