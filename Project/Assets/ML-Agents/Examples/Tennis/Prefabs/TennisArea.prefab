@@ -208,7 +208,7 @@ MonoBehaviour:
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 13ca629afc16c42afb2d681a3d81ea6c, type: 3}
+  m_Model: {fileID: 11400000, guid: 02efff6cde0914e34bcc06eac03de48a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
@@ -235,9 +235,7 @@ MonoBehaviour:
   invertX: 0
   score: 0
   myArea: {fileID: 1541947554534326}
-  angle: 0
   scale: 0
-  energyPenalty: 0
 --- !u!114 &2449890524009497851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1345,12 +1343,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 14
+    vectorObservationSize: 12
     numStackedVectorObservations: 3
     vectorActionSize: 03000000
     vectorActionDescriptions: []
     vectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 13ca629afc16c42afb2d681a3d81ea6c, type: 3}
+  m_Model: {fileID: 11400000, guid: 02efff6cde0914e34bcc06eac03de48a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
@@ -1377,9 +1375,7 @@ MonoBehaviour:
   invertX: 1
   score: 0
   myArea: {fileID: 1541947554534326}
-  angle: 0
   scale: 0
-  energyPenalty: 0
 --- !u!114 &6598495797138489682
 MonoBehaviour:
   m_ObjectHideFlags: 0

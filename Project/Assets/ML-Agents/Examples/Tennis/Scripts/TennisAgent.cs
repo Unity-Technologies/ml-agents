@@ -70,8 +70,8 @@ public class TennisAgent : Agent
 
         sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x));
         sensor.AddObservation(opponent.transform.position.y - myArea.transform.position.y);
-        sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x);
-        sensor.AddObservation(m_OpponentRb.velocity.y);
+        //sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x);
+        //sensor.AddObservation(m_OpponentRb.velocity.y);
 
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
 
