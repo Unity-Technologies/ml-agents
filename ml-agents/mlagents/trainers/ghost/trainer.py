@@ -223,7 +223,7 @@ class GhostTrainer(Trainer):
                     # We grab at most the maximum length of the queue.
                     # This ensures that even if the queue is being filled faster than it is
                     # being emptied, the trajectories in the queue are on-policy.
-                    for _ in range(trajectory_queue.maxlen):
+                    for _ in range(trajectory_queue.qsize()):
                         t = trajectory_queue.get_nowait()
                         # adds to wrapped trainers queue
                         internal_trajectory_queue.put(t)
@@ -233,7 +233,7 @@ class GhostTrainer(Trainer):
             else:
                 # Dump trajectories from non-learning policy
                 try:
-                    for _ in range(trajectory_queue.maxlen):
+                    for _ in range(trajectory_queue.qsize()):
                         t = trajectory_queue.get_nowait()
                         # count ghost steps
                         self.ghost_step += len(t.steps)

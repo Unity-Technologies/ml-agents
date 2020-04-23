@@ -16,7 +16,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// The compression type used by the sensor.
         /// </summary>
-        public SensorCompressionType compressionType
+        public SensorCompressionType CompressionType
         {
             get { return m_CompressionType;  }
             set { m_CompressionType = value; }

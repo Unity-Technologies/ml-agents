@@ -66,7 +66,7 @@
 
 ## Translations
 
-To make the Unity ML-Agents toolkit accessible to the global research and Unity
+To make the Unity ML-Agents Toolkit accessible to the global research and Unity
 developer communities, we're attempting to create and maintain translations of
 our documentation. We've started with translating a subset of the documentation
 to one language (Chinese), but we hope to continue translating more pages and to

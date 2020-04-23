@@ -4,8 +4,7 @@ using System;
 namespace MLAgents.SideChannels
 {
     /// <summary>
-    /// Side channel that is comprised of a collection of float variables, represented by
-    /// <see cref="IFloatProperties"/>
+    /// Side channel that is comprised of a collection of float variables.
     /// </summary>
     public class FloatPropertiesChannel : SideChannel
     {
@@ -42,7 +41,11 @@ namespace MLAgents.SideChannels
             action?.Invoke(value);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Sets one of the float properties of the environment. This data will be sent to Python.
+        /// </summary>
+        /// <param name="key"> The string identifier of the property.</param>
+        /// <param name="value"> The float value of the property.</param>
         public void Set(string key, float value)
         {
             m_FloatProperties[key] = value;
@@ -58,7 +61,13 @@ namespace MLAgents.SideChannels
             action?.Invoke(value);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Get an Environment property with a default value. If there is a value for this property,
+        /// it will be returned, otherwise, the default value will be returned.
+        /// </summary>
+        /// <param name="key"> The string identifier of the property.</param>
+        /// <param name="defaultValue"> The default value of the property.</param>
+        /// <returns></returns>
         public float GetWithDefault(string key, float defaultValue)
         {
             float valueOut;
@@ -66,13 +75,20 @@ namespace MLAgents.SideChannels
             return hasKey ? valueOut : defaultValue;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Registers an action to be performed everytime the property is changed.
+        /// </summary>
+        /// <param name="key"> The string identifier of the property.</param>
+        /// <param name="action"> The action that ill be performed. Takes a float as input.</param>
         public void RegisterCallback(string key, Action<float> action)
         {
             m_RegisteredActions[key] = action;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns a list of all the string identifiers of the properties currently present.
+        /// </summary>
+        /// <returns> The list of string identifiers </returns>
         public IList<string> List()
         {
             return new List<string>(m_FloatProperties.Keys);

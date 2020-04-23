@@ -50,7 +50,7 @@ namespace MLAgents.SideChannels
             }
             else
             {
-                Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.")
+                Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");
             }
         }
 
