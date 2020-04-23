@@ -398,11 +398,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
-        write_timing_tree(run_logs_dir, options.run_id)
+        write_timing_tree(run_logs_dir)
 
 
-def write_timing_tree(summaries_dir: str, run_id: str) -> None:
-    timing_path = f"{summaries_dir}/{run_id}_timers.json"
+def write_timing_tree(summaries_dir: str) -> None:
+    timing_path = f"{summaries_dir}/timers.json"
     try:
         with open(timing_path, "w") as f:
             json.dump(get_timer_tree(), f, indent=4)
