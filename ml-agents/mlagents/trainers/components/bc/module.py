@@ -38,7 +38,9 @@ class BCModule:
         self.policy = policy
         self.current_lr = policy_learning_rate * strength
         self.model = BCModel(policy, self.current_lr, steps)
-        _, self.demonstration_buffer = demo_to_buffer(demo_path, policy.sequence_length)
+        _, self.demonstration_buffer = demo_to_buffer(
+            demo_path, policy.sequence_length, policy.brain
+        )
 
         self.batch_size = batch_size if batch_size else default_batch_size
         self.num_epoch = num_epoch if num_epoch else default_num_epoch

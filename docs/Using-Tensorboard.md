@@ -1,6 +1,6 @@
 # Using TensorBoard to Observe Training
 
-The ML-Agents toolkit saves statistics during learning session that you can view
+The ML-Agents Toolkit saves statistics during learning session that you can view
 with a TensorFlow utility named,
 [TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
 
@@ -34,7 +34,7 @@ graphs.
 When you run the training program, `mlagents-learn`, you can use the
 `--save-freq` option to specify how frequently to save the statistics.
 
-## The ML-Agents toolkit training statistics
+## The ML-Agents Toolkit training statistics
 
 The ML-Agents training program saves the following statistics:
 

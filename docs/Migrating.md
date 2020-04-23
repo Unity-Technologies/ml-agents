@@ -38,6 +38,10 @@ double-check that the versions are in the same. The versions can be found in
   `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
   the `UnityEnvironment` must be passed as input to the
   constructor of `UnityToGymWrapper`
+- Public fields and properties on several classes were renamed to follow Unity's
+  C# style conventions. All public fields and properties now use "PascalCase"
+  instead of "camelCase"; for example, `Agent.maxStep` was renamed to
+  `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 - Trainer configuration, curriculum configuration, and parameter randomization
   configuration have all been moved to a single YAML file.
 
@@ -66,7 +70,8 @@ double-check that the versions are in the same. The versions can be found in
 - Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor
   no longer takes a file name as input but a fully constructed
   `UnityEnvironment` instead.
-  - Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
+- Update uses of "camelCase" fields and properties to "PascalCase".
+- Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
   a separate trainer configuration file, under a `behaviors` section. You can move the `default` section too
   if it's being used. This file should be specific to your environment, and not contain configurations for
   multiple environments (unless they have the same Behavior Names).
@@ -74,7 +79,6 @@ double-check that the versions are in the same. The versions can be found in
   the `Behavior Name` section.
   - If your training uses [parameter randomization](Training-Environment-Parameter-Randomization.md), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
-
 
 ## Migrating from 0.14 to 0.15
 

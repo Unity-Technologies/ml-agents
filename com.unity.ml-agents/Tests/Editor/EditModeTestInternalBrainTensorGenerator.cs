@@ -23,14 +23,14 @@ namespace MLAgents.Tests
         {
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();
-            bpA.brainParameters.vectorObservationSize = 3;
-            bpA.brainParameters.numStackedVectorObservations = 1;
+            bpA.BrainParameters.VectorObservationSize = 3;
+            bpA.BrainParameters.NumStackedVectorObservations = 1;
             var agentA = goA.AddComponent<TestAgent>();
 
             var goB = new GameObject("goB");
             var bpB = goB.AddComponent<BehaviorParameters>();
-            bpB.brainParameters.vectorObservationSize = 3;
-            bpB.brainParameters.numStackedVectorObservations = 1;
+            bpB.BrainParameters.VectorObservationSize = 3;
+            bpB.BrainParameters.NumStackedVectorObservations = 1;
             var agentB = goB.AddComponent<TestAgent>();
 
             var agents = new List<TestAgent> { agentA, agentB };

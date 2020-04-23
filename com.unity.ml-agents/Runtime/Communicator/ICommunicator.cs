@@ -31,7 +31,7 @@ namespace MLAgents
     internal struct UnityRLInitParameters
     {
         /// <summary>
-        /// An RNG seed sent from the python process to Unity.
+        /// A random number generator (RNG) seed sent from the python process to Unity.
         /// </summary>
         public int seed;
 
@@ -54,7 +54,7 @@ namespace MLAgents
     }
 
     /// <summary>
-    /// Delegate for handling quite events sent back from the communicator.
+    /// Delegate for handling quit events sent back from the communicator.
     /// </summary>
     internal delegate void QuitCommandHandler();
 

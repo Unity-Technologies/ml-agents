@@ -22,20 +22,20 @@ namespace MLAgents.Tests
         private BrainParameters GetContinuous2vis8vec2actionBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
-            validBrainParameters.vectorObservationSize = 8;
-            validBrainParameters.vectorActionSize = new int[] { 2 };
-            validBrainParameters.numStackedVectorObservations = 1;
-            validBrainParameters.vectorActionSpaceType = SpaceType.Continuous;
+            validBrainParameters.VectorObservationSize = 8;
+            validBrainParameters.VectorActionSize = new int[] { 2 };
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             return validBrainParameters;
         }
 
         private BrainParameters GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
-            validBrainParameters.vectorObservationSize = 0;
-            validBrainParameters.vectorActionSize = new int[] { 2, 3 };
-            validBrainParameters.numStackedVectorObservations = 1;
-            validBrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            validBrainParameters.VectorObservationSize = 0;
+            validBrainParameters.VectorActionSize = new int[] { 2, 3 };
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
         }
 
@@ -94,7 +94,7 @@ namespace MLAgents.Tests
             Assert.IsNotNull(modelRunner.GetAction(1));
             Assert.IsNotNull(modelRunner.GetAction(2));
             Assert.IsNull(modelRunner.GetAction(3));
-            Assert.AreEqual(brainParameters.vectorActionSize.Count(), modelRunner.GetAction(1).Count());
+            Assert.AreEqual(brainParameters.VectorActionSize.Count(), modelRunner.GetAction(1).Count());
             modelRunner.Dispose();
         }
     }

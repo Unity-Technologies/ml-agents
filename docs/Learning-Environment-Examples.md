@@ -263,6 +263,29 @@ you would like to contribute environments, please see our
 - Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
 - Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
 
+## Worm
+
+![Worm](images/worm.png)
+
+* Set-up: A worm with a head and 3 body segments.
+* Goal: The agents must move its body toward the goal direction.
+  * `WormStaticTarget` - Goal direction is always forward.
+  * `WormDynamicTarget`- Goal direction is randomized.
+* Agents: The environment contains 10 agents with same Behavior Parameters.
+* Agent Reward Function (independent):
+  * +0.01 times body velocity in the goal direction.
+  * +0.01 times body direction alignment with goal direction.
+* Behavior Parameters:
+  * Vector Observation space: 57 variables corresponding to position, rotation,
+    velocity, and angular velocities of each limb plus the acceleration and
+    angular acceleration of the body.
+  * Vector Action space: (Continuous) Size of 9, corresponding to target
+    rotations for joints.
+  * Visual Observations: None
+* Float Properties: None
+* Benchmark Mean Reward for `WormStaticTarget`: 200
+* Benchmark Mean Reward for `WormDynamicTarget`: 150
+
 ## Food Collector
 
 ![Collector](images/foodCollector.png)
@@ -361,7 +384,7 @@ you would like to contribute environments, please see our
   Behavior Parameters : SoccerTwos.
 - Agent Reward Function (dependent):
     - (1 - `accumulated time penalty`) When ball enters opponent's goal `accumulated time penalty` is incremented by
-    (1 / `maxStep`) every fixed update and is reset to 0 at the beginning of an episode.
+    (1 / `MaxStep`) every fixed update and is reset to 0 at the beginning of an episode.
     - -1 When ball enters team's goal.
 - Behavior Parameters:
   - Vector Observation space: 336 corresponding to 11 ray-casts forward distributed over 120 degrees
