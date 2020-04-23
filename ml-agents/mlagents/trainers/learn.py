@@ -407,7 +407,10 @@ def write_run_options(output_dir: str, run_options: RunOptions) -> None:
     run_options_path = os.path.join(output_dir, "configuration.yaml")
     try:
         with open(run_options_path, "w") as f:
-            yaml.dump(dict(run_options._asdict()), f, sort_keys=False)
+            try:
+                yaml.dump(dict(run_options._asdict()), f, sort_keys=False)
+            except TypeError:  # Older versions of pyyaml don't support sort_keys
+                yaml.dump(dict(run_options._asdict()), f)
     except FileNotFoundError:
         logger.warning(
             f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
