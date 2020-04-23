@@ -1,20 +1,9 @@
 test_editors:
   - version: 2018.4
-    # 2018.4 doesn't support code-coverage
-    coverageOptions:
-    minCoveragePct: 0
   - version: 2019.3
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
   - version: 2020.1
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
   - version: 2020.2
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
   - version: trunk
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
 
 test_platforms:
   - name: win
@@ -72,7 +61,7 @@ promote:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package promote --package-path com.unity.ml-agents --dry-run
+    - upm-ci package promote --package-path com.unity.ml-agents
 #  triggers:
 #    tags:
 #      only:
@@ -83,8 +72,3 @@ promote:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
-{% for editor in test_editors %}
-{% for platform in test_platforms %}
-    - .yamato/com.unity.ml-agents-promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
-{% endfor %}
-{% endfor %}
