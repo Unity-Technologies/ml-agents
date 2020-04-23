@@ -6,6 +6,9 @@ executors:
   python373:
     docker:
       - image: circleci/python:3.7.3
+  python382:
+    docker:
+      - image: circleci/python:3.8.2
 
 jobs:
   build_python:
@@ -228,10 +231,10 @@ workflows:
           # Make sure ONNX conversion passes here (recent version of tensorflow 1.x)
           enforce_onnx_conversion: 1
       - build_python:
-          name: python_3.7.3+tf2
-          executor: python373
-          pyversion: 3.7.3
-          # Test python 3.7 with the newest supported versions
+          name: python_3.8.2+tf2
+          executor: python382
+          pyversion: 3.8.2
+          # Test python 3.8 with the newest supported versions
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - pre-commit
