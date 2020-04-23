@@ -210,7 +210,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, aca.EpisodeCount);
             Assert.AreEqual(0, aca.StepCount);
             Assert.AreEqual(0, aca.TotalStepCount);
-            Assert.AreNotEqual(null, SideChannelUtils.GetSideChannel<FloatPropertiesChannel>());
+            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>());
+            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<EngineConfigurationChannel>());
+            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<StatsSideChannel>());
 
             // Check that Dispose is idempotent
             aca.Dispose();
@@ -221,14 +223,20 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademyDispose()
         {
-            var floatProperties1 = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+            var envParams1 = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+            var engineParams1 = SideChannelsManager.GetSideChannel<EngineConfigurationChannel>();
+            var statsParams1 = SideChannelsManager.GetSideChannel<StatsSideChannel>();
             Academy.Instance.Dispose();
 
             Academy.Instance.LazyInitialize();
-            var floatProperties2 = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+            var envParams2 = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+            var engineParams2 = SideChannelsManager.GetSideChannel<EngineConfigurationChannel>();
+            var statsParams2 = SideChannelsManager.GetSideChannel<StatsSideChannel>();
             Academy.Instance.Dispose();
 
-            Assert.AreNotEqual(floatProperties1, floatProperties2);
+            Assert.AreNotEqual(envParams1, envParams2);
+            Assert.AreNotEqual(engineParams1, engineParams2);
+            Assert.AreNotEqual(statsParams1, statsParams2);
         }
 
         [Test]

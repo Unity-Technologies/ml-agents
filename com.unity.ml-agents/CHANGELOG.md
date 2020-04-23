@@ -13,10 +13,6 @@ and this project adheres to
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
 - The Jupyter notebooks have been removed from the repository.
-- Introduced the `SideChannelUtils` to register, unregister and access side
-  channels.
-- `Academy.FloatProperties` was removed, please use
-  `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
   scenarios, use the [Low Level Python API](../docs/Python-API.md).
 - The low level Python API has changed. You can look at the document
@@ -38,6 +34,19 @@ and this project adheres to
   `AgentAction` and `AgentReset` have been removed.
 - The GhostTrainer has been extended to support asymmetric games and the
   asymmetric example environment Strikers Vs. Goalie has been added.
+- The SideChannel API has changed (#3833, #3660) :
+  - Introduced the `SideChannelManager` to register, unregister and access side
+  channels.
+  - `EnvironmentParameters` replaces the default `FloatProperties`.
+  You can access the `EnvironmentParameters` with
+  `Academy.Instance.EnvironmentParameters` on C# and create an
+  `EnvironmentParametersChannel` on Python
+  - `SideChannel.OnMessageReceived` is now a protected method (was public)
+  - SideChannel IncomingMessages methods now take an optional default argument,
+  which is used when trying to read more data than the message contains.
+  - Added a feature to allow sending stats from C# environments to TensorBoard
+  (and other python StatsWriters). To do this from your code, use
+  `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
 - CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
   were changed from `public` to `private` (#3808).
 - The `UnityEnv` class from the `gym-unity` package was renamed
@@ -53,15 +62,9 @@ and this project adheres to
 
 - Format of console output has changed slightly and now matches the name of the
   model/summary directory. (#3630, #3616)
-- Added a feature to allow sending stats from C# environments to TensorBoard
-  (and other python StatsWriters). To do this from your code, use
-  `SideChannelUtils.GetSideChannel<StatsSideChannel>().AddStat(key, value)`
-  (#3660)
 - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
 - Timer files now contain a dictionary of metadata, including things like the
   package version numbers.
-- SideChannel IncomingMessages methods now take an optional default argument,
-  which is used when trying to read more data than the message contains.
 - The way that UnityEnvironment decides the port was changed. If no port is
   specified, the behavior will depend on the `file_name` parameter. If it is
   `None`, 5004 (the editor port) will be used; otherwise 5005 (the base

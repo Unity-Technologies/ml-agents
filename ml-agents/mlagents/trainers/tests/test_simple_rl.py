@@ -16,7 +16,9 @@ from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
@@ -142,7 +144,7 @@ def _check_environment_trains(
         # Make sure threading is turned off for determinism
         trainer_config["threading"] = False
         if env_manager is None:
-            env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
+            env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
             summaries_dir=dir,

@@ -198,7 +198,7 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SideChannelUtils.ProcessSideChannelData(rlInput.SideChannel.ToArray());
+            SideChannelsManager.ProcessSideChannelData(rlInput.SideChannel.ToArray());
             SendCommandEvent(rlInput.Command);
         }
 
@@ -365,7 +365,7 @@ namespace MLAgents
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
-            byte[] messageAggregated = SideChannelUtils.GetSideChannelMessage();
+            byte[] messageAggregated = SideChannelsManager.GetSideChannelMessage();
             message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);

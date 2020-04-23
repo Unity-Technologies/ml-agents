@@ -42,7 +42,7 @@ namespace MLAgents
     /// Access the Academy singleton through the <see cref="Instance"/>
     /// property. The Academy instance is initialized the first time it is accessed (which will
     /// typically be by the first <see cref="Agent"/> initialized in a scene).
-    /// 
+    ///
     /// At initialization, the Academy attempts to connect to the Python training process through
     /// the external communicator. If successful, the training process can train <see cref="Agent"/>
     /// instances. When you set an agent's <see cref="BehaviorParameters.behaviorType"/> setting
@@ -62,7 +62,7 @@ namespace MLAgents
         /// on each side, although we may allow some flexibility in the future.
         /// This should be incremented whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "0.16.0";
+        const string k_ApiVersion = "0.17.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -311,6 +311,31 @@ namespace MLAgents
             }
         }
 
+        private EnvironmentParameters m_EnvironmentParameters;
+        private StatsRecorder m_StatsRecorder;
+
+        /// <summary>
+        /// Returns the <see cref="EnvironmentParameters"/> instance. If training
+        /// features such as Curriculum Learning or Environment Parameter Randomization are used,
+        /// then the values of the parameters generated from the training process can be
+        /// retrieved here.
+        /// </summary>
+        /// <returns></returns>
+        public EnvironmentParameters EnvironmentParameters
+        {
+            get { return m_EnvironmentParameters; }
+        }
+
+        /// <summary>
+        /// Returns the <see cref="StatsRecorder"/> instance. This instance can be used
+        /// to record any statistics from the Unity environment.
+        /// </summary>
+        /// <returns></returns>
+        public StatsRecorder StatsRecorder
+        {
+            get { return m_StatsRecorder; }
+        }
+
         /// <summary>
         /// Initializes the environment, configures it and initializes the Academy.
         /// </summary>
@@ -321,9 +346,9 @@ namespace MLAgents
 
             EnableAutomaticStepping();
 
-            SideChannelUtils.RegisterSideChannel(new EngineConfigurationChannel());
-            SideChannelUtils.RegisterSideChannel(new FloatPropertiesChannel());
-            SideChannelUtils.RegisterSideChannel(new StatsSideChannel());
+            SideChannelsManager.RegisterSideChannel(new EngineConfigurationChannel());
+            m_EnvironmentParameters = new EnvironmentParameters();
+            m_StatsRecorder = new StatsRecorder();
 
             // Try to launch the communicator by using the arguments passed at launch
             var port = ReadPortFromArgs();
@@ -477,7 +502,7 @@ namespace MLAgents
             // If the communicator is not on, we need to clear the SideChannel sending queue
             if (!IsCommunicatorOn)
             {
-                SideChannelUtils.GetSideChannelMessage();
+                SideChannelsManager.GetSideChannelMessage();
             }
 
             using (TimerStack.Instance.Scoped("AgentAct"))
@@ -531,7 +556,10 @@ namespace MLAgents
 
             Communicator?.Dispose();
             Communicator = null;
-            SideChannelUtils.UnregisterAllSideChannels();
+
+            m_EnvironmentParameters.Dispose();
+            m_StatsRecorder.Dispose();
+            SideChannelsManager.UnregisterAllSideChannels();  // unregister custom side channels
 
             if (m_ModelRunners != null)
             {
