@@ -120,13 +120,13 @@ public class TennisAgent : Agent
         actionsOut[2] = Input.GetAxis("Vertical");   // Racket Rotation
     }
 
-    void OnCollisionEnter(Collision c)
-    {
-        if (c.gameObject.CompareTag("ball"))
-        {
-            AddReward(.01f);
-        }
-    }
+    //void OnCollisionEnter(Collision c)
+    //{
+    //    if (c.gameObject.CompareTag("ball"))
+    //    {
+    //        AddReward(.01f);
+    //    }
+    //}
 
     void FixedUpdate()
     {   
