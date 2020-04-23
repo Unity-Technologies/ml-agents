@@ -41,33 +41,7 @@ publish:
     - .yamato/com.unity.ml-agents-pack.yml#pack
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
-    {% if test_editor.version == "trunk" %}
-    - .yamato/com.unity.ml-agents-publish.yml#test_{{ platform.name }}_{{ editor.version }}
-    {% else %}
     - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endif %}
     {% endfor %}
     {% endfor %}
-
-{% for platform in test_platforms %}
-test_{{ platform.name }}_trunk:
-  name : com.unity.ml-agents test trunk on {{ platform.name }}
-  agent:
-    type: {{ platform.type }}
-    image: {{ platform.image }}
-    flavor: {{ platform.flavor}}
-  commands:
-    - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
-    - unity-downloader-cli -u trunk -c editor --wait --fast
-    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u trunk --package-path com.unity.ml-agents
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
-  dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack
-  triggers:
-    cancel_old_ci: true
-  {% endfor %}
-
