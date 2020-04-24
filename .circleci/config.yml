@@ -35,8 +35,6 @@ jobs:
 
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install cmake protobuf-compiler libprotoc-dev
 
       - run:
           # Combine all the python dependencies into one file so that we can use that for the cache checksum
