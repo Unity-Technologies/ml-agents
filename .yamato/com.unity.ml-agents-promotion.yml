@@ -1,8 +1,3 @@
-promotion_test_trigger:
-  name: Promotion Tests Trigger
-  dependencies:
-    - .yamato/com.unity.ml-agents-test.yml#all_package_tests
-
 promote:
   name: Promote to Production
   agent:
@@ -24,3 +19,4 @@ promote:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
+    - .yamato/com.unity.ml-agents-test.yml#all_package_tests
