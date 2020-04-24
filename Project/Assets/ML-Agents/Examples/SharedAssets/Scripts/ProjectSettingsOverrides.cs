@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.MLAgents;
-using Unity.MLAgents.SideChannels;
 
 namespace Unity.MLAgentsExamples
 {

@@ -1,6 +1,5 @@
 using System;
 using Unity.MLAgents.Sensors;
-using UnityEngine.Serialization;
 
 namespace Unity.MLAgentsExamples
 {
@@ -50,7 +49,7 @@ namespace Unity.MLAgentsExamples
         {
             // One-hot encoding of the position
             Array.Clear(output, 0, output.Length);
-            output[basicController.m_Position] = 1;
+            output[basicController.position] = 1;
         }
 
         /// <inheritdoc/>
