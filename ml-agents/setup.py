@@ -48,6 +48,7 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
     # find_namespace_packages will recurse through the directories and find all the packages
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
@@ -61,7 +62,7 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml",
-        "tensorflow>=1.7,<2.1",
+        "tensorflow>=1.7,<3.0",
         'pypiwin32==223;platform_system=="Windows"',
     ],
     python_requires=">=3.6.1",

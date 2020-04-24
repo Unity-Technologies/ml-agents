@@ -6,6 +6,9 @@ executors:
   python373:
     docker:
       - image: circleci/python:3.7.3
+  python382:
+    docker:
+      - image: circleci/python:3.8.2
 
 jobs:
   build_python:
