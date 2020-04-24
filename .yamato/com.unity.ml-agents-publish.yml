@@ -1,14 +1,3 @@
-test_editors:
-  - version: 2018.4
-  - version: 2019.3
-  - version: 2020.1
-  - version: 2020.2
-  - version: trunk
-test_platforms:
-  - name: win
-  - name: mac
-  - name: linux
----
 publish:
   name: Publish ML-Agents to Internal Registry
   agent:
@@ -30,8 +19,4 @@ publish:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
-    {% for editor in test_editors %}
-    {% for platform in test_platforms %}
-    - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
-    {% endfor %}
-    {% endfor %}
+    - .yamato/com.unity.ml-agents-test.yml#all_package_tests
