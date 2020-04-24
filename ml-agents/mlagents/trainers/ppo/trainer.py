@@ -91,7 +91,7 @@ class PPOTrainer(RLTrainer):
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        super()._process_trajectory(trajectory)
+        # super()._process_trajectory(trajectory)
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
@@ -178,7 +178,6 @@ class PPOTrainer(RLTrainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
-        buffer_length = self.update_buffer.num_experiences
         self.cumulative_returns_since_policy_update.clear()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
@@ -199,8 +198,6 @@ class PPOTrainer(RLTrainer):
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
 
-        # increment steps when training instead of when generating from environment
-        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
         num_epoch = self.trainer_parameters["num_epoch"]
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
@@ -221,6 +218,8 @@ class PPOTrainer(RLTrainer):
             update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
+
+        super()._update_policy()
         self._clear_update_buffer()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:

@@ -107,12 +107,10 @@ VisualPyramids:
 
 3DBall:
     normalize: true
-    batch_size: 64
-    buffer_size: 12000
-    summary_freq: 12000
     time_horizon: 1000
     lambd: 0.99
     beta: 0.001
+    max_steps: 1.0e5
 
 3DBallHard:
     normalize: true
