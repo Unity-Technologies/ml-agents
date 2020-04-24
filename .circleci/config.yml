@@ -55,6 +55,10 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install --upgrade setuptools
+
+            pip install protobuf==3.11.3 --progress-bar=off
+            pip install mypy-protobuf==1.16.0 --progress-bar=off
+
             pip install --progress-bar=off -e ./ml-agents-envs -c << parameters.pip_constraints >>
             pip install --progress-bar=off -e ./ml-agents -c << parameters.pip_constraints >>
             pip install --progress-bar=off -r test_requirements.txt -c << parameters.pip_constraints >>
