@@ -68,7 +68,7 @@ namespace MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "0.15.1-preview";
+        internal const string k_PackageVersion = "1.0.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
