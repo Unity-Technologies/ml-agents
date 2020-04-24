@@ -8,8 +8,20 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+##C#
+- Test C# Change.
+##Python
+- Test Python Change.
 ### Minor Changes
+##C#
+- Test C# Change.
+##Python
+- Test Python Change.
 ### Bug Fixes
+##C#
+- Test C# Change.
+##Python
+- Test Python Change.
 
 ## [1.0.0-preview] - 2020-05-06
 
