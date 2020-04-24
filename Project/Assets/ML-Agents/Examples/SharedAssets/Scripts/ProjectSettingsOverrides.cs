@@ -4,6 +4,12 @@ using MLAgents.SideChannels;
 
 namespace MLAgentsExamples
 {
+    /// <summary>
+    /// A helper class for the ML-Agents example scenes to override various
+    /// global settings, and restore them afterwards.
+    /// This can modify some Physics and time-stepping properties, so you
+    /// shouldn't copy it into your project unless you know what you're doing.
+    /// </summary>
     public class ProjectSettingsOverrides : MonoBehaviour
     {
         // Original values

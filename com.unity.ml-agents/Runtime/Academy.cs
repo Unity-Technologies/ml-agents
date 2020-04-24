@@ -141,6 +141,12 @@ namespace MLAgents
             set { m_InferenceSeed = value; }
         }
 
+        /// <summary>
+        /// Returns the RLCapabilities of the python client that the unity process is connected to.
+        /// </summary>
+        internal UnityRLCapabilities TrainerCapabilities { get; set; }
+
+
         // The Academy uses a series of events to communicate with agents
         // to facilitate synchronization. More specifically, it ensures
         // that all the agents perform their steps in a consistent order (i.e. no
@@ -375,10 +381,13 @@ namespace MLAgents
                             unityCommunicationVersion = k_ApiVersion,
                             unityPackageVersion = k_PackageVersion,
                             name = "AcademySingleton",
+                            CSharpCapabilities = new UnityRLCapabilities()
                         });
                     UnityEngine.Random.InitState(unityRlInitParameters.seed);
                     // We might have inference-only Agents, so set the seed for them too.
                     m_InferenceSeed = unityRlInitParameters.seed;
+                    TrainerCapabilities = unityRlInitParameters.TrainerCapabilities;
+                    TrainerCapabilities.WarnOnPythonMissingBaseRLCapabilities();
                 }
                 catch
                 {
