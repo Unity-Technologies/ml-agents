@@ -166,6 +166,7 @@ namespace MLAgents
                 seed = inputProto.Seed,
                 pythonLibraryVersion = inputProto.PackageVersion,
                 pythonCommunicationVersion = inputProto.CommunicationVersion,
+                TrainerCapabilities = inputProto.Capabilities.ToRLCapabilities()
             };
         }
 
@@ -280,5 +281,21 @@ namespace MLAgents
             return observationProto;
         }
         #endregion
+
+        public static UnityRLCapabilities ToRLCapabilities(this UnityRLCapabilitiesProto proto)
+        {
+            return new UnityRLCapabilities
+            {
+                m_BaseRLCapabilities = proto.BaseRLCapabilities
+            };
+        }
+
+        public static UnityRLCapabilitiesProto ToProto(this UnityRLCapabilities rlCaps)
+        {
+            return new UnityRLCapabilitiesProto
+            {
+                BaseRLCapabilities = rlCaps.m_BaseRLCapabilities
+            };
+        }
     }
 }

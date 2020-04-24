@@ -83,6 +83,7 @@ and this project adheres to
 - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
 - `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
 you will need to change the signature of its `Write()` method. (#3834)
+- `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
 
 ### Bug Fixes
 

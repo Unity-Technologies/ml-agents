@@ -108,7 +108,8 @@ namespace MLAgents
             {
                 Name = initParameters.name,
                 PackageVersion = initParameters.unityPackageVersion,
-                CommunicationVersion = initParameters.unityCommunicationVersion
+                CommunicationVersion = initParameters.unityCommunicationVersion,
+                Capabilities = initParameters.CSharpCapabilities.ToProto()
             };
 
             UnityInputProto input;
