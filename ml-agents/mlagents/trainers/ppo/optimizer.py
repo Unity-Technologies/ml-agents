@@ -235,9 +235,10 @@ class PPOOptimizer(TFOptimizer):
         decay_epsilon = tf.train.polynomial_decay(
             epsilon, self.policy.global_step, max_step, 0.1, power=1.0
         )
-        decay_beta = tf.train.polynomial_decay(
-            beta, self.policy.global_step, max_step, 1e-5, power=1.0
-        )
+        # decay_beta = tf.train.polynomial_decay(
+        #    beta, self.policy.global_step, max_step, 1e-5, power=1.0
+        # )
+        decay_beta = tf.Variable(beta)
 
         value_losses = []
         for name, head in value_heads.items():
