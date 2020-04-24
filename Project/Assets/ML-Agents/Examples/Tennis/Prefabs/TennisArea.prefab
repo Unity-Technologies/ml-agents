@@ -203,7 +203,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 14
+    vectorObservationSize: 10
     numStackedVectorObservations: 3
     vectorActionSize: 03000000
     vectorActionDescriptions: []
@@ -236,6 +236,7 @@ MonoBehaviour:
   score: 0
   myArea: {fileID: 1541947554534326}
   scale: 0
+  timePenalty: 0
 --- !u!114 &2449890524009497851
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1343,7 +1344,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 14
+    vectorObservationSize: 10
     numStackedVectorObservations: 3
     vectorActionSize: 03000000
     vectorActionDescriptions: []
@@ -1376,6 +1377,7 @@ MonoBehaviour:
   score: 0
   myArea: {fileID: 1541947554534326}
   scale: 0
+  timePenalty: 0
 --- !u!114 &6598495797138489682
 MonoBehaviour:
   m_ObjectHideFlags: 0
