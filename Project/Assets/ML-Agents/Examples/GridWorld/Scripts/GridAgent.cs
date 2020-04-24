@@ -1,10 +1,10 @@
 using System;
 using UnityEngine;
 using System.Linq;
-using MLAgents;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 using UnityEngine.Serialization;
-using MLAgents.SideChannels;
+using Unity.MLAgents.SideChannels;
 
 public class GridAgent : Agent
 {

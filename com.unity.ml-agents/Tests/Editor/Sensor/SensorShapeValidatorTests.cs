@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class DummySensor : ISensor
     {

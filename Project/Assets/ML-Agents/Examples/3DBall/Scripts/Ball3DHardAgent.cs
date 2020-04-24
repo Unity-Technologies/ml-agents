@@ -1,7 +1,7 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.SideChannels;
 
 public class Ball3DHardAgent : Agent
 {

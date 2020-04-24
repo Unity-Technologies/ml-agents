@@ -1,9 +1,9 @@
 using System;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
 
     [TestFixture]

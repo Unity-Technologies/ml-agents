@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Barracuda;
 using System.IO;
-using MLAgents;
-using MLAgents.Policies;
+using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// Utility class to allow the NNModel file for an agent to be overriden during inference.

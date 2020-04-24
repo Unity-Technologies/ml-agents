@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using MLAgents.SideChannels;
+using Unity.MLAgents.SideChannels;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// A container for the Environment Parameters that may be modified during training.

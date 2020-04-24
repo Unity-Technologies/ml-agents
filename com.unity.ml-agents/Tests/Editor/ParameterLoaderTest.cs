@@ -2,12 +2,12 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 using Barracuda;
-using MLAgents.Inference;
-using MLAgents.Sensors;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Sensors;
 using System.Linq;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class Test3DSensorComponent : SensorComponent
     {

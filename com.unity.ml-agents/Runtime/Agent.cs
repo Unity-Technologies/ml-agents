@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using Barracuda;
-using MLAgents.Sensors;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Struct that contains all the information for an Agent, including its
@@ -199,7 +199,7 @@ namespace MLAgents
         /// outside of training, you can set the max step to 0 in <see cref="Initialize"/>
         /// if the <see cref="Academy"/> is not connected to an external process.
         /// <code>
-        /// using MLAgents;
+        /// using Unity.MLAgents;
         ///
         /// public class MyAgent : Agent
         /// {

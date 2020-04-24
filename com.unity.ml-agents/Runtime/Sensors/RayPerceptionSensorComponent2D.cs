@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A component for 2D Ray Perception.

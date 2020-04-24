@@ -1,4 +1,4 @@
-namespace MLAgents.Inference.Utils
+namespace Unity.MLAgents.Inference.Utils
 {
     /// <summary>
     /// Multinomial - Draws samples from a multinomial distribution given a (potentially unscaled)

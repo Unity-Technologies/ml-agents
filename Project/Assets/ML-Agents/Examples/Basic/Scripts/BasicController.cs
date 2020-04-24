@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using MLAgents;
+using Unity.MLAgents;
 
 /// <summary>
 /// An example of how to use ML-Agents without inheriting from the Agent class.
@@ -77,7 +77,7 @@ public class BasicController : MonoBehaviour
     }
 
     public void ResetAgent()
-    {   
+    {
         // This is a very inefficient way to reset the scene. Used here for testing.
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         m_Agent = null; // LoadScene only takes effect at the next Update.
