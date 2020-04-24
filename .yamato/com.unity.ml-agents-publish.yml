@@ -6,7 +6,6 @@ publish:
     flavor: b1.large
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-# Please remove the dry-run option once your CI pipeline is in place ant that you're ready to publish for real
     - upm-ci package publish --package-path com.unity.ml-agents
   triggers:
     cancel_old_ci: true
