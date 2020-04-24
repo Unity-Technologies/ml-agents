@@ -56,10 +56,6 @@ test_{{ platform.name }}_{{ editor.version }}:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    {% if editor.version != "trunk" %}
-    - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
-    - unity-downloader-cli -u trunk -c editor --wait --fast
-    {% endif %}
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
