@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using Unity.MLAgents;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Unity.MLAgentsExamples
 {

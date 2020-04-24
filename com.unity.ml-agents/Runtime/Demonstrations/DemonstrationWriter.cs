@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Demonstrations
     public class DemonstrationWriter
     {
         /// <summary>
-        /// Number of bytes reserved for the <see cref="Demonstration"/> metadata at the start of the demo file.
+        /// Number of bytes reserved for the <see cref="DemonstrationMetaData"/> at the start of the demo file.
         /// </summary>
         internal const int MetaDataBytes = 32;
 

@@ -1,6 +1,5 @@
 using NUnit.Framework;
 using UnityEngine;
-using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Tests

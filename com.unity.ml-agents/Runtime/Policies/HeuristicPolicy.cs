@@ -15,7 +15,6 @@ namespace Unity.MLAgents.Policies
         public delegate void ActionGenerator(float[] actionsOut);
         ActionGenerator m_Heuristic;
         float[] m_LastDecision;
-        int m_numActions;
         bool m_Done;
         bool m_DecisionRequested;
 
@@ -27,8 +26,7 @@ namespace Unity.MLAgents.Policies
         public HeuristicPolicy(ActionGenerator heuristic, int numActions)
         {
             m_Heuristic = heuristic;
-            m_numActions = numActions;
-            m_LastDecision = new float[m_numActions];
+            m_LastDecision = new float[numActions];
         }
 
         /// <inheritdoc />

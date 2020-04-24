@@ -126,6 +126,7 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="sensorComponents">Attached sensor components</param>
+        /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
         /// <returns>The list the error messages of the checks that failed</returns>
         public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters,
             SensorComponent[] sensorComponents, BehaviorType behaviorType = BehaviorType.Default)

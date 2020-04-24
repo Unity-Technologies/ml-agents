@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Tests
             bp.BrainParameters.VectorActionSize = new[] { 2, 2 };
             bp.BrainParameters.VectorActionSpaceType = SpaceType.Discrete;
 
-            var agent = gameobj.AddComponent<TestAgent>();
+            gameobj.AddComponent<TestAgent>();
 
             Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirectory));
 
