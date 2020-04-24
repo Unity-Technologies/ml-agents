@@ -87,6 +87,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         Uses demonstration_buffer to update model.
         """
+        self._maybe_write_summary(self.get_step + self.trainer_parameters["buffer_size"])
         pass
 
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
@@ -119,7 +120,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         Takes a trajectory and processes it, putting it into the update buffer.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        self._maybe_write_summary(self.get_step + len(trajectory.steps))
+        # self._maybe_write_summary(self.get_step + len(trajectory.steps))
         # self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
