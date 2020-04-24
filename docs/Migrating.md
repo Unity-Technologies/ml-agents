@@ -24,7 +24,7 @@ double-check that the versions are in the same. The versions can be found in
 ### Important changes
 
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
-  namespaces were similarly renamed.
+  namespaces were similarly renamed (#3843).
 - The `--load` and `--train` command-line flags have been deprecated and
   replaced with `--resume` and `--inference`.
 - Running with the same `--run-id` twice will now throw an error.

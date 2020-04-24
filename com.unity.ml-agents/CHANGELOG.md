@@ -15,7 +15,7 @@ and this project adheres to
 
 ### Major Changes
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
-  namespaces were similarly renamed. (#3792)
+  namespaces were similarly renamed. (#3843)
 - Added new 3-joint Worm ragdoll environment. (#3798)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
