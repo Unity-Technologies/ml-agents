@@ -14,7 +14,12 @@ double-check that the versions are in the same. The versions can be found in
 
 # Migrating
 
-## Migrating from 0.15 to latest
+## Migrating from Release 1 to latest
+### Important changes
+### Steps to Migrate
+
+## Migrating from 0.15 to  Release 1
+
 
 ### Important changes
 

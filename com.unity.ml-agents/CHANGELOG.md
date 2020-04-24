@@ -7,6 +7,11 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Major Changes
+### Minor Changes
+### Bug Fixes
+
+## [1.0.0-preview] - 2020-05-06
 
 ### Major Changes
 - Added new 3-joint Worm ragdoll environment. (#3798)
