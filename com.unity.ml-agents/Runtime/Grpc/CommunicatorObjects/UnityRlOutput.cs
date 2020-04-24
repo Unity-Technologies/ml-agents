@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_rl_output.proto</summary>
   internal static partial class UnityRlOutputReflection {
@@ -34,11 +34,12 @@ namespace MLAgents.CommunicatorObjects {
             "cy5BZ2VudEluZm9Qcm90bxpuCg9BZ2VudEluZm9zRW50cnkSCwoDa2V5GAEg",
             "ASgJEkoKBXZhbHVlGAIgASgLMjsuY29tbXVuaWNhdG9yX29iamVjdHMuVW5p",
             "dHlSTE91dHB1dFByb3RvLkxpc3RBZ2VudEluZm9Qcm90bzoCOAFKBAgBEAJC",
-            "H6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "JaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3Rv",
+            "Mw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.AgentInfoReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLOutputProto), global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Parser, new[]{ "AgentInfos", "SideChannel" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto), global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto.Parser, new[]{ "Value" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Parser, new[]{ "AgentInfos", "SideChannel" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto.Parser, new[]{ "Value" }, null, null, null),
             null, })
           }));
     }
@@ -54,7 +55,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.UnityRlOutputReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Unity.MLAgents.CommunicatorObjects.UnityRlOutputReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -83,11 +84,11 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "agentInfos" field.</summary>
     public const int AgentInfosFieldNumber = 2;
-    private static readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>.Codec _map_agentInfos_codec
-        = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto.Parser), 18);
-    private readonly pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto> agentInfos_ = new pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>();
+    private static readonly pbc::MapField<string, global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>.Codec _map_agentInfos_codec
+        = new pbc::MapField<string, global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>.Codec(pb::FieldCodec.ForString(10), pb::FieldCodec.ForMessage(18, global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto.Parser), 18);
+    private readonly pbc::MapField<string, global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto> agentInfos_ = new pbc::MapField<string, global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::MapField<string, global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto> AgentInfos {
+    public pbc::MapField<string, global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Types.ListAgentInfoProto> AgentInfos {
       get { return agentInfos_; }
     }
 
@@ -205,7 +206,7 @@ namespace MLAgents.CommunicatorObjects {
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public static pbr::MessageDescriptor Descriptor {
-          get { return global::MLAgents.CommunicatorObjects.UnityRLOutputProto.Descriptor.NestedTypes[0]; }
+          get { return global::Unity.MLAgents.CommunicatorObjects.UnityRLOutputProto.Descriptor.NestedTypes[0]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -233,11 +234,11 @@ namespace MLAgents.CommunicatorObjects {
 
         /// <summary>Field number for the "value" field.</summary>
         public const int ValueFieldNumber = 1;
-        private static readonly pb::FieldCodec<global::MLAgents.CommunicatorObjects.AgentInfoProto> _repeated_value_codec
-            = pb::FieldCodec.ForMessage(10, global::MLAgents.CommunicatorObjects.AgentInfoProto.Parser);
-        private readonly pbc::RepeatedField<global::MLAgents.CommunicatorObjects.AgentInfoProto> value_ = new pbc::RepeatedField<global::MLAgents.CommunicatorObjects.AgentInfoProto>();
+        private static readonly pb::FieldCodec<global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto> _repeated_value_codec
+            = pb::FieldCodec.ForMessage(10, global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto.Parser);
+        private readonly pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto> value_ = new pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto>();
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public pbc::RepeatedField<global::MLAgents.CommunicatorObjects.AgentInfoProto> Value {
+        public pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.AgentInfoProto> Value {
           get { return value_; }
         }
 
