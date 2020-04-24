@@ -1,0 +1,21 @@
+publish:
+  name: Publish ML-Agents to Internal Registry
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package publish --package-path com.unity.ml-agents
+  triggers:
+    cancel_old_ci: true
+#    tags:
+#      only:
+#        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    artifacts:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/com.unity.ml-agents-pack.yml#pack
+    - .yamato/com.unity.ml-agents-test.yml#all_package_tests
