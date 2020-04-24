@@ -99,10 +99,12 @@ for an example.
 Once we have specified our metacurriculum and curricula, we can launch
 `mlagents-learn` using the `–curriculum` flag to point to the config file
 for our curricula and PPO will train using Curriculum Learning. For example,
-to train agents in the Wall Jump environment with curriculum learning, we can run:
+to train agents in the Wall Jump environment with curriculum learning, you can run:
 
 ```sh
 mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum
 ```
 
-We can then keep track of the current lessons and progresses via TensorBoard.
+You can then keep track of the current lessons and progresses via TensorBoard.
+
+__Note__: If you are resuming a training session that uses curriculum, please pass the number of the last-reached lesson using the `--lesson` flag when running `mlagents-learn`.
