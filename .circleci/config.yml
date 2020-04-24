@@ -36,7 +36,7 @@ jobs:
     steps:
       - checkout
       - run: sudo apt-get update
-      - run: sudo apt-get install cmake
+      - run: sudo apt-get install cmake protobuf-compiler libprotoc-dev
 
       - run:
           # Combine all the python dependencies into one file so that we can use that for the cache checksum
@@ -55,10 +55,6 @@ jobs:
             . venv/bin/activate
             pip install --upgrade pip
             pip install --upgrade setuptools
-
-            pip install protobuf==3.11.3 --progress-bar=off
-            pip install mypy-protobuf==1.16.0 --progress-bar=off
-
             pip install --progress-bar=off -e ./ml-agents-envs -c << parameters.pip_constraints >>
             pip install --progress-bar=off -e ./ml-agents -c << parameters.pip_constraints >>
             pip install --progress-bar=off -r test_requirements.txt -c << parameters.pip_constraints >>
