@@ -83,6 +83,8 @@ and this project adheres to
 - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
 - `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
 you will need to change the signature of its `Write()` method. (#3834)
+- The maximum compatible version of tensorflow was changed to allow tensorflow 2.1 and 2.2. This
+will allow use with python 3.8 using tensorflow 2.2.0rc3.
 - `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
 
 ### Bug Fixes
