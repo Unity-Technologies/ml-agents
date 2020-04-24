@@ -47,6 +47,9 @@ all_package_tests:
   {% endfor %}
   triggers:
     cancel_old_ci: true
+    recurring:
+      - branch: master
+        frequency: daily
 
 {% for editor in test_editors %}
   {% for platform in test_platforms %}
@@ -68,11 +71,13 @@ test_{{ platform.name }}_{{ editor.version }}:
     - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
+    {% if platform.name == "mac" %}
     changes:
       only:
         - "com.unity.ml-agents/**"
         - "ml-agents/tests/yamato/**"
         - ".yamato/com.unity.ml-agents-test.yml"
+    {% endif %}
   {% endfor %}
 {% endfor %}
 
