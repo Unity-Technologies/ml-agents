@@ -35,6 +35,8 @@ jobs:
 
     steps:
       - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install cmake
 
       - run:
           # Combine all the python dependencies into one file so that we can use that for the cache checksum
@@ -97,6 +99,8 @@ jobs:
 
     steps:
       - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install ruby-full
       - run:
           name: Combine precommit config and python versions for caching
           command: |
@@ -111,7 +115,6 @@ jobs:
           name: Install Dependencies
           command: |
             # Need ruby for search-and-replace
-            sudo apt-get update
             sudo apt-get install ruby-full
             python3 -m venv venv
             . venv/bin/activate
@@ -235,6 +238,12 @@ workflows:
           executor: python373
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_tf2_version.txt
+      - build_python:
+          name: python_3.8.2+tf2.2
+          executor: python382
+          pyversion: 3.8.2
+          # Test python 3.8 with the bleeding edge versions
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - pre-commit
