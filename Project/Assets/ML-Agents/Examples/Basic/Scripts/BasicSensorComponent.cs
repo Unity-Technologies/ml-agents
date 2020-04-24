@@ -1,8 +1,8 @@
 using System;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 using UnityEngine.Serialization;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// A simple example of a SensorComponent.

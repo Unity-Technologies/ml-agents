@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using MLAgents;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 
 public class AgentSoccer : Agent
 {

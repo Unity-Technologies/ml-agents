@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System;
 using Barracuda;
-using MLAgents.Inference.Utils;
+using Unity.MLAgents.Inference.Utils;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     /// <summary>
     /// Reshapes a Tensor so that its first dimension becomes equal to the current batch size

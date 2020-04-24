@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
 using System.Reflection;
-using MLAgents;
+using Unity.MLAgents;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class AcademyTests

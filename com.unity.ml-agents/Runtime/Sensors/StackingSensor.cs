@@ -1,6 +1,6 @@
 using System;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// Sensor that wraps around another Sensor to provide temporal stacking.

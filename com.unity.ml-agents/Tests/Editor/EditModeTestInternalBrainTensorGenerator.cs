@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using Barracuda;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Inference;
-using MLAgents.Policies;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class EditModeTestInternalBrainTensorGenerator

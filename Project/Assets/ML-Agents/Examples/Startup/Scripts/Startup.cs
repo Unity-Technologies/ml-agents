@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     internal class Startup : MonoBehaviour
     {

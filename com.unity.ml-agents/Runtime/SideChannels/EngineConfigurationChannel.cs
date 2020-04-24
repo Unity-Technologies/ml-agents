@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
 
     /// <summary>

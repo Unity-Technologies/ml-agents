@@ -1,17 +1,17 @@
 apiRules:
 - exclude:
-    uidRegex: ^MLAgents\.Tests$
+    uidRegex: ^Unity.MLAgents\.Tests$
     type: Namespace
 - exclude:
-    uidRegex: ^MLAgents\.CommunicatorObjects$
+    uidRegex: ^Unity.MLAgents\.CommunicatorObjects$
     type: Namespace
 - exclude:
-    uidRegex: ^MLAgents\.Tests\.Communicator$
+    uidRegex: ^Unity.MLAgents\.Tests\.Communicator$
     type: Namespace
 - exclude:
-    uidRegex: ^MLAgents\.Editor$
+    uidRegex: ^Unity.MLAgents\.Editor$
     type: Namespace
 - exclude:
-    uidRegex: ^MLAgentsExamples$
+    uidRegex: ^Unity.MLAgentsExamples$
     type: Namespace
 

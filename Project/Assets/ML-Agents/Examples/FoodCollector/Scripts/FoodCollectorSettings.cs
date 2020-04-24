@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using MLAgents;
+using Unity.MLAgents;
 
 public class FoodCollectorSettings : MonoBehaviour
 {

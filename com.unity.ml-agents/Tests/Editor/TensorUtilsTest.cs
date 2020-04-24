@@ -1,10 +1,10 @@
 using System;
 using Barracuda;
-using MLAgents.Inference;
-using MLAgents.Inference.Utils;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Inference.Utils;
 using NUnit.Framework;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class TensorUtilsTest
     {

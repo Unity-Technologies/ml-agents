@@ -23,6 +23,8 @@ double-check that the versions are in the same. The versions can be found in
 
 ### Important changes
 
+- The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
+  namespaces were similarly renamed (#3843).
 - The `--load` and `--train` command-line flags have been deprecated and
   replaced with `--resume` and `--inference`.
 - Running with the same `--run-id` twice will now throw an error.
@@ -64,6 +66,9 @@ double-check that the versions are in the same. The versions can be found in
 
 ### Steps to Migrate
 
+- In C# code, replace `using MLAgents` with `using Unity.MLAgents`. Replace
+  other nested namespaces such as `using MLAgents.Sensors` with
+  `using Unity.MLAgents.Sensors`
 - Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and
   don't use the `--train` flag as training will happen by default. To run
   without training, use `--inference`.

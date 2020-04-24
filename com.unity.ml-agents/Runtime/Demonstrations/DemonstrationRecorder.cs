@@ -2,10 +2,10 @@ using System.IO.Abstractions;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using System.IO;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 using UnityEngine.Serialization;
 
-namespace MLAgents.Demonstrations
+namespace Unity.MLAgents.Demonstrations
 {
     /// <summary>
     /// The Demonstration Recorder component facilitates the recording of demonstrations
