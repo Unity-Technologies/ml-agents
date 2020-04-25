@@ -34,7 +34,7 @@ public class WalkerAgent : Agent
     Rigidbody m_ChestRb;
     Rigidbody m_SpineRb;
 
-    FloatPropertiesChannel m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
@@ -60,7 +60,7 @@ public class WalkerAgent : Agent
         m_ChestRb = chest.GetComponent<Rigidbody>();
         m_SpineRb = spine.GetComponent<Rigidbody>();
 
-        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
     }
@@ -179,9 +179,9 @@ public class WalkerAgent : Agent
 
     public void SetTorsoMass()
     {
-        m_ChestRb.mass = m_ResetParams.GetPropertyWithDefault("chest_mass", 8);
-        m_SpineRb.mass = m_ResetParams.GetPropertyWithDefault("spine_mass", 10);
-        m_HipsRb.mass = m_ResetParams.GetPropertyWithDefault("hip_mass", 15);
+        m_ChestRb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
+        m_SpineRb.mass = m_ResetParams.GetWithDefault("spine_mass", 10);
+        m_HipsRb.mass = m_ResetParams.GetWithDefault("hip_mass", 15);
     }
 
     public void SetResetParameters()

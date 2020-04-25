@@ -1,6 +1,10 @@
 # Training with Curriculum Learning
 
-## Sample Environment
+Curriculum learning is a feature of ML-Agents which allows for the properties of environments to be changed during the training process to aid in learning.
+
+## An Instructional Example
+
+*[**Note**: The example provided below is for instructional purposes, and was based on an early version of the [Wall Jump example environment](Example-Environments.md). As such, it is not possible to directly replicate the results here using that environment.]*
 
 Imagine a task in which an agent needs to scale a wall to arrive at a goal. The
 starting point when training an agent to accomplish this task will be a random
@@ -10,24 +14,12 @@ If we start with a simpler task, such as moving toward an unobstructed goal,
 then the agent can easily learn to accomplish the task. From there, we can
 slowly add to the difficulty of the task by increasing the size of the wall
 until the agent can complete the initially near-impossible task of scaling the
-wall. We have included an environment to demonstrate this with ML-Agents,
-called __Wall Jump__.
+wall.
 
 ![Wall](images/curriculum.png)
 
-_Demonstration of a curriculum training scenario in which a progressively taller
+_Demonstration of a hypothetical curriculum training scenario in which a progressively taller
 wall obstructs the path to the goal._
-
-To see curriculum learning in action, observe the two learning curves below. Each
-displays the reward over time for an agent trained using PPO with the same set of
-training hyperparameters. The difference is that one agent was trained using the
-full-height wall version of the task, and the other agent was trained using the
-curriculum version of the task. As you can see, without using curriculum
-learning the agent has a lot of difficulty. We think that by using well-crafted
-curricula, agents trained using reinforcement learning will be able to
-accomplish tasks otherwise much more difficult.
-
-![Log](images/curriculum_progress.png)
 
 ## How-To
 
@@ -40,8 +32,8 @@ the same environment.
 
 In order to define the curricula, the first step is to decide which parameters of
 the environment will vary. In the case of the Wall Jump environment,
-the height of the wall is what varies. We define this as a `Shared Float Property`
-that can be accessed in `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()`, and by doing
+the height of the wall is what varies. We define this as a `Environment Parameters`
+that can be accessed in `Academy.Instance.EnvironmentParameters`, and by doing
 so it becomes adjustable via the Python API.
 Rather than adjusting it by hand, we will create a YAML file which
 describes the structure of the curricula. Within it, we can specify which
@@ -107,10 +99,12 @@ for an example.
 Once we have specified our metacurriculum and curricula, we can launch
 `mlagents-learn` using the `–curriculum` flag to point to the config file
 for our curricula and PPO will train using Curriculum Learning. For example,
-to train agents in the Wall Jump environment with curriculum learning, we can run:
+to train agents in the Wall Jump environment with curriculum learning, you can run:
 
 ```sh
 mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum
 ```
 
-We can then keep track of the current lessons and progresses via TensorBoard.
+You can then keep track of the current lessons and progresses via TensorBoard.
+
+__Note__: If you are resuming a training session that uses curriculum, please pass the number of the last-reached lesson using the `--lesson` flag when running `mlagents-learn`.

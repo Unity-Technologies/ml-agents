@@ -12,16 +12,16 @@ namespace MLAgents.Sensors
         RenderTextureSensor m_Sensor;
 
         /// <summary>
-        /// The <see cref="RenderTexture"/> instance that the associated
+        /// The <see cref="UnityEngine.RenderTexture"/> instance that the associated
         /// <see cref="RenderTextureSensor"/> wraps.
         /// </summary>
         [HideInInspector, SerializeField, FormerlySerializedAs("renderTexture")]
         RenderTexture m_RenderTexture;
 
         /// <summary>
-        /// Stores the <see cref="RenderTexture"/> associated with this sensor.
+        /// Stores the <see cref="UnityEngine.RenderTexture"/> associated with this sensor.
         /// </summary>
-        public RenderTexture renderTexture
+        public RenderTexture RenderTexture
         {
             get { return m_RenderTexture;  }
             set { m_RenderTexture = value;  }
@@ -34,7 +34,7 @@ namespace MLAgents.Sensors
         /// Name of the generated <see cref="RenderTextureSensor"/>.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
-        public string sensorName
+        public string SensorName
         {
             get { return m_SensorName;  }
             set { m_SensorName = value; }
@@ -47,7 +47,7 @@ namespace MLAgents.Sensors
         /// Whether the RenderTexture observation should be converted to grayscale or not.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public bool grayscale
+        public bool Grayscale
         {
             get { return m_Grayscale;  }
             set { m_Grayscale = value; }
@@ -59,7 +59,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Compression type for the render texture observation.
         /// </summary>
-        public SensorCompressionType compression
+        public SensorCompressionType CompressionType
         {
             get { return m_Compression;  }
             set { m_Compression = value; UpdateSensor(); }
@@ -68,17 +68,17 @@ namespace MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor CreateSensor()
         {
-            m_Sensor = new RenderTextureSensor(renderTexture, grayscale, sensorName, compression);
+            m_Sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
             return m_Sensor;
         }
 
         /// <inheritdoc/>
         public override int[] GetObservationShape()
         {
-            var width = renderTexture != null ? renderTexture.width : 0;
-            var height = renderTexture != null ? renderTexture.height : 0;
+            var width = RenderTexture != null ? RenderTexture.width : 0;
+            var height = RenderTexture != null ? RenderTexture.height : 0;
 
-            return new[] { height, width, grayscale ? 1 : 3 };
+            return new[] { height, width, Grayscale ? 1 : 3 };
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace MLAgents.Sensors
         {
             if (m_Sensor != null)
             {
-                m_Sensor.compressionType = m_Compression;
+                m_Sensor.CompressionType = m_Compression;
             }
         }
     }

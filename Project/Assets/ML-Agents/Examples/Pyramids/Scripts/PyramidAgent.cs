@@ -57,7 +57,7 @@ public class PyramidAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        AddReward(-1f / maxStep);
+        AddReward(-1f / MaxStep);
         MoveAgent(vectorAction);
     }
 

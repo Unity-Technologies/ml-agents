@@ -29,6 +29,13 @@ public class GridAgent : Agent
     const int k_Left = 3;
     const int k_Right = 4;
 
+    EnvironmentParameters m_ResetParams;
+
+    public override void Initialize()
+    {
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
+    }
+
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
         // Mask the necessary actions if selected by the user.
@@ -37,7 +44,7 @@ public class GridAgent : Agent
            // Prevents the agent from picking an action that would make it collide with a wall
             var positionX = (int)transform.position.x;
             var positionZ = (int)transform.position.z;
-            var maxPosition = (int)SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("gridSize", 5f) - 1;
+            var maxPosition = (int)m_ResetParams.GetWithDefault("gridSize", 5f) - 1;
 
             if (positionX == 0)
             {

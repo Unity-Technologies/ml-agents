@@ -7,6 +7,13 @@ namespace MLAgents.SideChannels
     /// Side channels provide an alternative mechanism of sending/receiving data from Unity
     /// to Python that is outside of the traditional machine learning loop. ML-Agents provides
     /// some specific implementations of side channels, but users can create their own.
+    ///
+    /// To create your own, you'll need to create two, new mirrored classes, one in Unity (by
+    /// extending <see cref="SideChannel"/>) and another in Python by extending a Python class
+    /// also called SideChannel. Then, within your project, use
+    /// <see cref="SideChannelsManager.RegisterSideChannel"/> and
+    /// <see cref="SideChannelsManager.UnregisterSideChannel"/> to register and unregister your
+    /// custom side channel.
     /// </summary>
     public abstract class SideChannel
     {
@@ -25,12 +32,20 @@ namespace MLAgents.SideChannels
             protected set;
         }
 
+        internal void ProcessMessage(byte[] msg)
+        {
+            using (var incomingMsg = new IncomingMessage(msg))
+            {
+                OnMessageReceived(incomingMsg);
+            }
+        }
+
         /// <summary>
         /// Is called by the communicator every time a message is received from Python by the SideChannel.
         /// Can be called multiple times per simulation step if multiple messages were sent.
         /// </summary>
         /// <param name="msg">The incoming message.</param>
-        public abstract void OnMessageReceived(IncomingMessage msg);
+        protected abstract void OnMessageReceived(IncomingMessage msg);
 
         /// <summary>
         /// Queues a message to be sent to Python during the next simulation step.

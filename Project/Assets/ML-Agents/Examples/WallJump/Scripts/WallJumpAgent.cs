@@ -42,7 +42,7 @@ public class WallJumpAgent : Agent
     Vector3 m_JumpTargetPos;
     Vector3 m_JumpStartingPos;
 
-    FloatPropertiesChannel m_FloatProperties;
+    EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
@@ -57,7 +57,7 @@ public class WallJumpAgent : Agent
 
         spawnArea.SetActive(false);
 
-        m_FloatProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
     // Begin the jump sequence
@@ -316,7 +316,7 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_FloatProperties.GetPropertyWithDefault("no_wall_height", 0),
+                m_ResetParams.GetWithDefault("no_wall_height", 0),
                 localScale.z);
             wall.transform.localScale = localScale;
             SetModel("SmallWallJump", noWallBrain);
@@ -325,15 +325,15 @@ public class WallJumpAgent : Agent
         {
             localScale = new Vector3(
                 localScale.x,
-                m_FloatProperties.GetPropertyWithDefault("small_wall_height", 4),
+                m_ResetParams.GetWithDefault("small_wall_height", 4),
                 localScale.z);
             wall.transform.localScale = localScale;
             SetModel("SmallWallJump", smallWallBrain);
         }
         else
         {
-            var min = m_FloatProperties.GetPropertyWithDefault("big_wall_min_height", 8);
-            var max = m_FloatProperties.GetPropertyWithDefault("big_wall_max_height", 8);
+            var min = m_ResetParams.GetWithDefault("big_wall_min_height", 8);
+            var max = m_ResetParams.GetWithDefault("big_wall_max_height", 8);
             var height = min + Random.value * (max - min);
             localScale = new Vector3(
                 localScale.x,

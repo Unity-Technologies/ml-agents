@@ -21,7 +21,7 @@ public class TennisAgent : Agent
     HitWall m_BallScript;
     TennisArea m_Area;
     float m_InvertMult;
-    FloatPropertiesChannel m_ResetParams;
+    EnvironmentParameters m_ResetParams;
     Vector3 m_Down = new Vector3(0f, -100f, 0f);
     Vector3 zAxis = new Vector3(0f, 0f, 1f);
     const float k_Angle = 90f;
@@ -48,7 +48,7 @@ public class TennisAgent : Agent
         m_Area = myArea.GetComponent<TennisArea>();
         var canvas = GameObject.Find(k_CanvasName);
         GameObject scoreBoard;
-        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
         if (invertX)
         {
             scoreBoard = canvas.transform.Find(k_ScoreBoardBName).gameObject;
@@ -167,7 +167,7 @@ public class TennisAgent : Agent
 
     public void SetBall()
     {
-        scale = m_ResetParams.GetPropertyWithDefault("scale", .5f);
+        scale = m_ResetParams.GetWithDefault("scale", .5f);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

@@ -19,7 +19,7 @@ namespace MLAgents.Policies
         bool m_Done;
         bool m_DecisionRequested;
 
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        ObservationWriter m_ObservationWriter = new ObservationWriter();
         NullList m_NullList = new NullList();
 
 
@@ -128,8 +128,8 @@ namespace MLAgents.Policies
             {
                 if (sensor.GetCompressionType() == SensorCompressionType.None)
                 {
-                    m_WriteAdapter.SetTarget(m_NullList, sensor.GetObservationShape(), 0);
-                    sensor.Write(m_WriteAdapter);
+                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationShape(), 0);
+                    sensor.Write(m_ObservationWriter);
                 }
                 else
                 {

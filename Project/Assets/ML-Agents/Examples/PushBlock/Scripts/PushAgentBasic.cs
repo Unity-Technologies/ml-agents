@@ -49,6 +49,8 @@ public class PushAgentBasic : Agent
     /// </summary>
     Renderer m_GroundRenderer;
 
+    private EnvironmentParameters m_ResetParams;
+
     void Awake()
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -69,6 +71,8 @@ public class PushAgentBasic : Agent
         m_GroundRenderer = ground.GetComponent<Renderer>();
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
+
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
     }
@@ -167,7 +171,7 @@ public class PushAgentBasic : Agent
         MoveAgent(vectorAction);
 
         // Penalty given each step to encourage agent to finish task quickly.
-        AddReward(-1f / maxStep);
+        AddReward(-1f / MaxStep);
     }
 
     public override void Heuristic(float[] actionsOut)
@@ -226,27 +230,23 @@ public class PushAgentBasic : Agent
 
     public void SetGroundMaterialFriction()
     {
-        var resetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
-
         var groundCollider = ground.GetComponent<Collider>();
 
-        groundCollider.material.dynamicFriction = resetParams.GetPropertyWithDefault("dynamic_friction", 0);
-        groundCollider.material.staticFriction = resetParams.GetPropertyWithDefault("static_friction", 0);
+        groundCollider.material.dynamicFriction = m_ResetParams.GetWithDefault("dynamic_friction", 0);
+        groundCollider.material.staticFriction = m_ResetParams.GetWithDefault("static_friction", 0);
     }
 
     public void SetBlockProperties()
     {
-        var resetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
-
-        var scale = resetParams.GetPropertyWithDefault("block_scale", 2);
+        var scale = m_ResetParams.GetWithDefault("block_scale", 2);
         //Set the scale of the block
         m_BlockRb.transform.localScale = new Vector3(scale, 0.75f, scale);
 
         // Set the drag of the block
-        m_BlockRb.drag = resetParams.GetPropertyWithDefault("block_drag", 0.5f);
+        m_BlockRb.drag = m_ResetParams.GetWithDefault("block_drag", 0.5f);
     }
 
-    public void SetResetParameters()
+    private void SetResetParameters()
     {
         SetGroundMaterialFriction();
         SetBlockProperties();

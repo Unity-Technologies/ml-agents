@@ -7,16 +7,17 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Major Changes
+### Minor Changes
+### Bug Fixes
+
+## [1.0.0-preview] - 2020-05-06
 
 ### Major Changes
-
+- Added new 3-joint Worm ragdoll environment. (#3798)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
 - The Jupyter notebooks have been removed from the repository.
-- Introduced the `SideChannelUtils` to register, unregister and access side
-  channels.
-- `Academy.FloatProperties` was removed, please use
-  `SideChannelUtils.GetSideChannel<FloatPropertiesChannel>()` instead.
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
   scenarios, use the [Low Level Python API](../docs/Python-API.md).
 - The low level Python API has changed. You can look at the document
@@ -38,26 +39,37 @@ and this project adheres to
   `AgentAction` and `AgentReset` have been removed.
 - The GhostTrainer has been extended to support asymmetric games and the
   asymmetric example environment Strikers Vs. Goalie has been added.
+- The SideChannel API has changed (#3833, #3660) :
+  - Introduced the `SideChannelManager` to register, unregister and access side
+  channels.
+  - `EnvironmentParameters` replaces the default `FloatProperties`.
+  You can access the `EnvironmentParameters` with
+  `Academy.Instance.EnvironmentParameters` on C# and create an
+  `EnvironmentParametersChannel` on Python
+  - `SideChannel.OnMessageReceived` is now a protected method (was public)
+  - SideChannel IncomingMessages methods now take an optional default argument,
+  which is used when trying to read more data than the message contains.
+  - Added a feature to allow sending stats from C# environments to TensorBoard
+  (and other python StatsWriters). To do this from your code, use
+  `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
 - CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
   were changed from `public` to `private` (#3808).
 - The `UnityEnv` class from the `gym-unity` package was renamed
   `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
   Instead, the `UnityEnvironment` must be passed as input to the
   constructor of `UnityToGymWrapper`
+- Public fields and properties on several classes were renamed to follow Unity's
+  C# style conventions. All public fields and properties now use "PascalCase"
+  instead of "camelCase"; for example, `Agent.maxStep` was renamed to
+  `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 
 ### Minor Changes
 
 - Format of console output has changed slightly and now matches the name of the
   model/summary directory. (#3630, #3616)
-- Added a feature to allow sending stats from C# environments to TensorBoard
-  (and other python StatsWriters). To do this from your code, use
-  `SideChannelUtils.GetSideChannel<StatsSideChannel>().AddStat(key, value)`
-  (#3660)
 - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
 - Timer files now contain a dictionary of metadata, including things like the
   package version numbers.
-- SideChannel IncomingMessages methods now take an optional default argument,
-  which is used when trying to read more data than the message contains.
 - The way that UnityEnvironment decides the port was changed. If no port is
   specified, the behavior will depend on the `file_name` parameter. If it is
   `None`, 5004 (the editor port) will be used; otherwise 5005 (the base
@@ -67,9 +79,18 @@ and this project adheres to
 - Running `mlagents-learn` with the same `--run-id` twice will no longer
   overwrite the existing files. (#3705)
 - `StackingSensor` was changed from `internal` visibility to `public`
+- Academy.InferenceSeed property was added. This is used to initialize the
+  random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
 - Updated Barracuda to 0.6.3-preview.
- - Model updates can now happen asynchronously with environment steps for better performance. (#3690)
- - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
+- Added `Agent.GetObservations(), which returns a read-only view of the observations
+  added in `CollectObservations()`. (#3825)
+- Model updates can now happen asynchronously with environment steps for better performance. (#3690)
+- `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
+- `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
+you will need to change the signature of its `Write()` method. (#3834)
+- The maximum compatible version of tensorflow was changed to allow tensorflow 2.1 and 2.2. This
+will allow use with python 3.8 using tensorflow 2.2.0rc3.
+- `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
 
 ### Bug Fixes
 
