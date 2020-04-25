@@ -40,7 +40,7 @@ public class TennisAgent : Agent
 
     public override void Initialize()
     {
-        m_Existential = 1f / maxStep;
+        m_Existential = 1f / MaxStep;
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_OpponentRb = opponent.GetComponent<Rigidbody>();

@@ -28,6 +28,7 @@ public class SmallCubeAgent : Agent
     public Laser myLaser;
     public GameObject myBody;
 
+    private EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
@@ -241,8 +242,9 @@ public class SmallCubeAgent : Agent
         m_Shoot = false;
         m_ShootTime = -.5f;
         //m_Bonus = Academy.Instance.FloatProperties.GetPropertyWithDefault("bonus", 0);
-        m_Bonus = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>().GetPropertyWithDefault("bonus", 0);
+        m_Bonus = m_ResetParams.GetWithDefault("bonus", 0);
         m_AgentRb.velocity = Vector3.zero;
+
 
         float smallRange = 50f * m_MyArea.range;
         transform.position = new Vector3(Random.Range(-smallRange, smallRange),

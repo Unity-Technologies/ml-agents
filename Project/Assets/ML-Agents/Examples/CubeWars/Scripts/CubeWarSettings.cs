@@ -14,7 +14,7 @@ public class CubeWarSettings : MonoBehaviour
     public int totalScore;
     public Text scoreText;
 
-    StatsSideChannel m_statsSideChannel;
+    //StatsSideChannel m_statsSideChannel;
 
 //    public void Awake()
 //    {
