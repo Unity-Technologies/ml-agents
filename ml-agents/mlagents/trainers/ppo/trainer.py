@@ -179,6 +179,7 @@ class PPOTrainer(RLTrainer):
         The reward signal generators must be updated in this method at their own pace.
         """
         self.cumulative_returns_since_policy_update.clear()
+        super()._update_policy()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
@@ -219,7 +220,6 @@ class PPOTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
 
-        super()._update_policy()
         self._clear_update_buffer()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:

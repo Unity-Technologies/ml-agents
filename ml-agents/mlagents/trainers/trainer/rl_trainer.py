@@ -86,9 +86,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         Uses demonstration_buffer to update model.
         """
-        # increment steps when training instead of when generating from environment
-        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
         self._maybe_write_summary(self.get_step + self.trainer_parameters["buffer_size"])
+        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
 
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
         """
@@ -128,7 +127,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         write the summary. This logic ensures summaries are written on the update step and not in between.
         :param step_after_process: the step count after processing the next trajectory.
         """
-        if step_after_process >= self.next_summary_step and self.get_step != 0:
+        if step_after_process >= self.next_summary_step:
             self._write_summary(self.next_summary_step)
 
     def advance(self) -> None:
