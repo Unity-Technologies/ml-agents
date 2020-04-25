@@ -150,6 +150,8 @@ Goalie:
     batch_size: 2048
     buffer_size: 20480
     hidden_units: 512
+    beta: 1.0e-2
+    threaded: false
     time_horizon: 1000
     num_layers: 2
     self_play:
@@ -166,6 +168,8 @@ Striker:
     batch_size: 2048
     buffer_size: 20480
     hidden_units: 512
+    beta: 1.0e-2
+    threaded: false
     time_horizon: 1000
     num_layers: 2
     self_play:
@@ -182,6 +186,8 @@ SoccerTwos:
     batch_size: 2048
     buffer_size: 20480
     hidden_units: 512
+    beta: 1.0e-2
+    threaded: false
     time_horizon: 1000
     num_layers: 2
     self_play:
