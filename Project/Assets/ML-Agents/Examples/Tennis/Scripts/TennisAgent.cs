@@ -73,10 +73,10 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_InvertMult * m_BallRb.velocity.x / 40f);
         sensor.AddObservation(m_BallRb.velocity.y / 60f);
 
-        //sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x) / -25f);
-        //sensor.AddObservation((opponent.transform.position.y - myArea.transform.position.y) / -7f);
-        //sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x / 20f);
-        //sensor.AddObservation(m_OpponentRb.velocity.y / 20f);
+        sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x) / -25f);
+        sensor.AddObservation((opponent.transform.position.y - myArea.transform.position.y) / -7f);
+        sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x / 20f);
+        sensor.AddObservation(m_OpponentRb.velocity.y / 20f);
 
         //sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
         sensor.AddObservation((m_InvertMult * (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f) - 35f) / 125f);

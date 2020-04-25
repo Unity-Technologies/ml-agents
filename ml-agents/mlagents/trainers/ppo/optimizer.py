@@ -232,12 +232,13 @@ class PPOOptimizer(TFOptimizer):
         )
         advantage = tf.expand_dims(self.advantage, -1)
 
-        decay_epsilon = tf.train.polynomial_decay(
-            epsilon, self.policy.global_step, max_step, 0.1, power=1.0
-        )
+        # decay_epsilon = tf.train.polynomial_decay(
+        #    epsilon, self.policy.global_step, max_step, 0.1, power=1.0
+        # )
         # decay_beta = tf.train.polynomial_decay(
         #    beta, self.policy.global_step, max_step, 1e-5, power=1.0
         # )
+        decay_epsilon = tf.Variable(epsilon)
         decay_beta = tf.Variable(beta)
 
         value_losses = []
