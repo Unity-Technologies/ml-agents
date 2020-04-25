@@ -3,7 +3,7 @@
 import os
 import json
 import sys
-from typing import Dict
+from typing import Dict, Optional
 import argparse
 
 VERSION_LINE_START = "__version__ = "
@@ -16,6 +16,26 @@ DIRECTORIES = [
 
 UNITY_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
 ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
+
+PYTHON_VERSION_FILE_TEMPLATE = """
+# Version of the library that will be used to upload to pypi
+__version__ = {version}
+
+# Git tag that will be checked to determine whether to trigger upload to pypi
+__release_tag__ = {release_tag}
+"""
+
+
+def _escape_non_none(s: Optional[str]) -> str:
+    """
+    Returns s escaped in quotes if it is non-None, else "None"
+    :param s:
+    :return:
+    """
+    if s is not None:
+        return f'"{s}"'
+    else:
+        return "None"
 
 
 def extract_version_string(filename):
@@ -42,8 +62,11 @@ def check_versions() -> bool:
     return True
 
 
-def set_version(python_version: str, csharp_version: str) -> None:
-    new_contents = f'{VERSION_LINE_START}"{python_version}"\n'
+def set_version(python_version: str, csharp_version: str, release_tag: str) -> None:
+    new_contents = PYTHON_VERSION_FILE_TEMPLATE.format(
+        version=_escape_non_none(python_version),
+        release_tag=_escape_non_none(release_tag),
+    )
     for directory in DIRECTORIES:
         path = os.path.join(directory, "__init__.py")
         print(f"Setting {path} to version {python_version}")
@@ -92,6 +115,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--python-version", default=None)
     parser.add_argument("--csharp-version", default=None)
+    parser.add_argument("--release-tag", default=None)
     # unused, but allows precommit to pass filenames
     parser.add_argument("files", nargs="*")
     args = parser.parse_args()
@@ -100,7 +124,7 @@ if __name__ == "__main__":
         print(f"Updating python library to version {args.python_version}")
         if args.csharp_version:
             print(f"Updating C# package to version {args.csharp_version}")
-        set_version(args.python_version, args.csharp_version)
+        set_version(args.python_version, args.csharp_version, args.release_tag)
     else:
         ok = check_versions()
         return_code = 0 if ok else 1
