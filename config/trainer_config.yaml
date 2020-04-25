@@ -128,7 +128,7 @@ VisualPyramids:
             gamma: 0.995
 
 Tennis:
-    max_steps: 5.0e7
+    max_steps: 1.0e8
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
@@ -137,10 +137,10 @@ Tennis:
     threaded: false
     time_horizon: 1000
     self_play:
-        window: 10
+        window: 100
         play_against_latest_model_ratio: 0.5
         save_steps: 50000
-        swap_steps: 50000
+        swap_steps: 2000
         team_change: 100000
 
 Goalie:
@@ -177,7 +177,7 @@ Striker:
 
 SoccerTwos:
     normalize: false
-    max_steps: 5.0e7
+    max_steps: 1.0e8
     learning_rate_schedule: constant
     batch_size: 2048
     buffer_size: 20480
@@ -185,10 +185,10 @@ SoccerTwos:
     time_horizon: 1000
     num_layers: 2
     self_play:
-        window: 10
+        window: 100
         play_against_latest_model_ratio: 0.5
         save_steps: 50000
-        swap_steps: 50000
+        swap_steps: 2000
         team_change: 200000
 
 SmallCubeSoldier:
