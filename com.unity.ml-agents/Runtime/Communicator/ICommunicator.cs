@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.SideChannels;
 
 namespace Unity.MLAgents
 {

@@ -45,7 +45,7 @@ namespace Unity.MLAgents
     ///
     /// At initialization, the Academy attempts to connect to the Python training process through
     /// the external communicator. If successful, the training process can train <see cref="Agent"/>
-    /// instances. When you set an agent's <see cref="BehaviorParameters.behaviorType"/> setting
+    /// instances. When you set an agent's <see cref="BehaviorParameters.BehaviorType"/> setting
     /// to <see cref="BehaviorType.Default"/>, the agent exchanges data with the training process
     /// to make decisions. If no training process is available, agents with the default behavior
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
@@ -72,7 +72,7 @@ namespace Unity.MLAgents
 
         const int k_EditorTrainingPort = 5004;
 
-        const string k_portCommandLineFlag = "--mlagents-port";
+        const string k_PortCommandLineFlag = "--mlagents-port";
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
@@ -294,7 +294,7 @@ namespace Unity.MLAgents
             var inputPort = "";
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == k_portCommandLineFlag)
+                if (args[i] == k_PortCommandLineFlag)
                 {
                     inputPort = args[i + 1];
                 }
@@ -317,8 +317,8 @@ namespace Unity.MLAgents
             }
         }
 
-        private EnvironmentParameters m_EnvironmentParameters;
-        private StatsRecorder m_StatsRecorder;
+        EnvironmentParameters m_EnvironmentParameters;
+        StatsRecorder m_StatsRecorder;
 
         /// <summary>
         /// Returns the <see cref="EnvironmentParameters"/> instance. If training

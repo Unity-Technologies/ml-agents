@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using Unity.MLAgents.Policies;
 using UnityEngine.Serialization;
 
 namespace Unity.MLAgents.Demonstrations

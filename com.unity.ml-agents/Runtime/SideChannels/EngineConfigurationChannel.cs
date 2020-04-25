@@ -9,7 +9,7 @@ namespace Unity.MLAgents.SideChannels
     /// </summary>
     internal class EngineConfigurationChannel : SideChannel
     {
-        private enum ConfigurationType : int
+        enum ConfigurationType : int
         {
             ScreenResolution = 0,
             QualityLevel = 1,

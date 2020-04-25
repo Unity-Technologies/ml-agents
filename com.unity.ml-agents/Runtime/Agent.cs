@@ -108,7 +108,7 @@ namespace Unity.MLAgents
     /// Use the <see cref="OnActionReceived"/> function to implement the actions your agent can take,
     /// such as moving to reach a goal or interacting with its environment.
     ///
-    /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="maxStep"/> count,
+    /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="MaxStep"/> count,
     /// its current episode ends. You can reset the agent -- or remove it from the
     /// environment -- by implementing the <see cref="OnEpisodeBegin"/> function. An agent also
     /// becomes done when the <see cref="Academy"/> resets the environment, which only happens when

@@ -1,7 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
+#if UNITY_2019_3_OR_NEWER
 using System.Reflection;
 using Unity.MLAgents;
+#endif
 
 namespace Unity.MLAgents.Tests
 {

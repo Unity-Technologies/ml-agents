@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
