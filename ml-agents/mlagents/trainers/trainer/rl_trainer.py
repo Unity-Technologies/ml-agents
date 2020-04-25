@@ -82,14 +82,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         return False
 
-    # @abc.abstractmethod
     def _update_policy(self):
         """
         Uses demonstration_buffer to update model.
         """
         # increment steps when training instead of when generating from environment
-        self._maybe_write_summary(self.get_step + self.trainer_parameters["buffer_size"])
         self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
+        self._maybe_write_summary(self.get_step + self.trainer_parameters["buffer_size"])
 
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
         """
@@ -122,8 +121,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         pass
-        # self._maybe_write_summary(self.get_step + len(trajectory.steps))
-        # self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
