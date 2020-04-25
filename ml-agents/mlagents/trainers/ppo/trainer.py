@@ -178,9 +178,6 @@ class PPOTrainer(RLTrainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
-        super()._update_policy()
-
-        # buffer_length = self.update_buffer.num_experiences
         self.cumulative_returns_since_policy_update.clear()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
@@ -221,6 +218,8 @@ class PPOTrainer(RLTrainer):
             update_stats = self.optimizer.bc_module.update()
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
+
+        super()._update_policy()
         self._clear_update_buffer()
 
     def create_policy(self, brain_parameters: BrainParameters) -> TFPolicy:
