@@ -17,8 +17,7 @@ DIRECTORIES = [
 UNITY_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
 ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
 
-PYTHON_VERSION_FILE_TEMPLATE = """
-# Version of the library that will be used to upload to pypi
+PYTHON_VERSION_FILE_TEMPLATE = """# Version of the library that will be used to upload to pypi
 __version__ = {version}
 
 # Git tag that will be checked to determine whether to trigger upload to pypi
