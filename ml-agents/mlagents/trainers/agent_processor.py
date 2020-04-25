@@ -153,7 +153,7 @@ class AgentProcessor:
             if not terminated:
                 self.episode_steps[global_id] += 1
 
-            # if the trajectory is too long, we truncate it
+            # Add a trajectory segment to the buffer if terminal or the length has reached the time horizon
             if (
                 len(self.experience_buffers[global_id]) >= self.max_trajectory_length
                 or terminated
