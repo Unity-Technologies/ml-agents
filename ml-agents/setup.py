@@ -64,6 +64,9 @@ setup(
         "pyyaml",
         "tensorflow>=1.7,<3.0",
         'pypiwin32==223;platform_system=="Windows"',
+        # We don't actually need six, but tensorflow does, and pip seems
+        # to get confused and install the wrong version.
+        "six>=1.12.0",
     ],
     python_requires=">=3.6.1",
     entry_points={
