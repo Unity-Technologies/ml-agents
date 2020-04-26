@@ -47,6 +47,8 @@ class PPOOptimizer(TFOptimizer):
                     "Losses/Value Loss": "value_loss",
                     "Losses/Policy Loss": "policy_loss",
                     "Policy/Learning Rate": "learning_rate",
+                    "Policy/Beta": "beta",
+                    "Policy/Epsilon": "epsilon",
                 }
                 if self.policy.use_recurrent:
                     self.m_size = self.policy.m_size
@@ -84,6 +86,8 @@ class PPOOptimizer(TFOptimizer):
                     "policy_loss": self.abs_policy_loss,
                     "update_batch": self.update_batch,
                     "learning_rate": self.learning_rate,
+                    "beta": self.decay_beta,
+                    "epsilon": self.decay_epsilon,
                 }
             )
 
@@ -238,15 +242,15 @@ class PPOOptimizer(TFOptimizer):
         # decay_beta = tf.train.polynomial_decay(
         #    beta, self.policy.global_step, max_step, 1e-5, power=1.0
         # )
-        decay_epsilon = tf.Variable(epsilon)
-        decay_beta = tf.Variable(beta)
+        self.decay_epsilon = tf.constant(epsilon)
+        self.decay_beta = tf.constant(beta)
 
         value_losses = []
         for name, head in value_heads.items():
             clipped_value_estimate = self.old_values[name] + tf.clip_by_value(
                 tf.reduce_sum(head, axis=1) - self.old_values[name],
-                -decay_epsilon,
-                decay_epsilon,
+                -self.decay_epsilon,
+                self.decay_epsilon,
             )
             v_opt_a = tf.squared_difference(
                 self.returns_holders[name], tf.reduce_sum(head, axis=1)
@@ -265,7 +269,9 @@ class PPOOptimizer(TFOptimizer):
         r_theta = tf.exp(probs - old_probs)
         p_opt_a = r_theta * advantage
         p_opt_b = (
-            tf.clip_by_value(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon)
+            tf.clip_by_value(
+                r_theta, 1.0 - self.decay_epsilon, 1.0 + self.decay_epsilon
+            )
             * advantage
         )
         self.policy_loss = -tf.reduce_mean(
@@ -277,7 +283,7 @@ class PPOOptimizer(TFOptimizer):
         self.loss = (
             self.policy_loss
             + 0.5 * self.value_loss
-            - decay_beta
+            - self.decay_beta
             * tf.reduce_mean(tf.dynamic_partition(entropy, self.policy.mask, 2)[1])
         )
 
