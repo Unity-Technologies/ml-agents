@@ -61,7 +61,14 @@ def check_versions() -> bool:
     return True
 
 
-def set_version(python_version: str, csharp_version: str, release_tag: str) -> None:
+def set_version(
+    python_version: str, csharp_version: str, release_tag: Optional[str]
+) -> None:
+    # Sanity check - make sure test tags have a test or dev version
+    if release_tag and "test" in release_tag:
+        if not ("dev" in python_version or "test" in python_version):
+            raise RuntimeError('Test tags must use a "test" or "dev" version.')
+
     new_contents = PYTHON_VERSION_FILE_TEMPLATE.format(
         version=_escape_non_none(python_version),
         release_tag=_escape_non_none(release_tag),
