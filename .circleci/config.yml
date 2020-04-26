@@ -184,7 +184,7 @@ jobs:
       test_repository_args:
         type: string
         description: Optional override repository URL. Only use for tests, leave blank for "real"
-        default:
+        default: ""
     docker:
       - image: circleci/python:3.6
     steps:
