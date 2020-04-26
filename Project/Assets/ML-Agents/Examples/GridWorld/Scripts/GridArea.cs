@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
-using Unity.MLAgents.SideChannels;
 
 
 public class GridArea : MonoBehaviour
@@ -50,7 +49,7 @@ public class GridArea : MonoBehaviour
         m_InitialPosition = transform.position;
     }
 
-    private void SetEnvironment()
+    void SetEnvironment()
     {
         transform.position = m_InitialPosition * (m_ResetParams.GetWithDefault("gridSize", 5f) + 1);
         var playersList = new List<int>();

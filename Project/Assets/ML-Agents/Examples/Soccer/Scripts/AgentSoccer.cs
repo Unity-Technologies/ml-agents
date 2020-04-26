@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
-using Unity.MLAgents.SideChannels;
 
 public class AgentSoccer : Agent
 {
@@ -41,7 +40,7 @@ public class AgentSoccer : Agent
     float m_ForwardSpeed;
 
     [HideInInspector]
-    public float timePenalty = 0;
+    public float timePenalty;
 
     [HideInInspector]
     public Rigidbody agentRb;
@@ -49,7 +48,7 @@ public class AgentSoccer : Agent
     BehaviorParameters m_BehaviorParameters;
     Vector3 m_Transform;
 
-    private EnvironmentParameters m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {

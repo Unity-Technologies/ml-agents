@@ -5,7 +5,6 @@ using UnityEngine;
 using Unity.MLAgents;
 using Barracuda;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.SideChannels;
 
 public class WallJumpAgent : Agent
 {

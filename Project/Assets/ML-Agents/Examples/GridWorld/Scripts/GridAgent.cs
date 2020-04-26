@@ -2,9 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
-using Unity.MLAgents.Sensors;
 using UnityEngine.Serialization;
-using Unity.MLAgents.SideChannels;
 
 public class GridAgent : Agent
 {
@@ -48,22 +46,22 @@ public class GridAgent : Agent
 
             if (positionX == 0)
             {
-                actionMasker.SetMask(0, new int[]{ k_Left});
+                actionMasker.SetMask(0, new []{ k_Left});
             }
 
             if (positionX == maxPosition)
             {
-                actionMasker.SetMask(0, new int[]{k_Right});
+                actionMasker.SetMask(0, new []{k_Right});
             }
 
             if (positionZ == 0)
             {
-                actionMasker.SetMask(0, new int[]{k_Down});
+                actionMasker.SetMask(0, new []{k_Down});
             }
 
             if (positionZ == maxPosition)
             {
-                actionMasker.SetMask(0, new int[]{k_Up});
+                actionMasker.SetMask(0, new []{k_Up});
             }
         }
     }
