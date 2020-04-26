@@ -44,7 +44,7 @@ where
 - `<trainer-config-file>` is the file path of the trainer configuration yaml.
   This contains all the hyperparameter values. We offer a detailed guide on the
   structure of this file and the meaning of the hyperameters (and advice on how
-  to set them) in the dedicated [Training Config File](#training-config-file)
+  to set them) in the dedicated [Training Configurations](#training-configurations)
   section below.
 - `<env_name>`**(Optional)** is the name (including path) of your
   [Unity executable](Learning-Environment-Executable.md) containing the agents
@@ -107,7 +107,7 @@ better than random. You can do this by specifying
 `--initialize-from=<run-identifier>`, where `<run-identifier>` is the old run
 ID.
 
-## Training Config File
+## Training Configurations
 
 The Unity ML-Agents Toolkit provides a wide range of training scenarios, methods
 and options. As such, specific training runs may require different training
@@ -115,67 +115,71 @@ configurations and may generate different artifacts and TensorBoard statistics.
 This section offers a detailed guide into how to manage the different training
 set-ups withing the toolkit.
 
-The training config files `config/trainer_config.yaml`,
-`config/sac_trainer_config.yaml`, `config/gail_config.yaml` and
-`config/offline_bc_config.yaml` specifies the training method, the
-hyperparameters, and a few additional values to use when training with Proximal
-Policy Optimization(PPO), Soft Actor-Critic(SAC), GAIL (Generative Adversarial
-Imitation Learning) with PPO/SAC, and Behavioral Cloning(BC)/Imitation with
-PPO/SAC. These files are divided into sections. The **default** section defines
-the default values for all the available training with PPO, SAC, GAIL (with
-PPO), and BC. These files are divided into sections. The **default** section
-defines the default values for all the available settings. You can also add new
-sections to override these defaults to train specific Behaviors. Name each of
-these override sections after the appropriate `Behavior Name`. Sections for the
-example environments are included in the provided config file.
+More specifically, this section offers a detailed guide on four command-line
+flags for `mlagents-learn` that control the training configurations:
 
-\*PPO = Proximal Policy Optimization, SAC = Soft Actor-Critic, BC = Behavioral
-Cloning (Imitation), GAIL = Generative Adversarial Imitation Learning
+- `<trainer-config-file>`: defines the training hyperparameters for each
+  Behavior in the scene
+- `--curriculum`: defines the set-up for Curriculum Learning
+- `--sampler`: defines the set-up for Environment Parameter Randomization
+- `--num-envs`: number of concurrent Unity instances to use during training
 
-| **Setting**            | **Description**                                                                                                                                                                         | **Applies To Trainer\*** |
-| :--------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------- |
-| batch_size             | The number of experiences in each iteration of gradient descent.                                                                                                                        | PPO, SAC                 |
-| batches_per_epoch      | In imitation learning, the number of batches of training examples to collect before training the model.                                                                                 |                          |
-| beta                   | The strength of entropy regularization.                                                                                                                                                 | PPO                      |
-| buffer_size            | The number of experiences to collect before updating the policy model. In SAC, the max size of the experience buffer.                                                                   | PPO, SAC                 |
-| buffer_init_steps      | The number of experiences to collect into the buffer before updating the policy model.                                                                                                  | SAC                      |
-| epsilon                | Influences how rapidly the policy can evolve during training.                                                                                                                           | PPO                      |
-| hidden_units           | The number of units in the hidden layers of the neural network.                                                                                                                         | PPO, SAC                 |
-| init_entcoef           | How much the agent should explore in the beginning of training.                                                                                                                         | SAC                      |
-| lambd                  | The regularization parameter.                                                                                                                                                           | PPO                      |
-| learning_rate          | The initial learning rate for gradient descent.                                                                                                                                         | PPO, SAC                 |
-| learning_rate_schedule | Determines how learning rate changes over time.                                                                                                                                         | PPO, SAC                 |
-| max_steps              | The maximum number of simulation steps to run during a training session.                                                                                                                | PPO, SAC                 |
-| memory_size            | The size of the memory an agent must keep. Used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                 | PPO, SAC                 |
-| normalize              | Whether to automatically normalize observations.                                                                                                                                        | PPO, SAC                 |
-| num_epoch              | The number of passes to make through the experience buffer when performing gradient descent optimization.                                                                               | PPO                      |
-| num_layers             | The number of hidden layers in the neural network.                                                                                                                                      | PPO, SAC                 |
-| behavioral_cloning     | Use demonstrations to bootstrap the policy neural network. See [Pretraining Using Demonstrations](Training-PPO.md#optional-behavioral-cloning-using-demonstrations).                    | PPO, SAC                 |
-| reward_signals         | The reward signals used to train the policy. Enable Curiosity and GAIL here. See [Reward Signals](Reward-Signals.md) for configuration options.                                         | PPO, SAC                 |
-| save_replay_buffer     | Saves the replay buffer when exiting training, and loads it on resume.                                                                                                                  | SAC                      |
-| sequence_length        | Defines how long the sequences of experiences must be while training. Only used for training with a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md). | PPO, SAC                 |
-| summary_freq           | How often, in steps, to save training statistics. This determines the number of data points shown by TensorBoard.                                                                       | PPO, SAC                 |
-| tau                    | How aggressively to update the target network used for bootstrapping value estimation in SAC.                                                                                           | SAC                      |
-| time_horizon           | How many steps of experience to collect per-agent before adding it to the experience buffer.                                                                                            | PPO, SAC                 |
-| trainer                | The type of training to perform: "ppo", "sac", "offline_bc" or "online_bc".                                                                                                             | PPO, SAC                 |
-| steps_per_update           | Ratio of agent steps per mini-batch update.                                                                                                                     | SAC                      |
-| use_recurrent          | Train using a recurrent neural network. See [Using Recurrent Neural Networks](Feature-Memory.md).                                                                                       | PPO, SAC                 |
-| init_path              | Initialize trainer from a previously saved model.                                                                                                                                       | PPO, SAC                 |
-| threaded              | Run the trainer in a parallel thread from the environment steps. (Default: true)                                                                                                                                      | PPO, SAC                 |
+Reminder that a detailed description of all command-line options can be found by
+using the help utility:
 
-For specific advice on setting hyperparameters based on the type of training you
-are conducting, see:
+```sh
+mlagents-learn --help
+```
 
-- [Training with PPO](Training-PPO.md)
-- [Training with SAC](Training-SAC.md)
-- [Training with Self-Play](Training-Self-Play.md)
-- [Using Recurrent Neural Networks](Feature-Memory.md)
-- [Training with Curriculum Learning](Training-Curriculum-Learning.md)
-- [Training with Imitation Learning](Training-Imitation-Learning.md)
-- [Training with Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
+It is important to highlight that successfully training a Behavior in the
+ML-Agents Toolkit involves tuning the training hyperparameters and
+configuration. This guide contains some best practices for tuning the training
+process when the default parameters don't seem to be giving the level of
+performance you would like. We provide sample configuration files for our
+example environments in the [config/](../config/) directory. The
+`config/trainer_config.yaml` was used to train the 3D Balance Ball in the
+[Getting Started](Getting-Started.md) guide. That configuration file uses the
+PPO trainer, but we also have configuration files for SAC and GAIL.
 
-You can also compare the
-[example environments](Learning-Environment-Examples.md) to the corresponding
-sections of the `config/trainer_config.yaml` file for each example to see how
-the hyperparameters and other configuration variables have been changed from the
-defaults.
+Additionally, the set of configurations you provide depend on the training
+functionalities you use (see [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
+for a description of all the training functionalities). Each functionality you
+add typically has its own training configurations or additional configuration
+files. For instance:
+
+- Use PPO or SAC?
+- Use Recurrent Neural Networks for adding memory to your agents?
+- Use the intrinsic curiosity module?
+- Ignore the environment reward signal?
+- Pre-train using behavioral cloning? (Assuming you have recorded
+  demonstrations.)
+- Include the GAIL intrinsic reward signals? (Assuming you have recorded
+  demonstrations.)
+- Use self-play? (Assuming your environment includes multiple agents.)
+
+The answers to the above questions will dictate the configuration files and the
+parameters within them. The rest of this section breaks down the different
+configuration files and explains the possible settings for each.
+
+### Trainer Config File
+
+#### Common Trainer Configurations
+
+#### Trainer-specific Configurations
+
+#### Memory-enhanced agents using Recurrent Neural Networks
+
+#### Behavioral Cloning
+
+#### Reward Signals
+
+#### Self-Play
+
+
+### Curriculum Learning
+
+
+### Environment Parameter Randomization
+
+
+### Training Using Concurrent Unity Instances

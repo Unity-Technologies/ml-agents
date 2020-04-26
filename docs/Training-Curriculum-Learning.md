@@ -80,7 +80,7 @@ behavior has the following parameters:
   cumulative reward of the last `100` episodes exceeds the current threshold.
   The mean reward logged to the console is dictated by the `summary_freq`
   parameter in the
-  [trainer configuration file](Training-ML-Agents.md#training-config-file).
+  [trainer configuration file](Training-ML-Agents.md#training-configurations).
 * `signal_smoothing` (true/false) - Whether to weight the current progress
   measure by previous values.
   * If `true`, weighting will be 0.75 (new) 0.25 (old).

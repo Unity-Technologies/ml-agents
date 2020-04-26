@@ -603,7 +603,7 @@ in order to ensure a smooth transition.
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
 - Hyperparameters for training Brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
-  [here](Training-ML-Agents.md#training-config-file).
+  [here](Training-ML-Agents.md#training-configurations).
 
 ### Unity API
 
