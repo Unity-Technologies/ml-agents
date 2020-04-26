@@ -9,19 +9,13 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents (C#)
-#### ml-agents (Python)
-#### ml-agents-envs (Python)
-#### gym-unity (Python)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-#### ml-agents (Python)
-#### ml-agents-envs (Python)
-#### gym-unity (Python)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
-#### ml-agents (Python)
-#### ml-agents-envs (Python)
-#### gym-unity (Python)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [1.0.0-preview] - 2020-05-06
 
@@ -58,20 +52,18 @@ and this project adheres to
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
-#### ml-agents (Python)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
 - Added ability to start training (initialize model weights) from a previous run
   ID. (#3710)
 - The GhostTrainer has been extended to support asymmetric games and the
   asymmetric example environment Strikers Vs. Goalie has been added.
-#### ml-agents-envs (Python)
 - The Jupyter notebooks have been removed from the repository.
 - The low level Python API has changed. You can look at the document
   [Low Level Python API documentation](../docs/Python-API.md) for more
   information. If you use `mlagents-learn` for training, this should be a
   transparent change.
-#### gym-unity (Python)
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
   scenarios, use the [Low Level Python API](../docs/Python-API.md).
 - The `UnityEnv` class from the `gym-unity` package was renamed
@@ -90,7 +82,7 @@ and this project adheres to
 - `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
 you will need to change the signature of its `Write()` method. (#3834)
 - `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
-#### ml-agents (Python)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Format of console output has changed slightly and now matches the name of the
   model/summary directory. (#3630, #3616)
 - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
@@ -102,25 +94,18 @@ you will need to change the signature of its `Write()` method. (#3834)
 - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
 - The maximum compatible version of tensorflow was changed to allow tensorflow 2.1 and 2.2. This
 will allow use with python 3.8 using tensorflow 2.2.0rc3.
-#### ml-agents-envs (Python)
 - The way that UnityEnvironment decides the port was changed. If no port is
   specified, the behavior will depend on the `file_name` parameter. If it is
   `None`, 5004 (the editor port) will be used; otherwise 5005 (the base
   environment port) will be used.
-#### gym-unity (Python)
-- N/A
 ### Bug Fixes
 
 #### com.unity.ml-agents (C#)
  - Fixed a display bug when viewing Demonstration files in the inspector. The
    shapes of the observations in the file now display correctly. (#3771)
-#### ml-agents (Python)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue where exceptions from environments provided a returncode of 0.
   (#3680)
-#### ml-agents-envs (Python)
-- N/A
-#### gym-unity (Python)
-- N/A
 
 ## [0.15.1-preview] - 2020-03-30
 
