@@ -74,8 +74,8 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class ParameterLoaderTest
     {
-        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/Resources/continuous2vis8vec2action.nn";
-        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/Resources/discrete1vis0vec_2_3action_recurr.nn";
+        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.nn";
+        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr.nn";
         NNModel continuous2vis8vec2actionModel;
         NNModel discrete1vis0vec_2_3action_recurrModel;
         Test3DSensorComponent sensor_21_20_3;
