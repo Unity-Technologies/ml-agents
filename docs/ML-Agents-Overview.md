@@ -257,7 +257,87 @@ You can even turn your environment into a [gym.](../gym-unity/README.md)
 We do not currently have a tutorial highlighting this mode, but you can
 learn more about the Python API [here](Python-API.md).
 
-### Curriculum Learning
+## Flexible Training Scenarios
+
+While the discussion so-far has mostly focused on training a single agent, with
+ML-Agents, several training scenarios are possible. We are excited to see what
+kinds of novel and fun environments the community creates. For those new to
+training intelligent agents, below are a few examples that can serve as
+inspiration:
+
+- Single-Agent. A single agent, with its own reward
+  signal. The traditional way of training an agent. An example is any
+  single-player game, such as Chicken. [Video
+  Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
+- Simultaneous Single-Agent. Multiple independent agents with independent reward
+  signals with same `Behavior Parameters`. A parallelized version of the traditional
+  training scenario, which can speed-up and stabilize the training process.
+  Helpful when you have multiple versions of the same character in an
+  environment who should learn similar behaviors. An example might be training a
+  dozen robot-arms to each open a door simultaneously. [Video
+  Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
+- Adversarial Self-Play. Two interacting agents with inverse reward signals.
+  In two-player games, adversarial self-play can allow
+  an agent to become increasingly more skilled, while always having the
+  perfectly matched opponent: itself. This was the strategy employed when
+  training AlphaGo, and more recently used by OpenAI to train a human-beating
+  1-vs-1 Dota 2 agent.
+- Cooperative Multi-Agent. Multiple interacting agents with a shared reward
+  signal with same or different `Behavior Parameters`. In this
+  scenario, all agents must work together to accomplish a task that cannot be
+  done alone. Examples include environments where each agent only has access to
+  partial information, which needs to be shared in order to accomplish the task
+  or collaboratively solve a puzzle.
+- Competitive Multi-Agent. Multiple interacting agents with inverse reward
+  signals with same or different `Behavior Parameters`. In this
+  scenario, agents must compete with one another to either win a competition, or
+  obtain some limited set of resources. All team sports fall into this scenario.
+- Ecosystem. Multiple interacting agents with independent reward signals with
+  same or different `Behavior Parameters`. This scenario can be thought
+  of as creating a small world in which animals with different goals all
+  interact, such as a savanna in which there might be zebras, elephants and
+  giraffes, or an autonomous driving simulation within an urban environment.
+
+## Training Methods: Environment-agnostic
+
+#### A Quick Note on Reward Signals
+
+### Deep Reinforcement Learning
+
+#### Curiosity for Sparse-reward Environments
+
+### Imitation Learning
+
+It is often more intuitive to simply demonstrate the behavior we want an agent
+to perform, rather than attempting to have it learn via trial-and-error methods.
+For example, instead of training the medic by setting up its reward function,
+this mode allows providing real examples from a game controller on how the medic
+should behave. More specifically, in this mode, the Agent must use its heuristic
+to generate action, and all the actions performed with the controller (in addition
+to the agent observations) will be recorded. The
+imitation learning algorithm will then use these pairs of observations and
+actions from the human player to learn a policy. [Video
+Link](https://youtu.be/kpb8ZkMBFYs).
+
+The toolkit provides a way to learn directly from demonstrations, as well as use them
+to help speed up reward-based training (RL). We include two algorithms called
+Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
+[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
+features in more depth.
+
+#### GAIL (Generative Adversarial Imitation Learning)
+
+#### Behavioral Cloning (BC)
+
+#### Recording Demonstrations
+
+### Summary
+
+## Training Methods: Environment-specific
+
+### Training in Multi-Agent Environments with Self-Play
+
+### Solving Complex Tasks using Curriculum Learning
 
 This mode is an extension of _Built-in Training and Inference_, and is
 particularly helpful when training intricate behaviors for complex environments.
@@ -300,88 +380,20 @@ progress.
 The [Training with Curriculum Learning](Training-Curriculum-Learning.md)
 tutorial covers this training mode with the **Wall Area** sample environment.
 
-### Imitation Learning
+### Training Robust Agents using Environment Parameter Randomization
 
-It is often more intuitive to simply demonstrate the behavior we want an agent
-to perform, rather than attempting to have it learn via trial-and-error methods.
-For example, instead of training the medic by setting up its reward function,
-this mode allows providing real examples from a game controller on how the medic
-should behave. More specifically, in this mode, the Agent must use its heuristic
-to generate action, and all the actions performed with the controller (in addition
-to the agent observations) will be recorded. The
-imitation learning algorithm will then use these pairs of observations and
-actions from the human player to learn a policy. [Video
-Link](https://youtu.be/kpb8ZkMBFYs).
+- **Training with Environment Parameter Randomization** - If an agent is exposed to several variations of an environment, it will be more robust (i.e. generalize better) to
+  unseen variations of the environment. Similar to Curriculum Learning,
+  where environments become more difficult as the agent learns, the toolkit provides
+  a way to randomly sample parameters of the environment during training. See
+  [Training With Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
+  to learn more about this feature.
 
-The toolkit provides a way to learn directly from demonstrations, as well as use them
-to help speed up reward-based training (RL). We include two algorithms called
-Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
-[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
-features in more depth.
+## Model Types
 
-## Flexible Training Scenarios
+### Learning from Vector Observations
 
-While the discussion so-far has mostly focused on training a single agent, with
-ML-Agents, several training scenarios are possible. We are excited to see what
-kinds of novel and fun environments the community creates. For those new to
-training intelligent agents, below are a few examples that can serve as
-inspiration:
-
-- Single-Agent. A single agent, with its own reward
-  signal. The traditional way of training an agent. An example is any
-  single-player game, such as Chicken. [Video
-  Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
-- Simultaneous Single-Agent. Multiple independent agents with independent reward
-  signals with same `Behavior Parameters`. A parallelized version of the traditional
-  training scenario, which can speed-up and stabilize the training process.
-  Helpful when you have multiple versions of the same character in an
-  environment who should learn similar behaviors. An example might be training a
-  dozen robot-arms to each open a door simultaneously. [Video
-  Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
-- Adversarial Self-Play. Two interacting agents with inverse reward signals.
-  In two-player games, adversarial self-play can allow
-  an agent to become increasingly more skilled, while always having the
-  perfectly matched opponent: itself. This was the strategy employed when
-  training AlphaGo, and more recently used by OpenAI to train a human-beating
-  1-vs-1 Dota 2 agent.
-- Cooperative Multi-Agent. Multiple interacting agents with a shared reward
-  signal with same or different `Behavior Parameters`. In this
-  scenario, all agents must work together to accomplish a task that cannot be
-  done alone. Examples include environments where each agent only has access to
-  partial information, which needs to be shared in order to accomplish the task
-  or collaboratively solve a puzzle.
-- Competitive Multi-Agent. Multiple interacting agents with inverse reward
-  signals with same or different `Behavior Parameters`. In this
-  scenario, agents must compete with one another to either win a competition, or
-  obtain some limited set of resources. All team sports fall into this scenario.
-- Ecosystem. Multiple interacting agents with independent reward signals with
-  same or different `Behavior Parameters`. This scenario can be thought
-  of as creating a small world in which animals with different goals all
-  interact, such as a savanna in which there might be zebras, elephants and
-  giraffes, or an autonomous driving simulation within an urban environment.
-
-## Additional Features
-
-Beyond the flexible training scenarios available, the ML-Agents Toolkit includes
-additional features which improve the flexibility and interpretability of the
-training process.
-
-- **Memory-enhanced Agents** - In some scenarios, agents must learn to remember
-  the past in order to take the best decision. When an agent only has partial
-  observability of the environment, keeping track of past observations can help
-  the agent learn. We provide an implementation of _Long Short-term Memory_
-  ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory)) in our trainers
-  that enable the agent to store memories to be used in future steps. You can
-  learn more about enabling LSTM during training [here](Feature-Memory.md).
-
-- **Monitoring Agent’s Decision Making** - Since communication in ML-Agents is a
-  two-way street, we provide an Agent Monitor class in Unity which can display
-  aspects of the trained Agent, such as the Agents perception on how well it is
-  doing (called **value estimates**) within the Unity environment itself. By
-  leveraging Unity as a visualization tool and providing these outputs in
-  real-time, researchers and developers can more easily debug an Agent’s
-  behavior. You can learn more about using the Monitor class
-  [here](Feature-Monitor.md).
+### Learning from Cameras using Convolutional Neural Networks
 
 - **Complex Visual Observations** - Unlike other platforms, where the agent’s
   observation might be limited to a single vector or image, the ML-Agents
@@ -393,12 +405,26 @@ training process.
   learn more about adding visual observations to an agent
   [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
 
-- **Training with Environment Parameter Randomization** - If an agent is exposed to several variations of an environment, it will be more robust (i.e. generalize better) to
-  unseen variations of the environment. Similar to Curriculum Learning,
-  where environments become more difficult as the agent learns, the toolkit provides
-  a way to randomly sample parameters of the environment during training. See
-  [Training With Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
-  to learn more about this feature.
+### Memory-enhanced Agents using Recurrent Neural Networks
+
+- **Memory-enhanced Agents** - In some scenarios, agents must learn to remember
+  the past in order to take the best decision. When an agent only has partial
+  observability of the environment, keeping track of past observations can help
+  the agent learn. We provide an implementation of _Long Short-term Memory_
+  ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory)) in our trainers
+  that enable the agent to store memories to be used in future steps. You can
+  learn more about enabling LSTM during training [here](Feature-Memory.md).
+
+
+## Additional Features
+
+Beyond the flexible training scenarios available, the ML-Agents Toolkit includes
+additional features which improve the flexibility and interpretability of the
+training process.
+
+- **Concurrent Unity Instances**
+- **Custom Side Channels**
+- **Recording Statistics from Unity**
 
 ## Summary and Next Steps
 
