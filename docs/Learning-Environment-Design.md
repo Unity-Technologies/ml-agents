@@ -51,12 +51,6 @@ To create a training environment, extend the Agent class to
 implement the above methods whether you need to implement them or not depends on
 your specific scenario.
 
-**Note:** The API used by the Python training process to communicate with
-and control the Academy during training can be used for other purposes as well.
-For example, you could use the API to use Unity as the simulation engine for
-your own machine learning algorithms. See [Python API](Python-API.md) for more
-information.
-
 ## Organizing the Unity Scene
 
 To train and use the ML-Agents Toolkit in a Unity scene, the scene as many Agent subclasses as you need.
@@ -124,15 +118,6 @@ See [Agents](Learning-Environment-Design-Agents.md) for detailed information
 about programming your own Agents.
 
 ## Environments
-
-An _environment_ in the ML-Agents Toolkit can be any scene built in Unity. The
-Unity scene provides the environment in which agents observe, act, and learn.
-How you set up the Unity scene to serve as a learning environment really depends
-on your goal. You may be trying to solve a specific reinforcement learning
-problem of limited scope, in which case you can use the same scene for both
-training and for testing trained agents. Or, you may be training agents to
-operate in a complex game or simulation. In this case, it might be more
-efficient and practical to create a purpose-built training scene.
 
 When you create a training environment in Unity, you must set up the scene so
 that it can be controlled by the external training process. Considerations

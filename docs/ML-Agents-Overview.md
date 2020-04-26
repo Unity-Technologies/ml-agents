@@ -1,7 +1,7 @@
 # ML-Agents Toolkit Overview
 
 **The Unity Machine Learning Agents Toolkit** (ML-Agents Toolkit) is an
-open-source Unity plugin that enables games and simulations to serve as
+open-source project that enables games and simulations to serve as
 environments for training intelligent agents. Agents can be trained using
 reinforcement learning, imitation learning, neuroevolution, or other machine
 learning methods through a simple-to-use Python API. We also provide
@@ -27,7 +27,9 @@ machine learning concepts or have not previously heard of TensorFlow.
 The remainder of this page contains a deep dive into ML-Agents, its key
 components, different training modes and scenarios. By the end of it, you should
 have a good sense of _what_ the ML-Agents Toolkit allows you to do. The
-subsequent documentation pages provide examples of _how_ to use ML-Agents.
+subsequent documentation pages provide examples of _how_ to use ML-Agents. To get
+started, watch this
+[demo video of ML-Agents in action](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
 
 ## Running Example: Training NPC Behaviors
 
@@ -111,68 +113,98 @@ achieves this and what features it provides.
 
 ## Key Components
 
-The ML-Agents Toolkit is a Unity plugin that contains three high-level
-components:
+The ML-Agents Toolkit contains five high-level components:
 
 - **Learning Environment** - which contains the Unity scene and all the game
-  characters.
-- **Python API** - which contains all the machine learning algorithms that are
-  used for training (learning a behavior or policy). Note that, unlike the
+  characters. The Unity scene provides the environment in which agents observe,
+  act, and learn. How you set up the Unity scene to serve as a learning
+  environment really depends on your goal. You may be trying to solve a
+  specific reinforcement learning problem of limited scope, in which case you
+  can use the same scene for both training and for testing trained agents. Or,
+  you may be training agents to operate in a complex game or simulation. In
+  this case, it might be more efficient and practical to create a purpose-built
+  training scene. The ML-Agents Toolkit includes an ML-Agents Unity SDK
+  (`com.unity.ml-agents` package) that enables you to transform any Unity scene
+  into a learning environment by defining the agents and their behaviors.
+- **Python Low-Level API** - which contains a low-level Python interface for
+  interacting and manipulating a learning environment. Note that, unlike the
   Learning Environment, the Python API is not part of Unity, but lives outside
-  and communicates with Unity through the External Communicator.
+  and communicates with Unity through the Communicator. This API is contained
+  in a dedicated `mlagents_envs` Python package and is used by the Python
+  training process to communicate with and control the Academy during training.
+  However, it can be used for other purposes as well. For example, you could
+  use the API to use Unity as the simulation engine for your own machine
+  learning algorithms. See [Python API](Python-API.md) for more information.
 - **External Communicator** - which connects the Learning Environment with the
-  Python API. It lives within the Learning Environment.
+  Python Low-Level API. It lives within the Learning Environment.
+- **Python Trainers** which contains all the machine learning algorithms that
+  enable training agents. The algorithms are implemented in Python and are part
+  of their own `mlagents` Python package. The package exposes a single
+  command-line utility `mlagents-learn` that supports all the training methods
+  and options outlined in this document. The Python Trainers interface solely
+  with the Python Low-Level API.
+- **Gym Wrapper** (not pictured). A common way in which machine learning
+  researchers interact with simulation environments is via a wrapper provided
+  by OpenAI called [gym](https://github.com/openai/gym). We provide a gym
+  wrapper in a dedicated `gym-unity` Python package and
+  [instructions](../gym-unity/README.md) for using it with existing machine
+  learning algorithms which utilize gym.
 
 <p align="center">
   <img src="images/learning_environment_basic.png"
        alt="Simplified ML-Agents Scene Block Diagram"
-       width="700" border="10" />
+       width="600"
+       border="10" />
 </p>
 
 _Simplified block diagram of ML-Agents._
 
-The Learning Environment contains an additional component that help
-organize the Unity scene:
+The Learning Environment contains two Unity Components that help organize the
+Unity scene:
 
 - **Agents** - which is attached to a Unity GameObject (any character within a
   scene) and handles generating its observations, performing the actions it
   receives and assigning a reward (positive / negative) when appropriate. Each
   Agent is linked to a Behavior.
+- **Behavior** - defines specific attributes of the agent such as the number
+  of actions that agent can take. Each Behavior is uniquely identified by a
+  `Behavior Name` field. A Behavior can be thought as a function that receives
+  observations and rewards from the Agent and returns actions. A Behavior can
+  be of one of three types: Learning, Heuristic or Inference. A Learning
+  Behavior is one that is not, yet, defined but about to be trained. A
+  Heuristic Behavior is one that is defined by a hard-coded set of rules
+  implemented in code. An Inference Behavior is one that includes a trained
+  Neural Network file. In essence, after a Learning Behavior is trained, it
+  becomes an Inference Behavior.
 
 Every Learning Environment will always have one Agent for
 every character in the scene. While each Agent must be linked to a Behavior, it is
 possible for Agents that have similar observations and actions to have
 the same Behavior. In our sample game, we have two teams each with their own medic.
 Thus we will have two Agents in our Learning Environment, one for each medic,
-but both of these medics can have the same Behavior. Note that these two
-medics have the same Behavior. This does not mean that at each instance they will have
-identical observation and action _values_. If we expanded our game to include
-tank driver NPCs, then the Agent
-attached to those characters cannot share its Behavior with the Agent linked to the
-medics (medics and drivers have different actions).
+but both of these medics can have the same Behavior. This does not mean that at
+each instance they will have identical observation and action _values_.
 
 <p align="center">
   <img src="images/learning_environment_example.png"
        alt="Example ML-Agents Scene Block Diagram"
+       width="700"
        border="10" />
 </p>
 
 _Example block diagram of ML-Agents Toolkit for our sample game._
 
-We have yet to discuss how the ML-Agents Toolkit trains behaviors, and what role
-the Python API and External Communicator play. Before we dive into those
-details, let's summarize the earlier components. Each character is attached to
-an Agent, and each Agent has a Behavior. The Behavior can be thought as a function
-that receives observations
-and rewards from the Agent and returns actions. The Learning Environment through
+Note that in a single environment, there can be multiple Agents and multiple Behaviors
+at the same time. For example, if we expanded our game to include
+tank driver NPCs, then the Agent
+attached to those characters cannot share its Behavior with the Agent linked to the
+medics (medics and drivers have different actions). The Learning Environment through
 the Academy (not represented in the diagram) ensures that all the
 Agents are in sync in addition to controlling environment-wide
 settings.
 
-Note that in a single environment, there can be multiple Agents and multiple Behaviors
-at the same time. These Behaviors can communicate with Python through the communicator
-but can also use a pre-trained _Neural Network_ or a _Heuristic_. Note that it is also
-possible to communicate data with Python without using Agents through _Side Channels_.
+Lastly, it is possible to exchange data between Unity and Python outside of
+the machine learning loop through _Side Channels_.
 One example of using _Side Channels_ is to exchange data with Python about
 _Environment Parameters_. The following diagram illustrates the above.
 
