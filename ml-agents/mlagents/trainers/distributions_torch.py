@@ -37,21 +37,22 @@ class MultiCategoricalDistribution(nn.Module):
         branches = []
         for size in act_sizes:
             branch_output_layer = nn.Linear(hidden_size, size)
-            nn.init.xavier_uniform(branch_output_layer.weight, gain=0.01)
+            nn.init.xavier_uniform_(branch_output_layer.weight, gain=0.01)
             branches.append(branch_output_layer)
-        return branches
+        return nn.ModuleList(branches)
 
     def mask_branch(self, logits, mask):
-        raw_probs = torch.sigmoid(logits, dim=-1) * mask
-        normalized_probs = raw_probs / torch.sum(raw_probs, dim=-1)
+        raw_probs = torch.nn.functional.softmax(logits, dim=-1) * mask
+        normalized_probs = raw_probs / torch.sum(raw_probs, dim=-1).unsqueeze(-1)
         normalized_logits = torch.log(normalized_probs)
         return normalized_logits
 
     def forward(self, inputs, masks):
+        # Todo - Support multiple branches in mask code
         branch_distributions = []
-        for idx, branch in enumerate(self.branches):
+        for branch in self.branches:
             logits = branch(inputs)
-            norm_logits = self.mask_branch(logits, masks[idx])
+            norm_logits = self.mask_branch(logits, masks)
             distribution = distributions.categorical.Categorical(logits=norm_logits)
             branch_distributions.append(distribution)
         return branch_distributions

@@ -11,7 +11,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.policy import UnityPolicyException
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.models_torch import ActionType, EncoderType, Actor, Critic
+from mlagents.trainers.models_torch import EncoderType, Actor, Critic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -49,6 +49,7 @@ class TorchPolicy(Policy):
         self.global_step = 0
 
         self.act_size = brain.vector_action_space_size
+        self.act_type = brain.vector_action_space_type
         self.sequence_length = 1
         if self.use_recurrent:
             self.m_size = trainer_params["memory_size"]
@@ -94,9 +95,9 @@ class TorchPolicy(Policy):
 
         self.actor = Actor(
             h_size=int(trainer_params["hidden_units"]),
-            act_type=ActionType.CONTINUOUS,
+            act_type=self.act_type,
             vector_sizes=[brain.vector_observation_space_size],
-            act_size=sum(brain.vector_action_space_size),
+            act_size=brain.vector_action_space_size,
             normalize=trainer_params["normalize"],
             num_layers=int(trainer_params["num_layers"]),
             m_size=trainer_params["memory_size"],
@@ -154,7 +155,7 @@ class TorchPolicy(Policy):
             actions.append(action)
             log_probs.append(action_dist.log_prob(action))
             entropies.append(action_dist.entropy())
-        actions = torch.stack(actions).squeeze(0)
+        actions = torch.stack(actions)
         log_probs = torch.stack(log_probs).squeeze(0)
         entropies = torch.stack(entropies).squeeze(0)
 
@@ -171,6 +172,7 @@ class TorchPolicy(Policy):
         vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
         vec_obs = [torch.Tensor(vec_obs)]
         vis_obs = [torch.Tensor(vis_ob) for vis_ob in vis_obs]
+        masks = torch.Tensor(masks)
         run_out = {}
         action, log_probs, entropy, value_heads = self.execute_model(
             vec_obs, vis_obs, masks
