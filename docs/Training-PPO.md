@@ -1,9 +1,5 @@
 # Training with Proximal Policy Optimization
 
-To train an agent, you will need to provide the agent one or more reward signals which
-the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
-for the available reward signals and the corresponding hyperparameters.
-
 If you are using the recurrent neural network (RNN) to utilize memory, see
 [Using Recurrent Neural Networks](Feature-Memory.md) for RNN-specific training
 details.
@@ -20,18 +16,6 @@ For information about imitation learning from demonstrations, see
 ## Hyperparameters
 
 ### Reward Signals
-
-In reinforcement learning, the goal is to learn a Policy that maximizes reward.
-At a base level, the reward is given by the environment. However, we could imagine
-rewarding the agent for various different behaviors. For instance, we could reward
-the agent for exploring new states, rather than just when an explicit reward is given.
-Furthermore, we could mix reward signals to help the learning process.
-
-Using `reward_signals` allows you to define [reward signals.](Reward-Signals.md)
-The ML-Agents Toolkit provides three reward signals by default, the Extrinsic (environment)
-reward signal, the Curiosity reward signal, which can be used to encourage exploration in
-sparse extrinsic reward environments, and the GAIL reward signal. Please see [Reward Signals](Reward-Signals.md)
-for additional details.
 
 ## (Optional) Recurrent Neural Network Hyperparameters
 
@@ -56,71 +40,6 @@ be a multiple of 2, and should scale with the amount of information you expect
 the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `32` - `256`
-
-## (Optional) Behavioral Cloning Using Demonstrations
-
-In some cases, you might want to bootstrap the agent's policy using behavior recorded
-from a player. This can help guide the agent towards the reward. Behavioral Cloning (BC) adds
-training operations that mimic a demonstration rather than attempting to maximize reward.
-
-To use BC, add a `behavioral_cloning` section to the trainer_config. For instance:
-
-```
-    behavioral_cloning:
-        demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-        strength: 0.5
-        steps: 10000
-```
-
-Below are the available hyperparameters for BC.
-
-### Strength
-
-`strength` corresponds to the learning rate of the imitation relative to the learning
-rate of PPO, and roughly corresponds to how strongly we allow BC
-to influence the policy.
-
-Typical Range: `0.1` - `0.5`
-
-### Demo Path
-
-`demo_path` is the path to your `.demo` file or directory of `.demo` files.
-See the [imitation learning guide](Training-Imitation-Learning.md) for more on `.demo` files.
-
-### Steps
-
-During BC, it is often desirable to stop using demonstrations after the agent has
-"seen" rewards, and allow it to optimize past the available demonstrations and/or generalize
-outside of the provided demonstrations. `steps` corresponds to the training steps over which
-BC is active. The learning rate of BC will anneal over the steps. Set
-the steps to 0 for constant imitation over the entire training run.
-
-### (Optional) Batch Size
-
-`batch_size` is the number of demonstration experiences used for one iteration of a gradient
-descent update. If not specified, it will default to the `batch_size` defined for PPO.
-
-Typical Range (Continuous): `512` - `5120`
-
-Typical Range (Discrete): `32` - `512`
-
-### (Optional) Number of Epochs
-
-`num_epoch` is the number of passes through the experience buffer during
-gradient descent. If not specified, it will default to the number of epochs set for PPO.
-
-Typical Range: `3` - `10`
-
-### (Optional) Samples Per Update
-
-`samples_per_update` is the maximum number of samples
-to use during each imitation update. You may want to lower this if your demonstration
-dataset is very large to avoid overfitting the policy on demonstrations. Set to 0
-to train over all of the demonstrations at each update step.
-
-Default Value: `0` (all)
-
-Typical Range: Approximately equal to PPO's `buffer_size`
 
 ### (Optional) Advanced: Disable Threading
 

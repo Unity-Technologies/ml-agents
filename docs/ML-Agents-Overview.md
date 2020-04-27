@@ -313,6 +313,33 @@ regardless of the specifics of your learning environment.
 
 #### A Quick Note on Reward Signals
 
+In this section we introduce the concepts of _intrinsic_ and _extrinsic_
+rewards, which helps explain some of the training methods.
+
+In reinforcement learning, the end goal for the Agent is to discover a behavior
+(a Policy) that maximizes a reward. Uou will need to provide the agent one or
+more reward signals to use during training.Typically, a reward is defined by
+your environment, and corresponds to reaching some goal. These are what we
+refer to as _extrinsic_ rewards, as they are defined external of the learning
+algorithm.
+
+Rewards, however, can be defined outside of the environment as well, to
+encourage the agent to behave in certain ways, or to aid the learning of the
+true extrinsic reward. We refer to these rewards as _intrinsic_ reward signals.
+The total reward that the agent will learn to maximize can be a mix of
+extrinsic and intrinsic reward signals.
+
+The ML-Agents Toolkit allows reward signals to be defined in a modular way, and
+we provide three reward signals that can the mixed and matched to help shape
+your agent's behavior:
+- `extrinsic`: represents the rewards defined in your environment, and is
+  enabled by default
+- `gail`: represents an intrinsic reward signal that is defined by GAIL
+  (see below)
+- `curiosity`: represents an intrinsic reward signal that encourages
+  exploration in sparse-reward environments that is defined by the Curiosity
+  module (see below).
+
 ### Deep Reinforcement Learning
 
 ML-Agents provide an implementation of two reinforcement learning algorithms:
@@ -335,32 +362,123 @@ about maximum entropy RL
 
 #### Curiosity for Sparse-reward Environments
 
+In environments where the agent receives rare or infrequent rewards (i.e.
+sparse-reward), an agent may never receive a reward signal on which to
+bootstrap its training process. This is a scenario where the use of an
+intrinsic reward signals can be valuable. Curiosity is one such signal which
+can help the agent explore when extrinsic rewards are sparse.
+
+The `curiosity` Reward Signal enables the Intrinsic Curiosity Module. This is
+an implementation of the approach described in
+[Curiosity-driven Exploration by Self-supervised Prediction](https://pathak22.github.io/noreward-rl/)
+by Pathak, et al. It trains two networks:
+- an inverse model, which takes the current and next observation of the agent,
+  encodes them, and uses the encoding to predict the action that was taken
+  between the observations
+- a forward model, which takes the encoded current observation and action, and
+  predicts the next encoded observation.
+
+The loss of the forward model (the difference between the predicted and actual
+encoded observations) is used as the intrinsic reward, so the more surprised
+the model is, the larger the reward will be.
+
+For more information, see our dedicated
+[blog post on the Curiosity module](https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/).
+
 ### Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we want an agent
-to perform, rather than attempting to have it learn via trial-and-error methods.
-For example, instead of training the medic by setting up its reward function,
-this mode allows providing real examples from a game controller on how the medic
-should behave. More specifically, in this mode, the Agent must use its heuristic
-to generate action, and all the actions performed with the controller (in addition
-to the agent observations) will be recorded. The
-imitation learning algorithm will then use these pairs of observations and
-actions from the human player to learn a policy. [Video
-Link](https://youtu.be/kpb8ZkMBFYs).
+to perform, rather than attempting to have it learn via trial-and-error
+methods. For example, instead of indirectly training a medic with the help
+of a reward function, we can give the medic real world examples of observations
+from the game and actions from a game controller to guide the medic's behavior.
+Imitation Learning uses pairs of observations and actions from a demonstration
+to learn a policy. See this [video demo](https://youtu.be/kpb8ZkMBFYs) of
+imitation learning .
 
-The toolkit provides a way to learn directly from demonstrations, as well as use them
-to help speed up reward-based training (RL). We include two algorithms called
-Behavioral Cloning (BC) and Generative Adversarial Imitation Learning (GAIL). The
-[Training with Imitation Learning](Training-Imitation-Learning.md) tutorial covers these
-features in more depth.
+Imitation learning can either be used alone or in conjunction with
+reinforcement learning. If used alone it can provide a mechanism for learning a
+specific type of behavior (i.e. a specific style of solving the task). If used
+in conjunction with reinforcement learning it can dramatically reduce the time
+the agent takes to solve the environment. This can be especially pronounced in
+sparse-reward environments. For instance, on the
+[Pyramids environment](Learning-Environment-Examples.md#pyramids),
+using 6 episodes of demonstrations can reduce training steps by more than 4
+times. See Behavioral Cloning + GAIL + Curiosity + RL below.
+
+<p align="center">
+  <img src="images/mlagents-ImitationAndRL.png"
+       alt="Using Demonstrations with Reinforcement Learning"
+       width="700" border="0" />
+</p>
+
+The ML-Agents Toolkit provides a way to learn directly from demonstrations, as
+well as use them to help speed up reward-based training (RL). We include two
+algorithms called Behavioral Cloning (BC) and Generative Adversarial Imitation
+Learning (GAIL). In most scenarios, you can combine these two features:
+- If you want to help your agents learn (especially with environments that have
+  sparse rewards) using pre-recorded demonstrations, you can generally enable
+  both GAIL and Behavioral Cloning at low strengths in addition to having an
+  extrinsic reward. An example of this is provided for the Pyramids example
+  environment under `PyramidsLearning` in `config/gail_config.yaml`.
+- If you want to train purely from demonstrations, GAIL and BC _without_ an
+  extrinsic reward signal is the preferred approach. An example of this is
+  provided for the Crawler example environment under `CrawlerStaticLearning` in
+  `config/gail_config.yaml`.
 
 #### GAIL (Generative Adversarial Imitation Learning)
 
+GAIL, or
+[Generative Adversarial Imitation Learning](https://arxiv.org/abs/1606.03476),
+uses an adversarial approach to reward your Agent for behaving similar to
+a set of demonstrations. GAIL can be used with or without environment rewards,
+and works well when there are a limited number of demonstrations. In this
+framework, a second neural network, the discriminator, is taught to distinguish
+whether an observation/action is from a demonstration or produced by the agent.
+This discriminator can the examine a new observation/action and provide it a
+reward based on how close it believes this new observation/action is to the
+provided demonstrations.
+
+At each training step, the agent tries to learn how to maximize this reward.
+Then, the discriminator is trained to better distinguish between demonstrations
+and agent state/actions. In this way, while the agent gets better and better at
+mimicking the demonstrations, the discriminator keeps getting stricter and
+stricter and the agent must try harder to "fool" it.
+
+This approach learns a _policy_ that produces states and actions similar to the
+demonstrations, requiring fewer demonstrations than direct cloning of the
+actions. In addition to learning purely from demonstrations, the GAIL reward
+signal can be mixed with an extrinsic reward signal to guide the learning
+process.
+
 #### Behavioral Cloning (BC)
+
+BC trains the Agent's policy to exactly mimic the actions shown in a set of
+demonstrations. The BC feature can be enabled on the PPO or SAC trainers. As BC
+cannot generalize past the examples shown in the demonstrations, BC tends to
+work best when there exists demonstrations for nearly all of the states that
+the agent can experience, or in conjunction with GAIL and/or an extrinsic
+reward.
 
 #### Recording Demonstrations
 
+Demonstrations of agent behavior can be recorded from the Unity Editor or
+build, and saved as assets. These demonstrations contain information on the
+observations, actions, and rewards for a given agent during the recording
+session. They can be managed in the Editor, as well as used for training with
+BC and GAIL.
+
 ### Summary
+
+To summarize, we provide 3 training methods: BC, GAIL and RL (PPO or SAC) that
+can be used independently or together:
+- BC can be used on its own or as a pre-training step before GAIL and/or RL
+- GAIL can be used with or without extrinsic rewards
+- RL can be used on its own (either PPO or SAC) or in conjunction with BC
+  and/or GAIL.
+
+Leveraging either BC or GAIL requires recording demonstrations to be provided
+as input to the training algorithms.
 
 ## Training Methods: Environment-specific
 
