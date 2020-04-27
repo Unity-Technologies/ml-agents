@@ -215,7 +215,7 @@ used in your normalization formula.
   agent to take the optimally informed decision, and ideally no extraneous
   information.
 - In cases where Vector Observations need to be remembered or compared over
-  time, either an LSTM (see [here](Feature-Memory.md)) should be used in the
+  time, either an RNN should be used in the
   model, or the `Stacked Vectors` value in the agent GameObject's
   `Behavior Parameters` should be changed.
 - Categorical variables such as type of object (Sword, Shield, Bow) should be
@@ -649,9 +649,7 @@ be called independently of the `Max Step` property.
 - `Behavior Parameters` - The parameters dictating what Policy the Agent will
   receive.
   - `Behavior Name` - The identifier for the behavior. Agents with the same
-    behavior name will learn the same policy. If you're using
-    [curriculum learning](Training-Curriculum-Learning.md), this is used as the
-    top-level key in the config.
+    behavior name will learn the same policy.
   - `Vector Observation`
     - `Space Size` - Length of vector observation for the Agent.
     - `Stacked Vectors` - The number of previous vector observations that will

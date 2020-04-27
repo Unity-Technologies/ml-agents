@@ -1,1 +1,0 @@
-# Training with Curriculum Learning

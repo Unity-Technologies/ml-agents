@@ -165,7 +165,7 @@ losing and 0 indicates a draw. The ELO calculation (discussed below) depends on
 this final reward being either +1, 0, -1.
 
 The reward signal should still be used as described in the documentation for the
-other trainers and [reward signals.](Reward-Signals.md) However, we encourage
+other trainers. However, we encourage
 users to be a bit more conservative when shaping reward functions due to the
 instability and non-stationarity of learning in adversarial games. Specifically,
 we encourage users to begin with the simplest possible reward function (+1

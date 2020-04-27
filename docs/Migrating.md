@@ -431,9 +431,7 @@ double-check that the versions are in the same. The versions can be found in
   - `use_curiosity`, `curiosity_strength`, `curiosity_enc_size`: Define a
     `curiosity` reward signal and set its `strength` to `curiosity_strength`,
     and `encoding_size` to `curiosity_enc_size`. Give it the same `gamma` as
-    your `extrinsic` signal to mimic previous behavior. See
-    [Reward Signals](Reward-Signals.md) for more information on defining reward
-    signals.
+    your `extrinsic` signal to mimic previous behavior.
 - TensorBoards generated when running multiple environments in v0.8 are not
   comparable to those generated in v0.9 in terms of step count. Multiply your
   v0.8 step count by `num_envs` for an approximate comparison. You may need to
@@ -558,9 +556,7 @@ double-check that the versions are in the same. The versions can be found in
   [trainer_config.yaml](../config/trainer_config.yaml). An example of passing a
   trainer configuration to `mlagents-learn` is shown above.
 - The environment name is now passed through the `--env` option.
-- Curriculum learning has been changed. Refer to the
-  [curriculum learning documentation](Training-Curriculum-Learning.md) for
-  detailed information. In summary:
+- Curriculum learning has been changed. In summary:
   - Curriculum files for the same environment must now be placed into a folder.
     Each curriculum file should be named after the Brain whose curriculum it
     specifies.
