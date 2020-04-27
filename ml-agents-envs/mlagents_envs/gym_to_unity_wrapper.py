@@ -39,6 +39,10 @@ class GymToUnityWrapper(BaseEnv):
         if isinstance(self._gym_env.action_space, gym.spaces.Box):
             action_type = ActionType.CONTINUOUS
             action_shape = np.prod(self._gym_env.action_space.shape)
+            self.act_ratio = np.maximum(
+                self._gym_env.action_space.high, -self._gym_env.action_space.low
+            )
+            self.act_ratio[self.act_ratio > 1e38] = 1
         elif isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             action_shape = (self._gym_env.action_space.n,)
             action_type = ActionType.DISCRETE
@@ -46,13 +50,15 @@ class GymToUnityWrapper(BaseEnv):
             raise UnityActionException(
                 f"Unknown action type {self._gym_env.action_space}"
             )
-        self.obs_ratio = np.maximum(
-            self._gym_env.observation_space.high, -self._gym_env.observation_space.low
-        )
         if not isinstance(self._gym_env.observation_space, gym.spaces.Box):
             raise UnityObservationException(
                 f"Unknown observation type {self._gym_env.observation_space}"
             )
+        self.obs_ratio = np.maximum(
+            self._gym_env.observation_space.high, -self._gym_env.observation_space.low
+        )
+        # If the range is infinity, just don't normalize
+        self.obs_ratio[self.obs_ratio > 1e38] = 1
         self._behavior_specs = BehaviorSpec(
             observation_shapes=[self._gym_env.observation_space.shape],
             action_type=action_type,
@@ -117,6 +123,8 @@ class GymToUnityWrapper(BaseEnv):
         spec = self._behavior_specs
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
         n_agents = len(self._current_steps[0])
+        if n_agents == 0:
+            return
         expected_shape = (n_agents, spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
@@ -126,12 +134,10 @@ class GymToUnityWrapper(BaseEnv):
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
-        if n_agents == 0:
-            return
         if isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             self._g_action = int(action[0, 0])
         elif isinstance(self._gym_env.action_space, gym.spaces.Box):
-            self._g_action = action[0]
+            self._g_action = action[0] / self.act_ratio
         else:
             raise UnityActionException(
                 f"Unknown action type {self._gym_env.action_space}"
@@ -157,7 +163,7 @@ class GymToUnityWrapper(BaseEnv):
         if isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             self._g_action = int(action[0])
         elif isinstance(self._gym_env.action_space, gym.spaces.Box):
-            self._g_action = action
+            self._g_action = action / self.act_ratio
         else:
             raise UnityActionException(
                 f"Unknown action type {self._gym_env.action_space}"

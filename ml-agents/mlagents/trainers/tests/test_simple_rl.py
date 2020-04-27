@@ -23,6 +23,9 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
 
+import gym
+from mlagents_envs.gym_to_unity_wrapper import GymToUnityWrapper
+
 BRAIN_NAME = "1D"
 
 PPO_CONFIG = f"""
@@ -171,9 +174,12 @@ def _check_environment_trains(
         if (
             success_threshold is not None
         ):  # For tests where we are just checking setup and not reward
-            processed_rewards = [
-                reward_processor(rewards) for rewards in env.final_rewards.values()
-            ]
+            if hasattr(env, "final_rewards"):
+                processed_rewards = [
+                    reward_processor(rewards) for rewards in env.final_rewards.values()
+                ]
+            else:
+                processed_rewards = list(debug_writer.get_last_rewards().values())
             assert all(not math.isnan(reward) for reward in processed_rewards)
             assert all(reward > success_threshold for reward in processed_rewards)
 
@@ -513,3 +519,62 @@ def test_gail_visual_sac(simple_record, use_discrete):
     }
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config, success_threshold=0.9)
+
+
+@pytest.mark.gym
+@pytest.mark.parametrize(
+    "gym_name,target_return",
+    [
+        pytest.param("CartPole-v0", 150),  # optimal 200
+        pytest.param("MountainCar-v0", -199),  # solved if more than -200
+        pytest.param("MountainCarContinuous-v0", 0),  # optimal 90
+    ],
+)
+def test_ppo_gym_training(gym_name, target_return, pytestconfig):
+    if "gym" not in pytestconfig.getoption(name="-m", skip=False):
+        raise pytest.skip(
+            "Dit not run the gym tests, add the marker gym to run these tests"
+        )
+    env = GymToUnityWrapper(gym.make(gym_name), BRAIN_NAME)
+    override_vals = {
+        "max_steps": 1000000,
+        "batch_size": 1024,
+        "buffer_size": 10240,
+        "num_layers": 2,
+        "hidden_units": 128,
+        "time_horizon": 256,
+        "learning_rate_schedule": "linear",
+        "curiosity": {"strength": 0.01, "gamma": 0.95, "encoding_size": 256},
+        "learning_rate": 3.0e-4,
+    }
+    config = generate_config(PPO_CONFIG, override_vals)
+    _check_environment_trains(env, config, success_threshold=target_return)
+
+
+@pytest.mark.gym
+@pytest.mark.parametrize(
+    "gym_name,target_return",
+    [
+        pytest.param("CartPole-v0", 150),  # optimal 200
+        pytest.param("MountainCar-v0", -199),  # solved if more than -200
+        pytest.param("MountainCarContinuous-v0", 0),  # optimal 90
+    ],
+)
+def test_sac_gym_training(gym_name, target_return, pytestconfig):
+    if "gym" not in pytestconfig.getoption(name="-m", skip=False):
+        raise pytest.skip(
+            "Dit not run the gym tests, add the marker gym to run these tests"
+        )
+    env = GymToUnityWrapper(gym.make(gym_name), BRAIN_NAME)
+    override_vals = {
+        "max_steps": 1000000,
+        "buffer_size": 10240,
+        "num_layers": 2,
+        "hidden_units": 128,
+        "time_horizon": 256,
+        "learning_rate_schedule": "linear",
+        "curiosity": {"strength": 0.01, "gamma": 0.95, "encoding_size": 256},
+        "learning_rate": 3.0e-4,
+    }
+    config = generate_config(PPO_CONFIG, override_vals)
+    _check_environment_trains(env, config, success_threshold=target_return)
