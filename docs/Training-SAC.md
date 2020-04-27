@@ -1,29 +1,10 @@
 # Training with Soft-Actor Critic
 
-In addition to [Proximal Policy Optimization (PPO)](Training-PPO.md), ML-Agents also provides
-[Soft Actor-Critic](http://bair.berkeley.edu/blog/2018/12/14/sac/) to perform
-reinforcement learning.
-
-In contrast with PPO, SAC is _off-policy_, which means it can learn from experiences collected
-at any time during the past. As experiences are collected, they are placed in an
-experience replay buffer and randomly drawn during training. This makes SAC
-significantly more sample-efficient, often requiring 5-10 times less samples to learn
-the same task as PPO. However, SAC tends to require more model updates. SAC is a
-good choice for heavier or slower environments (about 0.1 seconds per step or more).
-
-SAC is also a "maximum entropy" algorithm, and enables exploration in an intrinsic way.
-Read more about maximum entropy RL [here](https://bair.berkeley.edu/blog/2017/10/06/soft-q-learning/).
-
 To train an agent, you will need to provide the agent one or more reward signals which
 the agent should attempt to maximize. See [Reward Signals](Reward-Signals.md)
 for the available reward signals and the corresponding hyperparameters.
 
 ## Best Practices when training with SAC
-
-Successfully training a reinforcement learning model often involves tuning
-hyperparameters. This guide contains some best practices for training
-when the default parameters don't seem to be giving the level of performance
-you would like.
 
 ## Hyperparameters
 
@@ -53,161 +34,6 @@ under `reward_signals` to N / M to accomplish this. By default, `reward_signal_s
 
 Typical Range: `steps_per_update`
 
-### Buffer Size
-
-`buffer_size` corresponds the maximum number of experiences (agent observations, actions
-and rewards obtained) that can be stored in the experience replay buffer. This value should be
-large, on the order of thousands of times longer than your episodes, so that SAC
-can learn from old as well as new experiences. It should also be much larger than
-`batch_size`.
-
-Typical Range: `50000` - `1000000`
-
-### Buffer Init Steps
-
-`buffer_init_steps` is the number of experiences to prefill the buffer with before attempting training.
-As the untrained policy is fairly random, prefilling the buffer with random actions is
-useful for exploration. Typically, at least several episodes of experiences should be
-prefilled.
-
-Typical Range: `1000` - `10000`
-
-### Batch Size
-
-`batch_size` is the number of experiences used for one iteration of a gradient
-descent update. If
-you are using a continuous action space, this value should be large (in the
-order of 1000s). If you are using a discrete action space, this value should be
-smaller (in order of 10s).
-
-Typical Range (Continuous): `128` - `1024`
-
-Typical Range (Discrete): `32` - `512`
-
-### Initial Entropy Coefficient
-
-`init_entcoef` refers to the initial entropy coefficient set at the beginning of training. In
-SAC, the agent is incentivized to make its actions entropic to facilitate better exploration.
-The entropy coefficient weighs the true reward with a bonus entropy reward. The entropy
-coefficient is [automatically adjusted](https://arxiv.org/abs/1812.05905) to a preset target
-entropy, so the `init_entcoef` only corresponds to the starting value of the entropy bonus.
-Increase `init_entcoef` to explore more in the beginning, decrease to converge to a solution faster.
-
-Typical Range (Continuous): `0.5` - `1.0`
-
-Typical Range (Discrete): `0.05` - `0.5`
-
-### Train Interval
-
-`train_interval` is the number of steps taken between each agent training event. Typically,
-we can train after every step, but if your environment's steps are very small and very frequent,
-there may not be any new interesting information between steps, and `train_interval` can be increased.
-
-Typical Range: `1` - `5`
-
-### Steps Per Update
-
-`steps_per_update` corresponds to the average ratio of agent steps (actions) taken to updates made of the agent's
-policy. In SAC, a single "update" corresponds to grabbing a batch of size `batch_size` from the experience
-replay buffer, and using this mini batch to update the models. Note that it is not guaranteed that after
-exactly `steps_per_update` steps an update will be made, only that the ratio will hold true over many steps.
-
-Typically, `steps_per_update` should be greater than or equal to 1. Note that setting `steps_per_update` lower will
-improve sample efficiency (reduce the number of steps required to train)
-but increase the CPU time spent performing updates. For most environments where steps are fairly fast (e.g. our example
-environments) `steps_per_update` equal to the number of agents in the scene is a good balance.
-For slow environments (steps take 0.1 seconds or more) reducing `steps_per_update` may improve training speed.
-We can also change `steps_per_update` to lower than 1 to update more often than once per step, though this will
-usually result in a slowdown unless the environment is very slow.
-
-Typical Range: `1` - `20`
-
-### Tau
-
-`tau` corresponds to the magnitude of the target Q update during the SAC model update.
-In SAC, there are two neural networks: the target and the policy. The target network is
-used to bootstrap the policy's estimate of the future rewards at a given state, and is fixed
-while the policy is being updated. This target is then slowly updated according to `tau`.
-Typically, this value should be left at `0.005`. For simple problems, increasing
-`tau` to `0.01` might reduce the time it takes to learn, at the cost of stability.
-
-Typical Range: `0.005` - `0.01`
-
-### Learning Rate
-
-`learning_rate` corresponds to the strength of each gradient descent update
-step. This should typically be decreased if training is unstable, and the reward
-does not consistently increase.
-
-Typical Range: `1e-5` - `1e-3`
-
-### (Optional) Learning Rate Schedule
-
-`learning_rate_schedule` corresponds to how the learning rate is changed over time.
-For SAC, we recommend holding learning rate constant so that the agent can continue to
-learn until its Q function converges naturally.
-
-Options:
-* `linear`: Decay `learning_rate` linearly, reaching 0 at `max_steps`.
-* `constant` (default): Keep learning rate constant for the entire training run.
-
-Options: `linear`, `constant`
-
-### Time Horizon
-
-`time_horizon` corresponds to how many steps of experience to collect per-agent
-before adding it to the experience buffer. This parameter is a lot less critical
-to SAC than PPO, and can typically be set to approximately your episode length.
-
-Typical Range: `32` - `2048`
-
-### Max Steps
-
-`max_steps` corresponds to how many steps of the simulation (multiplied by
-frame-skip) are run during the training process. This value should be increased
-for more complex problems.
-
-Typical Range: `5e5` - `1e7`
-
-### Normalize
-
-`normalize` corresponds to whether normalization is applied to the vector
-observation inputs. This normalization is based on the running average and
-variance of the vector observation. Normalization can be helpful in cases with
-complex continuous control problems, but may be harmful with simpler discrete
-control problems.
-
-### Number of Layers
-
-`num_layers` corresponds to how many hidden layers are present after the
-observation input, or after the CNN encoding of the visual observation. For
-simple problems, fewer layers are likely to train faster and more efficiently.
-More layers may be necessary for more complex control problems.
-
-Typical range: `1` - `3`
-
-### Hidden Units
-
-`hidden_units` correspond to how many units are in each fully connected layer of
-the neural network. For simple problems where the correct action is a
-straightforward combination of the observation inputs, this should be small. For
-problems where the action is a very complex interaction between the observation
-variables, this should be larger.
-
-Typical Range: `32` - `512`
-
-### (Optional) Visual Encoder Type
-
-`vis_encode_type` corresponds to the encoder type for encoding visual observations.
-Valid options include:
-* `simple` (default): a simple encoder which consists of two convolutional layers
-* `nature_cnn`: [CNN implementation proposed by Mnih et al.](https://www.nature.com/articles/nature14236),
-consisting of three convolutional layers
-* `resnet`: [IMPALA Resnet implementation](https://arxiv.org/abs/1802.01561),
-consisting of three stacked layers, each with two residual blocks, making a
-much larger network than the other two.
-
-Options: `simple`, `nature_cnn`, `resnet`
 
 ## (Optional) Recurrent Neural Network Hyperparameters
 
@@ -233,15 +59,6 @@ the agent will need to remember in order to successfully complete the task.
 
 Typical Range: `32` - `256`
 
-### (Optional) Save Replay Buffer
-
-`save_replay_buffer` enables you to save and load the experience replay buffer as well as
-the model when quitting and re-starting training. This may help resumes go more smoothly,
-as the experiences collected won't be wiped. Note that replay buffers can be very large, and
-will take up a considerable amount of disk space. For that reason, we disable this feature by
-default.
-
-Default: `False`
 
 ## (Optional) Behavioral Cloning Using Demonstrations
 
@@ -290,16 +107,6 @@ Typical Range (Continuous): `512` - `5120`
 
 Typical Range (Discrete): `32` - `512`
 
-### (Optional) Advanced: Initialize Model Path
-
-`init_path` can be specified to initialize your model from a previous run before starting.
-Note that the prior run should have used the same trainer configurations as the current run,
-and have been saved with the same version of ML-Agents. You should provide the full path
-to the folder where the checkpoints were saved, e.g. `./models/{run-id}/{behavior_name}`.
-
-This option is provided in case you want to initialize different behaviors from different runs;
-in most cases, it is sufficient to use the `--initialize-from` CLI parameter to initialize
-all models from the same run.
 
 ## Training Statistics
 

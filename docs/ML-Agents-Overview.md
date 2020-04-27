@@ -267,15 +267,13 @@ inspiration:
 
 - Single-Agent. A single agent, with its own reward
   signal. The traditional way of training an agent. An example is any
-  single-player game, such as Chicken. [Video
-  Link](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
+  single-player game, such as Chicken.
 - Simultaneous Single-Agent. Multiple independent agents with independent reward
   signals with same `Behavior Parameters`. A parallelized version of the traditional
   training scenario, which can speed-up and stabilize the training process.
   Helpful when you have multiple versions of the same character in an
   environment who should learn similar behaviors. An example might be training a
-  dozen robot-arms to each open a door simultaneously. [Video
-  Link](https://www.youtube.com/watch?v=fq0JBaiCYNA).
+  dozen robot-arms to each open a door simultaneously.
 - Adversarial Self-Play. Two interacting agents with inverse reward signals.
   In two-player games, adversarial self-play can allow
   an agent to become increasingly more skilled, while always having the
@@ -300,9 +298,40 @@ inspiration:
 
 ## Training Methods: Environment-agnostic
 
+The remaining sections overview the various state-of-the-art machine learning
+algorithms that are part of the ML-Agents Toolkit. If you aren't studying
+machine and reinforcement learning as a subject and just want to train agents
+to accomplish tasks, you can treat these algorithms as _black boxes_. There are
+a few training-related parameters to adjust inside Unity as well as on the
+Python training side, but you do not need in-depth knowledge of the algorithms
+themselves to successfully create and train agents. Step-by-step procedures for
+running the training process are provided in the
+[Training ML-Agents](Training-ML-Agents.md) page.
+
+This section specifically focuses on the training methods that are available
+regardless of the specifics of your learning environment.
+
 #### A Quick Note on Reward Signals
 
 ### Deep Reinforcement Learning
+
+ML-Agents provide an implementation of two reinforcement learning algorithms:
+* [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/)
+* [Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/)
+
+The default algorithm is PPO. This is a method that has been shown to be more
+general purpose and stable than many other RL algorithms.
+
+In contrast with PPO, SAC is _off-policy_, which means it can learn from
+experiences collected at any time during the past. As experiences are
+collected, they are placed in an experience replay buffer and randomly drawn
+during training. This makes SAC significantly more sample-efficient, often
+requiring 5-10 times less samples to learn the same task as PPO. However, SAC
+tends to require more model updates. SAC is a good choice for heavier or slower
+environments (about 0.1 seconds per step or more). SAC is also a "maximum
+entropy" algorithm, and enables exploration in an intrinsic way. Read more
+about maximum entropy RL
+[here](https://bair.berkeley.edu/blog/2017/10/06/soft-q-learning/).
 
 #### Curiosity for Sparse-reward Environments
 

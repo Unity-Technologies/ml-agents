@@ -1,29 +1,5 @@
 # Reinforcement Learning in Unity
 
-Reinforcement learning is an artificial intelligence technique that trains
-_agents_ to perform tasks by rewarding desirable behavior. During reinforcement
-learning, an agent explores its environment, observes the state of things, and,
-based on those observations, takes an action. If the action leads to a better
-state, the agent receives a positive reward. If it leads to a less desirable
-state, then the agent receives no reward or a negative reward (punishment). As
-the agent learns during training, it optimizes its decision making so that it
-receives the maximum reward over time.
-
-The ML-Agents Toolkit uses a reinforcement learning technique called
-[Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/).
-PPO uses a neural network to approximate the ideal function that maps an agent's
-observations to the best action an agent can take in a given state. The
-ML-Agents PPO algorithm is implemented in TensorFlow and runs in a separate
-Python process (communicating with the running Unity application over a socket).
-
-**Note:** if you aren't studying machine and reinforcement learning as a subject
-and just want to train agents to accomplish tasks, you can treat PPO training as
-a _black box_. There are a few training-related parameters to adjust inside
-Unity as well as on the Python training side, but you do not need in-depth
-knowledge of the algorithm itself to successfully create and train agents.
-Step-by-step procedures for running the training process are provided in the
-[Training section](Training-ML-Agents.md).
-
 ## The Simulation and Training Process
 
 Training and simulation proceed in steps orchestrated by the ML-Agents Academy
