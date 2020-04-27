@@ -6,28 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-### Major Changes
-### Minor Changes
-### Bug Fixes
-
 ## [1.0.0-preview] - 2020-05-06
 
 ### Major Changes
+#### com.unity.ml-agents (C#)
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
   namespaces were similarly renamed. (#3843)
 - Added new 3-joint Worm ragdoll environment. (#3798)
-- The `--load` and `--train` command-line flags have been deprecated. Training
-  now happens by default, and use `--resume` to resume training instead. (#3705)
-- The Jupyter notebooks have been removed from the repository.
-- Removed the multi-agent gym option from the gym wrapper. For multi-agent
-  scenarios, use the [Low Level Python API](../docs/Python-API.md).
-- The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](../docs/Python-API.md) for more
-  information. If you use `mlagents-learn` for training, this should be a
-  transparent change.
-- Added ability to start training (initialize model weights) from a previous run
-  ID. (#3710)
 - The internal event `Academy.AgentSetStatus` was renamed to
   `Academy.AgentPreStep` and made public.
 - The offset logic was removed from DecisionRequester.
@@ -39,8 +24,6 @@ and this project adheres to
   communication between Unity and the Python process.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
-- The GhostTrainer has been extended to support asymmetric games and the
-  asymmetric example environment Strikers Vs. Goalie has been added.
 - The SideChannel API has changed (#3833, #3660) :
   - Introduced the `SideChannelManager` to register, unregister and access side
   channels.
@@ -56,17 +39,42 @@ and this project adheres to
   `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
 - CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
   were changed from `public` to `private` (#3808).
-- The `UnityEnv` class from the `gym-unity` package was renamed
-  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
-  Instead, the `UnityEnvironment` must be passed as input to the
-  constructor of `UnityToGymWrapper`
 - Public fields and properties on several classes were renamed to follow Unity's
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `--load` and `--train` command-line flags have been deprecated. Training
+  now happens by default, and use `--resume` to resume training instead. (#3705)
+- The Jupyter notebooks have been removed from the repository.
+- Removed the multi-agent gym option from the gym wrapper. For multi-agent
+  scenarios, use the [Low Level Python API](../docs/Python-API.md).
+- The low level Python API has changed. You can look at the document
+  [Low Level Python API documentation](../docs/Python-API.md) for more
+  information. If you use `mlagents-learn` for training, this should be a
+  transparent change.
+- Added ability to start training (initialize model weights) from a previous run
+  ID. (#3710)
+- The GhostTrainer has been extended to support asymmetric games and the
+  asymmetric example environment Strikers Vs. Goalie has been added.
+- The `UnityEnv` class from the `gym-unity` package was renamed
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`.
+  Instead, the `UnityEnvironment` must be passed as input to the
+  constructor of `UnityToGymWrapper`
 
 ### Minor Changes
 
+#### com.unity.ml-agents (C#)
+- `StackingSensor` was changed from `internal` visibility to `public`
+- Academy.InferenceSeed property was added. This is used to initialize the
+  random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
+- Updated Barracuda to 0.6.3-preview.
+- Added `Agent.GetObservations(), which returns a read-only view of the observations
+  added in `CollectObservations()`. (#3825)
+- `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
+you will need to change the signature of its `Write()` method. (#3834)
+- `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Format of console output has changed slightly and now matches the name of the
   model/summary directory. (#3630, #3616)
 - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
@@ -76,29 +84,23 @@ and this project adheres to
   specified, the behavior will depend on the `file_name` parameter. If it is
   `None`, 5004 (the editor port) will be used; otherwise 5005 (the base
   environment port) will be used.
-- Fixed an issue where exceptions from environments provided a returncode of 0.
-  (#3680)
 - Running `mlagents-learn` with the same `--run-id` twice will no longer
   overwrite the existing files. (#3705)
-- `StackingSensor` was changed from `internal` visibility to `public`
-- Academy.InferenceSeed property was added. This is used to initialize the
-  random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
-- Updated Barracuda to 0.6.3-preview.
-- Added `Agent.GetObservations(), which returns a read-only view of the observations
-  added in `CollectObservations()`. (#3825)
 - Model updates can now happen asynchronously with environment steps for better performance. (#3690)
 - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
-- `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
-you will need to change the signature of its `Write()` method. (#3834)
 - The maximum compatible version of tensorflow was changed to allow tensorflow 2.1 and 2.2. This
 will allow use with python 3.8 using tensorflow 2.2.0rc3.
-- `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
 - `mlagents-learn` will no longer set the width and height of the executable window to 84x84 when no width nor height arguments are given
 
 ### Bug Fixes
 
+#### com.unity.ml-agents (C#)
  - Fixed a display bug when viewing Demonstration files in the inspector. The
    shapes of the observations in the file now display correctly. (#3771)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an issue where exceptions from environments provided a returncode of 0.
+  (#3680)
+
 
 ## [0.15.1-preview] - 2020-03-30
 
