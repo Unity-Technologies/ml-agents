@@ -144,13 +144,13 @@ namespace Unity.MLAgents
     /// [OnDisable()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html]
     /// [OnBeforeSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnBeforeSerialize.html
     /// [OnAfterSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnAfterSerialize.html
-    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md
-    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design.md
+    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md
+    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design.md
     /// [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Readme.md
+    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Readme.md
     ///
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
@@ -596,8 +596,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Reward-Signals.md
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Reward-Signals.md
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -626,8 +626,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Reward-Signals.md
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Reward-Signals.md
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -758,7 +758,7 @@ namespace Unity.MLAgents
         /// control of an agent using keyboard, mouse, or game controller input.
         ///
         /// Your heuristic implementation can use any decision making logic you specify. Assign decision
-        /// values to the float[] array, <paramref cref="actionsOut"/>, passed to your function as a parameter.
+        /// values to the float[] array, <paramref name="actionsOut"/>, passed to your function as a parameter.
         /// Add values to the array at the same indexes as they are used in your
         /// <seealso cref="OnActionReceived(float[])"/> function, which receives this array and
         /// implements the corresponding agent behavior. See [Actions] for more information
@@ -779,8 +779,8 @@ namespace Unity.MLAgents
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Training-Imitation-Learning.md#recording-demonstrations
-        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Training-Imitation-Learning.md#recording-demonstrations
+        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
         /// <example>
@@ -971,7 +971,7 @@ namespace Unity.MLAgents
         /// For more information about observations, see [Observations and Sensors].
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
+        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
@@ -1002,7 +1002,7 @@ namespace Unity.MLAgents
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="OnActionReceived(float[])"/>
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
@@ -1072,7 +1072,7 @@ namespace Unity.MLAgents
         ///
         /// For more information about implementing agent actions see [Agents - Actions].
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="vectorAction">
         /// An array containing the action vector. The length of the array is specified

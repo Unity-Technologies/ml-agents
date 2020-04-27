@@ -77,8 +77,8 @@ class UnityEnvironment(BaseEnv):
         raise UnityEnvironmentException(
             f"The communication API version is not compatible between Unity and python. "
             f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_com_ver}.\n "
-            f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
-            f"to download the latest version of ML-Agents."
+            f"Please find the versions that work best together from our release page.\n"
+            "https://github.com/Unity-Technologies/ml-agents/releases"
         )
 
     @staticmethod
