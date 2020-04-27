@@ -3,7 +3,7 @@
 using System.Collections;
 using UnityEngine;
 using MLAgents;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Sensors;
 using MLAgents.SideChannels;
 

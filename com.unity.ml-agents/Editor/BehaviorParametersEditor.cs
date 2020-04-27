@@ -1,6 +1,6 @@
 using MLAgents.Sensors;
 using UnityEditor;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Policies;
 using UnityEngine;
 

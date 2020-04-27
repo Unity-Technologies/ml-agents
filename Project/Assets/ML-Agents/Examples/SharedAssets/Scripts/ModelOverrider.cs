@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Barracuda;
+using Unity.Barracuda;
 using System.IO;
 using MLAgents;
 using MLAgents.Policies;

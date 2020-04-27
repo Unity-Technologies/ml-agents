@@ -68,6 +68,7 @@ and this project adheres to
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
+- Update Barracuda to 0.7.0-preview which has breaking namespace and assembly name changes.
 
 ### Minor Changes
 
@@ -87,7 +88,6 @@ and this project adheres to
 - `StackingSensor` was changed from `internal` visibility to `public`
 - Academy.InferenceSeed property was added. This is used to initialize the
   random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
-- Updated Barracuda to 0.6.3-preview.
 - Added `Agent.GetObservations(), which returns a read-only view of the observations
   added in `CollectObservations()`. (#3825)
 - Model updates can now happen asynchronously with environment steps for better performance. (#3690)

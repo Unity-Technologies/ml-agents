@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Inference;
 
 namespace MLAgents.Sensors

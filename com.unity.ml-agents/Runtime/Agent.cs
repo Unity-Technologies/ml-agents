@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Sensors;
 using MLAgents.Demonstrations;
 using MLAgents.Policies;
