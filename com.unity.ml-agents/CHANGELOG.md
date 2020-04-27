@@ -8,8 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 ### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 ### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [1.0.0-preview] - 2020-05-06
 
