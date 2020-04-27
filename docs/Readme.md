@@ -22,7 +22,6 @@
 
 ### Advanced Usage
 
-- [Using the Monitor](Feature-Monitor.md)
 - [Using an Executable Environment](Learning-Environment-Executable.md)
 
 ## Training

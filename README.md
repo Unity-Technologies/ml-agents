@@ -38,7 +38,6 @@ developer communities.
 * Easily definable Curriculum Learning and Generalization scenarios
 * Built-in support for [Imitation Learning](docs/Training-Imitation-Learning.md) through Behavioral Cloning or Generative Adversarial Imitation Learning
 * Flexible agent control with On Demand Decision Making
-* Visualizing network outputs within the environment
 * Wrap learning environments as a gym
 * Utilizes the Unity Inference Engine
 * Train using concurrent Unity environment instances

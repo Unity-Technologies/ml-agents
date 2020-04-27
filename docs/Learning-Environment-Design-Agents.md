@@ -681,13 +681,6 @@ be called independently of the `Max Step` property.
 - `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset.
 
-## Monitoring Agents
-
-We created a helpful `Monitor` class that enables visualizing variables within a
-Unity environment. While this was built for monitoring an agent's value function
-throughout the training process, we imagine it can be more broadly useful. You
-can learn more [here](Feature-Monitor.md).
-
 ## Destroying an Agent
 
 You can destroy an Agent GameObject during the simulation. Make sure that there

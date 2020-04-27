@@ -389,9 +389,7 @@ RollerAgent.
 Press :arrow_forward: to run the scene and use the arrows keys to move the Agent
 around the platform. Make sure that there are no errors displayed in the Unity
 Editor Console window and that the Agent resets when it reaches its target or
-falls from the platform. Note that for more involved debugging, the ML-Agents
-SDK includes a convenient [Monitor](Feature-Monitor.md) class that you can use
-to easily display Agent status information in the Game window.
+falls from the platform.
 
 ## Training the Environment
 
