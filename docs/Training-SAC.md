@@ -1,12 +1,6 @@
 # Training with Soft-Actor Critic
 
-## Best Practices when training with SAC
-
 ## Training Statistics
-
-To view training statistics, use TensorBoard. For information on launching and
-using TensorBoard, see
-[here](./Getting-Started.md#observing-training-progress).
 
 ### Cumulative Reward
 

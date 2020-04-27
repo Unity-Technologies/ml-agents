@@ -1,12 +1,5 @@
 # Training with Self-Play
 
-
-## Training Statistics
-
-To view training statistics, use TensorBoard. For information on launching and
-using TensorBoard, see
-[here](./Getting-Started.md#observing-training-progress).
-
 ### ELO
 In adversarial games, the cumulative environment reward may not be a meaningful metric by which to track learning progress.  This is because cumulative reward is entirely dependent on the skill of the opponent. An agent at a particular skill level will get more or less reward against a worse or better agent, respectively.
 

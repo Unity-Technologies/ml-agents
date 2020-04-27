@@ -194,6 +194,7 @@ BehaviorPPO:
   epsilon: 0.2
   lambd: 0.95
   num_epoch: 3
+  threaded: true
 
   # memory
   use_recurrent: true
