@@ -122,6 +122,7 @@ class UnityEnvironment(BaseEnv):
         timeout_wait: int = 60,
         args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
+        log_folder: Optional[str] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -136,6 +137,7 @@ class UnityEnvironment(BaseEnv):
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :list args: Addition Unity command line arguments
         :list side_channels: Additional side channel for no-rl communication with Unity
+        :str log_folder: Optional folder to write the Unity Player log file into.
         """
         args = args or []
         atexit.register(self._close)
@@ -164,6 +166,7 @@ class UnityEnvironment(BaseEnv):
                         )
                     )
                 self.side_channels[_sc.channel_id] = _sc
+        self.log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -282,7 +285,17 @@ class UnityEnvironment(BaseEnv):
             if no_graphics:
                 subprocess_args += ["-nographics", "-batchmode"]
             subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
+            if self.log_folder:
+                subprocess_args += [
+                    "-logFile",
+                    str(
+                        os.path.join(
+                            os.getcwd(), self.log_folder, f"Player-{self.worker_id}.log"
+                        )
+                    ),
+                ]
             subprocess_args += args
+            print(subprocess_args)
             try:
                 self.proc1 = subprocess.Popen(
                     subprocess_args,
