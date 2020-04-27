@@ -694,3 +694,26 @@ You can destroy an Agent GameObject during the simulation. Make sure that there
 is always at least one Agent training at all times by either spawning a new
 Agent every time one is destroyed or by re-spawning new Agents when the whole
 environment resets.
+
+## Defining Teams for Multi-agent Scenarios
+
+Self-play is triggered by including the self-play hyperparameter hierarchy in
+the [trainer configuration](Training-ML-Agents.md#training-configurations).
+To distinguish opposing agents, set the team ID to different integer values in
+the behavior parameters script on the agent prefab.
+
+![Team ID](images/team_id.png)
+
+***Team ID must be 0 or an integer greater than 0.***
+
+In symmetric games, since all agents (even on opposing teams) will share the
+same policy, they should have the same 'Behavior Name' in their Behavior
+Parameters Script.  In asymmetric games, they should have a different Behavior
+Name in their Behavior Parameters script. Note, in asymmetric games, the agents
+must have both different Behavior Names *and* different team IDs!
+
+For examples of how to use this feature, you can see the trainer configurations
+and agent prefabs for our Tennis and Soccer environments. Tennis and Soccer
+provide examples of symmetric games. To train an asymmetric game, specify
+trainer configurations for each of your behavior names and include the
+self-play hyperparameter hierarchy in both.

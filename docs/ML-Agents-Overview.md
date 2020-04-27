@@ -484,6 +484,32 @@ as input to the training algorithms.
 
 ### Training in Multi-Agent Environments with Self-Play
 
+ML-Agents provides the functionality to train both symmetric and asymmetric
+adversarial games with
+[Self-Play](https://openai.com/blog/competitive-self-play/). A symmetric game
+is one in which opposing agents are equal in form, function and objective.
+Examples of symmetric games are our Tennis and Soccer example environments. In
+reinforcement learning, this means both agents have the same observation and
+action spaces and learn from the same reward function and so *they can share
+the same policy*. In asymmetric games, this is not the case. An example of an
+asymmetric games are Hide and Seek. Agents in these types of games do not
+always have the same observation or action spaces and so sharing policy
+networks is not necessarily ideal.
+
+With self-play, an agent learns in adversarial games by competing against
+fixed, past versions of its opponent (which could be itself as in symmetric
+games) to provide a more stable, stationary learning environment. This is
+compared to competing against the current, best opponent in every episode,
+which is constantly changing (because it's learning).
+
+Self-play can be used with our implementations of both Proximal Policy
+Optimization (PPO) and Soft Actor-Critic (SAC). However, from the perspective
+of an individual agent, these scenarios appear to have non-stationary dynamics
+because the opponent is often changing. This can cause significant issues in
+the experience replay mechanism used by SAC. Thus, we recommend that users use
+PPO. For further reading on this issue in particular, see the paper
+[Stabilising Experience Replay for Deep Multi-Agent Reinforcement Learning](https://arxiv.org/pdf/1702.08887.pdf).
+
 ### Solving Complex Tasks using Curriculum Learning
 
 This mode is an extension of _Built-in Training and Inference_, and is

@@ -428,6 +428,58 @@ A few considerations when deciding to use memory:
 
 #### Self-Play
 
+Training with self-play adds additional confounding factors to the usual issues
+faced by reinforcement learning. In general, the tradeoff is between the skill
+level and generality of the final policy and the stability of learning. Training
+against a set of slowly or unchanging adversaries with low diversity results in
+a more stable learning process than training against a set of quickly changing
+adversaries with high diversity. With this context, this guide discusses the
+exposed self-play hyperparameters and intuitions for tuning them.
+
+If your environment contains multiple agents that are divided into teams, you
+can leverage our self-play training option by providing these configurations
+for each Behavior:
+
+| **Setting**                     | **Description** |
+| :------------------------------ | :-------------- |
+| `save_steps` | Number of *trainer steps* between snapshots.  For example, if `save_steps=10000` then a snapshot of the current policy will be saved every `10000` trainer steps. Note, trainer steps are counted per agent. For more information, please see the [migration doc](Migrating.md) after v0.13. <br><br>A larger value of `save_steps` will yield a set of opponents that cover a wider range of skill levels and possibly play styles since the policy receives more training. As a result, the agent trains against a wider variety of opponents. Learning a policy to defeat more diverse opponents is a harder problem and so may require more overall training steps but also may lead to more general and robust policy at the end of training. This value is also dependent on how intrinsically difficult the environment is for the agent. <br><br> Typical range: `10000` - `100000` |
+| `team_change` | Number of *trainer_steps* between switching the learning team. This is the number of trainer steps the teams associated with a specific ghost trainer will train before a different team becomes the new learning team. It is possible that, in asymmetric games, opposing teams require fewer trainer steps to make similar performance gains. This enables users to train a more complicated team of agents for more trainer steps than a simpler team of agents per team switch. <br><br>A larger value of `team-change` will allow the agent to train longer against it's opponents.  The longer an agent trains against the same set of opponents the more able it will be to defeat them. However, training against them for too long may result in overfitting to the particular opponent strategies and so the agent may fail against the next batch of opponents. <br><br> The value of `team-change` will determine how many snapshots of the agent's policy are saved to be used as opponents for the other team.  So, we recommend setting this value as a function of the `save_steps` parameter discussed previously. <br><br> Typical range: 4x-10x where x=`save_steps` |
+| `swap_steps` | Number of *ghost steps* (not trainer steps) between swapping the opponents policy with a different snapshot. A 'ghost step' refers to a step taken by an agent *that is following a fixed policy and not learning*. The reason for this distinction is that in asymmetric games, we may have teams with an unequal number of agents e.g. a 2v1 scenario like our Strikers Vs Goalie example environment. The team with two agents collects twice as many agent steps per environment step as the team with one agent.  Thus, these two values will need to be distinct to ensure that the same number of trainer steps corresponds to the same number of opponent swaps for each team. The formula for `swap_steps` if a user desires `x` swaps of a team with `num_agents` agents against an opponent team with `num_opponent_agents` agents during `team-change` total steps is: `(num_agents / num_opponent_agents) * (team_change / x)` <br><br> Typical range: `10000` - `100000` |
+| `play_against_latest_model_ratio` | Probability an agent will play against the latest opponent policy. With probability 1 - `play_against_latest_model_ratio`, the agent will play against a snapshot of its opponent from a past iteration. <br><br> A larger value of `play_against_latest_model_ratio` indicates that an agent will be playing against the current opponent more often. Since the agent is updating it's policy, the opponent will be different from iteration to iteration.  This can lead to an unstable learning environment, but poses the agent with an [auto-curricula](https://openai.com/blog/emergent-tool-use/) of more increasingly challenging situations which may lead to a stronger final policy. <br><br> Typical range: `0.0` - `1.0` |
+| `window` | Size of the sliding window of past snapshots from which the agent's opponents are sampled.  For example, a `window` size of 5 will save the last 5 snapshots taken. Each time a new snapshot is taken, the oldest is discarded. A larger value of `window` means that an agent's pool of opponents will contain a larger diversity of behaviors since it will contain policies from earlier in the training run. Like in the `save_steps` hyperparameter, the agent trains against a wider variety of opponents. Learning a policy to defeat more diverse opponents is a harder problem and so may require more overall training steps but also may lead to more general and robust policy at the end of training. <br><br> Typical range: `5` - `30` |
+
+**A Note on Reward Signals**
+
+We make the assumption that the final reward in a trajectory corresponds to the
+outcome of an episode. A final reward of +1 indicates winning, -1 indicates
+losing and 0 indicates a draw. The ELO calculation (discussed below) depends on
+this final reward being either +1, 0, -1.
+
+The reward signal should still be used as described in the documentation for the
+other trainers and [reward signals.](Reward-Signals.md) However, we encourage
+users to be a bit more conservative when shaping reward functions due to the
+instability and non-stationarity of learning in adversarial games. Specifically,
+we encourage users to begin with the simplest possible reward function (+1
+winning, -1 losing) and to allow for more iterations of training to compensate
+for the sparsity of reward.
+
+**Note on Swap Steps**
+
+As an example, in a 2v1 scenario, if we want the swap to occur x=4 times during
+team-change=200000 steps, the swap_steps for the team of one agent is:
+
+swap_steps = (1 / 2) \* (200000 / 4) = 25000 The swap_steps for the team of two
+agents is:
+
+swap_steps = (2 / 1) \* (200000 / 4) = 100000 Note, with equal team sizes, the
+first term is equal to 1 and swap_steps can be calculated by just dividing the
+total steps by the desired number of swaps.
+
+A larger value of swap_steps means that an agent will play against the same
+fixed opponent for a longer number of training iterations. This results in a
+more stable training scenario, but leaves the agent open to the risk of
+overfitting it's behavior for this particular opponent. Thus, when a new
+opponent is swapped, the agent may lose more often than expected.
 
 ### Curriculum Learning
 
