@@ -26,6 +26,8 @@ class GhostController:
         self._learning_team: int = -1
         # Dict from team id to GhostTrainer for ELO calculation
         self._ghost_trainers: Dict[int, GhostTrainer] = {}
+        # Signals to the trainer control to perform a hard reset
+        self._reset = False
 
     @property
     def get_learning_team(self) -> int:
@@ -34,6 +36,17 @@ class GhostController:
         :return: The learning team id
         """
         return self._learning_team
+
+    @property
+    def reset(self) -> bool:
+        """
+        Whether or not team change occurred. Causes full reset in trainer_controller
+        :return: The truth value of the team changing
+        """
+        change_team = self._reset
+        if self._reset:
+            self._reset = False
+        return change_team
 
     def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
         """
@@ -60,6 +73,7 @@ class GhostController:
         logger.debug(
             "Learning team {} swapped on step {}".format(self._learning_team, step)
         )
+        self._reset = True
 
     # Adapted from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
     # https://metinmediamath.wordpress.com/2013/11/27/how-to-calculate-the-elo-rating-including-example/

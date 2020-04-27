@@ -12,6 +12,7 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.trainer_util import (
     load_config,
     TrainerFactory,
@@ -375,6 +376,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         sampler_manager, resampling_interval = create_sampler_manager(
             options.sampler_config, run_seed
         )
+        ghost_controller = GhostController()
+
         trainer_factory = TrainerFactory(
             options.trainer_config,
             summaries_dir,
@@ -384,6 +387,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             not options.inference,
             options.resume,
             run_seed,
+            ghost_controller,
             maybe_init_path,
             maybe_meta_curriculum,
             options.multi_gpu,
@@ -400,6 +404,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             run_seed,
             sampler_manager,
             resampling_interval,
+            ghost_controller,
         )
 
     # Begin training
