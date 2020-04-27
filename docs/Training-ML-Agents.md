@@ -566,5 +566,122 @@ running `mlagents-learn`.
 
 ### Environment Parameter Randomization
 
+To enable parameter randomization, you need to provide the `--sampler` CLI
+option and point to a YAML file that defines the curriculum. Here is one
+example file:
+
+```yaml
+resampling-interval: 5000
+
+mass:
+    sampler-type: "uniform"
+    min_value: 0.5
+    max_value: 10
+
+gravity:
+    sampler-type: "multirange_uniform"
+    intervals: [[7, 10], [15, 20]]
+
+scale:
+    sampler-type: "uniform"
+    min_value: 0.75
+    max_value: 3
+
+```
+
+Note that `mass`, `gravity` and `scale` are the names of the environment
+parameters that will be sampled. If a parameter specified in the file doesn't
+exist in the environment, then this parameter will be ignored.
+
+| **Setting**                     | **Description** |
+| :------------------------------ | :-------------- |
+| `resampling-interval` | Number of steps for the agent to train under a particular environment configuration before resetting the environment with a new sample of `Environment Parameters`. |
+| `sampler-type` | Type of sampler use for this `Environment Parameter`. This is a string that should exist in the `Sampler Factory` (explained below). |
+| `sampler-type-sub-arguments` |  Specify the sub-arguments depending on the `sampler-type`. In the example above, this would correspond to the `intervals` under the `sampler-type` `multirange_uniform` for the `Environment Parameter` called `gravity`. The key name should match the name of the corresponding argument in the sampler definition (explained) below) |
+
+Once our parameters and samplers are defined, we have to use the environment
+parameters we defined and modify the environment from the Agent's
+`OnEpisodeBegin()` function by leveraging
+`Academy.Instance.EnvironmentParameters`.
+
+#### Included Sampler Types
+
+Below is a list of included `sampler-type` as part of the toolkit.
+
+- `uniform` - Uniform sampler
+    - Uniformly samples a single float value between defined endpoints. The
+      sub-arguments for this sampler to specify the interval endpoints are as
+      below. The sampling is done in the range of [`min_value`, `max_value`).
+    - **sub-arguments** - `min_value`, `max_value`
+- `gaussian` - Gaussian sampler
+    - Samples a single float value from the distribution characterized by the
+      mean and standard deviation. The sub-arguments to specify the Gaussian
+      distribution to use are as below.
+    - **sub-arguments** - `mean`, `st_dev`
+- `multirange_uniform` - Multirange uniform sampler
+    - Uniformly samples a single float value between the specified intervals.
+      Samples by first performing a weight pick of an interval from the list
+      of intervals (weighted based on interval width) and samples uniformly
+      from the selected interval (half-closed interval, same as the uniform
+      sampler). This sampler can take an arbitrary number of intervals in a
+      list in the following format:
+      [[`interval_1_min`, `interval_1_max`], [`interval_2_min`, `interval_2_max`], ...]
+    - **sub-arguments** - `intervals`
+
+The implementation of the samplers can be found at
+`ml-agents-envs/mlagents_envs/sampler_class.py`.
+
+#### Defining a New Sampler Type
+
+If you want to define your own sampler type, you must first inherit the
+*Sampler* base class (included in the `sampler_class` file) and preserve the
+interface. Once the class for the required method is specified, it must be
+registered in the Sampler Factory.
+
+This can be done by subscribing to the *register_sampler* method of the
+`SamplerFactory`. The command is as follows:
+
+```SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)```
+
+Once the Sampler Factory reflects the new register, the new sampler type can be
+used for sample any `Environment Parameter`. For example, lets say a new
+sampler type was implemented as below and we register the `CustomSampler` class
+with the string `custom-sampler` in the Sampler Factory.
+
+```python
+class CustomSampler(Sampler):
+
+    def __init__(self, argA, argB, argC):
+        self.possible_vals = [argA, argB, argC]
+
+    def sample_all(self):
+        return np.random.choice(self.possible_vals)
+```
+
+Now we need to specify the new sampler type in the sampler YAML file. For
+example, we use this new sampler type for the `Environment Parameter` *mass*.
+
+```yaml
+mass:
+    sampler-type: "custom-sampler"
+    argB: 1
+    argA: 2
+    argC: 3
+```
+
+#### Training with Environment Parameter Randomization
+
+After the sampler YAML file is defined, we proceed by launching
+`mlagents-learn` and specify our configured sampler file with the `--sampler`
+flag. For example, if we wanted to train the 3D ball agent with parameter
+randomization using `Environment Parameters` with
+`config/3dball_randomize.yaml` sampling setup, we would run
+
+```sh
+mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
+--run-id=3D-Ball-randomize
+```
+
+We can observe progress and metrics via Tensorboard.
 
 ### Training Using Concurrent Unity Instances

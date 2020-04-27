@@ -552,12 +552,29 @@ based on training progress.
 
 ### Training Robust Agents using Environment Parameter Randomization
 
-- **Training with Environment Parameter Randomization** - If an agent is exposed to several variations of an environment, it will be more robust (i.e. generalize better) to
-  unseen variations of the environment. Similar to Curriculum Learning,
-  where environments become more difficult as the agent learns, the toolkit provides
-  a way to randomly sample parameters of the environment during training. See
-  [Training With Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
-  to learn more about this feature.
+An agent trained on a specific environment, may be unable to generalize to any
+tweaks or variations in the environment (in machine learning this is referred
+to as overfitting). This becomes problematic in cases where environments are
+instantiated with varying objects or properties. One mechanism to alleviate
+this and train more robust agents that can generalize to unseen variations of
+the environment is to expose them to these variations during training. Similar
+to Curriculum Learning, where environments become more difficult as the agent
+learns, the ML-Agents Toolkit provides a way to randomly sample parameters of
+the environment during training. We refer to this approach as **Environment
+Parameter Randomization**. For those familiar with Reinforcement Learning
+research, this approach is based on the concept of Domain Randomization (you
+can read more about it [here](https://arxiv.org/abs/1703.06907)). By using
+parameter randomization during training, the agent can be better suited to
+adapt (with higher performance) to future unseen variations of the environment.
+
+_Example of variations of the 3D Ball environment._
+
+Ball scale of 0.5          |  Ball scale of 4
+:-------------------------:|:-------------------------:
+![](images/3dball_small.png)  |  ![](images/3dball_big.png)
+
+In the 3D ball environment example displayed in the figure above, the
+environment parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 ## Model Types
 
