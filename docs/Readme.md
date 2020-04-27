@@ -29,9 +29,6 @@
 - [Training ML-Agents](Training-ML-Agents.md)
   - [Profiling Trainers](Profiling-Python.md)
 - [Using TensorBoard to Observe Training](Using-Tensorboard.md)
-- [Training with Proximal Policy Optimization](Training-PPO.md)
-- [Training with Soft Actor-Critic](Training-SAC.md)
-- [Training with Self-Play](Training-Self-Play.md)
 
 ## Inference
 

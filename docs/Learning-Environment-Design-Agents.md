@@ -673,7 +673,7 @@ be called independently of the `Max Step` property.
       otherwise they will perform inference.
     - `Heuristic Only` - the Agent will always use the `Heuristic()` method.
     - `Inference Only` - the Agent will always perform inference.
-  - `Team ID` - Used to define the team for [self-play](Training-Self-Play.md)
+  - `Team ID` - Used to define the team for self-play
   - `Use Child Sensors` - Whether to use all Sensor components attached to child
     GameObjects of this Agent.
 - `Max Step` - The per-agent maximum number of steps. Once this number is
