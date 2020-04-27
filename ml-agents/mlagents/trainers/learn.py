@@ -38,6 +38,7 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
+import horovod.tensorflow as hvd
 
 logger = logging_util.get_logger(__name__)
 
@@ -375,6 +376,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         sampler_manager, resampling_interval = create_sampler_manager(
             options.sampler_config, run_seed
         )
+        hvd.init()
         trainer_factory = TrainerFactory(
             options.trainer_config,
             summaries_dir,

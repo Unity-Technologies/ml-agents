@@ -91,7 +91,6 @@ class PPOTrainer(RLTrainer):
         Processing involves calculating value and advantage targets for model updating step.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        super()._process_trajectory(trajectory)
         agent_id = trajectory.agent_id  # All the agents should have the same ID
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
@@ -178,8 +177,8 @@ class PPOTrainer(RLTrainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
-        buffer_length = self.update_buffer.num_experiences
         self.cumulative_returns_since_policy_update.clear()
+        super()._update_policy()
 
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
@@ -203,7 +202,7 @@ class PPOTrainer(RLTrainer):
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.update_buffer
-            max_num_batch = buffer_length // batch_size
+            max_num_batch = self.trainer_parameters["buffer_size"] // batch_size
             for l in range(0, max_num_batch * batch_size, batch_size):
                 update_stats = self.optimizer.update(
                     buffer.make_mini_batch(l, l + batch_size), n_sequences

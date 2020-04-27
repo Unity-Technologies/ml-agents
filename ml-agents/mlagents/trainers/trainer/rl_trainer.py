@@ -83,13 +83,15 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         return False
 
-    @abc.abstractmethod
-    def _update_policy(self) -> bool:
+    def _update_policy(self):
         """
         Uses demonstration_buffer to update model.
         :return: Whether or not the policy was updated.
         """
-        pass
+        self._maybe_write_summary(
+            self.get_step + self.trainer_parameters["buffer_size"]
+        )
+        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
 
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
         """
@@ -121,8 +123,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         Takes a trajectory and processes it, putting it into the update buffer.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        self._maybe_write_summary(self.get_step + len(trajectory.steps))
-        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
+        pass
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
@@ -130,7 +131,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         write the summary. This logic ensures summaries are written on the update step and not in between.
         :param step_after_process: the step count after processing the next trajectory.
         """
-        if step_after_process >= self.next_summary_step and self.get_step != 0:
+        if step_after_process >= self.next_summary_step:
             self._write_summary(self.next_summary_step)
 
     def advance(self) -> None:

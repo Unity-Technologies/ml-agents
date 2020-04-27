@@ -11,6 +11,11 @@ from mlagents.trainers.components.reward_signals.reward_signal_factory import (
 )
 from mlagents.trainers.components.bc.module import BCModule
 
+try:
+    import horovod.tensorflow as hvd
+except ImportError:
+    hvd = None
+
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
     def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
@@ -138,7 +143,11 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
     def create_optimizer_op(
         self, learning_rate: tf.Tensor, name: str = "Adam"
     ) -> tf.train.Optimizer:
-        return tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
+        adam_optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
+        horovod_optimizer = (
+            hvd.DistributedOptimizer(adam_optimizer) if hvd is not None else None
+        )
+        return horovod_optimizer if hvd is not None else adam_optimizer
 
     def _execute_model(
         self, feed_dict: Dict[tf.Tensor, np.ndarray], out_dict: Dict[str, tf.Tensor]
