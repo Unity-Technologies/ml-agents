@@ -352,12 +352,6 @@ The curriculum for each Behavior has the following parameters:
 | `signal_smoothing` | Whether to weight the current progress measure by previous values. |
 | `parameters` | Corresponds to environment parameters to control. Length of each array should be one greater than number of thresholds. |
 
-Once our curriculum is defined, we have to use the environment parameters we
-defined and modify the environment from the Agent's `OnEpisodeBegin()` function
-by leveraging `Academy.Instance.EnvironmentParameters`.
-See
-[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
-for an example.
 
 #### Training with a Curriculum
 
@@ -410,11 +404,6 @@ exist in the environment, then this parameter will be ignored.
 | `resampling-interval` | Number of steps for the agent to train under a particular environment configuration before resetting the environment with a new sample of `Environment Parameters`. |
 | `sampler-type` | Type of sampler use for this `Environment Parameter`. This is a string that should exist in the `Sampler Factory` (explained below). |
 | `sampler-type-sub-arguments` |  Specify the sub-arguments depending on the `sampler-type`. In the example above, this would correspond to the `intervals` under the `sampler-type` `multirange_uniform` for the `Environment Parameter` called `gravity`. The key name should match the name of the corresponding argument in the sampler definition (explained) below) |
-
-Once our parameters and samplers are defined, we have to use the environment
-parameters we defined and modify the environment from the Agent's
-`OnEpisodeBegin()` function by leveraging
-`Academy.Instance.EnvironmentParameters`.
 
 #### Included Sampler Types
 

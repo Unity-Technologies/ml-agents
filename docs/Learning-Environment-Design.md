@@ -65,6 +65,21 @@ training a maze-solving agent, you would probably want to change the maze itself
 for each training episode. Otherwise, the agent would probably on learn to solve
 one, particular maze, not mazes in general.
 
+### Environment Parameters
+
+Curriculum learning and environment parameter randomization are two training
+methods that control specific parameters in your environment. As such, it
+is important to ensure that your environment parameters are updated at each
+step to the correct values. To enable this, we expose a `EnvironmentParameters`
+C# class that you can use to retrieve the values of the parameters defined
+in the training configurations for both of those features.
+
+We recommend modifying the environment from the Agent's `OnEpisodeBegin()`
+function by leveraging `Academy.Instance.EnvironmentParameters`.
+See the WallJump example environment for a sample usage (specifically,
+[WallJumpAgent.cs](../Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
+).
+
 ### Agent
 
 The Agent class represents an actor in the scene that collects observations and
@@ -105,3 +120,13 @@ include:
   training.
 * A training episode must have a definite end — either using `Max Steps` or by
   each Agent ending its episode manually with `EndEpisode()`.
+
+## Recording Statistics
+
+We offer developers a mechanism to record statistics from within their Unity
+environments. These statistics are aggregated and generated during the
+training process. To record statistics, see the `StatsRecorder` C# class.
+
+See the FoodCollector example environment for a sample usage (specifically,
+[FoodCollectorSettings.cs](../Project/Assets/ML-Agents/Examples/FoodCollector/Scripts/FoodCollectorSettings.cs)
+).
