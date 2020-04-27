@@ -150,7 +150,6 @@ class SimpleEnvironment(BaseEnv):
         self.goal[name] = self.random.choice([-1, 1])
         self.positions[name] = [0.0 for _ in range(self.action_size)]
         self.step_count[name] = 0
-        self.final_rewards[name].append(self.rewards[name])
         self.rewards[name] = 0
         self.agent_id[name] = self.agent_id[name] + 1
 
@@ -164,6 +163,7 @@ class SimpleEnvironment(BaseEnv):
         decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
+            self.final_rewards[name].append(self.rewards[name])
             self._reset_agent(name)
             new_vector_obs = self._make_obs(self.goal[name])
             (
