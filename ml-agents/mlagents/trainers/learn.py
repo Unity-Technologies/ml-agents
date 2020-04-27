@@ -377,7 +377,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.sampler_config, run_seed
         )
         ghost_controller = GhostController()
-
         trainer_factory = TrainerFactory(
             options.trainer_config,
             summaries_dir,
