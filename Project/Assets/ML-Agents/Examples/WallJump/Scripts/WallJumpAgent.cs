@@ -3,7 +3,7 @@
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
-using Barracuda;
+using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
 
 public class WallJumpAgent : Agent
