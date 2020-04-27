@@ -4,9 +4,6 @@ If you are using curriculum training to pace the difficulty of the learning task
 presented to an agent, see [Training with Curriculum
 Learning](Training-Curriculum-Learning.md).
 
-For information about imitation learning from demonstrations, see
-[Training with Imitation Learning](Training-Imitation-Learning.md).
-
 ## Best Practices Training with PPO
 
 ### (Optional) Advanced: Disable Threading

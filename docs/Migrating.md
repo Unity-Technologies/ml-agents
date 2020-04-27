@@ -279,8 +279,7 @@ double-check that the versions are in the same. The versions can be found in
   The Academy class no longer has a `ResetParameters`. To access shared float
   properties with Python, use the new `FloatProperties` field on the Academy.
 - Offline Behavioral Cloning has been removed. To learn from demonstrations, use
-  the GAIL and Behavioral Cloning features with either PPO or SAC. See
-  [Imitation Learning](Training-Imitation-Learning.md) for more information.
+  the GAIL and Behavioral Cloning features with either PPO or SAC.
 - `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout
   depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused
   problems with some of our tooling such as mypy and pylint.

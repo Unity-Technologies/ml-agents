@@ -38,7 +38,6 @@
 ### Advanced Training Methods
 
 - [Training with Curriculum Learning](Training-Curriculum-Learning.md)
-- [Training with Imitation Learning](Training-Imitation-Learning.md)
 - [Training with LSTM](Feature-Memory.md)
 - [Training with Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
 
