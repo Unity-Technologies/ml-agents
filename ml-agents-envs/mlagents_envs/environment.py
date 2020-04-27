@@ -291,7 +291,6 @@ class UnityEnvironment(BaseEnv):
                 )
                 subprocess_args += ["-logFile", log_file_path]
             subprocess_args += args
-            print(subprocess_args)
             try:
                 self.proc1 = subprocess.Popen(
                     subprocess_args,
