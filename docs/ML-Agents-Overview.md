@@ -612,7 +612,9 @@ Beyond the flexible training scenarios available, the ML-Agents Toolkit includes
 additional features which improve the flexibility and interpretability of the
 training process.
 
-- **Concurrent Unity Instances**
+- **Concurrent Unity Instances** - We enable developers to run concurrent,
+  parallel instances of the Unity executable during training. For certain
+  scenarios, this should speed up training.
 - **Custom Side Channels**
 - **Recording Statistics from Unity**
 

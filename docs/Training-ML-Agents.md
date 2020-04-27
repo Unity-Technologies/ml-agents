@@ -685,3 +685,20 @@ mlagents-learn config/trainer_config.yaml --sampler=config/3dball_randomize.yaml
 We can observe progress and metrics via Tensorboard.
 
 ### Training Using Concurrent Unity Instances
+
+In order to run concurrent Unity instances during training, set the number of
+environment instances using the command line option `--num-envs=<n>` when you
+invoke `mlagents-learn`. Optionally, you can also set the `--base-port`, which
+is the starting port used for the concurrent Unity instances.
+
+Some considerations:
+- **Buffer Size** - If you are having trouble getting an agent to train, even
+  with multiple concurrent Unity instances, you could increase `buffer_size` in
+  the `config/trainer_config.yaml` file. A common practice is to multiply
+  `buffer_size` by `num-envs`.
+- **Resource Constraints** - Invoking concurrent Unity instances is constrained
+  by the resources on the machine. Please use discretion when setting
+  `--num-envs=<n>`.
+- **Result Variation Using Concurrent Unity Instances** - If you keep all the
+  hyperparameters the same, but change `--num-envs=<n>`, the results and model
+  would likely change.
