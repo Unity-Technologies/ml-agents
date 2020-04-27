@@ -12,9 +12,6 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
   namespaces were similarly renamed. (#3843)
-- Added new 3-joint Worm ragdoll environment. (#3798)
-- The internal event `Academy.AgentSetStatus` was renamed to
-  `Academy.AgentPreStep` and made public. (#3716)
 - The offset logic was removed from DecisionRequester. (#3716)
 - The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
   parameter, instead of returning the array. This was done to prevent a common
@@ -38,11 +35,14 @@ and this project adheres to
   (and other python StatsWriters). To do this from your code, use
   `Academy.Instance.StatsRecorder.Add(key, value)`. (#3660)
 - CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
-  were changed from `public` to `private` (#3808).
+  were changed from `public` to `private`. These can still be accessed via their
+  corresponding properties. (#3808)
 - Public fields and properties on several classes were renamed to follow Unity's
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
+- `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
+  you will need to change the signature of its `Write()` method. (#3834)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
@@ -65,14 +65,15 @@ and this project adheres to
 ### Minor Changes
 
 #### com.unity.ml-agents (C#)
+- Added new 3-joint Worm ragdoll environment. (#3798)
 - `StackingSensor` was changed from `internal` visibility to `public`. (#3701)
+- The internal event `Academy.AgentSetStatus` was renamed to
+  `Academy.AgentPreStep` and made public. (#3716)
 - Academy.InferenceSeed property was added. This is used to initialize the
   random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
 - Updated Barracuda to 0.6.3-preview.
 - Added `Agent.GetObservations(), which returns a read-only view of the observations
   added in `CollectObservations()`. (#3825)
-- `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
-you will need to change the signature of its `Write()` method. (#3834)
 - `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Format of console output has changed slightly and now matches the name of the
