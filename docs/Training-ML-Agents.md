@@ -414,8 +414,8 @@ and setting `memory_size` and `sequence_length`:
 | **Setting**     | **Description** |
 | :-------------- | :-------------- |
 | use_recurrent   | Whether to enable this option or not. |
-| memory_size     | Size of the memory an agent must keep. In order to use a LSTM, training requires a sequence of experiences instead of single experiences. Corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network of the policy. This value must be a multiple of 2, and should scale with the amount of information you expect the agent will need to remember in order to successfully complete the task. |
-| sequence_length | Defines how long the sequences of experiences must be while training. Note that if this number is too small, the agent will not be able to remember things over longer periods of time. If this number is too large, the neural network will take longer to train. |
+| memory_size     | Size of the memory an agent must keep. In order to use a LSTM, training requires a sequence of experiences instead of single experiences. Corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network of the policy. This value must be a multiple of 2, and should scale with the amount of information you expect the agent will need to remember in order to successfully complete the task. <br><br>Typical range: `32` - `256` |
+| sequence_length | Defines how long the sequences of experiences must be while training. Note that if this number is too small, the agent will not be able to remember things over longer periods of time. If this number is too large, the neural network will take longer to train. <br><br>Typical range: `4` - `128` |
 
 A few considerations when deciding to use memory:
 - LSTM does not work well with continuous vector action space. Please use
