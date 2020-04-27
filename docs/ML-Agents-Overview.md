@@ -554,14 +554,17 @@ tutorial covers this training mode with the **Wall Area** sample environment.
 
 ### Memory-enhanced Agents using Recurrent Neural Networks
 
-- **Memory-enhanced Agents** - In some scenarios, agents must learn to remember
-  the past in order to take the best decision. When an agent only has partial
-  observability of the environment, keeping track of past observations can help
-  the agent learn. We provide an implementation of _Long Short-term Memory_
-  ([LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory)) in our trainers
-  that enable the agent to store memories to be used in future steps. You can
-  learn more about enabling LSTM during training [here](Feature-Memory.md).
+Have you ever entered a room to get something and immediately forgot what you
+were looking for? Don't let that happen to your agents.
 
+![Inspector](images/ml-agents-LSTM.png)
+
+In some scenarios, agents must learn to remember the past in order to take the best
+decision. When an agent only has partial observability of the environment, keeping
+track of past observations can help the agent learn. Deciding what the agents should
+remember in order to solve a task is not easy to do by hand, but our training algorithms
+can learn to keep track of what is important to remember with
+[LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory).
 
 ## Additional Features
 

@@ -401,13 +401,30 @@ recorded demonstrations), provide the following configurations under the
 | `demo_path`          | The path to your .demo file or directory of .demo files. |
 | `strength`           | Learning rate of the imitation relative to the learning rate of PPO, and roughly corresponds to how strongly we allow BC to influence the policy. <br><br>Typical range: `0.1` - `0.5` |
 | `steps`              | During BC, it is often desirable to stop using demonstrations after the agent has "seen" rewards, and allow it to optimize past the available demonstrations and/or generalize outside of the provided demonstrations. steps corresponds to the training steps over which BC is active. The learning rate of BC will anneal over the steps. Set the steps to 0 for constant imitation over the entire training run. |
-| `batch_size`         | Number of demonstration experiences used for one iteration of a gradient descent update. If not specified, it will default to the `batch_size`. <br><br>Typical range: (Continuous): 512 - 5120; (Discrete): 32 - 512 |
+| `batch_size`         | Number of demonstration experiences used for one iteration of a gradient descent update. If not specified, it will default to the `batch_size`. <br><br>Typical range: (Continuous): `512` - `5120`; (Discrete): `32` - `512` |
 | `num_epoch`          | Number of passes through the experience buffer during gradient descent. If not specified, it will default to the number of epochs set for PPO. <br><br>Typical range: `3` - `10` |
 | `samples_per_update` | (Optional, default = `0`) Maximum number of samples to use during each imitation update. You may want to lower this if your demonstration dataset is very large to avoid overfitting the policy on demonstrations. Set to 0 to train over all of the demonstrations at each update step. <br><br>Typical range: `buffer_size` |
 | `init_path` |  Initialize trainer from a previously saved model. Note that the prior run should have used the same trainer configurations as the current run, and have been saved with the same version of ML-Agents. You should provide the full path to the folder where the checkpoints were saved, e.g. `./models/{run-id}/{behavior_name}`. This option is provided in case you want to initialize different behaviors from different runs; in most cases, it is sufficient to use the `--initialize-from` CLI parameter to initialize all models from the same run.|
 
-
 #### Memory-enhanced agents using Recurrent Neural Networks
+
+You can enable your agents to use memory, by setting `use_recurrent` to `true`
+and setting `memory_size` and `sequence_length`:
+
+| **Setting**     | **Description** |
+| :-------------- | :-------------- |
+| use_recurrent   | Whether to enable this option or not. |
+| memory_size     | Size of the memory an agent must keep. In order to use a LSTM, training requires a sequence of experiences instead of single experiences. Corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network of the policy. This value must be a multiple of 2, and should scale with the amount of information you expect the agent will need to remember in order to successfully complete the task. |
+| sequence_length | Defines how long the sequences of experiences must be while training. Note that if this number is too small, the agent will not be able to remember things over longer periods of time. If this number is too large, the neural network will take longer to train. |
+
+A few considerations when deciding to use memory:
+- LSTM does not work well with continuous vector action space. Please use
+  discrete vector action space for better results.
+- Since the memories must be sent back and forth between Python and Unity,
+  using too large `memory_size` will slow down training.
+- Adding a recurrent layer increases the complexity of the neural network, it
+  is recommended to decrease `num_layers` when using recurrent.
+- It is required that `memory_size` be divisible by 4.
 
 #### Self-Play
 
