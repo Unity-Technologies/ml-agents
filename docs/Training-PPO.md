@@ -1,9 +1,5 @@
 # Training with Proximal Policy Optimization
 
-If you are using the recurrent neural network (RNN) to utilize memory, see
-[Using Recurrent Neural Networks](Feature-Memory.md) for RNN-specific training
-details.
-
 If you are using curriculum training to pace the difficulty of the learning task
 presented to an agent, see [Training with Curriculum
 Learning](Training-Curriculum-Learning.md).
@@ -12,34 +8,6 @@ For information about imitation learning from demonstrations, see
 [Training with Imitation Learning](Training-Imitation-Learning.md).
 
 ## Best Practices Training with PPO
-
-## Hyperparameters
-
-### Reward Signals
-
-## (Optional) Recurrent Neural Network Hyperparameters
-
-The below hyperparameters are only used when `use_recurrent` is set to true.
-
-### Sequence Length
-
-`sequence_length` corresponds to the length of the sequences of experience
-passed through the network during training. This should be long enough to
-capture whatever information your agent might need to remember over time. For
-example, if your agent needs to remember the velocity of objects, then this can
-be a small value. If your agent needs to remember a piece of information given
-only once at the beginning of an episode, then this should be a larger value.
-
-Typical Range: `4` - `128`
-
-### Memory Size
-
-`memory_size` corresponds to the size of the array of floating point numbers
-used to store the hidden state of the recurrent neural network of the policy. This value must
-be a multiple of 2, and should scale with the amount of information you expect
-the agent will need to remember in order to successfully complete the task.
-
-Typical Range: `32` - `256`
 
 ### (Optional) Advanced: Disable Threading
 
