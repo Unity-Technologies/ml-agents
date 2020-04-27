@@ -9,12 +9,12 @@ from enum import IntEnum
 
 
 class EngineConfig(NamedTuple):
-    width: int
-    height: int
-    quality_level: int
-    time_scale: float
-    target_frame_rate: int
-    capture_frame_rate: int
+    width: Optional[int]
+    height: Optional[int]
+    quality_level: Optional[int]
+    time_scale: Optional[float]
+    target_frame_rate: Optional[int]
+    capture_frame_rate: Optional[int]
 
     @staticmethod
     def default_config():
