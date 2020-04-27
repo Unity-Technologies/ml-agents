@@ -286,14 +286,10 @@ class UnityEnvironment(BaseEnv):
                 subprocess_args += ["-nographics", "-batchmode"]
             subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
             if self.log_folder:
-                subprocess_args += [
-                    "-logFile",
-                    str(
-                        os.path.join(
-                            os.getcwd(), self.log_folder, f"Player-{self.worker_id}.log"
-                        )
-                    ),
-                ]
+                log_file_path = os.path.join(
+                    os.getcwd(), self.log_folder, f"Player-{self.worker_id}.log"
+                )
+                subprocess_args += ["-logFile", log_file_path]
             subprocess_args += args
             print(subprocess_args)
             try:
