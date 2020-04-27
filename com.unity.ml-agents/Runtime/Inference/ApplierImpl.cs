@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Inference.Utils;
 using UnityEngine;
 

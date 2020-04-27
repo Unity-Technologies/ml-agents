@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Inference;
 using MLAgents.Sensors;
 using System.Linq;

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Inference;
 using MLAgents.Policies;
 
