@@ -512,8 +512,6 @@ PPO. For further reading on this issue in particular, see the paper
 
 ### Solving Complex Tasks using Curriculum Learning
 
-This mode is an extension of _Built-in Training and Inference_, and is
-particularly helpful when training intricate behaviors for complex environments.
 Curriculum learning is a way of training a machine learning model where more
 difficult aspects of a problem are gradually introduced in such a way that the
 model is always optimally challenged. This idea has been around for a long time,
@@ -525,33 +523,32 @@ for later lessons. The same principle can be applied to machine learning, where
 training on easier tasks can provide a scaffolding for harder tasks in the
 future.
 
-<p align="center">
-  <img src="images/math.png"
-       alt="Example Math Curriculum"
-       width="700"
-       border="10" />
-</p>
+Imagine training the medic to to scale a wall to arrive at a wounded team member.
+The starting point when training a medic to accomplish this task will be a random
+policy. That starting policy will have the medic running in circles, and will
+likely never, or very rarely scale the wall properly to revive their team member
+(and achieve the reward). If we start with a simpler task, such as moving toward
+an unobstructed team member, then the medic can easily learn to accomplish the task.
+From there, we can slowly add to the difficulty of the task by increasing the size of
+the wall until the medic can complete the initially near-impossible task of scaling the
+wall. We have included an environment to demonstrate this with ML-Agents,
+called [Wall Jump](Learning-Environment-Examples.md#wall-jump).
 
-_Example of a mathematics curriculum. Lessons progress from simpler topics to
-more complex ones, with each building on the last._
+![Wall](images/curriculum.png)
 
-When we think about how reinforcement learning actually works, the learning reward
-signal is received occasionally throughout training. The starting point
-when training an agent to accomplish this task will be a random policy. That
-starting policy will have the agent running in circles, and will likely never,
-or very rarely achieve the reward for complex environments. Thus by simplifying
-the environment at the beginning of training, we allow the agent to quickly
-update the random policy to a more meaningful one that is successively improved
-as the environment gradually increases in complexity. In our example, we can
-imagine first training the medic when each team only contains one player, and
-then iteratively increasing the number of players (i.e. the environment
-complexity). The ML-Agents Toolkit supports setting custom environment
-parameters within the Academy. This allows elements of the environment related
-to difficulty or complexity to be dynamically adjusted based on training
-progress.
+_Demonstration of a hypothetical curriculum training scenario in which a
+progressively taller wall obstructs the path to the goal._
 
-The [Training with Curriculum Learning](Training-Curriculum-Learning.md)
-tutorial covers this training mode with the **Wall Area** sample environment.
+*[**Note**: The example provided above is for instructional purposes, and was
+based on an early version of the
+[Wall Jump example environment](Example-Environments.md).
+As such, it is not possible to directly replicate the results here using that
+environment.]*
+
+The ML-Agents Toolkit supports modifying custom environment parameters during
+the training process to aid in learning.. This allows elements of the
+environment related to difficulty or complexity to be dynamically adjusted
+based on training progress.
 
 ### Training Robust Agents using Environment Parameter Randomization
 

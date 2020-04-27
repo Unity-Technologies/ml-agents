@@ -483,6 +483,86 @@ opponent is swapped, the agent may lose more often than expected.
 
 ### Curriculum Learning
 
+To enable curriculum learning, you need to provide the `--curriculum` CLI
+option and point to a YAML file that defines the curriculum. Here is one
+example file:
+
+```yml
+BehaviorY:
+  measure: progress
+  thresholds: [0.1, 0.3, 0.5]
+  min_lesson_length: 100
+  signal_smoothing: true
+  parameters:
+    wall_height: [1.5, 2.0, 2.5, 4.0]
+```
+
+Each group of Agents under the same `Behavior Name` in an environment can have
+a corresponding curriculum. These curricula are held in what we call a
+"metacurriculum". A metacurriculum allows different groups of Agents to follow
+different curricula within the same environment.
+
+#### Specifying Curricula
+
+In order to define the curricula, the first step is to decide which parameters
+of the environment will vary. In the case of the Wall Jump environment, the
+height of the wall is what varies. Rather than adjusting it by hand, we will
+create a YAML file which describes the structure of the curricula. Within it,
+we can specify which points in the training process our wall height will
+change, either based on the percentage of training steps which have taken
+place, or what the average reward the agent has received in the recent past is.
+Below is an example config for the curricula for the Wall Jump environment.
+
+```yaml
+BigWallJump:
+  measure: progress
+  thresholds: [0.1, 0.3, 0.5]
+  min_lesson_length: 100
+  signal_smoothing: true
+  parameters:
+    big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
+    big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
+SmallWallJump:
+  measure: progress
+  thresholds: [0.1, 0.3, 0.5]
+  min_lesson_length: 100
+  signal_smoothing: true
+  parameters:
+    small_wall_height: [1.5, 2.0, 2.5, 4.0]
+```
+
+The curriculum for each Behavior has the following parameters:
+| **Setting**                     | **Description** |
+| :------------------------------ | :-------------- |
+| `measure` |  What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps. |
+| `thresholds` | Points in value of `measure` where lesson should be increased. |
+| `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> __Important__: the average reward that is compared to the thresholds is   different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |
+| `signal_smoothing` | Whether to weight the current progress measure by previous values. |
+| `parameters` | Corresponds to environment parameters to control. Length of each array should be one greater than number of thresholds. |
+
+Once our curriculum is defined, we have to use the environment parameters we
+defined and modify the environment from the Agent's `OnEpisodeBegin()` function
+by leveraging `Academy.Instance.EnvironmentParameters`.
+See
+[WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/master/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
+for an example.
+
+#### Training with a Curriculum
+
+Once we have specified our metacurriculum and curricula, we can launch
+`mlagents-learn` using the `–curriculum` flag to point to the config file for
+our curricula and PPO will train using Curriculum Learning. For example, to
+train agents in the Wall Jump environment with curriculum learning, we can run:
+
+```sh
+mlagents-learn config/trainer_config.yaml --curriculum=config/curricula/wall_jump.yaml --run-id=wall-jump-curriculum
+```
+
+We can then keep track of the current lessons and progresses via TensorBoard.
+
+__Note__: If you are resuming a training session that uses curriculum, please
+pass the number of the last-reached lesson using the `--lesson` flag when
+running `mlagents-learn`.
 
 ### Environment Parameter Randomization
 
