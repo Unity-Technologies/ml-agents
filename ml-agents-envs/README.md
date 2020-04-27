@@ -11,7 +11,7 @@ The `mlagents_envs` Python package contains one sub package:
 
 * `mlagents_envs`: A low level API which allows you to interact directly with a
   Unity Environment. See
-  [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
+  [here](../docs/Python-API.md)
   for more information on using this package.
 
 ## Installation
@@ -25,4 +25,4 @@ pip install mlagents_envs
 ## Usage & More Information
 
 For more detailed documentation, check out the
-[ML-Agents Toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
+[ML-Agents Toolkit documentation.](../docs/Readme.md)
