@@ -360,7 +360,6 @@ namespace Unity.MLAgents
             s_TransformCamera = new Dictionary<Transform, Camera>();
         }
 
-        /// <inheritdoc/>
         void OnGUI()
         {
             if (!s_Initialized)

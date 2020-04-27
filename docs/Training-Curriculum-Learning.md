@@ -4,7 +4,8 @@ Curriculum learning is a feature of ML-Agents which allows for the properties of
 
 ## An Instructional Example
 
-*[**Note**: The example provided below is for instructional purposes, and was based on an early version of the [Wall Jump example environment](Example-Environments.md). As such, it is not possible to directly replicate the results here using that environment.]*
+*[**Note**: The example provided below is for instructional purposes, and was based on an early version of the [Wall Jump example environment](Learning-Environment-Examples.md).
+As such, it is not possible to directly replicate the results here using that environment.]*
 
 Imagine a task in which an agent needs to scale a wall to arrive at a goal. The
 starting point when training an agent to accomplish this task will be a random

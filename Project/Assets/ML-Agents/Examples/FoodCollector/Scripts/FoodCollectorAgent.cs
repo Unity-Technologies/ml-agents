@@ -1,7 +1,6 @@
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.SideChannels;
 
 public class FoodCollectorAgent : Agent
 {

@@ -7,14 +7,16 @@ from setuptools.command.install import install
 import mlagents.trainers
 
 VERSION = mlagents.trainers.__version__
+EXPECTED_TAG = mlagents.trainers.__release_tag__
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 
 class VerifyVersionCommand(install):
     """
-    Custom command to verify that the git tag matches our version
-    See https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
+    Custom command to verify that the git tag is the expected one for the release.
+    Based on https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
+    This differs slightly because our tags and versions are different.
     """
 
     description = "verify that the git tag matches our version"
@@ -22,9 +24,9 @@ class VerifyVersionCommand(install):
     def run(self):
         tag = os.getenv("CIRCLE_TAG")
 
-        if tag != VERSION:
-            info = "Git tag: {0} does not match the version of this app: {1}".format(
-                tag, VERSION
+        if tag != EXPECTED_TAG:
+            info = "Git tag: {0} does not match the expected tag of this app: {1}".format(
+                tag, EXPECTED_TAG
             )
             sys.exit(info)
 
@@ -64,6 +66,9 @@ setup(
         "pyyaml",
         "tensorflow>=1.7,<3.0",
         'pypiwin32==223;platform_system=="Windows"',
+        # We don't actually need six, but tensorflow does, and pip seems
+        # to get confused and install the wrong version.
+        "six>=1.12.0",
     ],
     python_requires=">=3.6.1",
     entry_points={

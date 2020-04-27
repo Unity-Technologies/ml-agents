@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.SideChannels;
 
 public class TennisAgent : Agent
 {
