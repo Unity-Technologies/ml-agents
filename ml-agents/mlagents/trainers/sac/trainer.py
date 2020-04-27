@@ -261,13 +261,23 @@ class SACTrainer(RLTrainer):
         """
 
         self.cumulative_returns_since_policy_update.clear()
+        self._maybe_write_summary(
+            self.get_step
+            + self.trainer_parameters["num_update"]
+            * self.trainer_parameters["batch_size"]
+        )
+        self._increment_step(
+            self.trainer_parameters["num_update"]
+            * self.trainer_parameters["batch_size"],
+            self.brain_name,
+        )
+
         n_sequences = max(
             int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
         )
 
-        num_updates = self.trainer_parameters["num_update"]
         batch_update_stats: Dict[str, list] = defaultdict(list)
-        for _ in range(num_updates):
+        for _ in range(self.trainer_parameters["num_update"]):
             logger.debug("Updating SAC policy at step {}".format(self.step))
             buffer = self.update_buffer
             if (

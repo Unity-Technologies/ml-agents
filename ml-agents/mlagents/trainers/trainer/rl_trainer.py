@@ -86,8 +86,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         Uses demonstration_buffer to update model.
         """
-        self._maybe_write_summary(self.get_step + self.trainer_parameters["buffer_size"])
-        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
+        pass
 
     def _increment_step(self, n_steps: int, name_behavior_id: str) -> None:
         """

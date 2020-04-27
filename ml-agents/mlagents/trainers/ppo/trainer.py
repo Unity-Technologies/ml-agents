@@ -179,7 +179,10 @@ class PPOTrainer(RLTrainer):
         The reward signal generators must be updated in this method at their own pace.
         """
         self.cumulative_returns_since_policy_update.clear()
-        super()._update_policy()
+        self._maybe_write_summary(
+            self.get_step + self.trainer_parameters["buffer_size"]
+        )
+        self._increment_step(self.trainer_parameters["buffer_size"], self.brain_name)
 
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
