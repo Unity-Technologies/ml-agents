@@ -9,6 +9,7 @@ from mlagents.trainers.trainer_util import load_config, _load_config
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.ghost.controller import GhostController
 
 
 @pytest.fixture
@@ -129,6 +130,7 @@ def test_initialize_trainer_parameters_override_defaults(
             train_model=train_model,
             load_model=load_model,
             seed=seed,
+            ghost_controller=GhostController(),
         )
         trainers = {}
         for _, brain_parameters in external_brains.items():
@@ -180,6 +182,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
             train_model=train_model,
             load_model=load_model,
             seed=seed,
+            ghost_controller=GhostController(),
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
@@ -213,6 +216,7 @@ def test_initialize_invalid_trainer_raises_exception(
             train_model=train_model,
             load_model=load_model,
             seed=seed,
+            ghost_controller=GhostController(),
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
@@ -230,6 +234,7 @@ def test_initialize_invalid_trainer_raises_exception(
             train_model=train_model,
             load_model=load_model,
             seed=seed,
+            ghost_controller=GhostController(),
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
@@ -247,6 +252,7 @@ def test_initialize_invalid_trainer_raises_exception(
             train_model=train_model,
             load_model=load_model,
             seed=seed,
+            ghost_controller=GhostController(),
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
@@ -277,6 +283,7 @@ def test_handles_no_default_section(dummy_config):
         train_model=True,
         load_model=False,
         seed=42,
+        ghost_controller=GhostController(),
     )
     trainer_factory.generate(brain_parameters.brain_name)
 
@@ -306,6 +313,7 @@ def test_raise_if_no_config_for_brain(dummy_config):
         train_model=True,
         load_model=False,
         seed=42,
+        ghost_controller=GhostController(),
     )
     with pytest.raises(TrainerConfigError):
         trainer_factory.generate(brain_parameters)

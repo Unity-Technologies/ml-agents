@@ -17,6 +17,7 @@ def basic_options(extra_args=None):
 
 @patch("mlagents.trainers.learn.handle_existing_directories")
 @patch("mlagents.trainers.learn.TrainerFactory")
+@patch("mlagents.trainers.learn.GhostController")
 @patch("mlagents.trainers.learn.SamplerManager")
 @patch("mlagents.trainers.learn.SubprocessEnvManager")
 @patch("mlagents.trainers.learn.create_environment_factory")
@@ -26,6 +27,7 @@ def test_run_training(
     create_environment_factory,
     subproc_env_mock,
     sampler_manager_mock,
+    ghost_controller_mock,
     trainer_factory_mock,
     handle_dir_mock,
 ):
@@ -51,6 +53,7 @@ def test_run_training(
                 0,
                 sampler_manager_mock.return_value,
                 None,
+                ghost_controller_mock.return_value,
             )
             handle_dir_mock.assert_called_once_with(
                 "./models/ppo", "./summaries", False, False, None
