@@ -482,6 +482,10 @@ as input to the training algorithms.
 
 ## Training Methods: Environment-specific
 
+In addition to the three environment-agnostic training methods introduced in
+the previous section, the ML-Agents Toolkit provides additional methods that
+can aid in training behaviors for specific types of environments.
+
 ### Training in Multi-Agent Environments with Self-Play
 
 ML-Agents provides the functionality to train both symmetric and asymmetric
@@ -578,19 +582,44 @@ environment parameters are `gravity`, `ball_mass` and `ball_scale`.
 
 ## Model Types
 
+Regardless of the training method deployed, there are a few model types that
+users can train using the ML-Agents Toolkit. This is due to the flexibility
+in defining agent observations, which can include vector, ray cast and visual
+observations. You can learn more about how to instrument an agent's observation
+in the [Designing Agents](Learning-Environment-Design-Agents.md) guide.
+
 ### Learning from Vector Observations
+
+Whether an agent's observations are ray cast or vector, the ML-Agents Toolkit
+provides a fully connected neural network model to learn from those
+observations. At training time you can configure different aspects of this
+model such as the number of hidden units and number of layers.
 
 ### Learning from Cameras using Convolutional Neural Networks
 
-- **Complex Visual Observations** - Unlike other platforms, where the agent’s
-  observation might be limited to a single vector or image, the ML-Agents
-  toolkit allows multiple cameras to be used for observations per agent. This
-  enables agents to learn to integrate information from multiple visual streams.
-  This can be helpful in several scenarios such as training a self-driving car
-  which requires multiple cameras with different viewpoints, or a navigational
-  agent which might need to integrate aerial and first-person visuals. You can
-  learn more about adding visual observations to an agent
-  [here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
+Unlike other platforms, where the agent’s observation might be limited to a
+single vector or image, the ML-Agents toolkit allows multiple cameras to be
+used for observations per agent. This enables agents to learn to integrate
+information from multiple visual streams. This can be helpful in several
+scenarios such as training a self-driving car which requires multiple cameras
+with different viewpoints, or a navigational agent which might need to
+integrate aerial and first-person visuals. You can learn more about adding
+visual observations to an agent
+[here](Learning-Environment-Design-Agents.md#multiple-visual-observations).
+
+When visual observations are utilized, the ML-Agents Toolkit leverages
+convolutional neural networks (CNN) to learn from the input images. We offer
+three network architectures:
+- a simple encoder which consists of two convolutional layers
+- the implementation proposed by
+  [Mnih et al.](https://www.nature.com/articles/nature14236), consisting of
+  three convolutional layers,
+- the [IMPALA Resnet](https://arxiv.org/abs/1802.01561) consisting of three
+  stacked layers, each with two residual blocks, making a much larger network
+  than the other two.
+
+The choice of the architecture depends on the visual complexity of the scene
+and the available computational resources.
 
 ### Memory-enhanced Agents using Recurrent Neural Networks
 
@@ -615,8 +644,16 @@ training process.
 - **Concurrent Unity Instances** - We enable developers to run concurrent,
   parallel instances of the Unity executable during training. For certain
   scenarios, this should speed up training.
-- **Custom Side Channels**
-- **Recording Statistics from Unity**
+- **Recording Statistics from Unity** - We enable developers to record
+  statistics from within their Unity environments. These statistics are
+  aggregated and generated during the training process.
+- **Custom Side Channels** - We enable developers to create custom side
+  channels to manage data transfer between Unity and Python that is unique
+  to their training workflow and/or environment.
+- **Custom Samplers** - We enable developers to create custom sampling methods
+  for Environment Parameter Randomization. This enables users to customize
+  this training method for their particular environment.
+
 
 ## Summary and Next Steps
 
