@@ -24,7 +24,7 @@ class UnityCommunicationException(UnityException):
 
 class UnityCommunicatorStoppedException(UnityException):
     """
-    The communicator has stopped gracefully.
+    Raised when communicator has stopped gracefully.
     """
 
     pass

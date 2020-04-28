@@ -249,8 +249,9 @@ class TrainerController(object):
                 # If the environment failed, we want to make sure to raise
                 # the exception so we exit the process with an return code of 1.
                 raise ex
-        if self.train_model:
-            self._export_graph()
+        finally:
+            if self.train_model:
+                self._export_graph()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]
