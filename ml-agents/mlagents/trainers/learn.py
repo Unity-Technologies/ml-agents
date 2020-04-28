@@ -201,14 +201,14 @@ def _create_parser():
     eng_conf = argparser.add_argument_group(title="Engine Configuration")
     eng_conf.add_argument(
         "--width",
-        default=84,
+        default=None,
         type=int,
         help="The width of the executable window of the environment(s) in pixels "
         "(ignored for editor training).",
     )
     eng_conf.add_argument(
         "--height",
-        default=84,
+        default=None,
         type=int,
         help="The height of the executable window of the environment(s) in pixels "
         "(ignored for editor training)",

@@ -130,8 +130,8 @@ The `--branch latest_release` option will switch to the tag of the latest stable
 release. Omitting that will get the `master` branch which is potentially
 unstable.
 
-If you don't want to use Git, you can always directly download all the files
-[here](https://github.com/Unity-Technologies/ml-agents/archive/latest_release.zip).
+If you don't want to use Git, you can find download links on the
+[releases page](https://github.com/Unity-Technologies/ml-agents/releases).
 
 The `com.unity.ml-agents` subdirectory contains the core code to add to your
 projects. The `Project` subdirectory contains many

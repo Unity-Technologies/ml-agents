@@ -1,4 +1,4 @@
-using Barracuda;
+using Unity.Barracuda;
 using System.Collections.Generic;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;

@@ -12,7 +12,7 @@ from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, BehaviorName
-from mlagents_envs.logging_util import get_logger
+from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
     TimerNode,
@@ -38,7 +38,7 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
-logger = get_logger(__name__)
+logger = logging_util.get_logger(__name__)
 
 
 class EnvironmentCommand(enum.Enum):
@@ -111,6 +111,7 @@ def worker(
     pickled_env_factory: str,
     worker_id: int,
     engine_configuration: EngineConfig,
+    log_level: int = logging_util.INFO,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
@@ -120,6 +121,9 @@ def worker(
     engine_configuration_channel.set_configuration(engine_configuration)
     stats_channel = StatsSideChannel()
     env: BaseEnv = None
+    # Set log level. On some platforms, the logger isn't common with the
+    # main process, so we need to set it again.
+    logging_util.set_log_level(log_level)
 
     def _send_response(cmd_name: EnvironmentCommand, payload: Any) -> None:
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
@@ -237,6 +241,7 @@ class SubprocessEnvManager(EnvManager):
                 pickled_env_factory,
                 worker_id,
                 engine_configuration,
+                logger.level,
             ),
         )
         child_process.start()

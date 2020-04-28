@@ -105,7 +105,7 @@ including our [ML-Agents Forum].
 [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
 [Unity Inference Engine]: https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html
 [Package Manager documentation]: https://docs.unity3d.com/Manual/upm-ui-install.html
-[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/latest_release/docs/Installation.md
+[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Installation.md
 [GitHUb Repository]: https://github.com/Unity-Technologies/ml-agents
 [Python package]: https://github.com/Unity-Technologies/ml-agents
 [Execution Order of Event Functions]: https://docs.unity3d.com/Manual/ExecutionOrder.html

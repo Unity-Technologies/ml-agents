@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
-using Barracuda;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
+using Unity.Barracuda;
 using System.Linq;
 using Unity.MLAgents.Policies;
 
