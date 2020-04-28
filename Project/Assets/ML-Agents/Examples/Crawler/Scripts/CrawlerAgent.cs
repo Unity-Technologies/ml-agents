@@ -192,8 +192,21 @@ public class CrawlerAgent : Agent
         bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
         bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
         
-     
-        
+        // Set reward for this step according to mixture of the following elements.
+        if (rewardMovingTowardsTarget)
+        {
+            RewardFunctionMovingTowards();
+        }
+
+        if (rewardFacingTarget)
+        {
+            RewardFunctionFacingTarget();
+        }
+
+        if (rewardUseTimePenalty)
+        {
+            RewardFunctionTimePenalty();
+        }
         
     }
 
@@ -210,24 +223,6 @@ public class CrawlerAgent : Agent
             }
         }
 
-        
-        
-        
-        // Set reward for this step according to mixture of the following elements.
-        if (rewardMovingTowardsTarget)
-        {
-            RewardFunctionMovingTowards();
-        }
-
-        if (rewardFacingTarget)
-        {
-            RewardFunctionFacingTarget();
-        }
-
-        if (rewardUseTimePenalty)
-        {
-            RewardFunctionTimePenalty();
-        }
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
         if (useFootGroundedVisualization)
