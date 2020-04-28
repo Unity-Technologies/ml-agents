@@ -72,7 +72,6 @@ training. It should steadily decrease in the beginning of training, and reach so
 value where it will level off. If it decreases too soon or takes too
 long to decrease, `init_entcoef` should be adjusted.
 
-
 ### Learning Loss Functions
 
 - `Losses/Policy Loss` (PPO; SAC) - The mean magnitude of policy loss function.
@@ -99,7 +98,6 @@ long to decrease, `init_entcoef` should be adjusted.
 
 - `Self-Play/ELO` (Self-Play) - The [ELO](https://en.wikipedia.org/wiki/Elo_rating_system) rating system is a method for calculating the relative skill level between two players from a given population in a zero-sum game.
 In a proper training run, the ELO of the agent should steadily increase. The absolute value of the ELO is less important than the change in ELO over training iterations.
-
 
 ## Custom Metrics from Unity
 
