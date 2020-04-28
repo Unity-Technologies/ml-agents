@@ -43,6 +43,7 @@ and this project adheres to
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
+- Updated to Barracuda 0.7.0-preivew which has breaking namespace and assembly name changes.
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
