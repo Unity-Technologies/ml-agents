@@ -53,40 +53,53 @@ The ML-Agents training program saves the following statistics:
 
 ### Policy Statistics
 
-- `Policy/Entropy` (PPO; BC) - How random the decisions of the model are. Should
+- `Policy/Entropy` (PPO; SAC; BC) - How random the decisions of the model are. Should
   slowly decrease during a successful training process. If it decreases too
   quickly, the `beta` hyperparameter should be increased.
 
-- `Policy/Learning Rate` (PPO; BC) - How large a step the training algorithm
+- `Policy/Learning Rate` (PPO; SAC; BC) - How large a step the training algorithm
   takes as it searches for the optimal policy. Should decrease over time.
 
-- `Policy/Value Estimate` (PPO) - The mean value estimate for all states visited
+- `Policy/Value Estimate` (PPO; SAC) - The mean value estimate for all states visited
   by the agent. Should increase during a successful training session.
 
-- `Policy/Curiosity Reward` (PPO+Curiosity) - This corresponds to the mean
+- `Policy/Curiosity Reward` (PPO/SAC+Curiosity) - This corresponds to the mean
   cumulative intrinsic reward generated per-episode.
+
+- `Policy/Entropy Coefficient` (SAC) - The entropy coefficient balances the incentive to behave randomly vs. maximizing the reward.
+This value is adjusted automatically so that the agent retains some amount of randomness during
+training. It should steadily decrease in the beginning of training, and reach some small
+value where it will level off. If it decreases too soon or takes too
+long to decrease, `init_entcoef` should be adjusted.
+
 
 ### Learning Loss Functions
 
-- `Losses/Policy Loss` (PPO) - The mean magnitude of policy loss function.
+- `Losses/Policy Loss` (PPO; SAC) - The mean magnitude of policy loss function.
   Correlates to how much the policy (process for deciding actions) is changing.
   The magnitude of this should decrease during a successful training session.
 
-- `Losses/Value Loss` (PPO) - The mean loss of the value function update.
+- `Losses/Value Loss` (PPO; SAC) - The mean loss of the value function update.
   Correlates to how well the model is able to predict the value of each state.
   This should increase while the agent is learning, and then decrease once the
   reward stabilizes.
 
-- `Losses/Forward Loss` (PPO+Curiosity) - The mean magnitude of the inverse
+- `Losses/Forward Loss` (PPO/SAC+Curiosity) - The mean magnitude of the inverse
   model loss function. Corresponds to how well the model is able to predict the
   new observation encoding.
 
-- `Losses/Inverse Loss` (PPO+Curiosity) - The mean magnitude of the forward
+- `Losses/Inverse Loss` (PPO/SAC+Curiosity) - The mean magnitude of the forward
   model loss function. Corresponds to how well the model is able to predict the
   action taken between two observations.
 
 - `Losses/Cloning Loss` (BC) - The mean magnitude of the behavioral cloning
   loss. Corresponds to how well the model imitates the demonstration data.
+
+### Self-Play
+
+- `Self-Play/ELO` (Self-Play) - The [ELO](https://en.wikipedia.org/wiki/Elo_rating_system) rating system is a method for calculating the relative skill level between two players from a given population in a zero-sum game.
+In a proper training run, the ELO of the agent should steadily increase. The absolute value of the ELO is less important than the change in ELO over training iterations.
+
 
 ## Custom Metrics from Unity
 
