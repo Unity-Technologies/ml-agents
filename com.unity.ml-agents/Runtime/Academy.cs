@@ -7,7 +7,7 @@ using UnityEditor;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
-using Barracuda;
+using Unity.Barracuda;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).

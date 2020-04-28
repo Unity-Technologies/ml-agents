@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
-using Barracuda;
 using Unity.MLAgents.Inference;
+using Unity.Barracuda;
 
 
 namespace Unity.MLAgents.Tests

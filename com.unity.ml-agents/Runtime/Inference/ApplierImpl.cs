@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Barracuda;
 using Unity.MLAgents.Inference.Utils;
+using Unity.Barracuda;
 using UnityEngine;
 
 namespace Unity.MLAgents.Inference

@@ -43,6 +43,7 @@ and this project adheres to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 - `WriteAdapter` was renamed to `ObservationWriter`. If you have a custom `ISensor` implementation,
   you will need to change the signature of its `Write()` method. (#3834)
+- Updated to Barracuda 0.7.0-preivew which has breaking namespace and assembly name changes. (#3875)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The `--load` and `--train` command-line flags have been deprecated. Training
   now happens by default, and use `--resume` to resume training instead. (#3705)
@@ -71,7 +72,6 @@ and this project adheres to
   `Academy.AgentPreStep` and made public. (#3716)
 - Academy.InferenceSeed property was added. This is used to initialize the
   random number generator in ModelRunner, and is incremented for each ModelRunner. (#3823)
-- Updated Barracuda to 0.6.3-preview.
 - Added `Agent.GetObservations(), which returns a read-only view of the observations
   added in `CollectObservations()`. (#3825)
 - `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
