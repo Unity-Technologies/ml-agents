@@ -123,10 +123,10 @@ class TrainerController(object):
                 os.makedirs(output_path)
         except Exception:
             raise UnityEnvironmentException(
-                "The folder {} containing the "
+                f"The folder {output_path} containing the "
                 "generated model could not be "
                 "accessed. Please make sure the "
-                "permissions are set correctly.".format(output_path)
+                "permissions are set correctly."
             )
 
     @timed

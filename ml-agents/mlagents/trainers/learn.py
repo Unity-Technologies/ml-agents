@@ -419,7 +419,7 @@ def write_run_options(output_dir: str, run_options: RunOptions) -> None:
 
 
 def write_timing_tree(output_dir: str) -> None:
-    timing_path = f"{output_dir}/timers.json"
+    timing_path = os.path.join(output_dir, "timers.json")
     try:
         with open(timing_path, "w") as f:
             json.dump(get_timer_tree(), f, indent=4)
