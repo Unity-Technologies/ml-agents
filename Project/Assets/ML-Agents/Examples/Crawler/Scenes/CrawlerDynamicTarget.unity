@@ -1244,6 +1244,11 @@ PrefabInstance:
       propertyPath: m_RootOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 54086862800714152, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_Mass
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 114060650647145362, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_BrainParameters.vectorObservationSize
@@ -1255,6 +1260,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: bf9c2d30164a940608c7779d5bd4455d,
         type: 3}
+    - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_ConnectedAnchor.x
+      value: -0.0000007224862
+      objectReference: {fileID: 0}
+    - target: {fileID: 153054223423980232, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_ConnectedAnchor.y
+      value: 0.6249963
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 3}
 --- !u!1 &942963200
