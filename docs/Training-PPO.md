@@ -70,8 +70,8 @@ Typical Range: `0.9` - `0.95`
 
 ### Buffer Size
 
-`buffer_size` corresponds to how many experiences (agent observations, actions
-and rewards obtained) should be collected before we do any learning or updating
+`buffer_size` corresponds to how many experiences should be collected before
+we do any learning or updating
 of the model. **This should be a multiple of `batch_size`**. Typically a larger
 `buffer_size` corresponds to more stable training updates.
 
