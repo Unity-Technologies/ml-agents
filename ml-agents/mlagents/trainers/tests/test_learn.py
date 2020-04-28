@@ -70,6 +70,7 @@ def test_bad_env_path():
             seed=None,
             start_port=8000,
             env_args=None,
+            log_folder="results/log_folder",
         )
 
 

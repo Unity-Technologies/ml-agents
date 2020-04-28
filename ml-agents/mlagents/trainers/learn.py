@@ -354,7 +354,12 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         if options.env_path is None:
             port = UnityEnvironment.DEFAULT_EDITOR_PORT
         env_factory = create_environment_factory(
-            options.env_path, options.no_graphics, run_seed, port, options.env_args
+            options.env_path,
+            options.no_graphics,
+            run_seed,
+            port,
+            options.env_args,
+            os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
         )
         engine_config = EngineConfig(
             options.width,
@@ -470,6 +475,7 @@ def create_environment_factory(
     seed: int,
     start_port: int,
     env_args: Optional[List[str]],
+    log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
         launch_string = UnityEnvironment.validate_environment_path(env_path)
@@ -489,8 +495,9 @@ def create_environment_factory(
             seed=env_seed,
             no_graphics=no_graphics,
             base_port=start_port,
-            args=env_args,
+            additional_args=env_args,
             side_channels=side_channels,
+            log_folder=log_folder,
         )
 
     return create_unity_environment
