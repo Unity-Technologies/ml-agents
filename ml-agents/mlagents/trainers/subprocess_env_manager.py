@@ -7,6 +7,7 @@ from mlagents_envs.exception import (
     UnityCommunicationException,
     UnityTimeOutException,
     UnityEnvironmentException,
+    UnityCommunicatorStoppedException,
 )
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
@@ -185,6 +186,7 @@ def worker(
         UnityCommunicationException,
         UnityTimeOutException,
         UnityEnvironmentException,
+        UnityCommunicatorStoppedException,
     ) as ex:
         logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(

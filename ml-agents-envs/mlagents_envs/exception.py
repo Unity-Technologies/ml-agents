@@ -22,6 +22,14 @@ class UnityCommunicationException(UnityException):
     pass
 
 
+class UnityCommunicatorStoppedException(UnityException):
+    """
+    Raised when communicator has stopped gracefully.
+    """
+
+    pass
+
+
 class UnityObservationException(UnityException):
     """
     Related to errors with receiving observations.
