@@ -20,6 +20,10 @@ class ReleaseInfo(NamedTuple):
 
     @staticmethod
     def from_simple_tag(release_tag: str, release_date: str) -> "ReleaseInfo":
+        """
+        Generate the ReleaseInfo for "old style" releases, where the tag and versions
+        were all the same.
+        """
         return ReleaseInfo(release_tag, release_tag, release_tag, release_date)
 
     @property
@@ -28,12 +32,20 @@ class ReleaseInfo(NamedTuple):
 
     @property
     def elapsed_days(self) -> int:
+        """
+        Days since this version was released.
+        :return:
+        """
         return (
             datetime.today() - datetime.strptime(self.release_date, "%B %d, %Y")
         ).days
 
     @property
     def display_name(self) -> str:
+        """
+        Clean up the tag name for display, e.g. "release_1" -> "Release 1"
+        :return:
+        """
         return self.release_tag.replace("_", " ").title()
 
 
@@ -48,6 +60,7 @@ versions = [
     ReleaseInfo.from_simple_tag("0.14.0", "February 13, 2020"),
     ReleaseInfo.from_simple_tag("0.14.1", "February 26, 2020"),
     ReleaseInfo.from_simple_tag("0.15.0", "March 18, 2020"),
+    ReleaseInfo.from_simple_tag("0.15.1", "March 30, 2020"),
     ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
 ]
 
