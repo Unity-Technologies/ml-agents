@@ -76,6 +76,7 @@ and this project adheres to
   added in `CollectObservations()`. (#3825)
 - Model updates can now happen asynchronously with environment steps for better performance. (#3690)
 - `num_updates` and `train_interval` for SAC were replaced with `steps_per_update`. (#3690)
+- Unity Player logs are now written out to the results directory. (#3877)
 
 ### Bug Fixes
 
