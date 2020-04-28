@@ -51,6 +51,18 @@ def test_port_defaults(
 
 @mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+def test_log_file_path_is_set(mock_communicator, mock_launcher):
+    mock_communicator.return_value = MockCommunicator()
+    env = UnityEnvironment(
+        file_name="myfile", worker_id=0, log_folder="./some-log-folder-path"
+    )
+    args = env.executable_args()
+    log_file_index = args.index("-logFile")
+    assert args[log_file_index + 1] == "./some-log-folder-path/Player-0.log"
+
+
+@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_reset(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
