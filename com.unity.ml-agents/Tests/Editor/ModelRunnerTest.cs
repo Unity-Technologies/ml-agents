@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Inference;
 using MLAgents.Sensors;
 using System.Linq;
@@ -12,8 +12,8 @@ namespace MLAgents.Tests
     [TestFixture]
     public class ModelRunnerTest
     {
-        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/Resources/continuous2vis8vec2action.nn";
-        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/Resources/discrete1vis0vec_2_3action_recurr.nn";
+        const string k_continuous2vis8vec2actionPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action.nn";
+        const string k_discrete1vis0vec_2_3action_recurrModelPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr.nn";
         NNModel continuous2vis8vec2actionModel;
         NNModel discrete1vis0vec_2_3action_recurrModel;
         Test3DSensorComponent sensor_21_20_3;
@@ -22,20 +22,20 @@ namespace MLAgents.Tests
         private BrainParameters GetContinuous2vis8vec2actionBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
-            validBrainParameters.vectorObservationSize = 8;
-            validBrainParameters.vectorActionSize = new int[] { 2 };
-            validBrainParameters.numStackedVectorObservations = 1;
-            validBrainParameters.vectorActionSpaceType = SpaceType.Continuous;
+            validBrainParameters.VectorObservationSize = 8;
+            validBrainParameters.VectorActionSize = new int[] { 2 };
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             return validBrainParameters;
         }
 
         private BrainParameters GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
-            validBrainParameters.vectorObservationSize = 0;
-            validBrainParameters.vectorActionSize = new int[] { 2, 3 };
-            validBrainParameters.numStackedVectorObservations = 1;
-            validBrainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            validBrainParameters.VectorObservationSize = 0;
+            validBrainParameters.VectorActionSize = new int[] { 2, 3 };
+            validBrainParameters.NumStackedVectorObservations = 1;
+            validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
         }
 
@@ -94,7 +94,7 @@ namespace MLAgents.Tests
             Assert.IsNotNull(modelRunner.GetAction(1));
             Assert.IsNotNull(modelRunner.GetAction(2));
             Assert.IsNull(modelRunner.GetAction(3));
-            Assert.AreEqual(brainParameters.vectorActionSize.Count(), modelRunner.GetAction(1).Count());
+            Assert.AreEqual(brainParameters.VectorActionSize.Count(), modelRunner.GetAction(1).Count());
             modelRunner.Dispose();
         }
     }

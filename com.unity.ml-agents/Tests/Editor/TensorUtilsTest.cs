@@ -1,5 +1,5 @@
 using System;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Inference;
 using MLAgents.Inference.Utils;
 using NUnit.Framework;

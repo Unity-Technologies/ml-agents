@@ -8,12 +8,12 @@ public class Ball3DAgent : Agent
     [Header("Specific to Ball3D")]
     public GameObject ball;
     Rigidbody m_BallRb;
-    FloatPropertiesChannel m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
-        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
     }
 
@@ -75,8 +75,8 @@ public class Ball3DAgent : Agent
     public void SetBall()
     {
         //Set the attributes of the ball by fetching the information from the academy
-        m_BallRb.mass = m_ResetParams.GetPropertyWithDefault("mass", 1.0f);
-        var scale = m_ResetParams.GetPropertyWithDefault("scale", 1.0f);
+        m_BallRb.mass = m_ResetParams.GetWithDefault("mass", 1.0f);
+        var scale = m_ResetParams.GetWithDefault("scale", 1.0f);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

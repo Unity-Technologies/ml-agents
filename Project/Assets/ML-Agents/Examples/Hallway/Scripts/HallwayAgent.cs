@@ -30,7 +30,7 @@ public class HallwayAgent : Agent
     {
         if (useVectorObs)
         {
-            sensor.AddObservation(StepCount / (float)maxStep);
+            sensor.AddObservation(StepCount / (float)MaxStep);
         }
     }
 
@@ -68,7 +68,7 @@ public class HallwayAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        AddReward(-1f / maxStep);
+        AddReward(-1f / MaxStep);
         MoveAgent(vectorAction);
     }
 

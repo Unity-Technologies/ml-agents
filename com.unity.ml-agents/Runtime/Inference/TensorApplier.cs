@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Policies;
 
 namespace MLAgents.Inference
@@ -51,14 +51,14 @@ namespace MLAgents.Inference
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            if (bp.vectorActionSpaceType == SpaceType.Continuous)
+            if (bp.VectorActionSpaceType == SpaceType.Continuous)
             {
                 m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
                 m_Dict[TensorNames.ActionOutput] =
-                    new DiscreteActionOutputApplier(bp.vectorActionSize, seed, allocator);
+                    new DiscreteActionOutputApplier(bp.VectorActionSize, seed, allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 

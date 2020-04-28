@@ -35,6 +35,7 @@ from mlagents_envs.communicator_objects.unity_rl_input_pb2 import UnityRLInputPr
 from mlagents_envs.communicator_objects.unity_rl_output_pb2 import UnityRLOutputProto
 from mlagents_envs.communicator_objects.agent_action_pb2 import AgentActionProto
 from mlagents_envs.communicator_objects.unity_output_pb2 import UnityOutputProto
+from mlagents_envs.communicator_objects.capabilities_pb2 import UnityRLCapabilitiesProto
 from mlagents_envs.communicator_objects.unity_rl_initialization_input_pb2 import (
     UnityRLInitializationInputProto,
 )
@@ -58,7 +59,7 @@ class UnityEnvironment(BaseEnv):
     # Currently we require strict equality between the communication protocol
     # on each side, although we may allow some flexibility in the future.
     # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.16.0"
+    API_VERSION = "0.17.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -111,6 +112,26 @@ class UnityEnvironment(BaseEnv):
                 f"and communication version {unity_com_ver}"
             )
         return True
+
+    @staticmethod
+    def get_capabilities_proto() -> UnityRLCapabilitiesProto:
+        capabilities = UnityRLCapabilitiesProto()
+        capabilities.baseRLCapabilities = True
+        return capabilities
+
+    @staticmethod
+    def warn_csharp_base_capabitlities(
+        caps: UnityRLCapabilitiesProto, unity_package_ver: str, python_package_ver: str
+    ) -> None:
+        if not caps.baseRLCapabilities:
+            logger.warning(
+                "WARNING: The Unity process is not running with the expected base Reinforcement Learning"
+                " capabilities. Please be sure upgrade the Unity Package to a version that is compatible with this "
+                "python package.\n"
+                f"Python package version: {python_package_ver}, C# package version: {unity_package_ver}"
+                f"Please find the versions that work best together from our release page.\n"
+                "https://github.com/Unity-Technologies/ml-agents/releases"
+            )
 
     def __init__(
         self,
@@ -190,6 +211,7 @@ class UnityEnvironment(BaseEnv):
             seed=seed,
             communication_version=self.API_VERSION,
             package_version=mlagents_envs.__version__,
+            capabilities=UnityEnvironment.get_capabilities_proto(),
         )
         try:
             aca_output = self.send_academy_parameters(rl_init_parameters_in)
@@ -205,6 +227,12 @@ class UnityEnvironment(BaseEnv):
         ):
             self._close(0)
             UnityEnvironment._raise_version_exception(aca_params.communication_version)
+
+        UnityEnvironment.warn_csharp_base_capabitlities(
+            aca_params.capabilities,
+            aca_params.package_version,
+            UnityEnvironment.API_VERSION,
+        )
 
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}

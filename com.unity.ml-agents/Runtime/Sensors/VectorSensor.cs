@@ -33,7 +33,7 @@ namespace MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             var expectedObservations = m_Shape[0];
             if (m_Observations.Count > expectedObservations)
@@ -57,7 +57,7 @@ namespace MLAgents.Sensors
                     m_Observations.Add(0);
                 }
             }
-            adapter.AddRange(m_Observations);
+            writer.AddRange(m_Observations);
             return expectedObservations;
         }
 
