@@ -297,7 +297,6 @@ class UnityEnvironment(BaseEnv):
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
             subprocess_args = [launch_string] + self.executable_args()
-            print(subprocess_args)
             try:
                 self.proc1 = subprocess.Popen(
                     subprocess_args,
