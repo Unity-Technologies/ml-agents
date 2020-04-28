@@ -61,10 +61,14 @@ dropdown  in order to find it.
 
 If you want to try newer features from our development branch you
 can still [install the local package](https://docs.unity3d.com/Manual/upm-ui-local.html) from the
-repo that you just cloned. You can add the `com.unity.ml-agents` package to your project by navigating
-to the menu `Window`  -> `Package Manager`. In the package manager window click on the `+` button.
-Select `Add package from disk...` and navigate into the `com.unity.ml-agents` folder and select the
-`package.json` file.
+repo that you just cloned.
+
+Add the local `com.unity.ml-agents` package to your project by:
+1. navigating to the menu `Window`  -> `Package Manager`.
+1. In the package manager window click on the `+` button.
+1. Select `Add package from disk...`
+1. Navigate into the `com.unity.ml-agents` folder.
+1. Select the `package.json` file.
 
 **NOTE:** In Unity 2018.4 the `+` button is on the bottom right of the packages list, and in Unity 2019.3 it's
 on the top left of the packages list.
