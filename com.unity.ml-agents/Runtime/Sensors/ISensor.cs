@@ -18,7 +18,6 @@ namespace Unity.MLAgents.Sensors
 
     /// <summary>
     /// Sensor interface for generating observations.
-    /// For custom implementations, it is recommended to <see cref="SensorBase"/> instead.
     /// </summary>
     public interface ISensor
     {
@@ -32,8 +31,6 @@ namespace Unity.MLAgents.Sensors
 
         /// <summary>
         /// Write the observation data directly to the <see cref="ObservationWriter"/>.
-        /// This is considered an advanced interface; for a simpler approach, use
-        /// <see cref="SensorBase"/> and override <see cref="SensorBase.WriteObservation"/> instead.
         /// Note that this (and  <see cref="GetCompressedObservation"/>) may
         /// be called multiple times per agent step, so should not mutate any internal state.
         /// </summary>
