@@ -215,7 +215,7 @@ used in your normalization formula.
   agent to take the optimally informed decision, and ideally no extraneous
   information.
 - In cases where Vector Observations need to be remembered or compared over
-  time, either an LSTM (see [here](Feature-Memory.md)) should be used in the
+  time, either an RNN should be used in the
   model, or the `Stacked Vectors` value in the agent GameObject's
   `Behavior Parameters` should be changed.
 - Categorical variables such as type of object (Sword, Shield, Bow) should be
@@ -649,9 +649,7 @@ be called independently of the `Max Step` property.
 - `Behavior Parameters` - The parameters dictating what Policy the Agent will
   receive.
   - `Behavior Name` - The identifier for the behavior. Agents with the same
-    behavior name will learn the same policy. If you're using
-    [curriculum learning](Training-Curriculum-Learning.md), this is used as the
-    top-level key in the config.
+    behavior name will learn the same policy.
   - `Vector Observation`
     - `Space Size` - Length of vector observation for the Agent.
     - `Stacked Vectors` - The number of previous vector observations that will
@@ -675,18 +673,11 @@ be called independently of the `Max Step` property.
       otherwise they will perform inference.
     - `Heuristic Only` - the Agent will always use the `Heuristic()` method.
     - `Inference Only` - the Agent will always perform inference.
-  - `Team ID` - Used to define the team for [self-play](Training-Self-Play.md)
+  - `Team ID` - Used to define the team for self-play
   - `Use Child Sensors` - Whether to use all Sensor components attached to child
     GameObjects of this Agent.
 - `Max Step` - The per-agent maximum number of steps. Once this number is
   reached, the Agent will be reset.
-
-## Monitoring Agents
-
-We created a helpful `Monitor` class that enables visualizing variables within a
-Unity environment. While this was built for monitoring an agent's value function
-throughout the training process, we imagine it can be more broadly useful. You
-can learn more [here](Feature-Monitor.md).
 
 ## Destroying an Agent
 
@@ -694,3 +685,56 @@ You can destroy an Agent GameObject during the simulation. Make sure that there
 is always at least one Agent training at all times by either spawning a new
 Agent every time one is destroyed or by re-spawning new Agents when the whole
 environment resets.
+
+## Defining Teams for Multi-agent Scenarios
+
+Self-play is triggered by including the self-play hyperparameter hierarchy in
+the [trainer configuration](Training-ML-Agents.md#training-configurations).
+To distinguish opposing agents, set the team ID to different integer values in
+the behavior parameters script on the agent prefab.
+
+![Team ID](images/team_id.png)
+
+***Team ID must be 0 or an integer greater than 0.***
+
+In symmetric games, since all agents (even on opposing teams) will share the
+same policy, they should have the same 'Behavior Name' in their Behavior
+Parameters Script.  In asymmetric games, they should have a different Behavior
+Name in their Behavior Parameters script. Note, in asymmetric games, the agents
+must have both different Behavior Names *and* different team IDs!
+
+For examples of how to use this feature, you can see the trainer configurations
+and agent prefabs for our Tennis and Soccer environments. Tennis and Soccer
+provide examples of symmetric games. To train an asymmetric game, specify
+trainer configurations for each of your behavior names and include the
+self-play hyperparameter hierarchy in both.
+
+## Recording Demonstrations
+
+In order to record demonstrations from an agent, add the `Demonstration Recorder`
+component to a GameObject in the scene which contains an `Agent` component.
+Once added, it is possible to name the demonstration that will be recorded
+from the agent.
+
+<p align="center">
+  <img src="images/demo_component.png"
+       alt="Demonstration Recorder"
+       width="375" border="10" />
+</p>
+
+When `Record` is checked, a demonstration will be created whenever the scene
+is played from the Editor. Depending on the complexity of the task, anywhere
+from a few minutes or a few hours of demonstration data may be necessary to
+be useful for imitation learning. When you have recorded enough data, end
+the Editor play session. A `.demo` file will be created in the
+`Assets/Demonstrations` folder (by default). This file contains the demonstrations.
+Clicking on the file will provide metadata about the demonstration in the
+inspector.
+
+<p align="center">
+  <img src="images/demo_inspector.png"
+       alt="Demonstration Inspector"
+       width="375" border="10" />
+</p>
+
+You can then specify the path to this file in your training configurations.

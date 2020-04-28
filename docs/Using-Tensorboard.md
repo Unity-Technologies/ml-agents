@@ -43,8 +43,7 @@ The ML-Agents training program saves the following statistics:
 ### Environment Statistics
 
 - `Environment/Lesson` - Plots the progress from lesson to lesson. Only
-  interesting when performing
-  [curriculum training](Training-Curriculum-Learning.md).
+  interesting when performing curriculum training.
 
 - `Environment/Cumulative Reward` - The mean cumulative episode reward over all
   agents. Should increase during a successful training session.
@@ -92,7 +91,7 @@ The ML-Agents training program saves the following statistics:
 ## Custom Metrics from Unity
 
 To get custom metrics from a C# environment into Tensorboard, you can use the
-StatsSideChannel:
+`StatsRecorder`:
 
 ```csharp
 var statsRecorder = Academy.Instance.StatsRecorder;
