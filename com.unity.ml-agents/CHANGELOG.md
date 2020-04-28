@@ -13,7 +13,7 @@ and this project adheres to
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
   namespaces were similarly renamed. (#3843)
 - The offset logic was removed from DecisionRequester. (#3716)
-- The signature of `Agent.Heuristic()` was changed to take a `float[]` as a
+- The signature of `Agent.Heuristic()` was changed to take a float array as a
   parameter, instead of returning the array. This was done to prevent a common
   source of error where users would return arrays of the wrong size. (#3765)
 - The communication API version has been bumped up to 1.0.0 and will use
