@@ -98,6 +98,7 @@ class PPOOptimizer(TorchOptimizer):
         vec_obs = [torch.Tensor(vec_obs)]
         act_masks = torch.Tensor(np.array(batch["action_mask"]))
         actions = [torch.Tensor(np.array(batch["actions"]))]
+        actions = list(actions[0].permute([1, 0]))
 
         if self.policy.use_vis_obs:
             vis_obs = np.array(batch["visual_obs"])
