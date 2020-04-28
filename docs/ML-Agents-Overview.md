@@ -598,7 +598,7 @@ model such as the number of hidden units and number of layers.
 ### Learning from Cameras using Convolutional Neural Networks
 
 Unlike other platforms, where the agent’s observation might be limited to a
-single vector or image, the ML-Agents toolkit allows multiple cameras to be
+single vector or image, the ML-Agents Toolkit allows multiple cameras to be
 used for observations per agent. This enables agents to learn to integrate
 information from multiple visual streams. This can be helpful in several
 scenarios such as training a self-driving car which requires multiple cameras
