@@ -66,7 +66,7 @@ to the menu `Window`  -> `Package Manager`. In the package manager window click 
 Select `Add package from disk...` and navigate into the `com.unity.ml-agents` folder and select the
 `package.json` file.
 
-**NOTE:** In Unity 2018.4 it's on the bottom right of the packages list, and in Unity 2019.3 it's
+**NOTE:** In Unity 2018.4 the `+` button is on the bottom right of the packages list, and in Unity 2019.3 it's
 on the top left of the packages list.
 
 <p align="center">
