@@ -326,7 +326,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         maybe_init_path = (
             os.path.join(base_path, options.run_id) if options.initialize_from else None
         )
-        run_logs_dir = os.path.abspath(os.path.join(write_path, "run_logs"))
+        run_logs_dir = os.path.join(write_path, "run_logs")
         port = options.base_port
         # Check if directory exists
         handle_existing_directories(
@@ -359,7 +359,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             run_seed,
             port,
             options.env_args,
-            run_logs_dir,
+            os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
         )
         engine_config = EngineConfig(
             options.width,
