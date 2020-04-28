@@ -27,7 +27,7 @@ For more detailed documentation, check out the
 ## Limitations
  - `mlagents_envs` uses localhost ports to exchange data between Unity and Python. As such,
  multiple instances can have their ports collide leading to errors. Make sure to use a
- different port if you are using multiple instances of `UnityEnvironment'.
+ different port if you are using multiple instances of `UnityEnvironment`.
  - Communication between Unity and the Python `UnityEnvironment` is not secure.
  - On Linux, ports are not released immediately after the communication closes. As such, you
  cannot reuse ports right after closing a `UnityEnvironment`.
