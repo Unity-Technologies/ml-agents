@@ -97,13 +97,9 @@ def initialize_trainer(
         )
 
     trainer_parameters = trainer_config.get("default", {}).copy()
-    trainer_parameters["output_path"] = "{basedir}/{name}".format(
-        basedir=output_path, name=brain_name
-    )
+    trainer_parameters["output_path"] = os.path.join(output_path, brain_name)
     if init_path is not None:
-        trainer_parameters["init_path"] = "{basedir}/{name}".format(
-            basedir=init_path, name=brain_name
-        )
+        trainer_parameters["init_path"] = os.path.join(init_path, brain_name)
     trainer_parameters["keep_checkpoints"] = keep_checkpoints
     if brain_name in trainer_config:
         _brain_key: Any = brain_name
