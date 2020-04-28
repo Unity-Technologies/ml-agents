@@ -80,7 +80,7 @@ def initialize_trainer(
     :param trainer_config: Original trainer configuration loaded from YAML
     :param brain_name: Name of the brain to be associated with trainer
     :param run_id: Run ID to associate with this training run
-    :param output_path: Path to save the model and save summary statistics
+    :param output_path: Path to save the model and summary statistics
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
     :param load_model: Whether to load the model or randomly initialize
