@@ -29,6 +29,15 @@ class ActionType(Enum):
     DISCRETE = "discrete"
     CONTINUOUS = "continuous"
 
+    @staticmethod
+    def from_str(label):
+        if label in "continuous":
+            return ActionType.CONTINUOUS
+        elif label in "discrete":
+            return ActionType.DISCRETE
+        else:
+            raise NotImplementedError
+
 
 class LearningRateSchedule(Enum):
     CONSTANT = "constant"
@@ -130,7 +139,7 @@ class Actor(nn.Module):
         use_lstm,
     ):
         super(Actor, self).__init__()
-        self.act_type = act_type
+        self.act_type = ActionType.from_str(act_type)
         self.act_size = act_size
         self.network_body = NetworkBody(
             vector_sizes,
@@ -143,7 +152,7 @@ class Actor(nn.Module):
             use_lstm,
         )
         if self.act_type == ActionType.CONTINUOUS:
-            self.distribution = GaussianDistribution(h_size, act_size)
+            self.distribution = GaussianDistribution(h_size, act_size[0])
         else:
             self.distribution = MultiCategoricalDistribution(h_size, act_size)
 
@@ -253,7 +262,7 @@ class VectorEncoder(nn.Module):
         self.layers = [nn.Linear(input_size, hidden_size)]
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
-            self.layers.append(nn.Tanh())
+            self.layers.append(nn.ReLU())
         self.layers = nn.ModuleList(self.layers)
 
     def forward(self, inputs):

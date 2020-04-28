@@ -97,13 +97,14 @@ class PPOOptimizer(TorchOptimizer):
         vec_obs = np.array(batch["vector_obs"])
         vec_obs = [torch.Tensor(vec_obs)]
         act_masks = torch.Tensor(np.array(batch["action_mask"]))
+        actions = [torch.Tensor(np.array(batch["actions"]))]
 
         if self.policy.use_vis_obs:
             vis_obs = np.array(batch["visual_obs"])
         else:
             vis_obs = []
-        actions, log_probs, entropy, values = self.policy.execute_model(
-            vec_obs, vis_obs, act_masks
+        _, log_probs, entropy, values = self.policy.execute_model(
+            vec_obs, vis_obs, act_masks, actions
         )
         value_loss = self.ppo_value_loss(values, old_values, returns)
         policy_loss = self.ppo_policy_loss(
