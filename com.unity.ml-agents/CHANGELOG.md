@@ -24,17 +24,15 @@ and this project adheres to
 - The SideChannel API has changed (#3833, #3660) :
   - Introduced the `SideChannelManager` to register, unregister and access side
   channels.
-  - `EnvironmentParameters` replaces the default `FloatProperties`.
-  You can access the `EnvironmentParameters` with
-  `Academy.Instance.EnvironmentParameters` on C# and create an
-  `EnvironmentParametersChannel` on Python
+  - `Academy.FloatProperties` was replaced by `Academy.EnvironmentParameters`.
+  See the [Migration Guide](../docs/Migrating.md) for more details on upgrading.
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - SideChannel IncomingMessages methods now take an optional default argument,
   which is used when trying to read more data than the message contains.
   - Added a feature to allow sending stats from C# environments to TensorBoard
   (and other python StatsWriters). To do this from your code, use
   `Academy.Instance.StatsRecorder.Add(key, value)`. (#3660)
-- CameraSensorComponent.m_Grayscale and RenderTextureSensorComponent.m_Grayscale
+- `CameraSensorComponent.m_Grayscale` and `RenderTextureSensorComponent.m_Grayscale`
   were changed from `public` to `private`. These can still be accessed via their
   corresponding properties. (#3808)
 - Public fields and properties on several classes were renamed to follow Unity's

@@ -45,8 +45,9 @@ double-check that the versions are in the same. The versions can be found in
   channels.
   - `EnvironmentParameters` replaces the default `FloatProperties`.
   You can access the `EnvironmentParameters` with
-  `Academy.Instance.EnvironmentParameters` on C# and create an
-  `EnvironmentParametersChannel` on Python
+  `Academy.Instance.EnvironmentParameters` on C#. If you were previously creating
+   a `UnityEnvironment` in python and passing it a `FloatPropertiesChannel`,
+   create an `EnvironmentParametersChannel` instead.
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - SideChannel IncomingMessages methods now take an optional default argument,
   which is used when trying to read more data than the message contains.
