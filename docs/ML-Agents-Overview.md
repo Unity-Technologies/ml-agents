@@ -545,7 +545,7 @@ progressively taller wall obstructs the path to the goal._
 
 *[**Note**: The example provided above is for instructional purposes, and was
 based on an early version of the
-[Wall Jump example environment](Example-Environments.md).
+[Wall Jump example environment](Learning-Environment-Examples.md).
 As such, it is not possible to directly replicate the results here using that
 environment.]*
 
