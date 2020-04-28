@@ -80,12 +80,15 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
         vector_obs = [torch.Tensor(np.array(batch["vector_obs"]))]
         if self.policy.use_vis_obs:
-            visual_obs = batch["visual_obs"]
+            visual_obs = []
+            for idx, _ in enumerate(self.policy.actor.network_body.visual_encoders):
+                visual_ob = torch.Tensor(np.array(batch["visual_obs%d" % idx]))
+                visual_obs.append(visual_ob)
         else:
             visual_obs = []
 
         next_obs = np.concatenate(next_obs, axis=-1)
-        next_obs = [torch.Tensor(next_obs)]
+        next_obs = [torch.Tensor(next_obs).unsqueeze(0)]
 
         value_estimates, mean_value = self.policy.critic(vector_obs, visual_obs)
 

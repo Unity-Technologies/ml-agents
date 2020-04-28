@@ -101,7 +101,10 @@ class PPOOptimizer(TorchOptimizer):
         actions = list(actions[0].permute([1, 0]))
 
         if self.policy.use_vis_obs:
-            vis_obs = np.array(batch["visual_obs"])
+            vis_obs = []
+            for idx, _ in enumerate(self.policy.actor.network_body.visual_encoders):
+                vis_ob = torch.Tensor(np.array(batch["visual_obs%d" % idx]))
+                vis_obs.append(vis_ob)
         else:
             vis_obs = []
         _, log_probs, entropy, values = self.policy.execute_model(

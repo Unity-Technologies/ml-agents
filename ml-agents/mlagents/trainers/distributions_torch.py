@@ -3,7 +3,7 @@ from torch import nn
 from torch import distributions
 import numpy as np
 
-EPSILON = 1e-6  # Small value to avoid divide by zero
+EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
 class GaussianDistribution(nn.Module):
@@ -46,7 +46,7 @@ class MultiCategoricalDistribution(nn.Module):
     def mask_branch(self, logits, mask):
         raw_probs = torch.nn.functional.softmax(logits, dim=-1) * mask
         normalized_probs = raw_probs / torch.sum(raw_probs, dim=-1).unsqueeze(-1)
-        normalized_logits = torch.log(normalized_probs)
+        normalized_logits = torch.log(normalized_probs + EPSILON)
         return normalized_logits
 
     def split_masks(self, masks):
