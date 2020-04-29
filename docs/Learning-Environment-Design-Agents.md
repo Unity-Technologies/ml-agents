@@ -215,9 +215,8 @@ used in your normalization formula.
   agent to take the optimally informed decision, and ideally no extraneous
   information.
 - In cases where Vector Observations need to be remembered or compared over
-  time, either an RNN should be used in the
-  model, or the `Stacked Vectors` value in the agent GameObject's
-  `Behavior Parameters` should be changed.
+  time, either an RNN should be used in the model, or the `Stacked Vectors`
+  value in the agent GameObject's `Behavior Parameters` should be changed.
 - Categorical variables such as type of object (Sword, Shield, Bow) should be
   encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`). This can be done
   automatically using the `AddOneHotObservation()` method of the `VectorSensor`.
@@ -293,7 +292,7 @@ Agent.
   not sufficient.
 - Image size should be kept as small as possible, without the loss of needed
   details for decision making.
-- Images should be made greyscale in situations where color information is not
+- Images should be made grayscale in situations where color information is not
   needed for making informed decisions.
 
 ### Raycast Observations
@@ -689,32 +688,32 @@ environment resets.
 ## Defining Teams for Multi-agent Scenarios
 
 Self-play is triggered by including the self-play hyperparameter hierarchy in
-the [trainer configuration](Training-ML-Agents.md#training-configurations).
-To distinguish opposing agents, set the team ID to different integer values in
-the behavior parameters script on the agent prefab.
+the [trainer configuration](Training-ML-Agents.md#training-configurations). To
+distinguish opposing agents, set the team ID to different integer values in the
+behavior parameters script on the agent prefab.
 
 ![Team ID](images/team_id.png)
 
-***Team ID must be 0 or an integer greater than 0.***
+**_Team ID must be 0 or an integer greater than 0._**
 
 In symmetric games, since all agents (even on opposing teams) will share the
 same policy, they should have the same 'Behavior Name' in their Behavior
-Parameters Script.  In asymmetric games, they should have a different Behavior
+Parameters Script. In asymmetric games, they should have a different Behavior
 Name in their Behavior Parameters script. Note, in asymmetric games, the agents
-must have both different Behavior Names *and* different team IDs!
+must have both different Behavior Names _and_ different team IDs!
 
 For examples of how to use this feature, you can see the trainer configurations
 and agent prefabs for our Tennis and Soccer environments. Tennis and Soccer
 provide examples of symmetric games. To train an asymmetric game, specify
-trainer configurations for each of your behavior names and include the
-self-play hyperparameter hierarchy in both.
+trainer configurations for each of your behavior names and include the self-play
+hyperparameter hierarchy in both.
 
 ## Recording Demonstrations
 
-In order to record demonstrations from an agent, add the `Demonstration Recorder`
-component to a GameObject in the scene which contains an `Agent` component.
-Once added, it is possible to name the demonstration that will be recorded
-from the agent.
+In order to record demonstrations from an agent, add the
+`Demonstration Recorder` component to a GameObject in the scene which contains
+an `Agent` component. Once added, it is possible to name the demonstration that
+will be recorded from the agent.
 
 <p align="center">
   <img src="images/demo_component.png"
@@ -722,14 +721,13 @@ from the agent.
        width="375" border="10" />
 </p>
 
-When `Record` is checked, a demonstration will be created whenever the scene
-is played from the Editor. Depending on the complexity of the task, anywhere
-from a few minutes or a few hours of demonstration data may be necessary to
-be useful for imitation learning. When you have recorded enough data, end
-the Editor play session. A `.demo` file will be created in the
-`Assets/Demonstrations` folder (by default). This file contains the demonstrations.
-Clicking on the file will provide metadata about the demonstration in the
-inspector.
+When `Record` is checked, a demonstration will be created whenever the scene is
+played from the Editor. Depending on the complexity of the task, anywhere from a
+few minutes or a few hours of demonstration data may be necessary to be useful
+for imitation learning. When you have recorded enough data, end the Editor play
+session. A `.demo` file will be created in the `Assets/Demonstrations` folder
+(by default). This file contains the demonstrations. Clicking on the file will
+provide metadata about the demonstration in the inspector.
 
 <p align="center">
   <img src="images/demo_inspector.png"

@@ -26,8 +26,8 @@
   within it) at a given time.
 - **Step** - Corresponds to an atomic change of the engine that happens between
   Agent decisions.
-- **Experience** - Corresponds to a tuple of [Agent observations, actions, rewards]
-  of a single Agent obtained after a Step.
+- **Experience** - Corresponds to a tuple of [Agent observations, actions,
+  rewards] of a single Agent obtained after a Step.
 - **Update** - Unity function called each time a frame is rendered. ML-Agents
   logic should not be placed here.
 - **External Coordinator** - ML-Agents class responsible for communication with
