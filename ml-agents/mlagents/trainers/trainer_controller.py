@@ -19,7 +19,12 @@ from mlagents_envs.exception import (
     UnityCommunicatorStoppedException,
 )
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents_envs.timers import hierarchical_timer, timed, get_timer_stack_for_thread
+from mlagents_envs.timers import (
+    hierarchical_timer,
+    timed,
+    get_timer_stack_for_thread,
+    merge_gauges,
+)
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -335,6 +340,7 @@ class TrainerController(object):
                         root_name="thread_root",
                         is_parallel=True,
                     )
+                    merge_gauges(thread_timer_stack.gauges)
 
     def trainer_update_func(self, trainer: Trainer) -> None:
         while not self.kill_trainers:

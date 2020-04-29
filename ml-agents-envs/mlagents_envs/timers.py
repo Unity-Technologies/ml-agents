@@ -98,19 +98,31 @@ class GaugeNode:
     Tracks the most recent value of a metric. This is analogous to gauges in statsd.
     """
 
-    __slots__ = ["value", "min_value", "max_value", "count"]
+    __slots__ = ["value", "min_value", "max_value", "count", "_timestamp"]
 
     def __init__(self, value: float):
         self.value = value
         self.min_value = value
         self.max_value = value
         self.count = 1
+        # Internal timestamp so we can determine priority.
+        self._timestamp = time.time()
 
     def update(self, new_value: float) -> None:
         self.min_value = min(self.min_value, new_value)
         self.max_value = max(self.max_value, new_value)
         self.value = new_value
         self.count += 1
+        self._timestamp = time.time()
+
+    def merge(self, other: "GaugeNode") -> None:
+        if self._timestamp < other._timestamp:
+            # Keep the "later" value
+            self.value = other.value
+            self._timestamp = other._timestamp
+        self.min_value = min(self.min_value, other.min_value)
+        self.max_value = max(self.max_value, other.max_value)
+        self.count += other.count
 
     def as_dict(self) -> Dict[str, float]:
         return {
@@ -303,6 +315,22 @@ def set_gauge(name: str, value: float, timer_stack: TimerStack = None) -> None:
     timer_stack.set_gauge(name, value)
 
 
+def merge_gauges(gauges: Dict[str, GaugeNode], timer_stack: TimerStack = None) -> None:
+    """
+    Merge the gauges from another TimerStack with the provided one (or the
+    current thread's stack if none is provided).
+    :param gauges:
+    :param timer_stack:
+    :return:
+    """
+    timer_stack = timer_stack or _get_thread_timer()
+    for n, g in gauges.items():
+        if n in timer_stack.gauges:
+            timer_stack.gauges[n].merge(g)
+        else:
+            timer_stack.gauges[n] = g
+
+
 def add_metadata(key: str, value: str, timer_stack: TimerStack = None) -> None:
     timer_stack = timer_stack or _get_thread_timer()
     timer_stack.add_metadata(key, value)
@@ -310,7 +338,8 @@ def add_metadata(key: str, value: str, timer_stack: TimerStack = None) -> None:
 
 def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
     """
-    Return the tree of timings from the TimerStack as a dictionary (or the global stack if none is provided)
+    Return the tree of timings from the TimerStack as a dictionary (or the
+     current thread's  stack if none is provided)
     """
     timer_stack = timer_stack or _get_thread_timer()
     return timer_stack.get_timing_tree()
@@ -318,7 +347,8 @@ def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
 
 def get_timer_root(timer_stack: TimerStack = None) -> TimerNode:
     """
-    Get the root TimerNode of the timer_stack (or the global TimerStack if not specified)
+    Get the root TimerNode of the timer_stack (or the current thread's
+    TimerStack if not specified)
     """
     timer_stack = timer_stack or _get_thread_timer()
     return timer_stack.get_root()
@@ -326,7 +356,7 @@ def get_timer_root(timer_stack: TimerStack = None) -> TimerNode:
 
 def reset_timers(timer_stack: TimerStack = None) -> None:
     """
-    Reset the timer_stack (or the global TimerStack if not specified)
+    Reset the timer_stack (or the current thread's TimerStack if not specified)
     """
     timer_stack = timer_stack or _get_thread_timer()
     timer_stack.reset()
