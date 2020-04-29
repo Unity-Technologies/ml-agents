@@ -43,9 +43,14 @@ By default, at the end of training, timers are collected and written in json for
  is optional and defaults to false.
 
 ### Parallel execution
+#### Subprocesses
 For code that executes in multiple processes (for example, SubprocessEnvManager), we periodically send the timer
 information back to the "main" process, aggregate the timers there, and flush them in the subprocess. Note that
 (depending on the number of processes) this can result in timers where the total time may exceed the parent's total
 time. This is analogous to the difference between "real" and "user" values reported from the unix `time` command. In the
 timer output, blocks that were run in parallel are indicated by the `is_parallel` flag.
+
+#### Threads
+Timers currently use `time.perf_counter()` to track time spent, which may not give accurate results for multiple
+threads. If this is problematic, set `threaded: false` in your trainer configuration.
 
