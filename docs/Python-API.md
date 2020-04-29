@@ -79,7 +79,7 @@ env = UnityEnvironment(file_name="3DBall", seed=1, side_channels=[])
   or properties. More on them in the [Modifying the environment from Python](Python-API.md#modifying-the-environment-from-python) section.
 
 If you want to directly interact with the Editor, you need to use
-`file_name=None`, then press the :arrow_forward: button in the Editor when the
+`file_name=None`, then press the **Play** button in the Editor when the
 message _"Start training by pressing the Play button in the Unity Editor"_ is
 displayed on the screen
 
