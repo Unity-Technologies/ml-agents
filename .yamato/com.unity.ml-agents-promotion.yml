@@ -1,0 +1,22 @@
+promote:
+  name: Promote to Production
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  variables:
+    UPMCI_PROMOTION: 1
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package promote --package-path com.unity.ml-agents
+#  triggers:
+#    tags:
+#      only:
+#        - /^(r|R)elease-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+  artifacts:
+    artifacts:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/com.unity.ml-agents-pack.yml#pack
+    - .yamato/com.unity.ml-agents-test.yml#all_package_tests

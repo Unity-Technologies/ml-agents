@@ -16,7 +16,9 @@ from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
@@ -45,6 +47,7 @@ PPO_CONFIG = f"""
         sequence_length: 64
         summary_freq: 500
         use_recurrent: false
+        threaded: false
         reward_signals:
             extrinsic:
                 strength: 1.0
@@ -55,7 +58,7 @@ SAC_CONFIG = f"""
     {BRAIN_NAME}:
         trainer: sac
         batch_size: 8
-        buffer_size: 500
+        buffer_size: 5000
         buffer_init_steps: 100
         hidden_units: 16
         init_entcoef: 0.01
@@ -63,8 +66,7 @@ SAC_CONFIG = f"""
         max_steps: 1000
         memory_size: 16
         normalize: false
-        num_update: 1
-        train_interval: 1
+        steps_per_update: 1
         num_layers: 1
         time_horizon: 64
         sequence_length: 32
@@ -74,6 +76,7 @@ SAC_CONFIG = f"""
         curiosity_enc_size: 128
         demo_path: None
         vis_encode_type: simple
+        threaded: false
         reward_signals:
             extrinsic:
                 strength: 1.0
@@ -138,8 +141,10 @@ def _check_environment_trains(
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
         StatsReporter.add_writer(debug_writer)
+        # Make sure threading is turned off for determinism
+        trainer_config["threading"] = False
         if env_manager is None:
-            env_manager = SimpleEnvManager(env, FloatPropertiesChannel())
+            env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
             summaries_dir=dir,
@@ -306,9 +311,10 @@ def test_recurrent_sac(use_discrete):
     override_vals = {
         "batch_size": 64,
         "use_recurrent": True,
-        "max_steps": 3000,
+        "max_steps": 5000,
         "learning_rate": 1e-3,
         "buffer_init_steps": 500,
+        "steps_per_update": 2,
     }
     config = generate_config(SAC_CONFIG, override_vals)
     _check_environment_trains(env, config)
@@ -424,7 +430,7 @@ def simple_record(tmpdir_factory):
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
         meta_data_proto = DemonstrationMetaProto()
         brain_param_proto = BrainParametersProto(
-            vector_action_size=[1],
+            vector_action_size=[2] if use_discrete else [1],
             vector_action_descriptions=[""],
             vector_action_space_type=discrete if use_discrete else continuous,
             brain_name=BRAIN_NAME,
@@ -471,7 +477,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         step_size=0.2,
     )
     override_vals = {
-        "max_steps": 500,
+        "max_steps": 750,
         "learning_rate": 3.0e-4,
         "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
         "reward_signals": {

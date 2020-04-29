@@ -1,0 +1,17 @@
+apiRules:
+- exclude:
+    uidRegex: ^MLAgents\.Tests$
+    type: Namespace
+- exclude:
+    uidRegex: ^MLAgents\.CommunicatorObjects$
+    type: Namespace
+- exclude:
+    uidRegex: ^MLAgents\.Tests\.Communicator$
+    type: Namespace
+- exclude:
+    uidRegex: ^MLAgents\.Editor$
+    type: Namespace
+- exclude:
+    uidRegex: ^MLAgentsExamples$
+    type: Namespace
+

@@ -149,8 +149,6 @@ A `DecisionSteps` has the following fields :
  `env.step()`).
  - `reward` is a float vector of length batch size. Corresponds to the
  rewards collected by each agent since the last simulation step.
- - `done` is an array of booleans of length batch size. Is true if the
- associated Agent was terminated during the last simulation step.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
@@ -174,8 +172,6 @@ A `DecisionStep` has the following fields:
  (Each array has one less dimension than the arrays in `DecisionSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
- - `done` is a bool. Is true if the Agent was terminated during the last
- simulation step.
  - `agent_id` is an int and an unique identifier for the corresponding Agent.
  - `action_mask` is an optional list of one dimensional array of booleans.
  Only available in multi-discrete action space type.
@@ -197,8 +193,6 @@ A `TerminalSteps` has the following fields :
  `env.step()`).
  - `reward` is a float vector of length batch size. Corresponds to the
  rewards collected by each agent since the last simulation step.
- - `done` is an array of booleans of length batch size. Is true if the
- associated Agent was terminated during the last simulation step.
  - `agent_id` is an int vector of length batch size containing unique
  identifier for the corresponding Agent. This is used to track Agents
  across simulation steps.
@@ -219,8 +213,6 @@ A `TerminalStep` has the following fields:
  (Each array has one less dimension than the arrays in `TerminalSteps`)
  - `reward` is a float. Corresponds to the rewards collected by the agent
  since the last simulation step.
- - `done` is a bool. Is true if the Agent was terminated during the last
- simulation step.
  - `agent_id` is an int and an unique identifier for the corresponding Agent.
  - `max_step` is a bool. Is true if the Agent reached its maximum number of
  steps during the last simulation step.
@@ -281,11 +273,12 @@ The `EngineConfiguration` side channel allows you to modify the time-scale, reso
 `EngineConfigurationChannel` has two methods :
 
  * `set_configuration_parameters` which takes the following arguments:
-   * `width`: Defines the width of the display. Default 80.
-   * `height`: Defines the height of the display. Default 80.
-   * `quality_level`: Defines the quality level of the simulation. Default 1.
-   * `time_scale`: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics may perform unpredictably. Default 20.
-   *  `target_frame_rate`: Instructs simulation to try to render at a specified frame rate. Default -1.
+   * `width`: Defines the width of the display. (Must be set alongside height)
+   * `height`: Defines the height of the display. (Must be set alongside width)
+   * `quality_level`: Defines the quality level of the simulation.
+   * `time_scale`: Defines the multiplier for the deltatime in the simulation. If set to a higher value, time will pass faster in the simulation but the physics may perform unpredictably.
+   *  `target_frame_rate`: Instructs simulation to try to render at a specified frame rate.
+   *  `capture_frame_rate` Instructs the simulation to consider time between updates to always be constant, regardless of the actual frame rate.
  * `set_configuration` with argument config which is an `EngineConfig`
  NamedTuple object.
 
@@ -305,41 +298,34 @@ i = env.reset()
 ...
 ```
 
-#### FloatPropertiesChannel
-The `FloatPropertiesChannel` will allow you to get and set pre-defined numerical values in the environment. This can be useful for adjusting environment-specific settings, or for reading non-agent related information from the environment. You can call `get_property` and `set_property` on the side channel to read and write properties.
+#### EnvironmentParameters
+The `EnvironmentParameters` will allow you to get and set pre-defined numerical values in the environment. This can be useful for adjusting environment-specific settings, or for reading non-agent related information from the environment. You can call `get_property` and `set_property` on the side channel to read and write properties.
 
-`FloatPropertiesChannel` has three methods:
+`EnvironmentParametersChannel` has one methods:
 
- * `set_property` Sets a property in the Unity Environment.
+ * `set_float_parameter` Sets a float parameter in the Unity Environment.
     * key: The string identifier of the property.
     * value: The float value of the property.
 
- * `get_property` Gets a property in the Unity Environment. If the property was not found, will return None.
-    * key: The string identifier of the property.
-
- * `list_properties` Returns a list of all the string identifiers of the properties
-
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import EnvironmentParametersChannel
 
-channel = FloatPropertiesChannel()
+channel = EnvironmentParametersChannel()
 
 env = UnityEnvironment(side_channels=[channel])
 
-channel.set_property("parameter_1", 2.0)
+channel.set_float_parameter("parameter_1", 2.0)
 
 i = env.reset()
-
-readout_value = channel.get_property("parameter_2")
 ...
 ```
 
 Once a property has been modified in Python, you can access it in C# after the next call to `step` as follows:
 
 ```csharp
-var sharedProperties = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
-float property1 = sharedProperties.GetPropertyWithDefault("parameter_1", 0.0f);
+var envParameters = Academy.Instance.EnvironmentParameters;
+float property1 = envParameters.GetWithDefault("parameter_1", 0.0f);
 ```
 
 #### Custom side channels

@@ -37,7 +37,7 @@ namespace MLAgents.Editor
             // it is not editable during play mode.
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
-                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), new GUIContent("Stacked Raycasts"), true);
             }
             EditorGUI.EndDisabledGroup();
 

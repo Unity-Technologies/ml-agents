@@ -6,6 +6,9 @@ executors:
   python373:
     docker:
       - image: circleci/python:3.7.3
+  python382:
+    docker:
+      - image: circleci/python:3.8.2
 
 jobs:
   build_python:
@@ -107,6 +110,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
+            # Need ruby for search-and-replace
+            sudo apt-get update
+            sudo apt-get install ruby-full
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
@@ -229,6 +235,12 @@ workflows:
           executor: python373
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_tf2_version.txt
+      - build_python:
+          name: python_3.8.2+tf2.2
+          executor: python382
+          pyversion: 3.8.2
+          # Test python 3.8 with the newest edge versions
           pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - pre-commit

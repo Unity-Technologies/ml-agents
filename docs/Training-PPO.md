@@ -50,7 +50,7 @@ the agent for exploring new states, rather than just when an explicit reward is 
 Furthermore, we could mix reward signals to help the learning process.
 
 Using `reward_signals` allows you to define [reward signals.](Reward-Signals.md)
-The ML-Agents toolkit provides three reward signals by default, the Extrinsic (environment)
+The ML-Agents Toolkit provides three reward signals by default, the Extrinsic (environment)
 reward signal, the Curiosity reward signal, which can be used to encourage exploration in
 sparse extrinsic reward environments, and the GAIL reward signal. Please see [Reward Signals](Reward-Signals.md)
 for additional details.
@@ -299,6 +299,15 @@ to the folder where the checkpoints were saved, e.g. `./models/{run-id}/{behavio
 This option is provided in case you want to initialize different behaviors from different runs;
 in most cases, it is sufficient to use the `--initialize-from` CLI parameter to initialize
 all models from the same run.
+
+### (Optional) Advanced: Disable Threading
+
+By default, PPO model updates can happen while the environment is being stepped. This violates the
+[on-policy](https://spinningup.openai.com/en/latest/user/algorithms.html#the-on-policy-algorithms)
+assumption of PPO slightly in exchange for a 10-20% training speedup. To maintain the
+strict on-policyness of PPO, you can disable parallel updates by setting `threaded` to `false`.
+
+Default Value: `true`
 
 ## Training Statistics
 

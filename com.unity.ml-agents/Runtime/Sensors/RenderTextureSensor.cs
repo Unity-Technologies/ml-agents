@@ -16,7 +16,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// The compression type used by the sensor.
         /// </summary>
-        public SensorCompressionType compressionType
+        public SensorCompressionType CompressionType
         {
             get { return m_CompressionType;  }
             set { m_CompressionType = value; }
@@ -68,12 +68,12 @@ namespace MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("RenderTextureSensor.Write"))
             {
                 var texture = ObservationToTexture(m_RenderTexture);
-                var numWritten = Utilities.TextureToTensorProxy(texture, adapter, m_Grayscale);
+                var numWritten = Utilities.TextureToTensorProxy(texture, writer, m_Grayscale);
                 DestroyTexture(texture);
                 return numWritten;
             }

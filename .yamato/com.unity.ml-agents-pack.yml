@@ -1,11 +1,11 @@
 pack:
   name: Pack
   agent:
-    type: Unity::VM
-    image: package-ci/ubuntu:stable
-    flavor: b1.large
+    type: Unity::VM::osx
+    image: package-ci/mac:stable
+    flavor: b1.small
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package pack --package-path com.unity.ml-agents
   artifacts:
     packages:

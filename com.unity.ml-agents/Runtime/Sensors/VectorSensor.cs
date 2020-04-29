@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace MLAgents.Sensors
@@ -32,7 +33,7 @@ namespace MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             var expectedObservations = m_Shape[0];
             if (m_Observations.Count > expectedObservations)
@@ -56,8 +57,17 @@ namespace MLAgents.Sensors
                     m_Observations.Add(0);
                 }
             }
-            adapter.AddRange(m_Observations);
+            writer.AddRange(m_Observations);
             return expectedObservations;
+        }
+
+        /// <summary>
+        /// Returns a read-only view of the observations that added.
+        /// </summary>
+        /// <returns>A read-only view of the observations list.</returns>
+        internal ReadOnlyCollection<float> GetObservations()
+        {
+            return m_Observations.AsReadOnly();
         }
 
         /// <inheritdoc/>
