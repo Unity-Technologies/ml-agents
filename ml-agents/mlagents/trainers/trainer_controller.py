@@ -285,7 +285,8 @@ class TrainerController(object):
             and (self.resampling_interval)
             and (steps % self.resampling_interval == 0)
         )
-        if meta_curriculum_reset or generalization_reset or self.ghost_controller.reset:
+        ghost_controller_reset = self.ghost_controller.should_reset()
+        if meta_curriculum_reset or generalization_reset or ghost_controller_reset:
             self.end_trainer_episodes(env, lessons_incremented)
 
     @timed
