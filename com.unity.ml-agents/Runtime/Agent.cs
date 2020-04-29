@@ -597,7 +597,7 @@ namespace Unity.MLAgents
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
         /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Reward-Signals.md
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -627,7 +627,7 @@ namespace Unity.MLAgents
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
         /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Reward-Signals.md
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -779,7 +779,7 @@ namespace Unity.MLAgents
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Training-Imitation-Learning.md#recording-demonstrations
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
         /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
