@@ -57,12 +57,12 @@ namespace Unity.MLAgents
     {
         /// <summary>
         /// Communication protocol version.
-        /// When connecting to python, this must match UnityEnvironment.API_VERSION.
-        /// Currently we require strict equality between the communication protocol
-        /// on each side, although we may allow some flexibility in the future.
-        /// This should be incremented whenever a change is made to the communication protocol.
+        /// When connecting to python, this must be compatible with UnityEnvironment.API_VERSION.
+        /// We follow semantic versioning on the communication version, so existing
+        /// functionality will work as long the major versions match.
+        /// This should be changed whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "0.17.0";
+        const string k_ApiVersion = "1.0.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.

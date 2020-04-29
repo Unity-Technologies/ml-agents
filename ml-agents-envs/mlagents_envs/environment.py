@@ -55,11 +55,11 @@ class UnityEnvironment(BaseEnv):
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
 
     # Communication protocol version.
-    # When connecting to C#, this must match Academy.k_ApiVersion
-    # Currently we require strict equality between the communication protocol
-    # on each side, although we may allow some flexibility in the future.
-    # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.17.0"
+    # When connecting to C#, this must be compatible with Academy.k_ApiVersion.
+    # We follow semantic versioning on the communication version, so existing
+    # functionality will work as long the major versions match.
+    # This should be changed whenever a change is made to the communication protocol.
+    API_VERSION = "1.0.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
