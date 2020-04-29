@@ -182,7 +182,7 @@ public class TennisAgent : Agent
 
     public void SetBall()
     {
-        scale = m_ResetParams.GetWithDefault("scale", .5f);
+        scale = .5f;//m_ResetParams.GetWithDefault("scale", .5f);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 
