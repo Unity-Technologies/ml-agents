@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 import abc
+import os
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
@@ -62,7 +63,7 @@ class TFPolicy(Policy):
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = trainer_parameters["model_path"]
+        self.model_path = trainer_parameters["output_path"]
         self.initialize_path = trainer_parameters.get("init_path", None)
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
@@ -366,7 +367,7 @@ class TFPolicy(Policy):
         :return:
         """
         with self.graph.as_default():
-            last_checkpoint = self.model_path + "/model-" + str(steps) + ".ckpt"
+            last_checkpoint = os.path.join(self.model_path, f"model-{steps}.ckpt")
             self.saver.save(self.sess, last_checkpoint)
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
