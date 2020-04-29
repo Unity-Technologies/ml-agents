@@ -1,5 +1,29 @@
 # Agents
 
+**Table of Contents:**
+- [Decisions](#decisions)
+- [Observations and Sensors](#observations-and-sensors)
+  - [Vector Observations](#vector-observations)
+    - [One-hot encoding categorical information](#one-hot-encoding-categorical-information)
+    - [Normalization](#normalization)
+    - [Vector Observation Summary & Best Practices](#vector-observation-summary--best-practices)
+  - [Visual Observations](#visual-observations)
+    - [Visual Observation Summary & Best Practices](#visual-observation-summary--best-practices)
+  - [Raycast Observations](#raycast-observations)
+    - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
+- [Actions](#actions)
+  - [Continuous Action Space](#continuous-action-space)
+  - [Discrete Action Space](#discrete-action-space)
+    - [Masking Discrete Actions](#masking-discrete-actions)
+  - [Actions Summary & Best Practices](#actions-summary--best-practices)
+- [Rewards](#rewards)
+  - [Examples](#examples)
+  - [Rewards Summary & Best Practices](#rewards-summary--best-practices)
+- [Agent Properties](#agent-properties)
+- [Destroying an Agent](#destroying-an-agent)
+- [Defining Teams for Multi-agent Scenarios](#defining-teams-for-multi-agent-scenarios)
+- [Recording Demonstrations](#recording-demonstrations)
+
 An agent is an entity that can observe its environment, decide on the best
 course of action using those observations, and execute those actions within its
 environment. Agents can be created in Unity by extending the `Agent` class. The
