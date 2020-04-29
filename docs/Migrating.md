@@ -15,11 +15,12 @@ double-check that the versions are in the same. The versions can be found in
 # Migrating
 
 ## Migrating from Release 1 to latest
+
 ### Important changes
+
 ### Steps to Migrate
 
-## Migrating from 0.15 to  Release 1
-
+## Migrating from 0.15 to Release 1
 
 ### Important changes
 
@@ -50,15 +51,16 @@ double-check that the versions are in the same. The versions can be found in
    create an `EnvironmentParametersChannel` instead.
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - SideChannel IncomingMessages methods now take an optional default argument,
-  which is used when trying to read more data than the message contains.
+    which is used when trying to read more data than the message contains.
   - Added a feature to allow sending stats from C# environments to TensorBoard
-  (and other python StatsWriters). To do this from your code, use
-  `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
-- `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
+    (and other python StatsWriters). To do this from your code, use
+    `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
+- `num_updates` and `train_interval` for SAC have been replaced with
+  `steps_per_update`.
 - The `UnityEnv` class from the `gym-unity` package was renamed
-  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
-  the `UnityEnvironment` must be passed as input to the
-  constructor of `UnityToGymWrapper`
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead, the
+  `UnityEnvironment` must be passed as input to the constructor of
+  `UnityToGymWrapper`
 - Public fields and properties on several classes were renamed to follow Unity's
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
@@ -80,18 +82,20 @@ double-check that the versions are in the same. The versions can be found in
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
 - If you used `SideChannels` you must:
-  - Replace `Academy.FloatProperties` with `Academy.Instance.EnvironmentParameters`.
+  - Replace `Academy.FloatProperties` with
+    `Academy.Instance.EnvironmentParameters`.
   - `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were
-  removed. Use `SideChannelManager.RegisterSideChannel` and
-  `SideChannelManager.UnregisterSideChannel` instead.
-- Set `steps_per_update` to be around equal to the number of agents in your environment,
-  times `num_updates` and divided by `train_interval`.
-- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor
-  no longer takes a file name as input but a fully constructed
-  `UnityEnvironment` instead.
+    removed. Use `SideChannelManager.RegisterSideChannel` and
+    `SideChannelManager.UnregisterSideChannel` instead.
+- Set `steps_per_update` to be around equal to the number of agents in your
+  environment, times `num_updates` and divided by `train_interval`.
+- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor no
+  longer takes a file name as input but a fully constructed `UnityEnvironment`
+  instead.
 - Update uses of "camelCase" fields and properties to "PascalCase".
-- If you have a custom `ISensor` implementation, you will need to change the signature of
-  its `Write()` method to use `ObservationWriter` instead of `WriteAdapter`.
+- If you have a custom `ISensor` implementation, you will need to change the
+  signature of its `Write()` method to use `ObservationWriter` instead of
+  `WriteAdapter`.
 
 ## Migrating from 0.14 to 0.15
 
@@ -280,8 +284,7 @@ double-check that the versions are in the same. The versions can be found in
   The Academy class no longer has a `ResetParameters`. To access shared float
   properties with Python, use the new `FloatProperties` field on the Academy.
 - Offline Behavioral Cloning has been removed. To learn from demonstrations, use
-  the GAIL and Behavioral Cloning features with either PPO or SAC. See
-  [Imitation Learning](Training-Imitation-Learning.md) for more information.
+  the GAIL and Behavioral Cloning features with either PPO or SAC.
 - `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout
   depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused
   problems with some of our tooling such as mypy and pylint.
@@ -433,9 +436,7 @@ double-check that the versions are in the same. The versions can be found in
   - `use_curiosity`, `curiosity_strength`, `curiosity_enc_size`: Define a
     `curiosity` reward signal and set its `strength` to `curiosity_strength`,
     and `encoding_size` to `curiosity_enc_size`. Give it the same `gamma` as
-    your `extrinsic` signal to mimic previous behavior. See
-    [Reward Signals](Reward-Signals.md) for more information on defining reward
-    signals.
+    your `extrinsic` signal to mimic previous behavior.
 - TensorBoards generated when running multiple environments in v0.8 are not
   comparable to those generated in v0.9 in terms of step count. Multiply your
   v0.8 step count by `num_envs` for an approximate comparison. You may need to
@@ -560,9 +561,7 @@ double-check that the versions are in the same. The versions can be found in
   [trainer_config.yaml](../config/trainer_config.yaml). An example of passing a
   trainer configuration to `mlagents-learn` is shown above.
 - The environment name is now passed through the `--env` option.
-- Curriculum learning has been changed. Refer to the
-  [curriculum learning documentation](Training-Curriculum-Learning.md) for
-  detailed information. In summary:
+- Curriculum learning has been changed. In summary:
   - Curriculum files for the same environment must now be placed into a folder.
     Each curriculum file should be named after the Brain whose curriculum it
     specifies.
@@ -604,7 +603,7 @@ in order to ensure a smooth transition.
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
 - Hyperparameters for training Brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
-  [here](Training-ML-Agents.md#training-config-file).
+  [here](Training-ML-Agents.md#training-configurations).
 
 ### Unity API
 

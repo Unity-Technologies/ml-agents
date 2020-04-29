@@ -22,26 +22,13 @@
 
 ### Advanced Usage
 
-- [Using the Monitor](Feature-Monitor.md)
 - [Using an Executable Environment](Learning-Environment-Executable.md)
 
 ## Training
 
 - [Training ML-Agents](Training-ML-Agents.md)
-  - [Reward Signals](Reward-Signals.md)
   - [Profiling Trainers](Profiling-Python.md)
 - [Using TensorBoard to Observe Training](Using-Tensorboard.md)
-- [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)
-- [Training with Proximal Policy Optimization](Training-PPO.md)
-- [Training with Soft Actor-Critic](Training-SAC.md)
-- [Training with Self-Play](Training-Self-Play.md)
-
-### Advanced Training Methods
-
-- [Training with Curriculum Learning](Training-Curriculum-Learning.md)
-- [Training with Imitation Learning](Training-Imitation-Learning.md)
-- [Training with LSTM](Feature-Memory.md)
-- [Training with Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
 
 ## Inference
 

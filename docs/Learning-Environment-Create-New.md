@@ -135,8 +135,9 @@ Then, edit the new `RollerAgent` script:
 
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
-1. In the editor, add the `using Unity.MLAgents;` and `using Unity.MLAgents.Sensors`
-   statements and then change the base class from `MonoBehaviour` to `Agent`.
+1. In the editor, add the `using Unity.MLAgents;` and
+   `using Unity.MLAgents.Sensors` statements and then change the base class from
+   `MonoBehaviour` to `Agent`.
 1. Delete the `Update()` method, but we will use the `Start()` function, so
    leave it alone for now.
 
@@ -386,12 +387,10 @@ In order for the Agent to use the Heuristic, You will need to set the
 `Behavior Type` to `Heuristic Only` in the `Behavior Parameters` of the
 RollerAgent.
 
-Press :arrow_forward: to run the scene and use the arrows keys to move the Agent
-around the platform. Make sure that there are no errors displayed in the Unity
-Editor Console window and that the Agent resets when it reaches its target or
-falls from the platform. Note that for more involved debugging, the ML-Agents
-SDK includes a convenient [Monitor](Feature-Monitor.md) class that you can use
-to easily display Agent status information in the Game window.
+Press **Play** to run the scene and use the arrows keys to move the Agent around
+the platform. Make sure that there are no errors displayed in the Unity Editor
+Console window and that the Agent resets when it reaches its target or falls
+from the platform.
 
 ## Training the Environment
 
@@ -436,8 +435,8 @@ effect on training time and success. A larger value reduces the number of
 decisions the training algorithm has to consider and, in this simple
 environment, speeds up training.
 
-To train your agent, run the following command before pressing :arrow_forward:
-in the Editor:
+To train your agent, run the following command before pressing **Play** in the
+Editor:
 
     mlagents-learn config/rollerball_config.yaml --run-id=RollerBall
 
