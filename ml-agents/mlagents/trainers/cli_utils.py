@@ -237,4 +237,12 @@ def _create_parser():
         "Application.targetFrameRate in Unity.",
         action=DetectDefault,
     )
+    eng_conf.add_argument(
+        "--capture-frame-rate",
+        default=60,
+        type=int,
+        help="The capture frame rate of the Unity environment(s). Equivalent to setting "
+        "Time.captureFramerate in Unity.",
+        action=DetectDefault,
+    )
     return argparser
