@@ -67,9 +67,8 @@ where
 - `<env_name>`**(Optional)** is the name (including path) of your
   [Unity executable](Learning-Environment-Executable.md) containing the agents
   to be trained. If `<env_name>` is not passed, the training will happen in the
-  Editor. Press the :arrow*forward: button in Unity when the message *"Start
-  training by pressing the Play button in the Unity Editor"\_ is displayed on
-  the screen.
+  Editor. Press the **Play** button in Unity when the message _"Start training
+  by pressing the Play button in the Unity Editor"_ is displayed on the screen.
 - `<run-identifier>` is a unique name you can use to identify the results of
   your training runs.
 
@@ -361,24 +360,15 @@ SmallWallJump:
     small_wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
-The curriculum for each Behavior has the following parameters: | **Setting** |
-**Description** | | :------------------------------ | :-------------- | |
-`measure` | What to measure learning progress, and advancement in lessons
-by.<br><br> `reward` uses a measure received reward, while `progress` uses the
-ratio of steps/max_steps. | | `thresholds` | Points in value of `measure` where
-lesson should be increased. | | `min_lesson_length` | The minimum number of
-episodes that should be completed before the lesson can change. If `measure` is
-set to `reward`, the average cumulative reward of the last `min_lesson_length`
-episodes will be used to determine if the lesson should change. Must be
-nonnegative. <br><br> **Important**: the average reward that is compared to the
-thresholds is different than the mean reward that is logged to the console. For
-example, if `min_lesson_length` is `100`, the lesson will increment after the
-average cumulative reward of the last `100` episodes exceeds the current
-threshold. The mean reward logged to the console is dictated by the
-`summary_freq` parameter defined above. | | `signal_smoothing` | Whether to
-weight the current progress measure by previous values. | | `parameters` |
-Corresponds to environment parameters to control. Length of each array should be
-one greater than number of thresholds. |
+The curriculum for each Behavior has the following parameters:
+
+| **Setting**         | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `thresholds`        | Points in value of `measure` where lesson should be increased.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> **Important**: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |
+| `signal_smoothing`  | Whether to weight the current progress measure by previous values.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `parameters`        | Corresponds to environment parameters to control. Length of each array should be one greater than number of thresholds.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 #### Training with a Curriculum
 
