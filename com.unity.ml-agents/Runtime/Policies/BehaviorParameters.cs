@@ -1,4 +1,4 @@
-using Barracuda;
+using Unity.Barracuda;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
