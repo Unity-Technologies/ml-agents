@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Barracuda;
+using Unity.Barracuda;
 using MLAgents.Sensors;
 
 namespace MLAgents.Inference

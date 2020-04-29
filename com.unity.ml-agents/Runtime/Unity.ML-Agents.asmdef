@@ -1,7 +1,7 @@
 {
     "name": "Unity.ML-Agents",
     "references": [
-        "Barracuda",
+        "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects"
     ],
     "optionalUnityReferences": [],

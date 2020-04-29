@@ -3,7 +3,7 @@
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
-        "Barracuda",
+        "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects"
     ],
     "optionalUnityReferences": [
