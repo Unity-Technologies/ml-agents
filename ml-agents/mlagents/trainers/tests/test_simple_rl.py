@@ -147,9 +147,8 @@ def _check_environment_trains(
             env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
-            summaries_dir=dir,
             run_id=run_id,
-            model_path=dir,
+            output_path=dir,
             keep_checkpoints=1,
             train_model=True,
             load_model=False,
@@ -160,8 +159,7 @@ def _check_environment_trains(
 
         tc = TrainerController(
             trainer_factory=trainer_factory,
-            summaries_dir=dir,
-            model_path=dir,
+            output_path=dir,
             run_id=run_id,
             meta_curriculum=meta_curriculum,
             train=True,

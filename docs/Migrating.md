@@ -61,8 +61,11 @@ double-check that the versions are in the same. The versions can be found in
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 - `WriteAdapter` was renamed to `ObservationWriter`. (#3834)
+- Training artifacts (trained models, summaries) are now found under `results/`
+  instead of `summaries/` and `models/`.
 - Trainer configuration, curriculum configuration, and parameter randomization
   configuration have all been moved to a single YAML file. (#3791)
+
 
 ### Steps to Migrate
 
