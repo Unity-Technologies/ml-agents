@@ -100,7 +100,8 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an issue where exceptions from environments provided a returncode of 0.
   (#3680)
-
+- Self-Play team changes will now trigger a full environment reset. This prevents trajectories
+  in progress during a team change from getting into the buffer. (#3870)
 
 ## [0.15.1-preview] - 2020-03-30
 
