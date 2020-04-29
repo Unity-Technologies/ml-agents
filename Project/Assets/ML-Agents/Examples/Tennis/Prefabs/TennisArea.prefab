@@ -203,11 +203,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 14
-    numStackedVectorObservations: 3
-    vectorActionSize: 03000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 1
+    VectorObservationSize: 14
+    NumStackedVectorObservations: 3
+    VectorActionSize: 03000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
   m_Model: {fileID: 11400000, guid: 02efff6cde0914e34bcc06eac03de48a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -229,7 +229,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 3000
+  MaxStep: 3000
   ball: {fileID: 1273406647218856}
   opponent: {fileID: 1882383181950958}
   invertX: 0
@@ -1344,11 +1344,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 14
-    numStackedVectorObservations: 3
-    vectorActionSize: 03000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 1
+    VectorObservationSize: 14
+    NumStackedVectorObservations: 3
+    VectorActionSize: 03000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
   m_Model: {fileID: 11400000, guid: 02efff6cde0914e34bcc06eac03de48a, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -1370,7 +1370,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 3000
+  MaxStep: 3000
   ball: {fileID: 1273406647218856}
   opponent: {fileID: 1170495812642400}
   invertX: 1
