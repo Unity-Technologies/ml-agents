@@ -14,7 +14,7 @@ def basic_mock_brain():
 
 
 def basic_params():
-    return {"use_recurrent": False, "model_path": "my/path"}
+    return {"use_recurrent": False, "output_path": "my/path"}
 
 
 class FakePolicy(TFPolicy):

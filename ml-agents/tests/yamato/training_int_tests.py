@@ -21,7 +21,7 @@ def run_training(python_version, csharp_version):
     print(
         f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
     )
-    nn_file_expected = f"./models/{run_id}/3DBall.nn"
+    nn_file_expected = f"./results/{run_id}/3DBall.nn"
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
         print("Artifacts from previous build found!")

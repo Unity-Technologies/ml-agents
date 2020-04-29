@@ -179,12 +179,11 @@ INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain 3DBallLearning:
         sequence_length:     64
         summary_freq:        1000
         use_recurrent:       False
-        summary_path:        ./summaries/first3DBallRun
         memory_size:         256
         use_curiosity:       False
         curiosity_strength:  0.01
         curiosity_enc_size:  128
-        model_path: ./models/first3DBallRun/3DBallLearning
+        output_path: ./results/first3DBallRun/3DBallLearning
 INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
 INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
 INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
@@ -236,7 +235,7 @@ the same command again, appending the `--resume` flag:
 mlagents-learn config/trainer_config.yaml --run-id=first3DBallRun --resume
 ```
 
-Your trained model will be at `models/<run-identifier>/<behavior_name>.nn` where
+Your trained model will be at `results/<run-identifier>/<behavior_name>.nn` where
 `<behavior_name>` is the name of the `Behavior Name` of the agents corresponding
 to the model. This file corresponds to your model's latest checkpoint. You can
 now embed this trained model into your Agents by following the steps below,

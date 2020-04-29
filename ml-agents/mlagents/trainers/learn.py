@@ -1,5 +1,6 @@
 # # Unity ML-Agents Toolkit
 import argparse
+import yaml
 
 import os
 import numpy as np
@@ -328,26 +329,29 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
-        model_path = f"./models/{options.run_id}"
+        base_path = "results"
+        write_path = os.path.join(base_path, options.run_id)
         maybe_init_path = (
-            f"./models/{options.initialize_from}" if options.initialize_from else None
+            os.path.join(base_path, options.run_id) if options.initialize_from else None
         )
-        summaries_dir = "./summaries"
+        run_logs_dir = os.path.join(write_path, "run_logs")
         port = options.base_port
-
+        # Check if directory exists
+        handle_existing_directories(
+            write_path, options.resume, options.force, maybe_init_path
+        )
+        # Make run logs directory
+        os.makedirs(run_logs_dir, exist_ok=True)
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
-            summaries_dir,
+            write_path,
             required_fields=[
                 "Environment/Cumulative Reward",
                 "Environment/Episode Length",
             ],
         )
-        handle_existing_directories(
-            model_path, summaries_dir, options.resume, options.force, maybe_init_path
-        )
-        tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
+        tb_writer = TensorboardWriter(write_path, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
@@ -358,7 +362,12 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         if options.env_path is None:
             port = UnityEnvironment.DEFAULT_EDITOR_PORT
         env_factory = create_environment_factory(
-            options.env_path, options.no_graphics, run_seed, port, options.env_args
+            options.env_path,
+            options.no_graphics,
+            run_seed,
+            port,
+            options.env_args,
+            os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
         )
         engine_config = EngineConfig(
             width=options.width,
@@ -377,9 +386,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         trainer_factory = TrainerFactory(
             options.trainer_config,
-            summaries_dir,
             options.run_id,
-            model_path,
+            write_path,
             options.keep_checkpoints,
             not options.inference,
             options.resume,
@@ -391,8 +399,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         # Create controller and begin training.
         tc = TrainerController(
             trainer_factory,
-            model_path,
-            summaries_dir,
+            write_path,
             options.run_id,
             options.save_freq,
             maybe_meta_curriculum,
@@ -407,11 +414,26 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
-        write_timing_tree(summaries_dir, options.run_id)
+        write_run_options(write_path, options)
+        write_timing_tree(run_logs_dir)
 
 
-def write_timing_tree(summaries_dir: str, run_id: str) -> None:
-    timing_path = f"{summaries_dir}/{run_id}_timers.json"
+def write_run_options(output_dir: str, run_options: RunOptions) -> None:
+    run_options_path = os.path.join(output_dir, "configuration.yaml")
+    try:
+        with open(run_options_path, "w") as f:
+            try:
+                yaml.dump(dict(run_options._asdict()), f, sort_keys=False)
+            except TypeError:  # Older versions of pyyaml don't support sort_keys
+                yaml.dump(dict(run_options._asdict()), f)
+    except FileNotFoundError:
+        logger.warning(
+            f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
+        )
+
+
+def write_timing_tree(output_dir: str) -> None:
+    timing_path = os.path.join(output_dir, "timers.json")
     try:
         with open(timing_path, "w") as f:
             json.dump(get_timer_tree(), f, indent=4)
@@ -462,6 +484,7 @@ def create_environment_factory(
     seed: int,
     start_port: int,
     env_args: Optional[List[str]],
+    log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
         launch_string = UnityEnvironment.validate_environment_path(env_path)
@@ -481,8 +504,9 @@ def create_environment_factory(
             seed=env_seed,
             no_graphics=no_graphics,
             base_port=start_port,
-            args=env_args,
+            additional_args=env_args,
             side_channels=side_channels,
+            log_folder=log_folder,
         )
 
     return create_unity_environment

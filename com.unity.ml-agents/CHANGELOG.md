@@ -69,6 +69,8 @@ and this project adheres to
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
 - Update Barracuda to 0.7.0-preview which has breaking namespace and assembly name changes.
+- Training artifacts (trained models, summaries) are now found in the `results/`
+  directory. (#3829)
 
 ### Minor Changes
 
@@ -97,6 +99,7 @@ you will need to change the signature of its `Write()` method. (#3834)
 - The maximum compatible version of tensorflow was changed to allow tensorflow 2.1 and 2.2. This
 will allow use with python 3.8 using tensorflow 2.2.0rc3.
 - `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
+- Unity Player logs are now written out to the results directory. (#3877)
 
 ### Bug Fixes
 
