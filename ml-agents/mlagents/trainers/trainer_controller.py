@@ -62,6 +62,7 @@ class TrainerController(object):
         self.meta_curriculum = meta_curriculum
         self.sampler_manager = sampler_manager
         self.resampling_interval = resampling_interval
+        self.ghost_controller = self.trainer_factory.ghost_controller
 
         self.trainer_threads: List[threading.Thread] = []
         self.kill_trainers = False
@@ -282,7 +283,8 @@ class TrainerController(object):
             and (self.resampling_interval)
             and (steps % self.resampling_interval == 0)
         )
-        if meta_curriculum_reset or generalization_reset:
+        ghost_controller_reset = self.ghost_controller.should_reset()
+        if meta_curriculum_reset or generalization_reset or ghost_controller_reset:
             self.end_trainer_episodes(env, lessons_incremented)
 
     @timed
