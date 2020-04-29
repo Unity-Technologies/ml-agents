@@ -1,5 +1,21 @@
 # Training Configuration File
 
+**Table of Contents**
+- [Common Trainer Configurations](#common-trainer-configurations)
+- [Trainer-specific Configurations](#trainer-specific-configurations)
+  - [PPO-specific Configurations](#ppo-specific-configurations)
+  - [SAC-specific Configurations](#sac-specific-configurations)
+- [Reward Signals](#reward-signals)
+  - [Extrinsic Rewards](#extrinsic-rewards)
+  - [Curiosity Intrinsic Reward](#curiosity-intrinsic-reward)
+  - [GAIL Intrinsic Reward](#gail-intrinsic-reward)
+  - [SAC-specific Reward Signal](#sac-specific-reward-signal)
+- [Behavioral Cloning](#behavioral-cloning)
+- [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
+- [Self-Play](#self-play)
+  - [Note on Reward Signals](#note-on-reward-signals)
+  - [Note on Swap Steps](#note-on-swap-steps)
+
 ## Common Trainer Configurations
 
 One of the first decisions you need to make regarding your training run is which
@@ -61,17 +77,21 @@ and `gamma`, in addition to any class-specific hyperparameters. Note that to
 remove a reward signal, you should delete its entry entirely from
 `reward_signals`. At least one reward signal should be left defined at all
 times. Provide the following configurations to design the reward signal for
-your training run:
+your training run.
 
-**Extrinsic rewards** - Enable these settings to ensure that your training run
-incorporates your environment-based reward signal:
+### Extrinsic Rewards
+
+Enable these settings to ensure that your training run incorporates your
+environment-based reward signal:
 
 | **Setting**        | **Description** |
 | :------------------| :--------------- |
 | `extrinsic > strength` | Factor by which to multiply the reward given by the environment. Typical ranges will vary depending on the reward signal. <br><br>Typical range: `1.00` |
 | `extrinsic > gamma`    | Discount factor for future rewards coming from the environment. This can be thought of as how far into the future the agent should care about possible rewards. In situations when the agent should be acting in the present in order to prepare for rewards in the distant future, this value should be large. In cases when rewards are more immediate, it can be smaller. Must be strictly smaller than 1. <br><br>Typical range: `0.8` - `0.995` |
 
-**Curiosity intrinsic reward**- To enable curiosity, provide these settings:
+### Curiosity Intrinsic Reward
+
+To enable curiosity, provide these settings:
 
 | **Setting**        | **Description** |
 | :------------------| :--------------- |
@@ -80,8 +100,10 @@ incorporates your environment-based reward signal:
 | `curiosity > encoding_size` | (Optional, default = `64`) Size of the encoding used by the intrinsic curiosity model. This value should be small enough to encourage the ICM to compress the original observation, but also not too small to prevent it from learning to differentiate between expected and actual observations. <br><br>Typical range: `64` - `256`  |
 | `curiosity > learning_rate` | (Optional, default = `3e-4`) Learning rate used to update the intrinsic curiosity module. This should typically be decreased if training is unstable, and the curiosity loss is unstable. <br><br>Typical range: `1e-5` - `1e-3`|
 
-**GAIL intrinsic reward**- To enable GAIL (assuming you have recorded
-demonstrations), provide these settings:
+### GAIL Intrinsic Reward
+
+To enable GAIL (assuming you have recorded demonstrations), provide these
+settings:
 
 | **Setting**        | **Description** |
 | :------------------| :--------------- |
@@ -93,9 +115,10 @@ demonstrations), provide these settings:
 | `gail > use_actions`   | (Optional, default = `false`) Determines whether the discriminator should discriminate based on both observations and actions, or just observations. Set to True if you want the agent to mimic the actions from the demonstrations, and False if you'd rather have the agent visit the same states as in the demonstrations but with possibly different actions. Setting to False is more likely to be stable, especially with imperfect demonstrations, but may learn slower. |
 | `gail > use_vail`      | (Optional, default = `false`) Enables a variational bottleneck within the GAIL discriminator. This forces the discriminator to learn a more general representation and reduces its tendency to be "too good" at discriminating, making learning more stable. However, it does increase training time. Enable this if you notice your imitation learning is unstable, or unable to learn the task at hand. |
 
-**SAC-specific reward signal**- All of the reward signals configurations
-described above apply to both PPO and SAC. There is one configuration for
-reward signals that only applies to SAC.
+### SAC-specific Reward Signal
+
+All of the reward signals configurations described above apply to both PPO and
+SAC. There is one configuration for reward signals that only applies to SAC.
 
 | **Setting**        | **Description** |
 | :------------------| :--------------- |
@@ -117,16 +140,16 @@ recorded demonstrations), provide the following configurations under the
 | `samples_per_update` | (Optional, default = `0`) Maximum number of samples to use during each imitation update. You may want to lower this if your demonstration dataset is very large to avoid overfitting the policy on demonstrations. Set to 0 to train over all of the demonstrations at each update step. <br><br>Typical range: `buffer_size` |
 | `init_path` |  Initialize trainer from a previously saved model. Note that the prior run should have used the same trainer configurations as the current run, and have been saved with the same version of ML-Agents. You should provide the full path to the folder where the checkpoints were saved, e.g. `./models/{run-id}/{behavior_name}`. This option is provided in case you want to initialize different behaviors from different runs; in most cases, it is sufficient to use the `--initialize-from` CLI parameter to initialize all models from the same run.|
 
-## Memory-enhanced agents using Recurrent Neural Networks
+## Memory-enhanced Agents using Recurrent Neural Networks
 
 You can enable your agents to use memory, by setting `use_recurrent` to `true`
 and setting `memory_size` and `sequence_length`:
 
 | **Setting**     | **Description** |
 | :-------------- | :-------------- |
-| use_recurrent   | Whether to enable this option or not. |
-| memory_size     | Size of the memory an agent must keep. In order to use a LSTM, training requires a sequence of experiences instead of single experiences. Corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network of the policy. This value must be a multiple of 2, and should scale with the amount of information you expect the agent will need to remember in order to successfully complete the task. <br><br>Typical range: `32` - `256` |
-| sequence_length | Defines how long the sequences of experiences must be while training. Note that if this number is too small, the agent will not be able to remember things over longer periods of time. If this number is too large, the neural network will take longer to train. <br><br>Typical range: `4` - `128` |
+| `use_recurrent`   | Whether to enable this option or not. |
+| `memory_size`     | Size of the memory an agent must keep. In order to use a LSTM, training requires a sequence of experiences instead of single experiences. Corresponds to the size of the array of floating point numbers used to store the hidden state of the recurrent neural network of the policy. This value must be a multiple of 2, and should scale with the amount of information you expect the agent will need to remember in order to successfully complete the task. <br><br>Typical range: `32` - `256` |
+| `sequence_length` | Defines how long the sequences of experiences must be while training. Note that if this number is too small, the agent will not be able to remember things over longer periods of time. If this number is too large, the neural network will take longer to train. <br><br>Typical range: `4` - `128` |
 
 A few considerations when deciding to use memory:
 - LSTM does not work well with continuous vector action space. Please use
@@ -159,7 +182,7 @@ for each Behavior:
 | `play_against_latest_model_ratio` | Probability an agent will play against the latest opponent policy. With probability 1 - `play_against_latest_model_ratio`, the agent will play against a snapshot of its opponent from a past iteration. <br><br> A larger value of `play_against_latest_model_ratio` indicates that an agent will be playing against the current opponent more often. Since the agent is updating it's policy, the opponent will be different from iteration to iteration.  This can lead to an unstable learning environment, but poses the agent with an [auto-curricula](https://openai.com/blog/emergent-tool-use/) of more increasingly challenging situations which may lead to a stronger final policy. <br><br> Typical range: `0.0` - `1.0` |
 | `window` | Size of the sliding window of past snapshots from which the agent's opponents are sampled.  For example, a `window` size of 5 will save the last 5 snapshots taken. Each time a new snapshot is taken, the oldest is discarded. A larger value of `window` means that an agent's pool of opponents will contain a larger diversity of behaviors since it will contain policies from earlier in the training run. Like in the `save_steps` hyperparameter, the agent trains against a wider variety of opponents. Learning a policy to defeat more diverse opponents is a harder problem and so may require more overall training steps but also may lead to more general and robust policy at the end of training. <br><br> Typical range: `5` - `30` |
 
-**A Note on Reward Signals**
+### Note on Reward Signals
 
 We make the assumption that the final reward in a trajectory corresponds to the
 outcome of an episode. A final reward of +1 indicates winning, -1 indicates
@@ -174,7 +197,7 @@ we encourage users to begin with the simplest possible reward function (+1
 winning, -1 losing) and to allow for more iterations of training to compensate
 for the sparsity of reward.
 
-**Note on Swap Steps**
+### Note on Swap Steps
 
 As an example, in a 2v1 scenario, if we want the swap to occur x=4 times during
 team-change=200000 steps, the swap_steps for the team of one agent is:

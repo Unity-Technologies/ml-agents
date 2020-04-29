@@ -1,5 +1,22 @@
 # Training ML-Agents
 
+**Table of Contents**
+- [Training with mlagents-learn](#training-with-mlagents-learn)
+  - [Starting Training](#starting-training)
+    - [Observing Training](#observing-training)
+    - [Stopping and Resuming Training](#stopping-and-resuming-training)
+    - [Loading an Existing Model](#loading-an-existing-model)
+- [Training Configurations](#training-configurations)
+  - [Trainer Config File](#trainer-config-file)
+  - [Curriculum Learning](#curriculum-learning)
+    - [Specifying Curricula](#specifying-curricula)
+    - [Training with a Curriculum](#training-with-a-curriculum)
+  - [Environment Parameter Randomization](#environment-parameter-randomization)
+    - [Included Sampler Types](#included-sampler-types)
+    - [Defining a New Sampler Type](#defining-a-new-sampler-type)
+    - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
+  - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
+
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
 [ML-Agents Toolkit Overview](ML-Agents-Overview.md).

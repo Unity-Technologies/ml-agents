@@ -1,5 +1,32 @@
 # ML-Agents Toolkit Overview
 
+**Table of Contents**
+- [Running Example: Training NPC Behaviors](#running-example-training-npc-behaviors)
+- [Key Components](#key-components)
+- [Training Modes](#training-modes)
+  - [Built-in Training and Inference](#built-in-training-and-inference)
+  - [Custom Training and Inference](#custom-training-and-inference)
+- [Flexible Training Scenarios](#flexible-training-scenarios)
+- [Training Methods: Environment-agnostic](#training-methods-environment-agnostic)
+  - [A Quick Note on Reward Signals](#a-quick-note-on-reward-signals)
+  - [Deep Reinforcement Learning](#deep-reinforcement-learning)
+    - [Curiosity for Sparse-reward Environments](#curiosity-for-sparse-reward-environments)
+  - [Imitation Learning](#imitation-learning)
+    - [GAIL (Generative Adversarial Imitation Learning)](#gail-generative-adversarial-imitation-learning)
+    - [Behavioral Cloning (BC)](#behavioral-cloning-bc)
+    - [Recording Demonstrations](#recording-demonstrations)
+  - [Summary](#summary)
+- [Training Methods: Environment-specific](#training-methods-environment-specific)
+  - [Training in Multi-Agent Environments with Self-Play](#training-in-multi-agent-environments-with-self-play)
+  - [Solving Complex Tasks using Curriculum Learning](#solving-complex-tasks-using-curriculum-learning)
+  - [Training Robust Agents using Environment Parameter Randomization](#training-robust-agents-using-environment-parameter-randomization)
+- [Model Types](#model-types)
+  - [Learning from Vector Observations](#learning-from-vector-observations)
+  - [Learning from Cameras using Convolutional Neural Networks](#learning-from-cameras-using-convolutional-neural-networks)
+  - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
+- [Additional Features](#additional-features)
+- [Summary and Next Steps](#summary-and-next-steps)
+
 **The Unity Machine Learning Agents Toolkit** (ML-Agents Toolkit) is an
 open-source project that enables games and simulations to serve as
 environments for training intelligent agents. Agents can be trained using
