@@ -15,14 +15,14 @@ public class BouncerAgent : Agent
     int m_NumberJumps = 20;
     int m_JumpLeft = 20;
 
-    FloatPropertiesChannel m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
         m_Rb = gameObject.GetComponent<Rigidbody>();
         m_LookDir = Vector3.zero;
 
-        m_ResetParams = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
     }
@@ -121,7 +121,7 @@ public class BouncerAgent : Agent
 
     public void SetTargetScale()
     {
-        var targetScale = m_ResetParams.GetPropertyWithDefault("target_scale", 1.0f);
+        var targetScale = m_ResetParams.GetWithDefault("target_scale", 1.0f);
         target.transform.localScale = new Vector3(targetScale, targetScale, targetScale);
     }
 

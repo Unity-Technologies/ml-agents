@@ -41,7 +41,7 @@ namespace MLAgents.Tests
             return null;
         }
 
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             return this.ObservationSize();
         }

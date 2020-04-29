@@ -20,10 +20,6 @@ Some known potential causes are:
 - You're using 32-bit python instead of 64-bit. See the answer
   [here](https://stackoverflow.com/a/1405971/224264) for how to tell which you
   have installed.
-- You're using python 3.8. Tensorflow plans to release packages for this as soon
-  as possible; see
-  [this issue](https://github.com/tensorflow/tensorflow/issues/33374) for more
-  details.
 - You have the `tensorflow-gpu` package installed. This is equivalent to
   `tensorflow`, however `pip` doesn't recognize this. The best way to resolve
   this is to update to `tensorflow==1.15.0` which provides GPU support in the
