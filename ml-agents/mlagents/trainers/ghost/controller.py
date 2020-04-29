@@ -42,10 +42,10 @@ class GhostController:
         Whether or not team change occurred. Causes full reset in trainer_controller
         :return: The truth value of the team changing
         """
-        change_team = self._changed_training_team
+        changed_team = self._changed_training_team
         if self._changed_training_team:
             self._changed_training_team = False
-        return change_team
+        return changed_team
 
     def subscribe_team_id(self, team_id: int, trainer: GhostTrainer) -> None:
         """
