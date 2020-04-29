@@ -8,6 +8,10 @@ from google.protobuf.message import (
     Message as google___protobuf___message___Message,
 )
 
+from mlagents_envs.communicator_objects.capabilities_pb2 import (
+    UnityRLCapabilitiesProto as mlagents_envs___communicator_objects___capabilities_pb2___UnityRLCapabilitiesProto,
+)
+
 from typing import (
     Optional as typing___Optional,
     Text as typing___Text,
@@ -30,17 +34,23 @@ class UnityRLInitializationInputProto(google___protobuf___message___Message):
     communication_version = ... # type: typing___Text
     package_version = ... # type: typing___Text
 
+    @property
+    def capabilities(self) -> mlagents_envs___communicator_objects___capabilities_pb2___UnityRLCapabilitiesProto: ...
+
     def __init__(self,
         *,
         seed : typing___Optional[builtin___int] = None,
         communication_version : typing___Optional[typing___Text] = None,
         package_version : typing___Optional[typing___Text] = None,
+        capabilities : typing___Optional[mlagents_envs___communicator_objects___capabilities_pb2___UnityRLCapabilitiesProto] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> UnityRLInitializationInputProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"communication_version",u"package_version",u"seed"]) -> None: ...
+        def HasField(self, field_name: typing_extensions___Literal[u"capabilities"]) -> builtin___bool: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"capabilities",u"communication_version",u"package_version",u"seed"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"communication_version",b"communication_version",u"package_version",b"package_version",u"seed",b"seed"]) -> None: ...
+        def HasField(self, field_name: typing_extensions___Literal[u"capabilities",b"capabilities"]) -> builtin___bool: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"capabilities",b"capabilities",u"communication_version",b"communication_version",u"package_version",b"package_version",u"seed",b"seed"]) -> None: ...

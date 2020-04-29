@@ -3,7 +3,7 @@
 You can create your own side channel in C# and Python and use it to communicate
 custom data structures between the two. This can be useful for situations in
 which the data to be sent is too complex or structured for the built-in
-`FloatPropertiesChannel`, or is not related to any specific agent, and therefore
+`EnvironmentParameters`, or is not related to any specific agent, and therefore
 inappropriate as an agent observation.
 
 ## Overview
@@ -24,7 +24,7 @@ To send data from C# to Python, create an `OutgoingMessage` instance, add data t
 `base.QueueMessageToSend(msg)` method inside the side channel, and call the
 `OutgoingMessage.Dispose()` method.
 
-To register a side channel on the Unity side, call `SideChannelUtils.RegisterSideChannel` with the side channel
+To register a side channel on the Unity side, call `SideChannelManager.RegisterSideChannel` with the side channel
 as only argument.
 
 ### Python side
@@ -122,8 +122,8 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // When a Debug.Log message is created, we send it to the stringChannel
         Application.logMessageReceived += stringChannel.SendDebugStatementToPython;
 
-        // The channel must be registered with the SideChannelUtils class
-        SideChannelUtils.RegisterSideChannel(stringChannel);
+        // The channel must be registered with the SideChannelManager class
+        SideChannelManager.RegisterSideChannel(stringChannel);
     }
 
     public void OnDestroy()
@@ -131,7 +131,7 @@ public class RegisterStringLogSideChannel : MonoBehaviour
         // De-register the Debug.Log callback
         Application.logMessageReceived -= stringChannel.SendDebugStatementToPython;
         if (Academy.IsInitialized){
-            SideChannelUtils.UnregisterSideChannel(stringChannel);
+            SideChannelManager.UnregisterSideChannel(stringChannel);
         }
     }
 

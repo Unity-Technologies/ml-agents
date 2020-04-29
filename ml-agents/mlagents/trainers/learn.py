@@ -75,6 +75,7 @@ class RunOptions(NamedTuple):
     quality_level: int = parser.get_default("quality_level")
     time_scale: float = parser.get_default("time_scale")
     target_frame_rate: int = parser.get_default("target_frame_rate")
+    capture_frame_rate: int = parser.get_default("capture_frame_rate")
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":
@@ -172,11 +173,12 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.env_path, options.no_graphics, run_seed, port, options.env_args
         )
         engine_config = EngineConfig(
-            options.width,
-            options.height,
-            options.quality_level,
-            options.time_scale,
-            options.target_frame_rate,
+            width=options.width,
+            height=options.height,
+            quality_level=options.quality_level,
+            time_scale=options.time_scale,
+            target_frame_rate=options.target_frame_rate,
+            capture_frame_rate=options.capture_frame_rate,
         )
         env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
         curriculum_config = assemble_curriculum_config(options.behaviors)

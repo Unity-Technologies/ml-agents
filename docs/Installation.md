@@ -62,7 +62,7 @@ this repository. Until then, you will need to
 just cloned. You can add the `com.unity.ml-agents` package to
 your project by navigating to the menu `Window`  -> `Package Manager`. In the package manager
 window click on the `+` button. Select `Add package from disk...` and navigate into the
-`com.unity.ml-agents` folder and select the `package.json` folder.
+`com.unity.ml-agents` folder and select the `package.json` file.
 
 **NOTE:** In Unity 2018.4 it's on the bottom right of the packages list, and in Unity 2019.3 it's
 on the top left of the packages list.

@@ -2,7 +2,7 @@
     "name": "Tests",
     "references": [
         "Unity.ML-Agents",
-        "Barracuda",
+        "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
         "Unity.ML-Agents.Editor"
     ],
