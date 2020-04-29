@@ -308,11 +308,11 @@ class RunOptions(NamedTuple):
           configs loaded from files.
         """
         argparse_args = vars(args)
-        full_config = {}
-        full_config.update(argparse_args)
+        run_options_dict = {}
+        run_options_dict.update(argparse_args)
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
-        full_config.pop("trainer_config_path")
+        run_options_dict.pop("trainer_config_path")
         config_path = argparse_args["trainer_config_path"]
 
         # Load YAML
@@ -332,12 +332,14 @@ class RunOptions(NamedTuple):
                     )
                 )
             if key not in DetectDefault.non_default_args:
-                full_config[key] = val
+                run_options_dict[key] = val
 
         # Keep deprecated --load working, TODO: remove
-        full_config["resume"] = full_config["resume"] or full_config["load_model"]
+        run_options_dict["resume"] = (
+            run_options_dict["resume"] or run_options_dict["load_model"]
+        )
 
-        return RunOptions(**full_config)
+        return RunOptions(**run_options_dict)
 
 
 def get_version_string() -> str:
