@@ -72,6 +72,8 @@ and this project adheres to
 
 ### Minor Changes
 
+- Updated the Dockerfile and renamed it to ml-agents.Dockerfile. The docker image
+can be used for both graphical and non-graphical environments. (#3900)
 - Format of console output has changed slightly and now matches the name of the
   model/summary directory. (#3630, #3616)
 - Renamed 'Generalization' feature to 'Environment Parameter Randomization'.
