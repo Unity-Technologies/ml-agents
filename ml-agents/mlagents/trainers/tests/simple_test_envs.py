@@ -232,6 +232,7 @@ class MemoryEnvironment(SimpleEnvironment):
         decision_step = DecisionSteps(m_vector_obs, m_reward, m_agent_id, action_mask)
         terminal_step = TerminalSteps.empty(self.behavior_spec)
         if done:
+            self.final_rewards[name].append(self.rewards[name])
             self._reset_agent(name)
             recurrent_obs_val = (
                 self.goal[name] if self.step_count[name] <= self.num_show_steps else 0
