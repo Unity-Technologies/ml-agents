@@ -88,7 +88,6 @@ class RunOptions(NamedTuple):
         argparse_args = vars(args)
         run_options_dict = {}
         run_options_dict.update(argparse_args)
-        print(args)
         config_path = StoreConfigFile.trainer_config_path
 
         # Load YAML
