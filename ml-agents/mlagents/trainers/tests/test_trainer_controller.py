@@ -3,13 +3,17 @@ import pytest
 
 from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.sampler_class import SamplerManager
+
+TRAINER_FACTORY = MagicMock()
+TRAINER_FACTORY.ghost_controller = GhostController()
 
 
 @pytest.fixture
 def basic_trainer_controller():
     return TrainerController(
-        trainer_factory=None,
+        trainer_factory=TRAINER_FACTORY,
         model_path="test_model_path",
         summaries_dir="test_summaries_dir",
         run_id="test_run_id",
@@ -27,7 +31,7 @@ def basic_trainer_controller():
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
     TrainerController(
-        trainer_factory=None,
+        trainer_factory=TRAINER_FACTORY,
         model_path="",
         summaries_dir="",
         run_id="1",
