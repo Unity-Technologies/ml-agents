@@ -3,8 +3,8 @@
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit (Beta)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_1_docs/docs/)
 
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/latest_release/docs/)
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
 ([latest release](https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release))
