@@ -281,7 +281,8 @@ namespace Unity.MLAgents
         internal VectorSensor collectObservationsSensor;
 
         /// <summary>
-        /// Called when the attached <see cref="GameObject"/> becomes enabled and active.
+        /// Called when the attached [GameObject] becomes enabled and active.
+        /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </summary>
         /// <remarks>
         /// This function initializes the Agent instance, if it hasn't been initialized yet.
@@ -428,7 +429,8 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
-        /// Called when the attached <see cref="GameObject"/> becomes disabled and inactive.
+        /// Called when the attached [GameObject] becomes disabled and inactive.
+        /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </summary>
         /// <remarks>
         /// Always call the base Agent class version of this function if you implement `OnDisable()`
@@ -810,7 +812,7 @@ namespace Unity.MLAgents
 
         /// <summary>
         /// Set up the list of ISensors on the Agent. By default, this will select any
-        /// SensorBase's attached to the Agent.
+        /// SensorComponent's attached to the Agent.
         /// </summary>
         internal void InitializeSensors()
         {

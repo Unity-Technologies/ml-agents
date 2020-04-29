@@ -23,9 +23,9 @@ from mlagents_envs.base_env import (
 from mlagents_envs.timers import timed, hierarchical_timer
 from mlagents_envs.exception import (
     UnityEnvironmentException,
-    UnityCommunicationException,
     UnityActionException,
     UnityTimeOutException,
+    UnityCommunicatorStoppedException,
 )
 
 from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
@@ -362,7 +362,7 @@ class UnityEnvironment(BaseEnv):
         if self._loaded:
             outputs = self.communicator.exchange(self._generate_reset_input())
             if outputs is None:
-                raise UnityCommunicationException("Communicator has stopped.")
+                raise UnityCommunicatorStoppedException("Communicator has exited.")
             self._update_behavior_specs(outputs)
             rl_output = outputs.rl_output
             self._update_state(rl_output)
@@ -390,7 +390,7 @@ class UnityEnvironment(BaseEnv):
         with hierarchical_timer("communicator.exchange"):
             outputs = self.communicator.exchange(step_input)
         if outputs is None:
-            raise UnityCommunicationException("Communicator has stopped.")
+            raise UnityCommunicatorStoppedException("Communicator has exited.")
         self._update_behavior_specs(outputs)
         rl_output = outputs.rl_output
         self._update_state(rl_output)

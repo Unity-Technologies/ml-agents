@@ -12,14 +12,15 @@ namespace Unity.MLAgents.Sensors
         RenderTextureSensor m_Sensor;
 
         /// <summary>
-        /// The <see cref="UnityEngine.RenderTexture"/> instance that the associated
-        /// <see cref="RenderTextureSensor"/> wraps.
+        /// The [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance
+        /// that the associated <see cref="RenderTextureSensor"/> wraps.
         /// </summary>
         [HideInInspector, SerializeField, FormerlySerializedAs("renderTexture")]
         RenderTexture m_RenderTexture;
 
         /// <summary>
-        /// Stores the <see cref="UnityEngine.RenderTexture"/> associated with this sensor.
+        /// Stores the [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html)
+        /// associated with this sensor.
         /// </summary>
         public RenderTexture RenderTexture
         {

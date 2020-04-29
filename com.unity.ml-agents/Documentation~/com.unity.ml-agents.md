@@ -57,7 +57,9 @@ Unity Editor:
 ## Known limitations
 
 ### Training
-Training is limited to the Unity Editor and Standalone builds on Windows, MacOS, and Linux.  Your environment will default to inference mode if training is not supported or is not currently running.
+Training is limited to the Unity Editor and Standalone builds on Windows, MacOS, and Linux with the
+Mono scripting backend. Currently, training does not work with the IL2CPP scripting backend.  Your
+environment will default to inference mode if training is not supported or is not currently running.
 
 ### Inference
 Inference is executed via the [Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html).

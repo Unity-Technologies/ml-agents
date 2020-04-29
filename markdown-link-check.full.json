@@ -9,8 +9,8 @@
             "comment": "Requires login"
         },
         {
-            "pattern": "^https?://bair.berkeley.edu",
-            "comment": "Temporary berkeley outage"
+            "pattern": "https://github.com/Unity-Technologies/ml-agents/(tree|archive)/release_[0-9]+.*",
+            "comment": "Whitelist future release tags"
         }
     ]
 }

@@ -16,6 +16,7 @@ from mlagents.trainers.env_manager import EnvManager
 from mlagents_envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
+    UnityCommunicatorStoppedException,
 )
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import hierarchical_timer, timed
@@ -234,19 +235,23 @@ class TrainerController(object):
             KeyboardInterrupt,
             UnityCommunicationException,
             UnityEnvironmentException,
+            UnityCommunicatorStoppedException,
         ) as ex:
             self.kill_trainers = True
             if self.train_model:
                 self._save_model_when_interrupted()
 
-            if isinstance(ex, KeyboardInterrupt):
+            if isinstance(ex, KeyboardInterrupt) or isinstance(
+                ex, UnityCommunicatorStoppedException
+            ):
                 pass
             else:
                 # If the environment failed, we want to make sure to raise
                 # the exception so we exit the process with an return code of 1.
                 raise ex
-        if self.train_model:
-            self._export_graph()
+        finally:
+            if self.train_model:
+                self._export_graph()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]
