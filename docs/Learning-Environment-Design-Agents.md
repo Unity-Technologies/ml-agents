@@ -1,6 +1,7 @@
 # Agents
 
 **Table of Contents:**
+
 - [Decisions](#decisions)
 - [Observations and Sensors](#observations-and-sensors)
   - [Vector Observations](#vector-observations)

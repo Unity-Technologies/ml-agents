@@ -119,8 +119,8 @@ example.
    **Note** : You can modify multiple game objects in a scene by selecting them
    all at once using the search bar in the Scene Hierarchy.
 1. Set the **Inference Device** to use for this model as `CPU`.
-1. Click the **Play** button in the Unity Editor and you will see the
-   platforms balance the balls using the pre-trained model.
+1. Click the **Play** button in the Unity Editor and you will see the platforms
+   balance the balls using the pre-trained model.
 
 ## Training a new model with Reinforcement Learning
 
@@ -143,8 +143,8 @@ accepts arguments used to configure both training and inference phases.
      all our example environments, including 3DBall.
    - `run-id` is a unique name for this training session.
 1. When the message _"Start training by pressing the Play button in the Unity
-   Editor"_ is displayed on the screen, you can press the **Play** button
-   in Unity to start training in the Editor.
+   Editor"_ is displayed on the screen, you can press the **Play** button in
+   Unity to start training in the Editor.
 
 If `mlagents-learn` runs correctly and starts training, you should see something
 like this:

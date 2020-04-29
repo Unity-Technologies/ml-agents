@@ -387,10 +387,10 @@ In order for the Agent to use the Heuristic, You will need to set the
 `Behavior Type` to `Heuristic Only` in the `Behavior Parameters` of the
 RollerAgent.
 
-Press **Play** to run the scene and use the arrows keys to move the Agent
-around the platform. Make sure that there are no errors displayed in the Unity
-Editor Console window and that the Agent resets when it reaches its target or
-falls from the platform.
+Press **Play** to run the scene and use the arrows keys to move the Agent around
+the platform. Make sure that there are no errors displayed in the Unity Editor
+Console window and that the Agent resets when it reaches its target or falls
+from the platform.
 
 ## Training the Environment
 
@@ -435,8 +435,8 @@ effect on training time and success. A larger value reduces the number of
 decisions the training algorithm has to consider and, in this simple
 environment, speeds up training.
 
-To train your agent, run the following command before pressing **Play**
-in the Editor:
+To train your agent, run the following command before pressing **Play** in the
+Editor:
 
     mlagents-learn config/rollerball_config.yaml --run-id=RollerBall
 
