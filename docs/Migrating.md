@@ -251,7 +251,7 @@ double-check that the versions are in the same. The versions can be found in
 - Multiply `max_steps` and `summary_freq` in your `trainer_config.yaml` by the
   number of Agents in the scene.
 - Combine curriculum configs into a single file. See
-  [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of
+  [the WallJump curricula](https://github.com/Unity-Technologies/ml-agents/blob/0.14.1/config/curricula/wall_jump.yaml) for an example of
   the new curriculum config format. A tool like https://www.json2yaml.com may be
   useful to help with the conversion.
 - If you have a model trained which uses RayPerceptionSensor and has non-1.0
@@ -561,7 +561,7 @@ double-check that the versions are in the same. The versions can be found in
 
 - It is now required to specify the path to the yaml trainer configuration file
   when running `mlagents-learn`. For an example trainer configuration file, see
-  [trainer_config.yaml](../config/trainer_config.yaml). An example of passing a
+  [trainer_config.yaml](https://github.com/Unity-Technologies/ml-agents/blob/0.5.0a/config/trainer_config.yaml). An example of passing a
   trainer configuration to `mlagents-learn` is shown above.
 - The environment name is now passed through the `--env` option.
 - Curriculum learning has been changed. Refer to the
