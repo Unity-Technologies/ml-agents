@@ -47,9 +47,9 @@ ML-Agents Toolkit GitHub repository to install the Unity package (the Python
 packages can be installed directly from PyPi - a Python package registry).
 
 ```sh
-git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_1 https://github.com/Unity-Technologies/ml-agents.git
 ```
-The `--branch latest_release` option will switch to the tag of the latest stable release.
+The `--branch release_1` option will switch to the tag of the latest stable release.
 Omitting that will get the `master` branch which is potentially unstable.
 
 ### Install the `com.unity.ml-agents` Unity package
