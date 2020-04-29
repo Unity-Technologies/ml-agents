@@ -31,9 +31,10 @@ over the timer name, or are splitting up multiple sections of a large function.
 import math
 import sys
 import time
+import threading
 
 from contextlib import contextmanager
-from typing import Any, Callable, Dict, Generator, TypeVar
+from typing import Any, Callable, Dict, Generator, Optional, TypeVar
 
 TIMER_FORMAT_VERSION = "0.1.0"
 
@@ -232,9 +233,23 @@ class TimerStack:
         self.metadata["command_line_arguments"] = " ".join(sys.argv)
 
 
-# Global instance of a TimerStack. This is generally all that we need for profiling, but you can potentially
-# create multiple instances and pass them to the contextmanager
-_global_timer_stack = TimerStack()
+# Maintain a separate "global" timer per thread, so that they don't accidentally conflict with each other.
+_thread_timer_stacks: Dict[int, TimerStack] = {}
+
+
+def _get_thread_timer() -> TimerStack:
+    ident = threading.get_ident()
+    if ident not in _thread_timer_stacks:
+        timer_stack = TimerStack()
+        _thread_timer_stacks[ident] = timer_stack
+    return _thread_timer_stacks[ident]
+
+
+def get_timer_stack_for_thread(t: threading.Thread) -> Optional[TimerStack]:
+    if t.ident is None:
+        # Thread hasn't started, shouldn't ever happen
+        return None
+    return _thread_timer_stacks.get(t.ident)
 
 
 @contextmanager
@@ -243,7 +258,7 @@ def hierarchical_timer(name: str, timer_stack: TimerStack = None) -> Generator:
     Creates a scoped timer around a block of code. This time spent will automatically be incremented when
     the context manager exits.
     """
-    timer_stack = timer_stack or _global_timer_stack
+    timer_stack = timer_stack or _get_thread_timer()
     timer_node = timer_stack.push(name)
     start_time = time.perf_counter()
 
@@ -284,12 +299,12 @@ def set_gauge(name: str, value: float, timer_stack: TimerStack = None) -> None:
     """
     Updates the value of the gauge (or creates it if it hasn't been set before).
     """
-    timer_stack = timer_stack or _global_timer_stack
+    timer_stack = timer_stack or _get_thread_timer()
     timer_stack.set_gauge(name, value)
 
 
 def add_metadata(key: str, value: str, timer_stack: TimerStack = None) -> None:
-    timer_stack = timer_stack or _global_timer_stack
+    timer_stack = timer_stack or _get_thread_timer()
     timer_stack.add_metadata(key, value)
 
 
@@ -297,7 +312,7 @@ def get_timer_tree(timer_stack: TimerStack = None) -> Dict[str, Any]:
     """
     Return the tree of timings from the TimerStack as a dictionary (or the global stack if none is provided)
     """
-    timer_stack = timer_stack or _global_timer_stack
+    timer_stack = timer_stack or _get_thread_timer()
     return timer_stack.get_timing_tree()
 
 
@@ -305,7 +320,7 @@ def get_timer_root(timer_stack: TimerStack = None) -> TimerNode:
     """
     Get the root TimerNode of the timer_stack (or the global TimerStack if not specified)
     """
-    timer_stack = timer_stack or _global_timer_stack
+    timer_stack = timer_stack or _get_thread_timer()
     return timer_stack.get_root()
 
 
@@ -313,5 +328,5 @@ def reset_timers(timer_stack: TimerStack = None) -> None:
     """
     Reset the timer_stack (or the global TimerStack if not specified)
     """
-    timer_stack = timer_stack or _global_timer_stack
+    timer_stack = timer_stack or _get_thread_timer()
     timer_stack.reset()

@@ -19,7 +19,7 @@ from mlagents_envs.exception import (
     UnityCommunicatorStoppedException,
 )
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents_envs.timers import hierarchical_timer, timed
+from mlagents_envs.timers import hierarchical_timer, timed, get_timer_stack_for_thread
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -227,7 +227,7 @@ class TrainerController(object):
                     if self._should_save_model(global_step):
                         self._save_model()
             # Stop advancing trainers
-            self.kill_trainers = True
+            self.join_threads()
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
@@ -237,7 +237,7 @@ class TrainerController(object):
             UnityEnvironmentException,
             UnityCommunicatorStoppedException,
         ) as ex:
-            self.kill_trainers = True
+            self.join_threads()
             if self.train_model:
                 self._save_model_when_interrupted()
 
@@ -312,6 +312,29 @@ class TrainerController(object):
                     trainer.advance()
 
         return num_steps
+
+    def join_threads(self, timeout_seconds: float = 1.0) -> None:
+        """
+        Wait for threads to finish, and merge their timer information into the main thread.
+        :param timeout_seconds:
+        :return:
+        """
+        self.kill_trainers = True
+        for t in self.trainer_threads:
+            try:
+                t.join(timeout_seconds)
+            except Exception:
+                pass
+
+        with hierarchical_timer("trainer_threads") as main_timer_node:
+            for trainer_thread in self.trainer_threads:
+                thread_timer_stack = get_timer_stack_for_thread(trainer_thread)
+                if thread_timer_stack:
+                    main_timer_node.merge(
+                        thread_timer_stack.root,
+                        root_name="thread_root",
+                        is_parallel=True,
+                    )
 
     def trainer_update_func(self, trainer: Trainer) -> None:
         while not self.kill_trainers:
