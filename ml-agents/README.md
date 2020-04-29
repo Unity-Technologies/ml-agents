@@ -27,7 +27,6 @@ For more detailed documentation, check out the
 ## Limitations
  - `mlagents` does not yet explicitly support multi-agent scenarios so training
  cooperative behavior among different agents is not stable.
- - `mlagents` does not yet explicitly support agent-agent communication.
  - Resuming self-play from a checkpoint resets the reported ELO to the default value.
  - Resuming curriculum learning from a checkpoint requires the last lesson be specified
  using the `--lesson` CLI option
