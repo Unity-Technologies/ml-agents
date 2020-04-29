@@ -103,6 +103,7 @@ you will need to change the signature of its `Write()` method. (#3834)
 will allow use with python 3.8 using tensorflow 2.2.0rc3.
 - `UnityRLCapabilities` was added to help inform users when RL features are mismatched between C# and Python packages. (#3831)
 - Unity Player logs are now written out to the results directory. (#3877)
+- Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
 
 ### Bug Fixes
 
