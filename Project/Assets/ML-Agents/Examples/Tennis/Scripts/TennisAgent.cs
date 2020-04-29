@@ -8,16 +8,17 @@ public class TennisAgent : Agent
 {
     [Header("Specific to Tennis")]
     public GameObject ball;
-    public GameObject opponent;
     public bool invertX;
     public int score;
     public GameObject myArea;
     public float scale;
 
+    [HideInInspector]
+    public Rigidbody OpponentRb;
+
     Text m_TextComponent;
     Rigidbody m_AgentRb;
     Rigidbody m_BallRb;
-    Rigidbody m_OpponentRb;
     HitWall m_BallScript;
     TennisArea m_Area;
     float m_InvertMult;
@@ -43,7 +44,6 @@ public class TennisAgent : Agent
         m_Existential = 1f / MaxStep;
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
-        m_OpponentRb = opponent.GetComponent<Rigidbody>();
         m_BallScript = ball.GetComponent<HitWall>();
         m_Area = myArea.GetComponent<TennisArea>();
         var canvas = GameObject.Find(k_CanvasName);
@@ -75,8 +75,8 @@ public class TennisAgent : Agent
 
         //sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x) / -25f);
         //sensor.AddObservation((opponent.transform.position.y - myArea.transform.position.y) / -7f);
-        //sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x / 20f);
-        //sensor.AddObservation(m_OpponentRb.velocity.y / 20f);
+        //sensor.AddObservation(m_InvertMult * OpponentRb.velocity.x / 20f);
+        //sensor.AddObservation(OpponentRb.velocity.y / 20f);
 
         sensor.AddObservation(m_InvertMult * (transform.position.x - myArea.transform.position.x));
         sensor.AddObservation(transform.position.y - myArea.transform.position.y);
@@ -88,10 +88,10 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_InvertMult * m_BallRb.velocity.x);
         sensor.AddObservation(m_BallRb.velocity.y);
 
-        sensor.AddObservation(m_InvertMult * (opponent.transform.position.x - myArea.transform.position.x));
-        sensor.AddObservation(opponent.transform.position.y - myArea.transform.position.y);
-        sensor.AddObservation(m_InvertMult * m_OpponentRb.velocity.x);
-        sensor.AddObservation(m_OpponentRb.velocity.y);
+        sensor.AddObservation(m_InvertMult * (OpponentRb.position.x - myArea.transform.position.x));
+        sensor.AddObservation(OpponentRb.position.y - myArea.transform.position.y);
+        sensor.AddObservation(m_InvertMult * OpponentRb.velocity.x);
+        sensor.AddObservation(OpponentRb.velocity.y);
 
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
         //sensor.AddObservation((m_InvertMult * (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f) - 35f) / 125f);

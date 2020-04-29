@@ -26,6 +26,8 @@ public class HitWall : MonoBehaviour
         m_Area = areaObject.GetComponent<TennisArea>();
         m_AgentA = m_Area.agentA.GetComponent<TennisAgent>();
         m_AgentB = m_Area.agentB.GetComponent<TennisAgent>();
+        m_AgentA.OpponentRb = m_AgentB.GetComponent<Rigidbody>();
+        m_AgentB.OpponentRb = m_AgentA.GetComponent<Rigidbody>();
     }
 
     public void ResetPoint()
