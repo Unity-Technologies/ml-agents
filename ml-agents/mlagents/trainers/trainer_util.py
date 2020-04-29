@@ -92,8 +92,8 @@ def initialize_trainer(
     """
     if "default" not in trainer_config and brain_name not in trainer_config:
         raise TrainerConfigError(
-            f'Trainer config must have either a "default" section, or a section for the brain name ({brain_name}). '
-            "See config/trainer_config.yaml for an example."
+            f'Trainer config must have either a "default" section, or a section for the brain name {brain_name}. '
+            "See the config/ directory for examples."
         )
 
     trainer_parameters = trainer_config.get("default", {}).copy()
@@ -106,6 +106,11 @@ def initialize_trainer(
         while not isinstance(trainer_config[_brain_key], dict):
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
+
+    if init_path is not None:
+        trainer_parameters["init_path"] = "{basedir}/{name}".format(
+            basedir=init_path, name=brain_name
+        )
 
     min_lesson_length = 1
     if meta_curriculum:
@@ -196,6 +201,22 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
             "Error parsing yaml file. Please check for formatting errors. "
             "A tool such as http://www.yamllint.com/ can be helpful with this."
         ) from e
+
+
+def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Assembles a curriculum config Dict from a trainer config. The resulting
+    dictionary should have a mapping of {brain_name: config}, where config is another
+    Dict that
+    :param trainer_config: Dict of trainer configurations (keys are brain_names).
+    :return: Dict of curriculum configurations. Returns empty dict if none are found.
+    """
+    curriculum_config: Dict[str, Any] = {}
+    for behavior_name, behavior_config in trainer_config.items():
+        # Don't try to iterate non-Dicts. This probably means your config is malformed.
+        if isinstance(behavior_config, dict) and "curriculum" in behavior_config:
+            curriculum_config[behavior_name] = behavior_config["curriculum"]
+    return curriculum_config
 
 
 def handle_existing_directories(

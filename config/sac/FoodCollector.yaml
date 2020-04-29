@@ -1,0 +1,25 @@
+behaviors:
+  FoodCollector:
+    trainer: sac
+    batch_size: 256
+    buffer_size: 500000
+    buffer_init_steps: 0
+    hidden_units: 128
+    init_entcoef: 0.05
+    learning_rate: 0.0003
+    learning_rate_schedule: constant
+    max_steps: 2.0e6
+    memory_size: 128
+    normalize: false
+    steps_per_update: 10
+    num_layers: 2
+    time_horizon: 64
+    sequence_length: 64
+    summary_freq: 10000
+    tau: 0.005
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99

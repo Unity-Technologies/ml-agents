@@ -10,7 +10,7 @@ Please refer to the general instructions on [Training ML-Agents](Training-ML-Age
 
 ### Buffer Size
 
-If you are having trouble getting an agent to train, even with multiple concurrent Unity instances, you could increase  `buffer_size` in the `config/trainer_config.yaml` file. A common practice is to multiply `buffer_size` by `num-envs`.
+If you are having trouble getting an agent to train, even with multiple concurrent Unity instances, you could increase  `buffer_size` in the [training configuration file](Training-ML-Agents.md#training-config-file). A common practice is to multiply `buffer_size` by `num-envs`.
 
 ### Resource Constraints
 

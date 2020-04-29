@@ -137,10 +137,10 @@ accepts arguments used to configure both training and inference phases.
 1. Navigate to the folder where you cloned the `ml-agents` repository. **Note**:
    If you followed the default [installation](Installation.md), then you should
    be able to run `mlagents-learn` from any directory.
-1. Run `mlagents-learn config/trainer_config.yaml --run-id=first3DBallRun`.
-   - `config/trainer_config.yaml` is the path to a default training
-     configuration file that we provide. In includes training configurations for
-     all our example environments, including 3DBall.
+1. Run `mlagents-learn config/ppo/3DBall.yaml --run-id=first3DBallRun`.
+   - `config/ppo/3DBall.yaml` is the path to a default training
+     configuration file that we provide. The `config/ppo` folder includes training configuration
+     files for all our example environments, including 3DBall.
    - `run-id` is a unique name for this training session.
 1. When the message _"Start training by pressing the Play button in the Unity
    Editor"_ is displayed on the screen, you can press the :arrow_forward: button
@@ -232,7 +232,7 @@ If you've quit the training early using Ctrl+C and want to resume training, run
 the same command again, appending the `--resume` flag:
 
 ```sh
-mlagents-learn config/trainer_config.yaml --run-id=first3DBallRun --resume
+mlagents-learn config/ppo/3DBall.yaml --run-id=firstRun --resume
 ```
 
 Your trained model will be at `results/<run-identifier>/<behavior_name>.nn` where

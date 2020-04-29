@@ -1,0 +1,25 @@
+behaviors:
+  Basic:
+    trainer: sac
+    batch_size: 64
+    buffer_size: 50000
+    buffer_init_steps: 0
+    hidden_units: 20
+    init_entcoef: 0.01
+    learning_rate: 0.0003
+    learning_rate_schedule: constant
+    max_steps: 5.0e5
+    memory_size: 128
+    normalize: false
+    steps_per_update: 10
+    num_layers: 2
+    time_horizon: 10
+    sequence_length: 64
+    summary_freq: 2000
+    tau: 0.005
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99

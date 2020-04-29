@@ -17,6 +17,7 @@ from mlagents.trainers.trainer_util import (
     load_config,
     TrainerFactory,
     handle_existing_directories,
+    assemble_curriculum_config,
 )
 from mlagents.trainers.stats import (
     TensorboardWriter,
@@ -27,7 +28,7 @@ from mlagents.trainers.stats import (
 )
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.trainers.exception import SamplerException
+from mlagents.trainers.exception import SamplerException, TrainerConfigError
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
@@ -55,22 +56,10 @@ def _create_parser():
         help="Path to the Unity executable to train",
     )
     argparser.add_argument(
-        "--curriculum",
-        default=None,
-        dest="curriculum_config_path",
-        help="YAML file for defining the lessons for curriculum training",
-    )
-    argparser.add_argument(
         "--lesson",
         default=0,
         type=int,
         help="The lesson to start with when performing curriculum training",
-    )
-    argparser.add_argument(
-        "--sampler",
-        default=None,
-        dest="sampler_file_path",
-        help="YAML file for defining the sampler for environment parameter randomization",
     )
     argparser.add_argument(
         "--keep-checkpoints",
@@ -249,7 +238,7 @@ parser = _create_parser()
 
 
 class RunOptions(NamedTuple):
-    trainer_config: Dict
+    behaviors: Dict
     debug: bool = parser.get_default("debug")
     seed: int = parser.get_default("seed")
     env_path: Optional[str] = parser.get_default("env_path")
@@ -268,7 +257,7 @@ class RunOptions(NamedTuple):
     lesson: int = parser.get_default("lesson")
     no_graphics: bool = parser.get_default("no_graphics")
     multi_gpu: bool = parser.get_default("multi_gpu")
-    sampler_config: Optional[Dict] = None
+    parameter_randomization: Optional[Dict] = None
     env_args: Optional[List[str]] = parser.get_default("env_args")
     cpu: bool = parser.get_default("cpu")
     width: int = parser.get_default("width")
@@ -288,22 +277,25 @@ class RunOptions(NamedTuple):
           configs loaded from files.
         """
         argparse_args = vars(args)
-        trainer_config_path = argparse_args["trainer_config_path"]
-        curriculum_config_path = argparse_args["curriculum_config_path"]
-        argparse_args["trainer_config"] = load_config(trainer_config_path)
-        if curriculum_config_path is not None:
-            argparse_args["curriculum_config"] = load_config(curriculum_config_path)
-        if argparse_args["sampler_file_path"] is not None:
-            argparse_args["sampler_config"] = load_config(
-                argparse_args["sampler_file_path"]
+        config_path = argparse_args["trainer_config_path"]
+        # Load YAML and apply overrides as needed
+        yaml_config = load_config(config_path)
+        try:
+            argparse_args["behaviors"] = yaml_config["behaviors"]
+        except KeyError:
+            raise TrainerConfigError(
+                "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
             )
+
+        argparse_args["parameter_randomization"] = yaml_config.get(
+            "parameter_randomization", None
+        )
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
         # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
         # these keys will need to be deleted to use the **/splat operator below.
-        argparse_args.pop("sampler_file_path")
-        argparse_args.pop("curriculum_config_path")
         argparse_args.pop("trainer_config_path")
+
         return RunOptions(**vars(args))
 
 
@@ -378,14 +370,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             capture_frame_rate=options.capture_frame_rate,
         )
         env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
+        curriculum_config = assemble_curriculum_config(options.behaviors)
         maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum_config, env_manager, options.lesson
+            curriculum_config, env_manager, options.lesson
         )
         sampler_manager, resampling_interval = create_sampler_manager(
-            options.sampler_config, run_seed
+            options.parameter_randomization, run_seed
         )
         trainer_factory = TrainerFactory(
-            options.trainer_config,
+            options.behaviors,
             options.run_id,
             write_path,
             options.keep_checkpoints,
@@ -468,7 +461,7 @@ def create_sampler_manager(sampler_config, run_seed=None):
 def try_create_meta_curriculum(
     curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
 ) -> Optional[MetaCurriculum]:
-    if curriculum_config is None:
+    if curriculum_config is None or len(curriculum_config) <= 0:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_config)

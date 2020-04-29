@@ -68,6 +68,9 @@ and this project adheres to
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
   `Agent.MaxStep`. For a full list of changes, see the pull request. (#3828)
+- Curriculum and Parameter Randomization configurations have been merged
+  into the main training configuration file. Note that this means training
+  configuration files are now environment-specific. (#3791)
 - Update Barracuda to 0.7.0-preview which has breaking namespace and assembly name changes.
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
