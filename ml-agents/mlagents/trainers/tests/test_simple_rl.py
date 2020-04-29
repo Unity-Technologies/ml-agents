@@ -14,7 +14,6 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -144,7 +143,6 @@ def _check_environment_trains(
         StatsReporter.add_writer(debug_writer)
         # Make sure threading is turned off for determinism
         trainer_config["threading"] = False
-        ghost_controller = GhostController()
         if env_manager is None:
             env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
@@ -156,7 +154,6 @@ def _check_environment_trains(
             train_model=True,
             load_model=False,
             seed=seed,
-            ghost_controller=ghost_controller,
             meta_curriculum=meta_curriculum,
             multi_gpu=False,
         )
@@ -169,7 +166,6 @@ def _check_environment_trains(
             meta_curriculum=meta_curriculum,
             train=True,
             training_seed=seed,
-            ghost_controller=ghost_controller,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
             save_freq=save_freq,

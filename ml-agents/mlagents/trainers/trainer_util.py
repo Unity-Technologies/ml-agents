@@ -27,7 +27,6 @@ class TrainerFactory:
         train_model: bool,
         load_model: bool,
         seed: int,
-        ghost_controller: GhostController,
         init_path: str = None,
         meta_curriculum: MetaCurriculum = None,
         multi_gpu: bool = False,
@@ -43,7 +42,7 @@ class TrainerFactory:
         self.seed = seed
         self.meta_curriculum = meta_curriculum
         self.multi_gpu = multi_gpu
-        self.ghost_controller = ghost_controller
+        self.ghost_controller = GhostController()
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
