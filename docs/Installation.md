@@ -75,7 +75,9 @@ The Unity ML-Agents C# SDK is a Unity Package. You can install the
 `com.unity.ml-agents` package
 [directly from the Package Manager registry](https://docs.unity3d.com/Manual/upm-ui-install.html).
 Please make sure you enable 'Preview Packages' in the 'Advanced' dropdown in
-order to find it.  If you do not see the ML-Agents package listed in the Package Manager
+order to find it.
+
+**NOTE:** If you do not see the ML-Agents package listed in the Package Manager
 please follow the the [advanced installation instructions](#advanced-local-installation-for-development) below.
 
 #### Advanced: Local Installation for Development
