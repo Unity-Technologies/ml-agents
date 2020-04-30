@@ -689,7 +689,7 @@ training process.
 - **Concurrent Unity Instances** - We enable developers to run concurrent,
   parallel instances of the Unity executable during training. For certain
   scenarios, this should speed up training. Check out our dedicated page
-  on [creating a Unity executable](/Learning-Environment-Executable.md) and the
+  on [creating a Unity executable](Learning-Environment-Executable.md) and the
   [Training ML-Agents](Training-ML-Agents.md#training-using-concurrent-unity-instances)
   page for instructions on how to set the number of concurrent instances.
 - **Recording Statistics from Unity** - We enable developers to
