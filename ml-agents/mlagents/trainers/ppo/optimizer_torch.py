@@ -98,7 +98,11 @@ class PPOOptimizer(TorchOptimizer):
         vec_obs = [torch.Tensor(vec_obs)]
         act_masks = torch.Tensor(np.array(batch["action_mask"]))
         actions = [torch.Tensor(np.array(batch["actions"]))]
-        memories = torch.Tensor(np.array(batch["memory"])).unsqueeze(0)
+        memories = [
+            torch.Tensor(np.array(batch["memory"][i]))
+            for i in range(0, len(batch["memory"]), self.policy.sequence_length)
+        ]
+        memories = torch.stack(memories).unsqueeze(0)
 
         if self.policy.use_vis_obs:
             vis_obs = []
