@@ -1,4 +1,17 @@
-# Reinforcement Learning in Unity
+# Designing a Learning Environment
+
+This page contains general advice on how to design your learning environment, in
+addition to overviewing aspects of the ML-Agents Unity SDK that pertain to
+setting up your scene and simulation as opposed to designing your agents within
+the scene. We have a dedicated page on
+[Designing Agents](Learning-Environment-Design-Agents.md) which includes how to
+instrument observations, actions and rewards, define teams for multi-agent
+scenarios and record agent demonstrations for imitation learning.
+
+To help on-board to the entire set of functionality provided by the ML-Agents
+Toolkit, we recommend exploring our [API documentation](API-Reference.md).
+Additionally, our [example environments](Learning-Environment-Examples.md) are a
+great resource as they provide sample usage of almost all of our features.
 
 ## The Simulation and Training Process
 
@@ -68,7 +81,33 @@ training a maze-solving agent, you would probably want to change the maze itself
 for each training episode. Otherwise, the agent would probably on learn to solve
 one, particular maze, not mazes in general.
 
-### Environment Parameters
+### Multiple Areas
+
+In many of the example environments, many copies of the training area are
+instantiated in the scene. This generally speeds up training, allowing the
+environment to gather many experiences in parallel. This can be achieved simply
+by instantiating many Agents with the same Behavior Name. If possible, consider
+designing your scene to support multiple areas.
+
+Check out our example environments to see examples of multiple areas.
+Additionally, the
+[Making a New Learning Environment](Learning-Environment-Create-New.md#optional-multiple-training-areas-within-the-same-scene)
+guide demonstrates this option.
+
+## Environments
+
+When you create a training environment in Unity, you must set up the scene so
+that it can be controlled by the external training process. Considerations
+include:
+
+- The training scene must start automatically when your Unity application is
+  launched by the training process.
+- The Academy must reset the scene to a valid starting point for each episode of
+  training.
+- A training episode must have a definite end — either using `Max Steps` or by
+  each Agent ending its episode manually with `EndEpisode()`.
+
+## Environment Parameters
 
 Curriculum learning and environment parameter randomization are two training
 methods that control specific parameters in your environment. As such, it is
@@ -83,7 +122,7 @@ WallJump example environment for a sample usage (specifically,
 [WallJumpAgent.cs](../Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs)
 ).
 
-### Agent
+## Agent
 
 The Agent class represents an actor in the scene that collects observations and
 carries out actions. The Agent class is typically attached to the GameObject in
@@ -112,19 +151,6 @@ the Agent to start again.
 
 See [Agents](Learning-Environment-Design-Agents.md) for detailed information
 about programming your own Agents.
-
-## Environments
-
-When you create a training environment in Unity, you must set up the scene so
-that it can be controlled by the external training process. Considerations
-include:
-
-- The training scene must start automatically when your Unity application is
-  launched by the training process.
-- The Academy must reset the scene to a valid starting point for each episode of
-  training.
-- A training episode must have a definite end — either using `Max Steps` or by
-  each Agent ending its episode manually with `EndEpisode()`.
 
 ## Recording Statistics
 

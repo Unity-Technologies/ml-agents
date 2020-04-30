@@ -14,13 +14,13 @@ Unity environment via Python.
 The gym wrapper can be installed using:
 
 ```sh
-pip install gym_unity
+pip3 install gym_unity
 ```
 
 or by running the following from the `/gym-unity` directory of the repository:
 
 ```sh
-pip install -e .
+pip3 install -e .
 ```
 
 ## Using the Gym Wrapper

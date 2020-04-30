@@ -717,7 +717,11 @@ the [trainer configuration](Training-ML-Agents.md#training-configurations). To
 distinguish opposing agents, set the team ID to different integer values in the
 behavior parameters script on the agent prefab.
 
-![Team ID](images/team_id.png)
+<p align="center">
+  <img src="images/team_id.png"
+       alt="Team ID"
+       width="375" border="10" />
+</p>
 
 **_Team ID must be 0 or an integer greater than 0._**
 
@@ -743,7 +747,7 @@ will be recorded from the agent.
 <p align="center">
   <img src="images/demo_component.png"
        alt="Demonstration Recorder"
-       width="375" border="10" />
+       width="450" border="10" />
 </p>
 
 When `Record` is checked, a demonstration will be created whenever the scene is

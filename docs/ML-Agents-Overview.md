@@ -6,6 +6,7 @@
 - [Key Components](#key-components)
 - [Training Modes](#training-modes)
   - [Built-in Training and Inference](#built-in-training-and-inference)
+    - [Cross-Platform Inference](#cross-platform-inference)
   - [Custom Training and Inference](#custom-training-and-inference)
 - [Flexible Training Scenarios](#flexible-training-scenarios)
 - [Training Methods: Environment-agnostic](#training-methods-environment-agnostic)
@@ -256,20 +257,26 @@ observations to the Python API through the External Communicator. The Python API
 processes these observations and sends back actions for each medic to take.
 During training these actions are mostly exploratory to help the Python API
 learn the best policy for each medic. Once training concludes, the learned
-policy for each medic can be exported. Given that all our implementations are
-based on TensorFlow, the learned policy is just a TensorFlow model file. Then
-during the inference phase, we use the TensorFlow model generated from the
-training phase. Now during the inference phase, the medics still continue to
+policy for each medic can be exported as a model file. Then during the inference
+phase, the medics still continue to
 generate their observations, but instead of being sent to the Python API, they
 will be fed into their (internal, embedded) model to generate the _optimal_
 action for each medic to take at every point in time.
 
-To summarize: our built-in implementations are based on TensorFlow, thus, during
-training the Python API uses the observations it receives to learn a TensorFlow
-model. This model is then embedded within the Agent during inference.
-
 The [Getting Started Guide](Getting-Started.md) tutorial covers this training
 mode with the **3D Balance Ball** sample environment.
+
+#### Cross-Platform Inference
+
+It is important to note that the ML-Agents Toolkit leverages the
+[Unity Inference Engine](Unity-Inference-Engine.md)
+to run the models within a Unity scene such that an agent can take the
+_optimal_ action at each step. Given that the Unity
+Inference Engine support most platforms that Unity does, this means that
+any model you train with the ML-Agents Toolkit can be embedded into your
+Unity application that runs on any platform. See our
+[dedicated blog post](https://blogs.unity3d.com/2019/03/01/unity-ml-agents-toolkit-v0-7-a-leap-towards-cross-platform-inference/)
+for additional information.
 
 ### Custom Training and Inference
 
@@ -492,7 +499,9 @@ Demonstrations of agent behavior can be recorded from the Unity Editor or build,
 and saved as assets. These demonstrations contain information on the
 observations, actions, and rewards for a given agent during the recording
 session. They can be managed in the Editor, as well as used for training with BC
-and GAIL.
+and GAIL. See the
+[Designing Agents](Learning-Environment-Design-Agents.md#recording-demonstrations)
+page for more information on how to record demonstrations for your agent.
 
 ### Summary
 
@@ -541,6 +550,13 @@ experience replay mechanism used by SAC. Thus, we recommend that users use PPO.
 For further reading on this issue in particular, see the paper
 [Stabilising Experience Replay for Deep Multi-Agent Reinforcement Learning](https://arxiv.org/pdf/1702.08887.pdf).
 
+See our
+[Designing Agents](Learning-Environment-Design-Agents.md#defining-teams-for-multi-agent-scenarios)
+page for more information on setting up teams in your Unity scene. Also, read
+our
+[blog post on self-play](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
+for additional information.
+
 ### Solving Complex Tasks using Curriculum Learning
 
 Curriculum learning is a way of training a machine learning model where more
@@ -577,9 +593,11 @@ based on an early version of the
 is not possible to directly replicate the results here using that environment.]_
 
 The ML-Agents Toolkit supports modifying custom environment parameters during
-the training process to aid in learning.. This allows elements of the
+the training process to aid in learning. This allows elements of the
 environment related to difficulty or complexity to be dynamically adjusted based
-on training progress.
+on training progress. The
+[Training ML-Agents](Training-ML-Agents.md#curriculum-learning) page has more
+information on defining training curriculums.
 
 ### Training Robust Agents using Environment Parameter Randomization
 
@@ -594,18 +612,17 @@ learns, the ML-Agents Toolkit provides a way to randomly sample parameters of
 the environment during training. We refer to this approach as **Environment
 Parameter Randomization**. For those familiar with Reinforcement Learning
 research, this approach is based on the concept of Domain Randomization (you can
-read more about it [here](https://arxiv.org/abs/1703.06907)). By using parameter
-randomization during training, the agent can be better suited to adapt (with
+read more about it [here](https://arxiv.org/abs/1703.06907)). By using
+[parameter randomization during training](Training-ML-Agents.md#environment-parameter-randomization),
+the agent can be better suited to adapt (with
 higher performance) to future unseen variations of the environment.
-
-_Example of variations of the 3D Ball environment._
 
 |      Ball scale of 0.5       |      Ball scale of 4       |
 | :--------------------------: | :------------------------: |
 | ![](images/3dball_small.png) | ![](images/3dball_big.png) |
 
-In the 3D ball environment example displayed in the figure above, the
-environment parameters are `gravity`, `ball_mass` and `ball_scale`.
+_Example of variations of the 3D Ball environment. The
+environment parameters are `gravity`, `ball_mass` and `ball_scale`._
 
 ## Model Types
 
@@ -671,14 +688,20 @@ training process.
 
 - **Concurrent Unity Instances** - We enable developers to run concurrent,
   parallel instances of the Unity executable during training. For certain
-  scenarios, this should speed up training.
-- **Recording Statistics from Unity** - We enable developers to record
-  statistics from within their Unity environments. These statistics are
+  scenarios, this should speed up training. Check out our dedicated page
+  on [creating a Unity executable](/Learning-Environment-Executable.md) and the
+  [Training ML-Agents](Training-ML-Agents.md#training-using-concurrent-unity-instances)
+  page for instructions on how to set the number of concurrent instances.
+- **Recording Statistics from Unity** - We enable developers to
+  [record statistics](Learning-Environment-Design.md#recording-statistics) from
+  within their Unity environments. These statistics are
   aggregated and generated during the training process.
-- **Custom Side Channels** - We enable developers to create custom side channels
+- **Custom Side Channels** - We enable developers to
+  [create custom side channels](Custom-SideChannels.md)
   to manage data transfer between Unity and Python that is unique to their
   training workflow and/or environment.
-- **Custom Samplers** - We enable developers to create custom sampling methods
+- **Custom Samplers** - We enable developers to
+  [create custom sampling methods](Training-ML-Agents.md#defining-a-new-sampler-type)
   for Environment Parameter Randomization. This enables users to customize this
   training method for their particular environment.
 
@@ -690,8 +713,14 @@ designed to enable a large variety of training modes and scenarios and comes
 packed with several features to enable researchers and developers to leverage
 (and enhance) machine learning within Unity.
 
-To help you use ML-Agents, we've created several in-depth tutorials for
-[installing ML-Agents](Installation.md), [getting started](Getting-Started.md)
-with the 3D Balance Ball environment (one of our many
-[sample environments](Learning-Environment-Examples.md)) and
-[making your own environment](Learning-Environment-Create-New.md).
+In terms of next steps:
+- For a walkthrough of running ML-Agents with a simple scene, check out the
+  [Getting Started](Getting-Started.md) guide.
+- For a "Hello World" introduction to creating your own Learning Environment,
+  check out the
+  [Making a New Learning Environment](Learning-Environment-Create-New.md) page.
+- For an overview on the more complex example environments that are provided in
+  this toolkit, check out the
+  [Example Environments](Learning-Environment-Examples.md) page.
+- For more information on the various training options available, check out the
+  [Training ML-Agents](Training-ML-Agents.md) page.

@@ -1,8 +1,9 @@
 # Unity Inference Engine
 
 The ML-Agents Toolkit allows you to use pre-trained neural network models
-inside your Unity games. This support is possible thanks to the Unity Inference
-Engine. The Unity Inference Engine is using
+inside your Unity games. This support is possible thanks to the
+[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@0.7/manual/index.html)
+(codenamed Barracuda). The Unity Inference Engine uses
 [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html)
 to run the neural network within Unity.
 
@@ -11,6 +12,9 @@ trainers.
 
 ## Supported devices
 
+See the Unity Inference Engine documentation for a list of the
+[supported platforms](https://docs.unity3d.com/Packages/com.unity.barracuda@0.7/manual/index.html#supported-platforms).
+
 Scripting Backends : The Unity Inference Engine is generally faster with
 __IL2CPP__ than with __Mono__ for Standalone builds.
 In the Editor, It is not possible to use the Unity Inference Engine with
@@ -18,14 +22,6 @@ GPU device selected when Editor Graphics Emulation is set to __OpenGL(ES)
 3.0 or 2.0 emulation__. Also there might be non-fatal build time errors
 when target platform includes Graphics API that does not support
 __Unity Compute Shaders__.
-The Unity Inference Engine supposedly works on any Unity supported platform
-but we only tested for the following platforms :
-
-* Linux 64 bits
-* Mac OS X 64 bits (`OpenGLCore` Graphics API is not supported)
-* Windows 64 bits
-* iOS
-* Android
 
 ## Supported formats
 There are currently two supported model formats:

@@ -18,25 +18,21 @@
 
 - [Making a New Learning Environment](Learning-Environment-Create-New.md)
 - [Designing a Learning Environment](Learning-Environment-Design.md)
-- [Designing Agents](Learning-Environment-Design-Agents.md)
-
-### Advanced Usage
-
+  - [Designing Agents](Learning-Environment-Design-Agents.md)
 - [Using an Executable Environment](Learning-Environment-Executable.md)
 
-## Training
+## Training & Inference
 
 - [Training ML-Agents](Training-ML-Agents.md)
+  - [Training Configuration File](Training-Configuration-File.md)
+  - [Using TensorBoard to Observe Training](Using-Tensorboard.md)
   - [Profiling Trainers](Profiling-Python.md)
-- [Using TensorBoard to Observe Training](Using-Tensorboard.md)
-
-## Inference
-
 - [Unity Inference Engine](Unity-Inference-Engine.md)
 
 ## Extending ML-Agents
 
 - [Creating Custom Side Channels](Custom-SideChannels.md)
+- [Creating Custom Samplers for Environment Parameter Randomization](Training-ML-Agents.md#defining-a-new-sampler-type)
 
 ## Help
 

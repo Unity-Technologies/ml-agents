@@ -211,7 +211,7 @@ you would like to contribute environments, please see our
   - +0.1 Each step agent's hand is in goal location.
 - Behavior Parameters:
   - Vector Observation space: 26 variables corresponding to position, rotation,
-    velocity, and angular velocities of the two arm Rigidbodies.
+    velocity, and angular velocities of the two arm rigid bodies.
   - Vector Action space: (Continuous) Size of 4, corresponding to torque
     applicable to two joints.
   - Visual Observations: None.

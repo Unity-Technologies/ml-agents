@@ -54,7 +54,7 @@ Unity Editor:
 * 2018.4 and later
 
 
-## Known limitations
+## Known Limitations
 
 ### Training
 Training is limited to the Unity Editor and Standalone builds on Windows, MacOS, and Linux with the

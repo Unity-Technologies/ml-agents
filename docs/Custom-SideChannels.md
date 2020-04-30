@@ -51,7 +51,7 @@ To register a side channel on the Python side, pass the side channel as argument
 
 ## Example implementation
 
-Below is a simple implementation of a side channel that will exchange ascii encoded
+Below is a simple implementation of a side channel that will exchange ASCII encoded
 strings between a Unity environment and Python.
 
 ### Example Unity C# code
@@ -100,9 +100,9 @@ Once we have defined our custom side channel class, we need to ensure that it is
 instantiated and registered. This can typically be done wherever the logic of
 the side channel makes sense to be associated, for example on a MonoBehaviour
 object that might need to access data from the side channel. Here we show a
-simple MonoBehaviour object which instantiates and registeres the new side
+simple MonoBehaviour object which instantiates and registers the new side
 channel. If you have not done it already, make sure that the MonoBehaviour
-which registers the side channel is attached to a gameobject which will
+which registers the side channel is attached to a GameObject which will
 be live in your Unity scene.
 
 ```csharp
