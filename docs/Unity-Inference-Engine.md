@@ -2,7 +2,7 @@
 
 The ML-Agents Toolkit allows you to use pre-trained neural network models
 inside your Unity games. This support is possible thanks to the
-[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@0.7/manual/index.html)
+[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html)
 (codenamed Barracuda). The Unity Inference Engine uses
 [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html)
 to run the neural network within Unity.
@@ -13,7 +13,7 @@ trainers.
 ## Supported devices
 
 See the Unity Inference Engine documentation for a list of the
-[supported platforms](https://docs.unity3d.com/Packages/com.unity.barracuda@0.7/manual/index.html#supported-platforms).
+[supported platforms](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html#supported-platforms).
 
 Scripting Backends : The Unity Inference Engine is generally faster with
 __IL2CPP__ than with __Mono__ for Standalone builds.

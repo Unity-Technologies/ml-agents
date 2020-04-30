@@ -28,7 +28,7 @@ scene with the ML-Agents SDK, check out the main
 ## Limitations
 
 - `mlagents_envs` uses localhost ports to exchange data between Unity and
-  Python. As such, multiple instances can have their ports collide leading to
+  Python. As such, multiple instances can have their ports collide, leading to
   errors. Make sure to use a different port if you are using multiple instances
   of `UnityEnvironment`.
 - Communication between Unity and the Python `UnityEnvironment` is not secure.

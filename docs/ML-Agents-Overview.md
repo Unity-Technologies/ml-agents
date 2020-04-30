@@ -611,8 +611,8 @@ Curriculum Learning, where environments become more difficult as the agent
 learns, the ML-Agents Toolkit provides a way to randomly sample parameters of
 the environment during training. We refer to this approach as **Environment
 Parameter Randomization**. For those familiar with Reinforcement Learning
-research, this approach is based on the concept of Domain Randomization (you can
-read more about it [here](https://arxiv.org/abs/1703.06907)). By using
+research, this approach is based on the concept of
+[Domain Randomization](https://arxiv.org/abs/1703.06907). By using
 [parameter randomization during training](Training-ML-Agents.md#environment-parameter-randomization),
 the agent can be better suited to adapt (with
 higher performance) to future unseen variations of the environment.
