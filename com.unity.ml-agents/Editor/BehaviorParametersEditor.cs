@@ -1,7 +1,7 @@
-using Unity.MLAgents.Sensors;
 using UnityEditor;
-using Unity.MLAgents.Policies;
 using Unity.Barracuda;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 
 namespace Unity.MLAgents.Editor

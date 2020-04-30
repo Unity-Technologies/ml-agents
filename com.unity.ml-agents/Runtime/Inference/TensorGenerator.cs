@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Unity.MLAgents.Sensors;
 using Unity.Barracuda;
+using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Inference
 {

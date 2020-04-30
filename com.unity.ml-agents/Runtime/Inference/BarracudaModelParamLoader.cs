@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
-using Unity.Barracuda;
 
 namespace Unity.MLAgents.Inference
 {

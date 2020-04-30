@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
-using Unity.Barracuda;
 using UnityEngine.Serialization;
 
 namespace Unity.MLAgents

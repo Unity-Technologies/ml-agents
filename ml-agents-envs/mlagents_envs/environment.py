@@ -141,8 +141,9 @@ class UnityEnvironment(BaseEnv):
         seed: int = 0,
         no_graphics: bool = False,
         timeout_wait: int = 60,
-        args: Optional[List[str]] = None,
+        additional_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
+        log_folder: Optional[str] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -157,9 +158,11 @@ class UnityEnvironment(BaseEnv):
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :list args: Addition Unity command line arguments
         :list side_channels: Additional side channel for no-rl communication with Unity
+        :str log_folder: Optional folder to write the Unity Player log file into.  Requires absolute path.
         """
-        args = args or []
         atexit.register(self._close)
+        self.additional_args = additional_args or []
+        self.no_graphics = no_graphics
         # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
         # an environment, otherwise DEFAULT_EDITOR_PORT
         if base_port is None:
@@ -185,6 +188,7 @@ class UnityEnvironment(BaseEnv):
                         )
                     )
                 self.side_channels[_sc.channel_id] = _sc
+        self.log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -195,7 +199,7 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, no_graphics, args)
+            self.executable_launcher(file_name, no_graphics, additional_args)
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -296,6 +300,20 @@ class UnityEnvironment(BaseEnv):
                 launch_string = candidates[0]
         return launch_string
 
+    def executable_args(self) -> List[str]:
+        args: List[str] = []
+        if self.no_graphics:
+            args += ["-nographics", "-batchmode"]
+        args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
+        if self.log_folder:
+            log_file_path = os.path.join(
+                self.log_folder, f"Player-{self.worker_id}.log"
+            )
+            args += ["-logFile", log_file_path]
+        # Add in arguments passed explicitly by the user.
+        args += self.additional_args
+        return args
+
     def executable_launcher(self, file_name, no_graphics, args):
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
@@ -306,11 +324,7 @@ class UnityEnvironment(BaseEnv):
         else:
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
-            subprocess_args = [launch_string]
-            if no_graphics:
-                subprocess_args += ["-nographics", "-batchmode"]
-            subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
-            subprocess_args += args
+            subprocess_args = [launch_string] + self.executable_args()
             try:
                 self.proc1 = subprocess.Popen(
                     subprocess_args,

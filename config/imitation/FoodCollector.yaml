@@ -1,0 +1,29 @@
+behaviors:
+  FoodCollector:
+    trainer: ppo
+    batch_size: 64
+    beta: 0.005
+    buffer_size: 10240
+    epsilon: 0.2
+    hidden_units: 128
+    lambd: 0.95
+    learning_rate: 0.0003
+    max_steps: 2.0e6
+    memory_size: 256
+    normalize: false
+    num_epoch: 3
+    num_layers: 2
+    time_horizon: 64
+    sequence_length: 32
+    summary_freq: 10000
+    use_recurrent: false
+    reward_signals:
+      gail:
+        strength: 0.1
+        gamma: 0.99
+        encoding_size: 128
+        demo_path: Project/Assets/ML-Agents/Examples/FoodCollector/Demos/ExpertFood.demo
+    behavioral_cloning:
+      demo_path: Project/Assets/ML-Agents/Examples/FoodCollector/Demos/ExpertFood.demo
+      strength: 1.0
+      steps: 0

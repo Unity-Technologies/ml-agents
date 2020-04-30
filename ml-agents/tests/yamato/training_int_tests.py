@@ -21,7 +21,7 @@ def run_training(python_version, csharp_version):
     print(
         f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
     )
-    nn_file_expected = f"./models/{run_id}/3DBall.nn"
+    nn_file_expected = f"./results/{run_id}/3DBall.nn"
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
         print("Artifacts from previous build found!")
@@ -63,7 +63,7 @@ def run_training(python_version, csharp_version):
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
     override_config_file(
-        "config/trainer_config.yaml",
+        "config/ppo/3DBall.yaml",
         "override.yaml",
         max_steps=100,
         batch_size=10,

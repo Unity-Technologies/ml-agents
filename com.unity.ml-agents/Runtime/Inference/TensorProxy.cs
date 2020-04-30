@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Unity.MLAgents.Inference.Utils;
 using Unity.Barracuda;
+using Unity.MLAgents.Inference.Utils;
 
 namespace Unity.MLAgents.Inference
 {

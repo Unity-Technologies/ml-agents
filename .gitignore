@@ -1,6 +1,8 @@
-# Tensorflow Model Info
+# Output Artifacts (Legacy)
 /models
 /summaries
+# Output Artifacts
+/results
 
 # Training environments
 /envs

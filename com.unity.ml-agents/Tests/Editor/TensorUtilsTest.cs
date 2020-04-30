@@ -1,8 +1,8 @@
 using System;
+using NUnit.Framework;
+using Unity.Barracuda;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Inference.Utils;
-using Unity.Barracuda;
-using NUnit.Framework;
 
 namespace Unity.MLAgents.Tests
 {
