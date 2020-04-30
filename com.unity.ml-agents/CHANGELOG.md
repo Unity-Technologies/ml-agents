@@ -25,7 +25,7 @@ and this project adheres to
   `AgentAction` and `AgentReset` have been removed. (#3770)
 - The SideChannel API has changed:
   - Introduced the `SideChannelManager` to register, unregister and access side
-    channels. (#3807())
+    channels. (#3807)
   - `Academy.FloatProperties` was replaced by `Academy.EnvironmentParameters`.
     See the [Migration Guide](../docs/Migrating.md) for more details on
     upgrading. (#3807)
@@ -55,7 +55,7 @@ and this project adheres to
   now happens by default, and use `--resume` to resume training instead of
   `--load`. (#3705)
 - The Jupyter notebooks have been removed from the repository. (#3704)
-- Removed the multi-agent gym option from the gym wrapper. For multi-agent
+- The multi-agent gym option was removed from the gym wrapper. For multi-agent
   scenarios, use the [Low Level Python API](../docs/Python-API.md). (#3681)
 - The low level Python API has changed. You can look at the document
   [Low Level Python API documentation](../docs/Python-API.md) for more
