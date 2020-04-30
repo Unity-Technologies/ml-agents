@@ -8,6 +8,13 @@ from mlagents.trainers.trainer_util import load_config
 from mlagents.trainers.exception import TrainerConfigError
 
 
+def strict_to_cls(d, t):
+    if d is None:
+        return None
+
+    return t(**d)
+
+
 @attr.s(auto_attribs=True)
 class CheckpointSettings:
     save_freq: int = parser.get_default("save_freq")
@@ -47,7 +54,6 @@ class RunOptions:
     behaviors: Dict[str, Dict]
     env_settings: EnvironmentSettings = EnvironmentSettings()
     engine_settings: EngineSettings = EngineSettings()
-    environment_settings: EnvironmentSettings = EnvironmentSettings()
     parameter_randomization: Optional[Dict] = None
     curriculum_config: Optional[Dict] = None
     checkpoint_settings: CheckpointSettings = CheckpointSettings()
