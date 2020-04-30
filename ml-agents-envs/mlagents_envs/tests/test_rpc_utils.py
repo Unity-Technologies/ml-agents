@@ -128,7 +128,7 @@ def proto_from_steps(
         agent_id_index = terminal_steps.agent_id_to_index[agent_id]
         reward = terminal_steps.reward[agent_id_index]
         done = True
-        max_step_reached = terminal_steps.max_step[agent_id_index]
+        max_step_reached = terminal_steps.interrupted[agent_id_index]
 
         final_observations: List[ObservationProto] = []
         for all_observations_of_type in terminal_steps.obs:
@@ -248,7 +248,7 @@ def test_batched_step_result_from_proto():
     for agent_id in range(n_agents):
         assert (agent_id in terminal_steps) == (agent_id % 2 == 0)
         if agent_id in terminal_steps:
-            assert terminal_steps[agent_id].max_step == (agent_id % 4 == 0)
+            assert terminal_steps[agent_id].interrupted == (agent_id % 4 == 0)
     assert decision_steps.obs[0].shape[1] == shapes[0][0]
     assert decision_steps.obs[1].shape[1] == shapes[1][0]
     assert terminal_steps.obs[0].shape[1] == shapes[0][0]

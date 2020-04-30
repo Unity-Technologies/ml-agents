@@ -16,7 +16,10 @@ double-check that the versions are in the same. The versions can be found in
 
 ## Migrating from Release 1 to latest
 ### Important changes
+- `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 ### Steps to Migrate
+- If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
+in the `TerminalStep` and `TerminalSteps` objects.
 
 ## Migrating from 0.15 to  Release 1
 
