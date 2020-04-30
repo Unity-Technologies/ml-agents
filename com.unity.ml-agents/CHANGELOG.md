@@ -302,5 +302,5 @@ and this project adheres to
 
 _Short description of this release_
 
-[Migration Guide]:(https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Migrating.md)
-[Low Level Python API]:(https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
+[Migration Guide]: (https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Migrating.md)
+[Low Level Python API]: (https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
