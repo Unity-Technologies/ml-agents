@@ -80,13 +80,18 @@ class NetworkBody(nn.Module):
                 )
         for visual_size in visual_sizes:
             self.visual_encoders.append(
-                visual_encoder(visual_size.num_channels, h_size)
+                visual_encoder(
+                    visual_size.height,
+                    visual_size.width,
+                    visual_size.num_channels,
+                    h_size,
+                )
             )
 
         self.vector_encoders = nn.ModuleList(self.vector_encoders)
         self.visual_encoders = nn.ModuleList(self.visual_encoders)
         if use_lstm:
-            self.lstm = nn.LSTM(h_size, h_size, 1)
+            self.lstm = nn.GRU(h_size, h_size, 1)
 
     def clear_memory(self, batch_size):
         self.memory = (
@@ -99,7 +104,7 @@ class NetworkBody(nn.Module):
             for idx, vec_input in enumerate(vec_inputs):
                 self.vector_normalizers[idx].update(vec_input)
 
-    def forward(self, vec_inputs, vis_inputs):
+    def forward(self, vec_inputs, vis_inputs, memories=None, sequence_length=1):
         vec_embeds = []
         for idx, encoder in enumerate(self.vector_encoders):
             vec_input = vec_inputs[idx]
@@ -127,8 +132,11 @@ class NetworkBody(nn.Module):
             embedding = vis_embeds
 
         if self.use_lstm:
-            embedding, self.memory = self.lstm(embedding, self.memory)
-        return embedding
+            embedding = embedding.reshape([sequence_length, -1, self.h_size])
+            print(embedding.shape, memories.shape)
+            embedding, memories = self.lstm(embedding, memories)
+            embedding = embedding.reshape([-1, self.h_size])
+        return embedding, memories
 
 
 class Actor(nn.Module):
@@ -163,13 +171,17 @@ class Actor(nn.Module):
         else:
             self.distribution = MultiCategoricalDistribution(h_size, act_size)
 
-    def forward(self, vec_inputs, vis_inputs, masks=None):
-        embedding = self.network_body(vec_inputs, vis_inputs)
+    def forward(
+        self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
+    ):
+        embedding, memories = self.network_body(
+            vec_inputs, vis_inputs, memories, sequence_length
+        )
         if self.act_type == ActionType.CONTINUOUS:
             dist = self.distribution(embedding)
         else:
             dist = self.distribution(embedding, masks=masks)
-        return dist
+        return dist, memories
 
 
 class Critic(nn.Module):
@@ -194,13 +206,13 @@ class Critic(nn.Module):
             num_layers,
             m_size,
             vis_encode_type,
-            use_lstm,
+            False,
         )
         self.stream_names = stream_names
         self.value_heads = ValueHeads(stream_names, h_size)
 
     def forward(self, vec_inputs, vis_inputs):
-        embedding = self.network_body(vec_inputs, vis_inputs)
+        embedding, _ = self.network_body(vec_inputs, vis_inputs)
         return self.value_heads(embedding)
 
 
@@ -279,33 +291,59 @@ class VectorEncoder(nn.Module):
         return x
 
 
+def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1):
+    from math import floor
+
+    if type(kernel_size) is not tuple:
+        kernel_size = (kernel_size, kernel_size)
+    h = floor(
+        ((h_w[0] + (2 * pad) - (dilation * (kernel_size[0] - 1)) - 1) / stride) + 1
+    )
+    w = floor(
+        ((h_w[1] + (2 * pad) - (dilation * (kernel_size[1] - 1)) - 1) / stride) + 1
+    )
+    return h, w
+
+
 class SimpleVisualEncoder(nn.Module):
-    def __init__(self, initial_channels, output_size):
+    def __init__(self, height, width, initial_channels, output_size):
         super(SimpleVisualEncoder, self).__init__()
         self.h_size = output_size
+        conv_1_hw = conv_output_shape((height, width), 8, 4)
+        conv_2_hw = conv_output_shape(conv_1_hw, 4, 2)
+        self.final_flat = conv_2_hw[0] * conv_2_hw[1] * 32
+
         self.conv1 = nn.Conv2d(initial_channels, 16, [8, 8], [4, 4])
         self.conv2 = nn.Conv2d(16, 32, [4, 4], [2, 2])
-        self.dense = nn.Linear(1728, self.h_size)
+        self.dense = nn.Linear(self.final_flat, self.h_size)
 
     def forward(self, visual_obs):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
-        hidden = self.dense(conv_2.reshape([-1, 1728]))
+        hidden = self.dense(conv_2.reshape([-1, self.final_flat]))
         return hidden
 
 
 class NatureVisualEncoder(nn.Module):
-    def __init__(self, initial_channels):
+    def __init__(self, height, width, initial_channels, output_size):
         super(NatureVisualEncoder, self).__init__()
+        self.h_size = output_size
+        conv_1_hw = conv_output_shape((height, width), 8, 4)
+        conv_2_hw = conv_output_shape(conv_1_hw, 4, 2)
+        conv_3_hw = conv_output_shape(conv_2_hw, 3, 1)
+        self.final_flat = conv_3_hw[0] * conv_3_hw[1] * 64
+
         self.conv1 = nn.Conv2d(initial_channels, 32, [8, 8], [4, 4])
         self.conv2 = nn.Conv2d(43, 64, [4, 4], [2, 2])
         self.conv3 = nn.Conv2d(64, 64, [3, 3], [1, 1])
+        self.dense = nn.Linear(self.final_flat, self.h_size)
 
     def forward(self, visual_obs):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
         conv_3 = torch.relu(self.conv3(conv_2))
-        return torch.flatten(conv_3)
+        hidden = self.dense(conv_3.reshape([-1, self.final_flat]))
+        return hidden
 
 
 class DiscreteActionMask(nn.Module):

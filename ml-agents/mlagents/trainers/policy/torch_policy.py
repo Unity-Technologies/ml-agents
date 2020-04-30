@@ -1,7 +1,8 @@
-from typing import Any, Dict
+from typing import Any, Dict, List
 import numpy as np
 import torch
 from mlagents.trainers.action_info import ActionInfo
+from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 
 from mlagents.trainers.policy import Policy
 from mlagents_envs.base_env import DecisionSteps
@@ -47,6 +48,7 @@ class TorchPolicy(Policy):
         self.seed = seed
         self.brain = brain
         self.global_step = 0
+        self.m_size = 0
 
         self.act_size = brain.vector_action_space_size
         self.act_type = brain.vector_action_space_type
@@ -145,8 +147,12 @@ class TorchPolicy(Policy):
             self.critic.network_body.update_normalization(vector_obs)
             self.actor.network_body.update_normalization(vector_obs)
 
-    def execute_model(self, vec_obs, vis_obs, masks=None, actions=None):
-        action_dists = self.actor(vec_obs, vis_obs, masks)
+    def execute_model(
+        self, vec_obs, vis_obs, masks=None, actions=None, memories=None, seq_len=1
+    ):
+        action_dists, new_memories = self.actor(
+            vec_obs, vis_obs, masks, memories, seq_len
+        )
         if actions is None:
             generate_actions = True
             actions = []
@@ -172,23 +178,28 @@ class TorchPolicy(Policy):
             log_probs = log_probs.squeeze(-1)
             entropies = entropies.squeeze(-1)
         value_heads, mean_value = self.critic(vec_obs, vis_obs)
-        return actions, log_probs, entropies, value_heads
+        return actions, log_probs, entropies, value_heads, memories
 
     @timed
-    def evaluate(self, decision_requests: DecisionSteps) -> Dict[str, Any]:
+    def evaluate(
+        self, decision_requests: DecisionSteps, global_agent_ids: List[str]
+    ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
+        :param global_agent_ids:
         :param decision_requests: DecisionStep object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
         vec_obs = [torch.Tensor(vec_obs)]
         vis_obs = [torch.Tensor(vis_ob) for vis_ob in vis_obs]
+        memories = torch.Tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(0)
+
         if masks is not None:
             masks = torch.Tensor(masks)
         run_out = {}
-        action, log_probs, entropy, value_heads = self.execute_model(
-            vec_obs, vis_obs, masks
+        action, log_probs, entropy, value_heads, memories = self.execute_model(
+            vec_obs, vis_obs, masks=masks, memories=memories
         )
         run_out["action"] = np.array(action.detach())
         run_out["pre_action"] = np.array(
@@ -201,6 +212,8 @@ class TorchPolicy(Policy):
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
+        if self.use_recurrent:
+            run_out["memories"] = np.array(memories.detach())
         self.actor.network_body.update_normalization(vec_obs)
         self.critic.network_body.update_normalization(vec_obs)
         return run_out
@@ -217,9 +230,16 @@ class TorchPolicy(Policy):
         """
         if len(decision_requests) == 0:
             return ActionInfo.empty()
+
+        global_agent_ids = [
+            get_global_agent_id(worker_id, int(agent_id))
+            for agent_id in decision_requests.agent_id
+        ]  # For 1-D array, the iterator order is correct.
+
         run_out = self.evaluate(
-            decision_requests
+            decision_requests, global_agent_ids
         )  # pylint: disable=assignment-from-no-return
+        self.save_memories(global_agent_ids, run_out.get("memory_out"))
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),
