@@ -109,9 +109,9 @@ Notes on argument values:
 - `<image-name>` references the image name used when building the container.
 - `<environment-name>` **(Optional)**: If you are training with a linux
   executable, this is the name of the executable. If you are training in the
-  Editor, do not pass a `<environment-name>` argument and press the
-  **Play** button in Unity when the message _"Start training by pressing
-  the Play button in the Unity Editor"_ is displayed on the screen.
+  Editor, do not pass a `<environment-name>` argument and press the **Play**
+  button in Unity when the message _"Start training by pressing the Play button
+  in the Unity Editor"_ is displayed on the screen.
 - `source`: Reference to the path in your host OS where you will store the Unity
   executable.
 - `target`: Tells Docker to mount the `source` path as a disk with this name.
