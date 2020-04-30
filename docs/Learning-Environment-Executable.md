@@ -170,7 +170,7 @@ INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 9000. Mean Reward: 18
 INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
 ```
 
-You can press Ctrl+C to stop the training, and your trained model will be at
+You can press `Ctrl+C` to stop the training, and your trained model will be at
 `models/<run-identifier>/<behavior_name>.nn`, which corresponds to your model's
 latest checkpoint. (**Note:** There is a known bug on Windows that causes the
 saving of the model to fail when you early terminate the training, it's

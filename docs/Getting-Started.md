@@ -200,6 +200,10 @@ INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 10000. Mean Reward
 Note how the `Mean Reward` value printed to the screen increases as training
 progresses. This is a positive sign that training is succeeding.
 
+**Note**: You can train using an executable rather than the Editor. To do so,
+follow the instructions in
+[Using an Executable](Learning-Environment-Executable.md).
+
 ### Observing Training Progress
 
 Once you start training using `mlagents-learn` in the way described in the
@@ -225,12 +229,12 @@ Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
 use it with compatible Agents (the Agents that generated the model). **Note:**
 Do not just close the Unity Window once the `Saved Model` message appears.
-Either wait for the training process to close the window or press Ctrl+C at the
-command-line prompt. If you close the window manually, the `.nn` file containing
-the trained model is not exported into the ml-agents folder.
+Either wait for the training process to close the window or press `Ctrl+C` at
+the command-line prompt. If you close the window manually, the `.nn` file
+containing the trained model is not exported into the ml-agents folder.
 
-If you've quit the training early using Ctrl+C and want to resume training, run
-the same command again, appending the `--resume` flag:
+If you've quit the training early using `Ctrl+C` and want to resume training,
+run the same command again, appending the `--resume` flag:
 
 ```sh
 mlagents-learn config/trainer_config.yaml --run-id=first3DBallRun --resume

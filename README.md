@@ -3,6 +3,7 @@
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
 # Unity ML-Agents Toolkit (Beta)
+
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_1_docs/docs/)
 
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
@@ -27,20 +28,25 @@ developer communities.
 
 ## Features
 
-- Unity environment control from Python
-- 15+ sample Unity environments
-- Two deep reinforcement learning algorithms, Proximal Policy Optimization (PPO)
-  and Soft Actor-Critic (SAC)
+- 15+ [example Unity environments](docs/Learning-Environment-Examples.md)
 - Support for multiple environment configurations and training scenarios
-- Self-play mechanism for training agents in adversarial scenarios
-- Train memory-enhanced agents using deep reinforcement learning
-- Easily definable Curriculum Learning and Generalization scenarios
+- Flexible Unity SDK that can be integrated into your game or custom Unity scene
+- Training using two deep reinforcement learning algorithms, Proximal Policy
+  Optimization (PPO) and Soft Actor-Critic (SAC)
 - Built-in support for Imitation Learning through Behavioral Cloning or
   Generative Adversarial Imitation Learning
+- Self-play mechanism for training agents in adversarial scenarios
+- Easily definable Curriculum Learning scenarios for complex tasks
+- Train robust agents using environment randomization
 - Flexible agent control with On Demand Decision Making
-- Wrap learning environments as a gym
-- Utilizes the Unity Inference Engine
-- Train using concurrent Unity environment instances
+- Train using multiple concurrent Unity environment instances
+- Utilizes the [Unity Inference Engine](docs/Unity-Inference-Engine.md) to
+  provide native cross-platform support
+- Unity environment [control from Python](docs/Python-API.md)
+- Wrap Unity learning environments as a [gym](gym-unity/README.md)
+
+See our [ML-Agents Overview](docs/ML-Agents-Overview.md) page for detailed
+descriptions of all these features.
 
 ## Releases & Documentation
 
