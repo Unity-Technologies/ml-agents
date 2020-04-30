@@ -194,7 +194,6 @@ class Critic(nn.Module):
         num_layers,
         m_size,
         vis_encode_type,
-        use_lstm,
     ):
         super(Critic, self).__init__()
         self.network_body = NetworkBody(
