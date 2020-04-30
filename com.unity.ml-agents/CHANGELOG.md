@@ -80,9 +80,8 @@ and this project adheres to
 - Academy.InferenceSeed property was added. This is used to initialize the
   random number generator in ModelRunner, and is incremented for each
   ModelRunner. (#3823)
-- Added
-  `Agent.GetObservations(), which returns a read-only view of the observations added in`CollectObservations()`.
-  (#3825)
+- Added `Agent.GetObservations()`, which returns a read-only view of the
+  observations added in `CollectObservations()`. (#3825)
 - `UnityRLCapabilities` was added to help inform users when RL features are
   mismatched between C# and Python packages. (#3831)
 
