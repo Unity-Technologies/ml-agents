@@ -71,15 +71,15 @@ Inference is executed via the
 
 **CPU**
 
-- All platforms supported.
+All platforms supported.
 
 **GPU**
 
-- All platforms supported except:
+All platforms supported except:
 
-  - WebGL and GLES 3/2 on Android / iPhone
+- WebGL and GLES 3/2 on Android / iPhone
 
-  **NOTE:** Mobile platform support includes:
+**NOTE:** Mobile platform support includes:
 
 - Vulkan for Android
 - Metal for iOS.
