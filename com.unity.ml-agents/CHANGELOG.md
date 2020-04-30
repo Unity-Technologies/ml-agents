@@ -27,7 +27,7 @@ and this project adheres to
   - Introduced the `SideChannelManager` to register, unregister and access side
     channels.
   - `Academy.FloatProperties` was replaced by `Academy.EnvironmentParameters`.
-    See the [Migration Guide](../docs/Migrating.md) for more details on
+    See the [Migration Guide] for more details on
     upgrading.
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - SideChannel IncomingMessages methods now take an optional default argument,
@@ -55,9 +55,9 @@ and this project adheres to
   now happens by default, and use `--resume` to resume training instead. (#3705)
 - The Jupyter notebooks have been removed from the repository. (#3704)
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
-  scenarios, use the [Low Level Python API](../docs/Python-API.md). (#3681)
+  scenarios, use the [Low Level Python API]. (#3681)
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](../docs/Python-API.md) for more
+  [Low Level Python API] documentation for more
   information. If you use `mlagents-learn` for training, this should be a
   transparent change. (#3681)
 - Added ability to start training (initialize model weights) from a previous run
@@ -301,3 +301,6 @@ and this project adheres to
 ### This is the first release of _Unity Package ML-Agents_.
 
 _Short description of this release_
+
+[Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Migrating.md)
+[Low Level Python API](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
