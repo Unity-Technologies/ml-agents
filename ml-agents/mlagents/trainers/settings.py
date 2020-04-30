@@ -11,8 +11,17 @@ from mlagents.trainers.exception import TrainerConfigError
 def strict_to_cls(d, t):
     if d is None:
         return None
-
-    return t(**d)
+    d_copy = {}
+    d_copy.update(d)
+    for key, val in d_copy.items():
+        _fd = attr.fields_dict(t)
+        if key not in attr.fields_dict(t):
+            raise TrainerConfigError(
+                f"The option {key} was specified in your YAML file for {t.__name__}, but is invalid."
+            )
+        # Apply cattr structure to the values
+        d_copy[key] = cattr.structure(val, _fd[key].type)
+    return t(**d_copy)
 
 
 @attr.s(auto_attribs=True)
@@ -62,6 +71,10 @@ class RunOptions:
     # They will be left here.
     debug: bool = parser.get_default("debug")
     multi_gpu: bool = False
+    # Strict conversion
+    cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
+    cattr.register_structure_hook(EngineSettings, strict_to_cls)
+    cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":
