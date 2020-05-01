@@ -23,9 +23,9 @@ from mlagents_envs.base_env import (
 from mlagents_envs.timers import timed, hierarchical_timer
 from mlagents_envs.exception import (
     UnityEnvironmentException,
-    UnityCommunicationException,
     UnityActionException,
     UnityTimeOutException,
+    UnityCommunicatorStoppedException,
 )
 
 from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
@@ -55,11 +55,11 @@ class UnityEnvironment(BaseEnv):
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
 
     # Communication protocol version.
-    # When connecting to C#, this must match Academy.k_ApiVersion
-    # Currently we require strict equality between the communication protocol
-    # on each side, although we may allow some flexibility in the future.
-    # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.17.0"
+    # When connecting to C#, this must be compatible with Academy.k_ApiVersion.
+    # We follow semantic versioning on the communication version, so existing
+    # functionality will work as long the major versions match.
+    # This should be changed whenever a change is made to the communication protocol.
+    API_VERSION = "1.0.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -77,8 +77,8 @@ class UnityEnvironment(BaseEnv):
         raise UnityEnvironmentException(
             f"The communication API version is not compatible between Unity and python. "
             f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_com_ver}.\n "
-            f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
-            f"to download the latest version of ML-Agents."
+            f"Please find the versions that work best together from our release page.\n"
+            "https://github.com/Unity-Technologies/ml-agents/releases"
         )
 
     @staticmethod
@@ -376,7 +376,7 @@ class UnityEnvironment(BaseEnv):
         if self._loaded:
             outputs = self.communicator.exchange(self._generate_reset_input())
             if outputs is None:
-                raise UnityCommunicationException("Communicator has stopped.")
+                raise UnityCommunicatorStoppedException("Communicator has exited.")
             self._update_behavior_specs(outputs)
             rl_output = outputs.rl_output
             self._update_state(rl_output)
@@ -404,7 +404,7 @@ class UnityEnvironment(BaseEnv):
         with hierarchical_timer("communicator.exchange"):
             outputs = self.communicator.exchange(step_input)
         if outputs is None:
-            raise UnityCommunicationException("Communicator has stopped.")
+            raise UnityCommunicatorStoppedException("Communicator has exited.")
         self._update_behavior_specs(outputs)
         rl_output = outputs.rl_output
         self._update_state(rl_output)

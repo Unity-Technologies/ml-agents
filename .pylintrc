@@ -46,3 +46,6 @@ disable =
 
     # Using the global statement
     W0603,
+
+    # "Access to a protected member _foo of a client class (protected-access)"
+    W0212

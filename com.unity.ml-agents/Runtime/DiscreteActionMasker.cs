@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// The DiscreteActionMasker class represents a set of masked (disallowed) actions and
@@ -37,10 +37,10 @@ namespace MLAgents
         /// When used, the agent will not be able to perform the actions passed as argument
         /// at the next decision for the specified action branch. The actionIndices correspond
         /// to the action options the agent will be unable to perform.
-        /// 
+        ///
         /// See [Agents - Actions] for more information on masking actions.
-        /// 
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
+        ///
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="branch">The branch for which the actions will be masked.</param>
         /// <param name="actionIndices">The indices of the masked actions.</param>

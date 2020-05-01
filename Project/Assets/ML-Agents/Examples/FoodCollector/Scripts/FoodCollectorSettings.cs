@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using MLAgents;
+using Unity.MLAgents;
 
 public class FoodCollectorSettings : MonoBehaviour
 {
@@ -20,7 +20,7 @@ public class FoodCollectorSettings : MonoBehaviour
         m_Recorder = Academy.Instance.StatsRecorder;
     }
 
-    private void EnvironmentReset()
+    void EnvironmentReset()
     {
         ClearObjects(GameObject.FindGameObjectsWithTag("food"));
         ClearObjects(GameObject.FindGameObjectsWithTag("badFood"));

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System;
 using System.Collections;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Policies
+namespace Unity.MLAgents.Policies
 {
     /// <summary>
     /// The Heuristic Policy uses a hards coded Heuristic method
@@ -15,7 +15,6 @@ namespace MLAgents.Policies
         public delegate void ActionGenerator(float[] actionsOut);
         ActionGenerator m_Heuristic;
         float[] m_LastDecision;
-        int m_numActions;
         bool m_Done;
         bool m_DecisionRequested;
 
@@ -27,8 +26,7 @@ namespace MLAgents.Policies
         public HeuristicPolicy(ActionGenerator heuristic, int numActions)
         {
             m_Heuristic = heuristic;
-            m_numActions = numActions;
-            m_LastDecision = new float[m_numActions];
+            m_LastDecision = new float[numActions];
         }
 
         /// <inheritdoc />

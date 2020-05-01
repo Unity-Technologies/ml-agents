@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/observation.proto</summary>
   internal static partial class ObservationReflection {
@@ -32,12 +32,12 @@ namespace MLAgents.CommunicatorObjects {
             "IAEoCzIwLmNvbW11bmljYXRvcl9vYmplY3RzLk9ic2VydmF0aW9uUHJvdG8u",
             "RmxvYXREYXRhSAAaGQoJRmxvYXREYXRhEgwKBGRhdGEYASADKAJCEgoQb2Jz",
             "ZXJ2YXRpb25fZGF0YSopChRDb21wcmVzc2lvblR5cGVQcm90bxIICgROT05F",
-            "EAASBwoDUE5HEAFCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNi",
-            "BnByb3RvMw=="));
+            "EAASBwoDUE5HEAFCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9i",
+            "amVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.CompressionTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto), global::MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
           }));
     }
     #endregion
@@ -60,7 +60,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.ObservationReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Unity.MLAgents.CommunicatorObjects.ObservationReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -108,9 +108,9 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "compression_type" field.</summary>
     public const int CompressionTypeFieldNumber = 2;
-    private global::MLAgents.CommunicatorObjects.CompressionTypeProto compressionType_ = 0;
+    private global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto compressionType_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.CommunicatorObjects.CompressionTypeProto CompressionType {
+    public global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto CompressionType {
       get { return compressionType_; }
       set {
         compressionType_ = value;
@@ -131,8 +131,8 @@ namespace MLAgents.CommunicatorObjects {
     /// <summary>Field number for the "float_data" field.</summary>
     public const int FloatDataFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData FloatData {
-      get { return observationDataCase_ == ObservationDataOneofCase.FloatData ? (global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData) observationData_ : null; }
+    public global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData FloatData {
+      get { return observationDataCase_ == ObservationDataOneofCase.FloatData ? (global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData) observationData_ : null; }
       set {
         observationData_ = value;
         observationDataCase_ = value == null ? ObservationDataOneofCase.None : ObservationDataOneofCase.FloatData;
@@ -252,7 +252,7 @@ namespace MLAgents.CommunicatorObjects {
           break;
         case ObservationDataOneofCase.FloatData:
           if (FloatData == null) {
-            FloatData = new global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData();
+            FloatData = new global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData();
           }
           FloatData.MergeFrom(other.FloatData);
           break;
@@ -275,7 +275,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 16: {
-            compressionType_ = (global::MLAgents.CommunicatorObjects.CompressionTypeProto) input.ReadEnum();
+            compressionType_ = (global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto) input.ReadEnum();
             break;
           }
           case 26: {
@@ -283,7 +283,7 @@ namespace MLAgents.CommunicatorObjects {
             break;
           }
           case 34: {
-            global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData subBuilder = new global::MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData();
+            global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData subBuilder = new global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData();
             if (observationDataCase_ == ObservationDataOneofCase.FloatData) {
               subBuilder.MergeFrom(FloatData);
             }
@@ -307,7 +307,7 @@ namespace MLAgents.CommunicatorObjects {
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public static pbr::MessageDescriptor Descriptor {
-          get { return global::MLAgents.CommunicatorObjects.ObservationProto.Descriptor.NestedTypes[0]; }
+          get { return global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Descriptor.NestedTypes[0]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

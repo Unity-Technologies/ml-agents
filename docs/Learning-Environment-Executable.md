@@ -183,4 +183,4 @@ following the steps below:
 1. Select the **3DBall** prefab from the Project window and select **Agent**.
 1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
    the **Model** placeholder in the **Ball3DAgent** inspector window.
-1. Press the :arrow_forward: button at the top of the editor.
+1. Press the **Play** button at the top of the Editor.

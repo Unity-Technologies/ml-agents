@@ -10,9 +10,8 @@ def decorated_func(x: int = 0, y: float = 1.0) -> str:
 
 
 def test_timers() -> None:
-    with mock.patch(
-        "mlagents_envs.timers._global_timer_stack", new_callable=timers.TimerStack
-    ) as test_timer:
+    test_timer = timers.TimerStack()
+    with mock.patch("mlagents_envs.timers._get_thread_timer", return_value=test_timer):
         # First, run some simple code
         with timers.hierarchical_timer("top_level"):
             for i in range(3):

@@ -1,5 +1,5 @@
 using UnityEngine;
-using MLAgentsExamples;
+using Unity.MLAgentsExamples;
 
 public class FoodCollectorArea : Area
 {
