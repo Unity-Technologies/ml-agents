@@ -10,6 +10,7 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)

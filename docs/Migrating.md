@@ -21,6 +21,7 @@ double-check that the versions are in the same. The versions can be found in
   instead of `summaries/` and `models/`.
 - Trainer configuration, curriculum configuration, and parameter randomization
   configuration have all been moved to a single YAML file. (#3791)
+- `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 
 ### Steps to Migrate
 - Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
@@ -31,6 +32,8 @@ double-check that the versions are in the same. The versions can be found in
   the `Behavior Name` section.
   - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
+- If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
+in the `TerminalStep` and `TerminalSteps` objects.
 
 ## Migrating from 0.15 to Release 1
 

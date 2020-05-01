@@ -102,7 +102,7 @@ class PPOTrainer(RLTrainer):
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
             trajectory.next_obs,
-            trajectory.done_reached and not trajectory.max_step_reached,
+            trajectory.done_reached and not trajectory.interrupted,
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)

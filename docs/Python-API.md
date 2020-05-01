@@ -200,9 +200,9 @@ A `TerminalSteps` has the following fields :
 - `agent_id` is an int vector of length batch size containing unique identifier
   for the corresponding Agent. This is used to track Agents across simulation
   steps.
-- `max_step` is an array of booleans of length batch size. Is true if the
-  associated Agent reached its maximum number of steps during the last
-  simulation step.
+ - `interrupted` is an array of booleans of length batch size. Is true if the
+ associated Agent was interrupted since the last decision step. For example,
+ if the Agent reached the maximum number of steps for the episode.
 
 It also has the two following methods:
 
@@ -218,8 +218,9 @@ A `TerminalStep` has the following fields:
 - `reward` is a float. Corresponds to the rewards collected by the agent since
   the last simulation step.
 - `agent_id` is an int and an unique identifier for the corresponding Agent.
-- `max_step` is a bool. Is true if the Agent reached its maximum number of steps
-  during the last simulation step.
+ - `interrupted` is a bool. Is true if the Agent was interrupted since the last
+ decision step. For example, if the Agent reached the maximum number of steps for
+ the episode.
 
 #### BehaviorSpec
 

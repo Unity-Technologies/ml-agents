@@ -13,7 +13,7 @@ class AgentExperience(NamedTuple):
     action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
     prev_action: np.ndarray
-    max_step: bool
+    interrupted: bool
     memory: np.ndarray
 
 
@@ -141,8 +141,8 @@ class Trajectory(NamedTuple):
         return self.steps[-1].done
 
     @property
-    def max_step_reached(self) -> bool:
+    def interrupted(self) -> bool:
         """
         Returns true if trajectory was terminated because max steps was reached.
         """
-        return self.steps[-1].max_step
+        return self.steps[-1].interrupted
