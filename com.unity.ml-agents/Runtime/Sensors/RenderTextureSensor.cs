@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
-    /// Sensor class that wraps a <see cref="RenderTexture"/> instance.
+    /// Sensor class that wraps a [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance.
     /// </summary>
     public class RenderTextureSensor : ISensor
     {
@@ -26,10 +26,12 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Initializes the sensor.
         /// </summary>
-        /// <param name="renderTexture">The <see cref="RenderTexture"/> instance to wrap.</param>
+        /// <param name="renderTexture">The [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html)
+        /// instance to wrap.</param>
         /// <param name="grayscale">Whether to convert it to grayscale or not.</param>
         /// <param name="name">Name of the sensor.</param>
         /// <param name="compressionType">Compression method for the render texture.</param>
+        /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         public RenderTextureSensor(
             RenderTexture renderTexture, bool grayscale, string name, SensorCompressionType compressionType)
         {
@@ -83,7 +85,7 @@ namespace MLAgents.Sensors
         public void Update() {}
 
         /// <inheritdoc/>
-        public void Reset() { }
+        public void Reset() {}
 
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()
@@ -118,11 +120,11 @@ namespace MLAgents.Sensors
             {
                 // Edit Mode tests complain if we use Destroy()
                 // TODO move to extension methods for UnityEngine.Object?
-                UnityEngine.Object.DestroyImmediate(texture);
+                Object.DestroyImmediate(texture);
             }
             else
             {
-                UnityEngine.Object.Destroy(texture);
+                Object.Destroy(texture);
             }
         }
     }

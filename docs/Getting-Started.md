@@ -119,8 +119,8 @@ example.
    **Note** : You can modify multiple game objects in a scene by selecting them
    all at once using the search bar in the Scene Hierarchy.
 1. Set the **Inference Device** to use for this model as `CPU`.
-1. Click the :arrow_forward: button in the Unity Editor and you will see the
-   platforms balance the balls using the pre-trained model.
+1. Click the **Play** button in the Unity Editor and you will see the platforms
+   balance the balls using the pre-trained model.
 
 ## Training a new model with Reinforcement Learning
 
@@ -143,8 +143,8 @@ accepts arguments used to configure both training and inference phases.
      files for all our example environments, including 3DBall.
    - `run-id` is a unique name for this training session.
 1. When the message _"Start training by pressing the Play button in the Unity
-   Editor"_ is displayed on the screen, you can press the :arrow_forward: button
-   in Unity to start training in the Editor.
+   Editor"_ is displayed on the screen, you can press the **Play** button in
+   Unity to start training in the Editor.
 
 If `mlagents-learn` runs correctly and starts training, you should see something
 like this:
@@ -199,6 +199,10 @@ INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 10000. Mean Reward
 Note how the `Mean Reward` value printed to the screen increases as training
 progresses. This is a positive sign that training is succeeding.
 
+**Note**: You can train using an executable rather than the Editor. To do so,
+follow the instructions in
+[Using an Executable](Learning-Environment-Executable.md).
+
 ### Observing Training Progress
 
 Once you start training using `mlagents-learn` in the way described in the
@@ -224,12 +228,12 @@ Once the training process completes, and the training process saves the model
 (denoted by the `Saved Model` message) you can add it to the Unity project and
 use it with compatible Agents (the Agents that generated the model). **Note:**
 Do not just close the Unity Window once the `Saved Model` message appears.
-Either wait for the training process to close the window or press Ctrl+C at the
-command-line prompt. If you close the window manually, the `.nn` file containing
-the trained model is not exported into the ml-agents folder.
+Either wait for the training process to close the window or press `Ctrl+C` at
+the command-line prompt. If you close the window manually, the `.nn` file
+containing the trained model is not exported into the ml-agents folder.
 
-If you've quit the training early using Ctrl+C and want to resume training, run
-the same command again, appending the `--resume` flag:
+If you've quit the training early using `Ctrl+C` and want to resume training,
+run the same command again, appending the `--resume` flag:
 
 ```sh
 mlagents-learn config/ppo/3DBall.yaml --run-id=firstRun --resume
@@ -247,7 +251,7 @@ which is similar to the steps described [above](#running-a-pre-trained-model).
 1. Select the **3DBall** prefab Agent object.
 1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
    the **Model** placeholder in the **Ball3DAgent** inspector window.
-1. Press the :arrow_forward: button at the top of the Editor.
+1. Press the **Play** button at the top of the Editor.
 
 ## Next Steps
 

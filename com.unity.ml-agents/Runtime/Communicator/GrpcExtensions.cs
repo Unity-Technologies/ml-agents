@@ -2,18 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Google.Protobuf;
-using MLAgents.CommunicatorObjects;
+using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
-using MLAgents.Sensors;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     internal static class GrpcExtensions
     {

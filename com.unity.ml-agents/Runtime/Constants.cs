@@ -1,4 +1,4 @@
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Grouping for use in AddComponentMenu (instead of nesting the menus).

@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Utility class for reading the data sent to the SideChannel.

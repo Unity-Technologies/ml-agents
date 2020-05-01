@@ -1,5 +1,5 @@
 using System;
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// A Side Channel for sending <see cref="StatsRecorder"/> data.

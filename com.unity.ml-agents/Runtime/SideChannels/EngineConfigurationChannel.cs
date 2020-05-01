@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
 
     /// <summary>
@@ -9,7 +9,7 @@ namespace MLAgents.SideChannels
     /// </summary>
     internal class EngineConfigurationChannel : SideChannel
     {
-        private enum ConfigurationType : int
+        enum ConfigurationType : int
         {
             ScreenResolution = 0,
             QualityLevel = 1,

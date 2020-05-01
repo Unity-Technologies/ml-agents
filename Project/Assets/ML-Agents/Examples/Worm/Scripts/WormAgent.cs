@@ -1,8 +1,7 @@
-using System.Collections;
 using UnityEngine;
-using MLAgents;
-using MLAgentsExamples;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgentsExamples;
+using Unity.MLAgents.Sensors;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
@@ -17,13 +16,13 @@ public class WormAgent : Agent
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
-    [Header("Body Parts")] [Space(10)] 
+    [Header("Body Parts")] [Space(10)]
     public Transform bodySegment0;
     public Transform bodySegment1;
     public Transform bodySegment2;
     public Transform bodySegment3;
 
-    [Header("Joint Settings")] [Space(10)] 
+    [Header("Joint Settings")] [Space(10)]
     JointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
@@ -51,7 +50,7 @@ public class WormAgent : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
-        
+
         //We only want the head to detect the target
         //So we need to remove TargetContact from everything else
         //This is a temp fix till we can redesign
@@ -60,7 +59,7 @@ public class WormAgent : Agent
         DestroyImmediate(bodySegment3.GetComponent<TargetContact>());
     }
 
-    
+
     //Get Joint Rotation Relative to the Connected Rigidbody
     //We want to collect this info because it is the actual rotation, not the "target rotation"
     public Quaternion GetJointRotation(ConfigurableJoint joint)
@@ -90,7 +89,7 @@ public class WormAgent : Agent
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
-    
+
     public override void CollectObservations(VectorSensor sensor)
     {
         m_JdController.GetCurrentJointForces();

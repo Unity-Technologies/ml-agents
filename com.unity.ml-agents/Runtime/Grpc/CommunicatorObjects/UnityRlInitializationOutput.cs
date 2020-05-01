@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_rl_initialization_output.proto</summary>
   internal static partial class UnityRlInitializationOutputReflection {
@@ -34,12 +34,12 @@ namespace MLAgents.CommunicatorObjects {
             "YWluX3BhcmFtZXRlcnMYBSADKAsyKi5jb21tdW5pY2F0b3Jfb2JqZWN0cy5C",
             "cmFpblBhcmFtZXRlcnNQcm90bxIXCg9wYWNrYWdlX3ZlcnNpb24YByABKAkS",
             "RAoMY2FwYWJpbGl0aWVzGAggASgLMi4uY29tbXVuaWNhdG9yX29iamVjdHMu",
-            "VW5pdHlSTENhcGFiaWxpdGllc1Byb3RvSgQIBhAHQh+qAhxNTEFnZW50cy5D",
-            "b21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
+            "VW5pdHlSTENhcGFiaWxpdGllc1Byb3RvSgQIBhAHQiWqAiJVbml0eS5NTEFn",
+            "ZW50cy5Db21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor, global::MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor, global::Unity.MLAgents.CommunicatorObjects.BrainParametersReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "CommunicationVersion", "LogPath", "BrainParameters", "PackageVersion", "Capabilities" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationOutputProto.Parser, new[]{ "Name", "CommunicationVersion", "LogPath", "BrainParameters", "PackageVersion", "Capabilities" }, null, null, null)
           }));
     }
     #endregion
@@ -57,7 +57,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.UnityRlInitializationOutputReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Unity.MLAgents.CommunicatorObjects.UnityRlInitializationOutputReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -126,11 +126,11 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "brain_parameters" field.</summary>
     public const int BrainParametersFieldNumber = 5;
-    private static readonly pb::FieldCodec<global::MLAgents.CommunicatorObjects.BrainParametersProto> _repeated_brainParameters_codec
-        = pb::FieldCodec.ForMessage(42, global::MLAgents.CommunicatorObjects.BrainParametersProto.Parser);
-    private readonly pbc::RepeatedField<global::MLAgents.CommunicatorObjects.BrainParametersProto> brainParameters_ = new pbc::RepeatedField<global::MLAgents.CommunicatorObjects.BrainParametersProto>();
+    private static readonly pb::FieldCodec<global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto> _repeated_brainParameters_codec
+        = pb::FieldCodec.ForMessage(42, global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto.Parser);
+    private readonly pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto> brainParameters_ = new pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::MLAgents.CommunicatorObjects.BrainParametersProto> BrainParameters {
+    public pbc::RepeatedField<global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto> BrainParameters {
       get { return brainParameters_; }
     }
 
@@ -150,12 +150,12 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "capabilities" field.</summary>
     public const int CapabilitiesFieldNumber = 8;
-    private global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto capabilities_;
+    private global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto capabilities_;
     /// <summary>
     /// The RL Capabilities of the C# package.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto Capabilities {
+    public global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto Capabilities {
       get { return capabilities_; }
       set {
         capabilities_ = value;
@@ -277,7 +277,7 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.capabilities_ != null) {
         if (capabilities_ == null) {
-          capabilities_ = new global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
+          capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
         }
         Capabilities.MergeFrom(other.Capabilities);
       }
@@ -314,7 +314,7 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 66: {
             if (capabilities_ == null) {
-              capabilities_ = new global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
+              capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
             }
             input.ReadMessage(capabilities_);
             break;

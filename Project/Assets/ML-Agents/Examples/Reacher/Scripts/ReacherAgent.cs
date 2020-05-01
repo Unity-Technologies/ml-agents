@@ -1,7 +1,6 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 
 public class ReacherAgent : Agent
 {
@@ -21,7 +20,7 @@ public class ReacherAgent : Agent
     // Frequency of the cosine deviation of the goal along the vertical dimension
     float m_DeviationFreq;
 
-    private EnvironmentParameters m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     /// <summary>
     /// Collect the rigidbodies of the reacher in order to resue them for

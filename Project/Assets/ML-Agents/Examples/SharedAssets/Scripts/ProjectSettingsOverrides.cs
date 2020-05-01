@@ -1,8 +1,7 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// A helper class for the ML-Agents example scenes to override various
