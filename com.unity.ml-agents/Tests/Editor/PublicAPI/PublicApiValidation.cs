@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using MLAgents;
-using MLAgents.Policies;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// The purpose of these tests is to make sure that we can do basic operations like creating
@@ -25,17 +22,17 @@ namespace MLAgentsExamples
             var height = 16;
 
             var sensorComponent = gameObject.AddComponent<CameraSensorComponent>();
-            sensorComponent.camera = Camera.main;
-            sensorComponent.sensorName = "camera1";
-            sensorComponent.width = width;
-            sensorComponent.height = height;
-            sensorComponent.grayscale = true;
+            sensorComponent.Camera = Camera.main;
+            sensorComponent.SensorName = "camera1";
+            sensorComponent.Width = width;
+            sensorComponent.Height = height;
+            sensorComponent.Grayscale = true;
 
             // Make sure the sets actually applied
-            Assert.AreEqual("camera1", sensorComponent.sensorName);
-            Assert.AreEqual(width, sensorComponent.width);
-            Assert.AreEqual(height, sensorComponent.height);
-            Assert.IsTrue(sensorComponent.grayscale);
+            Assert.AreEqual("camera1", sensorComponent.SensorName);
+            Assert.AreEqual(width, sensorComponent.Width);
+            Assert.AreEqual(height, sensorComponent.Height);
+            Assert.IsTrue(sensorComponent.Grayscale);
         }
 
         [Test]
@@ -47,13 +44,13 @@ namespace MLAgentsExamples
             var width = 24;
             var height = 16;
             var texture = new RenderTexture(width, height, 0);
-            sensorComponent.renderTexture = texture;
-            sensorComponent.sensorName = "rtx1";
-            sensorComponent.grayscale = true;
+            sensorComponent.RenderTexture = texture;
+            sensorComponent.SensorName = "rtx1";
+            sensorComponent.Grayscale = true;
 
             // Make sure the sets actually applied
-            Assert.AreEqual("rtx1", sensorComponent.sensorName);
-            Assert.IsTrue(sensorComponent.grayscale);
+            Assert.AreEqual("rtx1", sensorComponent.SensorName);
+            Assert.IsTrue(sensorComponent.Grayscale);
         }
 
         [Test]
@@ -62,13 +59,13 @@ namespace MLAgentsExamples
             var gameObject = new GameObject();
 
             var sensorComponent = gameObject.AddComponent<RayPerceptionSensorComponent3D>();
-            sensorComponent.sensorName = "ray3d";
-            sensorComponent.detectableTags = new List<string> { "Player", "Respawn" };
-            sensorComponent.raysPerDirection = 3;
-            sensorComponent.maxRayDegrees = 30;
-            sensorComponent.sphereCastRadius = .1f;
-            sensorComponent.rayLayerMask = 0;
-            sensorComponent.observationStacks = 2;
+            sensorComponent.SensorName = "ray3d";
+            sensorComponent.DetectableTags = new List<string> { "Player", "Respawn" };
+            sensorComponent.RaysPerDirection = 3;
+            sensorComponent.MaxRayDegrees = 30;
+            sensorComponent.SphereCastRadius = .1f;
+            sensorComponent.RayLayerMask = 0;
+            sensorComponent.ObservationStacks = 2;
 
             sensorComponent.CreateSensor();
         }

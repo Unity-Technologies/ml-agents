@@ -56,7 +56,7 @@ In this tutorial we used the
 [Deep Learning AMI (Ubuntu)](https://aws.amazon.com/marketplace/pp/B077GCH38C)
 listed under AWS Marketplace with a p2.xlarge instance.
 
-### Installing the ML-Agents toolkit on the instance
+### Installing the ML-Agents Toolkit on the instance
 
 After launching your EC2 instance using the ami and ssh into it:
 
@@ -69,7 +69,7 @@ After launching your EC2 instance using the ami and ssh into it:
 2. Clone the ML-Agents repo and install the required Python packages
 
    ```sh
-   git clone --branch latest_release https://github.com/Unity-Technologies/ml-agents.git
+   git clone --branch release_1 https://github.com/Unity-Technologies/ml-agents.git
    cd ml-agents/ml-agents/
    pip3 install -e .
    ```

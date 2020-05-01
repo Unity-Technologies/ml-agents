@@ -1,6 +1,6 @@
 using System;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// Sensor that wraps around another Sensor to provide temporal stacking.
@@ -33,7 +33,7 @@ namespace MLAgents.Sensors
         float[][] m_StackedObservations;
 
         int m_CurrentIndex;
-        WriteAdapter m_LocalAdapter = new WriteAdapter();
+        ObservationWriter m_LocalWriter = new ObservationWriter();
 
         /// <summary>
         /// Initializes the sensor.
@@ -76,19 +76,19 @@ namespace MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
-            // First, call the wrapped sensor's write method. Make sure to use our own adapter, not the passed one.
+            // First, call the wrapped sensor's write method. Make sure to use our own writer, not the passed one.
             var wrappedShape = m_WrappedSensor.GetObservationShape();
-            m_LocalAdapter.SetTarget(m_StackedObservations[m_CurrentIndex], wrappedShape, 0);
-            m_WrappedSensor.Write(m_LocalAdapter);
+            m_LocalWriter.SetTarget(m_StackedObservations[m_CurrentIndex], wrappedShape, 0);
+            m_WrappedSensor.Write(m_LocalWriter);
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
                 var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                adapter.AddRange(m_StackedObservations[obsIndex], numWritten);
+                writer.AddRange(m_StackedObservations[obsIndex], numWritten);
                 numWritten += m_UnstackedObservationSize;
             }
 

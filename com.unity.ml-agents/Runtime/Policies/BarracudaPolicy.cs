@@ -1,9 +1,9 @@
-using Barracuda;
+using Unity.Barracuda;
 using System.Collections.Generic;
-using MLAgents.Inference;
-using MLAgents.Sensors;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Policies
+namespace Unity.MLAgents.Policies
 {
     /// <summary>
     /// Where to perform inference.

@@ -1,8 +1,6 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
 
 public class FoodCollectorSettings : MonoBehaviour
 {
@@ -14,15 +12,15 @@ public class FoodCollectorSettings : MonoBehaviour
     public int totalScore;
     public Text scoreText;
 
-    StatsSideChannel m_statsSideChannel;
+    StatsRecorder m_Recorder;
 
     public void Awake()
     {
         Academy.Instance.OnEnvironmentReset += EnvironmentReset;
-        m_statsSideChannel = SideChannelUtils.GetSideChannel<StatsSideChannel>();
+        m_Recorder = Academy.Instance.StatsRecorder;
     }
 
-    public void EnvironmentReset()
+    void EnvironmentReset()
     {
         ClearObjects(GameObject.FindGameObjectsWithTag("food"));
         ClearObjects(GameObject.FindGameObjectsWithTag("badFood"));
@@ -54,7 +52,7 @@ public class FoodCollectorSettings : MonoBehaviour
         // need to send every Update() call.
         if ((Time.frameCount % 100)== 0)
         {
-            m_statsSideChannel?.AddStat("TotalScore", totalScore);
+            m_Recorder.Add("TotalScore", totalScore);
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Side channel for managing raw bytes of data. It is up to the clients of this side channel
@@ -22,7 +22,7 @@ namespace MLAgents.SideChannels
         }
 
         /// <inheritdoc/>
-        public override void OnMessageReceived(IncomingMessage msg)
+        protected override void OnMessageReceived(IncomingMessage msg)
         {
             m_MessagesReceived.Add(msg.GetRawBytes());
         }

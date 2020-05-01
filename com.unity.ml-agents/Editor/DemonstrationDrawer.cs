@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEditor;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     /// <summary>
     /// Renders a custom UI for DemonstrationSummary ScriptableObject.
@@ -72,8 +72,8 @@ namespace MLAgents.Editor
         /// </summary>
         void MakeActionsProperty(SerializedProperty property)
         {
-            var actSizeProperty = property.FindPropertyRelative("vectorActionSize");
-            var actSpaceTypeProp = property.FindPropertyRelative("vectorActionSpaceType");
+            var actSizeProperty = property.FindPropertyRelative("VectorActionSize");
+            var actSpaceTypeProp = property.FindPropertyRelative("VectorActionSpaceType");
 
             var vecActSizeLabel =
                 actSizeProperty.displayName + ": " + BuildIntArrayLabel(actSizeProperty);

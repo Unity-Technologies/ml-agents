@@ -6,6 +6,9 @@ executors:
   python373:
     docker:
       - image: circleci/python:3.7.3
+  python382:
+    docker:
+      - image: circleci/python:3.8.2
 
 jobs:
   build_python:
@@ -107,6 +110,9 @@ jobs:
       - run:
           name: Install Dependencies
           command: |
+            # Need ruby for search-and-replace
+            sudo apt-get update
+            sudo apt-get install ruby-full
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
@@ -171,6 +177,14 @@ jobs:
       directory:
         type: string
         description: Local directory to use for publishing (e.g. ml-agents)
+      username:
+        type: string
+        description: pypi username
+        default: mlagents
+      test_repository_args:
+        type: string
+        description: Optional override repository URL. Only use for tests, leave blank for "real"
+        default: ""
     docker:
       - image: circleci/python:3.6
     steps:
@@ -204,7 +218,7 @@ jobs:
           command: |
             . venv/bin/activate
             cd << parameters.directory >>
-            twine upload -u mlagents -p $PYPI_PASSWORD dist/*
+            twine upload -u << parameters.username >> -p $PYPI_PASSWORD << parameters.test_repository_args >> dist/*
 
 workflows:
   version: 2
@@ -230,14 +244,22 @@ workflows:
           pyversion: 3.7.3
           # Test python 3.7 with the newest supported versions
           pip_constraints: test_constraints_max_tf2_version.txt
+      - build_python:
+          name: python_3.8.2+tf2.2
+          executor: python382
+          pyversion: 3.8.2
+          # Test python 3.8 with the newest edge versions
+          pip_constraints: test_constraints_max_tf2_version.txt
       - markdown_link_check
       - pre-commit
+      # The first deploy jobs are the "real" ones that upload to pypi
       - deploy:
           name: deploy ml-agents-envs
           directory: ml-agents-envs
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+              # Matches e.g. "release_123"
+              only: /^release_[0-9]+$/
             branches:
               ignore: /.*/
       - deploy:
@@ -245,7 +267,8 @@ workflows:
           directory: ml-agents
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+              # Matches e.g. "release_123"
+              only: /^release_[0-9]+$/
             branches:
               ignore: /.*/
       - deploy:
@@ -253,7 +276,42 @@ workflows:
           directory: gym-unity
           filters:
             tags:
-              only: /[0-9]+(\.[0-9]+)*(\.dev[0-9]+)*/
+              # Matches e.g. "release_123"
+              only: /^release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      # These deploy jobs upload to the pypi test repo. They have different tag triggers than the real ones.
+      - deploy:
+          name: test deploy ml-agents-envs
+          directory: ml-agents-envs
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: test deploy ml-agents
+          directory: ml-agents
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: test deploy gym-unity
+          directory: gym-unity
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^release_[0-9]+_test[0-9]+$/
             branches:
               ignore: /.*/
   nightly:

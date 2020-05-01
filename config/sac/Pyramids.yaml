@@ -1,0 +1,31 @@
+behaviors:
+  Pyramids:
+    trainer: sac
+    batch_size: 128
+    buffer_size: 500000
+    buffer_init_steps: 10000
+    hidden_units: 256
+    init_entcoef: 0.01
+    learning_rate: 0.0003
+    learning_rate_schedule: constant
+    max_steps: 1.0e7
+    memory_size: 128
+    normalize: false
+    steps_per_update: 10
+    num_layers: 2
+    time_horizon: 128
+    sequence_length: 16
+    summary_freq: 30000
+    tau: 0.01
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 2.0
+        gamma: 0.99
+      gail:
+        strength: 0.02
+        gamma: 0.99
+        encoding_size: 128
+        use_actions: true
+        demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo

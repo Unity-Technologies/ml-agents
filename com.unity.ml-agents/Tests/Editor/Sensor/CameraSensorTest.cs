@@ -1,9 +1,9 @@
  using System;
  using NUnit.Framework;
  using UnityEngine;
- using MLAgents.Sensors;
+ using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
 
     [TestFixture]
@@ -21,8 +21,8 @@ namespace MLAgents.Tests
                     var camera = Camera.main;
                     var sensor = new CameraSensor(camera, width, height, grayscale, "TestCameraSensor", compression);
 
-                    var writeAdapter = new WriteAdapter();
-                    var obs = sensor.GetObservationProto(writeAdapter);
+                    var obsWriter = new ObservationWriter();
+                    var obs = sensor.GetObservationProto(obsWriter);
 
                     Assert.AreEqual((int) compression, (int) obs.CompressionType);
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };

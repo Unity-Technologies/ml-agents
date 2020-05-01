@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_rl_initialization_input.proto</summary>
   internal static partial class UnityRlInitializationInputReflection {
@@ -26,14 +26,17 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CkZtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL3VuaXR5X3Js",
             "X2luaXRpYWxpemF0aW9uX2lucHV0LnByb3RvEhRjb21tdW5pY2F0b3Jfb2Jq",
-            "ZWN0cyJnCh9Vbml0eVJMSW5pdGlhbGl6YXRpb25JbnB1dFByb3RvEgwKBHNl",
-            "ZWQYASABKAUSHQoVY29tbXVuaWNhdGlvbl92ZXJzaW9uGAIgASgJEhcKD3Bh",
-            "Y2thZ2VfdmVyc2lvbhgDIAEoCUIfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9y",
-            "T2JqZWN0c2IGcHJvdG8z"));
+            "ZWN0cxo1bWxhZ2VudHNfZW52cy9jb21tdW5pY2F0b3Jfb2JqZWN0cy9jYXBh",
+            "YmlsaXRpZXMucHJvdG8irQEKH1VuaXR5UkxJbml0aWFsaXphdGlvbklucHV0",
+            "UHJvdG8SDAoEc2VlZBgBIAEoBRIdChVjb21tdW5pY2F0aW9uX3ZlcnNpb24Y",
+            "AiABKAkSFwoPcGFja2FnZV92ZXJzaW9uGAMgASgJEkQKDGNhcGFiaWxpdGll",
+            "cxgEIAEoCzIuLmNvbW11bmljYXRvcl9vYmplY3RzLlVuaXR5UkxDYXBhYmls",
+            "aXRpZXNQcm90b0IlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2Jq",
+            "ZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { },
+          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion", "Capabilities" }, null, null, null)
           }));
     }
     #endregion
@@ -51,7 +54,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.UnityRlInitializationInputReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Unity.MLAgents.CommunicatorObjects.UnityRlInitializationInputReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -71,6 +74,7 @@ namespace MLAgents.CommunicatorObjects {
       seed_ = other.seed_;
       communicationVersion_ = other.communicationVersion_;
       packageVersion_ = other.packageVersion_;
+      Capabilities = other.capabilities_ != null ? other.Capabilities.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -118,6 +122,20 @@ namespace MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "capabilities" field.</summary>
+    public const int CapabilitiesFieldNumber = 4;
+    private global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto capabilities_;
+    /// <summary>
+    /// The RL Capabilities of the Python trainer.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto Capabilities {
+      get { return capabilities_; }
+      set {
+        capabilities_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLInitializationInputProto);
@@ -134,6 +152,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Seed != other.Seed) return false;
       if (CommunicationVersion != other.CommunicationVersion) return false;
       if (PackageVersion != other.PackageVersion) return false;
+      if (!object.Equals(Capabilities, other.Capabilities)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -143,6 +162,7 @@ namespace MLAgents.CommunicatorObjects {
       if (Seed != 0) hash ^= Seed.GetHashCode();
       if (CommunicationVersion.Length != 0) hash ^= CommunicationVersion.GetHashCode();
       if (PackageVersion.Length != 0) hash ^= PackageVersion.GetHashCode();
+      if (capabilities_ != null) hash ^= Capabilities.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -168,6 +188,10 @@ namespace MLAgents.CommunicatorObjects {
         output.WriteRawTag(26);
         output.WriteString(PackageVersion);
       }
+      if (capabilities_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Capabilities);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -184,6 +208,9 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (PackageVersion.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(PackageVersion);
+      }
+      if (capabilities_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Capabilities);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -204,6 +231,12 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.PackageVersion.Length != 0) {
         PackageVersion = other.PackageVersion;
+      }
+      if (other.capabilities_ != null) {
+        if (capabilities_ == null) {
+          capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
+        }
+        Capabilities.MergeFrom(other.Capabilities);
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -226,6 +259,13 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 26: {
             PackageVersion = input.ReadString();
+            break;
+          }
+          case 34: {
+            if (capabilities_ == null) {
+              capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
+            }
+            input.ReadMessage(capabilities_);
             break;
           }
         }

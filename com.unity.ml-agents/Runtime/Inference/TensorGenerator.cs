@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Barracuda;
-using MLAgents.Sensors;
+using Unity.Barracuda;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     /// <summary>
     /// Mapping between Tensor names and generators.

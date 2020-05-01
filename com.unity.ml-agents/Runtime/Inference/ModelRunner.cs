@@ -1,10 +1,10 @@
 using System.Collections.Generic;
-using Barracuda;
+using Unity.Barracuda;
 using UnityEngine.Profiling;
-using MLAgents.Sensors;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     internal struct AgentInfoSensorsPair
     {

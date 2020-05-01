@@ -1,25 +1,26 @@
 using System.IO;
 using Google.Protobuf;
 using System.Collections.Generic;
-using MLAgents.Sensors;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Demonstrations
+namespace Unity.MLAgents.Demonstrations
 {
     /// <summary>
     /// Responsible for writing demonstration data to stream (typically a file stream).
     /// </summary>
+    /// <seealso cref="DemonstrationRecorder"/>
     public class DemonstrationWriter
     {
         /// <summary>
-        /// Number of bytes reserved for the Demonstration metadata at the start of the demo file.
+        /// Number of bytes reserved for the <see cref="DemonstrationMetaData"/> at the start of the demo file.
         /// </summary>
         internal const int MetaDataBytes = 32;
 
         DemonstrationMetaData m_MetaData;
         Stream m_Writer;
         float m_CumulativeReward;
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        ObservationWriter m_ObservationWriter = new ObservationWriter();
 
         /// <summary>
         /// Create a DemonstrationWriter that will write to the specified stream.
@@ -116,7 +117,7 @@ namespace MLAgents.Demonstrations
             var agentProto = info.ToInfoActionPairProto();
             foreach (var sensor in sensors)
             {
-                agentProto.AgentInfo.Observations.Add(sensor.GetObservationProto(m_WriteAdapter));
+                agentProto.AgentInfo.Observations.Add(sensor.GetObservationProto(m_ObservationWriter));
             }
 
             agentProto.WriteDelimitedTo(m_Writer);

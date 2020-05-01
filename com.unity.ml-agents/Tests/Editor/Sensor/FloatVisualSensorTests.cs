@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class Float2DSensor : ISensor
     {
@@ -44,7 +44,7 @@ namespace MLAgents.Tests
             return null;
         }
 
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("Float2DSensor.Write"))
             {
@@ -52,7 +52,7 @@ namespace MLAgents.Tests
                 {
                     for (var w = 0; w < Width; w++)
                     {
-                        adapter[h, w, 0] = floatData[h, w];
+                        writer[h, w, 0] = floatData[h, w];
                     }
                 }
                 var numWritten = Height * Width;
@@ -84,7 +84,7 @@ namespace MLAgents.Tests
             }
 
             var output = new float[12];
-            var writer = new WriteAdapter();
+            var writer = new ObservationWriter();
             writer.SetTarget(output, sensor.GetObservationShape(), 0);
             sensor.Write(writer);
             for (var i = 0; i < 9; i++)

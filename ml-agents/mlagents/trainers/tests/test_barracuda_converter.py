@@ -55,8 +55,7 @@ def dummy_config():
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
+        output_path: test
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -70,8 +69,7 @@ def dummy_config():
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 def test_policy_conversion(dummy_config, tmpdir, rnn, visual, discrete):
     tf.reset_default_graph()
-    dummy_config["summary_path"] = str(tmpdir)
-    dummy_config["model_path"] = os.path.join(tmpdir, "test")
+    dummy_config["output_path"] = os.path.join(tmpdir, "test")
     policy = create_policy_mock(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )

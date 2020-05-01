@@ -1,19 +1,19 @@
 using System;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     internal static class Utilities
     {
         /// <summary>
-        /// Puts a Texture2D into a WriteAdapter.
+        /// Puts a Texture2D into a ObservationWriter.
         /// </summary>
         /// <param name="texture">
         /// The texture to be put into the tensor.
         /// </param>
-        /// <param name="adapter">
-        /// Adapter to fill with Texture data.
+        /// <param name="obsWriter">
+        /// Writer to fill with Texture data.
         /// </param>
         /// <param name="grayScale">
         /// If set to <c>true</c> the textures will be converted to grayscale before
@@ -22,7 +22,7 @@ namespace MLAgents
         /// <returns>The number of floats written</returns>
         internal static int TextureToTensorProxy(
             Texture2D texture,
-            WriteAdapter adapter,
+            ObservationWriter obsWriter,
             bool grayScale)
         {
             var width = texture.width;
@@ -38,15 +38,15 @@ namespace MLAgents
                     var currentPixel = texturePixels[(height - h - 1) * width + w];
                     if (grayScale)
                     {
-                        adapter[h, w, 0] =
+                        obsWriter[h, w, 0] =
                             (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
                     }
                     else
                     {
                         // For Color32, the r, g and b values are between 0 and 255.
-                        adapter[h, w, 0] = currentPixel.r / 255.0f;
-                        adapter[h, w, 1] = currentPixel.g / 255.0f;
-                        adapter[h, w, 2] = currentPixel.b / 255.0f;
+                        obsWriter[h, w, 0] = currentPixel.r / 255.0f;
+                        obsWriter[h, w, 1] = currentPixel.g / 255.0f;
+                        obsWriter[h, w, 2] = currentPixel.b / 255.0f;
                     }
                 }
             }

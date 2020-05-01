@@ -1,7 +1,7 @@
 using UnityEngine;
-using MLAgents;
-using MLAgentsExamples;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgentsExamples;
+using Unity.MLAgents.Sensors;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent

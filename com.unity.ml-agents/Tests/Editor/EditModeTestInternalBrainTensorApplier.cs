@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Barracuda;
-using MLAgents.Inference;
-using MLAgents.Policies;
+using Unity.Barracuda;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorApplier
     {

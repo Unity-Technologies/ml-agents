@@ -1,9 +1,9 @@
 using System;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
 
     [TestFixture]
@@ -23,11 +23,11 @@ namespace MLAgents.Tests
                     var agentGameObj = new GameObject("agent");
 
                     var cameraComponent = agentGameObj.AddComponent<CameraSensorComponent>();
-                    cameraComponent.camera = camera;
-                    cameraComponent.height = height;
-                    cameraComponent.width = width;
-                    cameraComponent.grayscale = grayscale;
-                    cameraComponent.compression = compression;
+                    cameraComponent.Camera = camera;
+                    cameraComponent.Height = height;
+                    cameraComponent.Width = width;
+                    cameraComponent.Grayscale = grayscale;
+                    cameraComponent.CompressionType = compression;
 
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
                     Assert.AreEqual(expectedShape, cameraComponent.GetObservationShape());

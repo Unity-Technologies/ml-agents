@@ -1,9 +1,9 @@
 using System;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class RenderTextureSensorComponentTest
@@ -22,9 +22,9 @@ namespace MLAgents.Tests
                     var agentGameObj = new GameObject("agent");
 
                     var renderTexComponent = agentGameObj.AddComponent<RenderTextureSensorComponent>();
-                    renderTexComponent.renderTexture = texture;
-                    renderTexComponent.grayscale = grayscale;
-                    renderTexComponent.compression = compression;
+                    renderTexComponent.RenderTexture = texture;
+                    renderTexComponent.Grayscale = grayscale;
+                    renderTexComponent.CompressionType = compression;
 
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
                     Assert.AreEqual(expectedShape, renderTexComponent.GetObservationShape());

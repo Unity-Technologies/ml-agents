@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A SensorComponent that creates a <see cref="CameraSensor"/>.
@@ -17,7 +17,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Camera object that provides the data to the sensor.
         /// </summary>
-        public new Camera camera
+        public Camera Camera
         {
             get { return m_Camera;  }
             set { m_Camera = value; UpdateSensor(); }
@@ -30,7 +30,7 @@ namespace MLAgents.Sensors
         /// Name of the generated <see cref="CameraSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.
         /// </summary>
-        public string sensorName
+        public string SensorName
         {
             get { return m_SensorName;  }
             set { m_SensorName = value; }
@@ -43,7 +43,7 @@ namespace MLAgents.Sensors
         /// Width of the generated observation.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public int width
+        public int Width
         {
             get { return m_Width;  }
             set { m_Width = value; }
@@ -56,20 +56,20 @@ namespace MLAgents.Sensors
         /// Height of the generated observation.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public int height
+        public int Height
         {
             get { return m_Height;  }
             set { m_Height = value;  }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
-        public bool m_Grayscale;
+        bool m_Grayscale;
 
         /// <summary>
         /// Whether to generate grayscale images or color.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
-        public bool grayscale
+        public bool Grayscale
         {
             get { return m_Grayscale;  }
             set { m_Grayscale = value; }
@@ -81,7 +81,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// The compression type to use for the sensor.
         /// </summary>
-        public SensorCompressionType compression
+        public SensorCompressionType CompressionType
         {
             get { return m_Compression;  }
             set { m_Compression = value; UpdateSensor(); }
@@ -93,7 +93,7 @@ namespace MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor CreateSensor()
         {
-            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, grayscale, m_SensorName, compression);
+            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression);
             return m_Sensor;
         }
 
@@ -103,7 +103,7 @@ namespace MLAgents.Sensors
         /// <returns>The observation shape of the associated <see cref="CameraSensor"/> object.</returns>
         public override int[] GetObservationShape()
         {
-            return CameraSensor.GenerateShape(m_Width, m_Height, grayscale);
+            return CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
         }
 
         /// <summary>
@@ -113,8 +113,8 @@ namespace MLAgents.Sensors
         {
             if (m_Sensor != null)
             {
-                m_Sensor.camera = m_Camera;
-                m_Sensor.compressionType = m_Compression;
+                m_Sensor.Camera = m_Camera;
+                m_Sensor.CompressionType = m_Compression;
             }
         }
     }

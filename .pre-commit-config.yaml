@@ -72,16 +72,20 @@ repos:
             )$
         args: [--score=n]
 
+- repo: https://github.com/mattlqx/pre-commit-search-and-replace
+  rev: v1.0.3
+  hooks:
+  - id: search-and-replace
+    types: [markdown]
+    exclude: ".*localized.*"
+
 # "Local" hooks, see https://pre-commit.com/#repository-local-hooks
 -   repo: local
     hooks:
     -   id: markdown-link-check
         name: markdown-link-check
-        # markdown-link-check doesn't support multiple files on the commandline, so this hacks around that.
-        # Note that you must install the package separately via npm. For example:
-        #  brew install npm; npm install -g markdown-link-check
-        entry: bash -c 'for i in "$@"; do markdown-link-check -c markdown-link-check.fast.json "$i"; done' --
-        language: system
+        entry: utils/run_markdown_link_check.py
+        language: script
         types: [markdown]
         # Don't check localized files since their target might not be localized.
         exclude: ".*localized.*"
@@ -89,11 +93,14 @@ repos:
         stages: [manual]
     -   id: markdown-link-check-full
         name: markdown-link-check-full
-        entry: bash -c 'for i in "$@"; do markdown-link-check -c markdown-link-check.full.json "$i"; done' --
-        language: system
+        entry: utils/run_markdown_link_check.py
+        language: script
         types: [markdown]
+        # Don't check localized files since their target might not be localized.
         exclude: ".*localized.*"
+        # Only run manually, e.g. pre-commit run --hook-stage manual markdown-link-check-full
         stages: [manual]
+        args: [--check-remote]
     -   id: validate-versions
         name: validate library versions
         language: script

@@ -1,22 +1,21 @@
-using System.CodeDom;
 using System;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
-using MLAgents.Sensors;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     internal class TestPolicy : IPolicy
     {
         public Action OnRequestDecision;
-        private WriteAdapter m_Adapter = new WriteAdapter();
+        ObservationWriter m_ObsWriter = new ObservationWriter();
         public void RequestDecision(AgentInfo info, List<ISensor> sensors) {
             foreach(var sensor in sensors){
-                sensor.GetObservationProto(m_Adapter);
+                sensor.GetObservationProto(m_ObsWriter);
             }
             OnRequestDecision?.Invoke();
         }
@@ -96,6 +95,8 @@ namespace MLAgents.Tests
 
         public override void Heuristic(float[] actionsOut)
         {
+            var obs = GetObservations();
+            actionsOut[0] = obs[0];
             heuristicCalls++;
         }
     }
@@ -118,7 +119,7 @@ namespace MLAgents.Tests
             return new[] { 0 };
         }
 
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             numWriteCalls++;
             // No-op
@@ -208,7 +209,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(0, aca.EpisodeCount);
             Assert.AreEqual(0, aca.StepCount);
             Assert.AreEqual(0, aca.TotalStepCount);
-            Assert.AreNotEqual(null, SideChannelUtils.GetSideChannel<FloatPropertiesChannel>());
+            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>());
+            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<EngineConfigurationChannel>());
+            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<StatsSideChannel>());
 
             // Check that Dispose is idempotent
             aca.Dispose();
@@ -219,14 +222,20 @@ namespace MLAgents.Tests
         [Test]
         public void TestAcademyDispose()
         {
-            var floatProperties1 = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+            var envParams1 = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+            var engineParams1 = SideChannelsManager.GetSideChannel<EngineConfigurationChannel>();
+            var statsParams1 = SideChannelsManager.GetSideChannel<StatsSideChannel>();
             Academy.Instance.Dispose();
 
             Academy.Instance.LazyInitialize();
-            var floatProperties2 = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
+            var envParams2 = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+            var engineParams2 = SideChannelsManager.GetSideChannel<EngineConfigurationChannel>();
+            var statsParams2 = SideChannelsManager.GetSideChannel<StatsSideChannel>();
             Academy.Instance.Dispose();
 
-            Assert.AreNotEqual(floatProperties1, floatProperties2);
+            Assert.AreNotEqual(envParams1, envParams2);
+            Assert.AreNotEqual(engineParams1, engineParams2);
+            Assert.AreNotEqual(statsParams1, statsParams2);
         }
 
         [Test]
@@ -500,7 +509,7 @@ namespace MLAgents.Tests
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
-            behaviorParameters.brainParameters.numStackedVectorObservations = 3;
+            behaviorParameters.BrainParameters.NumStackedVectorObservations = 3;
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
             agent1.LazyInitialize();
@@ -557,7 +566,7 @@ namespace MLAgents.Tests
             decisionRequester.Awake();
 
 
-            agent1.maxStep = 20;
+            agent1.MaxStep = 20;
 
             agent2.LazyInitialize();
             agent1.LazyInitialize();
@@ -568,7 +577,7 @@ namespace MLAgents.Tests
             for (var i = 0; i < 50; i++)
             {
                 expectedAgent1ActionForEpisode += 1;
-                if (expectedAgent1ActionForEpisode == agent1.maxStep || i == 0)
+                if (expectedAgent1ActionForEpisode == agent1.MaxStep || i == 0)
                 {
                     expectedAgent1ActionForEpisode = 0;
                 }
@@ -594,7 +603,7 @@ namespace MLAgents.Tests
             decisionRequester.Awake();
 
             const int maxStep = 6;
-            agent1.maxStep = maxStep;
+            agent1.MaxStep = maxStep;
             agent1.LazyInitialize();
 
             var expectedAgentStepCount = 0;
@@ -667,6 +676,9 @@ namespace MLAgents.Tests
             Assert.AreEqual(numSteps, agent1.heuristicCalls);
             Assert.AreEqual(numSteps, agent1.sensor1.numWriteCalls);
             Assert.AreEqual(numSteps, agent1.sensor2.numCompressedCalls);
+
+            // Make sure the Heuristic method read the observation and set the action
+            Assert.AreEqual(agent1.collectObservationsCallsForEpisode, agent1.GetAction()[0]);
         }
     }
 

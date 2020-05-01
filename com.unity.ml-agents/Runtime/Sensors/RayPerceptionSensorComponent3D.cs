@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A component for 3D Ray Perception.
@@ -17,7 +17,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Ray start is offset up or down by this amount.
         /// </summary>
-        public float startVerticalOffset
+        public float StartVerticalOffset
         {
             get => m_StartVerticalOffset;
             set { m_StartVerticalOffset = value; UpdateSensor(); }
@@ -31,7 +31,7 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Ray end is offset up or down by this amount.
         /// </summary>
-        public float endVerticalOffset
+        public float EndVerticalOffset
         {
             get => m_EndVerticalOffset;
             set { m_EndVerticalOffset = value; UpdateSensor(); }
@@ -46,13 +46,13 @@ namespace MLAgents.Sensors
         /// <inheritdoc/>
         public override float GetStartVerticalOffset()
         {
-            return startVerticalOffset;
+            return StartVerticalOffset;
         }
 
         /// <inheritdoc/>
         public override float GetEndVerticalOffset()
         {
-            return endVerticalOffset;
+            return EndVerticalOffset;
         }
     }
 }

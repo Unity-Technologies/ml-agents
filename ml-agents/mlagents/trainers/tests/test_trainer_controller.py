@@ -3,15 +3,17 @@ import pytest
 
 from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.sampler_class import SamplerManager
 
 
 @pytest.fixture
 def basic_trainer_controller():
+    trainer_factory_mock = MagicMock()
+    trainer_factory_mock.ghost_controller = GhostController()
     return TrainerController(
-        trainer_factory=None,
-        model_path="test_model_path",
-        summaries_dir="test_summaries_dir",
+        trainer_factory=trainer_factory_mock,
+        output_path="test_model_path",
         run_id="test_run_id",
         save_freq=100,
         meta_curriculum=None,
@@ -26,10 +28,11 @@ def basic_trainer_controller():
 @patch.object(tf, "set_random_seed")
 def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     seed = 27
+    trainer_factory_mock = MagicMock()
+    trainer_factory_mock.ghost_controller = GhostController()
     TrainerController(
-        trainer_factory=None,
-        model_path="",
-        summaries_dir="",
+        trainer_factory=trainer_factory_mock,
+        output_path="",
         run_id="1",
         save_freq=1,
         meta_curriculum=None,
@@ -147,4 +150,5 @@ def test_advance_adds_experiences_to_trainer_and_trains(
 
     env_mock.reset.assert_not_called()
     env_mock.advance.assert_called_once()
-    trainer_mock.advance.assert_called_once()
+    # May have been called many times due to thread
+    trainer_mock.advance.call_count > 0

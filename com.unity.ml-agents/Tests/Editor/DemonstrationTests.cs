@@ -2,12 +2,12 @@ using NUnit.Framework;
 using UnityEngine;
 using System.IO.Abstractions.TestingHelpers;
 using System.Reflection;
-using MLAgents.CommunicatorObjects;
-using MLAgents.Sensors;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.CommunicatorObjects;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class DemonstrationTests
@@ -43,20 +43,20 @@ namespace MLAgents.Tests
             var gameobj = new GameObject("gameObj");
 
             var bp = gameobj.AddComponent<BehaviorParameters>();
-            bp.brainParameters.vectorObservationSize = 3;
-            bp.brainParameters.numStackedVectorObservations = 2;
-            bp.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            bp.brainParameters.vectorActionSize = new[] { 2, 2 };
-            bp.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            bp.BrainParameters.VectorObservationSize = 3;
+            bp.BrainParameters.NumStackedVectorObservations = 2;
+            bp.BrainParameters.VectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            bp.BrainParameters.VectorActionSize = new[] { 2, 2 };
+            bp.BrainParameters.VectorActionSpaceType = SpaceType.Discrete;
 
-            var agent = gameobj.AddComponent<TestAgent>();
+            gameobj.AddComponent<TestAgent>();
 
             Assert.IsFalse(fileSystem.Directory.Exists(k_DemoDirectory));
 
             var demoRec = gameobj.AddComponent<DemonstrationRecorder>();
-            demoRec.record = true;
-            demoRec.demonstrationName = k_DemoName;
-            demoRec.demonstrationDirectory = k_DemoDirectory;
+            demoRec.Record = true;
+            demoRec.DemonstrationName = k_DemoName;
+            demoRec.DemonstrationDirectory = k_DemoDirectory;
             var demoWriter = demoRec.LazyInitialize(fileSystem);
 
             Assert.IsTrue(fileSystem.Directory.Exists(k_DemoDirectory));
@@ -100,11 +100,11 @@ namespace MLAgents.Tests
         {
             var agentGo1 = new GameObject("TestAgent");
             var bpA = agentGo1.AddComponent<BehaviorParameters>();
-            bpA.brainParameters.vectorObservationSize = 3;
-            bpA.brainParameters.numStackedVectorObservations = 1;
-            bpA.brainParameters.vectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
-            bpA.brainParameters.vectorActionSize = new[] { 2, 2 };
-            bpA.brainParameters.vectorActionSpaceType = SpaceType.Discrete;
+            bpA.BrainParameters.VectorObservationSize = 3;
+            bpA.BrainParameters.NumStackedVectorObservations = 1;
+            bpA.BrainParameters.VectorActionDescriptions = new[] { "TestActionA", "TestActionB" };
+            bpA.BrainParameters.VectorActionSize = new[] { 2, 2 };
+            bpA.BrainParameters.VectorActionSpaceType = SpaceType.Discrete;
 
             agentGo1.AddComponent<ObservationAgent>();
             var agent1 = agentGo1.GetComponent<ObservationAgent>();
@@ -112,9 +112,9 @@ namespace MLAgents.Tests
             agentGo1.AddComponent<DemonstrationRecorder>();
             var demoRecorder = agentGo1.GetComponent<DemonstrationRecorder>();
             var fileSystem = new MockFileSystem();
-            demoRecorder.demonstrationDirectory = k_DemoDirectory;
-            demoRecorder.demonstrationName = "TestBrain";
-            demoRecorder.record = true;
+            demoRecorder.DemonstrationDirectory = k_DemoDirectory;
+            demoRecorder.DemonstrationName = "TestBrain";
+            demoRecorder.Record = true;
             demoRecorder.LazyInitialize(fileSystem);
 
             var agentEnableMethod = typeof(Agent).GetMethod("OnEnable",
@@ -139,7 +139,7 @@ namespace MLAgents.Tests
             var obs = agentInfoProto.Observations[2]; // skip dummy sensors
             {
                 var vecObs = obs.FloatData.Data;
-                Assert.AreEqual(bpA.brainParameters.vectorObservationSize, vecObs.Count);
+                Assert.AreEqual(bpA.BrainParameters.VectorObservationSize, vecObs.Count);
                 for (var i = 0; i < vecObs.Count; i++)
                 {
                     Assert.AreEqual((float)i + 1, vecObs[i]);

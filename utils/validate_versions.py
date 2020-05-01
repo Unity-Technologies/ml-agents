@@ -3,7 +3,7 @@
 import os
 import json
 import sys
-from typing import Dict
+from typing import Dict, Optional
 import argparse
 
 VERSION_LINE_START = "__version__ = "
@@ -16,6 +16,25 @@ DIRECTORIES = [
 
 UNITY_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
 ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
+
+PYTHON_VERSION_FILE_TEMPLATE = """# Version of the library that will be used to upload to pypi
+__version__ = {version}
+
+# Git tag that will be checked to determine whether to trigger upload to pypi
+__release_tag__ = {release_tag}
+"""
+
+
+def _escape_non_none(s: Optional[str]) -> str:
+    """
+    Returns s escaped in quotes if it is non-None, else "None"
+    :param s:
+    :return:
+    """
+    if s is not None:
+        return f'"{s}"'
+    else:
+        return "None"
 
 
 def extract_version_string(filename):
@@ -42,16 +61,26 @@ def check_versions() -> bool:
     return True
 
 
-def set_version(new_version: str) -> None:
-    new_contents = f'{VERSION_LINE_START}"{new_version}"\n'
+def set_version(
+    python_version: str, csharp_version: str, release_tag: Optional[str]
+) -> None:
+    # Sanity check - make sure test tags have a test or dev version
+    if release_tag and "test" in release_tag:
+        if not ("dev" in python_version or "test" in python_version):
+            raise RuntimeError('Test tags must use a "test" or "dev" version.')
+
+    new_contents = PYTHON_VERSION_FILE_TEMPLATE.format(
+        version=_escape_non_none(python_version),
+        release_tag=_escape_non_none(release_tag),
+    )
     for directory in DIRECTORIES:
         path = os.path.join(directory, "__init__.py")
-        print(f"Setting {path} to version {new_version}")
+        print(f"Setting {path} to version {python_version}")
         with open(path, "w") as f:
             f.write(new_contents)
-    # Package version is a bit stricter - only set it if we're not a "dev" version.
-    if "dev" not in new_version:
-        package_version = new_version + "-preview"
+
+    if csharp_version is not None:
+        package_version = csharp_version + "-preview"
         print(
             f"Setting package version to {package_version} in {UNITY_PACKAGE_JSON_PATH}"
         )
@@ -90,13 +119,18 @@ def set_academy_version_string(new_version):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--new-version", default=None)
+    parser.add_argument("--python-version", default=None)
+    parser.add_argument("--csharp-version", default=None)
+    parser.add_argument("--release-tag", default=None)
     # unused, but allows precommit to pass filenames
     parser.add_argument("files", nargs="*")
     args = parser.parse_args()
-    if args.new_version:
-        print(f"Updating to verison {args.new_version}")
-        set_version(args.new_version)
+
+    if args.python_version:
+        print(f"Updating python library to version {args.python_version}")
+        if args.csharp_version:
+            print(f"Updating C# package to version {args.csharp_version}")
+        set_version(args.python_version, args.csharp_version, args.release_tag)
     else:
         ok = check_versions()
         return_code = 0 if ok else 1

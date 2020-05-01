@@ -1,6 +1,7 @@
 syntax = "proto3";
 
-option csharp_namespace = "MLAgents.CommunicatorObjects";
+import "mlagents_envs/communicator_objects/capabilities.proto";
+option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 // The initializaiton message - this is typically sent from the Python trainer to the C# environment.
@@ -12,4 +13,7 @@ message UnityRLInitializationInputProto {
 
     // Package/library version that the initiating side (typically the Python trainer) is using.
     string package_version = 3;
+
+    // The RL Capabilities of the Python trainer.
+    UnityRLCapabilitiesProto capabilities = 4;
 }

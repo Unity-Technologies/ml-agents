@@ -2,8 +2,8 @@ using System;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using MLAgents;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 
 public class PyramidAgent : Agent
 {
@@ -57,7 +57,7 @@ public class PyramidAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        AddReward(-1f / maxStep);
+        AddReward(-1f / MaxStep);
         MoveAgent(vectorAction);
     }
 

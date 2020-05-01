@@ -1,7 +1,6 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 
 public class ReacherAgent : Agent
 {
@@ -21,6 +20,8 @@ public class ReacherAgent : Agent
     // Frequency of the cosine deviation of the goal along the vertical dimension
     float m_DeviationFreq;
 
+    EnvironmentParameters m_ResetParams;
+
     /// <summary>
     /// Collect the rigidbodies of the reacher in order to resue them for
     /// observations and actions.
@@ -29,6 +30,8 @@ public class ReacherAgent : Agent
     {
         m_RbA = pendulumA.GetComponent<Rigidbody>();
         m_RbB = pendulumB.GetComponent<Rigidbody>();
+
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
     }
@@ -110,10 +113,9 @@ public class ReacherAgent : Agent
 
     public void SetResetParameters()
     {
-        var fp = SideChannelUtils.GetSideChannel<FloatPropertiesChannel>();
-        m_GoalSize = fp.GetPropertyWithDefault("goal_size", 5);
-        m_GoalSpeed = Random.Range(-1f, 1f) * fp.GetPropertyWithDefault("goal_speed", 1);
-        m_Deviation = fp.GetPropertyWithDefault("deviation", 0);
-        m_DeviationFreq = fp.GetPropertyWithDefault("deviation_freq", 0);
+        m_GoalSize = m_ResetParams.GetWithDefault("goal_size", 5);
+        m_GoalSpeed = Random.Range(-1f, 1f) * m_ResetParams.GetWithDefault("goal_speed", 1);
+        m_Deviation = m_ResetParams.GetWithDefault("deviation", 0);
+        m_DeviationFreq = m_ResetParams.GetWithDefault("deviation_freq", 0);
     }
 }

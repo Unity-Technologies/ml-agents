@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/custom_reset_parameters.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n@mlagents_envs/communicator_objects/custom_reset_parameters.proto\x12\x14\x63ommunicator_objects\"\x1c\n\x1a\x43ustomResetParametersProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n@mlagents_envs/communicator_objects/custom_reset_parameters.proto\x12\x14\x63ommunicator_objects\"\x1c\n\x1a\x43ustomResetParametersProtoB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -60,5 +60,5 @@ _sym_db.RegisterMessage(CustomResetParametersProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

@@ -223,7 +223,7 @@ class GhostTrainer(Trainer):
                     # We grab at most the maximum length of the queue.
                     # This ensures that even if the queue is being filled faster than it is
                     # being emptied, the trajectories in the queue are on-policy.
-                    for _ in range(trajectory_queue.maxlen):
+                    for _ in range(trajectory_queue.qsize()):
                         t = trajectory_queue.get_nowait()
                         # adds to wrapped trainers queue
                         internal_trajectory_queue.put(t)
@@ -233,7 +233,7 @@ class GhostTrainer(Trainer):
             else:
                 # Dump trajectories from non-learning policy
                 try:
-                    for _ in range(trajectory_queue.maxlen):
+                    for _ in range(trajectory_queue.qsize()):
                         t = trajectory_queue.get_nowait()
                         # count ghost steps
                         self.ghost_step += len(t.steps)
@@ -326,6 +326,7 @@ class GhostTrainer(Trainer):
         """
         policy = self.trainer.create_policy(parsed_behavior_id, brain_parameters)
         policy.create_tf_graph()
+        policy.initialize_or_load()
         policy.init_load_weights()
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
@@ -335,7 +336,7 @@ class GhostTrainer(Trainer):
             internal_trainer_policy = self.trainer.create_policy(
                 parsed_behavior_id, brain_parameters
             )
-            internal_trainer_policy.create_tf_graph()
+            self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
             internal_trainer_policy.init_load_weights()
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
@@ -343,7 +344,6 @@ class GhostTrainer(Trainer):
 
             policy.load_weights(internal_trainer_policy.get_weights())
             self._save_snapshot()  # Need to save after trainer initializes policy
-            self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
             self._learning_team = self.controller.get_learning_team
             self.wrapped_trainer_team = team_id
         return policy

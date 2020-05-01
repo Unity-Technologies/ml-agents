@@ -13,14 +13,16 @@ from google.protobuf import descriptor_pb2
 _sym_db = _symbol_database.Default()
 
 
+from mlagents_envs.communicator_objects import capabilities_pb2 as mlagents__envs_dot_communicator__objects_dot_capabilities__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_rl_initialization_input.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\nFmlagents_envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\"g\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x12\x1d\n\x15\x63ommunication_version\x18\x02 \x01(\t\x12\x17\n\x0fpackage_version\x18\x03 \x01(\tB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
-)
+  serialized_pb=_b('\nFmlagents_envs/communicator_objects/unity_rl_initialization_input.proto\x12\x14\x63ommunicator_objects\x1a\x35mlagents_envs/communicator_objects/capabilities.proto\"\xad\x01\n\x1fUnityRLInitializationInputProto\x12\x0c\n\x04seed\x18\x01 \x01(\x05\x12\x1d\n\x15\x63ommunication_version\x18\x02 \x01(\t\x12\x17\n\x0fpackage_version\x18\x03 \x01(\t\x12\x44\n\x0c\x63\x61pabilities\x18\x04 \x01(\x0b\x32..communicator_objects.UnityRLCapabilitiesProtoB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
+  ,
+  dependencies=[mlagents__envs_dot_communicator__objects_dot_capabilities__pb2.DESCRIPTOR,])
 
 
 
@@ -53,6 +55,13 @@ _UNITYRLINITIALIZATIONINPUTPROTO = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='capabilities', full_name='communicator_objects.UnityRLInitializationInputProto.capabilities', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -65,10 +74,11 @@ _UNITYRLINITIALIZATIONINPUTPROTO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=96,
-  serialized_end=199,
+  serialized_start=152,
+  serialized_end=325,
 )
 
+_UNITYRLINITIALIZATIONINPUTPROTO.fields_by_name['capabilities'].message_type = mlagents__envs_dot_communicator__objects_dot_capabilities__pb2._UNITYRLCAPABILITIESPROTO
 DESCRIPTOR.message_types_by_name['UnityRLInitializationInputProto'] = _UNITYRLINITIALIZATIONINPUTPROTO
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
@@ -81,5 +91,5 @@ _sym_db.RegisterMessage(UnityRLInitializationInputProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

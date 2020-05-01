@@ -1,4 +1,4 @@
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// The compression setting for visual/camera observations.
@@ -18,7 +18,6 @@ namespace MLAgents.Sensors
 
     /// <summary>
     /// Sensor interface for generating observations.
-    /// For custom implementations, it is recommended to <see cref="SensorBase"/> instead.
     /// </summary>
     public interface ISensor
     {
@@ -31,15 +30,13 @@ namespace MLAgents.Sensors
         int[] GetObservationShape();
 
         /// <summary>
-        /// Write the observation data directly to the <see cref="WriteAdapter"/>.
-        /// This is considered an advanced interface; for a simpler approach, use
-        /// <see cref="SensorBase"/> and override <see cref="SensorBase.WriteObservation"/> instead.
+        /// Write the observation data directly to the <see cref="ObservationWriter"/>.
         /// Note that this (and  <see cref="GetCompressedObservation"/>) may
         /// be called multiple times per agent step, so should not mutate any internal state.
         /// </summary>
-        /// <param name="adapter">Where the observations will be written to.</param>
+        /// <param name="writer">Where the observations will be written to.</param>
         /// <returns>The number of elements written.</returns>
-        int Write(WriteAdapter adapter);
+        int Write(ObservationWriter writer);
 
         /// <summary>
         /// Return a compressed representation of the observation. For small observations,

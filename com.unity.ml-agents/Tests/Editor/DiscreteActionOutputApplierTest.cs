@@ -1,11 +1,11 @@
 using System;
-using Barracuda;
+using Unity.Barracuda;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Inference;
-using MLAgents.Inference.Utils;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Inference.Utils;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class DiscreteActionOutputApplierTest
     {

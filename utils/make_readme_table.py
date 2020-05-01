@@ -4,6 +4,7 @@ into the markdown file.
 """
 from distutils.version import LooseVersion
 from datetime import datetime
+from typing import NamedTuple
 
 
 def table_line(display_name, name, date, bold=False):
@@ -11,31 +12,71 @@ def table_line(display_name, name, date, bold=False):
     return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
 
 
+class ReleaseInfo(NamedTuple):
+    release_tag: str
+    csharp_version: str
+    python_verion: str
+    release_date: str
+
+    @staticmethod
+    def from_simple_tag(release_tag: str, release_date: str) -> "ReleaseInfo":
+        """
+        Generate the ReleaseInfo for "old style" releases, where the tag and versions
+        were all the same.
+        """
+        return ReleaseInfo(release_tag, release_tag, release_tag, release_date)
+
+    @property
+    def loose_version(self) -> LooseVersion:
+        return LooseVersion(self.python_verion)
+
+    @property
+    def elapsed_days(self) -> int:
+        """
+        Days since this version was released.
+        :return:
+        """
+        return (
+            datetime.today() - datetime.strptime(self.release_date, "%B %d, %Y")
+        ).days
+
+    @property
+    def display_name(self) -> str:
+        """
+        Clean up the tag name for display, e.g. "release_1" -> "Release 1"
+        :return:
+        """
+        return self.release_tag.replace("_", " ").title()
+
+
 versions = [
-    ["0.10.0", "September 30, 2019"],
-    ["0.10.1", "October 9, 2019"],
-    ["0.11.0", "November 4, 2019"],
-    ["0.12.0", "December 2, 2019"],
-    ["0.12.1", "December 11, 2019"],
-    ["0.13.0", "January 8, 2020"],
-    ["0.13.1", "January 21, 2020"],
-    ["0.14.0", "February 13, 2020"],
-    ["0.14.1", "February 26, 2020"],
-    ["0.15.0", "March 18, 2020"],
-    ["0.15.1", "March 30, 2020"],
+    ReleaseInfo.from_simple_tag("0.10.0", "September 30, 2019"),
+    ReleaseInfo.from_simple_tag("0.10.1", "October 9, 2019"),
+    ReleaseInfo.from_simple_tag("0.11.0", "November 4, 2019"),
+    ReleaseInfo.from_simple_tag("0.12.0", "December 2, 2019"),
+    ReleaseInfo.from_simple_tag("0.12.1", "December 11, 2019"),
+    ReleaseInfo.from_simple_tag("0.13.0", "January 8, 2020"),
+    ReleaseInfo.from_simple_tag("0.13.1", "January 21, 2020"),
+    ReleaseInfo.from_simple_tag("0.14.0", "February 13, 2020"),
+    ReleaseInfo.from_simple_tag("0.14.1", "February 26, 2020"),
+    ReleaseInfo.from_simple_tag("0.15.0", "March 18, 2020"),
+    ReleaseInfo.from_simple_tag("0.15.1", "March 30, 2020"),
+    ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
-sorted_versions = sorted(
-    ([LooseVersion(v[0]), v[1]] for v in versions), key=lambda x: x[0], reverse=True
-)
+sorted_versions = sorted(versions, key=lambda x: x.loose_version, reverse=True)
 
 print(table_line("master (unstable)", "master", "--"))
 highlight = True  # whether to bold the line or not
-for version_name, version_date in sorted_versions:
-    elapsed_days = (
-        datetime.today() - datetime.strptime(version_date, "%B %d, %Y")
-    ).days
-    if elapsed_days <= MAX_DAYS:
-        print(table_line(version_name, version_name, version_date, highlight))
+for version_info in sorted_versions:
+    if version_info.elapsed_days <= MAX_DAYS:
+        print(
+            table_line(
+                version_info.display_name,
+                version_info.release_tag,
+                version_info.release_date,
+                highlight,
+            )
+        )
         highlight = False  # only bold the first stable release

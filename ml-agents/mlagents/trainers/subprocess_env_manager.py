@@ -7,12 +7,13 @@ from mlagents_envs.exception import (
     UnityCommunicationException,
     UnityTimeOutException,
     UnityEnvironmentException,
+    UnityCommunicatorStoppedException,
 )
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, BehaviorName
-from mlagents_envs.logging_util import get_logger
+from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
     TimerNode,
@@ -23,7 +24,9 @@ from mlagents_envs.timers import (
 )
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.action_info import ActionInfo
-from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
 from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
@@ -36,7 +39,7 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
-logger = get_logger(__name__)
+logger = logging_util.get_logger(__name__)
 
 
 class EnvironmentCommand(enum.Enum):
@@ -109,15 +112,19 @@ def worker(
     pickled_env_factory: str,
     worker_id: int,
     engine_configuration: EngineConfig,
+    log_level: int = logging_util.INFO,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
-    shared_float_properties = FloatPropertiesChannel()
+    env_parameters = EnvironmentParametersChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
     stats_channel = StatsSideChannel()
     env: BaseEnv = None
+    # Set log level. On some platforms, the logger isn't common with the
+    # main process, so we need to set it again.
+    logging_util.set_log_level(log_level)
 
     def _send_response(cmd_name: EnvironmentCommand, payload: Any) -> None:
         parent_conn.send(EnvironmentResponse(cmd_name, worker_id, payload))
@@ -138,8 +145,7 @@ def worker(
 
     try:
         env = env_factory(
-            worker_id,
-            [shared_float_properties, engine_configuration_channel, stats_channel],
+            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
         )
         while True:
             req: EnvironmentRequest = parent_conn.recv()
@@ -167,12 +173,9 @@ def worker(
                 reset_timers()
             elif req.cmd == EnvironmentCommand.EXTERNAL_BRAINS:
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
-            elif req.cmd == EnvironmentCommand.GET_PROPERTIES:
-                reset_params = shared_float_properties.get_property_dict_copy()
-                _send_response(EnvironmentCommand.GET_PROPERTIES, reset_params)
             elif req.cmd == EnvironmentCommand.RESET:
                 for k, v in req.payload.items():
-                    shared_float_properties.set_property(k, v)
+                    env_parameters.set_float_parameter(k, v)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)
@@ -183,6 +186,7 @@ def worker(
         UnityCommunicationException,
         UnityTimeOutException,
         UnityEnvironmentException,
+        UnityCommunicatorStoppedException,
     ) as ex:
         logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(
@@ -239,6 +243,7 @@ class SubprocessEnvManager(EnvManager):
                 pickled_env_factory,
                 worker_id,
                 engine_configuration,
+                logger.level,
             ),
         )
         child_process.start()
@@ -293,11 +298,6 @@ class SubprocessEnvManager(EnvManager):
     @property
     def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         self.env_workers[0].send(EnvironmentCommand.EXTERNAL_BRAINS)
-        return self.env_workers[0].recv().payload
-
-    @property
-    def get_properties(self) -> Dict[BehaviorName, float]:
-        self.env_workers[0].send(EnvironmentCommand.GET_PROPERTIES)
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:

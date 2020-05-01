@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
+package communicator_objects;
+
+/*
+ * A Capabilities message that will communicate both C# and Python
+ * what features are available to both.
+ */
+message UnityRLCapabilitiesProto {
+    // These are the 1.0 capabilities.
+    bool baseRLCapabilities = 1;
+}

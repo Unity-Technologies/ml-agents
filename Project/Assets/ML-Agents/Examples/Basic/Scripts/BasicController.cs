@@ -1,5 +1,7 @@
 using UnityEngine;
-using MLAgents;
+using UnityEngine.SceneManagement;
+using Unity.MLAgents;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// An example of how to use ML-Agents without inheriting from the Agent class.
@@ -10,8 +12,9 @@ public class BasicController : MonoBehaviour
 {
     public float timeBetweenDecisionsAtInference;
     float m_TimeSinceDecision;
+    [FormerlySerializedAs("m_Position")]
     [HideInInspector]
-    public int m_Position;
+    public int position;
     const int k_SmallGoalPosition = 7;
     const int k_LargeGoalPosition = 17;
     public GameObject largeGoal;
@@ -22,10 +25,14 @@ public class BasicController : MonoBehaviour
 
     Agent m_Agent;
 
+
     public void OnEnable()
     {
         m_Agent = GetComponent<Agent>();
-        ResetAgent();
+        position = 10;
+        transform.position = new Vector3(position - 10f, 0f, 0f);
+        smallGoal.transform.position = new Vector3(k_SmallGoalPosition - 10f, 0f, 0f);
+        largeGoal.transform.position = new Vector3(k_LargeGoalPosition - 10f, 0f, 0f);
     }
 
     /// <summary>
@@ -48,22 +55,22 @@ public class BasicController : MonoBehaviour
                 break;
         }
 
-        m_Position += direction;
-        if (m_Position < k_MinPosition) { m_Position = k_MinPosition; }
-        if (m_Position > k_MaxPosition) { m_Position = k_MaxPosition; }
+        position += direction;
+        if (position < k_MinPosition) { position = k_MinPosition; }
+        if (position > k_MaxPosition) { position = k_MaxPosition; }
 
-        gameObject.transform.position = new Vector3(m_Position - 10f, 0f, 0f);
+        gameObject.transform.position = new Vector3(position - 10f, 0f, 0f);
 
         m_Agent.AddReward(-0.01f);
 
-        if (m_Position == k_SmallGoalPosition)
+        if (position == k_SmallGoalPosition)
         {
             m_Agent.AddReward(0.1f);
             m_Agent.EndEpisode();
             ResetAgent();
         }
 
-        if (m_Position == k_LargeGoalPosition)
+        if (position == k_LargeGoalPosition)
         {
             m_Agent.AddReward(1f);
             m_Agent.EndEpisode();
@@ -73,9 +80,10 @@ public class BasicController : MonoBehaviour
 
     public void ResetAgent()
     {
-        m_Position = 10;
-        smallGoal.transform.position = new Vector3(k_SmallGoalPosition - 10f, 0f, 0f);
-        largeGoal.transform.position = new Vector3(k_LargeGoalPosition - 10f, 0f, 0f);
+        // This is a very inefficient way to reset the scene. Used here for testing.
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        m_Agent = null; // LoadScene only takes effect at the next Update.
+        // We set the Agent to null to avoid using the Agent before the reload
     }
 
     public void FixedUpdate()
@@ -85,11 +93,15 @@ public class BasicController : MonoBehaviour
 
     void WaitTimeInference()
     {
+        if (m_Agent == null)
+        {
+            return;
+        }
         if (Academy.Instance.IsCommunicatorOn)
         {
             // Apply the previous step's actions
             ApplyAction(m_Agent.GetAction());
-            m_Agent.RequestDecision();
+            m_Agent?.RequestDecision();
         }
         else
         {
@@ -99,7 +111,7 @@ public class BasicController : MonoBehaviour
                 ApplyAction(m_Agent.GetAction());
 
                 m_TimeSinceDecision = 0f;
-                m_Agent.RequestDecision();
+                m_Agent?.RequestDecision();
             }
             else
             {

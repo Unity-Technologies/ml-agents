@@ -1,8 +1,8 @@
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class SensorTestHelper
     {
@@ -17,10 +17,10 @@ namespace MLAgents.Tests
             }
             Assert.AreEqual(fill, output[0]);
 
-            WriteAdapter writer = new WriteAdapter();
+            ObservationWriter writer = new ObservationWriter();
             writer.SetTarget(output, sensor.GetObservationShape(), 0);
 
-            // Make sure WriteAdapter didn't touch anything
+            // Make sure ObservationWriter didn't touch anything
             Assert.AreEqual(fill, output[0]);
 
             sensor.Write(writer);

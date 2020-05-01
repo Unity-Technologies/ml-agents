@@ -1,6 +1,6 @@
 using System;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     internal struct Observation
     {

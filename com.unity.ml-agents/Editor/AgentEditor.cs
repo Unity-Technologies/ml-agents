@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     /*
      This code is meant to modify the behavior of the inspector on Agent Components.
@@ -15,13 +15,12 @@ namespace MLAgents.Editor
             var serializedAgent = serializedObject;
             serializedAgent.Update();
 
-            var maxSteps = serializedAgent.FindProperty(
-                "maxStep");
+            var maxSteps = serializedAgent.FindProperty("MaxStep");
 
             EditorGUILayout.PropertyField(
                 maxSteps,
-                new GUIContent(
-                    "Max Step", "The per-agent maximum number of steps."));
+                new GUIContent("Max Step", "The per-agent maximum number of steps.")
+            );
 
             serializedAgent.ApplyModifiedProperties();
 

@@ -8,13 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using MLAgents.CommunicatorObjects;
-using MLAgents.Sensors;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents.CommunicatorObjects;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// Responsible for communication with External using gRPC.
     internal class RpcCommunicator : ICommunicator
@@ -27,7 +27,7 @@ namespace MLAgents
 
         List<string> m_BehaviorNames = new List<string>();
         bool m_NeedCommunicateThisStep;
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        ObservationWriter m_ObservationWriter = new ObservationWriter();
         Dictionary<string, SensorShapeValidator> m_SensorShapeValidators = new Dictionary<string, SensorShapeValidator>();
         Dictionary<string, List<int>> m_OrderedAgentsRequestingDecisions = new Dictionary<string, List<int>>();
 
@@ -108,7 +108,8 @@ namespace MLAgents
             {
                 Name = initParameters.name,
                 PackageVersion = initParameters.unityPackageVersion,
-                CommunicationVersion = initParameters.unityCommunicationVersion
+                CommunicationVersion = initParameters.unityCommunicationVersion,
+                Capabilities = initParameters.CSharpCapabilities.ToProto()
             };
 
             UnityInputProto input;
@@ -198,7 +199,7 @@ namespace MLAgents
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
         {
-            SideChannelUtils.ProcessSideChannelData(rlInput.SideChannel.ToArray());
+            SideChannelsManager.ProcessSideChannelData(rlInput.SideChannel.ToArray());
             SendCommandEvent(rlInput.Command);
         }
 
@@ -322,7 +323,7 @@ namespace MLAgents
                 {
                     foreach (var sensor in sensors)
                     {
-                        var obsProto = sensor.GetObservationProto(m_WriteAdapter);
+                        var obsProto = sensor.GetObservationProto(m_ObservationWriter);
                         agentInfoProto.Observations.Add(obsProto);
                     }
                 }
@@ -365,7 +366,7 @@ namespace MLAgents
                 message.RlInitializationOutput = tempUnityRlInitializationOutput;
             }
 
-            byte[] messageAggregated = SideChannelUtils.GetSideChannelMessage();
+            byte[] messageAggregated = SideChannelsManager.GetSideChannelMessage();
             message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);

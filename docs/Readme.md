@@ -18,38 +18,21 @@
 
 - [Making a New Learning Environment](Learning-Environment-Create-New.md)
 - [Designing a Learning Environment](Learning-Environment-Design.md)
-- [Designing Agents](Learning-Environment-Design-Agents.md)
-
-### Advanced Usage
-
-- [Using the Monitor](Feature-Monitor.md)
+  - [Designing Agents](Learning-Environment-Design-Agents.md)
 - [Using an Executable Environment](Learning-Environment-Executable.md)
 
-## Training
+## Training & Inference
 
 - [Training ML-Agents](Training-ML-Agents.md)
-  - [Reward Signals](Reward-Signals.md)
+  - [Training Configuration File](Training-Configuration-File.md)
+  - [Using TensorBoard to Observe Training](Using-Tensorboard.md)
   - [Profiling Trainers](Profiling-Python.md)
-- [Using TensorBoard to Observe Training](Using-Tensorboard.md)
-- [Training Using Concurrent Unity Instances](Training-Using-Concurrent-Unity-Instances.md)
-- [Training with Proximal Policy Optimization](Training-PPO.md)
-- [Training with Soft Actor-Critic](Training-SAC.md)
-- [Training with Self-Play](Training-Self-Play.md)
-
-### Advanced Training Methods
-
-- [Training with Curriculum Learning](Training-Curriculum-Learning.md)
-- [Training with Imitation Learning](Training-Imitation-Learning.md)
-- [Training with LSTM](Feature-Memory.md)
-- [Training with Environment Parameter Randomization](Training-Environment-Parameter-Randomization.md)
-
-## Inference
-
 - [Unity Inference Engine](Unity-Inference-Engine.md)
 
 ## Extending ML-Agents
 
 - [Creating Custom Side Channels](Custom-SideChannels.md)
+- [Creating Custom Samplers for Environment Parameter Randomization](Training-ML-Agents.md#defining-a-new-sampler-type)
 
 ## Help
 
@@ -66,7 +49,7 @@
 
 ## Translations
 
-To make the Unity ML-Agents toolkit accessible to the global research and Unity
+To make the Unity ML-Agents Toolkit accessible to the global research and Unity
 developer communities, we're attempting to create and maintain translations of
 our documentation. We've started with translating a subset of the documentation
 to one language (Chinese), but we hope to continue translating more pages and to

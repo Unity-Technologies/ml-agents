@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// Determines which dimensions the sensor will perform the casts in.
@@ -28,49 +28,49 @@ namespace MLAgents.Sensors
         /// <summary>
         /// Length of the rays to cast. This will be scaled up or down based on the scale of the transform.
         /// </summary>
-        public float rayLength;
+        public float RayLength;
 
         /// <summary>
         /// List of tags which correspond to object types agent can see.
         /// </summary>
-        public IReadOnlyList<string> detectableTags;
+        public IReadOnlyList<string> DetectableTags;
 
         /// <summary>
         /// List of angles (in degrees) used to define the rays.
         /// 90 degrees is considered "forward" relative to the game object.
         /// </summary>
-        public IReadOnlyList<float> angles;
+        public IReadOnlyList<float> Angles;
 
         /// <summary>
         /// Starting height offset of ray from center of agent
         /// </summary>
-        public float startOffset;
+        public float StartOffset;
 
         /// <summary>
         /// Ending height offset of ray from center of agent.
         /// </summary>
-        public float endOffset;
+        public float EndOffset;
 
         /// <summary>
         /// Radius of the sphere to use for spherecasting.
         /// If 0 or less, rays are used instead - this may be faster, especially for complex environments.
         /// </summary>
-        public float castRadius;
+        public float CastRadius;
 
         /// <summary>
         /// Transform of the GameObject.
         /// </summary>
-        public Transform transform;
+        public Transform Transform;
 
         /// <summary>
         /// Whether to perform the casts in 2D or 3D.
         /// </summary>
-        public RayPerceptionCastType castType;
+        public RayPerceptionCastType CastType;
 
         /// <summary>
         /// Filtering options for the casts.
         /// </summary>
-        public int layerMask;
+        public int LayerMask;
 
         /// <summary>
         /// Returns the expected number of floats in the output.
@@ -78,7 +78,7 @@ namespace MLAgents.Sensors
         /// <returns></returns>
         public int OutputSize()
         {
-            return (detectableTags.Count + 2) * angles.Count;
+            return (DetectableTags.Count + 2) * Angles.Count;
         }
 
         /// <summary>
@@ -88,23 +88,23 @@ namespace MLAgents.Sensors
         /// <returns>A tuple of the start and end positions in world space.</returns>
         public (Vector3 StartPositionWorld, Vector3 EndPositionWorld) RayExtents(int rayIndex)
         {
-            var angle = angles[rayIndex];
+            var angle = Angles[rayIndex];
             Vector3 startPositionLocal, endPositionLocal;
-            if (castType == RayPerceptionCastType.Cast3D)
+            if (CastType == RayPerceptionCastType.Cast3D)
             {
-                startPositionLocal = new Vector3(0, startOffset, 0);
-                endPositionLocal = PolarToCartesian3D(rayLength, angle);
-                endPositionLocal.y += endOffset;
+                startPositionLocal = new Vector3(0, StartOffset, 0);
+                endPositionLocal = PolarToCartesian3D(RayLength, angle);
+                endPositionLocal.y += EndOffset;
             }
             else
             {
                 // Vector2s here get converted to Vector3s (and back to Vector2s for casting)
                 startPositionLocal = new Vector2();
-                endPositionLocal = PolarToCartesian2D(rayLength, angle);
+                endPositionLocal = PolarToCartesian2D(RayLength, angle);
             }
 
-            var startPositionWorld = transform.TransformPoint(startPositionLocal);
-            var endPositionWorld = transform.TransformPoint(endPositionLocal);
+            var startPositionWorld = Transform.TransformPoint(startPositionLocal);
+            var endPositionWorld = Transform.TransformPoint(endPositionLocal);
 
             return (StartPositionWorld : startPositionWorld, EndPositionWorld : endPositionWorld);
         }
@@ -143,29 +143,29 @@ namespace MLAgents.Sensors
             /// <summary>
             /// Whether or not the ray hit anything.
             /// </summary>
-            public bool hasHit;
+            public bool HasHit;
 
             /// <summary>
-            /// Whether or not the ray hit an object whose tag is in the input's detectableTags list.
+            /// Whether or not the ray hit an object whose tag is in the input's DetectableTags list.
             /// </summary>
-            public bool hitTaggedObject;
+            public bool HitTaggedObject;
 
             /// <summary>
-            /// The index of the hit object's tag in the detectableTags list, or -1 if there was no hit, or the
+            /// The index of the hit object's tag in the DetectableTags list, or -1 if there was no hit, or the
             /// hit object has a different tag.
             /// </summary>
-            public int hitTagIndex;
+            public int HitTagIndex;
 
             /// <summary>
             /// Normalized distance to the hit object.
             /// </summary>
-            public float hitFraction;
+            public float HitFraction;
 
             /// <summary>
             /// Writes the ray output information to a subset of the float array.  Each element in the rayAngles array
             /// determines a sublist of data to the observation. The sublist contains the observation data for a single cast.
             /// The list is composed of the following:
-            /// 1. A one-hot encoding for detectable tags. For example, if detectableTags.Length = n, the
+            /// 1. A one-hot encoding for detectable tags. For example, if DetectableTags.Length = n, the
             ///    first n elements of the sublist will be a one-hot encoding of the detectableTag that was hit, or
             ///    all zeroes otherwise.
             /// 2. The 'numDetectableTags' element of the sublist will be 1 if the ray missed everything, or 0 if it hit
@@ -175,23 +175,23 @@ namespace MLAgents.Sensors
             /// </summary>
             /// <param name="numDetectableTags"></param>
             /// <param name="rayIndex"></param>
-            /// <param name="buffer">Output buffer. The size must be equal to (numDetectableTags+2) * rayOutputs.Length</param>
+            /// <param name="buffer">Output buffer. The size must be equal to (numDetectableTags+2) * RayOutputs.Length</param>
             public void ToFloatArray(int numDetectableTags, int rayIndex, float[] buffer)
             {
                 var bufferOffset = (numDetectableTags + 2) * rayIndex;
-                if (hitTaggedObject)
+                if (HitTaggedObject)
                 {
-                    buffer[bufferOffset + hitTagIndex] = 1f;
+                    buffer[bufferOffset + HitTagIndex] = 1f;
                 }
-                buffer[bufferOffset + numDetectableTags] = hasHit ? 0f : 1f;
-                buffer[bufferOffset + numDetectableTags + 1] = hitFraction;
+                buffer[bufferOffset + numDetectableTags] = HasHit ? 0f : 1f;
+                buffer[bufferOffset + numDetectableTags + 1] = HitFraction;
             }
         }
 
         /// <summary>
         /// RayOutput for each ray that was cast.
         /// </summary>
-        public RayOutput[] rayOutputs;
+        public RayOutput[] RayOutputs;
     }
 
     /// <summary>
@@ -286,18 +286,18 @@ namespace MLAgents.Sensors
 
         /// <summary>
         /// Computes the ray perception observations and saves them to the provided
-        /// <see cref="WriteAdapter"/>.
+        /// <see cref="ObservationWriter"/>.
         /// </summary>
-        /// <param name="adapter">Where the ray perception observations are written to.</param>
+        /// <param name="writer">Where the ray perception observations are written to.</param>
         /// <returns></returns>
-        public int Write(WriteAdapter adapter)
+        public int Write(ObservationWriter writer)
         {
             using (TimerStack.Instance.Scoped("RayPerceptionSensor.Perceive"))
             {
                 Array.Clear(m_Observations, 0, m_Observations.Length);
 
-                var numRays = m_RayPerceptionInput.angles.Count;
-                var numDetectableTags = m_RayPerceptionInput.detectableTags.Count;
+                var numRays = m_RayPerceptionInput.Angles.Count;
+                var numDetectableTags = m_RayPerceptionInput.DetectableTags.Count;
 
                 if (m_DebugDisplayInfo != null)
                 {
@@ -322,8 +322,8 @@ namespace MLAgents.Sensors
 
                     rayOutput.ToFloatArray(numDetectableTags, rayIndex, m_Observations);
                 }
-                // Finally, add the observations to the WriteAdapter
-                adapter.AddRange(m_Observations);
+                // Finally, add the observations to the ObservationWriter
+                writer.AddRange(m_Observations);
             }
             return m_Observations.Length;
         }
@@ -368,12 +368,12 @@ namespace MLAgents.Sensors
         public static RayPerceptionOutput Perceive(RayPerceptionInput input)
         {
             RayPerceptionOutput output = new RayPerceptionOutput();
-            output.rayOutputs = new RayPerceptionOutput.RayOutput[input.angles.Count];
+            output.RayOutputs = new RayPerceptionOutput.RayOutput[input.Angles.Count];
 
-            for (var rayIndex = 0; rayIndex < input.angles.Count; rayIndex++)
+            for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
             {
                 DebugDisplayInfo.RayInfo debugRay;
-                output.rayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex, out debugRay);
+                output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex, out debugRay);
             }
 
             return output;
@@ -392,8 +392,8 @@ namespace MLAgents.Sensors
             out DebugDisplayInfo.RayInfo debugRayOut
         )
         {
-            var unscaledRayLength = input.rayLength;
-            var unscaledCastRadius = input.castRadius;
+            var unscaledRayLength = input.RayLength;
+            var unscaledCastRadius = input.CastRadius;
 
             var extents = input.RayExtents(rayIndex);
             var startPositionWorld = extents.StartPositionWorld;
@@ -414,18 +414,18 @@ namespace MLAgents.Sensors
             float hitFraction;
             GameObject hitObject;
 
-            if (input.castType == RayPerceptionCastType.Cast3D)
+            if (input.CastType == RayPerceptionCastType.Cast3D)
             {
                 RaycastHit rayHit;
                 if (scaledCastRadius > 0f)
                 {
                     castHit = Physics.SphereCast(startPositionWorld, scaledCastRadius, rayDirection, out rayHit,
-                        scaledRayLength, input.layerMask);
+                        scaledRayLength, input.LayerMask);
                 }
                 else
                 {
                     castHit = Physics.Raycast(startPositionWorld, rayDirection, out rayHit,
-                        scaledRayLength, input.layerMask);
+                        scaledRayLength, input.LayerMask);
                 }
 
                 // If scaledRayLength is 0, we still could have a hit with sphere casts (maybe?).
@@ -439,11 +439,11 @@ namespace MLAgents.Sensors
                 if (scaledCastRadius > 0f)
                 {
                     rayHit = Physics2D.CircleCast(startPositionWorld, scaledCastRadius, rayDirection,
-                        scaledRayLength, input.layerMask);
+                        scaledRayLength, input.LayerMask);
                 }
                 else
                 {
-                    rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, scaledRayLength, input.layerMask);
+                    rayHit = Physics2D.Raycast(startPositionWorld, rayDirection, scaledRayLength, input.LayerMask);
                 }
 
                 castHit = rayHit;
@@ -453,21 +453,21 @@ namespace MLAgents.Sensors
 
             var rayOutput = new RayPerceptionOutput.RayOutput
             {
-                hasHit = castHit,
-                hitFraction = hitFraction,
-                hitTaggedObject = false,
-                hitTagIndex = -1
+                HasHit = castHit,
+                HitFraction = hitFraction,
+                HitTaggedObject = false,
+                HitTagIndex = -1
             };
 
             if (castHit)
             {
                 // Find the index of the tag of the object that was hit.
-                for (var i = 0; i < input.detectableTags.Count; i++)
+                for (var i = 0; i < input.DetectableTags.Count; i++)
                 {
-                    if (hitObject.CompareTag(input.detectableTags[i]))
+                    if (hitObject.CompareTag(input.DetectableTags[i]))
                     {
-                        rayOutput.hitTaggedObject = true;
-                        rayOutput.hitTagIndex = i;
+                        rayOutput.HitTaggedObject = true;
+                        rayOutput.HitTagIndex = i;
                         break;
                     }
                 }

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System;
-using Barracuda;
-using MLAgents.Inference.Utils;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.Barracuda;
+using Unity.MLAgents.Inference.Utils;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     /// <summary>
     /// Reshapes a Tensor so that its first dimension becomes equal to the current batch size
@@ -82,7 +82,7 @@ namespace MLAgents.Inference
     {
         readonly ITensorAllocator m_Allocator;
         List<int> m_SensorIndices = new List<int>();
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        ObservationWriter m_ObservationWriter = new ObservationWriter();
 
         public VectorObservationGenerator(ITensorAllocator allocator)
         {
@@ -115,8 +115,8 @@ namespace MLAgents.Inference
                     foreach (var sensorIndex in m_SensorIndices)
                     {
                         var sensor = info.sensors[sensorIndex];
-                        m_WriteAdapter.SetTarget(tensorProxy, agentIndex, tensorOffset);
-                        var numWritten = sensor.Write(m_WriteAdapter);
+                        m_ObservationWriter.SetTarget(tensorProxy, agentIndex, tensorOffset);
+                        var numWritten = sensor.Write(m_ObservationWriter);
                         tensorOffset += numWritten;
                     }
                     Debug.AssertFormat(
@@ -350,7 +350,7 @@ namespace MLAgents.Inference
     {
         readonly int m_SensorIndex;
         readonly ITensorAllocator m_Allocator;
-        WriteAdapter m_WriteAdapter = new WriteAdapter();
+        ObservationWriter m_ObservationWriter = new ObservationWriter();
 
         public VisualObservationInputGenerator(
             int sensorIndex, ITensorAllocator allocator)
@@ -375,8 +375,8 @@ namespace MLAgents.Inference
                 }
                 else
                 {
-                    m_WriteAdapter.SetTarget(tensorProxy, agentIndex, 0);
-                    sensor.Write(m_WriteAdapter);
+                    m_ObservationWriter.SetTarget(tensorProxy, agentIndex, 0);
+                    sensor.Write(m_ObservationWriter);
                 }
                 agentIndex++;
             }

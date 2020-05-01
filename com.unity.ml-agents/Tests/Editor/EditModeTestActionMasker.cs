@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class EditModeTestActionMasker
     {
@@ -17,8 +17,8 @@ namespace MLAgents.Tests
         public void FailsWithContinuous()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Continuous;
-            bp.vectorActionSize = new[] {4};
+            bp.VectorActionSpaceType = SpaceType.Continuous;
+            bp.VectorActionSize = new[] {4};
             var masker = new DiscreteActionMasker(bp);
             masker.SetMask(0, new[] {0});
             Assert.Catch<UnityAgentsException>(() => masker.GetMask());
@@ -28,7 +28,7 @@ namespace MLAgents.Tests
         public void NullMask()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Discrete;
+            bp.VectorActionSpaceType = SpaceType.Discrete;
             var masker = new DiscreteActionMasker(bp);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
@@ -38,8 +38,8 @@ namespace MLAgents.Tests
         public void FirstBranchMask()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Discrete;
-            bp.vectorActionSize = new[] {4, 5, 6};
+            bp.VectorActionSpaceType = SpaceType.Discrete;
+            bp.VectorActionSize = new[] {4, 5, 6};
             var masker = new DiscreteActionMasker(bp);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
@@ -58,8 +58,8 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters
             {
-                vectorActionSpaceType = SpaceType.Discrete,
-                vectorActionSize = new[] { 4, 5, 6 }
+                VectorActionSpaceType = SpaceType.Discrete,
+                VectorActionSize = new[] { 4, 5, 6 }
             };
             var masker = new DiscreteActionMasker(bp);
             masker.SetMask(1, new[] {1, 2, 3});
@@ -78,8 +78,8 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters
             {
-                vectorActionSpaceType = SpaceType.Discrete,
-                vectorActionSize = new[] { 4, 5, 6 }
+                VectorActionSpaceType = SpaceType.Discrete,
+                VectorActionSize = new[] { 4, 5, 6 }
             };
             var masker = new DiscreteActionMasker(bp);
             masker.SetMask(1, new[] {1, 2, 3});
@@ -96,8 +96,8 @@ namespace MLAgents.Tests
         {
             var bp = new BrainParameters
             {
-                vectorActionSpaceType = SpaceType.Discrete,
-                vectorActionSize = new[] { 4, 5, 6 }
+                VectorActionSpaceType = SpaceType.Discrete,
+                VectorActionSize = new[] { 4, 5, 6 }
             };
             var masker = new DiscreteActionMasker(bp);
 
@@ -119,8 +119,8 @@ namespace MLAgents.Tests
         public void MultipleMaskEdit()
         {
             var bp = new BrainParameters();
-            bp.vectorActionSpaceType = SpaceType.Discrete;
-            bp.vectorActionSize = new[] {4, 5, 6};
+            bp.VectorActionSpaceType = SpaceType.Discrete;
+            bp.VectorActionSize = new[] {4, 5, 6};
             var masker = new DiscreteActionMasker(bp);
             masker.SetMask(0, new[] {0, 1});
             masker.SetMask(0, new[] {3});

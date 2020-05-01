@@ -20,7 +20,7 @@ def dummy_config():
     return yaml.safe_load(
         """
         trainer: sac
-        batch_size: 32
+        batch_size: 8
         buffer_size: 10240
         buffer_init_steps: 0
         hidden_units: 32
@@ -29,8 +29,7 @@ def dummy_config():
         max_steps: 1024
         memory_size: 10
         normalize: true
-        num_update: 1
-        train_interval: 1
+        steps_per_update: 1
         num_layers: 1
         time_horizon: 64
         sequence_length: 16
@@ -66,7 +65,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
 
     trainer_parameters = dummy_config
     model_path = "testmodel"
-    trainer_parameters["model_path"] = model_path
+    trainer_parameters["output_path"] = model_path
     trainer_parameters["keep_checkpoints"] = 3
     trainer_parameters["use_recurrent"] = use_rnn
     policy = NNPolicy(
@@ -128,8 +127,7 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
     trainer_params = dummy_config
-    trainer_params["summary_path"] = str(tmpdir)
-    trainer_params["model_path"] = str(tmpdir)
+    trainer_params["output_path"] = str(tmpdir)
     trainer_params["save_replay_buffer"] = True
     trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
     policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
@@ -156,8 +154,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     mock_optimizer.reward_signals = {}
     sac_optimizer.return_value = mock_optimizer
 
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
@@ -175,18 +172,20 @@ def test_add_get_policy(sac_optimizer, dummy_config):
         trainer.add_policy(brain_params, policy)
 
 
-def test_process_trajectory(dummy_config):
+def test_advance(dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
+    dummy_config["steps_per_update"] = 20
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
 
     trajectory_queue = AgentManagerQueue("testbrain")
+    policy_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
+    trainer.publish_policy_queue(policy_queue)
 
     trajectory = make_fake_trajectory(
         length=15,
@@ -194,6 +193,7 @@ def test_process_trajectory(dummy_config):
         vec_obs_size=6,
         num_vis_obs=0,
         action_space=[2],
+        is_discrete=False,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -208,11 +208,12 @@ def test_process_trajectory(dummy_config):
 
     # Add a terminal trajectory
     trajectory = make_fake_trajectory(
-        length=15,
+        length=6,
         max_step_complete=False,
         vec_obs_size=6,
         num_vis_obs=0,
         action_space=[2],
+        is_discrete=False,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -227,6 +228,24 @@ def test_process_trajectory(dummy_config):
         trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").mean > 0
     )
 
+    # Make sure there is a policy on the queue
+    policy_queue.get_nowait()
+
+    # Add another trajectory. Since this is less than 20 steps total (enough for)
+    # two updates, there should NOT be a policy on the queue.
+    trajectory = make_fake_trajectory(
+        length=5,
+        max_step_complete=False,
+        vec_obs_size=6,
+        num_vis_obs=0,
+        action_space=[2],
+        is_discrete=False,
+    )
+    trajectory_queue.put(trajectory)
+    trainer.advance()
+    with pytest.raises(AgentManagerQueue.Empty):
+        policy_queue.get_nowait()
+
 
 def test_bad_config(dummy_config):
     brain_params = make_brain_parameters(
@@ -236,8 +255,7 @@ def test_bad_config(dummy_config):
     dummy_config["sequence_length"] = 64
     dummy_config["batch_size"] = 32
     dummy_config["use_recurrent"] = True
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     with pytest.raises(UnityTrainerException):
         _ = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
 

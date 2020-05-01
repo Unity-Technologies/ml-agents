@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/demonstration_meta.proto</summary>
   internal static partial class DemonstrationMetaReflection {
@@ -29,11 +29,12 @@ namespace MLAgents.CommunicatorObjects {
             "bW9uc3RyYXRpb25NZXRhUHJvdG8SEwoLYXBpX3ZlcnNpb24YASABKAUSGgoS",
             "ZGVtb25zdHJhdGlvbl9uYW1lGAIgASgJEhQKDG51bWJlcl9zdGVwcxgDIAEo",
             "BRIXCg9udW1iZXJfZXBpc29kZXMYBCABKAUSEwoLbWVhbl9yZXdhcmQYBSAB",
-            "KAJCH6oCHE1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "KAJCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnBy",
+            "b3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.DemonstrationMetaProto), global::MLAgents.CommunicatorObjects.DemonstrationMetaProto.Parser, new[]{ "ApiVersion", "DemonstrationName", "NumberSteps", "NumberEpisodes", "MeanReward" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.DemonstrationMetaProto), global::Unity.MLAgents.CommunicatorObjects.DemonstrationMetaProto.Parser, new[]{ "ApiVersion", "DemonstrationName", "NumberSteps", "NumberEpisodes", "MeanReward" }, null, null, null)
           }));
     }
     #endregion
@@ -48,7 +49,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.DemonstrationMetaReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Unity.MLAgents.CommunicatorObjects.DemonstrationMetaReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

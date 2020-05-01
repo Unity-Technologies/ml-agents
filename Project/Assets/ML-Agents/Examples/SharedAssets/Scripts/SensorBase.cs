@@ -1,6 +1,6 @@
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// A simple sensor that provides a number default implementations.
@@ -22,18 +22,18 @@ namespace MLAgentsExamples
 
         /// <summary>
         /// Default implementation of Write interface. This creates a temporary array,
-        /// calls WriteObservation, and then writes the results to the WriteAdapter.
+        /// calls WriteObservation, and then writes the results to the ObservationWriter.
         /// </summary>
-        /// <param name="adapter"></param>
+        /// <param name="writer"></param>
         /// <returns>The number of elements written.</returns>
-        public virtual int Write(WriteAdapter adapter)
+        public virtual int Write(ObservationWriter writer)
         {
             // TODO reuse buffer for similar agents, don't call GetObservationShape()
             var numFloats = this.ObservationSize();
             float[] buffer = new float[numFloats];
             WriteObservation(buffer);
 
-            adapter.AddRange(buffer);
+            writer.AddRange(buffer);
 
             return numFloats;
         }

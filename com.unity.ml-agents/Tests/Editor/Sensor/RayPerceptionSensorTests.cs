@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class RayPerceptionSensorTests
     {
@@ -67,24 +67,24 @@ namespace MLAgents.Tests
             var obj = new GameObject("agent");
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
 
-            perception.raysPerDirection = 1;
-            perception.maxRayDegrees = 45;
-            perception.rayLength = 20;
-            perception.detectableTags = new List<string>();
-            perception.detectableTags.Add(k_CubeTag);
-            perception.detectableTags.Add(k_SphereTag);
+            perception.RaysPerDirection = 1;
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add(k_CubeTag);
+            perception.DetectableTags.Add(k_SphereTag);
 
             var radii = new[] { 0f, .5f };
             foreach (var castRadius in radii)
             {
-                perception.sphereCastRadius = castRadius;
+                perception.SphereCastRadius = castRadius;
                 var sensor = perception.CreateSensor();
 
-                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
-                WriteAdapter writer = new WriteAdapter();
+                ObservationWriter writer = new ObservationWriter();
                 writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
 
                 var numWritten = sensor.Write(writer);
@@ -102,7 +102,7 @@ namespace MLAgents.Tests
 
                 // Hit is at z=9.0 in world space, ray length is 20
                 Assert.That(
-                    outputBuffer[3], Is.EqualTo((9.5f - castRadius) / perception.rayLength).Within(.0005f)
+                    outputBuffer[3], Is.EqualTo((9.5f - castRadius) / perception.RayLength).Within(.0005f)
                 );
 
                 // Spheres are at 5,0,5 and 5,0,-5, so 5*sqrt(2) units from origin
@@ -112,14 +112,14 @@ namespace MLAgents.Tests
                 Assert.AreEqual(0.0f, outputBuffer[5]); // missed sphere
                 Assert.AreEqual(0.0f, outputBuffer[6]); // hit unknown tag -> all 0
                 Assert.That(
-                    outputBuffer[7], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f)
+                    outputBuffer[7], Is.EqualTo(expectedHitLengthWorldSpace / perception.RayLength).Within(.0005f)
                 );
 
                 Assert.AreEqual(0.0f, outputBuffer[8]); // missed cube
                 Assert.AreEqual(1.0f, outputBuffer[9]); // hit sphere
                 Assert.AreEqual(0.0f, outputBuffer[10]); // missed unknown tag
                 Assert.That(
-                    outputBuffer[11], Is.EqualTo(expectedHitLengthWorldSpace / perception.rayLength).Within(.0005f)
+                    outputBuffer[11], Is.EqualTo(expectedHitLengthWorldSpace / perception.RayLength).Within(.0005f)
                 );
             }
         }
@@ -130,19 +130,19 @@ namespace MLAgents.Tests
             var obj = new GameObject("agent");
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
 
-            perception.raysPerDirection = 0;
-            perception.maxRayDegrees = 45;
-            perception.rayLength = 20;
-            perception.detectableTags = new List<string>();
-            perception.detectableTags.Add(k_CubeTag);
-            perception.detectableTags.Add(k_SphereTag);
+            perception.RaysPerDirection = 0;
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add(k_CubeTag);
+            perception.DetectableTags.Add(k_SphereTag);
 
             var sensor = perception.CreateSensor();
-            var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+            var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
             Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
             var outputBuffer = new float[expectedObs];
 
-            WriteAdapter writer = new WriteAdapter();
+            ObservationWriter writer = new ObservationWriter();
             writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
 
             var numWritten = sensor.Write(writer);
@@ -170,9 +170,9 @@ namespace MLAgents.Tests
 
             var obj = new GameObject("agent");
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
-            perception.raysPerDirection = 0;
-            perception.rayLength = 20;
-            perception.detectableTags = new List<string>();
+            perception.RaysPerDirection = 0;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
 
             var filterCubeLayers = new[] { false, true };
             foreach (var filterCubeLayer in filterCubeLayers)
@@ -183,14 +183,14 @@ namespace MLAgents.Tests
                 {
                     layerMask &= ~(1 << cubeFiltered.layer);
                 }
-                perception.rayLayerMask = layerMask;
+                perception.RayLayerMask = layerMask;
 
                 var sensor = perception.CreateSensor();
-                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
-                WriteAdapter writer = new WriteAdapter();
+                ObservationWriter writer = new ObservationWriter();
                 writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
 
                 var numWritten = sensor.Write(writer);
@@ -200,14 +200,14 @@ namespace MLAgents.Tests
                 {
                     // Hit the far cube because close was filtered.
                     Assert.That(outputBuffer[outputBuffer.Length - 1],
-                        Is.EqualTo((9.5f - perception.sphereCastRadius) / perception.rayLength).Within(.0005f)
+                        Is.EqualTo((9.5f - perception.SphereCastRadius) / perception.RayLength).Within(.0005f)
                     );
                 }
                 else
                 {
                     // Hit the close cube because not filtered.
                     Assert.That(outputBuffer[outputBuffer.Length - 1],
-                        Is.EqualTo((4.5f - perception.sphereCastRadius) / perception.rayLength).Within(.0005f)
+                        Is.EqualTo((4.5f - perception.SphereCastRadius) / perception.RayLength).Within(.0005f)
                     );
                 }
             }
@@ -221,23 +221,23 @@ namespace MLAgents.Tests
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
             obj.transform.localScale = new Vector3(2, 2, 2);
 
-            perception.raysPerDirection = 0;
-            perception.maxRayDegrees = 45;
-            perception.rayLength = 20;
-            perception.detectableTags = new List<string>();
-            perception.detectableTags.Add(k_CubeTag);
+            perception.RaysPerDirection = 0;
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add(k_CubeTag);
 
             var radii = new[] { 0f, .5f };
             foreach (var castRadius in radii)
             {
-                perception.sphereCastRadius = castRadius;
+                perception.SphereCastRadius = castRadius;
                 var sensor = perception.CreateSensor();
 
-                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
-                WriteAdapter writer = new WriteAdapter();
+                ObservationWriter writer = new ObservationWriter();
                 writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
 
                 var numWritten = sensor.Write(writer);
@@ -251,7 +251,7 @@ namespace MLAgents.Tests
 
                 // Hit is at z=9.0 in world space, ray length was 20
                 // But scale increases the cast size and the ray length
-                var scaledRayLength = 2 * perception.rayLength;
+                var scaledRayLength = 2 * perception.RayLength;
                 var scaledCastRadius = 2 * castRadius;
                 Assert.That(
                     outputBuffer[2], Is.EqualTo((9.5f - scaledCastRadius) / scaledRayLength).Within(.0005f)
@@ -271,21 +271,21 @@ namespace MLAgents.Tests
 
             var obj = new GameObject("agent");
             var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
-            perception.raysPerDirection = 0;
-            perception.rayLength = 0.0f;
-            perception.sphereCastRadius = .5f;
-            perception.detectableTags = new List<string>();
-            perception.detectableTags.Add(k_CubeTag);
+            perception.RaysPerDirection = 0;
+            perception.RayLength = 0.0f;
+            perception.SphereCastRadius = .5f;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add(k_CubeTag);
 
             {
                 // Set the layer mask to either the default, or one that ignores the close cube's layer
 
                 var sensor = perception.CreateSensor();
-                var expectedObs = (2 * perception.raysPerDirection + 1) * (perception.detectableTags.Count + 2);
+                var expectedObs = (2 * perception.RaysPerDirection + 1) * (perception.DetectableTags.Count + 2);
                 Assert.AreEqual(sensor.GetObservationShape()[0], expectedObs);
                 var outputBuffer = new float[expectedObs];
 
-                WriteAdapter writer = new WriteAdapter();
+                ObservationWriter writer = new ObservationWriter();
                 writer.SetTarget(outputBuffer, sensor.GetObservationShape(), 0);
 
                 var numWritten = sensor.Write(writer);

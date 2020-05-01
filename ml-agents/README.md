@@ -1,33 +1,35 @@
-# Unity ML-Agents Python Interface and Trainers
+# Unity ML-Agents Trainers
 
 The `mlagents` Python package is part of the
-[ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
-`mlagents` provides a Python API that allows direct interaction with the Unity
-game engine as well as a collection of trainers and algorithms to train agents
-in Unity environments.
+[ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents). `mlagents`
+provides a set of reinforcement and imitation learning algorithms designed to be
+used with Unity environments. The algorithms interface with the Python API
+provided by the `mlagents_envs` package. See [here](../docs/Python-API.md) for
+more information on `mlagents_envs`.
 
-The `mlagents` Python package contains two sub packages:
-
-* `mlagents_envs`: A low level API which allows you to interact directly with a
-  Unity Environment. See
-  [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
-  for more information on using this package.
-
-* `mlagents.trainers`: A set of Reinforcement Learning algorithms designed to be
-  used with Unity environments. Access them using the: `mlagents-learn` access
-  point. See
-  [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md)
-  for more information on using this package.
+The algorithms can be accessed using the: `mlagents-learn` access point. See
+[here](../docs/Training-ML-Agents.md) for more information on using this
+package.
 
 ## Installation
 
 Install the `mlagents` package with:
 
 ```sh
-pip install mlagents
+pip3 install mlagents
 ```
 
 ## Usage & More Information
 
-For more detailed documentation, check out the
-[ML-Agents Toolkit documentation.](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Readme.md)
+For more information on the ML-Agents Toolkit and how to instrument a Unity
+scene with the ML-Agents SDK, check out the main
+[ML-Agents Toolkit documentation](../docs/Readme.md).
+
+## Limitations
+
+- `mlagents` does not yet explicitly support multi-agent scenarios so training
+  cooperative behavior among different agents is not stable.
+- Resuming self-play from a checkpoint resets the reported ELO to the default
+  value.
+- Resuming curriculum learning from a checkpoint requires the last lesson be
+  specified using the `--lesson` CLI option

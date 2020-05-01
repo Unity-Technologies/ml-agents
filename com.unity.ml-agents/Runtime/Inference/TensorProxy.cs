@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Barracuda;
-using MLAgents.Inference.Utils;
+using Unity.Barracuda;
+using Unity.MLAgents.Inference.Utils;
 
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     /// <summary>
     /// Tensor - A class to encapsulate a Tensor used for inference.

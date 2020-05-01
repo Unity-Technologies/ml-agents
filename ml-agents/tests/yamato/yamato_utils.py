@@ -52,7 +52,7 @@ def run_standalone_build(
         f"{base_path}/Project",
         "-batchmode",
         "-executeMethod",
-        "MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
+        "Unity.MLAgents.StandaloneBuildTest.BuildStandalonePlayerOSX",
     ]
 
     os.makedirs(os.path.dirname(log_output_path), exist_ok=True)
@@ -161,8 +161,9 @@ def override_config_file(src_path, dest_path, **kwargs):
     """
     with open(src_path) as f:
         configs = yaml.safe_load(f)
+        behavior_configs = configs["behaviors"]
 
-    for config in configs.values():
+    for config in behavior_configs.values():
         config.update(**kwargs)
 
     with open(dest_path, "w") as f:
