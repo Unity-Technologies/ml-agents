@@ -27,9 +27,9 @@ double-check that the versions are in the same. The versions can be found in
   a separate trainer configuration file, under a `behaviors` section. You can move the `default` section too
   if it's being used. This file should be specific to your environment, and not contain configurations for
   multiple environments (unless they have the same Behavior Names).
-  - If your training uses [curriculum](Training-Curriculum-Learning.md), move those configurations under
+  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under
   the `Behavior Name` section.
-  - If your training uses [parameter randomization](Training-Environment-Parameter-Randomization.md), move
+  - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
 
 ## Migrating from 0.15 to Release 1
