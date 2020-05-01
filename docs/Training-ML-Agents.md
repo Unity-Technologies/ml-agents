@@ -133,7 +133,7 @@ configurations and may generate different artifacts and TensorBoard statistics.
 This section offers a detailed guide into how to manage the different training
 set-ups withing the toolkit.
 
-More specifically, this section offers a detailed guide on two command-line
+More specifically, this section offers a detailed guide on the command-line
 flags for `mlagents-learn` that control the training configurations:
 
 - `<trainer-config-file>`: defines the training hyperparameters for each
