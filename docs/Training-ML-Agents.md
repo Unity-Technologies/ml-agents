@@ -465,8 +465,8 @@ Below is a list of included `sampler-type` as part of the toolkit.
     `interval_2_max`], ...]
   - **sub-arguments** - `intervals`
 
-The implementation of the samplers can be found at
-`ml-agents/mlagents/trainers/sampler_class.py`.
+The implementation of the samplers can be found in the
+[sampler_class.py file.](../ml-agents/mlagents/trainers/sampler_class.py).
 
 #### Defining a New Sampler Type
 
