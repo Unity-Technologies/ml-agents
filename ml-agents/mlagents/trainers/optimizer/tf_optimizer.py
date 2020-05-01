@@ -18,13 +18,13 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
         self.policy = policy
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.value_heads: Dict[str, tf.Tensor] = {}
-        self.create_reward_signals(trainer_params["reward_signals"])
+        self.create_reward_signals(trainer_params.reward_signals)
         self.memory_in: tf.Tensor = None
         self.memory_out: tf.Tensor = None
         self.m_size: int = 0
         self.bc_module: Optional[BCModule] = None
         # Create pretrainer if needed
-        if "behavioral_cloning" in trainer_params:
+        if trainer_params.behavioral_cloning is not None:
             BCModule.check_config(trainer_params["behavioral_cloning"])
             self.bc_module = BCModule(
                 self.policy,

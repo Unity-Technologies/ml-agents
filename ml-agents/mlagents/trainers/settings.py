@@ -1,27 +1,148 @@
 import attr
 import cattr
-from typing import Dict, Optional, List, Any
+from typing import Dict, Optional, List, Any, DefaultDict, Mapping
+from enum import Enum
+import collections
 import argparse
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
-from mlagents.trainers.trainer_util import load_config
+from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.models import LearningRateSchedule
 
 
-def strict_to_cls(d, t):
+def check_and_structure(key: str, value: Any, class_type: type) -> Any:
+    attr_fields_dict = attr.fields_dict(class_type)
+    if key not in attr_fields_dict:
+        raise TrainerConfigError(
+            f"The option {key} was specified in your YAML file for {class_type.__name__}, but is invalid."
+        )
+    # Apply cattr structure to the values
+    return cattr.structure(value, attr_fields_dict[key].type)
+
+
+def strict_to_cls(d: Mapping, t: type) -> Any:
     if d is None:
         return None
-    d_copy = {}
+    d_copy: Dict[str, Any] = {}
     d_copy.update(d)
     for key, val in d_copy.items():
-        _fd = attr.fields_dict(t)
-        if key not in attr.fields_dict(t):
-            raise TrainerConfigError(
-                f"The option {key} was specified in your YAML file for {t.__name__}, but is invalid."
-            )
-        # Apply cattr structure to the values
-        d_copy[key] = cattr.structure(val, _fd[key].type)
+        d_copy[key] = check_and_structure(key, val, t)
     return t(**d_copy)
+
+
+def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
+    if d is None:
+        return None
+    d_copy: Dict[str, Any] = {}
+    d_copy.update(d)
+
+    for key, val in d_copy.items():
+        if key == "hyperparameters":
+            if "trainer_type" not in d_copy:
+                raise TrainerConfigError(
+                    "Hyperparameters were specified but no trainer_type was given."
+                )
+            else:
+                d_copy[key] = strict_to_cls(
+                    d_copy[key], TrainerSettings.to_settings(d_copy["trainer_type"])
+                )
+        else:
+            d_copy[key] = check_and_structure(key, val, t)
+    return t(**d_copy)
+
+
+@attr.s(auto_attribs=True)
+class NetworkSettings:
+    @attr.s(auto_attribs=True)
+    class MemorySettings:
+        sequence_length: int = 64
+        memory_size: int = 128
+
+    normalize: bool = False
+    hidden_units: int = 3
+    num_layers: int = 2
+    vis_encode_type: str = "simple"
+    memory: Optional[MemorySettings] = None
+
+
+@attr.s(auto_attribs=True)
+class HyperparamSettings:
+    pass
+
+
+@attr.s(auto_attribs=True)
+class PPOSettings(HyperparamSettings):
+    batch_size: int = 1024
+    beta: float = 5.0e-3
+    buffer_size: int = 10240
+    epsilon: float = 0.2
+    lambd: float = 0.95
+    learning_rate: float = 3.0e-4
+    num_epoch: int = 3
+    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.CONSTANT
+
+
+@attr.s(auto_attribs=True)
+class SACSettings(HyperparamSettings):
+    batch_size: int = 1024
+    beta: float = 5.0e-3
+    buffer_size: int = 10240
+    epsilon: float = 0.2
+    lambd: float = 0.95
+    learning_rate: float = 3.0e-4
+    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.CONSTANT
+
+
+@attr.s(auto_attribs=True)
+class RewardSignalSettings:
+    gamma: float = 0.99
+    strength: float = 1.0
+
+
+@attr.s(auto_attribs=True)
+class SelfPlaySettings:
+    hi: int = 0
+
+
+@attr.s(auto_attribs=True)
+class TrainerSettings:
+    # Edit these two fields to add new trainers #
+    class TrainerType(Enum):
+        PPO: str = "ppo"
+        SAC: str = "sac"
+
+    @staticmethod
+    def to_settings(ttype: TrainerType) -> type:
+        _mapping = {
+            TrainerSettings.TrainerType.PPO: PPOSettings,
+            TrainerSettings.TrainerType.SAC: SACSettings,
+        }
+        return _mapping[ttype]
+
+    ###############################################
+
+    trainer_type: TrainerType = TrainerType.PPO
+    hyperparameters: HyperparamSettings = attr.ib()
+
+    @hyperparameters.default
+    def _set_default_hyperparameters(self):
+        return TrainerSettings.to_settings(self.trainer_type)()
+
+    network_settings: NetworkSettings = NetworkSettings()
+    reward_signals: Dict[str, Dict] = {
+        "extrinsic": cattr.unstructure(RewardSignalSettings())
+    }
+    init_path: Optional[str] = None
+    output_path: str = "default"
+    # TODO: Remove parser default and remove from CLI
+    keep_checkpoints: int = parser.get_default("keep_checkpoints")
+    max_steps: int = 500000
+    time_horizon: int = 64
+    summary_freq: int = 50000
+    threaded: bool = False
+    self_play: Optional[SelfPlaySettings] = None
+    behavioral_cloning: Optional[SelfPlaySettings] = None
 
 
 @attr.s(auto_attribs=True)
@@ -60,7 +181,9 @@ class EngineSettings:
 
 @attr.s(auto_attribs=True)
 class RunOptions:
-    behaviors: Dict[str, Dict]
+    behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
+        default=attr.Factory(lambda: collections.defaultdict(TrainerSettings))
+    )
     env_settings: EnvironmentSettings = EnvironmentSettings()
     engine_settings: EngineSettings = EngineSettings()
     parameter_randomization: Optional[Dict] = None

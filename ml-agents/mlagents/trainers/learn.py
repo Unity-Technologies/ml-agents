@@ -6,7 +6,6 @@ import numpy as np
 import json
 
 from typing import Callable, Optional, List, Dict
-import attr
 import cattr
 
 import mlagents.trainers
@@ -298,7 +297,8 @@ def run_cli(options: RunOptions) -> None:
     logging_util.set_log_level(log_level)
 
     logger.debug("Configuration for this run:")
-    logger.debug(json.dumps(attr.asdict(options), indent=4))
+    print(options)
+    logger.debug(json.dumps(cattr.unstructure(options), indent=4))
 
     # Options deprecation warnings
     if options.checkpoint_settings.load_model:

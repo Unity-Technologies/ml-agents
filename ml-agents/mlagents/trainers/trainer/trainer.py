@@ -1,5 +1,5 @@
 # # Unity ML-Agents Toolkit
-from typing import Dict, List, Deque, Any
+from typing import List, Deque
 import abc
 
 from collections import deque
@@ -14,6 +14,7 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.settings import TrainerSettings
 
 
 logger = get_logger(__name__)
@@ -25,7 +26,7 @@ class Trainer(abc.ABC):
     def __init__(
         self,
         brain_name: str,
-        trainer_parameters: dict,
+        trainer_parameters: TrainerSettings,
         training: bool,
         run_id: str,
         reward_buff_cap: int = 1,
@@ -42,14 +43,14 @@ class Trainer(abc.ABC):
         self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_parameters = trainer_parameters
-        self._threaded = trainer_parameters.get("threaded", True)
+        self._threaded = trainer_parameters.threaded
         self._stats_reporter = StatsReporter(brain_name)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
-        self.summary_freq = self.trainer_parameters["summary_freq"]
+        self.summary_freq = self.trainer_parameters.summary_freq
         self.next_summary_step = self.summary_freq
 
     @property
@@ -68,7 +69,7 @@ class Trainer(abc.ABC):
                 )
 
     @property
-    def parameters(self) -> Dict[str, Any]:
+    def parameters(self) -> TrainerSettings:
         """
         Returns the trainer parameters of the trainer.
         """
@@ -80,7 +81,7 @@ class Trainer(abc.ABC):
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
-        return int(float(self.trainer_parameters["max_steps"]))
+        return int(float(self.trainer_parameters.max_steps))
 
     @property
     def get_step(self) -> int:

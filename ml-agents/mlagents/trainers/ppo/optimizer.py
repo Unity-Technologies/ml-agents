@@ -2,14 +2,15 @@ from typing import Optional, Any, Dict
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedule
+from mlagents.trainers.models import ModelUtils, EncoderType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 
 class PPOOptimizer(TFOptimizer):
-    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
@@ -22,20 +23,18 @@ class PPOOptimizer(TFOptimizer):
         with policy.graph.as_default():
             with tf.variable_scope("optimizer/"):
                 super().__init__(policy, trainer_params)
+                hyperparameters: PPOSettings = trainer_params.hyperparameters
+                lr = float(hyperparameters.learning_rate)
+                lr_schedule = hyperparameters.learning_rate_schedule
+                epsilon = float(hyperparameters.epsilon)
+                beta = float(hyperparameters.beta)
+                max_step = float(trainer_params.max_steps)
 
-                lr = float(trainer_params["learning_rate"])
-                lr_schedule = LearningRateSchedule(
-                    trainer_params.get("learning_rate_schedule", "linear")
-                )
-                h_size = int(trainer_params["hidden_units"])
-                epsilon = float(trainer_params["epsilon"])
-                beta = float(trainer_params["beta"])
-                max_step = float(trainer_params["max_steps"])
-                num_layers = int(trainer_params["num_layers"])
-                vis_encode_type = EncoderType(
-                    trainer_params.get("vis_encode_type", "simple")
-                )
-                self.burn_in_ratio = float(trainer_params.get("burn_in_ratio", 0.0))
+                policy_network_settings = policy.network_settings
+                h_size = int(policy_network_settings.hidden_units)
+                num_layers = policy_network_settings.num_layers
+                vis_encode_type = policy_network_settings.vis_encode_type
+                self.burn_in_ratio = 0.0
 
                 self.stream_names = list(self.reward_signals.keys())
 

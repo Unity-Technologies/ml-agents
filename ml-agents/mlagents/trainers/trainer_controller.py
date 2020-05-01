@@ -3,7 +3,6 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
-import sys
 import threading
 from typing import Dict, Optional, Set, List
 from collections import defaultdict
@@ -184,7 +183,7 @@ class TrainerController(object):
             policy,
             name_behavior_id,
             trainer.stats_reporter,
-            trainer.parameters.get("time_horizon", sys.maxsize),
+            trainer.parameters.time_horizon,
             threaded=trainer.threaded,
         )
         env_manager.set_agent_manager(name_behavior_id, agent_manager)

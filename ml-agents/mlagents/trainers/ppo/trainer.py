@@ -15,6 +15,7 @@ from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 
 logger = get_logger(__name__)
@@ -27,7 +28,7 @@ class PPOTrainer(RLTrainer):
         self,
         brain_name: str,
         reward_buff_cap: int,
-        trainer_parameters: dict,
+        trainer_parameters: TrainerSettings,
         training: bool,
         load: bool,
         seed: int,
@@ -66,7 +67,7 @@ class PPOTrainer(RLTrainer):
             "output_path",
             "reward_signals",
         ]
-        self._check_param_keys()
+        self.hyperparameters: PPOSettings = self.trainer_parameters.hyperparameters
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
@@ -139,7 +140,7 @@ class PPOTrainer(RLTrainer):
                 value_estimates=local_value_estimates,
                 value_next=bootstrap_value,
                 gamma=self.optimizer.reward_signals[name].gamma,
-                lambd=self.trainer_parameters["lambd"],
+                lambd=self.hyperparameters.lambd,
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
@@ -170,7 +171,7 @@ class PPOTrainer(RLTrainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = self.update_buffer.num_experiences
-        return size_of_buffer > self.trainer_parameters["buffer_size"]
+        return size_of_buffer > self.hyperparameters.buffer_size
 
     def _update_policy(self):
         """
@@ -183,21 +184,21 @@ class PPOTrainer(RLTrainer):
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
         batch_size = (
-            self.trainer_parameters["batch_size"]
-            - self.trainer_parameters["batch_size"] % self.policy.sequence_length
+            self.hyperparameters.batch_size
+            - self.hyperparameters.batch_size % self.policy.sequence_length
         )
         # Make sure there is at least one sequence
         batch_size = max(batch_size, self.policy.sequence_length)
 
         n_sequences = max(
-            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
+            int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
         advantages = self.update_buffer["advantages"].get_batch()
         self.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
-        num_epoch = self.trainer_parameters["num_epoch"]
+        num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)

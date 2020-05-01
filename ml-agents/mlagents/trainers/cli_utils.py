@@ -1,4 +1,7 @@
-from typing import Set
+from typing import Set, Dict, Any, TextIO
+import os
+import yaml
+from mlagents.trainers.exception import TrainerConfigError
 from mlagents_envs.environment import UnityEnvironment
 import argparse
 
@@ -244,6 +247,33 @@ def _create_parser() -> argparse.ArgumentParser:
         "the graphics driver. Use this only if your agents don't use visual observations.",
     )
     return argparser
+
+
+def load_config(config_path: str) -> Dict[str, Any]:
+    try:
+        with open(config_path) as data_file:
+            return _load_config(data_file)
+    except IOError:
+        abs_path = os.path.abspath(config_path)
+        raise TrainerConfigError(f"Config file could not be found at {abs_path}.")
+    except UnicodeDecodeError:
+        raise TrainerConfigError(
+            f"There was an error decoding Config file from {config_path}. "
+            f"Make sure your file is save using UTF-8"
+        )
+
+
+def _load_config(fp: TextIO) -> Dict[str, Any]:
+    """
+    Load the yaml config from the file-like object.
+    """
+    try:
+        return yaml.safe_load(fp)
+    except yaml.parser.ParserError as e:
+        raise TrainerConfigError(
+            "Error parsing yaml file. Please check for formatting errors. "
+            "A tool such as http://www.yamllint.com/ can be helpful with this."
+        ) from e
 
 
 parser = _create_parser()
