@@ -21,10 +21,8 @@ session running on port 6006 a new session can be launched on an open port using
 the --port option.
 
 **Note:** If you don't assign a `run-id` identifier, `mlagents-learn` uses the
-default string, "ppo". All the statistics will be saved to the same sub-folder
-and displayed as one session in TensorBoard. After a few runs, the displays can
-become difficult to interpret in this situation. You can delete the folders
-under the `summaries` directory to clear out old statistics.
+default string, "ppo". You can delete the folders under the `results` directory
+to clear out old statistics.
 
 On the left side of the TensorBoard window, you can select which of the training
 runs you want to display. You can select multiple run-ids to compare statistics.
