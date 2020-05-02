@@ -95,21 +95,18 @@ class PPOSettings(HyperparamSettings):
 
 @attr.s(auto_attribs=True)
 class SACSettings(HyperparamSettings):
-    batch_size: int = 1024
-    beta: float = 5.0e-3
-    buffer_size: int = 10240
+    batch_size: int = 128
+    buffer_size: int = 50000
     buffer_init_steps: int = 0
-    epsilon: float = 0.2
     tau: float = 0.005
     steps_per_update: float = 1
     save_replay_buffer: bool = False
+    init_entcoef: float = 1.0
     reward_signal_steps_per_update: float = attr.ib()
 
     @reward_signal_steps_per_update.default
     def _reward_signal_steps_per_update_default(self):
         return self.steps_per_update
-
-    init_entcoef: float = 1.0
 
 
 @attr.s(auto_attribs=True)
