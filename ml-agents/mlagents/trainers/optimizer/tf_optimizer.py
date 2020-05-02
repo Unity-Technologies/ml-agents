@@ -9,11 +9,12 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.components.bc.module import BCModule
 
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
-    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         self.sess = policy.sess
         self.policy = policy
         self.update_dict: Dict[str, tf.Tensor] = {}
@@ -25,13 +26,12 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
         self.bc_module: Optional[BCModule] = None
         # Create pretrainer if needed
         if trainer_params.behavioral_cloning is not None:
-            BCModule.check_config(trainer_params["behavioral_cloning"])
             self.bc_module = BCModule(
                 self.policy,
-                policy_learning_rate=trainer_params["learning_rate"],
-                default_batch_size=trainer_params["batch_size"],
+                trainer_params.behavioral_cloning,
+                policy_learning_rate=trainer_params.hyperparameters.learning_rate,
+                default_batch_size=trainer_params.hyperparameters.batch_size,
                 default_num_epoch=3,
-                **trainer_params["behavioral_cloning"],
             )
 
     def get_trajectory_value_estimates(

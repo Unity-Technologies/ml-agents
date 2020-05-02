@@ -67,20 +67,30 @@ class NetworkSettings:
 
 
 @attr.s(auto_attribs=True)
+class BehavioralCloningSettings:
+    demo_path: str
+    steps: int = 0
+    strength: float = 1.0
+    samples_per_update: int = 0
+    num_epoch: Optional[int] = None
+    batch_size: Optional[int] = None
+
+
+@attr.s(auto_attribs=True)
 class HyperparamSettings:
-    pass
+    batch_size: int = 1024
+    buffer_size: int = 10240
+    learning_rate: float = 3.0e-4
+    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.CONSTANT
 
 
 @attr.s(auto_attribs=True)
 class PPOSettings(HyperparamSettings):
-    batch_size: int = 1024
     beta: float = 5.0e-3
-    buffer_size: int = 10240
     epsilon: float = 0.2
     lambd: float = 0.95
-    learning_rate: float = 3.0e-4
     num_epoch: int = 3
-    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.CONSTANT
+    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.LINEAR
 
 
 @attr.s(auto_attribs=True)
@@ -90,8 +100,6 @@ class SACSettings(HyperparamSettings):
     buffer_size: int = 10240
     epsilon: float = 0.2
     lambd: float = 0.95
-    learning_rate: float = 3.0e-4
-    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.CONSTANT
 
 
 @attr.s(auto_attribs=True)
@@ -140,9 +148,9 @@ class TrainerSettings:
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
-    threaded: bool = False
+    threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
-    behavioral_cloning: Optional[SelfPlaySettings] = None
+    behavioral_cloning: Optional[BehavioralCloningSettings] = None
 
 
 @attr.s(auto_attribs=True)
