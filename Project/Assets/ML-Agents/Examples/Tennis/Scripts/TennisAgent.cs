@@ -41,7 +41,7 @@ public class TennisAgent : Agent
 
     public override void Initialize()
     {
-        m_Existential = 1f / MaxStep;
+        m_Existential = 1f / (2f * MaxStep);
         m_AgentRb = GetComponent<Rigidbody>();
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_BallScript = ball.GetComponent<HitWall>();
@@ -130,7 +130,7 @@ public class TennisAgent : Agent
         var rgV = m_AgentRb.velocity;
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
 
-        //timePenalty -= m_Existential;
+        timePenalty -= m_Existential;
         m_TextComponent.text = score.ToString();
     }
 

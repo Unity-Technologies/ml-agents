@@ -33,9 +33,11 @@ public class SmallCubeAgent : Agent
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
+        //m_AgentRb.useGravity = true;
         m_MyArea = area.GetComponent<CubeWarArea>();
         m_LargeAgent = largeAgent.GetComponent<LargeCubeAgent>();
         m_CubeWarSettings = FindObjectOfType<CubeWarSettings>();
+        m_ResetParams = Academy.Instance.EnvironmentParameters; 
         SetResetParameters();
     }
 
@@ -180,12 +182,14 @@ public class SmallCubeAgent : Agent
     {
         if (m_HitPoints <= 1f && m_HitPoints > .5f)
         {
+            m_Dead = false;
             gameObject.tag = "StrongSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = normalMaterial;
         }
 
         else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
         {
+            m_Dead = false;
             gameObject.tag = "WeakSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = weakMaterial;
 
