@@ -8,7 +8,7 @@ import argparse
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.models import LearningRateSchedule
+from mlagents.trainers.models import LearningRateSchedule, EncoderType
 
 
 def check_and_structure(key: str, value: Any, class_type: type) -> Any:
@@ -62,7 +62,7 @@ class NetworkSettings:
     normalize: bool = False
     hidden_units: int = 3
     num_layers: int = 2
-    vis_encode_type: str = "simple"
+    vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
 
 
