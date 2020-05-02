@@ -466,11 +466,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 4
-    numStackedVectorObservations: 2
-    vectorActionSize: 03000000030000000300000002000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    VectorObservationSize: 4
+    NumStackedVectorObservations: 2
+    VectorActionSize: 03000000030000000300000002000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -493,6 +493,7 @@ MonoBehaviour:
   m_DetectableTags:
   - StrongSmallAgent
   - WeakSmallAgent
+  - DeadSmallAgent
   - wall
   - StrongLargeAgent
   - WeakLargeAgent
@@ -522,7 +523,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
-  offsetStep: 0
 --- !u!114 &5940168890073970201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -538,7 +538,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 3000
+  MaxStep: 0
   area: {fileID: 0}
   largeAgent: {fileID: 0}
   turnSpeed: 300
@@ -650,7 +650,7 @@ PrefabInstance:
     - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
         type: 3}
       propertyPath: width
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 3343439013409978073, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
         type: 3}

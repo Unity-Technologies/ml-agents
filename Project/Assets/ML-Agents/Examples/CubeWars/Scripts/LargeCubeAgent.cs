@@ -1,6 +1,6 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 
 public class LargeCubeAgent : Agent
 {
@@ -13,7 +13,6 @@ public class LargeCubeAgent : Agent
     bool m_Shockwave;
     float m_ShockwaveTime;
     Rigidbody m_AgentRb;
-    float m_LaserLength;
     float m_HitPoints;
     // Speed of agent rotation.
     public float turnSpeed;
@@ -301,11 +300,6 @@ public class LargeCubeAgent : Agent
         return m_Dead;
     }
 
-    public void SetLaserLengths()
-    {
-        m_LaserLength = 1f;
-    }
-
     public void SetAgentScale()
     {
         float agentScale = 5f;
@@ -314,7 +308,6 @@ public class LargeCubeAgent : Agent
 
     public void SetResetParameters()
     {
-        SetLaserLengths();
         SetAgentScale();
     }
 }

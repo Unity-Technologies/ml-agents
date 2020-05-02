@@ -30,6 +30,13 @@ behaviors:
       save_steps: 50000
       swap_steps: 15000
       team_change: 200000
+    curriculum:
+      measure: progress
+      thresholds: [0.025, 0.05]
+      min_lesson_length: 100
+      signal_smoothing: true
+      parameters:
+        bonus: [1.0, 0.5, 0.0]
 
   LargeCubeSoldier:
     trainer: ppo

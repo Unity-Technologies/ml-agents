@@ -1,7 +1,6 @@
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 
 public class SmallCubeAgent : Agent
 {
@@ -14,7 +13,6 @@ public class SmallCubeAgent : Agent
     bool m_Shoot;
     float m_ShootTime;
     Rigidbody m_AgentRb;
-    float m_LaserLength;
     float m_HitPoints;
     // Speed of agent rotation.
     public float turnSpeed;
@@ -264,11 +262,6 @@ public class SmallCubeAgent : Agent
         return m_Dead;
     }
 
-    public void SetLaserLengths()
-    {
-        m_LaserLength = 1f;
-    }
-
     public void SetAgentScale()
     {
         float agentScale = 1f;
@@ -277,7 +270,6 @@ public class SmallCubeAgent : Agent
 
     public void SetResetParameters()
     {
-        SetLaserLengths();
         SetAgentScale();
     }
 }

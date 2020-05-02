@@ -453,6 +453,7 @@ MonoBehaviour:
   m_DetectableTags:
   - StrongSmallAgent
   - WeakSmallAgent
+  - DeadSmallAgent
   - wall
   m_RaysPerDirection: 20
   m_MaxRayDegrees: 180

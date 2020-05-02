@@ -1,8 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
 
 public class CubeWarSettings : MonoBehaviour
 {
