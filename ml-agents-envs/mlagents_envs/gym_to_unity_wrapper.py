@@ -92,7 +92,7 @@ class GymToUnityWrapper(BaseEnv):
                 TerminalSteps(
                     obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
                     reward=np.array([rew], dtype=np.float32),
-                    max_step=np.array(
+                    interrupted=np.array(
                         [info.get("TimeLimit.truncated", False)], dtype=np.bool
                     ),
                     agent_id=np.array([self._AGENT_ID], dtype=np.int32),
