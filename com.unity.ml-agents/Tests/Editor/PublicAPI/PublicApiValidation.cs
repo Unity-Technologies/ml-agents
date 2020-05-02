@@ -1,12 +1,9 @@
 using System.Collections.Generic;
-using MLAgents;
-using MLAgents.Policies;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// The purpose of these tests is to make sure that we can do basic operations like creating

@@ -1,10 +1,10 @@
 using System.IO;
 using Google.Protobuf;
 using System.Collections.Generic;
-using MLAgents.Sensors;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Demonstrations
+namespace Unity.MLAgents.Demonstrations
 {
     /// <summary>
     /// Responsible for writing demonstration data to stream (typically a file stream).
@@ -13,7 +13,7 @@ namespace MLAgents.Demonstrations
     public class DemonstrationWriter
     {
         /// <summary>
-        /// Number of bytes reserved for the <see cref="Demonstration"/> metadata at the start of the demo file.
+        /// Number of bytes reserved for the <see cref="DemonstrationMetaData"/> at the start of the demo file.
         /// </summary>
         internal const int MetaDataBytes = 32;
 

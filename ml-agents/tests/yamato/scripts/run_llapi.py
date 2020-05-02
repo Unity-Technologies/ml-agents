@@ -17,7 +17,7 @@ def test_run_environment(env_name):
         file_name=env_name,
         side_channels=[engine_configuration_channel],
         no_graphics=True,
-        args=["-logFile", "-"],
+        additional_args=["-logFile", "-"],
     )
 
     try:
@@ -94,14 +94,23 @@ def test_closing(env_name):
     """
     try:
         env1 = UnityEnvironment(
-            file_name=env_name, base_port=5006, no_graphics=True, args=["-logFile", "-"]
+            file_name=env_name,
+            base_port=5006,
+            no_graphics=True,
+            additional_args=["-logFile", "-"],
         )
         env1.close()
         env1 = UnityEnvironment(
-            file_name=env_name, base_port=5006, no_graphics=True, args=["-logFile", "-"]
+            file_name=env_name,
+            base_port=5006,
+            no_graphics=True,
+            additional_args=["-logFile", "-"],
         )
         env2 = UnityEnvironment(
-            file_name=env_name, base_port=5007, no_graphics=True, args=["-logFile", "-"]
+            file_name=env_name,
+            base_port=5007,
+            no_graphics=True,
+            additional_args=["-logFile", "-"],
         )
         env2.reset()
     finally:

@@ -1,0 +1,40 @@
+behaviors:
+    3DBall:
+        trainer: ppo
+        batch_size: 64
+        beta: 0.001
+        buffer_size: 12000
+        epsilon: 0.2
+        hidden_units: 128
+        lambd: 0.99
+        learning_rate: 3.0e-4
+        learning_rate_schedule: linear
+        max_steps: 5.0e5
+        memory_size: 128
+        normalize: true
+        num_epoch: 3
+        num_layers: 2
+        time_horizon: 1000
+        sequence_length: 64
+        summary_freq: 12000
+        use_recurrent: false
+        vis_encode_type: simple
+        reward_signals:
+            extrinsic:
+                strength: 1.0
+                gamma: 0.99
+
+parameter_randomization:
+    resampling-interval: 500
+    mass:
+        sampler-type: "uniform"
+        min_value: 0.5
+        max_value: 10
+    gravity:
+        sampler-type: "uniform"
+        min_value: 7
+        max_value: 12
+    scale:
+        sampler-type: "uniform"
+        min_value: 0.75
+        max_value: 3

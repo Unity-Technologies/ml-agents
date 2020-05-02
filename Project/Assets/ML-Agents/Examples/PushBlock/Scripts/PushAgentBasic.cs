@@ -2,8 +2,7 @@
 
 using System.Collections;
 using UnityEngine;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
 
 public class PushAgentBasic : Agent
 {
@@ -49,7 +48,7 @@ public class PushAgentBasic : Agent
     /// </summary>
     Renderer m_GroundRenderer;
 
-    private EnvironmentParameters m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     void Awake()
     {
@@ -246,7 +245,7 @@ public class PushAgentBasic : Agent
         m_BlockRb.drag = m_ResetParams.GetWithDefault("block_drag", 0.5f);
     }
 
-    private void SetResetParameters()
+    void SetResetParameters()
     {
         SetGroundMaterialFriction();
         SetBlockProperties();

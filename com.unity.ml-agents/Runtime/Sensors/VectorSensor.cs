@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A sensor implementation for vector observations.

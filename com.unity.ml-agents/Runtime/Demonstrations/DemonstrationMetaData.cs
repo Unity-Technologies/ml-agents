@@ -1,9 +1,8 @@
 using System;
 using UnityEngine;
-using MLAgents.Policies;
 using UnityEngine.Serialization;
 
-namespace MLAgents.Demonstrations
+namespace Unity.MLAgents.Demonstrations
 {
     /// <summary>
     /// Demonstration meta-data.

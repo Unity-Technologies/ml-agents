@@ -13,8 +13,7 @@ def basic_trainer_controller():
     trainer_factory_mock.ghost_controller = GhostController()
     return TrainerController(
         trainer_factory=trainer_factory_mock,
-        model_path="test_model_path",
-        summaries_dir="test_summaries_dir",
+        output_path="test_model_path",
         run_id="test_run_id",
         save_freq=100,
         meta_curriculum=None,
@@ -33,8 +32,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
     trainer_factory_mock.ghost_controller = GhostController()
     TrainerController(
         trainer_factory=trainer_factory_mock,
-        model_path="",
-        summaries_dir="",
+        output_path="",
         run_id="1",
         save_freq=1,
         meta_curriculum=None,

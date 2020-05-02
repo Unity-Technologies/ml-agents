@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// The DecisionRequester component automatically request decisions for an

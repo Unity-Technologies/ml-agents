@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     /// <summary>
     /// PropertyDrawer for BrainParameters. Defines how BrainParameters are displayed in the

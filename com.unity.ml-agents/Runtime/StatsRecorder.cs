@@ -1,6 +1,6 @@
-using MLAgents.SideChannels;
+using Unity.MLAgents.SideChannels;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Determines the behavior of how multiple stats within the same summary period are combined.

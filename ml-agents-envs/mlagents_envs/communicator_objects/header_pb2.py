@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/header.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n/mlagents_envs/communicator_objects/header.proto\x12\x14\x63ommunicator_objects\".\n\x0bHeaderProto\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\tB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n/mlagents_envs/communicator_objects/header.proto\x12\x14\x63ommunicator_objects\".\n\x0bHeaderProto\x12\x0e\n\x06status\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\tB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
 )
 
 
@@ -74,5 +74,5 @@ _sym_db.RegisterMessage(HeaderProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

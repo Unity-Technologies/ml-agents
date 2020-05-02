@@ -135,8 +135,9 @@ Then, edit the new `RollerAgent` script:
 
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
-1. In the editor, add the `using MLAgents;` and `using MLAgents.Sensors`
-   statements and then change the base class from `MonoBehaviour` to `Agent`.
+1. In the editor, add the `using Unity.MLAgents;` and
+   `using Unity.MLAgents.Sensors` statements and then change the base class from
+   `MonoBehaviour` to `Agent`.
 1. Delete the `Update()` method, but we will use the `Start()` function, so
    leave it alone for now.
 
@@ -188,8 +189,8 @@ So far, our RollerAgent script looks like:
 ```csharp
 using System.Collections.Generic;
 using UnityEngine;
-using MLAgents;
-using MLAgents.Sensors;
+using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
 
 public class RollerAgent : Agent
 {
@@ -386,12 +387,10 @@ In order for the Agent to use the Heuristic, You will need to set the
 `Behavior Type` to `Heuristic Only` in the `Behavior Parameters` of the
 RollerAgent.
 
-Press :arrow_forward: to run the scene and use the arrows keys to move the Agent
-around the platform. Make sure that there are no errors displayed in the Unity
-Editor Console window and that the Agent resets when it reaches its target or
-falls from the platform. Note that for more involved debugging, the ML-Agents
-SDK includes a convenient [Monitor](Feature-Monitor.md) class that you can use
-to easily display Agent status information in the Game window.
+Press **Play** to run the scene and use the arrows keys to move the Agent around
+the platform. Make sure that there are no errors displayed in the Unity Editor
+Console window and that the Agent resets when it reaches its target or falls
+from the platform.
 
 ## Training the Environment
 
@@ -403,27 +402,28 @@ pass to the `mlagents-learn` program. Create a new `rollerball_config.yaml` file
 and include the following hyperparameter values:
 
 ```yml
-RollerBall:
-  trainer: ppo
-  batch_size: 10
-  beta: 5.0e-3
-  buffer_size: 100
-  epsilon: 0.2
-  hidden_units: 128
-  lambd: 0.95
-  learning_rate: 3.0e-4
-  learning_rate_schedule: linear
-  max_steps: 5.0e4
-  normalize: false
-  num_epoch: 3
-  num_layers: 2
-  time_horizon: 64
-  summary_freq: 10000
-  use_recurrent: false
-  reward_signals:
-    extrinsic:
-      strength: 1.0
-      gamma: 0.99
+behaviors:
+  RollerBall:
+    trainer: ppo
+    batch_size: 10
+    beta: 5.0e-3
+    buffer_size: 100
+    epsilon: 0.2
+    hidden_units: 128
+    lambd: 0.95
+    learning_rate: 3.0e-4
+    learning_rate_schedule: linear
+    max_steps: 5.0e4
+    normalize: false
+    num_epoch: 3
+    num_layers: 2
+    time_horizon: 64
+    summary_freq: 10000
+    use_recurrent: false
+    reward_signals:
+        extrinsic:
+        strength: 1.0
+        gamma: 0.99
 ```
 
 Since this example creates a very simple training environment with only a few
@@ -436,8 +436,8 @@ effect on training time and success. A larger value reduces the number of
 decisions the training algorithm has to consider and, in this simple
 environment, speeds up training.
 
-To train your agent, run the following command before pressing :arrow_forward:
-in the Editor:
+To train your agent, run the following command before pressing **Play** in the
+Editor:
 
     mlagents-learn config/rollerball_config.yaml --run-id=RollerBall
 

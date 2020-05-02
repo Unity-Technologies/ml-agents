@@ -23,9 +23,9 @@ from mlagents_envs.base_env import (
 from mlagents_envs.timers import timed, hierarchical_timer
 from mlagents_envs.exception import (
     UnityEnvironmentException,
-    UnityCommunicationException,
     UnityActionException,
     UnityTimeOutException,
+    UnityCommunicatorStoppedException,
 )
 
 from mlagents_envs.communicator_objects.command_pb2 import STEP, RESET
@@ -55,11 +55,11 @@ class UnityEnvironment(BaseEnv):
     SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
 
     # Communication protocol version.
-    # When connecting to C#, this must match Academy.k_ApiVersion
-    # Currently we require strict equality between the communication protocol
-    # on each side, although we may allow some flexibility in the future.
-    # This should be incremented whenever a change is made to the communication protocol.
-    API_VERSION = "0.17.0"
+    # When connecting to C#, this must be compatible with Academy.k_ApiVersion.
+    # We follow semantic versioning on the communication version, so existing
+    # functionality will work as long the major versions match.
+    # This should be changed whenever a change is made to the communication protocol.
+    API_VERSION = "1.0.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -77,8 +77,8 @@ class UnityEnvironment(BaseEnv):
         raise UnityEnvironmentException(
             f"The communication API version is not compatible between Unity and python. "
             f"Python API: {UnityEnvironment.API_VERSION}, Unity API: {unity_com_ver}.\n "
-            f"Please go to https://github.com/Unity-Technologies/ml-agents/releases/tag/latest_release "
-            f"to download the latest version of ML-Agents."
+            f"Please find the versions that work best together from our release page.\n"
+            "https://github.com/Unity-Technologies/ml-agents/releases"
         )
 
     @staticmethod
@@ -141,8 +141,9 @@ class UnityEnvironment(BaseEnv):
         seed: int = 0,
         no_graphics: bool = False,
         timeout_wait: int = 60,
-        args: Optional[List[str]] = None,
+        additional_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
+        log_folder: Optional[str] = None,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -157,9 +158,11 @@ class UnityEnvironment(BaseEnv):
         :int timeout_wait: Time (in seconds) to wait for connection from environment.
         :list args: Addition Unity command line arguments
         :list side_channels: Additional side channel for no-rl communication with Unity
+        :str log_folder: Optional folder to write the Unity Player log file into.  Requires absolute path.
         """
-        args = args or []
         atexit.register(self._close)
+        self.additional_args = additional_args or []
+        self.no_graphics = no_graphics
         # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
         # an environment, otherwise DEFAULT_EDITOR_PORT
         if base_port is None:
@@ -185,6 +188,7 @@ class UnityEnvironment(BaseEnv):
                         )
                     )
                 self.side_channels[_sc.channel_id] = _sc
+        self.log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -195,7 +199,7 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, no_graphics, args)
+            self.executable_launcher(file_name, no_graphics, additional_args)
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -296,6 +300,20 @@ class UnityEnvironment(BaseEnv):
                 launch_string = candidates[0]
         return launch_string
 
+    def executable_args(self) -> List[str]:
+        args: List[str] = []
+        if self.no_graphics:
+            args += ["-nographics", "-batchmode"]
+        args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
+        if self.log_folder:
+            log_file_path = os.path.join(
+                self.log_folder, f"Player-{self.worker_id}.log"
+            )
+            args += ["-logFile", log_file_path]
+        # Add in arguments passed explicitly by the user.
+        args += self.additional_args
+        return args
+
     def executable_launcher(self, file_name, no_graphics, args):
         launch_string = self.validate_environment_path(file_name)
         if launch_string is None:
@@ -306,11 +324,7 @@ class UnityEnvironment(BaseEnv):
         else:
             logger.debug("This is the launch string {}".format(launch_string))
             # Launch Unity environment
-            subprocess_args = [launch_string]
-            if no_graphics:
-                subprocess_args += ["-nographics", "-batchmode"]
-            subprocess_args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
-            subprocess_args += args
+            subprocess_args = [launch_string] + self.executable_args()
             try:
                 self.proc1 = subprocess.Popen(
                     subprocess_args,
@@ -362,7 +376,7 @@ class UnityEnvironment(BaseEnv):
         if self._loaded:
             outputs = self.communicator.exchange(self._generate_reset_input())
             if outputs is None:
-                raise UnityCommunicationException("Communicator has stopped.")
+                raise UnityCommunicatorStoppedException("Communicator has exited.")
             self._update_behavior_specs(outputs)
             rl_output = outputs.rl_output
             self._update_state(rl_output)
@@ -390,7 +404,7 @@ class UnityEnvironment(BaseEnv):
         with hierarchical_timer("communicator.exchange"):
             outputs = self.communicator.exchange(step_input)
         if outputs is None:
-            raise UnityCommunicationException("Communicator has stopped.")
+            raise UnityCommunicatorStoppedException("Communicator has exited.")
         self._update_behavior_specs(outputs)
         rl_output = outputs.rl_output
         self._update_state(rl_output)

@@ -20,9 +20,8 @@ class TrainerFactory:
     def __init__(
         self,
         trainer_config: Any,
-        summaries_dir: str,
         run_id: str,
-        model_path: str,
+        output_path: str,
         keep_checkpoints: int,
         train_model: bool,
         load_model: bool,
@@ -33,9 +32,8 @@ class TrainerFactory:
         multi_gpu: bool = False,
     ):
         self.trainer_config = trainer_config
-        self.summaries_dir = summaries_dir
         self.run_id = run_id
-        self.model_path = model_path
+        self.output_path = output_path
         self.init_path = init_path
         self.keep_checkpoints = keep_checkpoints
         self.train_model = train_model
@@ -49,9 +47,8 @@ class TrainerFactory:
         return initialize_trainer(
             self.trainer_config,
             brain_name,
-            self.summaries_dir,
             self.run_id,
-            self.model_path,
+            self.output_path,
             self.keep_checkpoints,
             self.train_model,
             self.load_model,
@@ -66,9 +63,8 @@ class TrainerFactory:
 def initialize_trainer(
     trainer_config: Any,
     brain_name: str,
-    summaries_dir: str,
     run_id: str,
-    model_path: str,
+    output_path: str,
     keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
@@ -84,9 +80,8 @@ def initialize_trainer(
 
     :param trainer_config: Original trainer configuration loaded from YAML
     :param brain_name: Name of the brain to be associated with trainer
-    :param summaries_dir: Directory to store trainer summary statistics
     :param run_id: Run ID to associate with this training run
-    :param model_path: Path to save the model
+    :param output_path: Path to save the model and summary statistics
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
     :param load_model: Whether to load the model or randomly initialize
@@ -98,25 +93,25 @@ def initialize_trainer(
     """
     if "default" not in trainer_config and brain_name not in trainer_config:
         raise TrainerConfigError(
-            f'Trainer config must have either a "default" section, or a section for the brain name ({brain_name}). '
-            "See config/trainer_config.yaml for an example."
+            f'Trainer config must have either a "default" section, or a section for the brain name {brain_name}. '
+            "See the config/ directory for examples."
         )
 
     trainer_parameters = trainer_config.get("default", {}).copy()
-    trainer_parameters["summary_path"] = str(run_id) + "_" + brain_name
-    trainer_parameters["model_path"] = "{basedir}/{name}".format(
-        basedir=model_path, name=brain_name
-    )
+    trainer_parameters["output_path"] = os.path.join(output_path, brain_name)
     if init_path is not None:
-        trainer_parameters["init_path"] = "{basedir}/{name}".format(
-            basedir=init_path, name=brain_name
-        )
+        trainer_parameters["init_path"] = os.path.join(init_path, brain_name)
     trainer_parameters["keep_checkpoints"] = keep_checkpoints
     if brain_name in trainer_config:
         _brain_key: Any = brain_name
         while not isinstance(trainer_config[_brain_key], dict):
             _brain_key = trainer_config[_brain_key]
         trainer_parameters.update(trainer_config[_brain_key])
+
+    if init_path is not None:
+        trainer_parameters["init_path"] = "{basedir}/{name}".format(
+            basedir=init_path, name=brain_name
+        )
 
     min_lesson_length = 1
     if meta_curriculum:
@@ -209,8 +204,24 @@ def _load_config(fp: TextIO) -> Dict[str, Any]:
         ) from e
 
 
+def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Assembles a curriculum config Dict from a trainer config. The resulting
+    dictionary should have a mapping of {brain_name: config}, where config is another
+    Dict that
+    :param trainer_config: Dict of trainer configurations (keys are brain_names).
+    :return: Dict of curriculum configurations. Returns empty dict if none are found.
+    """
+    curriculum_config: Dict[str, Any] = {}
+    for behavior_name, behavior_config in trainer_config.items():
+        # Don't try to iterate non-Dicts. This probably means your config is malformed.
+        if isinstance(behavior_config, dict) and "curriculum" in behavior_config:
+            curriculum_config[behavior_name] = behavior_config["curriculum"]
+    return curriculum_config
+
+
 def handle_existing_directories(
-    model_path: str, summary_path: str, resume: bool, force: bool, init_path: str = None
+    output_path: str, resume: bool, force: bool, init_path: str = None
 ) -> None:
     """
     Validates that if the run_id model exists, we do not overwrite it unless --force is specified.
@@ -222,9 +233,9 @@ def handle_existing_directories(
     :param force: Whether or not the --force flag was passed.
     """
 
-    model_path_exists = os.path.isdir(model_path)
+    output_path_exists = os.path.isdir(output_path)
 
-    if model_path_exists:
+    if output_path_exists:
         if not resume and not force:
             raise UnityTrainerException(
                 "Previous data from this run ID was found. "

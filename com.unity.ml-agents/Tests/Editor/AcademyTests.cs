@@ -1,9 +1,11 @@
 using NUnit.Framework;
 using UnityEngine;
+#if UNITY_2019_3_OR_NEWER
 using System.Reflection;
-using MLAgents;
+using Unity.MLAgents;
+#endif
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     [TestFixture]
     public class AcademyTests

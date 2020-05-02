@@ -38,8 +38,7 @@ def dummy_config():
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
+        output_path: test
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -117,8 +116,7 @@ def test_process_trajectory(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     controller = GhostController(100)
     trainer = GhostTrainer(
@@ -190,8 +188,7 @@ def test_publish_queue(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     controller = GhostController(100)
     trainer = GhostTrainer(

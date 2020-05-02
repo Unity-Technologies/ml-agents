@@ -1,8 +1,7 @@
 using System;
-using MLAgents.Sensors;
-using UnityEngine.Serialization;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// A simple example of a SensorComponent.
@@ -50,7 +49,7 @@ namespace MLAgentsExamples
         {
             // One-hot encoding of the position
             Array.Clear(output, 0, output.Length);
-            output[basicController.m_Position] = 1;
+            output[basicController.position] = 1;
         }
 
         /// <inheritdoc/>

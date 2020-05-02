@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Side channel that is comprised of a collection of float variables.
@@ -10,7 +10,7 @@ namespace MLAgents.SideChannels
     {
         Dictionary<string, float> m_FloatProperties = new Dictionary<string, float>();
         Dictionary<string, Action<float>> m_RegisteredActions = new Dictionary<string, Action<float>>();
-        private const string k_FloatPropertiesDefaultId = "60ccf7d0-4f7e-11ea-b238-784f4387d1f7";
+        const string k_FloatPropertiesDefaultId = "60ccf7d0-4f7e-11ea-b238-784f4387d1f7";
 
         /// <summary>
         /// Initializes the side channel with the provided channel ID.

@@ -22,7 +22,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='mlagents_envs/communicator_objects/unity_message.proto',
   package='communicator_objects',
   syntax='proto3',
-  serialized_pb=_b('\n6mlagents_envs/communicator_objects/unity_message.proto\x12\x14\x63ommunicator_objects\x1a\x35mlagents_envs/communicator_objects/unity_output.proto\x1a\x34mlagents_envs/communicator_objects/unity_input.proto\x1a/mlagents_envs/communicator_objects/header.proto\"\xc0\x01\n\x11UnityMessageProto\x12\x31\n\x06header\x18\x01 \x01(\x0b\x32!.communicator_objects.HeaderProto\x12<\n\x0cunity_output\x18\x02 \x01(\x0b\x32&.communicator_objects.UnityOutputProto\x12:\n\x0bunity_input\x18\x03 \x01(\x0b\x32%.communicator_objects.UnityInputProtoB\x1f\xaa\x02\x1cMLAgents.CommunicatorObjectsb\x06proto3')
+  serialized_pb=_b('\n6mlagents_envs/communicator_objects/unity_message.proto\x12\x14\x63ommunicator_objects\x1a\x35mlagents_envs/communicator_objects/unity_output.proto\x1a\x34mlagents_envs/communicator_objects/unity_input.proto\x1a/mlagents_envs/communicator_objects/header.proto\"\xc0\x01\n\x11UnityMessageProto\x12\x31\n\x06header\x18\x01 \x01(\x0b\x32!.communicator_objects.HeaderProto\x12<\n\x0cunity_output\x18\x02 \x01(\x0b\x32&.communicator_objects.UnityOutputProto\x12:\n\x0bunity_input\x18\x03 \x01(\x0b\x32%.communicator_objects.UnityInputProtoB%\xaa\x02\"Unity.MLAgents.CommunicatorObjectsb\x06proto3')
   ,
   dependencies=[mlagents__envs_dot_communicator__objects_dot_unity__output__pb2.DESCRIPTOR,mlagents__envs_dot_communicator__objects_dot_unity__input__pb2.DESCRIPTOR,mlagents__envs_dot_communicator__objects_dot_header__pb2.DESCRIPTOR,])
 
@@ -88,5 +88,5 @@ _sym_db.RegisterMessage(UnityMessageProto)
 
 
 DESCRIPTOR.has_options = True
-DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\034MLAgents.CommunicatorObjects'))
+DESCRIPTOR._options = _descriptor._ParseOptions(descriptor_pb2.FileOptions(), _b('\252\002\"Unity.MLAgents.CommunicatorObjects'))
 # @@protoc_insertion_point(module_scope)

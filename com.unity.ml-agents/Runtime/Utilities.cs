@@ -1,8 +1,8 @@
 using System;
 using UnityEngine;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     internal static class Utilities
     {

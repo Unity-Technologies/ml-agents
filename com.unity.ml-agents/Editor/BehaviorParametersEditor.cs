@@ -1,10 +1,10 @@
-using MLAgents.Sensors;
 using UnityEditor;
 using Unity.Barracuda;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 using UnityEngine;
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     /*
      This code is meant to modify the behavior of the inspector on Agent Components.

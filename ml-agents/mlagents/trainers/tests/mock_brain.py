@@ -75,7 +75,7 @@ def create_mock_steps(
         ]
 
     reward = np.array(num_agents * [1.0], dtype=np.float32)
-    max_step = np.array(num_agents * [False], dtype=np.bool)
+    interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
     behavior_spec = BehaviorSpec(
         [(84, 84, 3)] * num_vis_observations + [(num_vector_observations, 0, 0)],
@@ -85,7 +85,7 @@ def create_mock_steps(
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
-            TerminalSteps(obs_list, reward, max_step, agent_id),
+            TerminalSteps(obs_list, reward, interrupted, agent_id),
         )
     else:
         return (
@@ -156,7 +156,7 @@ def make_fake_trajectory(
             action_pre=action_pre,
             action_mask=action_mask,
             prev_action=prev_action,
-            max_step=max_step,
+            interrupted=max_step,
             memory=memory,
         )
         steps_list.append(experience)
@@ -169,7 +169,7 @@ def make_fake_trajectory(
         action_pre=action_pre,
         action_mask=action_mask,
         prev_action=prev_action,
-        max_step=max_step_complete,
+        interrupted=max_step_complete,
         memory=memory,
     )
     steps_list.append(last_experience)

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Barracuda;
 using System.IO;
-using MLAgents;
-using MLAgents.Policies;
+using Unity.MLAgents;
+using Unity.MLAgents.Policies;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     /// <summary>
     /// Utility class to allow the NNModel file for an agent to be overriden during inference.
@@ -142,12 +142,12 @@ namespace MLAgentsExamples
         {
             m_Agent.LazyInitialize();
             var bp = m_Agent.GetComponent<BehaviorParameters>();
-            var name = bp.BehaviorName;
+            var behaviorName = bp.BehaviorName;
 
-            var nnModel = GetModelForBehaviorName(name);
-            Debug.Log($"Overriding behavior {name} for agent with model {nnModel?.name}");
+            var nnModel = GetModelForBehaviorName(behaviorName);
+            Debug.Log($"Overriding behavior {behaviorName} for agent with model {nnModel?.name}");
             // This might give a null model; that's better because we'll fall back to the Heuristic
-            m_Agent.SetModel($"Override_{name}", nnModel);
+            m_Agent.SetModel($"Override_{behaviorName}", nnModel);
 
         }
     }

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Inference
+namespace Unity.MLAgents.Inference
 {
     /// <summary>
     /// Mapping between the output tensor names and the method that will use the

@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Policies
+namespace Unity.MLAgents.Policies
 {
     /// <summary>
     /// The Remote Policy only works when training.
