@@ -203,6 +203,7 @@ SmallCubeSoldier:
     buffer_size: 20480
     hidden_units: 512
     time_horizon: 1000
+    threaded: false
     num_layers: 2
     self_play:
         window: 10
@@ -219,6 +220,7 @@ LargeCubeSoldier:
     buffer_size: 20480
     hidden_units: 512
     time_horizon: 1000
+    threaded: false
     num_layers: 2
     self_play:
         window: 10
