@@ -98,8 +98,18 @@ class SACSettings(HyperparamSettings):
     batch_size: int = 1024
     beta: float = 5.0e-3
     buffer_size: int = 10240
+    buffer_init_steps: int = 0
     epsilon: float = 0.2
-    lambd: float = 0.95
+    tau: float = 0.005
+    steps_per_update: float = 1
+    save_replay_buffer: bool = False
+    reward_signal_steps_per_update: float = attr.ib()
+
+    @reward_signal_steps_per_update.default
+    def _reward_signal_steps_per_update_default(self):
+        return self.steps_per_update
+
+    init_entcoef: float = 1.0
 
 
 @attr.s(auto_attribs=True)
@@ -206,6 +216,7 @@ class RunOptions:
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
+    cattr.register_structure_hook(TrainerSettings, trainer_settings_to_cls)
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":

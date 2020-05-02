@@ -1,15 +1,16 @@
 import numpy as np
-from typing import Dict, List, Optional, Any, Mapping
+from typing import Dict, List, Optional, Any, Mapping, cast
 
 from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
-from mlagents.trainers.models import LearningRateSchedule, EncoderType, ModelUtils
+from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
+from mlagents.trainers.settings import TrainerSettings, SACSettings
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
@@ -20,7 +21,7 @@ TARGET_SCOPE = "target_network"
 
 
 class SACOptimizer(TFOptimizer):
-    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -44,20 +45,24 @@ class SACOptimizer(TFOptimizer):
         with policy.graph.as_default():
             with tf.variable_scope(""):
                 super().__init__(policy, trainer_params)
-                lr = float(trainer_params["learning_rate"])
-                lr_schedule = LearningRateSchedule(
-                    trainer_params.get("learning_rate_schedule", "constant")
+                hyperparameters: SACSettings = cast(
+                    SACSettings, trainer_params.hyperparameters
                 )
+                lr = hyperparameters.learning_rate
+                lr_schedule = hyperparameters.learning_rate_schedule
+                max_step = trainer_params.max_steps
+                self.tau = hyperparameters.tau
+                self.init_entcoef = hyperparameters.init_entcoef
+
                 self.policy = policy
-                self.act_size = self.policy.act_size
-                h_size = int(trainer_params["hidden_units"])
-                max_step = float(trainer_params["max_steps"])
-                num_layers = int(trainer_params["num_layers"])
-                vis_encode_type = EncoderType(
-                    trainer_params.get("vis_encode_type", "simple")
-                )
-                self.tau = trainer_params.get("tau", 0.005)
-                self.burn_in_ratio = float(trainer_params.get("burn_in_ratio", 0.0))
+                self.act_size = policy.act_size
+                policy_network_settings = policy.network_settings
+                h_size = policy_network_settings.hidden_units
+                num_layers = policy_network_settings.num_layers
+                vis_encode_type = policy_network_settings.vis_encode_type
+
+                self.tau = hyperparameters.tau
+                self.burn_in_ratio = 0.0
 
                 # Non-exposed SAC parameters
                 self.discrete_target_entropy_scale = (
@@ -65,11 +70,10 @@ class SACOptimizer(TFOptimizer):
                 )  # Roughly equal to e-greedy 0.05
                 self.continuous_target_entropy_scale = 1.0
 
-                self.init_entcoef = trainer_params.get("init_entcoef", 1.0)
                 stream_names = list(self.reward_signals.keys())
                 # Use to reduce "survivor bonus" when using Curiosity or GAIL.
                 self.gammas = [
-                    _val["gamma"] for _val in trainer_params["reward_signals"].values()
+                    _val["gamma"] for _val in trainer_params.reward_signals.values()
                 ]
                 self.use_dones_in_backup = {
                     name: tf.Variable(1.0) for name in stream_names
