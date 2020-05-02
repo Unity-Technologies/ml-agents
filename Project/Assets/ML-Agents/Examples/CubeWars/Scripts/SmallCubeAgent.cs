@@ -14,6 +14,7 @@ public class SmallCubeAgent : Agent
     float m_ShootTime;
     Rigidbody m_AgentRb;
     float m_HitPoints;
+
     // Speed of agent rotation.
     public float turnSpeed;
     float m_Bonus;
@@ -145,7 +146,7 @@ public class SmallCubeAgent : Agent
                 }
                 else if (hit.collider.gameObject.CompareTag("StrongLargeAgent") || hit.collider.gameObject.CompareTag("WeakLargeAgent"))
                 {
-                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.02f);
+                    hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.01f);
 
                     AddReward(.1f + .4f * m_Bonus);
                 }
