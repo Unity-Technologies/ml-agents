@@ -7,10 +7,16 @@ public class FoodCollectorAgent : Agent
     FoodCollectorSettings m_FoodCollecterSettings;
     public GameObject area;
     FoodCollectorArea m_MyArea;
+
+    [Observable]
     bool m_Frozen;
+
     bool m_Poisoned;
     bool m_Satiated;
+
+    [Observable]
     bool m_Shoot;
+
     float m_FrozenTime;
     float m_EffectTime;
     Rigidbody m_AgentRb;
@@ -39,13 +45,21 @@ public class FoodCollectorAgent : Agent
         SetResetParameters();
     }
 
+    [Observable]
+    Vector3 localRbVelocity
+    {
+        get { return transform.InverseTransformDirection(m_AgentRb.velocity); }
+    }
+
     public override void CollectObservations(VectorSensor sensor)
     {
         if (useVectorObs)
         {
-            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
+            // TODO use Observable with localRbVelocity instead
+            var localVelocity = localRbVelocity;
             sensor.AddObservation(localVelocity.x);
             sensor.AddObservation(localVelocity.z);
+            // TODO replace with Observables
             sensor.AddObservation(System.Convert.ToInt32(m_Frozen));
             sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
         }

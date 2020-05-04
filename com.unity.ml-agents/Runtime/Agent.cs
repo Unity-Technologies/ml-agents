@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reflection;
 using UnityEngine;
 using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
@@ -816,6 +817,28 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
+            // Iterate over Observables
+            var fields = this.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            foreach (var field in fields)
+            {
+                var attr = (ObservableAttribute)Attribute.GetCustomAttribute(field, typeof(ObservableAttribute));
+                if (attr != null)
+                {
+                    sensors.Add(new AttributeFieldSensor(this, field, attr));
+                }
+            }
+
+            var properties = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            foreach (var prop in properties)
+            {
+                var attr = (ObservableAttribute)Attribute.GetCustomAttribute(prop, typeof(ObservableAttribute));
+                if (attr != null)
+                {
+                    sensors.Add(new AttributePropertySensor(this, prop, attr));
+                }
+            }
+
+
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
             if (m_PolicyFactory.UseChildSensors)
