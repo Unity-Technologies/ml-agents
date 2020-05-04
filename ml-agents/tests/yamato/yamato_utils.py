@@ -162,12 +162,8 @@ def override_config_file(src_path, dest_path, **kwargs):
         configs = yaml.safe_load(f)
         behavior_configs = configs["behaviors"]
 
-    for config_name, config in behavior_configs.items():
+    for config in behavior_configs.values():
         config.update(**kwargs)
-
-        # Backwards compat - also put each behavior at the top level for when
-        # we're running against old versions
-        configs[config_name] = config
 
     with open(dest_path, "w") as f:
         yaml.dump(configs, f)
