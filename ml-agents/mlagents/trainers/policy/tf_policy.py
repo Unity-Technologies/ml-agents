@@ -31,7 +31,9 @@ class TFPolicy(Policy):
         :param brain: The corresponding Brain for this policy.
         :param trainer_parameters: The trainer parameters.
         """
-        super(TFPolicy, self).__init__(brain, seed)
+        super(TFPolicy, self).__init__(
+            brain=brain, seed=seed, trainer_params=trainer_parameters
+        )
         self._version_number_ = 2
         self.m_size = 0
 
@@ -47,7 +49,6 @@ class TFPolicy(Policy):
         self.vec_obs_size = brain.vector_observation_space_size
         self.vis_obs_size = brain.number_visual_observations
 
-        self.model_path = trainer_parameters["model_path"]
         self.initialize_path = trainer_parameters.get("init_path", None)
         self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
         self.graph = tf.Graph()
@@ -73,6 +74,10 @@ class TFPolicy(Policy):
         Builds the tensorflow graph needed for this policy.
         """
         pass
+
+    def load_model(self, step=0):
+        reset_steps = not self.load
+        self._load_graph(self.model_path, reset_global_steps=reset_steps)
 
     def _initialize_graph(self):
         with self.graph.as_default():

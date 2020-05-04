@@ -8,7 +8,7 @@ from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 
 
-class PPOOptimizer(TFOptimizer):
+class TFPPOOptimizer(TFOptimizer):
     def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.

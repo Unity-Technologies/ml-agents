@@ -9,7 +9,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 
 
-class PPOOptimizer(TorchOptimizer):
+class TorchPPOOptimizer(TorchOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_params: Dict[str, Any]):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
@@ -20,7 +20,7 @@ class PPOOptimizer(TorchOptimizer):
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
-        super(PPOOptimizer, self).__init__(policy, trainer_params)
+        super(TorchPPOOptimizer, self).__init__(policy, trainer_params)
         params = list(self.policy.actor_critic.parameters())
 
         self.optimizer = torch.optim.Adam(
@@ -95,7 +95,11 @@ class PPOOptimizer(TorchOptimizer):
         vec_obs = np.array(batch["vector_obs"])
         vec_obs = [torch.Tensor(vec_obs)]
         act_masks = torch.Tensor(np.array(batch["action_mask"]))
-        actions = [torch.Tensor(np.array(batch["actions"]))]
+        if self.policy.use_continuous_act:
+            actions = [torch.Tensor(np.array(batch["actions"]))]
+        else:
+            actions = list(torch.Tensor(np.array(batch["actions"])).permute(1, 0))
+
         memories = [
             torch.Tensor(np.array(batch["memory"][i]))
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)

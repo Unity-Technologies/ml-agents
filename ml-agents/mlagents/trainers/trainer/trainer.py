@@ -10,7 +10,7 @@ from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.policy.policy import Policy
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
@@ -46,7 +46,7 @@ class Trainer(abc.ABC):
         self._stats_reporter = StatsReporter(self.summary_path)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
-        self.policy_queues: List[AgentManagerQueue[TorchPolicy]] = []
+        self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
         self.summary_freq = self.trainer_parameters["summary_freq"]
@@ -142,7 +142,7 @@ class Trainer(abc.ABC):
     @abc.abstractmethod
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> TorchPolicy:
+    ) -> Policy:
         """
         Creates policy
         """
@@ -150,7 +150,7 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TorchPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to trainer.
@@ -158,7 +158,7 @@ class Trainer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_policy(self, name_behavior_id: str) -> TorchPolicy:
+    def get_policy(self, name_behavior_id: str) -> Policy:
         """
         Gets policy from trainer.
         """
@@ -174,9 +174,7 @@ class Trainer(abc.ABC):
         """
         pass
 
-    def publish_policy_queue(
-        self, policy_queue: AgentManagerQueue[TorchPolicy]
-    ) -> None:
+    def publish_policy_queue(self, policy_queue: AgentManagerQueue[Policy]) -> None:
         """
         Adds a policy queue to the list of queues to publish to when this Trainer
         makes a policy update

@@ -4,7 +4,7 @@ import os
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
 
 CONTINUOUS_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
 DISCRETE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
@@ -115,7 +115,7 @@ def create_optimizer_mock(
     if trainer_parameters["trainer"] == "sac":
         optimizer = SACOptimizer(policy, trainer_parameters)
     else:
-        optimizer = PPOOptimizer(policy, trainer_parameters)
+        optimizer = TFPPOOptimizer(policy, trainer_parameters)
     return optimizer
 
 

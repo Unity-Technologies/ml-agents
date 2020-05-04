@@ -30,6 +30,7 @@ class Policy(object):
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_params["normalize"]
         self.use_recurrent = trainer_params["use_recurrent"]
+        self.model_path = trainer_params["model_path"]
 
         if self.use_recurrent:
             self.m_size = trainer_params["memory_size"]
@@ -109,6 +110,10 @@ class Policy(object):
         raise NotImplementedError
 
     @abstractmethod
+    def update_normalization(self, vector_obs: np.ndarray) -> None:
+        pass
+
+    @abstractmethod
     def export_model(self, step=0):
         pass
 
@@ -122,4 +127,8 @@ class Policy(object):
 
     @abstractmethod
     def increment_step(self, n_steps):
+        pass
+
+    @abstractmethod
+    def get_current_step(self):
         pass
