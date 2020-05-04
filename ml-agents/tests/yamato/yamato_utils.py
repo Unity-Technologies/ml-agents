@@ -135,12 +135,11 @@ def checkout_csharp_version(csharp_version):
     if csharp_version is None:
         return
 
+    csharp_tag = f"com.unity.ml-agents_{csharp_version}"
     csharp_dirs = ["com.unity.ml-agents", "Project"]
     for csharp_dir in csharp_dirs:
         subprocess.check_call(f"rm -rf {csharp_dir}", shell=True)
-        subprocess.check_call(
-            f"git checkout {csharp_version} -- {csharp_dir}", shell=True
-        )
+        subprocess.check_call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
 
 
 def undo_git_checkout():
