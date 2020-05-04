@@ -71,7 +71,7 @@ def run_training(python_version, csharp_version):
     )
 
     mla_learn_cmd = (
-        f"mlagents-learn override.yaml --train --env="
+        f"mlagents-learn override.yaml --force --env="
         f"{os.path.join(get_base_output_path(), standalone_player_path)} "
         f"--run-id={run_id} --no-graphics --env-args -logFile -"
     )  # noqa
