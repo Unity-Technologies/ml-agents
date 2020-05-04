@@ -171,3 +171,24 @@ def override_config_file(src_path, dest_path, **kwargs):
 
     with open(dest_path, "w") as f:
         yaml.dump(configs, f)
+
+
+def override_legacy_config_file(python_version, src_path, dest_path, **kwargs):
+    """
+    Override settings in a trainer config file, using an old version of the src_path. For example,
+        override_config_file("0.16.0", src_path, dest_path, max_steps=42)
+    will sync the file at src_path from version 0.16.0, copy it to dest_path, and override the
+    max_steps field to 42 for all brains.
+    """
+    # Sync the old version of the file
+    python_tag = f"python_{python_version}"
+    subprocess.check_call(f"git checkout {python_tag} -- {src_path}", shell=True)
+
+    with open(src_path) as f:
+        configs = yaml.safe_load(f)
+
+    for config in configs.values():
+        config.update(**kwargs)
+
+    with open(dest_path, "w") as f:
+        yaml.dump(configs, f)
