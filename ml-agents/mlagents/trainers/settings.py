@@ -47,9 +47,26 @@ def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
                 d_copy[key] = strict_to_cls(
                     d_copy[key], TrainerSettings.to_settings(d_copy["trainer_type"])
                 )
+        elif key == "reward_signals":
+            d_copy[key] = rewardsignal_settings_to_cls(val)
         else:
             d_copy[key] = check_and_structure(key, val, t)
     return t(**d_copy)
+
+
+def rewardsignal_settings_to_cls(d: Mapping) -> Any:
+    if d is None:
+        return None
+    d_final: Dict[RewardSignalSettings.RewardSignalType, RewardSignalSettings] = {}
+
+    for key, val in d.items():
+        try:
+            enum_key = RewardSignalSettings.RewardSignalType(key)
+            t = RewardSignalSettings.to_settings(enum_key)
+            d_final[enum_key] = strict_to_cls(val, t)
+        except KeyError:
+            raise TrainerConfigError(f"Unknown reward signal type {key}")
+    return d_final
 
 
 @attr.s(auto_attribs=True)
@@ -111,13 +128,52 @@ class SACSettings(HyperparamSettings):
 
 @attr.s(auto_attribs=True)
 class RewardSignalSettings:
+    class RewardSignalType(Enum):
+        EXTRINSIC: str = "extrinsic"
+        GAIL: str = "gail"
+        CURIOSITY: str = "curiosity"
+
+    @staticmethod
+    def to_settings(ttype: RewardSignalType) -> type:
+        _mapping = {
+            RewardSignalSettings.RewardSignalType.EXTRINSIC: RewardSignalSettings,
+            RewardSignalSettings.RewardSignalType.GAIL: GAILSettings,
+            RewardSignalSettings.RewardSignalType.CURIOSITY: CuriositySettings,
+        }
+        return _mapping[ttype]
+
     gamma: float = 0.99
     strength: float = 1.0
 
 
 @attr.s(auto_attribs=True)
+class GAILSettings(RewardSignalSettings):
+    encoding_size: int = 64
+    learning_rate: float = 3e-4
+    use_actions: bool = False
+    use_vail: bool = False
+    demo_path: str = attr.ib(kw_only=True)
+
+
+@attr.s(auto_attribs=True)
+class CuriositySettings(RewardSignalSettings):
+    encoding_size: int = 128
+    learning_rate: float = 3e-4
+
+
+@attr.s(auto_attribs=True)
 class SelfPlaySettings:
-    hi: int = 0
+    save_steps: int = 20000
+    team_change: int = attr.ib()
+
+    @team_change.default
+    def _team_change_default(self):
+        # Assign team_change to about 4x save_steps
+        return self.save_steps * 5
+
+    swap_steps: int = 10000
+    window: int = 10
+    play_against_latest_model_ratio: float = 0.5
 
 
 @attr.s(auto_attribs=True)
@@ -145,19 +201,21 @@ class TrainerSettings:
         return TrainerSettings.to_settings(self.trainer_type)()
 
     network_settings: NetworkSettings = NetworkSettings()
-    reward_signals: Dict[str, Dict] = {
-        "extrinsic": cattr.unstructure(RewardSignalSettings())
-    }
+    reward_signals: Dict[
+        RewardSignalSettings.RewardSignalType, RewardSignalSettings
+    ] = {RewardSignalSettings.RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     init_path: Optional[str] = None
     output_path: str = "default"
     # TODO: Remove parser default and remove from CLI
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
-    max_steps: int = 500000
+    max_steps: float = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
+
+    cattr.register_structure_hook(RewardSignalSettings, rewardsignal_settings_to_cls)
 
 
 @attr.s(auto_attribs=True)
@@ -208,7 +266,6 @@ class RunOptions:
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
-    multi_gpu: bool = False
     # Strict conversion
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)

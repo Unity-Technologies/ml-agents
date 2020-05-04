@@ -9,7 +9,7 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import TrainerSettings, RewardSignalSettings
 from mlagents.trainers.components.bc.module import BCModule
 
 
@@ -122,16 +122,19 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
 
         return value_estimates
 
-    def create_reward_signals(self, reward_signal_configs: Dict[str, Any]) -> None:
+    def create_reward_signals(
+        self, reward_signal_configs: Dict[RewardSignalSettings.RewardSignalType, Any]
+    ) -> None:
         """
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
+        print(reward_signal_configs)
         self.reward_signals = {}
         # Create reward signals
-        for reward_signal, config in reward_signal_configs.items():
+        for reward_signal, settings in reward_signal_configs.items():
             self.reward_signals[reward_signal] = create_reward_signal(
-                self.policy, reward_signal, config
+                self.policy, reward_signal, settings
             )
             self.update_dict.update(self.reward_signals[reward_signal].update_dict)
 

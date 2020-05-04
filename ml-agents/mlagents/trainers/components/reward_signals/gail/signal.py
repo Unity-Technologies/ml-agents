@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 import numpy as np
 from mlagents.tf_utils import tf
 
@@ -7,20 +7,11 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from .model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.settings import GAILSettings
 
 
 class GAILRewardSignal(RewardSignal):
-    def __init__(
-        self,
-        policy: TFPolicy,
-        strength: float,
-        gamma: float,
-        demo_path: str,
-        encoding_size: int = 64,
-        learning_rate: float = 3e-4,
-        use_actions: bool = False,
-        use_vail: bool = False,
-    ):
+    def __init__(self, policy: TFPolicy, settings: GAILSettings):
         """
         The GAIL Reward signal generator. https://arxiv.org/abs/1606.03476
         :param policy: The policy of the learning model
@@ -35,14 +26,19 @@ class GAILRewardSignal(RewardSignal):
         :param use_vail: Whether or not to use a variational bottleneck for the discriminator.
         See https://arxiv.org/abs/1810.00821.
         """
-        super().__init__(policy, strength, gamma)
+        super().__init__(policy, settings)
         self.use_terminal_states = False
 
         self.model = GAILModel(
-            policy, 128, learning_rate, encoding_size, use_actions, use_vail
+            policy,
+            128,
+            settings.learning_rate,
+            settings.encoding_size,
+            settings.use_actions,
+            settings.use_vail,
         )
         _, self.demonstration_buffer = demo_to_buffer(
-            demo_path, policy.sequence_length, policy.brain
+            settings.demo_path, policy.sequence_length, policy.brain
         )
         self.has_updated = False
         self.update_dict: Dict[str, tf.Tensor] = {
@@ -91,17 +87,6 @@ class GAILRewardSignal(RewardSignal):
         )
         scaled_reward = unscaled_reward * float(self.has_updated) * self.strength
         return RewardSignalResult(scaled_reward, unscaled_reward)
-
-    @classmethod
-    def check_config(
-        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
-    ) -> None:
-        """
-        Checks the config and throw an exception if a hyperparameter is missing. GAIL requires strength and gamma
-        at minimum.
-        """
-        param_keys = ["strength", "gamma", "demo_path"]
-        super().check_config(config_dict, param_keys)
 
     def prepare_update(
         self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int

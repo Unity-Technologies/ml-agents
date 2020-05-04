@@ -79,10 +79,10 @@ class GhostTrainer(Trainer):
         # Set the logging to print ELO in the console
         self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY, True)
 
-        self_play_parameters = trainer_parameters["self_play"]
-        self.window = self_play_parameters.get("window", 10)
-        self.play_against_latest_model_ratio = self_play_parameters.get(
-            "play_against_latest_model_ratio", 0.5
+        self_play_parameters = trainer_parameters.self_play
+        self.window = self_play_parameters.window
+        self.play_against_latest_model_ratio = (
+            self_play_parameters.play_against_latest_model_ratio
         )
         if (
             self.play_against_latest_model_ratio > 1.0
@@ -92,9 +92,9 @@ class GhostTrainer(Trainer):
                 "The play_against_latest_model_ratio is not between 0 and 1."
             )
 
-        self.steps_between_save = self_play_parameters.get("save_steps", 20000)
-        self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
-        self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
+        self.steps_between_save = self_play_parameters.save_steps
+        self.steps_between_swap = self_play_parameters.swap_steps
+        self.steps_to_train_team = self_play_parameters.team_change
         if self.steps_to_train_team > self.get_max_steps:
             logger.warning(
                 "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not face \
