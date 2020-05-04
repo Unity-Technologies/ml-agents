@@ -70,10 +70,10 @@ class SACOptimizer(TFOptimizer):
                 )  # Roughly equal to e-greedy 0.05
                 self.continuous_target_entropy_scale = 1.0
 
-                stream_names = list(self.reward_signals.keys())
+                stream_names = [key.value for key in self.reward_signals.keys()]
                 # Use to reduce "survivor bonus" when using Curiosity or GAIL.
                 self.gammas = [
-                    _val["gamma"] for _val in trainer_params.reward_signals.values()
+                    _val.gamma for _val in trainer_params.reward_signals.values()
                 ]
                 self.use_dones_in_backup = {
                     name: tf.Variable(1.0) for name in stream_names

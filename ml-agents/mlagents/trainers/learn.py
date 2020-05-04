@@ -145,7 +145,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             run_seed,
             maybe_init_path,
             maybe_meta_curriculum,
-            options.multi_gpu,
+            False,
         )
         # Create controller and begin training.
         tc = TrainerController(

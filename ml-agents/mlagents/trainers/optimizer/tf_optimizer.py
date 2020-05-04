@@ -133,10 +133,13 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
         self.reward_signals = {}
         # Create reward signals
         for reward_signal, settings in reward_signal_configs.items():
-            self.reward_signals[reward_signal] = create_reward_signal(
+            # Name reward signals by string in case we have duplicates later
+            self.reward_signals[reward_signal.value] = create_reward_signal(
                 self.policy, reward_signal, settings
             )
-            self.update_dict.update(self.reward_signals[reward_signal].update_dict)
+            self.update_dict.update(
+                self.reward_signals[reward_signal.value].update_dict
+            )
 
     def create_optimizer_op(
         self, learning_rate: tf.Tensor, name: str = "Adam"

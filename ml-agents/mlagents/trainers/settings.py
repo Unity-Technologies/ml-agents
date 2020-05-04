@@ -38,12 +38,17 @@ def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
     d_copy.update(d)
 
     for key, val in d_copy.items():
+        if attr.has(type(val)):
+            # Don't convert already-converted attrs classes.
+            continue
         if key == "hyperparameters":
             if "trainer_type" not in d_copy:
                 raise TrainerConfigError(
                     "Hyperparameters were specified but no trainer_type was given."
                 )
+
             else:
+                print(d_copy[key])
                 d_copy[key] = strict_to_cls(
                     d_copy[key], TrainerSettings.to_settings(d_copy["trainer_type"])
                 )

@@ -3,6 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 from collections import defaultdict
+from typing import cast
 
 import numpy as np
 
@@ -67,7 +68,9 @@ class PPOTrainer(RLTrainer):
             "output_path",
             "reward_signals",
         ]
-        self.hyperparameters: PPOSettings = self.trainer_parameters.hyperparameters
+        self.hyperparameters: PPOSettings = cast(
+            PPOSettings, self.trainer_parameters.hyperparameters
+        )
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore

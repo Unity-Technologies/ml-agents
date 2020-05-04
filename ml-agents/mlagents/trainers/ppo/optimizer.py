@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, cast
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
@@ -23,7 +23,9 @@ class PPOOptimizer(TFOptimizer):
         with policy.graph.as_default():
             with tf.variable_scope("optimizer/"):
                 super().__init__(policy, trainer_params)
-                hyperparameters: PPOSettings = trainer_params.hyperparameters
+                hyperparameters: PPOSettings = cast(
+                    PPOSettings, trainer_params.hyperparameters
+                )
                 lr = float(hyperparameters.learning_rate)
                 lr_schedule = hyperparameters.learning_rate_schedule
                 epsilon = float(hyperparameters.epsilon)
@@ -36,7 +38,7 @@ class PPOOptimizer(TFOptimizer):
                 vis_encode_type = policy_network_settings.vis_encode_type
                 self.burn_in_ratio = 0.0
 
-                self.stream_names = list(self.reward_signals.keys())
+                self.stream_names = [key.value for key in self.reward_signals.keys()]
 
                 self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
                 self.grads = None
