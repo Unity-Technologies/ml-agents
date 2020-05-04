@@ -2,6 +2,7 @@
 
 from typing import Dict, Set
 from mlagents.trainers.curriculum import Curriculum
+from mlagents.trainers.settings import CurriculumSettings
 
 from mlagents_envs.logging_util import get_logger
 
@@ -13,7 +14,7 @@ class MetaCurriculum:
     particular brain in the environment.
     """
 
-    def __init__(self, curriculum_configs: Dict[str, Dict]):
+    def __init__(self, curriculum_configs: Dict[str, CurriculumSettings]):
         """Initializes a MetaCurriculum object.
 
         :param curriculum_folder: Dictionary of brain_name to the
@@ -21,9 +22,9 @@ class MetaCurriculum:
         """
         self._brains_to_curricula: Dict[str, Curriculum] = {}
         used_reset_parameters: Set[str] = set()
-        for brain_name, curriculum_config in curriculum_configs.items():
+        for brain_name, curriculum_settings in curriculum_configs.items():
             self._brains_to_curricula[brain_name] = Curriculum(
-                brain_name, curriculum_config
+                brain_name, curriculum_settings
             )
             config_keys: Set[str] = set(
                 self._brains_to_curricula[brain_name].get_config().keys()

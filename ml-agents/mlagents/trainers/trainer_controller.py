@@ -23,6 +23,7 @@ from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
+from mlagents.trainers.settings import CurriculumSettings
 
 
 class TrainerController(object):
@@ -78,12 +79,12 @@ class TrainerController(object):
                 # Skip brains that are in the metacurriculum but no trainer yet.
                 if brain_name not in self.trainers:
                     continue
-                if curriculum.measure == "progress":
+                if curriculum.measure == CurriculumSettings.MeasureType.PROGRESS:
                     measure_val = self.trainers[brain_name].get_step / float(
                         self.trainers[brain_name].get_max_steps
                     )
                     brain_names_to_measure_vals[brain_name] = measure_val
-                elif curriculum.measure == "reward":
+                elif curriculum.measure == CurriculumSettings.MeasureType.REWARD:
                     measure_val = np.mean(self.trainers[brain_name].reward_buffer)
                     brain_names_to_measure_vals[brain_name] = measure_val
         else:

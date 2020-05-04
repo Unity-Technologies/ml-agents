@@ -224,6 +224,19 @@ class TrainerSettings:
 
 
 @attr.s(auto_attribs=True)
+class CurriculumSettings:
+    class MeasureType:
+        PROGRESS: str = "progress"
+        REWARD: str = "reward"
+
+    measure: str = attr.ib(default=MeasureType.REWARD)
+    thresholds: List[int] = attr.Factory(list)
+    min_lesson_length: int = 0
+    signal_smoothing: bool = True
+    parameters: Dict[str, List[float]] = attr.ib(kw_only=True)
+
+
+@attr.s(auto_attribs=True)
 class CheckpointSettings:
     save_freq: int = parser.get_default("save_freq")
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
@@ -265,7 +278,7 @@ class RunOptions:
     env_settings: EnvironmentSettings = EnvironmentSettings()
     engine_settings: EngineSettings = EngineSettings()
     parameter_randomization: Optional[Dict] = None
-    curriculum_config: Optional[Dict] = None
+    curriculum_config: Optional[Dict[str, CurriculumSettings]] = None
     checkpoint_settings: CheckpointSettings = CheckpointSettings()
 
     # These are options that are relevant to the run itself, and not the engine or environment.
