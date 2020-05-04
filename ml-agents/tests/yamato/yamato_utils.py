@@ -177,7 +177,7 @@ def override_legacy_config_file(python_version, src_path, dest_path, **kwargs):
     max_steps field to 42 for all brains.
     """
     # Sync the old version of the file
-    python_tag = f"python_{python_version}"
+    python_tag = f"python-packages_{python_version}"
     subprocess.check_call(f"git checkout {python_tag} -- {src_path}", shell=True)
 
     with open(src_path) as f:
