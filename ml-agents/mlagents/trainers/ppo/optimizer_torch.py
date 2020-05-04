@@ -21,9 +21,7 @@ class PPOOptimizer(TorchOptimizer):
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
         super(PPOOptimizer, self).__init__(policy, trainer_params)
-        params = list(self.policy.actor.parameters()) + list(
-            self.policy.critic.parameters()
-        )
+        params = list(self.policy.actor_critic.parameters())
 
         self.optimizer = torch.optim.Adam(
             params, lr=self.trainer_params["learning_rate"]
@@ -102,11 +100,14 @@ class PPOOptimizer(TorchOptimizer):
             torch.Tensor(np.array(batch["memory"][i]))
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
-        memories = torch.stack(memories).unsqueeze(0)
+        if len(memories) > 0:
+            memories = torch.stack(memories).unsqueeze(0)
 
         if self.policy.use_vis_obs:
             vis_obs = []
-            for idx, _ in enumerate(self.policy.actor.network_body.visual_encoders):
+            for idx, _ in enumerate(
+                self.policy.actor_critic.network_body.visual_encoders
+            ):
                 vis_ob = torch.Tensor(np.array(batch["visual_obs%d" % idx]))
                 vis_obs.append(vis_ob)
         else:

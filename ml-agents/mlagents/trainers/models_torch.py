@@ -132,13 +132,12 @@ class NetworkBody(nn.Module):
 
         if self.use_lstm:
             embedding = embedding.reshape([sequence_length, -1, self.h_size])
-            print(embedding.shape, memories.shape)
             embedding, memories = self.lstm(embedding, memories)
             embedding = embedding.reshape([-1, self.h_size])
         return embedding, memories
 
 
-class Actor(nn.Module):
+class ActorCritic(nn.Module):
     def __init__(
         self,
         h_size,
@@ -151,10 +150,13 @@ class Actor(nn.Module):
         vis_encode_type,
         act_type,
         use_lstm,
+        stream_names,
+        separate_critic,
     ):
-        super(Actor, self).__init__()
+        super(ActorCritic, self).__init__()
         self.act_type = ActionType.from_str(act_type)
         self.act_size = act_size
+        self.separate_critic = separate_critic
         self.network_body = NetworkBody(
             vector_sizes,
             visual_sizes,
@@ -169,6 +171,32 @@ class Actor(nn.Module):
             self.distribution = GaussianDistribution(h_size, act_size[0])
         else:
             self.distribution = MultiCategoricalDistribution(h_size, act_size)
+        if separate_critic:
+            self.critic = Critic(
+                stream_names,
+                h_size,
+                vector_sizes,
+                visual_sizes,
+                normalize,
+                num_layers,
+                m_size,
+                vis_encode_type,
+            )
+        else:
+            self.stream_names = stream_names
+            self.value_heads = ValueHeads(stream_names, h_size)
+
+    def update_normalization(self, vector_obs):
+        self.network_body.update_normalization(vector_obs)
+        if self.separate_critic:
+            self.critic.network_body.update_normalization(vector_obs)
+
+    def critic_pass(self, vec_inputs, vis_inputs):
+        if self.separate_critic:
+            return self.critic(vec_inputs, vis_inputs)
+        else:
+            embedding, _ = self.network_body(vec_inputs, vis_inputs)
+            return self.value_heads(embedding)
 
     def forward(
         self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
@@ -180,7 +208,11 @@ class Actor(nn.Module):
             dist = self.distribution(embedding)
         else:
             dist = self.distribution(embedding, masks=masks)
-        return dist, memories
+        if self.separate_critic:
+            value_outputs = self.critic(vec_inputs, vis_inputs)
+        else:
+            value_outputs = self.value_heads(embedding)
+        return dist, value_outputs, memories
 
 
 class Critic(nn.Module):

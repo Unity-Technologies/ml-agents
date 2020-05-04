@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Optional
 import abc
 import numpy as np
+
+from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.logging_util import get_logger
@@ -163,6 +165,10 @@ class TFPolicy(Policy):
         """
         raise UnityPolicyException("The evaluate function was not implemented.")
 
+    def export_model(self, step=0):
+        settings = SerializationSettings(self.model_path, self.brain.brain_name)
+        export_policy_model(settings, self.graph, self.sess)
+
     def get_action(
         self, decision_requests: DecisionSteps, worker_id: int = 0
     ) -> ActionInfo:
@@ -271,7 +277,7 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def save_model(self, step):
+    def save_model(self, step=0):
         """
         Saves the model
         :param step: The number of steps the model was trained for

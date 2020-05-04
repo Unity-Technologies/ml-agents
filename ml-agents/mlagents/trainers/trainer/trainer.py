@@ -5,6 +5,7 @@ import abc
 from collections import deque
 
 from mlagents_envs.logging_util import get_logger
+
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
@@ -127,10 +128,8 @@ class Trainer(abc.ABC):
         """
         Exports the model
         """
-        print("Export")
-        # policy = self.get_policy(name_behavior_id)
-        # settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
-        # export_policy_model(settings, policy.graph, policy.sess)
+        policy = self.get_policy(name_behavior_id)
+        policy.export_model()
 
     @abc.abstractmethod
     def end_episode(self):

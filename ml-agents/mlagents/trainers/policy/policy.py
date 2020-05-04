@@ -109,9 +109,17 @@ class Policy(object):
         raise NotImplementedError
 
     @abstractmethod
-    def increment_step(self, n_steps):
+    def export_model(self, step=0):
         pass
 
     @abstractmethod
-    def save_model(self, step):
+    def save_model(self, step=0):
+        pass
+
+    @abstractmethod
+    def load_model(self, step=0):
+        pass
+
+    @abstractmethod
+    def increment_step(self, n_steps):
         pass

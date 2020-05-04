@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
 import torch
+from torch import onnx
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 
@@ -12,7 +13,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.policy import UnityPolicyException
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.models_torch import EncoderType, Actor, Critic
+from mlagents.trainers.models_torch import EncoderType, ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -95,7 +96,7 @@ class TorchPolicy(Policy):
             "Losses/Policy Loss": "policy_loss",
         }
 
-        self.actor = Actor(
+        self.actor_critic = ActorCritic(
             h_size=int(trainer_params["hidden_units"]),
             act_type=self.act_type,
             vector_sizes=[brain.vector_observation_space_size],
@@ -108,20 +109,8 @@ class TorchPolicy(Policy):
             vis_encode_type=EncoderType(
                 trainer_params.get("vis_encode_type", "simple")
             ),
-        )
-
-        self.critic = Critic(
-            h_size=int(trainer_params["hidden_units"]),
-            vector_sizes=[brain.vector_observation_space_size],
-            normalize=trainer_params["normalize"],
-            num_layers=int(trainer_params["num_layers"]),
-            m_size=trainer_params["memory_size"],
-            use_lstm=self.use_recurrent,
-            visual_sizes=brain.camera_resolutions,
             stream_names=list(reward_signal_configs.keys()),
-            vis_encode_type=EncoderType(
-                trainer_params.get("vis_encode_type", "simple")
-            ),
+            separate_critic=self.use_continuous_act,
         )
 
     def split_decision_step(self, decision_requests):
@@ -144,13 +133,12 @@ class TorchPolicy(Policy):
         vector_obs = torch.Tensor(vector_obs)
         vector_obs = [vector_obs]
         if self.use_vec_obs and self.normalize:
-            self.critic.network_body.update_normalization(vector_obs)
-            self.actor.network_body.update_normalization(vector_obs)
+            self.actor_critic.update_normalization(vector_obs)
 
     def execute_model(
         self, vec_obs, vis_obs, masks=None, actions=None, memories=None, seq_len=1
     ):
-        action_dists, new_memories = self.actor(
+        action_dists, (value_heads, mean_value), new_memories = self.actor_critic(
             vec_obs, vis_obs, masks, memories, seq_len
         )
         if actions is None:
@@ -177,7 +165,6 @@ class TorchPolicy(Policy):
                 actions = actions.squeeze(-1)
             log_probs = log_probs.squeeze(-1)
             entropies = entropies.squeeze(-1)
-        value_heads, mean_value = self.critic(vec_obs, vis_obs)
         return actions, log_probs, entropies, value_heads, memories
 
     @timed
@@ -214,8 +201,7 @@ class TorchPolicy(Policy):
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memories"] = np.array(memories.detach())
-        self.actor.network_body.update_normalization(vec_obs)
-        self.critic.network_body.update_normalization(vec_obs)
+        self.actor_critic.update_normalization(vec_obs)
         return run_out
 
     def get_action(
@@ -245,6 +231,31 @@ class TorchPolicy(Policy):
             value=run_out.get("value"),
             outputs=run_out,
             agent_ids=list(decision_requests.agent_id),
+        )
+
+    def save_model(self, step=0):
+        """
+        Saves the model
+        :param step: The number of steps the model was trained for
+        """
+        save_path = self.model_path + "/model-" + str(step) + ".pt"
+        torch.save(self.actor_critic.state_dict(), save_path)
+
+    def load_model(self, step=0):
+        load_path = self.model_path + "/model-" + str(step) + ".pt"
+        self.actor_critic.load_state_dict(torch.load(load_path))
+
+    def export_model(self, step=0):
+        fake_vec_obs = [torch.zeros(self.vec_obs_size)]
+        fake_vis_obs = [torch.zeros(camera_res) for camera_res in self.vis_obs_size]
+        export_path = self.model_path + "/model-" + str(step) + ".onnx"
+        output_names = ["action", "memories", "value_estimates"]
+        onnx.export(
+            self.actor_critic,
+            (fake_vec_obs, fake_vis_obs),
+            export_path,
+            verbose=True,
+            output_names=output_names,
         )
 
     @property
@@ -277,9 +288,3 @@ class TorchPolicy(Policy):
         """
         self.global_step += n_steps
         return self.get_current_step()
-
-    def save_model(self, step):
-        pass
-
-    def export_model(self):
-        pass

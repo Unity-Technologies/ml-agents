@@ -60,7 +60,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         """
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
 
-        value_estimates, mean_value = self.policy.critic(
+        value_estimates, mean_value = self.policy.actor_critic.critic_pass(
             np.expand_dims(vec_vis_obs.vector_observations[idx], 0),
             np.expand_dims(vec_vis_obs.visual_observations[idx], 0),
         )
@@ -81,7 +81,9 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         vector_obs = [torch.Tensor(np.array(batch["vector_obs"]))]
         if self.policy.use_vis_obs:
             visual_obs = []
-            for idx, _ in enumerate(self.policy.actor.network_body.visual_encoders):
+            for idx, _ in enumerate(
+                self.policy.actor_critic.network_body.visual_encoders
+            ):
                 visual_ob = torch.Tensor(np.array(batch["visual_obs%d" % idx]))
                 visual_obs.append(visual_ob)
         else:
@@ -90,9 +92,13 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         next_obs = np.concatenate(next_obs, axis=-1)
         next_obs = [torch.Tensor(next_obs).unsqueeze(0)]
 
-        value_estimates, mean_value = self.policy.critic(vector_obs, visual_obs)
+        value_estimates, mean_value = self.policy.actor_critic.critic_pass(
+            vector_obs, visual_obs
+        )
 
-        next_value_estimate, next_value = self.policy.critic(next_obs, next_obs)
+        next_value_estimate, next_value = self.policy.actor_critic.critic_pass(
+            next_obs, next_obs
+        )
 
         for name, estimate in value_estimates.items():
             value_estimates[name] = estimate.detach().numpy()
