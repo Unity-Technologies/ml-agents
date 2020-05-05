@@ -38,7 +38,7 @@ class PPOOptimizer(TFOptimizer):
                 vis_encode_type = policy_network_settings.vis_encode_type
                 self.burn_in_ratio = 0.0
 
-                self.stream_names = [key.value for key in self.reward_signals.keys()]
+                self.stream_names = list(self.reward_signals.keys())
 
                 self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
                 self.grads = None
