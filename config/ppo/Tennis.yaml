@@ -1,0 +1,31 @@
+behaviors:
+  Tennis:
+    trainer: ppo
+    batch_size: 1024
+    beta: 0.005
+    buffer_size: 10240
+    epsilon: 0.2
+    hidden_units: 256
+    lambd: 0.95
+    learning_rate: 0.0003
+    learning_rate_schedule: constant
+    max_steps: 5.0e7
+    memory_size: 128
+    normalize: true
+    num_epoch: 3
+    num_layers: 2
+    time_horizon: 1000
+    sequence_length: 64
+    summary_freq: 10000
+    use_recurrent: false
+    vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+    self_play:
+      window: 10
+      play_against_latest_model_ratio: 0.5
+      save_steps: 50000
+      swap_steps: 50000
+      team_change: 100000

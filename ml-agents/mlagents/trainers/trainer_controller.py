@@ -16,9 +16,15 @@ from mlagents.trainers.env_manager import EnvManager
 from mlagents_envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
+    UnityCommunicatorStoppedException,
 )
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents_envs.timers import hierarchical_timer, timed
+from mlagents_envs.timers import (
+    hierarchical_timer,
+    timed,
+    get_timer_stack_for_thread,
+    merge_gauges,
+)
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
@@ -30,8 +36,7 @@ class TrainerController(object):
     def __init__(
         self,
         trainer_factory: TrainerFactory,
-        model_path: str,
-        summaries_dir: str,
+        output_path: str,
         run_id: str,
         save_freq: int,
         meta_curriculum: Optional[MetaCurriculum],
@@ -41,7 +46,7 @@ class TrainerController(object):
         resampling_interval: Optional[int],
     ):
         """
-        :param model_path: Path to save the model.
+        :param output_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
         :param save_freq: Frequency at which to save model
@@ -55,8 +60,7 @@ class TrainerController(object):
         self.trainers: Dict[str, Trainer] = {}
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
         self.trainer_factory = trainer_factory
-        self.model_path = model_path
-        self.summaries_dir = summaries_dir
+        self.output_path = output_path
         self.logger = get_logger(__name__)
         self.run_id = run_id
         self.save_freq = save_freq
@@ -120,16 +124,16 @@ class TrainerController(object):
                 self.trainers[brain_name].export_model(name_behavior_id)
 
     @staticmethod
-    def _create_model_path(model_path):
+    def _create_output_path(output_path):
         try:
-            if not os.path.exists(model_path):
-                os.makedirs(model_path)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
         except Exception:
             raise UnityEnvironmentException(
-                "The folder {} containing the "
+                f"The folder {output_path} containing the "
                 "generated model could not be "
                 "accessed. Please make sure the "
-                "permissions are set correctly.".format(model_path)
+                "permissions are set correctly."
             )
 
     @timed
@@ -208,7 +212,7 @@ class TrainerController(object):
 
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
-        self._create_model_path(self.model_path)
+        self._create_output_path(self.output_path)
         tf.reset_default_graph()
         global_step = 0
         last_brain_behavior_ids: Set[str] = set()
@@ -227,7 +231,7 @@ class TrainerController(object):
                     if self._should_save_model(global_step):
                         self._save_model()
             # Stop advancing trainers
-            self.kill_trainers = True
+            self.join_threads()
             # Final save Tensorflow model
             if global_step != 0 and self.train_model:
                 self._save_model()
@@ -235,19 +239,23 @@ class TrainerController(object):
             KeyboardInterrupt,
             UnityCommunicationException,
             UnityEnvironmentException,
+            UnityCommunicatorStoppedException,
         ) as ex:
-            self.kill_trainers = True
+            self.join_threads()
             if self.train_model:
                 self._save_model_when_interrupted()
 
-            if isinstance(ex, KeyboardInterrupt):
+            if isinstance(ex, KeyboardInterrupt) or isinstance(
+                ex, UnityCommunicatorStoppedException
+            ):
                 pass
             else:
                 # If the environment failed, we want to make sure to raise
                 # the exception so we exit the process with an return code of 1.
                 raise ex
-        if self.train_model:
-            self._export_graph()
+        finally:
+            if self.train_model:
+                self._export_graph()
 
     def end_trainer_episodes(
         self, env: EnvManager, lessons_incremented: Dict[str, bool]
@@ -309,6 +317,30 @@ class TrainerController(object):
                     trainer.advance()
 
         return num_steps
+
+    def join_threads(self, timeout_seconds: float = 1.0) -> None:
+        """
+        Wait for threads to finish, and merge their timer information into the main thread.
+        :param timeout_seconds:
+        :return:
+        """
+        self.kill_trainers = True
+        for t in self.trainer_threads:
+            try:
+                t.join(timeout_seconds)
+            except Exception:
+                pass
+
+        with hierarchical_timer("trainer_threads") as main_timer_node:
+            for trainer_thread in self.trainer_threads:
+                thread_timer_stack = get_timer_stack_for_thread(trainer_thread)
+                if thread_timer_stack:
+                    main_timer_node.merge(
+                        thread_timer_stack.root,
+                        root_name="thread_root",
+                        is_parallel=True,
+                    )
+                    merge_gauges(thread_timer_stack.gauges)
 
     def trainer_update_func(self, trainer: Trainer) -> None:
         while not self.kill_trainers:

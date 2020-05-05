@@ -45,8 +45,7 @@ def dummy_config():
         memory_size: 10
         curiosity_strength: 0.0
         curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
+        output_path: test
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -311,8 +310,7 @@ def test_process_trajectory(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
@@ -370,8 +368,7 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer
 
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000

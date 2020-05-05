@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 import abc
+import os
 import numpy as np
 
 from mlagents.model_serialization import SerializationSettings, export_policy_model
@@ -289,7 +290,7 @@ class TFPolicy(Policy):
         :return:
         """
         with self.graph.as_default():
-            last_checkpoint = self.model_path + "/model-" + str(step) + ".ckpt"
+            last_checkpoint = os.path.join(self.model_path, f"model-{step}.ckpt")
             self.saver.save(self.sess, last_checkpoint)
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False

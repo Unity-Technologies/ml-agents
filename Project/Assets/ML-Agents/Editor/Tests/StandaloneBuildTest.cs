@@ -3,12 +3,12 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Build.Reporting;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     public class StandaloneBuildTest
     {
-        const string k_outputCommandLineFlag = "--mlagents-build-output-path";
-        const string k_sceneCommandLineFlag = "--mlagents-build-scene-path";
+        const string k_OutputCommandLineFlag = "--mlagents-build-output-path";
+        const string k_SceneCommandLineFlag = "--mlagents-build-scene-path";
 
         public static void BuildStandalonePlayerOSX()
         {
@@ -19,12 +19,12 @@ namespace MLAgents
             var args = Environment.GetCommandLineArgs();
             for (var i = 0; i < args.Length - 1; i++)
             {
-                if (args[i] == k_outputCommandLineFlag)
+                if (args[i] == k_OutputCommandLineFlag)
                 {
                     outputPath = args[i + 1];
                     Debug.Log($"Overriding output path to {outputPath}");
                 }
-                else if (args[i] == k_sceneCommandLineFlag)
+                else if (args[i] == k_SceneCommandLineFlag)
                 {
                     scenePath = args[i + 1];
                 }

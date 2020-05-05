@@ -1,5 +1,6 @@
 # # Unity ML-Agents Toolkit
 import argparse
+import yaml
 
 import os
 import numpy as np
@@ -16,6 +17,7 @@ from mlagents.trainers.trainer_util import (
     load_config,
     TrainerFactory,
     handle_existing_directories,
+    assemble_curriculum_config,
 )
 from mlagents.trainers.stats import (
     TensorboardWriter,
@@ -24,9 +26,14 @@ from mlagents.trainers.stats import (
     GaugeWriter,
     ConsoleWriter,
 )
+from mlagents.trainers.cli_utils import (
+    StoreConfigFile,
+    DetectDefault,
+    DetectDefaultStoreTrue,
+)
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.trainers.exception import SamplerException
+from mlagents.trainers.exception import SamplerException, TrainerConfigError
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
@@ -46,30 +53,20 @@ def _create_parser():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    argparser.add_argument("trainer_config_path")
+    argparser.add_argument("trainer_config_path", action=StoreConfigFile)
     argparser.add_argument(
         "--env",
         default=None,
         dest="env_path",
         help="Path to the Unity executable to train",
-    )
-    argparser.add_argument(
-        "--curriculum",
-        default=None,
-        dest="curriculum_config_path",
-        help="YAML file for defining the lessons for curriculum training",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--lesson",
         default=0,
         type=int,
         help="The lesson to start with when performing curriculum training",
-    )
-    argparser.add_argument(
-        "--sampler",
-        default=None,
-        dest="sampler_file_path",
-        help="YAML file for defining the sampler for environment parameter randomization",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--keep-checkpoints",
@@ -78,19 +75,20 @@ def _create_parser():
         help="The maximum number of model checkpoints to keep. Checkpoints are saved after the"
         "number of steps specified by the save-freq option. Once the maximum number of checkpoints"
         "has been reached, the oldest checkpoint is deleted when saving a new checkpoint.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--load",
         default=False,
         dest="load_model",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help=argparse.SUPPRESS,  # Deprecated but still usable for now.
     )
     argparser.add_argument(
         "--resume",
         default=False,
         dest="resume",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to resume training from a checkpoint. Specify a --run-id to use this option. "
         "If set, the training code loads an already trained model to initialize the neural network "
         "before resuming training. This option is only valid when the models exist, and have the same "
@@ -100,7 +98,7 @@ def _create_parser():
         "--force",
         default=False,
         dest="force",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to force-overwrite this run-id's existing summary and model data. (Without "
         "this flag, attempting to train a model with a run-id that has been used before will throw "
         "an error.",
@@ -113,6 +111,7 @@ def _create_parser():
         "as the saved model itself. If you use TensorBoard to view the training statistics, "
         "always set a unique run-id for each training run. (The statistics for all runs with the "
         "same id are combined as if they were produced by a the same session.)",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--initialize-from",
@@ -122,31 +121,34 @@ def _create_parser():
         "This can be used, for instance, to fine-tune an existing model on a new environment. "
         "Note that the previously saved models must have the same behavior parameters as your "
         "current environment.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--save-freq",
         default=50000,
         type=int,
         help="How often (in steps) to save the model during training",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--seed",
         default=-1,
         type=int,
         help="A number to use as a seed for the random number generator used by the training code",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--train",
         default=False,
         dest="train_model",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help=argparse.SUPPRESS,
     )
     argparser.add_argument(
         "--inference",
         default=False,
         dest="inference",
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to run in Python inference mode (i.e. no training). Use with --resume to load "
         "a model trained with an existing run ID.",
     )
@@ -159,6 +161,7 @@ def _create_parser():
         "will use the port (base_port + worker_id), where the worker_id is sequential IDs given to "
         "each instance from 0 to (num_envs - 1). Note that when training using the Editor rather "
         "than an executable, the base port will be ignored.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--num-envs",
@@ -166,18 +169,19 @@ def _create_parser():
         type=int,
         help="The number of concurrent Unity environment instances to collect experiences "
         "from when training",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--no-graphics",
         default=False,
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
         "the graphics driver. Use this only if your agents don't use visual observations.",
     )
     argparser.add_argument(
         "--debug",
         default=False,
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Whether to enable debug-level logging for some parts of the code",
     )
     argparser.add_argument(
@@ -188,11 +192,12 @@ def _create_parser():
         "process these as Unity Command Line Arguments. You should choose different argument names if "
         "you want to create environment-specific arguments. All arguments after this flag will be "
         "passed to the executable.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--cpu",
         default=False,
-        action="store_true",
+        action=DetectDefaultStoreTrue,
         help="Forces training using CPU only",
     )
 
@@ -201,17 +206,19 @@ def _create_parser():
     eng_conf = argparser.add_argument_group(title="Engine Configuration")
     eng_conf.add_argument(
         "--width",
-        default=84,
+        default=None,
         type=int,
         help="The width of the executable window of the environment(s) in pixels "
         "(ignored for editor training).",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--height",
-        default=84,
+        default=None,
         type=int,
         help="The height of the executable window of the environment(s) in pixels "
         "(ignored for editor training)",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--quality-level",
@@ -219,6 +226,7 @@ def _create_parser():
         type=int,
         help="The quality level of the environment(s). Equivalent to calling "
         "QualitySettings.SetQualityLevel in Unity.",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--time-scale",
@@ -226,6 +234,7 @@ def _create_parser():
         type=float,
         help="The time scale of the Unity environment(s). Equivalent to setting "
         "Time.timeScale in Unity.",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--target-frame-rate",
@@ -233,6 +242,7 @@ def _create_parser():
         type=int,
         help="The target frame rate of the Unity environment(s). Equivalent to setting "
         "Application.targetFrameRate in Unity.",
+        action=DetectDefault,
     )
     eng_conf.add_argument(
         "--capture-frame-rate",
@@ -240,6 +250,7 @@ def _create_parser():
         type=int,
         help="The capture frame rate of the Unity environment(s). Equivalent to setting "
         "Time.captureFramerate in Unity.",
+        action=DetectDefault,
     )
     return argparser
 
@@ -248,7 +259,7 @@ parser = _create_parser()
 
 
 class RunOptions(NamedTuple):
-    trainer_config: Dict
+    behaviors: Dict
     debug: bool = parser.get_default("debug")
     seed: int = parser.get_default("seed")
     env_path: Optional[str] = parser.get_default("env_path")
@@ -267,7 +278,7 @@ class RunOptions(NamedTuple):
     lesson: int = parser.get_default("lesson")
     no_graphics: bool = parser.get_default("no_graphics")
     multi_gpu: bool = parser.get_default("multi_gpu")
-    sampler_config: Optional[Dict] = None
+    parameter_randomization: Optional[Dict] = None
     env_args: Optional[List[str]] = parser.get_default("env_args")
     cpu: bool = parser.get_default("cpu")
     width: int = parser.get_default("width")
@@ -287,23 +298,35 @@ class RunOptions(NamedTuple):
           configs loaded from files.
         """
         argparse_args = vars(args)
-        trainer_config_path = argparse_args["trainer_config_path"]
-        curriculum_config_path = argparse_args["curriculum_config_path"]
-        argparse_args["trainer_config"] = load_config(trainer_config_path)
-        if curriculum_config_path is not None:
-            argparse_args["curriculum_config"] = load_config(curriculum_config_path)
-        if argparse_args["sampler_file_path"] is not None:
-            argparse_args["sampler_config"] = load_config(
-                argparse_args["sampler_file_path"]
+        run_options_dict = {}
+        run_options_dict.update(argparse_args)
+        config_path = StoreConfigFile.trainer_config_path
+
+        # Load YAML
+        yaml_config = load_config(config_path)
+        # This is the only option that is not optional and has no defaults.
+        if "behaviors" not in yaml_config:
+            raise TrainerConfigError(
+                "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
             )
+        # Use the YAML file values for all values not specified in the CLI.
+        for key, val in yaml_config.items():
+            # Detect bad config options
+            if not hasattr(RunOptions, key):
+                raise TrainerConfigError(
+                    "The option {} was specified in your YAML file, but is invalid.".format(
+                        key
+                    )
+                )
+            if key not in DetectDefault.non_default_args:
+                run_options_dict[key] = val
+
         # Keep deprecated --load working, TODO: remove
-        argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
-        # Since argparse accepts file paths in the config options which don't exist in CommandLineOptions,
-        # these keys will need to be deleted to use the **/splat operator below.
-        argparse_args.pop("sampler_file_path")
-        argparse_args.pop("curriculum_config_path")
-        argparse_args.pop("trainer_config_path")
-        return RunOptions(**vars(args))
+        run_options_dict["resume"] = (
+            run_options_dict["resume"] or run_options_dict["load_model"]
+        )
+
+        return RunOptions(**run_options_dict)
 
 
 def get_version_string() -> str:
@@ -328,26 +351,29 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
-        model_path = f"./models/{options.run_id}"
+        base_path = "results"
+        write_path = os.path.join(base_path, options.run_id)
         maybe_init_path = (
-            f"./models/{options.initialize_from}" if options.initialize_from else None
+            os.path.join(base_path, options.run_id) if options.initialize_from else None
         )
-        summaries_dir = "./summaries"
+        run_logs_dir = os.path.join(write_path, "run_logs")
         port = options.base_port
-
+        # Check if directory exists
+        handle_existing_directories(
+            write_path, options.resume, options.force, maybe_init_path
+        )
+        # Make run logs directory
+        os.makedirs(run_logs_dir, exist_ok=True)
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
-            summaries_dir,
+            write_path,
             required_fields=[
                 "Environment/Cumulative Reward",
                 "Environment/Episode Length",
             ],
         )
-        handle_existing_directories(
-            model_path, summaries_dir, options.resume, options.force, maybe_init_path
-        )
-        tb_writer = TensorboardWriter(summaries_dir, clear_past_data=not options.resume)
+        tb_writer = TensorboardWriter(write_path, clear_past_data=not options.resume)
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
@@ -358,7 +384,12 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         if options.env_path is None:
             port = UnityEnvironment.DEFAULT_EDITOR_PORT
         env_factory = create_environment_factory(
-            options.env_path, options.no_graphics, run_seed, port, options.env_args
+            options.env_path,
+            options.no_graphics,
+            run_seed,
+            port,
+            options.env_args,
+            os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
         )
         engine_config = EngineConfig(
             width=options.width,
@@ -369,17 +400,17 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             capture_frame_rate=options.capture_frame_rate,
         )
         env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
+        curriculum_config = assemble_curriculum_config(options.behaviors)
         maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum_config, env_manager, options.lesson
+            curriculum_config, env_manager, options.lesson
         )
         sampler_manager, resampling_interval = create_sampler_manager(
-            options.sampler_config, run_seed
+            options.parameter_randomization, run_seed
         )
         trainer_factory = TrainerFactory(
-            options.trainer_config,
-            summaries_dir,
+            options.behaviors,
             options.run_id,
-            model_path,
+            write_path,
             options.keep_checkpoints,
             not options.inference,
             options.resume,
@@ -391,8 +422,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         # Create controller and begin training.
         tc = TrainerController(
             trainer_factory,
-            model_path,
-            summaries_dir,
+            write_path,
             options.run_id,
             options.save_freq,
             maybe_meta_curriculum,
@@ -407,11 +437,26 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         tc.start_learning(env_manager)
     finally:
         env_manager.close()
-        write_timing_tree(summaries_dir, options.run_id)
+        write_run_options(write_path, options)
+        write_timing_tree(run_logs_dir)
 
 
-def write_timing_tree(summaries_dir: str, run_id: str) -> None:
-    timing_path = f"{summaries_dir}/{run_id}_timers.json"
+def write_run_options(output_dir: str, run_options: RunOptions) -> None:
+    run_options_path = os.path.join(output_dir, "configuration.yaml")
+    try:
+        with open(run_options_path, "w") as f:
+            try:
+                yaml.dump(dict(run_options._asdict()), f, sort_keys=False)
+            except TypeError:  # Older versions of pyyaml don't support sort_keys
+                yaml.dump(dict(run_options._asdict()), f)
+    except FileNotFoundError:
+        logger.warning(
+            f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
+        )
+
+
+def write_timing_tree(output_dir: str) -> None:
+    timing_path = os.path.join(output_dir, "timers.json")
     try:
         with open(timing_path, "w") as f:
             json.dump(get_timer_tree(), f, indent=4)
@@ -446,7 +491,7 @@ def create_sampler_manager(sampler_config, run_seed=None):
 def try_create_meta_curriculum(
     curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
 ) -> Optional[MetaCurriculum]:
-    if curriculum_config is None:
+    if curriculum_config is None or len(curriculum_config) <= 0:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_config)
@@ -462,6 +507,7 @@ def create_environment_factory(
     seed: int,
     start_port: int,
     env_args: Optional[List[str]],
+    log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     if env_path is not None:
         launch_string = UnityEnvironment.validate_environment_path(env_path)
@@ -481,8 +527,9 @@ def create_environment_factory(
             seed=env_seed,
             no_graphics=no_graphics,
             base_port=start_port,
-            args=env_args,
+            additional_args=env_args,
             side_channels=side_channels,
+            log_folder=log_folder,
         )
 
     return create_unity_environment

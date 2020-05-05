@@ -10,6 +10,7 @@ from .yamato_utils import (
     run_standalone_build,
     init_venv,
     override_config_file,
+    override_legacy_config_file,
     checkout_csharp_version,
     undo_git_checkout,
 )
@@ -21,7 +22,8 @@ def run_training(python_version, csharp_version):
     print(
         f"Running training with python={python_version or latest} and c#={csharp_version or latest}"
     )
-    nn_file_expected = f"./models/{run_id}/3DBall.nn"
+    output_dir = "models" if python_version else "results"
+    nn_file_expected = f"./{output_dir}/{run_id}/3DBall.nn"
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
         print("Artifacts from previous build found!")
@@ -62,16 +64,17 @@ def run_training(python_version, csharp_version):
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
-    override_config_file(
-        "config/trainer_config.yaml",
-        "override.yaml",
-        max_steps=100,
-        batch_size=10,
-        buffer_size=10,
-    )
+    overrides = {"max_steps": 100, "batch_size": 10, "buffer_size": 10}
+    yaml_out = "override.yaml"
+    if python_version:
+        override_legacy_config_file(
+            python_version, "config/trainer_config.yaml", yaml_out, **overrides
+        )
+    else:
+        override_config_file("config/ppo/3DBall.yaml", yaml_out, **overrides)
 
     mla_learn_cmd = (
-        f"mlagents-learn override.yaml --train --env="
+        f"mlagents-learn {yaml_out} --force --env="
         f"{os.path.join(get_base_output_path(), standalone_player_path)} "
         f"--run-id={run_id} --no-graphics --env-args -logFile -"
     )  # noqa

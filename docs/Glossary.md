@@ -24,8 +24,10 @@
   agent’s action within the current state of the environment.
 - **State** - The underlying properties of the environment (including all agents
   within it) at a given time.
-- **Step** - Corresponds to each `FixedUpdate` call of the game engine. Is the
-  smallest atomic change to the state possible.
+- **Step** - Corresponds to an atomic change of the engine that happens between
+  Agent decisions.
+- **Experience** - Corresponds to a tuple of [Agent observations, actions,
+  rewards] of a single Agent obtained after a Step.
 - **Update** - Unity function called each time a frame is rendered. ML-Agents
   logic should not be placed here.
 - **External Coordinator** - ML-Agents class responsible for communication with

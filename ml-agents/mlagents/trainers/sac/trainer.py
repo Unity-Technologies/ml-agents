@@ -72,9 +72,8 @@ class SACTrainer(RLTrainer):
             "summary_freq",
             "tau",
             "use_recurrent",
-            "summary_path",
             "memory_size",
-            "model_path",
+            "output_path",
             "reward_signals",
         ]
 
@@ -136,7 +135,7 @@ class SACTrainer(RLTrainer):
         Save the training buffer's update buffer to a pickle file.
         """
         filename = os.path.join(
-            self.trainer_parameters["model_path"], "last_replay_buffer.hdf5"
+            self.trainer_parameters["output_path"], "last_replay_buffer.hdf5"
         )
         logger.info("Saving Experience Replay Buffer to {}".format(filename))
         with open(filename, "wb") as file_object:
@@ -147,7 +146,7 @@ class SACTrainer(RLTrainer):
         Loads the last saved replay buffer from a file.
         """
         filename = os.path.join(
-            self.trainer_parameters["model_path"], "last_replay_buffer.hdf5"
+            self.trainer_parameters["output_path"], "last_replay_buffer.hdf5"
         )
         logger.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "rb+") as file_object:
@@ -194,7 +193,7 @@ class SACTrainer(RLTrainer):
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
-        if last_step.max_step:
+        if last_step.interrupted:
             vec_vis_obs = SplitObservations.from_observations(last_step.obs)
             for i, obs in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs

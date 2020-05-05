@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using Unity.Barracuda;
-using MLAgents.Sensors;
-using MLAgents.Demonstrations;
-using MLAgents.Policies;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Demonstrations;
+using Unity.MLAgents.Policies;
 using UnityEngine.Serialization;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Struct that contains all the information for an Agent, including its
@@ -108,7 +108,7 @@ namespace MLAgents
     /// Use the <see cref="OnActionReceived"/> function to implement the actions your agent can take,
     /// such as moving to reach a goal or interacting with its environment.
     ///
-    /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="maxStep"/> count,
+    /// When you call <see cref="EndEpisode"/> on an agent or the agent reaches its <see cref="MaxStep"/> count,
     /// its current episode ends. You can reset the agent -- or remove it from the
     /// environment -- by implementing the <see cref="OnEpisodeBegin"/> function. An agent also
     /// becomes done when the <see cref="Academy"/> resets the environment, which only happens when
@@ -144,13 +144,13 @@ namespace MLAgents
     /// [OnDisable()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html]
     /// [OnBeforeSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnBeforeSerialize.html
     /// [OnAfterSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnAfterSerialize.html
-    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md
-    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design.md
+    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md
+    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design.md
     /// [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Readme.md
+    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Readme.md
     ///
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
@@ -199,7 +199,7 @@ namespace MLAgents
         /// outside of training, you can set the max step to 0 in <see cref="Initialize"/>
         /// if the <see cref="Academy"/> is not connected to an external process.
         /// <code>
-        /// using MLAgents;
+        /// using Unity.MLAgents;
         ///
         /// public class MyAgent : Agent
         /// {
@@ -281,7 +281,8 @@ namespace MLAgents
         internal VectorSensor collectObservationsSensor;
 
         /// <summary>
-        /// Called when the attached <see cref="GameObject"/> becomes enabled and active.
+        /// Called when the attached [GameObject] becomes enabled and active.
+        /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </summary>
         /// <remarks>
         /// This function initializes the Agent instance, if it hasn't been initialized yet.
@@ -428,7 +429,8 @@ namespace MLAgents
         }
 
         /// <summary>
-        /// Called when the attached <see cref="GameObject"/> becomes disabled and inactive.
+        /// Called when the attached [GameObject] becomes disabled and inactive.
+        /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </summary>
         /// <remarks>
         /// Always call the base Agent class version of this function if you implement `OnDisable()`
@@ -596,8 +598,8 @@ namespace MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Reward-Signals.md
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -626,8 +628,8 @@ namespace MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Reward-Signals.md
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -758,7 +760,7 @@ namespace MLAgents
         /// control of an agent using keyboard, mouse, or game controller input.
         ///
         /// Your heuristic implementation can use any decision making logic you specify. Assign decision
-        /// values to the float[] array, <paramref cref="actionsOut"/>, passed to your function as a parameter.
+        /// values to the float[] array, <paramref name="actionsOut"/>, passed to your function as a parameter.
         /// Add values to the array at the same indexes as they are used in your
         /// <seealso cref="OnActionReceived(float[])"/> function, which receives this array and
         /// implements the corresponding agent behavior. See [Actions] for more information
@@ -779,8 +781,8 @@ namespace MLAgents
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Training-Imitation-Learning.md#recording-demonstrations
-        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
+        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
         /// <example>
@@ -810,7 +812,7 @@ namespace MLAgents
 
         /// <summary>
         /// Set up the list of ISensors on the Agent. By default, this will select any
-        /// SensorBase's attached to the Agent.
+        /// SensorComponent's attached to the Agent.
         /// </summary>
         internal void InitializeSensors()
         {
@@ -971,7 +973,7 @@ namespace MLAgents
         /// For more information about observations, see [Observations and Sensors].
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
+        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
@@ -1002,7 +1004,7 @@ namespace MLAgents
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="OnActionReceived(float[])"/>
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
@@ -1072,7 +1074,7 @@ namespace MLAgents
         ///
         /// For more information about implementing agent actions see [Agents - Actions].
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="vectorAction">
         /// An array containing the action vector. The length of the array is specified

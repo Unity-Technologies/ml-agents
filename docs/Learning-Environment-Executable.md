@@ -89,13 +89,13 @@ For example, if you are training with a 3DBall executable you exported to the
 the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
-mlagents-learn ../config/trainer_config.yaml --env=3DBall --run-id=firstRun
+mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
 ```
 
 And you should see something like
 
 ```console
-ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=first-run
+ml-agents$ mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=first-run
 
 
                         ▄▄▄▓▓▓▓
@@ -152,12 +152,11 @@ INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain Ball3DLearning:
         sequence_length:     64
         summary_freq:        1000
         use_recurrent:       False
-        summary_path:        ./summaries/first-run-0
         memory_size:         256
         use_curiosity:       False
         curiosity_strength:  0.01
         curiosity_enc_size:  128
-        model_path: ./models/first-run-0/Ball3DLearning
+        output_path: ./results/first-run-0/Ball3DLearning
 INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 1000. Mean Reward: 1.242. Std of Reward: 0.746. Training.
 INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 2000. Mean Reward: 1.319. Std of Reward: 0.693. Training.
 INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 3000. Mean Reward: 1.804. Std of Reward: 1.056. Training.
@@ -171,11 +170,11 @@ INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 2
 ```
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`models/<run-identifier>/<behavior_name>.nn`, which corresponds to your model's
+`results/<run-identifier>/<behavior_name>.nn`, which corresponds to your model's
 latest checkpoint. (**Note:** There is a known bug on Windows that causes the
 saving of the model to fail when you early terminate the training, it's
 recommended to wait until Step has reached the max_steps parameter you set in
-trainer_config.yaml.) You can now embed this trained model into your Agent by
+your config YAML.) You can now embed this trained model into your Agent by
 following the steps below:
 
 1. Move your model file into
@@ -184,4 +183,4 @@ following the steps below:
 1. Select the **3DBall** prefab from the Project window and select **Agent**.
 1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
    the **Model** placeholder in the **Ball3DAgent** inspector window.
-1. Press the :arrow_forward: button at the top of the editor.
+1. Press the **Play** button at the top of the Editor.

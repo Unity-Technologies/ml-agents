@@ -144,14 +144,15 @@ class TerminalStep(NamedTuple):
      - obs is a list of numpy arrays observations collected by the agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
-     - max_step is a bool. Is true if the Agent reached its maximum number of
-     steps during the last simulation step.
+     - interrupted is a bool. Is true if the Agent was interrupted since the last
+     decision step. For example, if the Agent reached the maximum number of steps for
+     the episode.
      - agent_id is an int and an unique identifier for the corresponding Agent.
     """
 
     obs: List[np.ndarray]
     reward: float
-    max_step: bool
+    interrupted: bool
     agent_id: AgentId
 
 
@@ -165,18 +166,18 @@ class TerminalSteps(Mapping):
      first dimension of the array corresponds to the batch size of the batch.
      - reward is a float vector of length batch size. Corresponds to the
      rewards collected by each agent since the last simulation step.
-     - max_step is an array of booleans of length batch size. Is true if the
-     associated Agent reached its maximum number of steps during the last
-     simulation step.
+     - interrupted is an array of booleans of length batch size. Is true if the
+     associated Agent was interrupted since the last decision step. For example, if the
+     Agent reached the maximum number of steps for the episode.
      - agent_id is an int vector of length batch size containing unique
      identifier for the corresponding Agent. This is used to track Agents
      across simulation steps.
     """
 
-    def __init__(self, obs, reward, max_step, agent_id):
+    def __init__(self, obs, reward, interrupted, agent_id):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.max_step: np.ndarray = max_step
+        self.interrupted: np.ndarray = interrupted
         self.agent_id: np.ndarray = agent_id
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
@@ -213,7 +214,7 @@ class TerminalSteps(Mapping):
         return TerminalStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            max_step=self.max_step[agent_index],
+            interrupted=self.interrupted[agent_index],
             agent_id=agent_id,
         )
 
@@ -232,7 +233,7 @@ class TerminalSteps(Mapping):
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            max_step=np.zeros(0, dtype=np.bool),
+            interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
         )
 
@@ -381,7 +382,7 @@ class BaseEnv(ABC):
          the rewards, the agent ids and the action masks for the Agents
          of the specified behavior. These Agents need an action this step.
          - A TerminalSteps NamedTuple containing the observations,
-         rewards, agent ids and max_step flags of the agents that had their
+         rewards, agent ids and interrupted flags of the agents that had their
          episode terminated last step.
         """
         pass

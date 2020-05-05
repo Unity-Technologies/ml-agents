@@ -8,13 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using MLAgents.CommunicatorObjects;
-using MLAgents.Sensors;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents.CommunicatorObjects;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// Responsible for communication with External using gRPC.
     internal class RpcCommunicator : ICommunicator

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     internal class UnityRLCapabilities
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Collection of static utilities for managing the registering/unregistering of
@@ -11,15 +11,15 @@ namespace MLAgents.SideChannels
     /// </summary>
     public static class SideChannelsManager
     {
-        private static Dictionary<Guid, SideChannel> RegisteredChannels = new Dictionary<Guid, SideChannel>();
+        static Dictionary<Guid, SideChannel> s_RegisteredChannels = new Dictionary<Guid, SideChannel>();
 
-        private struct CachedSideChannelMessage
+        struct CachedSideChannelMessage
         {
             public Guid ChannelId;
             public byte[] Message;
         }
 
-        private static readonly Queue<CachedSideChannelMessage> m_CachedMessages =
+        static readonly Queue<CachedSideChannelMessage> s_CachedMessages =
             new Queue<CachedSideChannelMessage>();
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace MLAgents.SideChannels
         public static void RegisterSideChannel(SideChannel sideChannel)
         {
             var channelId = sideChannel.ChannelId;
-            if (RegisteredChannels.ContainsKey(channelId))
+            if (s_RegisteredChannels.ContainsKey(channelId))
             {
                 throw new UnityAgentsException(
                     $"A side channel with id {channelId} is already registered. " +
@@ -40,20 +40,20 @@ namespace MLAgents.SideChannels
             }
 
             // Process any messages that we've already received for this channel ID.
-            var numMessages = m_CachedMessages.Count;
+            var numMessages = s_CachedMessages.Count;
             for (var i = 0; i < numMessages; i++)
             {
-                var cachedMessage = m_CachedMessages.Dequeue();
+                var cachedMessage = s_CachedMessages.Dequeue();
                 if (channelId == cachedMessage.ChannelId)
                 {
                     sideChannel.ProcessMessage(cachedMessage.Message);
                 }
                 else
                 {
-                    m_CachedMessages.Enqueue(cachedMessage);
+                    s_CachedMessages.Enqueue(cachedMessage);
                 }
             }
-            RegisteredChannels.Add(channelId, sideChannel);
+            s_RegisteredChannels.Add(channelId, sideChannel);
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace MLAgents.SideChannels
         /// <param name="sideChannel">The side channel to unregister.</param>
         public static void UnregisterSideChannel(SideChannel sideChannel)
         {
-            if (RegisteredChannels.ContainsKey(sideChannel.ChannelId))
+            if (s_RegisteredChannels.ContainsKey(sideChannel.ChannelId))
             {
-                RegisteredChannels.Remove(sideChannel.ChannelId);
+                s_RegisteredChannels.Remove(sideChannel.ChannelId);
             }
         }
 
@@ -81,7 +81,7 @@ namespace MLAgents.SideChannels
         /// </summary>
         internal static void UnregisterAllSideChannels()
         {
-            RegisteredChannels = new Dictionary<Guid, SideChannel>();
+            s_RegisteredChannels = new Dictionary<Guid, SideChannel>();
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace MLAgents.SideChannels
         /// <returns></returns>
         internal static T GetSideChannel<T>() where T: SideChannel
         {
-            foreach (var sc in RegisteredChannels.Values)
+            foreach (var sc in s_RegisteredChannels.Values)
             {
                 if (sc.GetType() == typeof(T))
                 {
@@ -109,7 +109,7 @@ namespace MLAgents.SideChannels
         /// <returns></returns>
         internal static byte[] GetSideChannelMessage()
         {
-            return GetSideChannelMessage(RegisteredChannels);
+            return GetSideChannelMessage(s_RegisteredChannels);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace MLAgents.SideChannels
         /// <param name="dataReceived">The byte array of data received from Python.</param>
         internal static void ProcessSideChannelData(byte[] dataReceived)
         {
-            ProcessSideChannelData(RegisteredChannels, dataReceived);
+            ProcessSideChannelData(s_RegisteredChannels, dataReceived);
         }
 
         /// <summary>
@@ -156,9 +156,9 @@ namespace MLAgents.SideChannels
         /// <param name="dataReceived">The byte array of data received from Python.</param>
         internal static void ProcessSideChannelData(Dictionary<Guid, SideChannel> sideChannels, byte[] dataReceived)
         {
-            while (m_CachedMessages.Count != 0)
+            while (s_CachedMessages.Count != 0)
             {
-                var cachedMessage = m_CachedMessages.Dequeue();
+                var cachedMessage = s_CachedMessages.Dequeue();
                 if (sideChannels.ContainsKey(cachedMessage.ChannelId))
                 {
                     sideChannels[cachedMessage.ChannelId].ProcessMessage(cachedMessage.Message);
@@ -204,7 +204,7 @@ namespace MLAgents.SideChannels
                         {
                             // Don't recognize this ID, but cache it in case the SideChannel that can handle
                             // it is registered before the next call to ProcessSideChannelData.
-                            m_CachedMessages.Enqueue(new CachedSideChannelMessage
+                            s_CachedMessages.Enqueue(new CachedSideChannelMessage
                             {
                                 ChannelId = channelId,
                                 Message = message

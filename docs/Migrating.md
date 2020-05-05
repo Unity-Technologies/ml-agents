@@ -15,14 +15,32 @@ double-check that the versions are in the same. The versions can be found in
 # Migrating
 
 ## Migrating from Release 1 to latest
+
 ### Important changes
+- Training artifacts (trained models, summaries) are now found under `results/`
+  instead of `summaries/` and `models/`.
+- Trainer configuration, curriculum configuration, and parameter randomization
+  configuration have all been moved to a single YAML file. (#3791)
+- `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
+
 ### Steps to Migrate
+- Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
+  a separate trainer configuration file, under a `behaviors` section. You can move the `default` section too
+  if it's being used. This file should be specific to your environment, and not contain configurations for
+  multiple environments (unless they have the same Behavior Names).
+  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under
+  the `Behavior Name` section.
+  - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
+  the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
+- If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
+in the `TerminalStep` and `TerminalSteps` objects.
 
-## Migrating from 0.15 to  Release 1
-
+## Migrating from 0.15 to Release 1
 
 ### Important changes
 
+- The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
+  namespaces were similarly renamed (#3843).
 - The `--load` and `--train` command-line flags have been deprecated and
   replaced with `--resume` and `--inference`.
 - Running with the same `--run-id` twice will now throw an error.
@@ -40,22 +58,24 @@ double-check that the versions are in the same. The versions can be found in
   source of error where users would return arrays of the wrong size.
 - The SideChannel API has changed (#3833, #3660) :
   - Introduced the `SideChannelManager` to register, unregister and access side
-  channels.
-  - `EnvironmentParameters` replaces the default `FloatProperties`.
-  You can access the `EnvironmentParameters` with
-  `Academy.Instance.EnvironmentParameters` on C# and create an
-  `EnvironmentParametersChannel` on Python
+    channels.
+  - `EnvironmentParameters` replaces the default `FloatProperties`. You can
+    access the `EnvironmentParameters` with
+    `Academy.Instance.EnvironmentParameters` on C#. If you were previously
+    creating a `UnityEnvironment` in python and passing it a
+    `FloatPropertiesChannel`, create an `EnvironmentParametersChannel` instead.
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - SideChannel IncomingMessages methods now take an optional default argument,
-  which is used when trying to read more data than the message contains.
+    which is used when trying to read more data than the message contains.
   - Added a feature to allow sending stats from C# environments to TensorBoard
-  (and other python StatsWriters). To do this from your code, use
-  `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
-- `num_updates` and `train_interval` for SAC have been replaced with `steps_per_update`.
+    (and other python StatsWriters). To do this from your code, use
+    `Academy.Instance.StatsRecorder.Add(key, value)`(#3660)
+- `num_updates` and `train_interval` for SAC have been replaced with
+  `steps_per_update`.
 - The `UnityEnv` class from the `gym-unity` package was renamed
-  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead,
-  the `UnityEnvironment` must be passed as input to the
-  constructor of `UnityToGymWrapper`
+  `UnityToGymWrapper` and no longer creates the `UnityEnvironment`. Instead, the
+  `UnityEnvironment` must be passed as input to the constructor of
+  `UnityToGymWrapper`
 - Public fields and properties on several classes were renamed to follow Unity's
   C# style conventions. All public fields and properties now use "PascalCase"
   instead of "camelCase"; for example, `Agent.maxStep` was renamed to
@@ -64,6 +84,9 @@ double-check that the versions are in the same. The versions can be found in
 
 ### Steps to Migrate
 
+- In C# code, replace `using MLAgents` with `using Unity.MLAgents`. Replace
+  other nested namespaces such as `using MLAgents.Sensors` with
+  `using Unity.MLAgents.Sensors`
 - Replace the `--load` flag with `--resume` when calling `mlagents-learn`, and
   don't use the `--train` flag as training will happen by default. To run
   without training, use `--inference`.
@@ -74,18 +97,17 @@ double-check that the versions are in the same. The versions can be found in
   `public override void Heuristic(float[] actionsOut)` and assign values to
   `actionsOut` instead of returning an array.
 - If you used `SideChannels` you must:
-  - Replace `Academy.FloatProperties` with `Academy.Instance.EnvironmentParameters`.
+  - Replace `Academy.FloatProperties` with
+    `Academy.Instance.EnvironmentParameters`.
   - `Academy.RegisterSideChannel` and `Academy.UnregisterSideChannel` were
-  removed. Use `SideChannelManager.RegisterSideChannel` and
-  `SideChannelManager.UnregisterSideChannel` instead.
-- Set `steps_per_update` to be around equal to the number of agents in your environment,
-  times `num_updates` and divided by `train_interval`.
-- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor
-  no longer takes a file name as input but a fully constructed
-  `UnityEnvironment` instead.
+    removed. Use `SideChannelManager.RegisterSideChannel` and
+    `SideChannelManager.UnregisterSideChannel` instead.
+- Set `steps_per_update` to be around equal to the number of agents in your
+  environment, times `num_updates` and divided by `train_interval`.
+- Replace `UnityEnv` with `UnityToGymWrapper` in your code. The constructor no
+  longer takes a file name as input but a fully constructed `UnityEnvironment`
+  instead.
 - Update uses of "camelCase" fields and properties to "PascalCase".
-- If you have a custom `ISensor` implementation, you will need to change the signature of
-  its `Write()` method to use `ObservationWriter` instead of `WriteAdapter`.
 
 ## Migrating from 0.14 to 0.15
 
@@ -241,7 +263,7 @@ double-check that the versions are in the same. The versions can be found in
 - Multiply `max_steps` and `summary_freq` in your `trainer_config.yaml` by the
   number of Agents in the scene.
 - Combine curriculum configs into a single file. See
-  [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of
+  [the WallJump curricula](https://github.com/Unity-Technologies/ml-agents/blob/0.14.1/config/curricula/wall_jump.yaml) for an example of
   the new curriculum config format. A tool like https://www.json2yaml.com may be
   useful to help with the conversion.
 - If you have a model trained which uses RayPerceptionSensor and has non-1.0
@@ -274,8 +296,7 @@ double-check that the versions are in the same. The versions can be found in
   The Academy class no longer has a `ResetParameters`. To access shared float
   properties with Python, use the new `FloatProperties` field on the Academy.
 - Offline Behavioral Cloning has been removed. To learn from demonstrations, use
-  the GAIL and Behavioral Cloning features with either PPO or SAC. See
-  [Imitation Learning](Training-Imitation-Learning.md) for more information.
+  the GAIL and Behavioral Cloning features with either PPO or SAC.
 - `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout
   depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused
   problems with some of our tooling such as mypy and pylint.
@@ -427,9 +448,7 @@ double-check that the versions are in the same. The versions can be found in
   - `use_curiosity`, `curiosity_strength`, `curiosity_enc_size`: Define a
     `curiosity` reward signal and set its `strength` to `curiosity_strength`,
     and `encoding_size` to `curiosity_enc_size`. Give it the same `gamma` as
-    your `extrinsic` signal to mimic previous behavior. See
-    [Reward Signals](Reward-Signals.md) for more information on defining reward
-    signals.
+    your `extrinsic` signal to mimic previous behavior.
 - TensorBoards generated when running multiple environments in v0.8 are not
   comparable to those generated in v0.9 in terms of step count. Multiply your
   v0.8 step count by `num_envs` for an approximate comparison. You may need to
@@ -551,12 +570,10 @@ double-check that the versions are in the same. The versions can be found in
 
 - It is now required to specify the path to the yaml trainer configuration file
   when running `mlagents-learn`. For an example trainer configuration file, see
-  [trainer_config.yaml](../config/trainer_config.yaml). An example of passing a
+  [trainer_config.yaml](https://github.com/Unity-Technologies/ml-agents/blob/0.5.0a/config/trainer_config.yaml). An example of passing a
   trainer configuration to `mlagents-learn` is shown above.
 - The environment name is now passed through the `--env` option.
-- Curriculum learning has been changed. Refer to the
-  [curriculum learning documentation](Training-Curriculum-Learning.md) for
-  detailed information. In summary:
+- Curriculum learning has been changed. In summary:
   - Curriculum files for the same environment must now be placed into a folder.
     Each curriculum file should be named after the Brain whose curriculum it
     specifies.
@@ -598,7 +615,7 @@ in order to ensure a smooth transition.
   [here](Training-ML-Agents.md#training-with-mlagents-learn).
 - Hyperparameters for training Brains are now stored in the
   `trainer_config.yaml` file. For more information on using this file, see
-  [here](Training-ML-Agents.md#training-config-file).
+  [here](Training-ML-Agents.md#training-configurations).
 
 ### Unity API
 
