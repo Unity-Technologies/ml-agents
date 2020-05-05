@@ -198,21 +198,52 @@ class ActorCritic(nn.Module):
             embedding, _ = self.network_body(vec_inputs, vis_inputs)
             return self.value_heads(embedding)
 
-    def forward(
+    def sample_action(self, dists):
+        actions = []
+        for action_dist in dists:
+            action = action_dist.sample()
+            actions.append(action)
+        actions = torch.stack(actions, dim=-1)
+        return actions
+
+    def get_probs_and_entropy(self, actions, dists):
+        log_probs = []
+        entropies = []
+        for idx, action_dist in enumerate(dists):
+            action = actions[:, idx]
+            log_probs.append(action_dist.log_prob(action))
+            entropies.append(action_dist.entropy())
+        log_probs = torch.stack(log_probs, dim=-1)
+        entropies = torch.stack(entropies, dim=-1)
+        if self.act_type == ActionType.CONTINUOUS:
+            log_probs = log_probs.squeeze(-1)
+            entropies = entropies.squeeze(-1)
+        return log_probs, entropies
+
+    def get_dist_and_value(
         self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
     ):
         embedding, memories = self.network_body(
             vec_inputs, vis_inputs, memories, sequence_length
         )
         if self.act_type == ActionType.CONTINUOUS:
-            dist = self.distribution(embedding)
+            dists = self.distribution(embedding)
         else:
-            dist = self.distribution(embedding, masks=masks)
+            dists = self.distribution(embedding, masks=masks)
         if self.separate_critic:
             value_outputs = self.critic(vec_inputs, vis_inputs)
         else:
             value_outputs = self.value_heads(embedding)
-        return dist, value_outputs, memories
+        return dists, value_outputs, memories
+
+    def forward(
+        self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
+    ):
+        dists, value_outputs, memories = self.get_dist_and_value(
+            vec_inputs, vis_inputs, masks, memories, sequence_length
+        )
+        sampled_actions = self.sample_action(dists)
+        return sampled_actions, memories
 
 
 class Critic(nn.Module):

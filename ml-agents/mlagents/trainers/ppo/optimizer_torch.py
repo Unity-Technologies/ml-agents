@@ -96,9 +96,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         vec_obs = [torch.Tensor(vec_obs)]
         act_masks = torch.Tensor(np.array(batch["action_mask"]))
         if self.policy.use_continuous_act:
-            actions = [torch.Tensor(np.array(batch["actions"]))]
+            actions = torch.Tensor(np.array(batch["actions"])).unsqueeze(-1)
         else:
-            actions = list(torch.Tensor(np.array(batch["actions"])).permute(1, 0))
+            actions = torch.Tensor(np.array(batch["actions"]))
 
         memories = [
             torch.Tensor(np.array(batch["memory"][i]))

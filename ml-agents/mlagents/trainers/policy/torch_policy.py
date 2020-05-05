@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
 import torch
+import os
 from torch import onnx
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
@@ -138,33 +139,19 @@ class TorchPolicy(Policy):
     def execute_model(
         self, vec_obs, vis_obs, masks=None, actions=None, memories=None, seq_len=1
     ):
-        action_dists, (value_heads, mean_value), new_memories = self.actor_critic(
+        dists, (
+            value_heads,
+            mean_value,
+        ), new_memories = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
+
         if actions is None:
-            generate_actions = True
-            actions = []
-        else:
-            generate_actions = False
-        log_probs = []
-        entropies = []
-        for idx, action_dist in enumerate(action_dists):
-            if generate_actions:
-                action = action_dist.sample()
-                actions.append(action)
-            else:
-                action = actions[idx]
-            log_probs.append(action_dist.log_prob(action))
-            entropies.append(action_dist.entropy())
-        if generate_actions:
-            actions = torch.stack(actions, dim=-1)
-        log_probs = torch.stack(log_probs, dim=-1)
-        entropies = torch.stack(entropies, dim=-1)
+            actions = self.actor_critic.sample_action(dists)
+        log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
         if self.act_type == "continuous":
-            if generate_actions:
-                actions = actions.squeeze(-1)
-            log_probs = log_probs.squeeze(-1)
-            entropies = entropies.squeeze(-1)
+            actions.squeeze_(-1)
+
         return actions, log_probs, entropies, value_heads, memories
 
     @timed
@@ -238,6 +225,8 @@ class TorchPolicy(Policy):
         Saves the model
         :param step: The number of steps the model was trained for
         """
+        if not os.path.exists(self.model_path):
+            os.makedirs(self.model_path)
         save_path = self.model_path + "/model-" + str(step) + ".pt"
         torch.save(self.actor_critic.state_dict(), save_path)
 
@@ -246,13 +235,23 @@ class TorchPolicy(Policy):
         self.actor_critic.load_state_dict(torch.load(load_path))
 
     def export_model(self, step=0):
-        fake_vec_obs = [torch.zeros(self.vec_obs_size)]
-        fake_vis_obs = [torch.zeros(camera_res) for camera_res in self.vis_obs_size]
+        fake_vec_obs = [torch.zeros([1] + [self.vec_obs_size])]
+        fake_vis_obs = [
+            torch.zeros(
+                [1] + [camera_res.height, camera_res.width, camera_res.num_channels]
+            )
+            for camera_res in self.brain.camera_resolutions
+        ]
+        if self.use_continuous_act:
+            fake_masks = None
+        else:
+            fake_masks = torch.ones([1] + [int(np.sum(self.act_size))])
+        fake_memories = torch.zeros([1] + [self.m_size])
         export_path = self.model_path + "/model-" + str(step) + ".onnx"
-        output_names = ["action", "memories", "value_estimates"]
+        output_names = ["action", "value_estimates", "memories"]
         onnx.export(
             self.actor_critic,
-            (fake_vec_obs, fake_vis_obs),
+            (fake_vec_obs, fake_vis_obs, fake_masks, fake_memories, 1),
             export_path,
             verbose=True,
             output_names=output_names,
