@@ -66,12 +66,12 @@ if __name__ == "__main__":
         help="Path to old format (<=0.16.X) trainer configuration YAML.",
     )
     argparser.add_argument(
-        "curriculum",
+        "--curriculum",
         help="Path to old format (<=0.16.X) curriculum configuration YAML.",
         default=None,
     )
     argparser.add_argument(
-        "sampler",
+        "--sampler",
         help="Path to old format (<=0.16.X) parameter randomization configuration YAML.",
         default=None,
     )
@@ -79,6 +79,9 @@ if __name__ == "__main__":
         "output_config_path", help="Path to write converted YAML file."
     )
     args = argparser.parse_args()
+    print(
+        f"Converting {args.trainer_config_path} and saving to {args.output_config_path}."
+    )
 
     old_config = load_config(args.trainer_config_path)
     behavior_config_dict = convert_behaviors(old_config)
