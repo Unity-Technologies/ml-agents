@@ -74,6 +74,16 @@ def rewardsignal_settings_to_cls(d: Mapping) -> Any:
     return d_final
 
 
+def defaultdict_to_dict(d: DefaultDict) -> Dict:
+    return {key: cattr.unstructure(val) for key, val in d.items()}
+
+
+def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
+    return collections.defaultdict(
+        TrainerSettings, cattr.structure(d, Dict[str, TrainerSettings])
+    )
+
+
 @attr.s(auto_attribs=True)
 class NetworkSettings:
     @attr.s(auto_attribs=True)
@@ -289,6 +299,10 @@ class RunOptions:
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(TrainerSettings, trainer_settings_to_cls)
+    cattr.register_structure_hook(
+        DefaultDict[str, TrainerSettings], dict_to_defaultdict
+    )
+    cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":
@@ -308,12 +322,9 @@ class RunOptions:
             "env_settings": {},
             "engine_settings": {},
         }
-        configured_dict.update(load_config(config_path))
-        # This is the only option that is not optional and has no defaults.
-        if "behaviors" not in configured_dict:
-            raise TrainerConfigError(
-                "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
-            )
+        if config_path is not None:
+            configured_dict.update(load_config(config_path))
+
         # Use the YAML file values for all values not specified in the CLI.
         for key in configured_dict.keys():
             # Detect bad config options

@@ -297,7 +297,6 @@ def run_cli(options: RunOptions) -> None:
     logging_util.set_log_level(log_level)
 
     logger.debug("Configuration for this run:")
-    print(options)
     logger.debug(json.dumps(cattr.unstructure(options), indent=4))
 
     # Options deprecation warnings

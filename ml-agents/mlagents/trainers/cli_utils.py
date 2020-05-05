@@ -49,7 +49,9 @@ def _create_parser() -> argparse.ArgumentParser:
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    argparser.add_argument("trainer_config_path", action=StoreConfigFile)
+    argparser.add_argument(
+        "trainer_config_path", action=StoreConfigFile, nargs="?", default=None
+    )
     argparser.add_argument(
         "--env",
         default=None,
