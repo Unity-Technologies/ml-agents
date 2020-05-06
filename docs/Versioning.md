@@ -52,8 +52,9 @@ Package names: ml-agents / ml-agents-envs / gym-unity
 - The python packages remain in "Beta."  This means that breaking changes to the public
     API of the python packages can change without having to have a major version bump.
     Historically, the python and C# packages were in version lockstep.  This is no longer
-    the case.  The python packages will remain in lockstep with each other, while the
-    C# package will follow its own versioning as is appropriate.
+    the case.  The python packages will remain in lockstep with each other for now, while the
+    C# package will follow its own versioning as is appropriate.  However, the python package
+    versions may diverge in the future.
 - While the python packages will remain in Beta for now, we acknowledge that the most
     heavily used portion of our python interface is the `mlagents-learn` CLI and strive
     to make this part of our API backward compatible. We are actively working on this and
