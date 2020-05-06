@@ -32,16 +32,16 @@ Package name: com.unity.ml-agents
 - This package produces one artifact, the `.demo` files.  These files will have integer
     versioning. This means their version will increment by 1 at each change.  The
     com.unity.ml-agents package must be backward compatible with version changes
-    that occur between minor versions.  For example, consider that com.unity.ml-agents
-    is at version 1.0.0 and the demo files are at version one.  If the demo files
-    change to version 2, the next release of com.unity.ml-agents at version 1.1.0
-    shall be able to read both of these formats.  If the demo files were to change to
-    version 3 and com.unity.ml-agents to version 2.0.0, support for demo versions 1 and
-    2 could be dropped for com.unity.ml-agents version 2.0.0.
-- This package consumes an artifact of the training process: the `.nn` file.  The
-    com.unity.ml-agents package will need to support the version of `.nn` files
-    which existed at its 1.0.0 release.  These files are integer versioned and are
-    currently at version 2.
+    that occur between minor versions.
+- This package consumes an artifact of the training process: the `.nn` file.  These files
+    are integer versioned and currently at version 2. The com.unity.ml-agents package
+    will need to support the version of `.nn` files which existed at its 1.0.0 release.
+    For example, consider that com.unity.ml-agents is at version 1.0.0 and the NN files
+    are at version 2.  If the NN files change to version 3, the next release of
+    com.unity.ml-agents at version 1.1.0 guarantees it will be able to read both of these
+    formats.  If the NN files were to change to version 4 and com.unity.ml-agents to
+    version 2.0.0, support for NN versions 2 and 3 could be dropped for com.unity.ml-agents
+    version 2.0.0.
 - To summarize, the artifacts produced and consumed by com.unity.ml-agents are guaranteed
     to be supported for 1.x.x versions of com.unity.ml-agents.  We intend to provide stability
     for our users by moving to a 1.0.0 release of com.unity.ml-agents.
