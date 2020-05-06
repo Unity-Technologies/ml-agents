@@ -89,5 +89,5 @@ for what they are. As of today, we provide 4 side channels:
 Aside from the specific implementations of side channels we provide (and use ourselves),
 the Side Channel interface is made available for users to create their own custom side
 channels. As such, we guarantee that the built in SideChannel interface between Unity and
-Python is con
+Python is backward compatible in packages that share the same major version.
 
