@@ -6,6 +6,22 @@ we use to version our packages and the data that flows into, through, and out of
 Our project now has four packages (1 Unity, 3 Python) along with artifacts that are produced as
 well as consumed.  This document covers the versioning for these packages and artifacts.
 
+## GitHub Releases
+Up until now, all packages were in lockstep in-terms of versioning. As a result, the GitHub releases
+were tagged with the version of all those packages (e.g. v0.15.0, v0.15.1) and labeled accordingly.
+With the decoupling of package versions, we now need to revisit our GitHub release tagging.
+The proposal is that we move towards an integer release numbering for our repo and each such
+release will call out specific version upgrades of each package. For instance, with the May release,
+we will have:
+- GitHub Release 1 (branch name: “release_1_branch)
+  - com.unity.ml-agents release 1.0.0
+  - ml-agents release 0.16.0
+  - ml-agents-envs release 0.16.0
+  - gym-unity release 0.16.0
+
+Our release cadence will not be affected by these versioning changes.  We will keep having
+monthly releases to fix bugs and release new features.
+
 ## Packages
 All of the software packages, and their generated artifacts will be versioned.  Any automation
 tools will not be versioned.
@@ -24,10 +40,11 @@ Package name: com.unity.ml-agents
     2 could be dropped for com.unity.ml-agents version 2.0.0.
 - This package consumes an artifact of the training process: the `.nn` file.  The
     com.unity.ml-agents package will need to support the version of `.nn` files
-    which existed at its 1.0.0 release.
-- To summarize, the artifacts produced and consumed by com.unity.ml-agents will be
-    supported through the 1.0.0 lifecycle.  We intend to provide stability for our
-    users by moving to a 1.0.0 release of com.unity.ml-agents.
+    which existed at its 1.0.0 release.  These files are integer versioned and are
+    currently at version 2.
+- To summarize, the artifacts produced and consumed by com.unity.ml-agents are guaranteed
+    to be supported for 1.x.x versions of com.unity.ml-agents.  We intend to provide stability
+    for our users by moving to a 1.0.0 release of com.unity.ml-agents.
 
 
 ### Python Packages
@@ -35,25 +52,28 @@ Package names: ml-agents / ml-agents-envs / gym-unity
 - The python packages remain in "Beta."  This means that breaking changes to the public
     API of the python packages can change without having to have a major version bump.
     Historically, the python and C# packages were in version lockstep.  This is no longer
-    the case.  The python packages will remain in lockstep in terms of version, while the
+    the case.  The python packages will remain in lockstep with each other, while the
     C# package will follow its own versioning as is appropriate.
 - While the python packages will remain in Beta for now, we acknowledge that the most
     heavily used portion of our python interface is the `mlagents-learn` CLI and strive
     to make this part of our API backward compatible. We are actively working on this and
-    expect to have a stable CLI in the next few months.
+    expect to have a stable CLI in the next few weeks.
 
 ## Communicator
 
 Packages which communicate: com.unity.ml-agents / ml-agents-envs
 
-Another entity of the ML-Agents Toolkit that requires versioning is the communicator
-version, which will follow semantic versioning.  This guarantees a level of backward
-compatibility between different versions of C# and Python packages which communicate.
+Another entity of the ML-Agents Toolkit that requires versioning is the communication layer
+between C# and Python, which will follow also semantic versioning.  This guarantees a level of
+backward compatibility between different versions of C# and Python packages which communicate.
 Any Communicator version 1.x.x of the Unity package should be compatible with any 1.x.x
 Communicator Version in Python.
 
-See [Communication Protocol Versioning](https://docs.google.com/document/d/1gKn4BX5CWfsG_iv_fMnrQGL9FGG7mdUIYCPXsVOe-Ec/edit#heading=h.v7t1ynb2u4tr)
-for more details.
+An RLCapabilities struct keeps track of which features exist. This struct is passed from C# to
+Python, and another from Python to C#.  With this feature level granularity, we can notify users
+more specifically about feature limitations based on what's available in both C# and Python.
+These notifications will be logged to the python terminal, or to the Unity Editor Console.
+
 
 ## Side Channels
 
@@ -68,6 +88,6 @@ for what they are. As of today, we provide 4 side channels:
 
 Aside from the specific implementations of side channels we provide (and use ourselves),
 the Side Channel interface is made available for users to create their own custom side
-channels. As such, we need to ensure that interface between Unity and Python is consistent
-so that a user's custom side channel can continue to function correctly across upgrades.
+channels. As such, we guarantee that the built in SideChannel interface between Unity and
+Python is con
 
