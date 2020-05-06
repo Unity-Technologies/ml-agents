@@ -29,10 +29,6 @@ tools will not be versioned.
 ### Unity package
 Package name: com.unity.ml-agents
 - Versioned following [Semantic Versioning Guidelines](https://www.semver.org)
-- This package produces one artifact, the `.demo` files.  These files will have integer
-    versioning. This means their version will increment by 1 at each change.  The
-    com.unity.ml-agents package must be backward compatible with version changes
-    that occur between minor versions.
 - This package consumes an artifact of the training process: the `.nn` file.  These files
     are integer versioned and currently at version 2. The com.unity.ml-agents package
     will need to support the version of `.nn` files which existed at its 1.0.0 release.
@@ -42,6 +38,10 @@ Package name: com.unity.ml-agents
     formats.  If the NN files were to change to version 4 and com.unity.ml-agents to
     version 2.0.0, support for NN versions 2 and 3 could be dropped for com.unity.ml-agents
     version 2.0.0.
+- This package produces one artifact, the `.demo` files.  These files will have integer
+    versioning. This means their version will increment by 1 at each change.  The
+    com.unity.ml-agents package must be backward compatible with version changes
+    that occur between minor versions.
 - To summarize, the artifacts produced and consumed by com.unity.ml-agents are guaranteed
     to be supported for 1.x.x versions of com.unity.ml-agents.  We intend to provide stability
     for our users by moving to a 1.0.0 release of com.unity.ml-agents.
