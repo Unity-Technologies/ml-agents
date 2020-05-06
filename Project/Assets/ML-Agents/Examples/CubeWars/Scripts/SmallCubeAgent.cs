@@ -13,7 +13,16 @@ public class SmallCubeAgent : Agent
     bool m_Shoot;
     float m_ShootTime;
     Rigidbody m_AgentRb;
-    float m_HitPoints;
+    [HideInInspector]
+    public float HitPoints;
+    [HideInInspector]
+    public SmallCubeAgent Teammate1;
+    [HideInInspector]
+    public SmallCubeAgent Teammate2;
+    [HideInInspector]
+    public Rigidbody TeammateRb1;
+    [HideInInspector]
+    public Rigidbody TeammateRb2;
 
     // Speed of agent rotation.
     public float turnSpeed;
@@ -32,7 +41,6 @@ public class SmallCubeAgent : Agent
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
-        //m_AgentRb.useGravity = true;
         m_MyArea = area.GetComponent<CubeWarArea>();
         m_LargeAgent = largeAgent.GetComponent<LargeCubeAgent>();
         m_CubeWarSettings = FindObjectOfType<CubeWarSettings>();
@@ -44,11 +52,23 @@ public class SmallCubeAgent : Agent
     {
         sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
         sensor.AddObservation(System.Convert.ToInt32(m_Dead));
-        sensor.AddObservation(m_HitPoints);
+        sensor.AddObservation(HitPoints);
         // Direction big agent is looking
         Vector3 dirToSelf = transform.position - m_LargeAgent.transform.position;
         float angle = Vector3.Dot(m_LargeAgent.transform.forward.normalized, dirToSelf.normalized);
         sensor.AddObservation(angle);
+
+        //Teammate 1 direction, normalized distance, hitpoints
+        Vector3 dirToT1 = Teammate1.transform.position - transform.position;
+        sensor.AddObservation(dirToT1.normalized);
+        sensor.AddObservation(Vector3.Distance(Teammate1.transform.position, transform.position) / 300f); //roughly normalized ditance
+        sensor.AddObservation(Teammate1.HitPoints);
+
+        Vector3 dirToT2 = Teammate2.transform.position - transform.position;
+        sensor.AddObservation(dirToT2.normalized);
+        sensor.AddObservation(Vector3.Distance(Teammate2.transform.position, transform.position) / 300f); //roughly normalized ditance
+        sensor.AddObservation(Teammate2.HitPoints);
+
         if (m_Dead)
         {
             AddReward(-.001f * m_Bonus);
@@ -140,7 +160,7 @@ public class SmallCubeAgent : Agent
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 28f))
             {
-                if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent"))
+                if (hit.collider.gameObject.CompareTag("StrongSmallAgent") || hit.collider.gameObject.CompareTag("WeakSmallAgent") || hit.collider.gameObject.CompareTag("DeadSmallAgent"))
                 {
                     hit.collider.gameObject.GetComponent<SmallCubeAgent>().HealAgent();
                 }
@@ -163,30 +183,30 @@ public class SmallCubeAgent : Agent
     {
         if (!m_Dead)
         {
-            m_HitPoints -= damage;
+            HitPoints -= damage;
             HealthStatus();
         }
     }
 
     public void HealAgent()
     {
-        if (m_HitPoints < 1f)
+        if (HitPoints < 1f)
         {
-            m_HitPoints = Mathf.Min(m_HitPoints + .25f, 1f);
+            HitPoints = Mathf.Min(HitPoints + .25f, 1f);
             HealthStatus();
         }
     }
 
     void HealthStatus()
     {
-        if (m_HitPoints <= 1f && m_HitPoints > .5f)
+        if (HitPoints <= 1f && HitPoints > .5f)
         {
             m_Dead = false;
             gameObject.tag = "StrongSmallAgent";
             myBody.GetComponentInChildren<Renderer>().material = normalMaterial;
         }
 
-        else if (m_HitPoints <= .5f && m_HitPoints > 0.0f)
+        else if (HitPoints <= .5f && HitPoints > 0.0f)
         {
             m_Dead = false;
             gameObject.tag = "WeakSmallAgent";
@@ -239,7 +259,7 @@ public class SmallCubeAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        m_HitPoints = 1f;
+        HitPoints = 1f;
         HealthStatus();
         m_Dead = false;
         m_Shoot = false;

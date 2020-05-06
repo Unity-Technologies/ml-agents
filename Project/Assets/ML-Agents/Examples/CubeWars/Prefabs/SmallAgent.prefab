@@ -415,7 +415,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8083776131842293165}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -24.8, y: 2, z: -9.559753}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -466,12 +466,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 14
     NumStackedVectorObservations: 2
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 697e3166f993b4e4cb890de8be9ec842, type: 3}
+  m_Model: {fileID: 11400000, guid: 77d026617f8254b39b58e7f514762320, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: SmallCubeSoldier
@@ -541,6 +541,11 @@ MonoBehaviour:
   MaxStep: 0
   area: {fileID: 0}
   largeAgent: {fileID: 0}
+  HitPoints: 0
+  Teammate1: {fileID: 0}
+  Teammate2: {fileID: 0}
+  TeammateRb1: {fileID: 0}
+  TeammateRb2: {fileID: 0}
   turnSpeed: 300
   moveSpeed: 6
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
@@ -632,26 +637,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8081094897351109481}
     m_Modifications:
-    - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: endPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: endPosition.y
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: endPosition.z
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 123071959092199671, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: width
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 3343439013409978073, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -716,11 +701,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Laser
-      objectReference: {fileID: 0}
-    - target: {fileID: 9221550522079577563, guid: d40a32b30361e40b49d59bdfbbdb2e8c,
-        type: 3}
-      propertyPath: m_Positions.Array.data[1].z
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d40a32b30361e40b49d59bdfbbdb2e8c, type: 3}
