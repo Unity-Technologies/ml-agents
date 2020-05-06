@@ -5,11 +5,8 @@ import os
 from unittest.mock import patch
 
 from mlagents.trainers import trainer_util
-from mlagents.trainers.trainer_util import (
-    load_config,
-    _load_config,
-    assemble_curriculum_config,
-)
+from mlagents.trainers.trainer_util import assemble_curriculum_config
+from mlagents.trainers.cli_utils import load_config, _load_config
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
 from mlagents.trainers.brain import BrainParameters

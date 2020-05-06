@@ -3,7 +3,8 @@ import yaml
 from unittest.mock import MagicMock, patch, mock_open
 from mlagents.trainers import learn
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.learn import parse_command_line, DetectDefault
+from mlagents.trainers.learn import parse_command_line
+from mlagents.trainers.cli_utils import DetectDefault
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.stats import StatsReporter
 
