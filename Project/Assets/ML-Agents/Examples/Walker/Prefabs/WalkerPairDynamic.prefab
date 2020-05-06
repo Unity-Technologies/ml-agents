@@ -1587,7 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 223
+    VectorObservationSize: 233
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -1680,13 +1680,15 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8913670488868299297}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35bd0d2facf4149ad86cde561dcedd64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   showCOMGizmos: 0
   avgCOMWorldSpace: {x: -499.97733, y: 2.196562, z: -250.00104}
+  avgCOMVelocityWorldSpace: {x: 0, y: 0, z: 0}
+  previousAvgCOM: {x: 0, y: 0, z: 0}
   avgCOMColor: {r: 0, g: 1, b: 0, a: 1}
   bodyPartCOMColor: {r: 0.3820755, g: 0.8758695, b: 1, a: 1}
   totalMass: 94

@@ -12,8 +12,11 @@ public class AvgCenterOfMass : MonoBehaviour
     /// Enable to show a green spehere at the current center of mass.
     /// </summary>
     [Tooltip("Enable to show a green spehere at the current center of mass.")]
+    public bool active;
     public bool showCOMGizmos = true;
     public Vector3 avgCOMWorldSpace;
+    public Vector3 avgCOMVelocityWorldSpace;
+    public Vector3 previousAvgCOM;
     public Color avgCOMColor = Color.green;
     public Color bodyPartCOMColor = Color.yellow;
     List<Rigidbody> rbList = new List<Rigidbody>();
@@ -64,6 +67,27 @@ public class AvgCenterOfMass : MonoBehaviour
     //         avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
     //     }
     // }
+
+    public Vector3 GetCoMWorldSpace()
+    {
+        Vector3 CoM = Vector3.zero;
+        avgCOMWorldSpace = Vector3.zero;
+        float c = 0f;
+            
+        foreach(var item in rbList)
+        {
+            CoM += item.worldCenterOfMass * item.mass;
+            c += item.mass;
+        }
+        avgCOMWorldSpace = CoM/c;
+//        avgCOMVelocityWorldSpace = previousAvgCOM - avgCOMWorldSpace;
+////        Debug.DrawRay(avgCOMWorldSpace, avgCOMVelocityWorldSpace, Color.green,Time.fixedDeltaTime);
+////        Debug.DrawRay(avgCOMWorldSpace, Vector3.ProjectOnPlane( avgCOMVelocityWorldSpace, Vector3.up), Color.green,Time.fixedDeltaTime);
+//
+//        previousAvgCOM = avgCOMWorldSpace;
+        return avgCOMWorldSpace;
+    }
+    
     
     void FixedUpdate()
     {
@@ -80,18 +104,28 @@ public class AvgCenterOfMass : MonoBehaviour
             // //DRAW AVG GIZMOS
             // avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
 
-
-            Vector3 CoM = Vector3.zero;
-            float c = 0f;
-            
-            foreach(var item in rbList)
+            if (active)
             {
-                CoM += item.worldCenterOfMass * item.mass;
-                c += item.mass;
+                GetCoMWorldSpace();
             }
-            avgCOMWorldSpace = CoM/c;
-            // CoM /= c;
             
+
+//            Vector3 CoM = Vector3.zero;
+//            avgCOMWorldSpace = Vector3.zero;
+//            float c = 0f;
+//            
+//            foreach(var item in rbList)
+//            {
+//                CoM += item.worldCenterOfMass * item.mass;
+//                c += item.mass;
+//            }
+//            avgCOMWorldSpace = CoM/c;
+//            avgCOMVelocityWorldSpace = previousAvgCOM - avgCOMWorldSpace;
+//            Debug.DrawRay(avgCOMWorldSpace, avgCOMVelocityWorldSpace, Color.green,Time.fixedDeltaTime);
+//
+//            previousAvgCOM = avgCOMWorldSpace;
+//            // CoM /= c;
+//            
             
             if (showBPPosRelToBody)
             {

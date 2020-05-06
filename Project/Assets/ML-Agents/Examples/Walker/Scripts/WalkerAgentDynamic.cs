@@ -42,9 +42,12 @@ public class WalkerAgentDynamic : Agent
     EnvironmentParameters m_ResetParams;
 
     private GameObject m_OrientationCube;
+    private AvgCenterOfMass m_avgCoM;
     public override void Initialize()
     {
         Vector3 oCubePos = hips.position;
+        m_avgCoM = GetComponent<AvgCenterOfMass>();
+            
         oCubePos.y = -.45f;
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
         m_OrientationCube.transform.SetParent(transform);
@@ -156,6 +159,9 @@ public class WalkerAgentDynamic : Agent
         //FACING DIR
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
         sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
+        sensor.AddObservation(Quaternion.Dot(m_WalkDirLookRot, hips.rotation));
+        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
+        sensor.AddObservation(Quaternion.Dot(m_WalkDirLookRot, head.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
         //UPDATE ORIENTATION CUBE POS & ROT
@@ -181,9 +187,21 @@ public class WalkerAgentDynamic : Agent
 
         //HIP POS REL TO MATRIX
 //        sensor.AddObservation(hips.position - worldPosMatrixPos);
-        sensor.AddObservation(hips.position - m_OrientationCube.transform.position);
+//        sensor.AddObservation(hips.position - m_OrientationCube.transform.position);
 //        sensor.AddObservation(m_JdController.bodyPartsDict[hips].rb.position);
-        
+
+        Vector3 com = m_avgCoM.GetCoMWorldSpace();
+        Vector3 comVel = com - m_OrientationCube.transform.position;
+        Vector3 comVelOnGround = Vector3.ProjectOnPlane(comVel, Vector3.up);
+//        Debug.DrawRay(m_OrientationCube.transform.position, comVelOnGround, Color.green,Time.fixedDeltaTime);
+
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(com));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(comVelOnGround));
+        sensor.AddObservation( Vector3.Dot(m_WalkDir.normalized, comVelOnGround));
+
+
+
+
 //        sensor.AddObservation(hips.forward);
 //        sensor.AddObservation(hips.up);
 
@@ -197,14 +215,31 @@ public class WalkerAgentDynamic : Agent
         // b. Rotation alignment with goal direction.
         // c. Encourage head height.
         // d. Discourage head movement.
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
         AddReward(
-            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_avgCoM.avgCOMVelocityWorldSpace)
+            +0.03f * Vector3.Dot(m_WalkDir.normalized, comVelOnGround)
             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
-            + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-                m_JdController.bodyPartsDict[hips].rb.velocity)
+            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation)
+//            + 0.02f * (head.position.y - hips.position.y)
+//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                m_JdController.bodyPartsDict[hips].rb.velocity)
         );
+        
+        
+//        // Set reward for this step according to mixture of the following elements.
+//        // a. Velocity alignment with goal direction.
+//        // b. Rotation alignment with goal direction.
+//        // c. Encourage head height.
+//        // d. Discourage head movement.
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
+//        AddReward(
+//            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
+//            + 0.02f * (head.position.y - hips.position.y)
+//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                m_JdController.bodyPartsDict[hips].rb.velocity)
+//        );
     }
 
     public override void OnActionReceived(float[] vectorAction)
