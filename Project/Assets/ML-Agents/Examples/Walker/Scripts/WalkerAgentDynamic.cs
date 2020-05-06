@@ -103,7 +103,8 @@ public class WalkerAgentDynamic : Agent
 //        sensor.AddObservation(rb.angularVelocity);
 //        var localPosRelToHips = hips.InverseTransformPoint(rb.position);
 //        sensor.AddObservation(localPosRelToHips);
-        sensor.AddObservation(hips.InverseTransformPointUnscaled(bp.rb.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(bp.rb.position));
+//        sensor.AddObservation(hips.InverseTransformPointUnscaled(bp.rb.position));
         
 
 //        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
@@ -146,7 +147,7 @@ public class WalkerAgentDynamic : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_JdController.GetCurrentJointForces();
+//        m_JdController.GetCurrentJointForces();
         
         // Update pos to target
 //        m_WalkDir = target.position - hips.position;
@@ -190,6 +191,20 @@ public class WalkerAgentDynamic : Agent
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
+        
+        // Set reward for this step according to mixture of the following elements.
+        // a. Velocity alignment with goal direction.
+        // b. Rotation alignment with goal direction.
+        // c. Encourage head height.
+        // d. Discourage head movement.
+        m_WalkDir = target.position - m_OrientationCube.transform.position;
+        AddReward(
+            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
+            + 0.02f * (head.position.y - hips.position.y)
+            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+                m_JdController.bodyPartsDict[hips].rb.velocity)
+        );
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -230,31 +245,31 @@ public class WalkerAgentDynamic : Agent
         bpDict[forearmR].SetJointStrength(vectorAction[++i]);
     }
 
-    void FixedUpdate()
-    {
-        // Set reward for this step according to mixture of the following elements.
-        // a. Velocity alignment with goal direction.
-        // b. Rotation alignment with goal direction.
-        // c. Encourage head height.
-        // d. Discourage head movement.
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
-        AddReward(
-            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
-            + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-                m_JdController.bodyPartsDict[hips].rb.velocity)
-        );
-        
-//        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+//    void FixedUpdate()
+//    {
+//        // Set reward for this step according to mixture of the following elements.
+//        // a. Velocity alignment with goal direction.
+//        // b. Rotation alignment with goal direction.
+//        // c. Encourage head height.
+//        // d. Discourage head movement.
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
 //        AddReward(
 //            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-//            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
 //            + 0.02f * (head.position.y - hips.position.y)
 //            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
 //                m_JdController.bodyPartsDict[hips].rb.velocity)
 //        );
-    }
+//        
+////        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+////        AddReward(
+////            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+////            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
+////            + 0.02f * (head.position.y - hips.position.y)
+////            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+////                m_JdController.bodyPartsDict[hips].rb.velocity)
+////        );
+//    }
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
