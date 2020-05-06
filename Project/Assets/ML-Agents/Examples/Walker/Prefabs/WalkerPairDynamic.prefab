@@ -1643,9 +1643,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b29724baddfa457da6eeab446fa49ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxJointSpring: 10000
-  jointDampen: 50
-  maxJointForceLimit: 25000
+  maxJointSpring: 40000
+  jointDampen: 3000
+  maxJointForceLimit: 10000
   bodyPartsList: []
 --- !u!114 &8913670488868299308
 MonoBehaviour:
@@ -1680,7 +1680,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8913670488868299297}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35bd0d2facf4149ad86cde561dcedd64, type: 3}
   m_Name: 
@@ -1700,7 +1700,7 @@ MonoBehaviour:
   showInverseTransformPointRelToBody: 0
   showInverseTransformVectorRelToBody: 0
   showInverseTransformDirRelToBody: 0
-  body_T: {fileID: 0}
+  body_T: {fileID: 8913670488009607195}
 --- !u!1 &8913670488904676214
 GameObject:
   m_ObjectHideFlags: 0
