@@ -41,8 +41,17 @@ public class WalkerAgentDynamic : Agent
 
     EnvironmentParameters m_ResetParams;
 
+    private GameObject m_OrientationCube;
     public override void Initialize()
     {
+        Vector3 oCubePos = hips.position;
+        oCubePos.y = -.45f;
+        m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
+        m_OrientationCube.transform.SetParent(transform);
+        
+        
+        var texture = Resources.Load<Texture2D>("Textures/texture01");
+
         m_JdController = GetComponent<JointDriveController>();
         m_JdController.SetupBodyPart(hips);
         m_JdController.SetupBodyPart(chest);
@@ -78,13 +87,17 @@ public class WalkerAgentDynamic : Agent
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
         
-        //RELATIVE RB VELOCITY
-        var velocityRelativeToLookRotationToTarget = m_worldPosMatrix.inverse.MultiplyVector(bp.rb.velocity);
-        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
+//        //RELATIVE RB VELOCITY
+//        var velocityRelativeToLookRotationToTarget = m_worldPosMatrix.inverse.MultiplyVector(bp.rb.velocity);
+//        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
+//
+//        //RELATIVE RB ANGULAR VELOCITY
+//        var angularVelocityRelativeToLookRotationToTarget = m_worldPosMatrix.inverse.MultiplyVector(bp.rb.angularVelocity);
+//        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
 
-        //RELATIVE RB ANGULAR VELOCITY
-        var angularVelocityRelativeToLookRotationToTarget = m_worldPosMatrix.inverse.MultiplyVector(bp.rb.angularVelocity);
-        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
+        //RELATIVE RB VELOCITIES
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.velocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.angularVelocity));
         
 //        sensor.AddObservation(rb.velocity);
 //        sensor.AddObservation(rb.angularVelocity);
@@ -136,22 +149,38 @@ public class WalkerAgentDynamic : Agent
         m_JdController.GetCurrentJointForces();
         
         // Update pos to target
-        m_WalkDir = target.position - hips.position;
+//        m_WalkDir = target.position - hips.position;
+        m_WalkDir = target.position - m_OrientationCube.transform.position;
         
         //FACING DIR
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
         sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
-        //ORIENTATION MATRIX
-        Vector3 worldPosMatrixPos = hips.position;
-        worldPosMatrixPos.y = .5f;
-        m_worldPosMatrix  = Matrix4x4.TRS(worldPosMatrixPos, Quaternion.identity, Vector3.one);
+        //UPDATE ORIENTATION CUBE POS & ROT
+        Vector3 oCubePos = hips.position;
+        oCubePos.y = -.45f;
+        m_OrientationCube.transform.position = oCubePos;
+        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+        
+        //HIP RAYCAST FOR HEIGHT
+        RaycastHit hit;
+        if (Physics.Raycast(hips.position, Vector3.down, out hit, 10.0f))
+        {
+            sensor.AddObservation(hit.distance);
+        }
+        else
+            sensor.AddObservation(10.0f);
+//        //ORIENTATION MATRIX
+//        Vector3 worldPosMatrixPos = hips.position;
+//        worldPosMatrixPos.y = .5f;
+//        m_worldPosMatrix  = Matrix4x4.TRS(worldPosMatrixPos, Quaternion.identity, Vector3.one);
         
 //        sensor.AddObservation(m_WalkDir.normalized);
 
         //HIP POS REL TO MATRIX
-        sensor.AddObservation(hips.position - worldPosMatrixPos);
+//        sensor.AddObservation(hips.position - worldPosMatrixPos);
+        sensor.AddObservation(hips.position - m_OrientationCube.transform.position);
 //        sensor.AddObservation(m_JdController.bodyPartsDict[hips].rb.position);
         
 //        sensor.AddObservation(hips.forward);
@@ -208,14 +237,23 @@ public class WalkerAgentDynamic : Agent
         // b. Rotation alignment with goal direction.
         // c. Encourage head height.
         // d. Discourage head movement.
-        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+        m_WalkDir = target.position - m_OrientationCube.transform.position;
         AddReward(
             +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
+            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
             + 0.02f * (head.position.y - hips.position.y)
             - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
                 m_JdController.bodyPartsDict[hips].rb.velocity)
         );
+        
+//        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+//        AddReward(
+//            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
+//            + 0.02f * (head.position.y - hips.position.y)
+//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                m_JdController.bodyPartsDict[hips].rb.velocity)
+//        );
     }
 
     /// <summary>
