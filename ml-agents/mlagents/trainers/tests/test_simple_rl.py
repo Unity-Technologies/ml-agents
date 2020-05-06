@@ -54,33 +54,6 @@ PPO_CONFIG = TrainerSettings(
     threaded=False,
 )
 
-PPO_CONFIG2 = f"""
-    {BRAIN_NAME}:
-        trainer: ppo
-        batch_size: 16
-        beta: 5.0e-3
-        buffer_size: 64
-        epsilon: 0.2
-        hidden_units: 32
-        lambd: 0.95
-        learning_rate: 5.0e-3
-        learning_rate_schedule: constant
-        max_steps: 3000
-        memory_size: 16
-        normalize: false
-        num_epoch: 3
-        num_layers: 1
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 500
-        use_recurrent: false
-        threaded: false
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
-    """
-
 SAC_CONFIG = TrainerSettings(
     trainer_type=TrainerSettings.TrainerType.SAC,
     hyperparameters=SACSettings(
@@ -97,35 +70,6 @@ SAC_CONFIG = TrainerSettings(
     max_steps=1000,
     threaded=False,
 )
-
-SAC_CONFIG2 = f"""
-    {BRAIN_NAME}:
-        trainer: sac
-        batch_size: 8
-        buffer_size: 5000
-        buffer_init_steps: 100
-        hidden_units: 16
-        init_entcoef: 0.01
-        learning_rate: 5.0e-3
-        max_steps: 1000
-        memory_size: 16
-        normalize: false
-        steps_per_update: 1
-        num_layers: 1
-        time_horizon: 64
-        sequence_length: 32
-        summary_freq: 100
-        tau: 0.01
-        use_recurrent: false
-        curiosity_enc_size: 128
-        demo_path: None
-        vis_encode_type: simple
-        threaded: false
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
-    """
 
 
 def generate_config(
@@ -365,7 +309,7 @@ def test_recurrent_sac(use_discrete):
     env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     new_networksettings = attr.evolve(
         SAC_CONFIG.network_settings,
-        memory=NetworkSettings.MemorySettings(memory_size=16),
+        memory=NetworkSettings.MemorySettings(memory_size=16, sequence_length=32),
     )
     new_hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters,
@@ -443,7 +387,7 @@ def test_simple_asymm_ghost_fails(use_discrete):
     # This config should fail because the team that us not learning when both have reached
     # max step should be executing the initial, untrained poliy.
     self_play_settings = SelfPlaySettings(
-        play_against_latest_model_ratio=1.0,
+        play_against_latest_model_ratio=0.0,
         save_steps=5000,
         swap_steps=5000,
         team_change=2000,
