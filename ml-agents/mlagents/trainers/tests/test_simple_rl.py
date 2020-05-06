@@ -3,6 +3,7 @@ import tempfile
 import pytest
 import yaml
 import numpy as np
+import attr
 from typing import Dict, Any
 
 from mlagents.trainers.tests.simple_test_envs import (
@@ -16,6 +17,17 @@ from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    PPOSettings,
+    SACSettings,
+    NetworkSettings,
+    SelfPlaySettings,
+    BehavioralCloningSettings,
+    RewardSignalSettings,
+    GAILSettings,
+)
+from mlagents.trainers.models import LearningRateSchedule, EncoderType
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
@@ -27,7 +39,22 @@ from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuo
 
 BRAIN_NAME = "1D"
 
-PPO_CONFIG = f"""
+
+PPO_CONFIG = TrainerSettings(
+    trainer_type=TrainerSettings.TrainerType.PPO,
+    hyperparameters=PPOSettings(
+        learning_rate=5.0e-3,
+        learning_rate_schedule=LearningRateSchedule.CONSTANT,
+        batch_size=16,
+        buffer_size=64,
+    ),
+    network_settings=NetworkSettings(num_layers=1, hidden_units=32),
+    summary_freq=500,
+    max_steps=3000,
+    threaded=False,
+)
+
+PPO_CONFIG2 = f"""
     {BRAIN_NAME}:
         trainer: ppo
         batch_size: 16
@@ -54,7 +81,24 @@ PPO_CONFIG = f"""
                 gamma: 0.99
     """
 
-SAC_CONFIG = f"""
+SAC_CONFIG = TrainerSettings(
+    trainer_type=TrainerSettings.TrainerType.SAC,
+    hyperparameters=SACSettings(
+        learning_rate=5.0e-3,
+        learning_rate_schedule=LearningRateSchedule.CONSTANT,
+        batch_size=8,
+        buffer_init_steps=100,
+        buffer_size=5000,
+        tau=0.01,
+        init_entcoef=0.01,
+    ),
+    network_settings=NetworkSettings(num_layers=1, hidden_units=16),
+    summary_freq=100,
+    max_steps=1000,
+    threaded=False,
+)
+
+SAC_CONFIG2 = f"""
     {BRAIN_NAME}:
         trainer: sac
         batch_size: 8
@@ -141,8 +185,6 @@ def _check_environment_trains(
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
         StatsReporter.add_writer(debug_writer)
-        # Make sure threading is turned off for determinism
-        trainer_config["threading"] = False
         if env_manager is None:
             env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
@@ -184,7 +226,7 @@ def _check_environment_trains(
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ppo(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    config = generate_config(PPO_CONFIG)
+    config = attr.evolve(PPO_CONFIG)
     _check_environment_trains(env, config)
 
 
@@ -193,8 +235,8 @@ def test_2d_ppo(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
     )
-    config = generate_config(PPO_CONFIG)
-    _check_environment_trains(env, config)
+    config = attr.evolve(PPO_CONFIG)
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -207,9 +249,9 @@ def test_visual_ppo(num_visual, use_discrete):
         num_vector=0,
         step_size=0.2,
     )
-    override_vals = {"learning_rate": 3.0e-4}
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    new_hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3.0e-4)
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams)
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
@@ -223,36 +265,42 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         step_size=0.5,
         vis_obs_size=(36, 36, 3),
     )
-    override_vals = {
-        "learning_rate": 3.0e-4,
-        "vis_encode_type": vis_encode_type,
-        "max_steps": 500,
-        "summary_freq": 100,
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
+    new_hyperparams = attr.evolve(
+        PPO_CONFIG.hyperparameters,
+        learning_rate=3.0e-4,
+        vis_encode_type=EncoderType(vis_encode_type),
+    )
+    config = attr.evolve(
+        PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=500, summary_freq=100
+    )
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.5)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_ppo(use_discrete):
     env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {
-        "max_steps": 5000,
-        "batch_size": 64,
-        "buffer_size": 128,
-        "learning_rate": 1e-3,
-        "use_recurrent": True,
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config, success_threshold=0.9)
+    new_network_settings = attr.evolve(
+        PPO_CONFIG.network_settings,
+        memory=NetworkSettings.MemorySettings(memory_size=16),
+    )
+    new_hyperparams = attr.evolve(
+        PPO_CONFIG.hyperparameters, learning_rate=1.0e-3, batch_size=64, buffer_size=128
+    )
+    config = attr.evolve(
+        PPO_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_network_settings,
+        max_steps=5000,
+    )
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_sac(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    config = generate_config(SAC_CONFIG)
-    _check_environment_trains(env, config)
+    config = attr.evolve(SAC_CONFIG)
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -260,9 +308,9 @@ def test_2d_sac(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
-    override_vals = {"buffer_init_steps": 2000, "max_steps": 10000}
-    config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config, success_threshold=0.8)
+    new_hyperparams = attr.evolve(SAC_CONFIG.hyperparameters, buffer_init_steps=2000)
+    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -275,9 +323,11 @@ def test_visual_sac(num_visual, use_discrete):
         num_vector=0,
         step_size=0.2,
     )
-    override_vals = {"batch_size": 16, "learning_rate": 3e-4}
-    config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    new_hyperparams = attr.evolve(
+        SAC_CONFIG.hyperparameters, batch_size=16, learning_rate=3e-4
+    )
+    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams)
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
@@ -291,31 +341,46 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
         step_size=0.5,
         vis_obs_size=(36, 36, 3),
     )
-    override_vals = {
-        "batch_size": 16,
-        "learning_rate": 3.0e-4,
-        "vis_encode_type": vis_encode_type,
-        "buffer_init_steps": 0,
-        "max_steps": 100,
-    }
-    config = generate_config(SAC_CONFIG, override_vals)
+    new_networksettings = attr.evolve(
+        SAC_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
+    )
+    new_hyperparams = attr.evolve(
+        SAC_CONFIG.hyperparameters,
+        batch_size=16,
+        learning_rate=3e-4,
+        buffer_init_steps=0,
+    )
+    config = attr.evolve(
+        SAC_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_networksettings,
+        max_steps=100,
+    )
     # The number of steps is pretty small for these encoders
-    _check_environment_trains(env, config, success_threshold=0.5)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
     env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    override_vals = {
-        "batch_size": 64,
-        "use_recurrent": True,
-        "max_steps": 5000,
-        "learning_rate": 1e-3,
-        "buffer_init_steps": 500,
-        "steps_per_update": 2,
-    }
-    config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    new_networksettings = attr.evolve(
+        SAC_CONFIG.network_settings,
+        memory=NetworkSettings.MemorySettings(memory_size=16),
+    )
+    new_hyperparams = attr.evolve(
+        SAC_CONFIG.hyperparameters,
+        batch_size=64,
+        learning_rate=1e-3,
+        buffer_init_steps=500,
+        steps_per_update=2,
+    )
+    config = attr.evolve(
+        SAC_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_networksettings,
+        max_steps=5000,
+    )
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -323,16 +388,11 @@ def test_simple_ghost(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
     )
-    override_vals = {
-        "max_steps": 2500,
-        "self_play": {
-            "play_against_latest_model_ratio": 1.0,
-            "save_steps": 2000,
-            "swap_steps": 2000,
-        },
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config)
+    self_play_settings = SelfPlaySettings(
+        play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=2000
+    )
+    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2500)
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -342,16 +402,11 @@ def test_simple_ghost_fails(use_discrete):
     )
     # This config should fail because the ghosted policy is never swapped with a competent policy.
     # Swap occurs after max step is reached.
-    override_vals = {
-        "max_steps": 2500,
-        "self_play": {
-            "play_against_latest_model_ratio": 1.0,
-            "save_steps": 2000,
-            "swap_steps": 4000,
-        },
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config, success_threshold=None)
+    self_play_settings = SelfPlaySettings(
+        play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=4000
+    )
+    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2500)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=None)
     processed_rewards = [
         default_reward_processor(rewards) for rewards in env.final_rewards.values()
     ]
@@ -368,18 +423,14 @@ def test_simple_asymm_ghost(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME + "?team=0", brain_name_opp + "?team=1"], use_discrete=use_discrete
     )
-    override_vals = {
-        "max_steps": 4000,
-        "self_play": {
-            "play_against_latest_model_ratio": 1.0,
-            "save_steps": 10000,
-            "swap_steps": 10000,
-            "team_change": 4000,
-        },
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    config[brain_name_opp] = config[BRAIN_NAME]
-    _check_environment_trains(env, config)
+    self_play_settings = SelfPlaySettings(
+        play_against_latest_model_ratio=1.0,
+        save_steps=10000,
+        swap_steps=10000,
+        team_change=400,
+    )
+    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=4000)
+    _check_environment_trains(env, {BRAIN_NAME: config, brain_name_opp: config})
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -391,18 +442,16 @@ def test_simple_asymm_ghost_fails(use_discrete):
     )
     # This config should fail because the team that us not learning when both have reached
     # max step should be executing the initial, untrained poliy.
-    override_vals = {
-        "max_steps": 2000,
-        "self_play": {
-            "play_against_latest_model_ratio": 0.0,
-            "save_steps": 5000,
-            "swap_steps": 5000,
-            "team_change": 2000,
-        },
-    }
-    config = generate_config(PPO_CONFIG, override_vals)
-    config[brain_name_opp] = config[BRAIN_NAME]
-    _check_environment_trains(env, config, success_threshold=None)
+    self_play_settings = SelfPlaySettings(
+        play_against_latest_model_ratio=1.0,
+        save_steps=5000,
+        swap_steps=5000,
+        team_change=2000,
+    )
+    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2000)
+    _check_environment_trains(
+        env, {BRAIN_NAME: config, brain_name_opp: config}, success_threshold=None
+    )
     processed_rewards = [
         default_reward_processor(rewards) for rewards in env.final_rewards.values()
     ]
@@ -448,20 +497,19 @@ def simple_record(tmpdir_factory):
 def test_gail(simple_record, use_discrete, trainer_config):
     demo_path = simple_record(use_discrete)
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
-    override_vals = {
-        "max_steps": 500,
-        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
-        "reward_signals": {
-            "gail": {
-                "strength": 1.0,
-                "gamma": 0.99,
-                "encoding_size": 32,
-                "demo_path": demo_path,
-            }
-        },
+    bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
+    reward_signals = {
+        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
+            encoding_size=32, demo_path=demo_path
+        )
     }
-    config = generate_config(trainer_config, override_vals)
-    _check_environment_trains(env, config, success_threshold=0.9)
+    config = attr.evolve(
+        trainer_config,
+        reward_signals=reward_signals,
+        behavioral_cloning=bc_settings,
+        max_steps=500,
+    )
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -474,21 +522,21 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         use_discrete=use_discrete,
         step_size=0.2,
     )
-    override_vals = {
-        "max_steps": 750,
-        "learning_rate": 3.0e-4,
-        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
-        "reward_signals": {
-            "gail": {
-                "strength": 1.0,
-                "gamma": 0.99,
-                "encoding_size": 32,
-                "demo_path": demo_path,
-            }
-        },
+    bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
+    reward_signals = {
+        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
+            encoding_size=32, demo_path=demo_path
+        )
     }
-    config = generate_config(PPO_CONFIG, override_vals)
-    _check_environment_trains(env, config, success_threshold=0.9)
+    hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3e-4)
+    config = attr.evolve(
+        PPO_CONFIG,
+        reward_signals=reward_signals,
+        hyperparameters=hyperparams,
+        behavioral_cloning=bc_settings,
+        max_steps=750,
+    )
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
@@ -501,19 +549,20 @@ def test_gail_visual_sac(simple_record, use_discrete):
         use_discrete=use_discrete,
         step_size=0.2,
     )
-    override_vals = {
-        "max_steps": 500,
-        "batch_size": 16,
-        "learning_rate": 3.0e-4,
-        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
-        "reward_signals": {
-            "gail": {
-                "strength": 1.0,
-                "gamma": 0.99,
-                "encoding_size": 32,
-                "demo_path": demo_path,
-            }
-        },
+    bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
+    reward_signals = {
+        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
+            encoding_size=32, demo_path=demo_path
+        )
     }
-    config = generate_config(SAC_CONFIG, override_vals)
-    _check_environment_trains(env, config, success_threshold=0.9)
+    hyperparams = attr.evolve(
+        SAC_CONFIG.hyperparameters, learning_rate=3e-4, batch_size=16
+    )
+    config = attr.evolve(
+        SAC_CONFIG,
+        reward_signals=reward_signals,
+        hyperparameters=hyperparams,
+        behavioral_cloning=bc_settings,
+        max_steps=500,
+    )
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)

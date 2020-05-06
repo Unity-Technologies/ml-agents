@@ -130,7 +130,7 @@ class GhostTrainer(Trainer):
         self.last_team_change: int = 0
 
         # Chosen because it is the initial ELO in Chess
-        self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
+        self.initial_elo: float = self_play_parameters.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * (
             self.window + 1
         )  # for learning policy

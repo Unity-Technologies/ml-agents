@@ -92,7 +92,7 @@ class NetworkSettings:
         memory_size: int = 128
 
     normalize: bool = False
-    hidden_units: int = 3
+    hidden_units: int = 128
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
@@ -189,6 +189,7 @@ class SelfPlaySettings:
     swap_steps: int = 10000
     window: int = 10
     play_against_latest_model_ratio: float = 0.5
+    initial_elo: float = 1200.0
 
 
 @attr.s(auto_attribs=True)

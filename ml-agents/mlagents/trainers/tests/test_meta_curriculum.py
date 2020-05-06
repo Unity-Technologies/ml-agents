@@ -2,12 +2,12 @@ import pytest
 from unittest.mock import patch, Mock
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-import json
 import yaml
 
 from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
 from mlagents.trainers.tests.test_simple_rl import _check_environment_trains, BRAIN_NAME
-from mlagents.trainers.tests.test_curriculum import dummy_curriculum_json_str
+from mlagents.trainers.tests.test_curriculum import dummy_curriculum_config
+from mlagents.trainers.settings import CurriculumSettings
 
 
 @pytest.fixture
@@ -21,13 +21,11 @@ def reward_buff_sizes():
 
 
 def test_curriculum_config(param_name="test_param1", min_lesson_length=100):
-    return {
-        "measure": "progress",
-        "thresholds": [0.1, 0.3, 0.5],
-        "min_lesson_length": min_lesson_length,
-        "signal_smoothing": True,
-        "parameters": {f"{param_name}": [0.0, 4.0, 6.0, 8.0]},
-    }
+    return CurriculumSettings(
+        thresholds=[0.1, 0.3, 0.5],
+        min_lesson_length=min_lesson_length,
+        parameters={f"{param_name}": [0.0, 4.0, 6.0, 8.0]},
+    )
 
 
 test_meta_curriculum_config = {
@@ -119,8 +117,7 @@ TRAINER_CONFIG = """
 @pytest.mark.parametrize("curriculum_brain_name", [BRAIN_NAME, "WrongBrainName"])
 def test_simple_metacurriculum(curriculum_brain_name):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=False)
-    curriculum_config = json.loads(dummy_curriculum_json_str)
-    mc = MetaCurriculum({curriculum_brain_name: curriculum_config})
+    mc = MetaCurriculum({curriculum_brain_name: dummy_curriculum_config})
     trainer_config = yaml.safe_load(TRAINER_CONFIG)
     _check_environment_trains(
         env, trainer_config, meta_curriculum=mc, success_threshold=None
