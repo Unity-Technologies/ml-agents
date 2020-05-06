@@ -30,7 +30,7 @@ class Policy(object):
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_params["normalize"]
         self.use_recurrent = trainer_params["use_recurrent"]
-        self.model_path = trainer_params["model_path"]
+        self.model_path = trainer_params["output_path"]
 
         if self.use_recurrent:
             self.m_size = trainer_params["memory_size"]

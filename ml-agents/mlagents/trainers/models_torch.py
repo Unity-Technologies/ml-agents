@@ -90,13 +90,7 @@ class NetworkBody(nn.Module):
         self.vector_encoders = nn.ModuleList(self.vector_encoders)
         self.visual_encoders = nn.ModuleList(self.visual_encoders)
         if use_lstm:
-            self.lstm = nn.GRU(h_size, h_size, 1)
-
-    def clear_memory(self, batch_size):
-        self.memory = (
-            torch.zeros(1, batch_size, self.m_size),
-            torch.zeros(1, batch_size, self.m_size),
-        )
+            self.lstm = nn.LSTM(h_size, m_size // 2, 1)
 
     def update_normalization(self, vec_inputs):
         if self.normalize:
@@ -132,8 +126,10 @@ class NetworkBody(nn.Module):
 
         if self.use_lstm:
             embedding = embedding.reshape([sequence_length, -1, self.h_size])
+            memories = torch.split(memories, self.m_size // 2, dim=-1)
             embedding, memories = self.lstm(embedding, memories)
-            embedding = embedding.reshape([-1, self.h_size])
+            embedding = embedding.reshape([-1, self.m_size // 2])
+            memories = torch.cat(memories, dim=-1)
         return embedding, memories
 
 
@@ -167,10 +163,14 @@ class ActorCritic(nn.Module):
             vis_encode_type,
             use_lstm,
         )
-        if self.act_type == ActionType.CONTINUOUS:
-            self.distribution = GaussianDistribution(h_size, act_size[0])
+        if use_lstm:
+            embedding_size = m_size // 2
         else:
-            self.distribution = MultiCategoricalDistribution(h_size, act_size)
+            embedding_size = h_size
+        if self.act_type == ActionType.CONTINUOUS:
+            self.distribution = GaussianDistribution(embedding_size, act_size[0])
+        else:
+            self.distribution = MultiCategoricalDistribution(embedding_size, act_size)
         if separate_critic:
             self.critic = Critic(
                 stream_names,
@@ -184,18 +184,18 @@ class ActorCritic(nn.Module):
             )
         else:
             self.stream_names = stream_names
-            self.value_heads = ValueHeads(stream_names, h_size)
+            self.value_heads = ValueHeads(stream_names, embedding_size)
 
     def update_normalization(self, vector_obs):
         self.network_body.update_normalization(vector_obs)
         if self.separate_critic:
             self.critic.network_body.update_normalization(vector_obs)
 
-    def critic_pass(self, vec_inputs, vis_inputs):
+    def critic_pass(self, vec_inputs, vis_inputs, memories=None):
         if self.separate_critic:
             return self.critic(vec_inputs, vis_inputs)
         else:
-            embedding, _ = self.network_body(vec_inputs, vis_inputs)
+            embedding, _ = self.network_body(vec_inputs, vis_inputs, memories=memories)
             return self.value_heads(embedding)
 
     def sample_action(self, dists):

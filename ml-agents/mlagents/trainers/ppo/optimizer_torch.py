@@ -92,8 +92,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             old_values[name] = np.array(batch["{}_value_estimates".format(name)])
             returns[name] = np.array(batch["{}_returns".format(name)])
 
-        vec_obs = np.array(batch["vector_obs"])
-        vec_obs = [torch.Tensor(vec_obs)]
+        vec_obs = [torch.Tensor(np.array(batch["vector_obs"]))]
         act_masks = torch.Tensor(np.array(batch["action_mask"]))
         if self.policy.use_continuous_act:
             actions = torch.Tensor(np.array(batch["actions"])).unsqueeze(-1)

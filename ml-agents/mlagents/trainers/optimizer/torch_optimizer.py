@@ -89,15 +89,18 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         else:
             visual_obs = []
 
+        memory = torch.zeros([1, len(vector_obs[0]), self.policy.m_size])
+
         next_obs = np.concatenate(next_obs, axis=-1)
         next_obs = [torch.Tensor(next_obs).unsqueeze(0)]
+        next_memory = torch.zeros([1, 1, self.policy.m_size])
 
         value_estimates, mean_value = self.policy.actor_critic.critic_pass(
-            vector_obs, visual_obs
+            vector_obs, visual_obs, memory
         )
 
         next_value_estimate, next_value = self.policy.actor_critic.critic_pass(
-            next_obs, next_obs
+            next_obs, next_obs, next_memory
         )
 
         for name, estimate in value_estimates.items():
