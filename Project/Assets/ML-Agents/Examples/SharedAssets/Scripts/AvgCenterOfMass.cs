@@ -64,6 +64,7 @@ public class AvgCenterOfMass : MonoBehaviour
     //         avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
     //     }
     // }
+    
     void FixedUpdate()
     {
         if(Application.isPlaying)
@@ -120,7 +121,8 @@ public class AvgCenterOfMass : MonoBehaviour
                         if (showInverseTransformPointUnscaledRelToBody)
                         {
 //                            Debug.DrawRay(body_T.position + body_T.InverseTransformPoint(rb.position), Vector3.up, Color.red,Time.fixedDeltaTime);
-                            Debug.DrawRay(body_T.position + body_T.InverseTransformPointUnscaled(rb.position), Vector3.up, Color.red,Time.fixedDeltaTime);
+//                            Debug.DrawRay(body_T.position + body_T.InverseTransformPointUnscaled(rb.position), Vector3.up, Color.red,Time.fixedDeltaTime);
+                            Debug.DrawRay(body_T.position + body_T.InverseTransformPointUnscaled(rb.transform.position), Vector3.up, Color.red,Time.fixedDeltaTime);
                         }
                         if (showInverseTransformPointRelToBody)
                         {
