@@ -1,10 +1,9 @@
 import math
 import tempfile
 import pytest
-import yaml
 import numpy as np
 import attr
-from typing import Dict, Any
+from typing import Dict
 
 from mlagents.trainers.tests.simple_test_envs import (
     SimpleEnvironment,
@@ -70,15 +69,6 @@ SAC_CONFIG = TrainerSettings(
     max_steps=1000,
     threaded=False,
 )
-
-
-def generate_config(
-    config: str, override_vals: Dict[str, Any] = None
-) -> Dict[str, Any]:
-    trainer_config = yaml.safe_load(config)
-    if override_vals is not None:
-        trainer_config[BRAIN_NAME].update(override_vals)
-    return trainer_config
 
 
 # The reward processor is passed as an argument to _check_environment_trains.
