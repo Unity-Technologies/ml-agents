@@ -2,10 +2,13 @@ import pytest
 from unittest.mock import patch, Mock
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-import yaml
 
 from mlagents.trainers.tests.simple_test_envs import SimpleEnvironment
-from mlagents.trainers.tests.test_simple_rl import _check_environment_trains, BRAIN_NAME
+from mlagents.trainers.tests.test_simple_rl import (
+    _check_environment_trains,
+    BRAIN_NAME,
+    PPO_CONFIG,
+)
 from mlagents.trainers.tests.test_curriculum import dummy_curriculum_config
 from mlagents.trainers.settings import CurriculumSettings
 
@@ -88,37 +91,10 @@ def test_get_config():
     assert meta_curriculum.get_config() == {"test_param1": 0.0, "test_param2": 0.0}
 
 
-TRAINER_CONFIG = """
-    default:
-        trainer: ppo
-        batch_size: 16
-        beta: 5.0e-3
-        buffer_size: 64
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 5.0e-3
-        max_steps: 100
-        memory_size: 256
-        normalize: false
-        num_epoch: 3
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 50
-        use_recurrent: false
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
-    """
-
-
 @pytest.mark.parametrize("curriculum_brain_name", [BRAIN_NAME, "WrongBrainName"])
 def test_simple_metacurriculum(curriculum_brain_name):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=False)
     mc = MetaCurriculum({curriculum_brain_name: dummy_curriculum_config})
-    trainer_config = yaml.safe_load(TRAINER_CONFIG)
     _check_environment_trains(
-        env, trainer_config, meta_curriculum=mc, success_threshold=None
+        env, {BRAIN_NAME: PPO_CONFIG}, meta_curriculum=mc, success_threshold=None
     )
