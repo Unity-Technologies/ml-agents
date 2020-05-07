@@ -62,8 +62,8 @@ def test_load_save(tmp_path):
     _compare_two_policies(policy, policy2)
 
     # Try initialize from path 1
-    trainer_params["model_path"] = path2
-    trainer_params["init_path"] = path1
+    trainer_params.output_path = path2
+    trainer_params.init_path = path1
     policy3 = create_policy_mock(trainer_params, load=False, seed=2)
     policy3.initialize_or_load()
 
@@ -84,11 +84,11 @@ def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
-def test_policy_evaluate(dummy_config, rnn, visual, discrete):
+def test_policy_evaluate(rnn, visual, discrete):
     # Test evaluate
     tf.reset_default_graph()
     policy = create_policy_mock(
-        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
+        TrainerSettings(), use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     decision_step, terminal_step = mb.create_steps_from_brainparams(
         policy.brain, num_agents=NUM_AGENTS
@@ -101,7 +101,7 @@ def test_policy_evaluate(dummy_config, rnn, visual, discrete):
         assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
 
 
-def test_normalization(dummy_config):
+def test_normalization():
     brain_params = BrainParameters(
         brain_name="test_brain",
         vector_observation_space_size=1,
@@ -110,7 +110,6 @@ def test_normalization(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
 
     time_horizon = 6
     trajectory = make_fake_trajectory(
@@ -123,7 +122,13 @@ def test_normalization(dummy_config):
     # Change half of the obs to 0
     for i in range(3):
         trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
-    policy = policy = NNPolicy(0, brain_params, dummy_config, False, False)
+    policy = NNPolicy(
+        0,
+        brain_params,
+        TrainerSettings(network_settings=NetworkSettings(normalize=True)),
+        False,
+        False,
+    )
 
     trajectory_buffer = trajectory.to_agentbuffer()
     policy.update_normalization(trajectory_buffer["vector_obs"])

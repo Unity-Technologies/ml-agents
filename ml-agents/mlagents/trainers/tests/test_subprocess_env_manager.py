@@ -195,7 +195,7 @@ def test_subprocess_env_endtoend(num_envs):
     # Run PPO using env_manager
     _check_environment_trains(
         simple_env_factory(0, []),
-        PPO_CONFIG,
+        {"1D": PPO_CONFIG},
         env_manager=env_manager,
         success_threshold=None,
     )

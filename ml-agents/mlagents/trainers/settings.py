@@ -216,7 +216,7 @@ class TrainerSettings:
     def _set_default_hyperparameters(self):
         return TrainerSettings.to_settings(self.trainer_type)()
 
-    network_settings: NetworkSettings = NetworkSettings()
+    network_settings: NetworkSettings = attr.ib(default=NetworkSettings())
     reward_signals: Dict[
         RewardSignalSettings.RewardSignalType, RewardSignalSettings
     ] = {RewardSignalSettings.RewardSignalType.EXTRINSIC: RewardSignalSettings()}
@@ -230,6 +230,17 @@ class TrainerSettings:
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
+
+    @network_settings.validator
+    def _check_batch_size_seq_length(self, attribute, value):
+        if self.network_settings.memory is not None:
+            if (
+                self.network_settings.memory.sequence_length
+                > self.hyperparameters.batch_size
+            ):
+                raise TrainerConfigError(
+                    "When using memory, sequence length must be less than or equal to batch size. "
+                )
 
     cattr.register_structure_hook(RewardSignalSettings, rewardsignal_settings_to_cls)
 

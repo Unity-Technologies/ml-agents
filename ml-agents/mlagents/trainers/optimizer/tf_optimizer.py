@@ -129,7 +129,6 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
-        print(reward_signal_configs)
         self.reward_signals = {}
         # Create reward signals
         for reward_signal, settings in reward_signal_configs.items():
