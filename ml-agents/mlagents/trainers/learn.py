@@ -13,11 +13,7 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.trainers.trainer_util import (
-    TrainerFactory,
-    handle_existing_directories,
-    assemble_curriculum_config,
-)
+from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
     CSVWriter,
@@ -128,9 +124,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager = SubprocessEnvManager(
             env_factory, engine_config, env_settings.num_envs
         )
-        curriculum_config = assemble_curriculum_config(options.behaviors)
         maybe_meta_curriculum = try_create_meta_curriculum(
-            curriculum_config, env_manager, checkpoint_settings.lesson
+            options.curriculum, env_manager, checkpoint_settings.lesson
         )
         sampler_manager, resampling_interval = create_sampler_manager(
             options.parameter_randomization, run_seed

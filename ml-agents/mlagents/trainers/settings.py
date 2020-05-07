@@ -289,7 +289,7 @@ class RunOptions:
     env_settings: EnvironmentSettings = EnvironmentSettings()
     engine_settings: EngineSettings = EngineSettings()
     parameter_randomization: Optional[Dict] = None
-    curriculum_config: Optional[Dict[str, CurriculumSettings]] = None
+    curriculum: Optional[Dict[str, CurriculumSettings]] = None
     checkpoint_settings: CheckpointSettings = CheckpointSettings()
 
     # These are options that are relevant to the run itself, and not the engine or environment.

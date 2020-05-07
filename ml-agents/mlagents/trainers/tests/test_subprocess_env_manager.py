@@ -21,7 +21,6 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests.test_simple_rl import (
     _check_environment_trains,
     PPO_CONFIG,
-    generate_config,
     DebugWriter,
 )
 
@@ -193,11 +192,10 @@ def test_subprocess_env_endtoend(num_envs):
     env_manager = SubprocessEnvManager(
         simple_env_factory, EngineConfig.default_config(), num_envs
     )
-    trainer_config = generate_config(PPO_CONFIG, override_vals={"max_steps": 5000})
     # Run PPO using env_manager
     _check_environment_trains(
         simple_env_factory(0, []),
-        trainer_config,
+        PPO_CONFIG,
         env_manager=env_manager,
         success_threshold=None,
     )
