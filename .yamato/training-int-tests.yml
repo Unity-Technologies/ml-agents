@@ -25,11 +25,11 @@ test_mac_training_int_{{ editor.version }}:
     cancel_old_ci: true
     expression: |
       pull_request.target eq "master" AND
-      NOT pull_request.draft AND 
-      (pull_request.changes.any match "com.unity.ml-agents/**" OR 
-      pull_request.changes.any match "Project/**" OR 
-      pull_request.changes.any match "ml-agents/**" OR 
-      pull_request.changes.any match "ml-agents-envs/**" OR 
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "Project/**" OR
+      pull_request.changes.any match "ml-agents/**" OR
+      pull_request.changes.any match "ml-agents-envs/**" OR
       pull_request.changes.any match ".yamato/training-int-tests.yml") AND
       NOT pull_request.changes.all match "*.md" AND
       NOT pull_request.changes.all match "com.unity.ml-agents/*.md" AND

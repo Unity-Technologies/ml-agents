@@ -74,8 +74,8 @@ test_{{ platform.name }}_{{ editor.version }}:
     {% if platform.name == "mac" %}
     expression: |
       pull_request.target eq "master" AND
-      NOT pull_request.draft AND 
-      (pull_request.changes.any match "com.unity.ml-agents/**" OR 
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
     {% endif %}
   {% endfor %}
