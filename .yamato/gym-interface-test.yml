@@ -26,7 +26,5 @@ test_gym_interface_{{ editor.version }}:
       pull_request.changes.any match "ml-agents/**" OR 
       pull_request.changes.any match "ml-agents-envs/**" OR 
       pull_request.changes.any match ".yamato/gym-interface-test.yml") AND
-      NOT pull_request.changes.all match "*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/**/*.md"
+      NOT pull_request.changes.all match "**/*.md"
 {% endfor %}

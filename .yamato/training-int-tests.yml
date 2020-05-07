@@ -31,9 +31,7 @@ test_mac_training_int_{{ editor.version }}:
       pull_request.changes.any match "ml-agents/**" OR
       pull_request.changes.any match "ml-agents-envs/**" OR
       pull_request.changes.any match ".yamato/training-int-tests.yml") AND
-      NOT pull_request.changes.all match "*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/**/*.md"
+      NOT pull_request.changes.all match "**/*.md"
   artifacts:
     logs:
       paths:

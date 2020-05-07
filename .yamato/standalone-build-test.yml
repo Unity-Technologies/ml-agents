@@ -24,9 +24,7 @@ test_mac_standalone_{{ editor.version }}:
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
       pull_request.changes.any match ".yamato/standalone-build-test.yml") AND
-      NOT pull_request.changes.all match "*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/**/*.md"
+      NOT pull_request.changes.all match "**/*.md"
   artifacts:
     logs:
       paths:

@@ -29,7 +29,5 @@ test_mac_ll_api_{{ editor.version }}:
       pull_request.changes.any match "ml-agents/**" OR 
       pull_request.changes.any match "ml-agents-envs/**" OR 
       pull_request.changes.any match ".yamato/python-ll-api-test.yml") AND
-      NOT pull_request.changes.all match "*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/*.md" AND
-      NOT pull_request.changes.all match "com.unity.ml-agents/**/*.md"
+      NOT pull_request.changes.all match "**/*.md"
 {% endfor %}
