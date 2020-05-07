@@ -10,11 +10,11 @@ from mlagents.trainers.cli_utils import load_config
 # Take an existing trainer config (e.g. trainer_config.yaml) and turn it into the new format.
 def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
     all_behavior_config_dict = {}
-    default_config = old_config.get("default", {})
-    for behavior_name, config in old_config.items():
+    default_config = old_trainer_config.get("default", {})
+    for behavior_name, config in old_trainer_config.items():
         if behavior_name != "default":
             config = default_config.copy()
-            config.update(old_config[behavior_name])
+            config.update(old_trainer_config[behavior_name])
 
             # Convert to split TrainerSettings, Hyperparameters, NetworkSettings
             # Set trainer_type and get appropriate hyperparameter settings
