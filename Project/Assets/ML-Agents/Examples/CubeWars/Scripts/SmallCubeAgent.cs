@@ -168,7 +168,7 @@ public class SmallCubeAgent : Agent
                 {
                     hit.collider.gameObject.GetComponent<LargeCubeAgent>().HitAgent(.01f);
 
-                    AddReward(.1f + .4f * m_Bonus);
+                    AddReward(.02f + .5f * m_Bonus);
                 }
                 myLaser.isFired = true;
             }
