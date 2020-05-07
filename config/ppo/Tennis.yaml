@@ -4,7 +4,7 @@ behaviors:
     batch_size: 2048
     buffer_size: 20480
     beta: 0.02
-    epsilon: 0.2
+    epsilon: 0.1
     hidden_units: 512
     lambd: 0.95
     learning_rate: 0.0003
@@ -23,7 +23,7 @@ behaviors:
     reward_signals:
       extrinsic:
         strength: 1.0
-        gamma: 0.99
+        gamma: 0.995
     self_play:
       window: 10
       play_against_latest_model_ratio: 0.0
