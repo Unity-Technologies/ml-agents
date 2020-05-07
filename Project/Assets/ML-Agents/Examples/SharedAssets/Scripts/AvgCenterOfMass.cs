@@ -30,7 +30,7 @@ public class AvgCenterOfMass : MonoBehaviour
     public bool showInverseTransformVectorRelToBody;
     public bool showInverseTransformDirRelToBody;
     public Transform body_T;
-    void Start()
+    void OnEnable()
     {
         SetUpRigidbodies();
     }
