@@ -43,6 +43,9 @@ public class WalkerAgentDynamic : Agent
 
     private GameObject m_OrientationCube;
     private AvgCenterOfMass m_avgCoM;
+    public float walkRewardDot;
+    public Vector3 walkDirNormalized;
+    public Vector3 comVelVector;
     public override void Initialize()
     {
         Vector3 oCubePos = hips.position;
@@ -145,6 +148,18 @@ public class WalkerAgentDynamic : Agent
 //        }
 //    }
 
+
+//    void UpdateBPAccelerations()
+//    {
+//        foreach (var bp in jdController.bodyPartsDict.Values)
+//        {
+//            bp.rbAcceleration = (bp.rb.velocity - bp.velocityLastFrame)/Time.fixedDeltaTime;
+//            bp.velocityLastFrame = bp.rb.velocity;
+//            bp.rbAccelerationMag = bp.rbAcceleration.magnitude;
+//            // print($"{bp.rb.name} Acc: {bp.rbAcceleration}");
+//        }
+//    }
+    
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
@@ -190,16 +205,38 @@ public class WalkerAgentDynamic : Agent
 //        sensor.AddObservation(hips.position - m_OrientationCube.transform.position);
 //        sensor.AddObservation(m_JdController.bodyPartsDict[hips].rb.position);
 
-        Vector3 com = m_avgCoM.GetCoMWorldSpace();
-        Vector3 comVel = com - m_OrientationCube.transform.position;
-        Vector3 comVelOnGround = Vector3.ProjectOnPlane(comVel, Vector3.up);
+        Vector3 com = m_avgCoM.avgCOMWorldSpace;
+//        Vector3 comVel = m_OrientationCube.transform.position - com;
+//        Vector3 comVel = m_OrientationCube.transform.position - com;
+//        Vector3 comVelOnGround = Vector3.ProjectOnPlane(comVel, Vector3.up);
+        Vector3 comVelOnGround = Vector3.ProjectOnPlane(m_avgCoM.avgCOMVelocityWorldSpace, Vector3.up);
+        comVelVector = comVelOnGround;
+        walkDirNormalized = m_WalkDir.normalized;
+        walkRewardDot = Vector3.Dot(m_WalkDir.normalized, comVelOnGround);
+//        print(walkRewardDot);
 //        Debug.DrawRay(m_OrientationCube.transform.position, comVelOnGround, Color.green,Time.fixedDeltaTime);
+//        Debug.DrawRay(m_OrientationCube.transform.position, walkDirNormalized, Color.yellow,Time.fixedDeltaTime);
 
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(com));
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(comVelOnGround));
         sensor.AddObservation( Vector3.Dot(m_WalkDir.normalized, comVelOnGround));
 
-
+        
+        
+//        Vector3 avgCoreBpVel = Vector3.zero;
+//        avgCoreBpVel = m_JdController.bodyPartsDict[head].rb.velocity
+//                       + m_JdController.bodyPartsDict[chest].rb.velocity
+//                       + m_JdController.bodyPartsDict[spine].rb.velocity
+//                       + m_JdController.bodyPartsDict[hips].rb.velocity;
+//        avgCoreBpVel /= 4;
+//        
+//        Vector3 comVelOnGround = Vector3.ProjectOnPlane(avgCoreBpVel, Vector3.up);
+//        comVelVector = comVelOnGround;
+//        walkDirNormalized = m_WalkDir.normalized;
+//        walkRewardDot = Vector3.Dot(m_WalkDir.normalized, comVelOnGround);
+////        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(m_avgCoM.GetCoMWorldSpace()));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(comVelOnGround));
+//        sensor.AddObservation( Vector3.Dot(m_WalkDir.normalized, comVelOnGround));
 
 
 //        sensor.AddObservation(hips.forward);
@@ -221,10 +258,12 @@ public class WalkerAgentDynamic : Agent
             +0.03f * Vector3.Dot(m_WalkDir.normalized, comVelOnGround)
             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation)
+            -0.001f * m_JdController.bodyPartsDict[head].rb.velocity.sqrMagnitude
 //            + 0.02f * (head.position.y - hips.position.y)
 //            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
 //                m_JdController.bodyPartsDict[hips].rb.velocity)
         );
+        
         
         
 //        // Set reward for this step according to mixture of the following elements.
@@ -319,6 +358,8 @@ public class WalkerAgentDynamic : Agent
         {
             transform.rotation = Quaternion.LookRotation(m_WalkDir);
         }
+
+        m_avgCoM.GetCoMWorldSpace();
 
         SetResetParameters();
     }

@@ -80,11 +80,11 @@ public class AvgCenterOfMass : MonoBehaviour
             c += item.mass;
         }
         avgCOMWorldSpace = CoM/c;
-//        avgCOMVelocityWorldSpace = previousAvgCOM - avgCOMWorldSpace;
-////        Debug.DrawRay(avgCOMWorldSpace, avgCOMVelocityWorldSpace, Color.green,Time.fixedDeltaTime);
-////        Debug.DrawRay(avgCOMWorldSpace, Vector3.ProjectOnPlane( avgCOMVelocityWorldSpace, Vector3.up), Color.green,Time.fixedDeltaTime);
-//
-//        previousAvgCOM = avgCOMWorldSpace;
+        avgCOMVelocityWorldSpace = (avgCOMWorldSpace - previousAvgCOM)/Time.fixedDeltaTime;
+//        Debug.DrawRay(avgCOMWorldSpace, avgCOMVelocityWorldSpace, Color.green,Time.fixedDeltaTime);
+//        Debug.DrawRay(avgCOMWorldSpace, Vector3.ProjectOnPlane( avgCOMVelocityWorldSpace, Vector3.up), Color.green,Time.fixedDeltaTime);
+
+        previousAvgCOM = avgCOMWorldSpace;
         return avgCOMWorldSpace;
     }
     
@@ -104,10 +104,10 @@ public class AvgCenterOfMass : MonoBehaviour
             // //DRAW AVG GIZMOS
             // avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
 
-            if (active)
-            {
+//            if (active)
+//            {
                 GetCoMWorldSpace();
-            }
+//            }
             
 
 //            Vector3 CoM = Vector3.zero;

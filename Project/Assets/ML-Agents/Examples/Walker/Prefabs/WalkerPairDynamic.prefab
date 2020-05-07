@@ -1631,6 +1631,9 @@ MonoBehaviour:
   armR: {fileID: 8913670489135890568}
   forearmR: {fileID: 8913670488215205509}
   handR: {fileID: 8913670488141971383}
+  walkRewardDot: 0
+  walkDirNormalized: {x: 0, y: 0, z: 0}
+  comVelVector: {x: 0, y: 0, z: 0}
 --- !u!114 &8913670488868299309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1685,6 +1688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35bd0d2facf4149ad86cde561dcedd64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  active: 0
   showCOMGizmos: 0
   avgCOMWorldSpace: {x: -499.97733, y: 2.196562, z: -250.00104}
   avgCOMVelocityWorldSpace: {x: 0, y: 0, z: 0}
