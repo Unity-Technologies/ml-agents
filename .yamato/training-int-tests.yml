@@ -23,17 +23,17 @@ test_mac_training_int_{{ editor.version }}:
     - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
-    changes:
-      only:
-        - "com.unity.ml-agents/**"
-        - "Project/**"
-        - "ml-agents/**"
-        - "ml-agents-envs/**"
-        - ".yamato/training-int-tests.yml"
-      except:
-        - "*.md"
-        - "com.unity.ml-agents/*.md"
-        - "com.unity.ml-agents/**/*.md"
+    expression: |
+      pull_request.target eq "master" AND
+      NOT pull_request.draft AND 
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR 
+      pull_request.changes.any match "Project/**" OR 
+      pull_request.changes.any match "ml-agents/**" OR 
+      pull_request.changes.any match "ml-agents-envs/**" OR 
+      pull_request.changes.any match ".yamato/training-int-tests.yml") AND
+      NOT pull_request.changes.all match "*.md" AND
+      NOT pull_request.changes.all match "com.unity.ml-agents/*.md" AND
+      NOT pull_request.changes.all match "com.unity.ml-agents/**/*.md"
   artifacts:
     logs:
       paths:
