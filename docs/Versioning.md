@@ -11,9 +11,10 @@ Up until now, all packages were in lockstep in-terms of versioning. As a result,
 were tagged with the version of all those packages (e.g. v0.15.0, v0.15.1) and labeled accordingly.
 With the decoupling of package versions, we now need to revisit our GitHub release tagging.
 The proposal is that we move towards an integer release numbering for our repo and each such
-release will call out specific version upgrades of each package. For instance, with the May release,
+release will call out specific version upgrades of each package. For instance, with
+[the April 30th release](https://github.com/Unity-Technologies/ml-agents/releases/tag/release_1),
 we will have:
-- GitHub Release 1 (branch name: “release_1_branch)
+- GitHub Release 1 (branch name: *release_1_branch*)
   - com.unity.ml-agents release 1.0.0
   - ml-agents release 0.16.0
   - ml-agents-envs release 0.16.0
