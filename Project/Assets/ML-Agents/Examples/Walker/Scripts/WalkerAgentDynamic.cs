@@ -254,12 +254,19 @@ public class WalkerAgentDynamic : Agent
         // d. Discourage head movement.
         AddReward(
             +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
-            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation)
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) //reward looking at
+            + 0.01f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) * .5f //penalize not looking at
+            + 0.01f * (Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) - 1) * .5f //penalize not looking at
+
             + 0.02f * (head.position.y - hips.position.y)
             - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
                 m_JdController.bodyPartsDict[hips].rb.velocity)
         );
+        
+        
+        
+        
 //        // Set reward for this step according to mixture of the following elements.
 //        // a. Velocity alignment with goal direction.
 //        // b. Rotation alignment with goal direction.
