@@ -151,18 +151,15 @@ public class WalkerAgentDynamic : Agent
         
         // Update pos to target
 //        m_WalkDir = target.position - hips.position;
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
         
         //FACING DIR
-        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
+//        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
         sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
+        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
-        //UPDATE ORIENTATION CUBE POS & ROT
-        Vector3 oCubePos = hips.position;
-        oCubePos.y = -.45f;
-        m_OrientationCube.transform.position = oCubePos;
-        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+
         
         //HIP RAYCAST FOR HEIGHT
         RaycastHit hit;
@@ -181,7 +178,7 @@ public class WalkerAgentDynamic : Agent
 
         //HIP POS REL TO MATRIX
 //        sensor.AddObservation(hips.position - worldPosMatrixPos);
-        sensor.AddObservation(hips.position - m_OrientationCube.transform.position);
+//        sensor.AddObservation(hips.position - m_OrientationCube.transform.position);
 //        sensor.AddObservation(m_JdController.bodyPartsDict[hips].rb.position);
         
 //        sensor.AddObservation(hips.forward);
@@ -192,19 +189,7 @@ public class WalkerAgentDynamic : Agent
             CollectObservationBodyPart(bodyPart, sensor);
         }
         
-        // Set reward for this step according to mixture of the following elements.
-        // a. Velocity alignment with goal direction.
-        // b. Rotation alignment with goal direction.
-        // c. Encourage head height.
-        // d. Discourage head movement.
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
-        AddReward(
-            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
-            + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-                m_JdController.bodyPartsDict[hips].rb.velocity)
-        );
+
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -245,8 +230,31 @@ public class WalkerAgentDynamic : Agent
         bpDict[forearmR].SetJointStrength(vectorAction[++i]);
     }
 
-//    void FixedUpdate()
-//    {
+    void FixedUpdate()
+    {
+        
+        
+        //UPDATE ORIENTATION CUBE POS & ROT
+        Vector3 oCubePos = hips.position;
+        oCubePos.y = -.45f;
+        m_OrientationCube.transform.position = oCubePos;
+        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+        
+        
+        // Set reward for this step according to mixture of the following elements.
+        // a. Velocity alignment with goal direction.
+        // b. Rotation alignment with goal direction.
+        // c. Encourage head height.
+        // d. Discourage head movement.
+        m_WalkDir = target.position - m_OrientationCube.transform.position;
+        AddReward(
+            +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
+            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation)
+            + 0.02f * (head.position.y - hips.position.y)
+            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+                m_JdController.bodyPartsDict[hips].rb.velocity)
+        );
 //        // Set reward for this step according to mixture of the following elements.
 //        // a. Velocity alignment with goal direction.
 //        // b. Rotation alignment with goal direction.
@@ -260,16 +268,15 @@ public class WalkerAgentDynamic : Agent
 //            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
 //                m_JdController.bodyPartsDict[hips].rb.velocity)
 //        );
-//        
-////        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
-////        AddReward(
-////            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-////            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
-////            + 0.02f * (head.position.y - hips.position.y)
-////            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-////                m_JdController.bodyPartsDict[hips].rb.velocity)
-////        );
-//    }
+//        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+//        AddReward(
+//            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
+//            + 0.02f * (head.position.y - hips.position.y)
+//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                m_JdController.bodyPartsDict[hips].rb.velocity)
+//        );
+    }
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
