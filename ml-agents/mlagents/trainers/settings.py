@@ -48,12 +48,15 @@ def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
                 )
 
             else:
-                print(d_copy[key])
                 d_copy[key] = strict_to_cls(
                     d_copy[key], TrainerSettings.to_settings(d_copy["trainer_type"])
                 )
         elif key == "reward_signals":
             d_copy[key] = rewardsignal_settings_to_cls(val)
+        elif key == "max_steps":
+            d_copy[key] = int(
+                float(val)
+            )  # In some configs, max steps was specified as a float
         else:
             d_copy[key] = check_and_structure(key, val, t)
     return t(**d_copy)
@@ -224,7 +227,7 @@ class TrainerSettings:
     output_path: str = "default"
     # TODO: Remove parser default and remove from CLI
     keep_checkpoints: int = parser.get_default("keep_checkpoints")
-    max_steps: float = 500000
+    max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
     threaded: bool = True
