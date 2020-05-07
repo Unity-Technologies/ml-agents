@@ -11,6 +11,9 @@ public class WalkerAgentDynamic : Agent
     [Space(10)]
     public Transform target;
 
+    [Header("Walk Direction Worldspace")] 
+    public Vector3 walkDirWorldspace = Vector3.right;
+
     
     //ORIENTATION
     Vector3 m_WalkDir;
@@ -153,8 +156,7 @@ public class WalkerAgentDynamic : Agent
 //        m_WalkDir = target.position - hips.position;
 //        m_WalkDir = target.position - m_OrientationCube.transform.position;
         
-        //FACING DIR
-//        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
+
         sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
         sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
@@ -232,6 +234,10 @@ public class WalkerAgentDynamic : Agent
 
     void FixedUpdate()
     {
+        //FACING DIR
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
+        m_WalkDir = walkDirWorldspace;
+        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
         
         
         //UPDATE ORIENTATION CUBE POS & ROT
@@ -246,7 +252,6 @@ public class WalkerAgentDynamic : Agent
         // b. Rotation alignment with goal direction.
         // c. Encourage head height.
         // d. Discourage head movement.
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
         AddReward(
             +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
@@ -287,10 +292,13 @@ public class WalkerAgentDynamic : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-        if (m_WalkDir != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(m_WalkDir);
-        }
+//        if (m_WalkDir != Vector3.zero)
+//        {
+//            transform.rotation = Quaternion.LookRotation(m_WalkDir);
+//        }
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+//        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
+
 
         SetResetParameters();
     }
