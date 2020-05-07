@@ -49,11 +49,23 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def write_to_yaml_file(config: Dict[str, Any], output_config: str):
+    unstructed_config = cattr.unstructure(config)
+    unstructed_config = remove_nones(unstructed_config)
     with open(output_config, "w") as f:
         try:
-            yaml.dump(cattr.unstructure(config), f, sort_keys=False)
+            yaml.dump(unstructed_config, f, sort_keys=False)
         except TypeError:  # Older versions of pyyaml don't support sort_keys
-            yaml.dump(cattr.unstructure(config), f)
+            yaml.dump(unstructed_config, f)
+
+
+def remove_nones(config: Dict[Any, Any]):
+    new_config = {}
+    for key, val in config.items():
+        if isinstance(val, dict):
+            new_config[key] = remove_nones(val)
+        elif val is not None:
+            new_config[key] = val
+    return new_config
 
 
 if __name__ == "__main__":
