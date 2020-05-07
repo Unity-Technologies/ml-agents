@@ -77,13 +77,7 @@ test_{{ platform.name }}_{{ editor.version }}:
       NOT pull_request.draft AND 
       (pull_request.changes.any match "com.unity.ml-agents/**" OR 
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
-      
-    changes:
-      only:
-        - "com.unity.ml-agents/**"
-        - ".yamato/com.unity.ml-agents-test.yml"
-
->>>>>>> Update package triggers.
+    {% endif %}
   {% endfor %}
 {% endfor %}
 
