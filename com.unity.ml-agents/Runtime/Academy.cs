@@ -4,9 +4,9 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-using MLAgents.Inference;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents.Inference;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 using Unity.Barracuda;
 
 /**
@@ -19,10 +19,10 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/blob/0.15.1/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_1_docs/docs/
  */
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.
@@ -45,24 +45,24 @@ namespace MLAgents
     ///
     /// At initialization, the Academy attempts to connect to the Python training process through
     /// the external communicator. If successful, the training process can train <see cref="Agent"/>
-    /// instances. When you set an agent's <see cref="BehaviorParameters.behaviorType"/> setting
+    /// instances. When you set an agent's <see cref="BehaviorParameters.BehaviorType"/> setting
     /// to <see cref="BehaviorType.Default"/>, the agent exchanges data with the training process
     /// to make decisions. If no training process is available, agents with the default behavior
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/master/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_1_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
         /// <summary>
         /// Communication protocol version.
-        /// When connecting to python, this must match UnityEnvironment.API_VERSION.
-        /// Currently we require strict equality between the communication protocol
-        /// on each side, although we may allow some flexibility in the future.
-        /// This should be incremented whenever a change is made to the communication protocol.
+        /// When connecting to python, this must be compatible with UnityEnvironment.API_VERSION.
+        /// We follow semantic versioning on the communication version, so existing
+        /// functionality will work as long the major versions match.
+        /// This should be changed whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "0.17.0";
+        const string k_ApiVersion = "1.0.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
@@ -72,7 +72,7 @@ namespace MLAgents
 
         const int k_EditorTrainingPort = 5004;
 
-        const string k_portCommandLineFlag = "--mlagents-port";
+        const string k_PortCommandLineFlag = "--mlagents-port";
 
         // Lazy initializer pattern, see https://csharpindepth.com/articles/singleton#lazy
         static Lazy<Academy> s_Lazy = new Lazy<Academy>(() => new Academy());
@@ -294,7 +294,7 @@ namespace MLAgents
             var inputPort = "";
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == k_portCommandLineFlag)
+                if (args[i] == k_PortCommandLineFlag)
                 {
                     inputPort = args[i + 1];
                 }
@@ -317,8 +317,8 @@ namespace MLAgents
             }
         }
 
-        private EnvironmentParameters m_EnvironmentParameters;
-        private StatsRecorder m_StatsRecorder;
+        EnvironmentParameters m_EnvironmentParameters;
+        StatsRecorder m_StatsRecorder;
 
         /// <summary>
         /// Returns the <see cref="EnvironmentParameters"/> instance. If training

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using MLAgents;
-using MLAgents.SideChannels;
+using Unity.MLAgents;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -32,7 +31,7 @@ public class SoccerFieldArea : MonoBehaviour
     [HideInInspector]
     public bool canResetBall;
 
-    private EnvironmentParameters m_ResetParams;
+    EnvironmentParameters m_ResetParams;
 
     void Awake()
     {

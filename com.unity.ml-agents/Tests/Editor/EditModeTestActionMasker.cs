@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using MLAgents.Policies;
+using Unity.MLAgents.Policies;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     public class EditModeTestActionMasker
     {

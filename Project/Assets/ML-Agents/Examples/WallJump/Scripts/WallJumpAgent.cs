@@ -2,10 +2,9 @@
 
 using System.Collections;
 using UnityEngine;
-using MLAgents;
+using Unity.MLAgents;
 using Unity.Barracuda;
-using MLAgents.Sensors;
-using MLAgents.SideChannels;
+using Unity.MLAgents.Sensors;
 
 public class WallJumpAgent : Agent
 {

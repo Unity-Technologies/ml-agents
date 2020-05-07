@@ -2,17 +2,17 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace MLAgentsExamples
+namespace Unity.MLAgentsExamples
 {
     internal class Startup : MonoBehaviour
     {
         const string k_SceneVariableName = "SCENE_NAME";
-        private const string k_SceneCommandLineFlag = "--mlagents-scene-name";
+        const string k_SceneCommandLineFlag = "--mlagents-scene-name";
 
         void Awake()
         {
             var sceneName = "";
-            
+
             // Check for the CLI '--scene-name' flag.  This will be used if
             // no scene environment variable is found.
             var args = Environment.GetCommandLineArgs();
@@ -28,7 +28,7 @@ namespace MLAgentsExamples
             {
                 sceneName = sceneEnvironmentVariable;
             }
-            
+
             SwitchScene(sceneName);
         }
 

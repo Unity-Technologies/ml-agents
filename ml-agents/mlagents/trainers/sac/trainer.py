@@ -162,7 +162,7 @@ class SACTrainer(RLTrainer):
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
-        if last_step.max_step:
+        if last_step.interrupted:
             vec_vis_obs = SplitObservations.from_observations(last_step.obs)
             for i, obs in enumerate(vec_vis_obs.visual_observations):
                 agent_buffer_trajectory["next_visual_obs%d" % i][-1] = obs

@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace MLAgents.SideChannels
+namespace Unity.MLAgents.SideChannels
 {
     /// <summary>
     /// Utility class for forming the data that is sent to the SideChannel.

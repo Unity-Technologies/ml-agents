@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEditor;
-using MLAgents.Sensors;
+using Unity.MLAgents.Sensors;
 
-namespace MLAgents.Editor
+namespace Unity.MLAgents.Editor
 {
     [CustomEditor(typeof(CameraSensorComponent))]
     [CanEditMultipleObjects]

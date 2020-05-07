@@ -89,7 +89,7 @@ For example, if you are training with a 3DBall executable you exported to the
 the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
-mlagents-learn ../config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
+mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
 ```
 
 And you should see something like
@@ -183,4 +183,4 @@ following the steps below:
 1. Select the **3DBall** prefab from the Project window and select **Agent**.
 1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
    the **Model** placeholder in the **Ball3DAgent** inspector window.
-1. Press the :arrow_forward: button at the top of the editor.
+1. Press the **Play** button at the top of the Editor.

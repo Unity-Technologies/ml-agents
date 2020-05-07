@@ -1,14 +1,13 @@
-using System.CodeDom;
 using System;
 using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
-using MLAgents.Sensors;
-using MLAgents.Policies;
-using MLAgents.SideChannels;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Policies;
+using Unity.MLAgents.SideChannels;
 
-namespace MLAgents.Tests
+namespace Unity.MLAgents.Tests
 {
     internal class TestPolicy : IPolicy
     {

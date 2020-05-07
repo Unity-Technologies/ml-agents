@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MLAgents.Sensors
+namespace Unity.MLAgents.Sensors
 {
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
@@ -175,11 +175,11 @@ namespace MLAgents.Sensors
             {
                 // Edit Mode tests complain if we use Destroy()
                 // TODO move to extension methods for UnityEngine.Object?
-                UnityEngine.Object.DestroyImmediate(texture);
+                Object.DestroyImmediate(texture);
             }
             else
             {
-                UnityEngine.Object.Destroy(texture);
+                Object.Destroy(texture);
             }
         }
     }

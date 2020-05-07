@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "mlagents_envs/communicator_objects/capabilities.proto";
-option csharp_namespace = "MLAgents.CommunicatorObjects";
+option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
 package communicator_objects;
 
 // The initializaiton message - this is typically sent from the Python trainer to the C# environment.

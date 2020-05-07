@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/unity_rl_initialization_input.proto</summary>
   internal static partial class UnityRlInitializationInputReflection {
@@ -31,12 +31,12 @@ namespace MLAgents.CommunicatorObjects {
             "UHJvdG8SDAoEc2VlZBgBIAEoBRIdChVjb21tdW5pY2F0aW9uX3ZlcnNpb24Y",
             "AiABKAkSFwoPcGFja2FnZV92ZXJzaW9uGAMgASgJEkQKDGNhcGFiaWxpdGll",
             "cxgEIAEoCzIuLmNvbW11bmljYXRvcl9vYmplY3RzLlVuaXR5UkxDYXBhYmls",
-            "aXRpZXNQcm90b0IfqgIcTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IG",
-            "cHJvdG8z"));
+            "aXRpZXNQcm90b0IlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2Jq",
+            "ZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.CapabilitiesReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion", "Capabilities" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLInitializationInputProto.Parser, new[]{ "Seed", "CommunicationVersion", "PackageVersion", "Capabilities" }, null, null, null)
           }));
     }
     #endregion
@@ -54,7 +54,7 @@ namespace MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::MLAgents.CommunicatorObjects.UnityRlInitializationInputReflection.Descriptor.MessageTypes[0]; }
+      get { return global::Unity.MLAgents.CommunicatorObjects.UnityRlInitializationInputReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -124,12 +124,12 @@ namespace MLAgents.CommunicatorObjects {
 
     /// <summary>Field number for the "capabilities" field.</summary>
     public const int CapabilitiesFieldNumber = 4;
-    private global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto capabilities_;
+    private global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto capabilities_;
     /// <summary>
     /// The RL Capabilities of the Python trainer.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto Capabilities {
+    public global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto Capabilities {
       get { return capabilities_; }
       set {
         capabilities_ = value;
@@ -234,7 +234,7 @@ namespace MLAgents.CommunicatorObjects {
       }
       if (other.capabilities_ != null) {
         if (capabilities_ == null) {
-          capabilities_ = new global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
+          capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
         }
         Capabilities.MergeFrom(other.Capabilities);
       }
@@ -263,7 +263,7 @@ namespace MLAgents.CommunicatorObjects {
           }
           case 34: {
             if (capabilities_ == null) {
-              capabilities_ = new global::MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
+              capabilities_ = new global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto();
             }
             input.ReadMessage(capabilities_);
             break;

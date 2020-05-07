@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using UnityEngine.SceneManagement;
 
-namespace MLAgents
+namespace Unity.MLAgents
 {
     [DataContract]
     internal class TimerNode
@@ -212,7 +212,7 @@ namespace MLAgents
     internal class RootNode : TimerNode
     {
         // Timer output format version
-        internal const string k_timerFormatVersion = "0.1.0";
+        internal const string k_TimerFormatVersion = "0.1.0";
 
         [DataMember(Name = "metadata", Order = 0)]
         Dictionary<string, string> m_Metadata = new Dictionary<string, string>();
@@ -225,7 +225,7 @@ namespace MLAgents
 
         public RootNode(string name="root") : base(name, true)
         {
-            m_Metadata.Add("timer_format_version", k_timerFormatVersion);
+            m_Metadata.Add("timer_format_version", k_TimerFormatVersion);
             m_Metadata.Add("start_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
             m_Metadata.Add("unity_version", Application.unityVersion);
             m_Metadata.Add("command_line_arguments", String.Join(" ", Environment.GetCommandLineArgs()));

@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace MLAgents.CommunicatorObjects {
+namespace Unity.MLAgents.CommunicatorObjects {
 
   /// <summary>Holder for reflection information generated from mlagents_envs/communicator_objects/command.proto</summary>
   internal static partial class CommandReflection {
@@ -26,11 +26,11 @@ namespace MLAgents.CommunicatorObjects {
           string.Concat(
             "CjBtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NvbW1hbmQu",
             "cHJvdG8SFGNvbW11bmljYXRvcl9vYmplY3RzKi0KDENvbW1hbmRQcm90bxII",
-            "CgRTVEVQEAASCQoFUkVTRVQQARIICgRRVUlUEAJCH6oCHE1MQWdlbnRzLkNv",
-            "bW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "CgRTVEVQEAASCQoFUkVTRVQQARIICgRRVUlUEAJCJaoCIlVuaXR5Lk1MQWdl",
+            "bnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::MLAgents.CommunicatorObjects.CommandProto), }, null));
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CommandProto), }, null));
     }
     #endregion
 
