@@ -119,10 +119,10 @@ public class TennisAgent : Agent
         Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
 
-        if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
-            !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult)
+        if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult * 5f ||
+            !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult * 5f)
         {
-            transform.position = new Vector3(-m_InvertMult + transform.parent.transform.position.x,
+            transform.position = new Vector3(-m_InvertMult * 5f + transform.parent.transform.position.x,
                 transform.position.y,
                 transform.position.z);
         }
