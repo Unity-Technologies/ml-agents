@@ -73,7 +73,7 @@ behavior_names = env.get_behavior_names()
 ...
 ```
 **NOTE:** Please read [Interacting with a Unity Environment](#interacting-with-a-unity-environment)
-to read more about interacting with the Unity environment.
+to read more about how you can interact with the Unity environment from Python.
 
 - `file_name` is the name of the environment binary (located in the root
   directory of the python project).
