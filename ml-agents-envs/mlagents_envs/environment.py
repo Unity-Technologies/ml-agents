@@ -120,7 +120,7 @@ class UnityEnvironment(BaseEnv):
         return capabilities
 
     @staticmethod
-    def warn_csharp_base_capabitlities(
+    def warn_csharp_base_capabilities(
         caps: UnityRLCapabilitiesProto, unity_package_ver: str, python_package_ver: str
     ) -> None:
         if not caps.baseRLCapabilities:
@@ -228,7 +228,7 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             UnityEnvironment._raise_version_exception(aca_params.communication_version)
 
-        UnityEnvironment.warn_csharp_base_capabitlities(
+        UnityEnvironment.warn_csharp_base_capabilities(
             aca_params.capabilities,
             aca_params.package_version,
             UnityEnvironment.API_VERSION,
