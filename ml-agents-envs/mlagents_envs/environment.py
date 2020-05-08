@@ -10,11 +10,7 @@ import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.side_channel.side_channel import SideChannel
-from mlagents_envs.side_channel.utils import (
-    parse_side_channel_message,
-    generate_side_channel_data,
-    get_side_channels_dict,
-)
+from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
 from mlagents_envs import env_utils
 
 from mlagents_envs.base_env import (
@@ -181,7 +177,7 @@ class UnityEnvironment(BaseEnv):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
-        self.side_channels = get_side_channels_dict(side_channels)
+        self.side_channel_manager = SideChannelManager(side_channels)
         self.log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
@@ -194,7 +190,7 @@ class UnityEnvironment(BaseEnv):
             )
         if file_name is not None:
             try:
-                self.proc1 = env_utils.executable_launcher(
+                self.proc1 = env_utils.launch_executable(
                     file_name, self.executable_args()
                 )
             except UnityEnvironmentException:
@@ -285,7 +281,7 @@ class UnityEnvironment(BaseEnv):
                     DecisionSteps.empty(self._env_specs[brain_name]),
                     TerminalSteps.empty(self._env_specs[brain_name]),
                 )
-        parse_side_channel_message(self.side_channels, output.side_channel)
+        self.side_channel_manager.process_side_channel_message(output.side_channel)
 
     def reset(self) -> None:
         if self._loaded:
@@ -466,13 +462,17 @@ class UnityEnvironment(BaseEnv):
                 action = AgentActionProto(vector_actions=vector_action[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
-        rl_in.side_channel = bytes(generate_side_channel_data(self.side_channels))
+        rl_in.side_channel = bytes(
+            self.side_channel_manager.generate_side_channel_messages()
+        )
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         rl_in.command = RESET
-        rl_in.side_channel = bytes(generate_side_channel_data(self.side_channels))
+        rl_in.side_channel = bytes(
+            self.side_channel_manager.generate_side_channel_messages()
+        )
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(

@@ -2,13 +2,16 @@ import glob
 import os
 import subprocess
 from sys import platform
-from typing import Optional
+from typing import Optional, List
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.exception import UnityEnvironmentException
 
 
 def validate_environment_path(env_path: str) -> Optional[str]:
-    # Strip out executable extensions if passed
+    """
+    Strip out executable extensions of the env_path
+    :param env_path: The path to the executable
+    """
     env_path = (
         env_path.strip()
         .replace(".app", "")
@@ -63,7 +66,13 @@ def validate_environment_path(env_path: str) -> Optional[str]:
     return launch_string
 
 
-def executable_launcher(file_name, args):
+def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
+    """
+    Launches a Unity executable and returns the process handle for it.
+    :param file_name: the name of the executable
+    :param args: List of string that will be passed as command line arguments
+    when launching the executable.
+    """
     launch_string = validate_environment_path(file_name)
     if launch_string is None:
         raise UnityEnvironmentException(
