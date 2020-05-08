@@ -255,7 +255,7 @@ in the `TerminalStep` and `TerminalSteps` objects.
     data in the new MonoBehaviour instead.
   - If the class overrode the virtual methods, create a new MonoBehaviour and
     move the logic to it:
-    - Move the InitializeAcademy code to MonoBehaviour.OnAwake
+    - Move the InitializeAcademy code to MonoBehaviour.Awake
     - Move the AcademyStep code to MonoBehaviour.FixedUpdate
     - Move the OnDestroy code to MonoBehaviour.OnDestroy.
     - Move the AcademyReset code to a new method and add it to the

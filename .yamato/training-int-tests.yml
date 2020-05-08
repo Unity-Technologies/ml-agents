@@ -17,23 +17,22 @@ test_mac_training_int_{{ editor.version }}:
     # Backwards-compatibility tests.
     # If we make a breaking change to the communication protocol, these will need
     # to be disabled until the next release.
-    # - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.15.0
-    # - python -u -m ml-agents.tests.yamato.training_int_tests --csharp=0.15.0
+    - python -u -m ml-agents.tests.yamato.training_int_tests --python=0.16.0
+    - python -u -m ml-agents.tests.yamato.training_int_tests --csharp=1.0.0
   dependencies:
     - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
   triggers:
     cancel_old_ci: true
-    changes:
-      only:
-        - "com.unity.ml-agents/**"
-        - "Project/**"
-        - "ml-agents/**"
-        - "ml-agents-envs/**"
-        - ".yamato/training-int-tests.yml"
-      except:
-        - "*.md"
-        - "com.unity.ml-agents/*.md"
-        - "com.unity.ml-agents/**/*.md"
+    expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "Project/**" OR
+      pull_request.changes.any match "ml-agents/**" OR
+      pull_request.changes.any match "ml-agents-envs/**" OR
+      pull_request.changes.any match ".yamato/training-int-tests.yml") AND
+      NOT pull_request.changes.all match "**/*.md"
   artifacts:
     logs:
       paths:

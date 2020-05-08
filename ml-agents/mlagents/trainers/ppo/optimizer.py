@@ -2,7 +2,7 @@ from typing import Optional, Any, Dict
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType, LearningRateSchedule
+from mlagents.trainers.models import ModelUtils, EncoderType, ScheduleType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
@@ -24,7 +24,7 @@ class PPOOptimizer(TFOptimizer):
                 super().__init__(policy, trainer_params)
 
                 lr = float(trainer_params["learning_rate"])
-                lr_schedule = LearningRateSchedule(
+                self._schedule = ScheduleType(
                     trainer_params.get("learning_rate_schedule", "linear")
                 )
                 h_size = int(trainer_params["hidden_units"])
@@ -47,8 +47,8 @@ class PPOOptimizer(TFOptimizer):
                     "Losses/Value Loss": "value_loss",
                     "Losses/Policy Loss": "policy_loss",
                     "Policy/Learning Rate": "learning_rate",
-                    "Policy/Beta": "beta",
-                    "Policy/Epsilon": "epsilon",
+                    "Policy/Epsilon": "decay_epsilon",
+                    "Policy/Beta": "decay_beta",
                 }
                 if self.policy.use_recurrent:
                     self.m_size = self.policy.m_size
@@ -65,8 +65,12 @@ class PPOOptimizer(TFOptimizer):
                 else:
                     self._create_dc_critic(h_size, num_layers, vis_encode_type)
 
-                self.learning_rate = ModelUtils.create_learning_rate(
-                    lr_schedule, lr, self.policy.global_step, int(max_step)
+                self.learning_rate = ModelUtils.create_schedule(
+                    self._schedule,
+                    lr,
+                    self.policy.global_step,
+                    int(max_step),
+                    min_value=1e-10,
                 )
                 self._create_losses(
                     self.policy.total_log_probs,
@@ -86,8 +90,8 @@ class PPOOptimizer(TFOptimizer):
                     "policy_loss": self.abs_policy_loss,
                     "update_batch": self.update_batch,
                     "learning_rate": self.learning_rate,
-                    "beta": self.decay_beta,
-                    "epsilon": self.decay_epsilon,
+                    "decay_epsilon": self.decay_epsilon,
+                    "decay_beta": self.decay_beta,
                 }
             )
 
@@ -236,14 +240,12 @@ class PPOOptimizer(TFOptimizer):
         )
         advantage = tf.expand_dims(self.advantage, -1)
 
-        # decay_epsilon = tf.train.polynomial_decay(
-        #    epsilon, self.policy.global_step, max_step, 0.1, power=1.0
-        # )
-        # decay_beta = tf.train.polynomial_decay(
-        #    beta, self.policy.global_step, max_step, 1e-5, power=1.0
-        # )
-        self.decay_epsilon = tf.constant(epsilon)
-        self.decay_beta = tf.constant(beta)
+        self.decay_epsilon = ModelUtils.create_schedule(
+            self._schedule, epsilon, self.policy.global_step, max_step, min_value=0.1
+        )
+        self.decay_beta = ModelUtils.create_schedule(
+            self._schedule, beta, self.policy.global_step, max_step, min_value=1e-5
+        )
 
         value_losses = []
         for name, head in value_heads.items():
