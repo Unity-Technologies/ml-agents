@@ -1587,7 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 224
+    VectorObservationSize: 223
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -1615,6 +1615,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   target: {fileID: 8916348921871391354}
+  walkDirWorldspace: {x: 1, y: 0, z: 0}
   hips: {fileID: 8913670488009607195}
   chest: {fileID: 8913670489932920748}
   spine: {fileID: 8913670488103258779}
@@ -1643,8 +1644,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b29724baddfa457da6eeab446fa49ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxJointSpring: 40000
-  jointDampen: 3000
+  maxJointSpring: 10000
+  jointDampen: 500
   maxJointForceLimit: 10000
   bodyPartsList: []
 --- !u!114 &8913670488868299308
