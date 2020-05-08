@@ -11,6 +11,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
+- `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
