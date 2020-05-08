@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 
 public class FoodCollectorAgent : Agent
 {

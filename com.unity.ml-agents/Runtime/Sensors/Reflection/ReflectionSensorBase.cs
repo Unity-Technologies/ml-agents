@@ -1,26 +1,29 @@
 using System.Reflection;
 
-namespace Unity.MLAgents.Sensors
+namespace Unity.MLAgents.Sensors.Reflection
 {
-    internal class AttributeFieldSensor : ISensor
+    internal abstract class ReflectionSensorBase : ISensor
     {
-        object m_Object;
-        FieldInfo m_FieldInfo;
+        protected object m_Object;
+
+        protected FieldInfo m_FieldInfo;
+        protected PropertyInfo m_PropertyInfo;
         // Not currently used, but might want later.
-        ObservableAttribute m_ObservableAttribute;
+        protected ObservableAttribute m_ObservableAttribute;
 
         string m_SensorName;
         int[] m_Shape;
 
-        public AttributeFieldSensor(object o, FieldInfo fieldInfo, ObservableAttribute observableAttribute)
+        public ReflectionSensorBase(object o, FieldInfo fieldInfo, PropertyInfo propertyInfo, ObservableAttribute observableAttribute, int size, string sensorName)
         {
+            // TODO 2 constructors?
+
             m_Object = o;
             m_FieldInfo = fieldInfo;
+            m_PropertyInfo = propertyInfo;
             m_ObservableAttribute = observableAttribute;
-
-            m_SensorName = $"ObservableAttribute:{fieldInfo.DeclaringType.Name}.{fieldInfo.Name}";
-            // TODO handle Vector3, quaternion, blittable(?)
-            m_Shape = new [] {1};
+            m_SensorName = sensorName;
+            m_Shape = new [] {size};
         }
 
         /// <inheritdoc/>
@@ -32,18 +35,11 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            var val = m_FieldInfo.GetValue(m_Object);
-            if (m_FieldInfo.FieldType == typeof(System.Boolean))
-            {
-                var boolVal = (System.Boolean)val;
-                writer[0] = boolVal ? 1.0f : 0.0f;
-            }
-            else
-            {
-                writer[0] = 0.0f;
-            }
-            return 1;
+            WriteReflectedField(writer);
+            return m_Shape[0];
         }
+
+        internal abstract void WriteReflectedField(ObservationWriter writer);
 
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()

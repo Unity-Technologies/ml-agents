@@ -1,26 +1,26 @@
 using System.Reflection;
 
-namespace Unity.MLAgents.Sensors
+namespace Unity.MLAgents.Sensors.Reflection
 {
-    internal class AttributePropertySensor : ISensor
+    internal class AttributeFieldSensor : ISensor
     {
         object m_Object;
-        PropertyInfo m_PropertyInfo;
+        FieldInfo m_FieldInfo;
         // Not currently used, but might want later.
         ObservableAttribute m_ObservableAttribute;
 
         string m_SensorName;
         int[] m_Shape;
 
-        public AttributePropertySensor(object o, PropertyInfo propertyInfo, ObservableAttribute observableAttribute)
+        public AttributeFieldSensor(object o, FieldInfo fieldInfo, ObservableAttribute observableAttribute)
         {
             m_Object = o;
-            m_PropertyInfo = propertyInfo;
+            m_FieldInfo = fieldInfo;
             m_ObservableAttribute = observableAttribute;
 
-            m_SensorName = $"ObservableAttribute:{propertyInfo.DeclaringType.Name}.{propertyInfo.Name}";
-            // TODO handle scalar, quaternion, blittable(?)
-            m_Shape = new [] {3};
+            m_SensorName = $"ObservableAttribute:{fieldInfo.DeclaringType.Name}.{fieldInfo.Name}";
+            // TODO handle Vector3, quaternion, blittable(?)
+            m_Shape = new [] {1};
         }
 
         /// <inheritdoc/>
@@ -32,21 +32,15 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            // TODO make Delegate in ctor instead?
-            var val = m_PropertyInfo.GetMethod.Invoke(m_Object, null);
-
-            if (m_PropertyInfo.PropertyType == typeof(UnityEngine.Vector3))
+            var val = m_FieldInfo.GetValue(m_Object);
+            if (m_FieldInfo.FieldType == typeof(System.Boolean))
             {
-                var vec3Val = (UnityEngine.Vector3)val;
-                writer[0] = vec3Val.x;
-                writer[1] = vec3Val.y;
-                writer[2] = vec3Val.z;
+                var boolVal = (System.Boolean)val;
+                writer[0] = boolVal ? 1.0f : 0.0f;
             }
             else
             {
                 writer[0] = 0.0f;
-                writer[1] = 0.0f;
-                writer[2] = 0.0f;
             }
             return 1;
         }
