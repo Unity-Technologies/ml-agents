@@ -44,8 +44,7 @@ class SideChannelManager:
                 )
             else:
                 get_logger(__name__).warning(
-                    "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_id)
+                    f"Unknown side channel data received. Channel type: {channel_id}."
                 )
 
     def generate_side_channel_messages(self) -> bytearray:
