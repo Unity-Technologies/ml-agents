@@ -1,6 +1,6 @@
 import atexit
 from distutils.version import StrictVersion
-import glob
+
 import numpy as np
 import os
 import subprocess
@@ -15,6 +15,7 @@ from mlagents_envs.side_channel.utils import (
     generate_side_channel_data,
     get_side_channels_dict,
 )
+from mlagents_envs import env_utils
 
 from mlagents_envs.base_env import (
     BaseEnv,
@@ -47,7 +48,6 @@ from mlagents_envs.communicator_objects.unity_rl_initialization_input_pb2 import
 from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 
 from .rpc_communicator import RpcCommunicator
-from sys import platform
 import signal
 
 logger = get_logger(__name__)
@@ -193,7 +193,13 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, no_graphics, additional_args)
+            try:
+                self.proc1 = env_utils.executable_launcher(
+                    file_name, self.executable_args()
+                )
+            except UnityEnvironmentException:
+                self._close(0)
+                raise
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -238,62 +244,6 @@ class UnityEnvironment(BaseEnv):
     def get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
-    @staticmethod
-    def validate_environment_path(env_path: str) -> Optional[str]:
-        # Strip out executable extensions if passed
-        env_path = (
-            env_path.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
-        )
-        true_filename = os.path.basename(os.path.normpath(env_path))
-        logger.debug("The true file name is {}".format(true_filename))
-
-        if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
-            return None
-
-        cwd = os.getcwd()
-        launch_string = None
-        true_filename = os.path.basename(os.path.normpath(env_path))
-        if platform == "linux" or platform == "linux2":
-            candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
-            if len(candidates) == 0:
-                candidates = glob.glob(env_path + ".x86_64")
-            if len(candidates) == 0:
-                candidates = glob.glob(env_path + ".x86")
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-
-        elif platform == "darwin":
-            candidates = glob.glob(
-                os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
-            )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(env_path + ".app", "Contents", "MacOS", true_filename)
-                )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(cwd, env_path + ".app", "Contents", "MacOS", "*")
-                )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(env_path + ".app", "Contents", "MacOS", "*")
-                )
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        elif platform == "win32":
-            candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
-            if len(candidates) == 0:
-                candidates = glob.glob(env_path + ".exe")
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        return launch_string
-
     def executable_args(self) -> List[str]:
         args: List[str] = []
         if self.no_graphics:
@@ -307,35 +257,6 @@ class UnityEnvironment(BaseEnv):
         # Add in arguments passed explicitly by the user.
         args += self.additional_args
         return args
-
-    def executable_launcher(self, file_name, no_graphics, args):
-        launch_string = self.validate_environment_path(file_name)
-        if launch_string is None:
-            self._close(0)
-            raise UnityEnvironmentException(
-                f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
-            )
-        else:
-            logger.debug("This is the launch string {}".format(launch_string))
-            # Launch Unity environment
-            subprocess_args = [launch_string] + self.executable_args()
-            try:
-                self.proc1 = subprocess.Popen(
-                    subprocess_args,
-                    # start_new_session=True means that signals to the parent python process
-                    # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
-                    # This is generally good since we want the environment to have a chance to shutdown,
-                    # but may be undesirable in come cases; if so, we'll add a command-line toggle.
-                    # Note that on Windows, the CTRL_C signal will still be sent.
-                    start_new_session=True,
-                )
-            except PermissionError as perm:
-                # This is likely due to missing read or execute permissions on file.
-                raise UnityEnvironmentException(
-                    f"Error when trying to launch environment - make sure "
-                    f"permissions are set correctly. For example "
-                    f'"chmod -R 755 {launch_string}"'
-                ) from perm
 
     def _update_behavior_specs(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
