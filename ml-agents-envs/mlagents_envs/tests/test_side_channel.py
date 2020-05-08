@@ -1,6 +1,10 @@
 import uuid
 import pytest
 from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
+from mlagents_envs.side_channel.utils import (
+    parse_side_channel_message,
+    generate_side_channel_data,
+)
 from mlagents_envs.side_channel.float_properties_channel import FloatPropertiesChannel
 from mlagents_envs.side_channel.raw_bytes_channel import RawBytesChannel
 from mlagents_envs.side_channel.engine_configuration_channel import (
@@ -14,7 +18,6 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsSideChannel,
     StatsAggregationMethod,
 )
-from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.exception import (
     UnitySideChannelException,
     UnityCommunicationException,
@@ -41,8 +44,8 @@ def test_int_channel():
     receiver = IntChannel()
     sender.send_int(5)
     sender.send_int(6)
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
     assert receiver.list_int[0] == 5
     assert receiver.list_int[1] == 6
 
@@ -53,8 +56,8 @@ def test_float_properties():
 
     sender.set_property("prop1", 1.0)
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     val = receiver.get_property("prop1")
     assert val == 1.0
@@ -62,8 +65,8 @@ def test_float_properties():
     assert val is None
     sender.set_property("prop2", 2.0)
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     val = receiver.get_property("prop1")
     assert val == 1.0
@@ -87,8 +90,8 @@ def test_raw_bytes():
     sender.send_raw_data("foo".encode("ascii"))
     sender.send_raw_data("bar".encode("ascii"))
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     messages = receiver.get_and_clear_received_messages()
     assert len(messages) == 2
@@ -181,16 +184,16 @@ def test_engine_configuration():
 
     config = EngineConfig.default_config()
     sender.set_configuration(config)
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     received_data = receiver.get_and_clear_received_messages()
     assert len(received_data) == 5  # 5 different messages one for each setting
 
     sent_time_scale = 4.5
     sender.set_configuration_parameters(time_scale=sent_time_scale)
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     message = IncomingMessage(receiver.get_and_clear_received_messages()[0])
     message.read_int32()
@@ -203,10 +206,8 @@ def test_engine_configuration():
     with pytest.raises(UnityCommunicationException):
         # try to send data to the EngineConfigurationChannel
         sender.set_configuration_parameters(time_scale=sent_time_scale)
-        data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-        UnityEnvironment._parse_side_channel_message(
-            {receiver.channel_id: sender}, data
-        )
+        data = generate_side_channel_data({sender.channel_id: sender})
+        parse_side_channel_message({receiver.channel_id: sender}, data)
 
 
 def test_environment_parameters():
@@ -215,8 +216,8 @@ def test_environment_parameters():
     receiver = RawBytesChannel(sender.channel_id)
 
     sender.set_float_parameter("param-1", 0.1)
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     message = IncomingMessage(receiver.get_and_clear_received_messages()[0])
     key = message.read_string()
@@ -230,18 +231,16 @@ def test_environment_parameters():
     sender.set_float_parameter("param-2", 0.1)
     sender.set_float_parameter("param-3", 0.1)
 
-    data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-    UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)
+    data = generate_side_channel_data({sender.channel_id: sender})
+    parse_side_channel_message({receiver.channel_id: receiver}, data)
 
     assert len(receiver.get_and_clear_received_messages()) == 3
 
     with pytest.raises(UnityCommunicationException):
         # try to send data to the EngineConfigurationChannel
         sender.set_float_parameter("param-1", 0.1)
-        data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
-        UnityEnvironment._parse_side_channel_message(
-            {receiver.channel_id: sender}, data
-        )
+        data = generate_side_channel_data({sender.channel_id: sender})
+        parse_side_channel_message({receiver.channel_id: sender}, data)
 
 
 def test_stats_channel():

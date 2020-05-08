@@ -10,7 +10,11 @@ from typing import Dict, List, Optional, Any, Tuple
 import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
+from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.utils import (
+    parse_side_channel_message,
+    generate_side_channel_data,
+)
 
 from mlagents_envs.base_env import (
     BaseEnv,
@@ -45,7 +49,6 @@ from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 from .rpc_communicator import RpcCommunicator
 from sys import platform
 import signal
-import struct
 
 logger = get_logger(__name__)
 
@@ -370,7 +373,7 @@ class UnityEnvironment(BaseEnv):
                     DecisionSteps.empty(self._env_specs[brain_name]),
                     TerminalSteps.empty(self._env_specs[brain_name]),
                 )
-        self._parse_side_channel_message(self.side_channels, output.side_channel)
+        parse_side_channel_message(self.side_channels, output.side_channel)
 
     def reset(self) -> None:
         if self._loaded:
@@ -538,53 +541,6 @@ class UnityEnvironment(BaseEnv):
         arr = [float(x) for x in arr]
         return arr
 
-    @staticmethod
-    def _parse_side_channel_message(
-        side_channels: Dict[uuid.UUID, SideChannel], data: bytes
-    ) -> None:
-        offset = 0
-        while offset < len(data):
-            try:
-                channel_id = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
-                offset += 16
-                message_len, = struct.unpack_from("<i", data, offset)
-                offset = offset + 4
-                message_data = data[offset : offset + message_len]
-                offset = offset + message_len
-            except Exception:
-                raise UnityEnvironmentException(
-                    "There was a problem reading a message in a SideChannel. "
-                    "Please make sure the version of MLAgents in Unity is "
-                    "compatible with the Python version."
-                )
-            if len(message_data) != message_len:
-                raise UnityEnvironmentException(
-                    "The message received by the side channel {0} was "
-                    "unexpectedly short. Make sure your Unity Environment "
-                    "sending side channel data properly.".format(channel_id)
-                )
-            if channel_id in side_channels:
-                incoming_message = IncomingMessage(message_data)
-                side_channels[channel_id].on_message_received(incoming_message)
-            else:
-                logger.warning(
-                    "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_id)
-                )
-
-    @staticmethod
-    def _generate_side_channel_data(
-        side_channels: Dict[uuid.UUID, SideChannel]
-    ) -> bytearray:
-        result = bytearray()
-        for channel_id, channel in side_channels.items():
-            for message in channel.message_queue:
-                result += channel_id.bytes_le
-                result += struct.pack("<i", len(message))
-                result += message
-            channel.message_queue = []
-        return result
-
     @timed
     def _generate_step_input(
         self, vector_action: Dict[str, np.ndarray]
@@ -598,13 +554,13 @@ class UnityEnvironment(BaseEnv):
                 action = AgentActionProto(vector_actions=vector_action[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
-        rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
+        rl_in.side_channel = bytes(generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         rl_in.command = RESET
-        rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
+        rl_in.side_channel = bytes(generate_side_channel_data(self.side_channels))
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(
