@@ -1,7 +1,6 @@
 import atexit
 from distutils.version import StrictVersion
 import glob
-import uuid
 import numpy as np
 import os
 import subprocess
@@ -14,6 +13,7 @@ from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.utils import (
     parse_side_channel_message,
     generate_side_channel_data,
+    get_side_channels_dict,
 )
 
 from mlagents_envs.base_env import (
@@ -181,16 +181,7 @@ class UnityEnvironment(BaseEnv):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
-        self.side_channels: Dict[uuid.UUID, SideChannel] = {}
-        if side_channels is not None:
-            for _sc in side_channels:
-                if _sc.channel_id in self.side_channels:
-                    raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel id {0}.".format(
-                            _sc.channel_id
-                        )
-                    )
-                self.side_channels[_sc.channel_id] = _sc
+        self.side_channels = get_side_channels_dict(side_channels)
         self.log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched

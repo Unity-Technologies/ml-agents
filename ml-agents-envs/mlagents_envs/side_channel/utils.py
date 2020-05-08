@@ -1,6 +1,6 @@
 import uuid
 import struct
-from typing import Dict
+from typing import Dict, Optional, List
 from mlagents_envs.side_channel import SideChannel, IncomingMessage
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents_envs.logging_util import get_logger
@@ -51,3 +51,18 @@ def generate_side_channel_data(
             result += message
         channel.message_queue = []
     return result
+
+
+def get_side_channels_dict(
+    side_c: Optional[List[SideChannel]]
+) -> Dict[uuid.UUID, SideChannel]:
+    side_channels_dict: Dict[uuid.UUID, SideChannel] = {}
+    if side_c is not None:
+        for _sc in side_c:
+            if _sc.channel_id in side_channels_dict:
+                raise UnityEnvironmentException(
+                    f"There cannot be two side channels with "
+                    f"the same channel id {_sc.channel_id}."
+                )
+            side_channels_dict[_sc.channel_id] = _sc
+    return side_channels_dict
