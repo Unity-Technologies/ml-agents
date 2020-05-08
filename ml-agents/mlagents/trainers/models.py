@@ -71,14 +71,14 @@ class ModelUtils:
         :return: A Tensor containing the learning rate.
         """
         if schedule == ScheduleType.CONSTANT:
-            parameter_rate = tf.Variable(parameter)
+            parameter_rate = tf.Variable(parameter, trainable=False)
         elif schedule == ScheduleType.LINEAR:
             parameter_rate = tf.train.polynomial_decay(
                 parameter, global_step, max_step, min_value, power=1.0
             )
         else:
             raise UnityTrainerException("The schedule {} is invalid.".format(schedule))
-        return tf.stop_gradient(parameter_rate)
+        return parameter_rate
 
     @staticmethod
     def scaled_init(scale):
