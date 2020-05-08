@@ -259,17 +259,25 @@ public class WalkerAgentDynamic : Agent
         //reward looking at
 //        float facingReward = + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
 //                             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
-        float facingReward = + 0.1f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
-                             + 0.1f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
 
 //        print($"FacingRewardDot {facingReward}");
 //        float velReward = +0.02f * Vector3.Dot(m_OrientationCube.transform.forward,m_OrientationCube.transform.InverseTransformVector(m_JdController.bodyPartsDict[hips].rb.velocity));
-        float velReward = +0.2f * Vector3.Dot(m_OrientationCube.transform.forward,m_JdController.bodyPartsDict[hips].rb.velocity); //because we are observing in local space???
 //        print($"VelRewardDot {velReward}");
 //        float velReward = +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity);
 
-        //Multiplying these amplifies the reward.
-        float runForwardTowardsTargetReward = facingReward * Mathf.Clamp(velReward, 0, 15);
+
+
+
+
+//        //Multiplying these amplifies the reward.
+//        float facingReward = + 0.1f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
+//                             + 0.1f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
+//        float velReward = +0.2f * Vector3.Dot(m_OrientationCube.transform.forward,m_JdController.bodyPartsDict[hips].rb.velocity); //because we are observing in local space???
+//        float runForwardTowardsTargetReward = facingReward * Mathf.Clamp(velReward, 0, 15);
+        
+//        print(Quaternion.Angle(hips.transform.rotation, thighL.transform.rotation));
+
+
 //        print($"Combined {runForwardTowardsTargetReward}");
 //        float runBackwardsTowardsTargetReward = facingReward * Mathf.Clamp(velReward, -1, 0);
         // Set reward for this step according to mixture of the following elements.
@@ -278,17 +286,21 @@ public class WalkerAgentDynamic : Agent
         // c. Encourage head height.
         // d. Discourage head movement.
         AddReward(
-            runForwardTowardsTargetReward
+//            runForwardTowardsTargetReward
 //            facingReward * velReward //max reward is moving towards while facing otherwise it is a penalty
 //            +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            + 0.02f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,5))
+            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,3))
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) //reward looking at
-//            + 0.01f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) * .5f //penalize not looking at
-//            + 0.01f * (Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) - 1) * .5f //penalize not looking at
+            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) * .5f //penalize not looking at
+            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) - 1) * .5f //penalize not looking at
 
-            + 0.02f * (head.position.y - hips.position.y)
-            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-                m_JdController.bodyPartsDict[hips].rb.velocity)
+            
+            
+//            + 0.02f * (head.position.y - hips.position.y)
+//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                m_JdController.bodyPartsDict[hips].rb.velocity)
         );
         
         
