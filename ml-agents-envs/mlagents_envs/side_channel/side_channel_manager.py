@@ -25,7 +25,7 @@ class SideChannelManager:
                 offset = offset + 4
                 message_data = data[offset : offset + message_len]
                 offset = offset + message_len
-            except Exception:
+            except (struct.error, ValueError, IndexError):
                 raise UnityEnvironmentException(
                     "There was a problem reading a message in a SideChannel. "
                     "Please make sure the version of MLAgents in Unity is "
