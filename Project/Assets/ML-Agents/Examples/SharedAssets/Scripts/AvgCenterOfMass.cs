@@ -205,7 +205,8 @@ public class AvgCenterOfMass : MonoBehaviour
 
 
 
-    private void OnDrawGizmosSelected()
+//    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         if(!Application.isPlaying)
         {
@@ -232,7 +233,7 @@ public class AvgCenterOfMass : MonoBehaviour
                 //DRAW AVG GIZMOS
                 avgCOMWorldSpace = CoM/c;
                 // avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
-                float avgCOMRadius = 0.1f; //radius of gizmo 
+                float avgCOMRadius = 0.5f; //radius of gizmo 
                 Gizmos.color = avgCOMColor;
                 Gizmos.DrawSphere(avgCOMWorldSpace, avgCOMRadius);
             }
@@ -258,7 +259,7 @@ public class AvgCenterOfMass : MonoBehaviour
 
                 //DRAW AVG GIZMOS
                 // avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
-                float avgCOMGizmoRadius = 0.1f; //radius of gizmo 
+                float avgCOMGizmoRadius = 0.5f; //radius of gizmo 
                 Gizmos.color = avgCOMColor;
                 Gizmos.DrawSphere(avgCOMWorldSpace, avgCOMGizmoRadius);
                 
