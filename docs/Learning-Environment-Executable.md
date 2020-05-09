@@ -89,13 +89,13 @@ For example, if you are training with a 3DBall executable you exported to the
 the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
-mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
+mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=firstRun
 ```
 
 And you should see something like
 
 ```console
-ml-agents$ mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=first-run
+ml-agents$ mlagents-learn config/trainer_config.yaml --env=3DBall --run-id=firstRun
 
 
                         ▄▄▄▓▓▓▓
