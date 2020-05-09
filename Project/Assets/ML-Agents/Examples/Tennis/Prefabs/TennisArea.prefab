@@ -208,7 +208,7 @@ MonoBehaviour:
     VectorActionSize: 03000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 02efff6cde0914e34bcc06eac03de48a, type: 3}
+  m_Model: {fileID: 11400000, guid: efc1607ab4c1542689d1451983e7dc63, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis
@@ -1349,7 +1349,7 @@ MonoBehaviour:
     VectorActionSize: 03000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 02efff6cde0914e34bcc06eac03de48a, type: 3}
+  m_Model: {fileID: 11400000, guid: efc1607ab4c1542689d1451983e7dc63, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Tennis

@@ -119,17 +119,17 @@ public class TennisAgent : Agent
         Quaternion deltaRotation = Quaternion.Euler(zAxis * rotateZ);
         m_AgentRb.MoveRotation(m_AgentRb.rotation * deltaRotation);
 
-        if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult * 3f ||
-            !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult * 3f)
+        if (invertX && transform.position.x - transform.parent.transform.position.x < -m_InvertMult ||
+            !invertX && transform.position.x - transform.parent.transform.position.x > -m_InvertMult )
         {
-            transform.position = new Vector3(-m_InvertMult * 3f + transform.parent.transform.position.x,
+            transform.position = new Vector3(-m_InvertMult + transform.parent.transform.position.x,
                 transform.position.y,
                 transform.position.z);
         }
         var rgV = m_AgentRb.velocity;
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
 
-        //timePenalty -= m_Existential;
+        timePenalty -= m_Existential;
         m_TextComponent.text = score.ToString();
     }
 

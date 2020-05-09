@@ -1,8 +1,8 @@
 behaviors:
   Tennis:
     trainer: ppo
-    batch_size: 2048
-    buffer_size: 20480
+    batch_size: 4096
+    buffer_size: 40960
     beta: 0.02
     epsilon: 0.2
     hidden_units: 512
