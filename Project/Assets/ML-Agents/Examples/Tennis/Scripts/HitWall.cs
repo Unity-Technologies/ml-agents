@@ -63,9 +63,17 @@ public class HitWall : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        // tunnels through floor on your side is a loss
         if (collision.gameObject.name == "Scenery")
         {
-            Reset();    
+            if (transform.position.x > 0f)
+                {
+                    AgentAWins();
+                }
+                else
+                {
+                    AgentBWins();
+                }    
         }
         else if (collision.gameObject.CompareTag("iWall"))
         {
