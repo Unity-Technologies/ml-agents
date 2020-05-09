@@ -11,11 +11,16 @@ public class WalkerAgentDynamic : Agent
     [Space(10)]
     public Transform target;
 
+    [Header("Walk Direction Worldspace")] 
+    public Vector3 walkDirWorldspace = Vector3.right;
+
     
     //ORIENTATION
     Vector3 m_WalkDir;
     Quaternion m_WalkDirLookRot;
     Matrix4x4 m_worldPosMatrix;
+
+    public Vector3 avgVelOfAllRBs;
     
     public Transform hips;
     public Transform chest;
@@ -53,9 +58,10 @@ public class WalkerAgentDynamic : Agent
             
         oCubePos.y = -.45f;
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
-        m_OrientationCube.transform.SetParent(transform);
+        m_OrientationCube.transform.SetParent(transform.parent);
         
-        
+        UpdateOrientationCube();
+
         var texture = Resources.Load<Texture2D>("Textures/texture01");
 
         m_JdController = GetComponent<JointDriveController>();
@@ -102,14 +108,14 @@ public class WalkerAgentDynamic : Agent
 //        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
 
         //RELATIVE RB VELOCITIES
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.velocity));
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.angularVelocity));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.velocity));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.angularVelocity));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(bp.rb.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+//        sensor.AddObservation(bp.rb.transform.localPosition);
         
-//        sensor.AddObservation(rb.velocity);
-//        sensor.AddObservation(rb.angularVelocity);
-//        var localPosRelToHips = hips.InverseTransformPoint(rb.position);
-//        sensor.AddObservation(localPosRelToHips);
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(bp.rb.position));
+        sensor.AddObservation(bp.rb.velocity);
+        sensor.AddObservation(bp.rb.angularVelocity);
 //        sensor.AddObservation(hips.InverseTransformPointUnscaled(bp.rb.position));
         
 
@@ -165,11 +171,12 @@ public class WalkerAgentDynamic : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        GetAvgVelForAllRBs();
 //        m_JdController.GetCurrentJointForces();
         
         // Update pos to target
 //        m_WalkDir = target.position - hips.position;
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
         
         //FACING DIR
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
@@ -179,20 +186,19 @@ public class WalkerAgentDynamic : Agent
         sensor.AddObservation(Quaternion.Dot(m_WalkDirLookRot, head.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
-        //UPDATE ORIENTATION CUBE POS & ROT
-        Vector3 oCubePos = hips.position;
-        oCubePos.y = -.45f;
-        m_OrientationCube.transform.position = oCubePos;
-        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+        //avgVel
+        sensor.AddObservation(avgVelOfAllRBs);
+
+
+//        //HIP RAYCAST FOR HEIGHT
+//        RaycastHit hit;
+//        if (Physics.Raycast(hips.position, Vector3.down, out hit, 10.0f))
+//        {
+//            sensor.AddObservation(hit.distance);
+//        }
+//        else
+//            sensor.AddObservation(10.0f);
         
-        //HIP RAYCAST FOR HEIGHT
-        RaycastHit hit;
-        if (Physics.Raycast(hips.position, Vector3.down, out hit, 10.0f))
-        {
-            sensor.AddObservation(hit.distance);
-        }
-        else
-            sensor.AddObservation(10.0f);
 //        //ORIENTATION MATRIX
 //        Vector3 worldPosMatrixPos = hips.position;
 //        worldPosMatrixPos.y = .5f;
@@ -319,8 +325,108 @@ public class WalkerAgentDynamic : Agent
         bpDict[forearmR].SetJointStrength(vectorAction[++i]);
     }
 
-//    void FixedUpdate()
-//    {
+    void UpdateOrientationCube()
+    {
+        //FACING DIR
+//        m_WalkDir = target.position - m_OrientationCube.transform.position;
+        m_WalkDir = walkDirWorldspace;
+        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
+        
+        
+        //UPDATE ORIENTATION CUBE POS & ROT
+        Vector3 oCubePos = hips.position;
+        oCubePos.y = -.45f;
+        m_OrientationCube.transform.position = oCubePos;
+        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+        
+        
+    }
+
+    void GetAvgVelForAllRBs()
+    {
+        avgVelOfAllRBs = Vector3.zero;
+        int numOfRB = m_JdController.bodyPartsDict.Count;
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        {
+            avgVelOfAllRBs += bodyPart.rb.velocity;
+        }
+
+        avgVelOfAllRBs /= numOfRB;
+    }
+    
+    void FixedUpdate()
+    {
+//        UpdateOrientationCube();
+        //reward looking at
+//        float facingReward = + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
+//                             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
+
+//        print($"FacingRewardDot {facingReward}");
+//        float velReward = +0.02f * Vector3.Dot(m_OrientationCube.transform.forward,m_OrientationCube.transform.InverseTransformVector(m_JdController.bodyPartsDict[hips].rb.velocity));
+//        print($"VelRewardDot {velReward}");
+//        float velReward = +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity);
+
+
+
+
+
+//        //Multiplying these amplifies the reward.
+//        float facingReward = + 0.1f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
+//                             + 0.1f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
+//        float velReward = +0.2f * Vector3.Dot(m_OrientationCube.transform.forward,m_JdController.bodyPartsDict[hips].rb.velocity); //because we are observing in local space???
+//        float runForwardTowardsTargetReward = facingReward * Mathf.Clamp(velReward, 0, 15);
+        
+//        print(Quaternion.Angle(hips.transform.rotation, thighL.transform.rotation));
+
+        GetAvgVelForAllRBs();
+//        print($"Combined {runForwardTowardsTargetReward}");
+//        float runBackwardsTowardsTargetReward = facingReward * Mathf.Clamp(velReward, -1, 0);
+        // Set reward for this step according to mixture of the following elements.
+        // a. Velocity alignment with goal direction.
+        // b. Rotation alignment with goal direction.
+        // c. Encourage head height.
+        // d. Discourage head movement.
+        AddReward(
+//            runForwardTowardsTargetReward
+//            facingReward * velReward //max reward is moving towards while facing otherwise it is a penalty
+//            +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            + 0.02f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,5))
+
+
+            + 0.03f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(avgVelOfAllRBs,3))
+//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(avgVelOfAllRBs,3))
+//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,3))
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) //reward looking at
+            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) * .5f //penalize not looking at
+            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) - 1) * .5f //penalize not looking at
+
+            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handL].rb.velocity,
+                m_JdController.bodyPartsDict[footR].rb.velocity)
+            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handR].rb.velocity,
+                m_JdController.bodyPartsDict[footL].rb.velocity)
+            
+            
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[footL].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[footR].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handL].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handR].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                avgVelOfAllRBs)
+            
+            
+            + 0.02f * (head.position.y - hips.position.y)
+            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+                m_JdController.bodyPartsDict[hips].rb.velocity)
+        );
+        
+        
+        
+        
 //        // Set reward for this step according to mixture of the following elements.
 //        // a. Velocity alignment with goal direction.
 //        // b. Rotation alignment with goal direction.
@@ -334,30 +440,32 @@ public class WalkerAgentDynamic : Agent
 //            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
 //                m_JdController.bodyPartsDict[hips].rb.velocity)
 //        );
-//        
-////        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
-////        AddReward(
-////            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
-////            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
-////            + 0.02f * (head.position.y - hips.position.y)
-////            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-////                m_JdController.bodyPartsDict[hips].rb.velocity)
-////        );
-//    }
+//        m_WalkDir = target.position - m_JdController.bodyPartsDict[hips].rb.position;
+//        AddReward(
+//            +0.03f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
+//            + 0.01f * Vector3.Dot(m_WalkDir.normalized, hips.forward)
+//            + 0.02f * (head.position.y - hips.position.y)
+//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                m_JdController.bodyPartsDict[hips].rb.velocity)
+//        );
+    }
 
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
     /// </summary>
     public override void OnEpisodeBegin()
     {
+//        print("OnEpisodeBegin");
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
-        if (m_WalkDir != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(m_WalkDir);
-        }
+//        if (m_WalkDir != Vector3.zero)
+//        {
+//            transform.rotation = Quaternion.LookRotation(m_WalkDir);
+//        }
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+//        UpdateOrientationCube();
 
         m_avgCoM.GetCoMWorldSpace();
 

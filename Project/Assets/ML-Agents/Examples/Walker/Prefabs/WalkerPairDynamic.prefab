@@ -1587,7 +1587,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 233
+    VectorObservationSize: 226
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -1615,6 +1615,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   target: {fileID: 8916348921871391354}
+  walkDirWorldspace: {x: 1, y: 0, z: 0}
   hips: {fileID: 8913670488009607195}
   chest: {fileID: 8913670489932920748}
   spine: {fileID: 8913670488103258779}
