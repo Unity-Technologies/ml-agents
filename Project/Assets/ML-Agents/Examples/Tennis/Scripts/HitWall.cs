@@ -63,7 +63,11 @@ public class HitWall : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("iWall"))
+        if (collision.gameObject.name == "Scenery")
+        {
+            Reset();    
+        }
+        else if (collision.gameObject.CompareTag("iWall"))
         {
             if (collision.gameObject.name == "wallA")
             {

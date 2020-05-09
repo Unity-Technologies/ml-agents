@@ -1478,6 +1478,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TennisArea (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1541947554534326, guid: 812997c7bc2544b6f927ff684c03450f, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4172342666475122, guid: 812997c7bc2544b6f927ff684c03450f, type: 3}
       propertyPath: m_LocalPosition.x
       value: -60
