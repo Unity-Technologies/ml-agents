@@ -19,6 +19,8 @@ public class WalkerAgentDynamic : Agent
     Vector3 m_WalkDir;
     Quaternion m_WalkDirLookRot;
     Matrix4x4 m_worldPosMatrix;
+
+    public Vector3 avgVelOfAllRBs;
     
     public Transform hips;
     public Transform chest;
@@ -50,9 +52,10 @@ public class WalkerAgentDynamic : Agent
         Vector3 oCubePos = hips.position;
         oCubePos.y = -.45f;
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
-        m_OrientationCube.transform.SetParent(transform);
+        m_OrientationCube.transform.SetParent(transform.parent);
         
-        
+        UpdateOrientationCube();
+
         var texture = Resources.Load<Texture2D>("Textures/texture01");
 
         m_JdController = GetComponent<JointDriveController>();
@@ -98,16 +101,16 @@ public class WalkerAgentDynamic : Agent
 //        var angularVelocityRelativeToLookRotationToTarget = m_worldPosMatrix.inverse.MultiplyVector(bp.rb.angularVelocity);
 //        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
 
-//        //RELATIVE RB VELOCITIES
+        //RELATIVE RB VELOCITIES
 //        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.velocity));
 //        sensor.AddObservation(m_OrientationCube.transform.InverseTransformVector(bp.rb.angularVelocity));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(bp.rb.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+//        sensor.AddObservation(bp.rb.transform.localPosition);
         
         sensor.AddObservation(bp.rb.velocity);
         sensor.AddObservation(bp.rb.angularVelocity);
-//        var localPosRelToHips = hips.InverseTransformPoint(rb.position);
-//        sensor.AddObservation(localPosRelToHips);
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPointUnscaled(bp.rb.position));
-        sensor.AddObservation(hips.InverseTransformPointUnscaled(bp.rb.position));
+//        sensor.AddObservation(hips.InverseTransformPointUnscaled(bp.rb.position));
         
 
 //        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
@@ -150,6 +153,7 @@ public class WalkerAgentDynamic : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        GetAvgVelForAllRBs();
 //        m_JdController.GetCurrentJointForces();
         
         // Update pos to target
@@ -157,12 +161,17 @@ public class WalkerAgentDynamic : Agent
 //        m_WalkDir = target.position - m_OrientationCube.transform.position;
         
 
-        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
-        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
+//        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
+//        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
+        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_OrientationCube.transform.rotation, hips.rotation));
+        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_OrientationCube.transform.rotation, head.rotation));
+//        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
+        //avgVel
+        sensor.AddObservation(avgVelOfAllRBs);
 
-        
+
 //        //HIP RAYCAST FOR HEIGHT
 //        RaycastHit hit;
 //        if (Physics.Raycast(hips.position, Vector3.down, out hit, 10.0f))
@@ -252,10 +261,22 @@ public class WalkerAgentDynamic : Agent
         
         
     }
+
+    void GetAvgVelForAllRBs()
+    {
+        avgVelOfAllRBs = Vector3.zero;
+        int numOfRB = m_JdController.bodyPartsDict.Count;
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        {
+            avgVelOfAllRBs += bodyPart.rb.velocity;
+        }
+
+        avgVelOfAllRBs /= numOfRB;
+    }
     
     void FixedUpdate()
     {
-        UpdateOrientationCube();
+//        UpdateOrientationCube();
         //reward looking at
 //        float facingReward = + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
 //                             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
@@ -277,7 +298,7 @@ public class WalkerAgentDynamic : Agent
         
 //        print(Quaternion.Angle(hips.transform.rotation, thighL.transform.rotation));
 
-
+        GetAvgVelForAllRBs();
 //        print($"Combined {runForwardTowardsTargetReward}");
 //        float runBackwardsTowardsTargetReward = facingReward * Mathf.Clamp(velReward, -1, 0);
         // Set reward for this step according to mixture of the following elements.
@@ -290,17 +311,37 @@ public class WalkerAgentDynamic : Agent
 //            facingReward * velReward //max reward is moving towards while facing otherwise it is a penalty
 //            +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
 //            + 0.02f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,5))
-            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,3))
+
+
+            + 0.03f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(avgVelOfAllRBs,3))
+//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(avgVelOfAllRBs,3))
+//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,3))
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) //reward looking at
             + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) * .5f //penalize not looking at
             + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) - 1) * .5f //penalize not looking at
 
+            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handL].rb.velocity,
+                m_JdController.bodyPartsDict[footR].rb.velocity)
+            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handR].rb.velocity,
+                m_JdController.bodyPartsDict[footL].rb.velocity)
             
             
-//            + 0.02f * (head.position.y - hips.position.y)
-//            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
-//                m_JdController.bodyPartsDict[hips].rb.velocity)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[footL].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[footR].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handL].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[handR].rb.velocity,
+//                avgVelOfAllRBs)
+//            - 0.005f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+//                avgVelOfAllRBs)
+            
+            
+            + 0.02f * (head.position.y - hips.position.y)
+            - 0.01f * Vector3.Distance(m_JdController.bodyPartsDict[head].rb.velocity,
+                m_JdController.bodyPartsDict[hips].rb.velocity)
         );
         
         
@@ -344,11 +385,11 @@ public class WalkerAgentDynamic : Agent
 //            transform.rotation = Quaternion.LookRotation(m_WalkDir);
 //        }
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-        UpdateOrientationCube();
+//        UpdateOrientationCube();
 
 //        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
-
+//        GetAvgVelForAllRBs();
         SetResetParameters();
     }
 
