@@ -52,9 +52,6 @@ public class WalkerAgentDynamic : Agent
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
         m_OrientationCube.transform.SetParent(transform);
         
-        
-        var texture = Resources.Load<Texture2D>("Textures/texture01");
-
         m_JdController = GetComponent<JointDriveController>();
         m_JdController.SetupBodyPart(hips);
         m_JdController.SetupBodyPart(chest);
