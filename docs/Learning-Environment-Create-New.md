@@ -414,6 +414,7 @@ behaviors:
     learning_rate: 3.0e-4
     learning_rate_schedule: linear
     max_steps: 5.0e4
+    memory_size: 128
     normalize: false
     num_epoch: 3
     num_layers: 2
