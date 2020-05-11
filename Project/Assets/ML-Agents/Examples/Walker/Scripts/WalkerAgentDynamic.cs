@@ -10,9 +10,13 @@ public class WalkerAgentDynamic : Agent
     [Header("Target To Walk Towards")]
     [Space(10)]
     public Transform target;
-
+    public Transform ground;
+    public bool detectTargets;
+    public bool targetIsStatic;
+    public bool respawnTargetWhenTouched;
+    public float targetSpawnRadius;
     [Header("Walk Direction Worldspace")] 
-    public Vector3 walkDirWorldspace = Vector3.right;
+//    public Vector3 walkDirWorldspace = Vector3.right;
 
     
     //ORIENTATION
@@ -279,13 +283,14 @@ public class WalkerAgentDynamic : Agent
     {
         //FACING DIR
         m_WalkDir = target.position - m_OrientationCube.transform.position;
+        m_WalkDir.y = 0;
 //        m_WalkDir = walkDirWorldspace;
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
         
         
         //UPDATE ORIENTATION CUBE POS & ROT
         Vector3 oCubePos = hips.position;
-        oCubePos.y = -.45f;
+//        oCubePos.y = -.45f;
         m_OrientationCube.transform.position = oCubePos;
         m_OrientationCube.transform.rotation = m_WalkDirLookRot;
         
@@ -295,6 +300,16 @@ public class WalkerAgentDynamic : Agent
     
     void FixedUpdate()
     {
+        if (detectTargets)
+        {
+            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+            {
+                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
+                {
+                    TouchedTarget();
+                }
+            }
+        }
         UpdateOrientationCube();
         //reward looking at
 //        float facingReward = + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
@@ -331,7 +346,7 @@ public class WalkerAgentDynamic : Agent
 //            +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
 //            + 0.02f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,5))
             +0.01f * Vector3.Dot(m_OrientationCube.transform.forward,
-                Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, 3))
+                Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, 5))
             + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
             + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
 
@@ -413,6 +428,30 @@ public class WalkerAgentDynamic : Agent
     }
 
     /// <summary>
+    /// Agent touched the target
+    /// </summary>
+    public void TouchedTarget()
+    {
+        AddReward(1f);
+        if (respawnTargetWhenTouched)
+        {
+            GetRandomTargetPos();
+        }
+    }
+
+    /// <summary>
+    /// Moves target to a random position within specified radius.
+    /// </summary>
+    public void GetRandomTargetPos()
+    {
+        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
+        newTargetPos.y = 5;
+        target.position = newTargetPos + ground.position;
+    }
+
+    
+    
+    /// <summary>
     /// Loop over body parts and reset them to initial conditions.
     /// </summary>
     public override void OnEpisodeBegin()
@@ -431,6 +470,10 @@ public class WalkerAgentDynamic : Agent
 
 //        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
+        if (detectTargets && !targetIsStatic)
+        {
+            GetRandomTargetPos();
+        }
 
         SetResetParameters();
     }
