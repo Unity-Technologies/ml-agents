@@ -70,10 +70,28 @@ namespace Unity.MLAgents.Sensors.Reflection
                 sensorName = observableAttribute.m_Name;
             }
 
-            if (memberType == typeof(System.Int32))
+            var reflectionSensorInfo = new ReflectionSensorInfo
             {
-                return new IntReflectionSensor(o, fieldInfo, propertyInfo, observableAttribute, sensorName);
+                Object = o,
+                FieldInfo = fieldInfo,
+                PropertyInfo = propertyInfo,
+                ObservableAttribute = observableAttribute,
+                SensorName = sensorName
+            };
+
+            if (memberType == typeof(Int32))
+            {
+                return new IntReflectionSensor(reflectionSensorInfo);
             }
+            if (memberType == typeof(UnityEngine.Vector3))
+            {
+                return new Vector3ReflectionSensor(reflectionSensorInfo);
+            }
+            // Int
+            // Bool
+            // Vector2
+            // Vector4
+            // Quaternion
 
             throw new UnityAgentsException($"Unsupported Observable type: {memberType.Name}");
 

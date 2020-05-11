@@ -2,6 +2,17 @@ using System.Reflection;
 
 namespace Unity.MLAgents.Sensors.Reflection
 {
+    // Construction info for a ReflectionSensorBase.
+    internal struct ReflectionSensorInfo
+    {
+        public object Object;
+
+        public FieldInfo FieldInfo;
+        public PropertyInfo PropertyInfo;
+        public ObservableAttribute ObservableAttribute;
+        public string SensorName;
+    }
+
     internal abstract class ReflectionSensorBase : ISensor
     {
         protected object m_Object;
@@ -14,15 +25,15 @@ namespace Unity.MLAgents.Sensors.Reflection
         string m_SensorName;
         int[] m_Shape;
 
-        public ReflectionSensorBase(object o, FieldInfo fieldInfo, PropertyInfo propertyInfo, ObservableAttribute observableAttribute, int size, string sensorName)
+        public ReflectionSensorBase(ReflectionSensorInfo reflectionSensorInfo, int size)
         {
             // TODO 2 constructors?
 
-            m_Object = o;
-            m_FieldInfo = fieldInfo;
-            m_PropertyInfo = propertyInfo;
-            m_ObservableAttribute = observableAttribute;
-            m_SensorName = sensorName;
+            m_Object = reflectionSensorInfo.Object;
+            m_FieldInfo = reflectionSensorInfo.FieldInfo;
+            m_PropertyInfo = reflectionSensorInfo.PropertyInfo;
+            m_ObservableAttribute = reflectionSensorInfo.ObservableAttribute;
+            m_SensorName = reflectionSensorInfo.SensorName;
             m_Shape = new [] {size};
         }
 
@@ -40,6 +51,13 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         internal abstract void WriteReflectedField(ObservationWriter writer);
+
+        protected object GetReflectedValue()
+        {
+            return m_FieldInfo != null ?
+                m_FieldInfo.GetValue(m_Object) :
+                m_PropertyInfo.GetMethod.Invoke(m_Object, null);
+        }
 
         /// <inheritdoc/>
         public byte[] GetCompressedObservation()
