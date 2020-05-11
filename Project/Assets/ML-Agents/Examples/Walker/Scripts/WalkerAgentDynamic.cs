@@ -278,8 +278,8 @@ public class WalkerAgentDynamic : Agent
     void UpdateOrientationCube()
     {
         //FACING DIR
-//        m_WalkDir = target.position - m_OrientationCube.transform.position;
-        m_WalkDir = walkDirWorldspace;
+        m_WalkDir = target.position - m_OrientationCube.transform.position;
+//        m_WalkDir = walkDirWorldspace;
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir);
         
         
@@ -295,7 +295,7 @@ public class WalkerAgentDynamic : Agent
     
     void FixedUpdate()
     {
-//        UpdateOrientationCube();
+        UpdateOrientationCube();
         //reward looking at
 //        float facingReward = + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation)
 //                             + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation);
@@ -332,6 +332,7 @@ public class WalkerAgentDynamic : Agent
 //            + 0.02f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,5))
             +0.01f * Vector3.Dot(m_OrientationCube.transform.forward,
                 Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, 3))
+            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
             + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
 
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, chest.rotation) //reward looking at
@@ -426,7 +427,7 @@ public class WalkerAgentDynamic : Agent
 //            transform.rotation = Quaternion.LookRotation(m_WalkDir);
 //        }
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-//        UpdateOrientationCube();
+        UpdateOrientationCube();
 
 //        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
