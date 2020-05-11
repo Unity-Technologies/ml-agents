@@ -287,9 +287,7 @@ class Normalizer(nn.Module):
     def forward(self, inputs):
         normalized_state = torch.clamp(
             (inputs - self.running_mean)
-            / torch.sqrt(
-                self.running_variance / self.normalization_steps.type(torch.float32)
-            ),
+            / torch.sqrt(self.running_variance / self.normalization_steps),
             -5,
             5,
         )
@@ -300,9 +298,7 @@ class Normalizer(nn.Module):
         total_new_steps = self.normalization_steps + steps_increment
 
         input_to_old_mean = vector_input - self.running_mean
-        new_mean = self.running_mean + (
-            input_to_old_mean / total_new_steps.type(torch.float32)
-        ).sum(0)
+        new_mean = self.running_mean + (input_to_old_mean / total_new_steps).sum(0)
 
         input_to_new_mean = vector_input - new_mean
         new_variance = self.running_variance + (

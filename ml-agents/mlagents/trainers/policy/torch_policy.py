@@ -136,6 +136,7 @@ class TorchPolicy(Policy):
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
+    @timed
     def sample_actions(self, vec_obs, vis_obs, masks=None, memories=None, seq_len=1):
         dists, (
             value_heads,
