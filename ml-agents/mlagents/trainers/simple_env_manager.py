@@ -53,9 +53,9 @@ class SimpleEnvManager(EnvManager):
     @property
     def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
         result = {}
-        for brain_name in self.env.get_behavior_names():
+        for brain_name in self.env.behavior_specs:
             result[brain_name] = behavior_spec_to_brain_parameters(
-                brain_name, self.env.get_behavior_spec(brain_name)
+                brain_name, self.env.behavior_specs[brain_name]
             )
         return result
 
@@ -74,6 +74,6 @@ class SimpleEnvManager(EnvManager):
 
     def _generate_all_results(self) -> AllStepResult:
         all_step_result: AllStepResult = {}
-        for brain_name in self.env.get_behavior_names():
+        for brain_name in self.env.behavior_specs:
             all_step_result[brain_name] = self.env.get_steps(brain_name)
         return all_step_result

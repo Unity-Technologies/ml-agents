@@ -308,6 +308,20 @@ class BehaviorSpec(NamedTuple):
             return np.zeros((n_agents, self.action_size), dtype=np.float32)
 
 
+class BehaviorMapping(Mapping):
+    def __init__(self, specs: Dict[BehaviorName, BehaviorSpec]):
+        self._dict = specs
+
+    def __len__(self) -> int:
+        return len(self._dict)
+
+    def __getitem__(self, behavior: BehaviorName) -> BehaviorSpec:
+        return self._dict[behavior]
+
+    def __iter__(self) -> Iterator[Any]:
+        yield from self._dict
+
+
 class BaseEnv(ABC):
     @abstractmethod
     def step(self) -> None:
@@ -331,17 +345,16 @@ class BaseEnv(ABC):
         """
         pass
 
+    @property
     @abstractmethod
-    def get_behavior_names(self) -> List[BehaviorName]:
+    def behavior_specs(self) -> BehaviorMapping:
         """
-        Returns the list of the behavior names present in the environment.
+        Returns a Mapping from behavior names to behavior specs.
         Agents grouped under the same behavior name have the same action and
         observation specs, and are expected to behave similarly in the
         environment.
-        This list can grow with time as new policies are instantiated.
-        :return: the list of agent BehaviorName.
+        Note that this mapping can grow and change as new policies are instantiated.
         """
-        pass
 
     @abstractmethod
     def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
@@ -384,14 +397,5 @@ class BaseEnv(ABC):
          - A TerminalSteps NamedTuple containing the observations,
          rewards, agent ids and interrupted flags of the agents that had their
          episode terminated last step.
-        """
-        pass
-
-    @abstractmethod
-    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
-        """
-        Get the BehaviorSpec corresponding to the behavior name
-        :param behavior_name: The name of the behavior the agents are part of
-        :return: A BehaviorSpec corresponding to that behavior
         """
         pass
