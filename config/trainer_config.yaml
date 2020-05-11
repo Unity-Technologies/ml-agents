@@ -235,6 +235,30 @@ WormStatic:
             strength: 1.0
             gamma: 0.995
 
+# WalkerDynamic:
+#     normalize: true
+#     num_epoch: 8
+#     time_horizon: 1000
+#     batch_size: 2048
+#     buffer_size: 20480
+#     # time_horizon: 128
+#     # batch_size: 512 #2048
+#     # buffer_size: 4096 #20480
+#     max_steps: 7.5e6
+#     summary_freq: 30000
+#     num_layers: 3
+#     hidden_units: 128
+#     beta: 1.0e-2
+#     learning_rate: 1.0e-3
+#     reward_signals:
+#         extrinsic:
+#             strength: 1.0
+#             gamma: 0.995
+#         curiosity:
+#             strength: 0.02
+#             gamma: 0.99
+#             encoding_size: 256
+
 WalkerDynamic:
     normalize: true
     num_epoch: 3
