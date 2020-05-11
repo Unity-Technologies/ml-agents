@@ -210,7 +210,7 @@ class ActorCritic(nn.Module):
         log_probs = []
         entropies = []
         for idx, action_dist in enumerate(dists):
-            action = actions[:, idx]
+            action = actions[..., idx]
             log_probs.append(action_dist.log_prob(action))
             entropies.append(action_dist.entropy())
         log_probs = torch.stack(log_probs, dim=-1)

@@ -115,7 +115,7 @@ class TorchPPOOptimizer(TorchOptimizer):
                 vis_obs.append(vis_ob)
         else:
             vis_obs = []
-        _, log_probs, entropy, values, _ = self.policy.execute_model(
+        log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,

@@ -136,23 +136,31 @@ class TorchPolicy(Policy):
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
-    def execute_model(
-        self, vec_obs, vis_obs, masks=None, actions=None, memories=None, seq_len=1
-    ):
+    def sample_actions(self, vec_obs, vis_obs, masks=None, memories=None, seq_len=1):
         dists, (
             value_heads,
             mean_value,
-        ), new_memories = self.actor_critic.get_dist_and_value(
+        ), memories = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
-        if actions is None:
-            actions = self.actor_critic.sample_action(dists)
+        actions = self.actor_critic.sample_action(dists)
         log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
         if self.act_type == "continuous":
             actions.squeeze_(-1)
 
         return actions, log_probs, entropies, value_heads, memories
+
+    def evaluate_actions(
+        self, vec_obs, vis_obs, masks=None, actions=None, memories=None, seq_len=1
+    ):
+        dists, (value_heads, mean_value), _ = self.actor_critic.get_dist_and_value(
+            vec_obs, vis_obs, masks, memories, seq_len
+        )
+
+        log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
+
+        return log_probs, entropies, value_heads
 
     @timed
     def evaluate(
@@ -172,7 +180,7 @@ class TorchPolicy(Policy):
         if masks is not None:
             masks = torch.Tensor(masks)
         run_out = {}
-        action, log_probs, entropy, value_heads, memories = self.execute_model(
+        action, log_probs, entropy, value_heads, memories = self.sample_actions(
             vec_obs, vis_obs, masks=masks, memories=memories
         )
         run_out["action"] = np.array(action.detach())
