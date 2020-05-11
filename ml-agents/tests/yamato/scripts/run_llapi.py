@@ -25,7 +25,7 @@ def test_run_environment(env_name):
         env.reset()
 
         # Set the default brain to work with
-        group_name = env.behavior_specs.keys()[0]
+        group_name = list(env.behavior_specs.keys())[0]
         group_spec = env.behavior_specs[group_name]
 
         # Set the time scale of the engine
