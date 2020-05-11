@@ -1,7 +1,6 @@
 import atexit
 from distutils.version import StrictVersion
-import glob
-import uuid
+
 import numpy as np
 import os
 import subprocess
@@ -10,7 +9,9 @@ from typing import Dict, List, Optional, Any, Tuple
 import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.side_channel.side_channel import SideChannel, IncomingMessage
+from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
+from mlagents_envs import env_utils
 
 from mlagents_envs.base_env import (
     BaseEnv,
@@ -43,9 +44,7 @@ from mlagents_envs.communicator_objects.unity_rl_initialization_input_pb2 import
 from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 
 from .rpc_communicator import RpcCommunicator
-from sys import platform
 import signal
-import struct
 
 logger = get_logger(__name__)
 
@@ -120,7 +119,7 @@ class UnityEnvironment(BaseEnv):
         return capabilities
 
     @staticmethod
-    def warn_csharp_base_capabitlities(
+    def warn_csharp_base_capabilities(
         caps: UnityRLCapabilitiesProto, unity_package_ver: str, python_package_ver: str
     ) -> None:
         if not caps.baseRLCapabilities:
@@ -178,16 +177,7 @@ class UnityEnvironment(BaseEnv):
         self.timeout_wait: int = timeout_wait
         self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
         self.worker_id = worker_id
-        self.side_channels: Dict[uuid.UUID, SideChannel] = {}
-        if side_channels is not None:
-            for _sc in side_channels:
-                if _sc.channel_id in self.side_channels:
-                    raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel id {0}.".format(
-                            _sc.channel_id
-                        )
-                    )
-                self.side_channels[_sc.channel_id] = _sc
+        self.side_channel_manager = SideChannelManager(side_channels)
         self.log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
@@ -199,7 +189,13 @@ class UnityEnvironment(BaseEnv):
                 "the worker-id must be 0 in order to connect with the Editor."
             )
         if file_name is not None:
-            self.executable_launcher(file_name, no_graphics, additional_args)
+            try:
+                self.proc1 = env_utils.launch_executable(
+                    file_name, self.executable_args()
+                )
+            except UnityEnvironmentException:
+                self._close(0)
+                raise
         else:
             logger.info(
                 f"Listening on port {self.port}. "
@@ -228,7 +224,7 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             UnityEnvironment._raise_version_exception(aca_params.communication_version)
 
-        UnityEnvironment.warn_csharp_base_capabitlities(
+        UnityEnvironment.warn_csharp_base_capabilities(
             aca_params.capabilities,
             aca_params.package_version,
             UnityEnvironment.API_VERSION,
@@ -244,62 +240,6 @@ class UnityEnvironment(BaseEnv):
     def get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
-    @staticmethod
-    def validate_environment_path(env_path: str) -> Optional[str]:
-        # Strip out executable extensions if passed
-        env_path = (
-            env_path.strip()
-            .replace(".app", "")
-            .replace(".exe", "")
-            .replace(".x86_64", "")
-            .replace(".x86", "")
-        )
-        true_filename = os.path.basename(os.path.normpath(env_path))
-        logger.debug("The true file name is {}".format(true_filename))
-
-        if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
-            return None
-
-        cwd = os.getcwd()
-        launch_string = None
-        true_filename = os.path.basename(os.path.normpath(env_path))
-        if platform == "linux" or platform == "linux2":
-            candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
-            if len(candidates) == 0:
-                candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
-            if len(candidates) == 0:
-                candidates = glob.glob(env_path + ".x86_64")
-            if len(candidates) == 0:
-                candidates = glob.glob(env_path + ".x86")
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-
-        elif platform == "darwin":
-            candidates = glob.glob(
-                os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
-            )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(env_path + ".app", "Contents", "MacOS", true_filename)
-                )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(cwd, env_path + ".app", "Contents", "MacOS", "*")
-                )
-            if len(candidates) == 0:
-                candidates = glob.glob(
-                    os.path.join(env_path + ".app", "Contents", "MacOS", "*")
-                )
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        elif platform == "win32":
-            candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
-            if len(candidates) == 0:
-                candidates = glob.glob(env_path + ".exe")
-            if len(candidates) > 0:
-                launch_string = candidates[0]
-        return launch_string
-
     def executable_args(self) -> List[str]:
         args: List[str] = []
         if self.no_graphics:
@@ -313,35 +253,6 @@ class UnityEnvironment(BaseEnv):
         # Add in arguments passed explicitly by the user.
         args += self.additional_args
         return args
-
-    def executable_launcher(self, file_name, no_graphics, args):
-        launch_string = self.validate_environment_path(file_name)
-        if launch_string is None:
-            self._close(0)
-            raise UnityEnvironmentException(
-                f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
-            )
-        else:
-            logger.debug("This is the launch string {}".format(launch_string))
-            # Launch Unity environment
-            subprocess_args = [launch_string] + self.executable_args()
-            try:
-                self.proc1 = subprocess.Popen(
-                    subprocess_args,
-                    # start_new_session=True means that signals to the parent python process
-                    # (e.g. SIGINT from keyboard interrupt) will not be sent to the new process on POSIX platforms.
-                    # This is generally good since we want the environment to have a chance to shutdown,
-                    # but may be undesirable in come cases; if so, we'll add a command-line toggle.
-                    # Note that on Windows, the CTRL_C signal will still be sent.
-                    start_new_session=True,
-                )
-            except PermissionError as perm:
-                # This is likely due to missing read or execute permissions on file.
-                raise UnityEnvironmentException(
-                    f"Error when trying to launch environment - make sure "
-                    f"permissions are set correctly. For example "
-                    f'"chmod -R 755 {launch_string}"'
-                ) from perm
 
     def _update_behavior_specs(self, output: UnityOutputProto) -> None:
         init_output = output.rl_initialization_output
@@ -370,7 +281,7 @@ class UnityEnvironment(BaseEnv):
                     DecisionSteps.empty(self._env_specs[brain_name]),
                     TerminalSteps.empty(self._env_specs[brain_name]),
                 )
-        self._parse_side_channel_message(self.side_channels, output.side_channel)
+        self.side_channel_manager.process_side_channel_message(output.side_channel)
 
     def reset(self) -> None:
         if self._loaded:
@@ -538,53 +449,6 @@ class UnityEnvironment(BaseEnv):
         arr = [float(x) for x in arr]
         return arr
 
-    @staticmethod
-    def _parse_side_channel_message(
-        side_channels: Dict[uuid.UUID, SideChannel], data: bytes
-    ) -> None:
-        offset = 0
-        while offset < len(data):
-            try:
-                channel_id = uuid.UUID(bytes_le=bytes(data[offset : offset + 16]))
-                offset += 16
-                message_len, = struct.unpack_from("<i", data, offset)
-                offset = offset + 4
-                message_data = data[offset : offset + message_len]
-                offset = offset + message_len
-            except Exception:
-                raise UnityEnvironmentException(
-                    "There was a problem reading a message in a SideChannel. "
-                    "Please make sure the version of MLAgents in Unity is "
-                    "compatible with the Python version."
-                )
-            if len(message_data) != message_len:
-                raise UnityEnvironmentException(
-                    "The message received by the side channel {0} was "
-                    "unexpectedly short. Make sure your Unity Environment "
-                    "sending side channel data properly.".format(channel_id)
-                )
-            if channel_id in side_channels:
-                incoming_message = IncomingMessage(message_data)
-                side_channels[channel_id].on_message_received(incoming_message)
-            else:
-                logger.warning(
-                    "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_id)
-                )
-
-    @staticmethod
-    def _generate_side_channel_data(
-        side_channels: Dict[uuid.UUID, SideChannel]
-    ) -> bytearray:
-        result = bytearray()
-        for channel_id, channel in side_channels.items():
-            for message in channel.message_queue:
-                result += channel_id.bytes_le
-                result += struct.pack("<i", len(message))
-                result += message
-            channel.message_queue = []
-        return result
-
     @timed
     def _generate_step_input(
         self, vector_action: Dict[str, np.ndarray]
@@ -598,13 +462,17 @@ class UnityEnvironment(BaseEnv):
                 action = AgentActionProto(vector_actions=vector_action[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
-        rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
+        rl_in.side_channel = bytes(
+            self.side_channel_manager.generate_side_channel_messages()
+        )
         return self.wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         rl_in.command = RESET
-        rl_in.side_channel = bytes(self._generate_side_channel_data(self.side_channels))
+        rl_in.side_channel = bytes(
+            self.side_channel_manager.generate_side_channel_messages()
+        )
         return self.wrap_unity_input(rl_in)
 
     def send_academy_parameters(
