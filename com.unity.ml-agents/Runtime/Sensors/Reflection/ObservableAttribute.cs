@@ -1,14 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace Unity.MLAgents.Sensors.Reflection
 {
-    [System.AttributeUsage(System.AttributeTargets.Field | System.AttributeTargets.Property)]
-    public class ObservableAttribute : System.Attribute
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    public class ObservableAttribute : Attribute
     {
-        // Currently nothing here
         string m_Name;
+
+        const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
 
         public ObservableAttribute(string name=null)
         {
@@ -19,20 +21,20 @@ namespace Unity.MLAgents.Sensors.Reflection
         {
             var sensorsOut = new List<ISensor>();
 
-            var fields = o.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var fields = o.GetType().GetFields(k_BindingFlags);
             foreach (var field in fields)
             {
-                var attr = (ObservableAttribute)Attribute.GetCustomAttribute(field, typeof(ObservableAttribute));
+                var attr = (ObservableAttribute)GetCustomAttribute(field, typeof(ObservableAttribute));
                 if (attr != null)
                 {
                     sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
                 }
             }
 
-            var properties = o.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var properties = o.GetType().GetProperties(k_BindingFlags);
             foreach (var prop in properties)
             {
-                var attr = (ObservableAttribute)Attribute.GetCustomAttribute(prop, typeof(ObservableAttribute));
+                var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
                 if (attr != null)
                 {
                     sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
@@ -83,15 +85,30 @@ namespace Unity.MLAgents.Sensors.Reflection
             {
                 return new IntReflectionSensor(reflectionSensorInfo);
             }
+            if (memberType == typeof(float))
+            {
+                return new FloatReflectionSensor(reflectionSensorInfo);
+            }
+            if (memberType == typeof(bool))
+            {
+                return new BoolReflectionSensor(reflectionSensorInfo);
+            }
+            if (memberType == typeof(UnityEngine.Vector2))
+            {
+                return new Vector2ReflectionSensor(reflectionSensorInfo);
+            }
             if (memberType == typeof(UnityEngine.Vector3))
             {
                 return new Vector3ReflectionSensor(reflectionSensorInfo);
             }
-            // Int
-            // Bool
-            // Vector2
-            // Vector4
-            // Quaternion
+            if (memberType == typeof(UnityEngine.Vector4))
+            {
+                return new Vector4ReflectionSensor(reflectionSensorInfo);
+            }
+            if (memberType == typeof(UnityEngine.Quaternion))
+            {
+                return new QuaternionReflectionSensor(reflectionSensorInfo);
+            }
 
             throw new UnityAgentsException($"Unsupported Observable type: {memberType.Name}");
 
