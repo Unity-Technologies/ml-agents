@@ -118,12 +118,13 @@ class TorchPolicy(Policy):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
         if not self.use_continuous_act:
-            mask = np.ones(
-                (len(decision_requests), np.sum(self.brain.vector_action_space_size)),
-                dtype=np.float32,
+            mask = torch.ones(
+                [len(decision_requests), np.sum(self.brain.vector_action_space_size)]
             )
             if decision_requests.action_mask is not None:
-                mask = 1 - np.concatenate(decision_requests.action_mask, axis=1)
+                mask = torch.as_tensor(
+                    1 - np.concatenate(decision_requests.action_mask, axis=1)
+                )
         return vec_vis_obs.vector_observations, vec_vis_obs.visual_observations, mask
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
@@ -131,8 +132,7 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        vector_obs = torch.Tensor(vector_obs)
-        vector_obs = [vector_obs]
+        vector_obs = [torch.as_tensor(vector_obs)]
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
@@ -152,7 +152,7 @@ class TorchPolicy(Policy):
         return actions, log_probs, entropies, value_heads, memories
 
     def evaluate_actions(
-        self, vec_obs, vis_obs, masks=None, actions=None, memories=None, seq_len=1
+        self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
     ):
         dists, (value_heads, mean_value), _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
@@ -173,29 +173,28 @@ class TorchPolicy(Policy):
         :return: Outputs from network as defined by self.inference_dict.
         """
         vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
-        vec_obs = [torch.Tensor(vec_obs)]
-        vis_obs = [torch.Tensor(vis_ob) for vis_ob in vis_obs]
-        memories = torch.Tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(0)
+        vec_obs = [torch.as_tensor(vec_obs)]
+        vis_obs = [torch.as_tensor(vis_ob) for vis_ob in vis_obs]
+        memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
+            0
+        )
 
-        if masks is not None:
-            masks = torch.Tensor(masks)
         run_out = {}
         action, log_probs, entropy, value_heads, memories = self.sample_actions(
             vec_obs, vis_obs, masks=masks, memories=memories
         )
-        run_out["action"] = np.array(action.detach())
-        run_out["pre_action"] = np.array(
-            action.detach()
-        )  # Todo - make pre_action difference
-        run_out["log_probs"] = np.array(log_probs.detach())
-        run_out["entropy"] = np.array(entropy.detach())
+        run_out["action"] = action.detach().numpy()
+        run_out["pre_action"] = action.detach().numpy()
+        # Todo - make pre_action difference
+        run_out["log_probs"] = log_probs.detach().numpy()
+        run_out["entropy"] = entropy.detach().numpy()
         run_out["value_heads"] = {
-            name: np.array(t.detach()) for name, t in value_heads.items()
+            name: t.detach().numpy() for name, t in value_heads.items()
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
-            run_out["memories"] = np.array(memories.detach())
+            run_out["memories"] = memories.detach().numpy()
         self.actor_critic.update_normalization(vec_obs)
         return run_out
 

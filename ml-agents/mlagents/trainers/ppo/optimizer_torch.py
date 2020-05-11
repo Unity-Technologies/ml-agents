@@ -1,5 +1,4 @@
 from typing import Any, Dict
-import numpy as np
 import torch
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -45,8 +44,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         value_losses = []
         for name, head in values.items():
-            old_val_tensor = torch.Tensor(old_values[name])
-            returns_tensor = torch.Tensor(returns[name])
+            old_val_tensor = old_values[name]
+            returns_tensor = returns[name]
             clipped_value_estimate = old_val_tensor + torch.clamp(
                 head - old_val_tensor, -decay_epsilon, decay_epsilon
             )
@@ -65,8 +64,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         :param log_probs: Current policy probabilities
         :param old_log_probs: Past policy probabilities
         """
-        advantage = torch.Tensor(advantages).unsqueeze(-1)
-        old_log_probs = torch.Tensor(old_log_probs)
+        advantage = advantages.unsqueeze(-1)
 
         decay_epsilon = self.trainer_params["epsilon"]
 
@@ -89,18 +87,18 @@ class TorchPPOOptimizer(TorchOptimizer):
         returns = {}
         old_values = {}
         for name in self.reward_signals:
-            old_values[name] = np.array(batch["{}_value_estimates".format(name)])
-            returns[name] = np.array(batch["{}_returns".format(name)])
+            old_values[name] = torch.as_tensor(batch["{}_value_estimates".format(name)])
+            returns[name] = torch.as_tensor(batch["{}_returns".format(name)])
 
-        vec_obs = [torch.Tensor(np.array(batch["vector_obs"]))]
-        act_masks = torch.Tensor(np.array(batch["action_mask"]))
+        vec_obs = [torch.as_tensor(batch["vector_obs"])]
+        act_masks = torch.as_tensor(batch["action_mask"])
         if self.policy.use_continuous_act:
-            actions = torch.Tensor(np.array(batch["actions"])).unsqueeze(-1)
+            actions = torch.as_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = torch.Tensor(np.array(batch["actions"]))
+            actions = torch.as_tensor(batch["actions"])
 
         memories = [
-            torch.Tensor(np.array(batch["memory"][i]))
+            torch.as_tensor(batch["memory"][i])
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
         if len(memories) > 0:
@@ -111,7 +109,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             for idx, _ in enumerate(
                 self.policy.actor_critic.network_body.visual_encoders
             ):
-                vis_ob = torch.Tensor(np.array(batch["visual_obs%d" % idx]))
+                vis_ob = torch.as_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
         else:
             vis_obs = []
@@ -125,10 +123,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         value_loss = self.ppo_value_loss(values, old_values, returns)
         policy_loss = self.ppo_policy_loss(
-            np.array(batch["advantages"]),
+            torch.as_tensor(batch["advantages"]),
             log_probs,
-            np.array(batch["action_probs"]),
-            np.array(batch["masks"], dtype=np.uint32),
+            torch.as_tensor(batch["action_probs"]),
+            torch.as_tensor(batch["masks"], dtype=torch.int32),
         )
         loss = (
             policy_loss
