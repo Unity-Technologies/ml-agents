@@ -65,8 +65,15 @@ in python, run:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
+# This is a non-blocking call that only loads the environment.
 env = UnityEnvironment(file_name="3DBall", seed=1, side_channels=[])
+# Start interacting with the evironment.
+env.reset()
+behavior_names = env.get_behavior_names()
+...
 ```
+**NOTE:** Please read [Interacting with a Unity Environment](#interacting-with-a-unity-environment)
+to read more about how you can interact with the Unity environment from Python.
 
 - `file_name` is the name of the environment binary (located in the root
   directory of the python project).

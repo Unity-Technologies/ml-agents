@@ -72,11 +72,12 @@ test_{{ platform.name }}_{{ editor.version }}:
   triggers:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
-    changes:
-      only:
-        - "com.unity.ml-agents/**"
-        - "ml-agents/tests/yamato/**"
-        - ".yamato/com.unity.ml-agents-test.yml"
+    expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
     {% endif %}
   {% endfor %}
 {% endfor %}

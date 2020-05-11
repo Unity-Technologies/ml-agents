@@ -21,7 +21,7 @@ class EncoderType(Enum):
     RESNET = "resnet"
 
 
-class LearningRateSchedule(Enum):
+class ScheduleType(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
 
@@ -55,11 +55,12 @@ class ModelUtils:
         return global_step, increment_step, steps_to_increment
 
     @staticmethod
-    def create_learning_rate(
-        lr_schedule: LearningRateSchedule,
-        lr: float,
+    def create_schedule(
+        schedule: ScheduleType,
+        parameter: float,
         global_step: tf.Tensor,
         max_step: int,
+        min_value: float,
     ) -> tf.Tensor:
         """
         Create a learning rate tensor.
@@ -69,17 +70,15 @@ class ModelUtils:
         :param max_step: The maximum number of steps in the training run.
         :return: A Tensor containing the learning rate.
         """
-        if lr_schedule == LearningRateSchedule.CONSTANT:
-            learning_rate = tf.Variable(lr)
-        elif lr_schedule == LearningRateSchedule.LINEAR:
-            learning_rate = tf.train.polynomial_decay(
-                lr, global_step, max_step, 1e-10, power=1.0
+        if schedule == ScheduleType.CONSTANT:
+            parameter_rate = tf.Variable(parameter, trainable=False)
+        elif schedule == ScheduleType.LINEAR:
+            parameter_rate = tf.train.polynomial_decay(
+                parameter, global_step, max_step, min_value, power=1.0
             )
         else:
-            raise UnityTrainerException(
-                "The learning rate schedule {} is invalid.".format(lr_schedule)
-            )
-        return learning_rate
+            raise UnityTrainerException("The schedule {} is invalid.".format(schedule))
+        return parameter_rate
 
     @staticmethod
     def scaled_init(scale):

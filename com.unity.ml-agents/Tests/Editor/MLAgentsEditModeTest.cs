@@ -13,8 +13,10 @@ namespace Unity.MLAgents.Tests
     {
         public Action OnRequestDecision;
         ObservationWriter m_ObsWriter = new ObservationWriter();
-        public void RequestDecision(AgentInfo info, List<ISensor> sensors) {
-            foreach(var sensor in sensors){
+        public void RequestDecision(AgentInfo info, List<ISensor> sensors)
+        {
+            foreach (var sensor in sensors)
+            {
                 sensor.GetObservationProto(m_ObsWriter);
             }
             OnRequestDecision?.Invoke();
@@ -517,8 +519,10 @@ namespace Unity.MLAgents.Tests
             agent1.SetPolicy(policy);
 
             StackingSensor sensor = null;
-            foreach(ISensor s in agent1.sensors){
-                if (s is  StackingSensor){
+            foreach (ISensor s in agent1.sensors)
+            {
+                if (s is  StackingSensor)
+                {
                     sensor = s as StackingSensor;
                 }
             }
@@ -529,7 +533,6 @@ namespace Unity.MLAgents.Tests
             {
                 agent1.RequestDecision();
                 aca.EnvironmentStep();
-
             }
 
             policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 21f});

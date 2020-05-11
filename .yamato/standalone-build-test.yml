@@ -15,19 +15,17 @@ test_mac_standalone_{{ editor.version }}:
     - pip install pyyaml
     - python -u -m ml-agents.tests.yamato.standalone_build_tests
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Basic/Scenes/Basic.unity
-    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Bouncer/Scenes/Bouncer.unity 
-    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity 
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Bouncer/Scenes/Bouncer.unity
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity
   triggers:
     cancel_old_ci: true
-    changes:
-      only:
-        - "com.unity.ml-agents/**"
-        - "Project/**"
-        - ".yamato/standalone-build-test.yml"
-      except:
-        - "*.md"
-        - "com.unity.ml-agents/*.md"
-        - "com.unity.ml-agents/**/*.md"
+    expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match ".yamato/standalone-build-test.yml") AND
+      NOT pull_request.changes.all match "**/*.md"
   artifacts:
     logs:
       paths:
