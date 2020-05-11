@@ -10,7 +10,17 @@ namespace Unity.MLAgents.Sensors.Reflection
     {
         string m_Name;
 
-        const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic
+        const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        static Dictionary<Type, int> s_TypeSizes = new Dictionary<Type, int>()
+        {
+            {typeof(int), 1},
+            {typeof(bool), 1},
+            {typeof(float), 1},
+            {typeof(Vector2), 2},
+            {typeof(Vector3), 3},
+            {typeof(Vector4), 4},
+            {typeof(Quaternion), 4},
+        };
 
         public ObservableAttribute(string name=null)
         {
@@ -45,7 +55,6 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         internal static ISensor CreateReflectionSensor(object o, FieldInfo fieldInfo, PropertyInfo propertyInfo, ObservableAttribute observableAttribute)
         {
-            MemberInfo memberInfo = fieldInfo != null ? (MemberInfo) fieldInfo : propertyInfo;
             string memberName;
             string declaringTypeName;
             Type memberType;
@@ -93,25 +102,51 @@ namespace Unity.MLAgents.Sensors.Reflection
             {
                 return new BoolReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(UnityEngine.Vector2))
+            if (memberType == typeof(Vector2))
             {
                 return new Vector2ReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(UnityEngine.Vector3))
+            if (memberType == typeof(Vector3))
             {
                 return new Vector3ReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(UnityEngine.Vector4))
+            if (memberType == typeof(Vector4))
             {
                 return new Vector4ReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(UnityEngine.Quaternion))
+            if (memberType == typeof(Quaternion))
             {
                 return new QuaternionReflectionSensor(reflectionSensorInfo);
             }
 
             throw new UnityAgentsException($"Unsupported Observable type: {memberType.Name}");
 
+        }
+
+        internal static int GetTotalObservationSize(object o)
+        {
+            int sizeOut = 0;
+
+            var fields = o.GetType().GetFields(k_BindingFlags);
+            foreach (var field in fields)
+            {
+                var attr = (ObservableAttribute)GetCustomAttribute(field, typeof(ObservableAttribute));
+                if (attr != null)
+                {
+                    sizeOut += s_TypeSizes[field.FieldType];
+                }
+            }
+
+            var properties = o.GetType().GetProperties(k_BindingFlags);
+            foreach (var prop in properties)
+            {
+                var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
+                if (attr != null)
+                {
+                    sizeOut += s_TypeSizes[prop.PropertyType];
+                }
+            }
+            return sizeOut;
         }
 
     }

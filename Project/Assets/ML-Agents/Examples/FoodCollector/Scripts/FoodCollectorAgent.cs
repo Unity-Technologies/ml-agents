@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.MLAgents;
-using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 
 public class FoodCollectorAgent : Agent
@@ -33,7 +32,6 @@ public class FoodCollectorAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
-    public bool useVectorObs;
 
     EnvironmentParameters m_ResetParams;
 
@@ -47,22 +45,12 @@ public class FoodCollectorAgent : Agent
     }
 
     [Observable]
-    Vector3 localRbVelocity
+    Vector2 localRbVelocity
     {
-        get { return transform.InverseTransformDirection(m_AgentRb.velocity); }
-    }
-
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        if (useVectorObs)
+        get
         {
-            // TODO use Observable with localRbVelocity instead
-            var localVelocity = localRbVelocity;
-            sensor.AddObservation(localVelocity.x);
-            sensor.AddObservation(localVelocity.z);
-            // TODO replace with Observables
-            sensor.AddObservation(System.Convert.ToInt32(m_Frozen));
-            sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
+            var rbVel = transform.InverseTransformDirection(m_AgentRb.velocity);
+            return new Vector2(rbVel.x, rbVel.z);
         }
     }
 

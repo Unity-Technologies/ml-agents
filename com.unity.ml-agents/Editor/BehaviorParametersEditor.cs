@@ -2,6 +2,7 @@ using UnityEditor;
 using Unity.Barracuda;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 using UnityEngine;
 
 namespace Unity.MLAgents.Editor
@@ -89,6 +90,7 @@ namespace Unity.MLAgents.Editor
             Model barracudaModel = null;
             var model = (NNModel)serializedObject.FindProperty("m_Model").objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
+
             SensorComponent[] sensorComponents;
             if (behaviorParameters.UseChildSensors)
             {
@@ -98,6 +100,15 @@ namespace Unity.MLAgents.Editor
             {
                 sensorComponents = behaviorParameters.GetComponents<SensorComponent>();
             }
+
+            int observableSensorSizes = 0;
+            var agent = behaviorParameters.GetComponent<Agent>();
+            if (agent != null)
+            {
+                // TODO check for invalid types and add HelpBox's
+                observableSensorSizes = ObservableAttribute.GetTotalObservationSize(agent);
+            }
+
             var brainParameters = behaviorParameters.BrainParameters;
             if (model != null)
             {
@@ -106,7 +117,8 @@ namespace Unity.MLAgents.Editor
             if (brainParameters != null)
             {
                 var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters, sensorComponents, behaviorParameters.BehaviorType
+                    barracudaModel, brainParameters, sensorComponents, observableSensorSizes,
+                    behaviorParameters.BehaviorType
                 );
                 foreach (var check in failedChecks)
                 {
