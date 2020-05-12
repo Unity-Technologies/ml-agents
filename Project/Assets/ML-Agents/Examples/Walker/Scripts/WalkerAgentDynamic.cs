@@ -124,7 +124,8 @@ public class WalkerAgentDynamic : Agent
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
             bp.rb.transform != footL && bp.rb.transform != footR)
         {
-            sensor.AddObservation(RagdollHelpers.GetJointRotation(bp.joint));
+            sensor.AddObservation(bp.rb.transform.localRotation);
+//            sensor.AddObservation(RagdollHelpers.GetJointRotation(bp.joint));
 //            sensor.AddObservation(bp.currentXNormalizedRot);
 //            sensor.AddObservation(bp.currentYNormalizedRot);
 //            sensor.AddObservation(bp.currentZNormalizedRot);
