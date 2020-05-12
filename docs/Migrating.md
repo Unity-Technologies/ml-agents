@@ -22,6 +22,7 @@ double-check that the versions are in the same. The versions can be found in
 - Trainer configuration, curriculum configuration, and parameter randomization
   configuration have all been moved to a single YAML file. (#3791)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
+- On the UnityEnvironment API, `get_behavior_names()` and `get_behavior_specs()` methods were combined into the property `behavior_specs` that contains a mapping from behavior names to behavior spec.
 
 ### Steps to Migrate
 - Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
@@ -34,6 +35,7 @@ double-check that the versions are in the same. The versions can be found in
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
 - If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
 in the `TerminalStep` and `TerminalSteps` objects.
+ - Replace usage of `get_behavior_names()` and `get_behavior_specs()` in UnityEnvironment with `behavior_specs`.
 
 ## Migrating from 0.15 to Release 1
 

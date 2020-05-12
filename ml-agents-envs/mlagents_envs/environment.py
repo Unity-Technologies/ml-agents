@@ -4,7 +4,7 @@ from distutils.version import StrictVersion
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, Mapping as MappingType
 
 import mlagents_envs
 
@@ -20,6 +20,7 @@ from mlagents_envs.base_env import (
     BehaviorSpec,
     BehaviorName,
     AgentId,
+    BehaviorMapping,
 )
 from mlagents_envs.timers import timed, hierarchical_timer
 from mlagents_envs.exception import (
@@ -321,8 +322,9 @@ class UnityEnvironment(BaseEnv):
         self._update_state(rl_output)
         self._env_actions.clear()
 
-    def get_behavior_names(self):
-        return list(self._env_specs.keys())
+    @property
+    def behavior_specs(self) -> MappingType[str, BehaviorSpec]:
+        return BehaviorMapping(self._env_specs)
 
     def _assert_behavior_exists(self, behavior_name: str) -> None:
         if behavior_name not in self._env_specs:
@@ -388,10 +390,6 @@ class UnityEnvironment(BaseEnv):
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         self._assert_behavior_exists(behavior_name)
         return self._env_state[behavior_name]
-
-    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
-        self._assert_behavior_exists(behavior_name)
-        return self._env_specs[behavior_name]
 
     def close(self):
         """

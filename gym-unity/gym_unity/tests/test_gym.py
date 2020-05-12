@@ -9,6 +9,7 @@ from mlagents_envs.base_env import (
     ActionType,
     DecisionSteps,
     TerminalSteps,
+    BehaviorMapping,
 )
 
 
@@ -19,7 +20,6 @@ def test_gym_wrapper():
     setup_mock_unityenvironment(
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
-
     env = UnityToGymWrapper(mock_env, use_visual=False)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.reset(), np.ndarray)
@@ -137,6 +137,5 @@ def setup_mock_unityenvironment(mock_env, mock_spec, mock_decision, mock_termina
     :Mock mock_decision: A DecisionSteps object that will be returned at each step and reset.
     :Mock mock_termination: A TerminationSteps object that will be returned at each step and reset.
     """
-    mock_env.get_behavior_names.return_value = ["MockBrain"]
-    mock_env.get_behavior_spec.return_value = mock_spec
+    mock_env.behavior_specs = BehaviorMapping({"MockBrain": mock_spec})
     mock_env.get_steps.return_value = (mock_decision, mock_termination)
