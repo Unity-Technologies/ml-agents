@@ -49,7 +49,7 @@ class UnityToGymWrapper(gym.Env):
         self._env = unity_env
 
         # Take a single step so that the brain information will be sent over
-        if len(self._env.behavior_specs) == 0:
+        if not self._env.behavior_specs:
             self._env.step()
 
         self.visual_obs = None
