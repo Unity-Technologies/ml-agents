@@ -4,7 +4,7 @@ from distutils.version import StrictVersion
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any, Tuple, Mapping as MappingType
 
 import mlagents_envs
 
@@ -323,7 +323,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions.clear()
 
     @property
-    def behavior_specs(self) -> BehaviorMapping:
+    def behavior_specs(self) -> MappingType[str, BehaviorSpec]:
         return BehaviorMapping(self._env_specs)
 
     def _assert_behavior_exists(self, behavior_name: str) -> None:

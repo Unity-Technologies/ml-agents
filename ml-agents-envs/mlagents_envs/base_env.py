@@ -18,7 +18,17 @@ not necessarily correspond to a fixed simulation time increment.
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from typing import List, NamedTuple, Tuple, Optional, Union, Dict, Iterator, Any
+from typing import (
+    List,
+    NamedTuple,
+    Tuple,
+    Optional,
+    Union,
+    Dict,
+    Iterator,
+    Any,
+    Mapping as MappingType,
+)
 import numpy as np
 from enum import Enum
 
@@ -347,7 +357,7 @@ class BaseEnv(ABC):
 
     @property
     @abstractmethod
-    def behavior_specs(self) -> Mapping:
+    def behavior_specs(self) -> MappingType[str, BehaviorSpec]:
         """
         Returns a Mapping from behavior names to behavior specs.
         Agents grouped under the same behavior name have the same action and
