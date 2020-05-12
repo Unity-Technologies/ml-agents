@@ -212,5 +212,30 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, ObservableAttribute.GetTotalObservationSize(bad, errors));
             Assert.AreEqual(2, errors.Count);
         }
+
+        class StackingClass
+        {
+            [Observable(numStackedObservations: 2)]
+            public float FloatVal;
+        }
+
+        [Test]
+        public void TestObservableAttributeStacking()
+        {
+            var c = new StackingClass();
+            c.FloatVal = 1.0f;
+            var sensors = ObservableAttribute.GetObservableSensors(c);
+            var sensor = sensors[0];
+            Assert.AreEqual(typeof(StackingSensor), sensor.GetType());
+            SensorTestHelper.CompareObservation(sensor, new[] { 0.0f, 1.0f });
+
+            sensor.Update();
+            c.FloatVal = 3.0f;
+            SensorTestHelper.CompareObservation(sensor, new[] { 1.0f, 3.0f });
+
+            var errors = new List<string>();
+            Assert.AreEqual(2, ObservableAttribute.GetTotalObservationSize(c, errors));
+            Assert.AreEqual(0, errors.Count);
+        }
     }
 }

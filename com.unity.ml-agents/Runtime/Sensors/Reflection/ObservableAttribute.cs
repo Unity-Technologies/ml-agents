@@ -9,6 +9,7 @@ namespace Unity.MLAgents.Sensors.Reflection
     public class ObservableAttribute : Attribute
     {
         string m_Name;
+        int m_NumStackedObservations;
 
         const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
         static Dictionary<Type, int> s_TypeSizes = new Dictionary<Type, int>()
@@ -22,9 +23,16 @@ namespace Unity.MLAgents.Sensors.Reflection
             {typeof(Quaternion), 4},
         };
 
-        public ObservableAttribute(string name=null)
+        /// <summary>
+        /// ObservableAttribute constructor.
+        /// </summary>
+        /// <param name="name">Optional override for the sensor name. Note that all sensors for an Agent
+        /// must have a unique name.</param>
+        /// <param name="numStackedObservations">Number of frames to concatenate observations from.</param>
+        public ObservableAttribute(string name=null, int numStackedObservations=1)
         {
             m_Name = name;
+            m_NumStackedObservations = numStackedObservations;
         }
 
         internal static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o)
@@ -106,47 +114,62 @@ namespace Unity.MLAgents.Sensors.Reflection
                 SensorName = sensorName
             };
 
+            ISensor sensor = null;
             if (memberType == typeof(Int32))
             {
-                return new IntReflectionSensor(reflectionSensorInfo);
+                sensor = new IntReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(float))
             {
-                return new FloatReflectionSensor(reflectionSensorInfo);
+                sensor = new  FloatReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(bool))
             {
-                return new BoolReflectionSensor(reflectionSensorInfo);
+                sensor = new BoolReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(Vector2))
             {
-                return new Vector2ReflectionSensor(reflectionSensorInfo);
+                sensor = new Vector2ReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(Vector3))
             {
-                return new Vector3ReflectionSensor(reflectionSensorInfo);
+                sensor = new Vector3ReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(Vector4))
             {
-                return new Vector4ReflectionSensor(reflectionSensorInfo);
+                sensor = new Vector4ReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(Quaternion))
             {
-                return new QuaternionReflectionSensor(reflectionSensorInfo);
+                sensor = new QuaternionReflectionSensor(reflectionSensorInfo);
             }
 
-            throw new UnityAgentsException($"Unsupported Observable type: {memberType.Name}");
+            if (sensor == null)
+            {
+                throw new UnityAgentsException($"Unsupported Observable type: {memberType.Name}");
+            }
+
+            // Wrap the base sensor in a StackingSensor if we're using stacking.
+            if (observableAttribute.m_NumStackedObservations > 1)
+            {
+                return new StackingSensor(sensor, observableAttribute.m_NumStackedObservations);
+            }
+
+            return sensor;
+
+
+
 
         }
 
         internal static int GetTotalObservationSize(object o, List<string> errorsOut)
         {
             int sizeOut = 0;
-            foreach (var (field, _) in GetObservableFields(o))
+            foreach (var (field, attr) in GetObservableFields(o))
             {
                 if (s_TypeSizes.ContainsKey(field.FieldType))
                 {
-                    sizeOut += s_TypeSizes[field.FieldType];
+                    sizeOut += s_TypeSizes[field.FieldType] * attr.m_NumStackedObservations;
                 }
                 else
                 {
@@ -154,12 +177,12 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
             }
 
-            foreach (var (prop, _) in GetObservableProperties(o))
+            foreach (var (prop, attr) in GetObservableProperties(o))
             {
 
                 if (s_TypeSizes.ContainsKey(prop.PropertyType))
                 {
-                    sizeOut += s_TypeSizes[prop.PropertyType];
+                    sizeOut += s_TypeSizes[prop.PropertyType] * attr.m_NumStackedObservations;
                 }
                 else
                 {
