@@ -129,7 +129,7 @@ public class TennisAgent : Agent
         var rgV = m_AgentRb.velocity;
         m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
 
-        timePenalty -= m_Existential;
+    //    timePenalty -= m_Existential;
         m_TextComponent.text = score.ToString();
     }
 
