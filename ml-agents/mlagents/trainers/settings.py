@@ -88,6 +88,12 @@ def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
 
 
 @attr.s(auto_attribs=True)
+class ExportableSettings:
+    def as_dict(self):
+        return cattr.unstructure(self)
+
+
+@attr.s(auto_attribs=True)
 class NetworkSettings:
     @attr.s(auto_attribs=True)
     class MemorySettings:
@@ -196,7 +202,7 @@ class SelfPlaySettings:
 
 
 @attr.s(auto_attribs=True)
-class TrainerSettings:
+class TrainerSettings(ExportableSettings):
     # Edit these two fields to add new trainers #
     class TrainerType(Enum):
         PPO: str = "ppo"
@@ -296,7 +302,7 @@ class EngineSettings:
 
 
 @attr.s(auto_attribs=True)
-class RunOptions:
+class RunOptions(ExportableSettings):
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
         default=attr.Factory(lambda: collections.defaultdict(TrainerSettings))
     )
@@ -318,6 +324,9 @@ class RunOptions:
         DefaultDict[str, TrainerSettings], dict_to_defaultdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
+
+    def as_dict(self):
+        return cattr.unstructure(self)
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":

@@ -2,7 +2,6 @@
 from typing import Dict, List
 from collections import defaultdict
 import abc
-import cattr
 import time
 
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
@@ -33,7 +32,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
         self._stats_reporter.add_property(
-            StatsPropertyType.HYPERPARAMETERS, cattr.unstructure(self.trainer_settings)
+            StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
 
     def end_episode(self) -> None:

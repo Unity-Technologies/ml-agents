@@ -6,7 +6,6 @@ import numpy as np
 import json
 
 from typing import Callable, Optional, List, Dict
-import cattr
 
 import mlagents.trainers
 import mlagents_envs
@@ -169,9 +168,9 @@ def write_run_options(output_dir: str, run_options: RunOptions) -> None:
     try:
         with open(run_options_path, "w") as f:
             try:
-                yaml.dump(cattr.unstructure(run_options), f, sort_keys=False)
+                yaml.dump(run_options.as_dict(), f, sort_keys=False)
             except TypeError:  # Older versions of pyyaml don't support sort_keys
-                yaml.dump(cattr.unstructure(run_options), f)
+                yaml.dump(run_options.as_dict(), f)
     except FileNotFoundError:
         logger.warning(
             f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
@@ -292,7 +291,7 @@ def run_cli(options: RunOptions) -> None:
     logging_util.set_log_level(log_level)
 
     logger.debug("Configuration for this run:")
-    logger.debug(json.dumps(cattr.unstructure(options), indent=4))
+    logger.debug(json.dumps(options.as_dict(), indent=4))
 
     # Options deprecation warnings
     if options.checkpoint_settings.load_model:
