@@ -38,7 +38,6 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
-from mlagents_envs.exception import UnityEnvironmentException
 from mlagents_envs.timers import (
     hierarchical_timer,
     get_timer_tree,
@@ -509,13 +508,6 @@ def create_environment_factory(
     env_args: Optional[List[str]],
     log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
-    if env_path is not None:
-        launch_string = UnityEnvironment.validate_environment_path(env_path)
-        if launch_string is None:
-            raise UnityEnvironmentException(
-                f"Couldn't launch the {env_path} environment. Provided filename does not match any environments."
-            )
-
     def create_unity_environment(
         worker_id: int, side_channels: List[SideChannel]
     ) -> UnityEnvironment:

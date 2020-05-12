@@ -83,14 +83,18 @@ see a pre-print of our
 If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you
 cite the following paper as a reference:
 
-Juliani, A., Berges, V., Vckay, E., Gao, Y., Henry, H., Mattar, M., Lange, D.
-(2018). Unity: A General Platform for Intelligent Agents. _arXiv preprint
-arXiv:1809.02627._ https://github.com/Unity-Technologies/ml-agents.
+Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C.,
+Gao, Y., Henry, H., Mattar, M., Lange, D. (2020). Unity: A General Platform for
+Intelligent Agents. _arXiv preprint
+[arXiv:1809.02627](https://arxiv.org/abs/1809.02627)._
+https://github.com/Unity-Technologies/ml-agents.
 
 ## Additional Resources
 
 We have published a series of blog posts that are relevant for ML-Agents:
 
+- (May 12, 2020)
+  [Announcing ML-Agents Unity Package v1.0!](https://blogs.unity3d.com/2020/05/12/announcing-ml-agents-unity-package-v1-0/)
 - (February 28, 2020)
   [Training intelligent adversaries using self-play with ML-Agents](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
 - (November 11, 2019)

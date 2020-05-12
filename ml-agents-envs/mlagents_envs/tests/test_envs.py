@@ -15,14 +15,14 @@ def test_handles_bad_filename(get_communicator):
         UnityEnvironment(" ")
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.get_behavior_names() == ["RealFakeBrain"]
+    assert list(env.behavior_specs.keys()) == ["RealFakeBrain"]
     env.close()
 
 
@@ -37,7 +37,7 @@ def test_initialization(mock_communicator, mock_launcher):
         (None, None, UnityEnvironment.DEFAULT_EDITOR_PORT),
     ],
 )
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_port_defaults(
     mock_communicator, mock_launcher, base_port, file_name, expected
@@ -49,7 +49,7 @@ def test_port_defaults(
     assert expected == env.port
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_log_file_path_is_set(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator()
@@ -61,14 +61,14 @@ def test_log_file_path_is_set(mock_communicator, mock_launcher):
     assert args[log_file_index + 1] == "./some-log-folder-path/Player-0.log"
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_reset(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_behavior_spec("RealFakeBrain")
+    spec = env.behavior_specs["RealFakeBrain"]
     env.reset()
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     env.close()
@@ -84,14 +84,14 @@ def test_reset(mock_communicator, mock_launcher):
         assert (n_agents,) + shape == obs.shape
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_step(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_behavior_spec("RealFakeBrain")
+    spec = env.behavior_specs["RealFakeBrain"]
     env.step()
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
@@ -122,7 +122,7 @@ def test_step(mock_communicator, mock_launcher):
     assert 2 in terminal_steps
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.executable_launcher")
+@mock.patch("mlagents_envs.env_utils.launch_executable")
 @mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
 def test_close(mock_communicator, mock_launcher):
     comm = MockCommunicator(discrete_action=False, visual_inputs=0)
