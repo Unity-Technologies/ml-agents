@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict
+from typing import Dict
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 class TrainerFactory:
     def __init__(
         self,
-        trainer_config: Any,
+        trainer_config: Dict[str, TrainerSettings],
         run_id: str,
         output_path: str,
         keep_checkpoints: int,
@@ -60,7 +60,7 @@ class TrainerFactory:
 
 
 def initialize_trainer(
-    trainer_config: TrainerSettings,
+    trainer_settings: TrainerSettings,
     brain_name: str,
     run_id: str,
     output_path: str,
@@ -77,7 +77,7 @@ def initialize_trainer(
     Initializes a trainer given a provided trainer configuration and brain parameters, as well as
     some general training session options.
 
-    :param trainer_config: Original trainer configuration loaded from YAML
+    :param trainer_settings: Original trainer configuration loaded from YAML
     :param brain_name: Name of the brain to be associated with trainer
     :param run_id: Run ID to associate with this training run
     :param output_path: Path to save the model and summary statistics
@@ -90,10 +90,9 @@ def initialize_trainer(
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
-    print(trainer_config)
-    trainer_config.output_path = os.path.join(output_path, brain_name)
+    trainer_settings.output_path = os.path.join(output_path, brain_name)
     if init_path is not None:
-        trainer_config.init_path = os.path.join(init_path, brain_name)
+        trainer_settings.init_path = os.path.join(init_path, brain_name)
 
     min_lesson_length = 1
     if meta_curriculum:
@@ -108,13 +107,13 @@ def initialize_trainer(
             )
 
     trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
-    trainer_type = trainer_config.trainer_type
+    trainer_type = trainer_settings.trainer_type
 
     if trainer_type == TrainerSettings.TrainerType.PPO:
         trainer = PPOTrainer(
             brain_name,
             min_lesson_length,
-            trainer_config,
+            trainer_settings,
             train_model,
             load_model,
             seed,
@@ -124,7 +123,7 @@ def initialize_trainer(
         trainer = SACTrainer(
             brain_name,
             min_lesson_length,
-            trainer_config,
+            trainer_settings,
             train_model,
             load_model,
             seed,
@@ -135,33 +134,17 @@ def initialize_trainer(
             f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
         )
 
-    if trainer_config.self_play is not None:
+    if trainer_settings.self_play is not None:
         trainer = GhostTrainer(
             trainer,
             brain_name,
             ghost_controller,
             min_lesson_length,
-            trainer_config,
+            trainer_settings,
             train_model,
             run_id,
         )
     return trainer
-
-
-def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Assembles a curriculum config Dict from a trainer config. The resulting
-    dictionary should have a mapping of {brain_name: config}, where config is another
-    Dict that
-    :param trainer_config: Dict of trainer configurations (keys are brain_names).
-    :return: Dict of curriculum configurations. Returns empty dict if none are found.
-    """
-    curriculum_config: Dict[str, Any] = {}
-    for behavior_name, behavior_config in trainer_config.items():
-        # Don't try to iterate non-Dicts. This probably means your config is malformed.
-        if isinstance(behavior_config, dict) and "curriculum" in behavior_config:
-            curriculum_config[behavior_name] = behavior_config["curriculum"]
-    return curriculum_config
 
 
 def handle_existing_directories(

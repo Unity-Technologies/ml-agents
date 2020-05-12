@@ -33,8 +33,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
         self._stats_reporter.add_property(
-            StatsPropertyType.HYPERPARAMETERS,
-            cattr.unstructure(self.trainer_parameters),
+            StatsPropertyType.HYPERPARAMETERS, cattr.unstructure(self.trainer_settings)
         )
 
     def end_episode(self) -> None:

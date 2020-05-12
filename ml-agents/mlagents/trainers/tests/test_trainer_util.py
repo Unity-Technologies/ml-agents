@@ -34,10 +34,10 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     expected_config = PPO_CONFIG
 
     def mock_constructor(
-        self, brain, reward_buff_cap, trainer_parameters, training, load, seed, run_id
+        self, brain, reward_buff_cap, trainer_settings, training, load, seed, run_id
     ):
         assert brain == brain_params_mock.brain_name
-        assert trainer_parameters == expected_config
+        assert trainer_settings == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
         assert training == train_model
         assert load == load_model

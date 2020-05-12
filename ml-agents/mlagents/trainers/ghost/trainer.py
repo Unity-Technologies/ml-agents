@@ -43,7 +43,7 @@ class GhostTrainer(Trainer):
         brain_name,
         controller,
         reward_buff_cap,
-        trainer_parameters,
+        trainer_settings,
         training,
         run_id,
     ):
@@ -53,13 +53,13 @@ class GhostTrainer(Trainer):
         :param brain_name: The name of the brain associated with trainer config
         :param controller: GhostController that coordinates all ghost trainers and calculates ELO
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param run_id: The identifier of the current run
         """
 
         super(GhostTrainer, self).__init__(
-            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, run_id, reward_buff_cap
         )
 
         self.trainer = trainer
@@ -79,7 +79,7 @@ class GhostTrainer(Trainer):
         # Set the logging to print ELO in the console
         self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY, True)
 
-        self_play_parameters = trainer_parameters.self_play
+        self_play_parameters = trainer_settings.self_play
         self.window = self_play_parameters.window
         self.play_against_latest_model_ratio = (
             self_play_parameters.play_against_latest_model_ratio

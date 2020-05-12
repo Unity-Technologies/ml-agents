@@ -26,7 +26,7 @@ class Trainer(abc.ABC):
     def __init__(
         self,
         brain_name: str,
-        trainer_parameters: TrainerSettings,
+        trainer_settings: TrainerSettings,
         training: bool,
         run_id: str,
         reward_buff_cap: int = 1,
@@ -34,7 +34,7 @@ class Trainer(abc.ABC):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
-        :dict trainer_parameters: The parameters for the trainer (dictionary).
+        :dict trainer_settings: The parameters for the trainer (dictionary).
         :bool training: Whether the trainer is set for training.
         :str run_id: The identifier of the current run
         :int reward_buff_cap:
@@ -42,15 +42,15 @@ class Trainer(abc.ABC):
         self.param_keys: List[str] = []
         self.brain_name = brain_name
         self.run_id = run_id
-        self.trainer_parameters = trainer_parameters
-        self._threaded = trainer_parameters.threaded
+        self.trainer_settings = trainer_settings
+        self._threaded = trainer_settings.threaded
         self._stats_reporter = StatsReporter(brain_name)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
-        self.summary_freq = self.trainer_parameters.summary_freq
+        self.summary_freq = self.trainer_settings.summary_freq
         self.next_summary_step = self.summary_freq
 
     @property
@@ -62,7 +62,7 @@ class Trainer(abc.ABC):
 
     def _check_param_keys(self):
         for k in self.param_keys:
-            if k not in self.trainer_parameters:
+            if k not in self.trainer_settings:
                 raise UnityTrainerException(
                     "The hyper-parameter {0} could not be found for the {1} trainer of "
                     "brain {2}.".format(k, self.__class__, self.brain_name)
@@ -73,7 +73,7 @@ class Trainer(abc.ABC):
         """
         Returns the trainer parameters of the trainer.
         """
-        return self.trainer_parameters
+        return self.trainer_settings
 
     @property
     def get_max_steps(self) -> int:
@@ -81,7 +81,7 @@ class Trainer(abc.ABC):
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
-        return int(float(self.trainer_parameters.max_steps))
+        return int(float(self.trainer_settings.max_steps))
 
     @property
     def get_step(self) -> int:

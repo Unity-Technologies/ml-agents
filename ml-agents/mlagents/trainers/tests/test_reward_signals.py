@@ -64,20 +64,20 @@ def create_optimizer_mock(
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-    trainer_parameters = trainer_config
-    trainer_parameters.reward_signals = reward_signal_config
-    trainer_parameters.network_settings.memory = (
+    trainer_settings = trainer_config
+    trainer_settings.reward_signals = reward_signal_config
+    trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
         if use_rnn
         else None
     )
     policy = NNPolicy(
-        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+        0, mock_brain, trainer_settings, False, False, create_tf_graph=False
     )
-    if trainer_parameters.trainer_type == TrainerSettings.TrainerType.SAC:
-        optimizer = SACOptimizer(policy, trainer_parameters)
+    if trainer_settings.trainer_type == TrainerSettings.TrainerType.SAC:
+        optimizer = SACOptimizer(policy, trainer_settings)
     else:
-        optimizer = PPOOptimizer(policy, trainer_parameters)
+        optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer
 
 

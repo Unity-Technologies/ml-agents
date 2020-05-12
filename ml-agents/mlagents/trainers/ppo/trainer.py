@@ -29,7 +29,7 @@ class PPOTrainer(RLTrainer):
         self,
         brain_name: str,
         reward_buff_cap: int,
-        trainer_parameters: TrainerSettings,
+        trainer_settings: TrainerSettings,
         training: bool,
         load: bool,
         seed: int,
@@ -39,14 +39,14 @@ class PPOTrainer(RLTrainer):
         Responsible for collecting experiences and training PPO model.
         :param brain_name: The name of the brain associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
         :param run_id: The identifier of the current run
         """
         super(PPOTrainer, self).__init__(
-            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, run_id, reward_buff_cap
         )
         self.param_keys = [
             "batch_size",
@@ -69,7 +69,7 @@ class PPOTrainer(RLTrainer):
             "reward_signals",
         ]
         self.hyperparameters: PPOSettings = cast(
-            PPOSettings, self.trainer_parameters.hyperparameters
+            PPOSettings, self.trainer_settings.hyperparameters
         )
         self.load = load
         self.seed = seed
@@ -80,9 +80,9 @@ class PPOTrainer(RLTrainer):
         # Check that batch size is greater than sequence length. Else, throw
         # an exception.
         if (
-            self.trainer_parameters["sequence_length"]
-            > self.trainer_parameters["batch_size"]
-            and self.trainer_parameters["use_recurrent"]
+            self.trainer_settings["sequence_length"]
+            > self.trainer_settings["batch_size"]
+            and self.trainer_settings["use_recurrent"]
         ):
             raise UnityTrainerException(
                 "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
@@ -235,7 +235,7 @@ class PPOTrainer(RLTrainer):
         policy = NNPolicy(
             self.seed,
             brain_parameters,
-            self.trainer_parameters,
+            self.trainer_settings,
             self.is_training,
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
@@ -262,7 +262,7 @@ class PPOTrainer(RLTrainer):
         if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
-        self.optimizer = PPOOptimizer(self.policy, self.trainer_parameters)
+        self.optimizer = PPOOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly

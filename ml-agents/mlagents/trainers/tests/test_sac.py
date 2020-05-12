@@ -39,16 +39,16 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-    trainer_parameters = dummy_config
-    trainer_parameters.network_settings.memory = (
+    trainer_settings = dummy_config
+    trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
         if use_rnn
         else None
     )
     policy = NNPolicy(
-        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+        0, mock_brain, trainer_settings, False, False, create_tf_graph=False
     )
-    optimizer = SACOptimizer(policy, trainer_parameters)
+    optimizer = SACOptimizer(policy, trainer_settings)
     return optimizer
 
 

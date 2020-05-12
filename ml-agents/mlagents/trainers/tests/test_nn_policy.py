@@ -37,12 +37,12 @@ def create_policy_mock(
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
-    trainer_parameters = dummy_config
-    trainer_parameters.keep_checkpoints = 3
-    trainer_parameters.network_settings.memory = (
+    trainer_settings = dummy_config
+    trainer_settings.keep_checkpoints = 3
+    trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
-    policy = NNPolicy(seed, mock_brain, trainer_parameters, False, load)
+    policy = NNPolicy(seed, mock_brain, trainer_settings, False, load)
     return policy
 
 

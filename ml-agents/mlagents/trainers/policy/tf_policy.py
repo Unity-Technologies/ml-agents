@@ -37,19 +37,19 @@ class TFPolicy(Policy):
         self,
         seed: int,
         brain: BrainParameters,
-        trainer_parameters: TrainerSettings,
+        trainer_settings: TrainerSettings,
         load: bool = False,
     ):
         """
         Initialized the policy.
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
-        :param trainer_parameters: The trainer parameters.
+        :param trainer_settings: The trainer parameters.
         """
         self._version_number_ = 2
         self.m_size = 0
-        self.trainer_parameters = trainer_parameters
-        self.network_settings: NetworkSettings = trainer_parameters.network_settings
+        self.trainer_settings = trainer_settings
+        self.network_settings: NetworkSettings = trainer_settings.network_settings
         # for ghost trainer save/load snapshots
         self.assign_phs: List[tf.Tensor] = []
         self.assign_ops: List[tf.Operation] = []
@@ -72,9 +72,9 @@ class TFPolicy(Policy):
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = self.trainer_parameters.output_path
-        self.initialize_path = self.trainer_parameters.init_path
-        self.keep_checkpoints = self.trainer_parameters.keep_checkpoints
+        self.model_path = self.trainer_settings.output_path
+        self.initialize_path = self.trainer_settings.init_path
+        self.keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.graph = tf.Graph()
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
