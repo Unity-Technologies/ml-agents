@@ -137,9 +137,9 @@ def worker(
 
     def external_brains():
         result = {}
-        for brain_name in env.behavior_specs:
-            result[brain_name] = behavior_spec_to_brain_parameters(
-                brain_name, env.behavior_specs[brain_name]
+        for behavior_name, behavior_specs in env.behavior_specs.items():
+            result[behavior_name] = behavior_spec_to_brain_parameters(
+                behavior_name, behavior_specs
             )
         return result
 

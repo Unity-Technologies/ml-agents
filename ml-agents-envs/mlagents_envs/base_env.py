@@ -347,13 +347,13 @@ class BaseEnv(ABC):
 
     @property
     @abstractmethod
-    def behavior_specs(self) -> BehaviorMapping:
+    def behavior_specs(self) -> Mapping:
         """
         Returns a Mapping from behavior names to behavior specs.
         Agents grouped under the same behavior name have the same action and
         observation specs, and are expected to behave similarly in the
         environment.
-        Note that this mapping can grow and change as new policies are instantiated.
+        Note that new keys can be added to this mapping as new policies areinstantiated.
         """
 
     @abstractmethod
