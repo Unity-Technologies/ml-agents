@@ -363,7 +363,7 @@ class BaseEnv(ABC):
         Agents grouped under the same behavior name have the same action and
         observation specs, and are expected to behave similarly in the
         environment.
-        Note that new keys can be added to this mapping as new policies areinstantiated.
+        Note that new keys can be added to this mapping as new policies are instantiated.
         """
 
     @abstractmethod
