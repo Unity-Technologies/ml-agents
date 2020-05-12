@@ -498,6 +498,7 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
+            // TODO account for totalVectorSensorSize in error message
             totalVectorSensorSize += observableAttributeTotalSize;
 
             if (vecObsSizeBp * numStackedVector + totalVectorSensorSize != totalVecObsSizeT)

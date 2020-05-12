@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using Unity.Barracuda;
 using Unity.MLAgents.Policies;
@@ -105,8 +106,12 @@ namespace Unity.MLAgents.Editor
             var agent = behaviorParameters.GetComponent<Agent>();
             if (agent != null)
             {
-                // TODO check for invalid types and add HelpBox's
-                observableSensorSizes = ObservableAttribute.GetTotalObservationSize(agent);
+                List<string> observableErrors = new List<string>();
+                observableSensorSizes = ObservableAttribute.GetTotalObservationSize(agent, observableErrors);
+                foreach (var check in observableErrors)
+                {
+                    EditorGUILayout.HelpBox(check, MessageType.Warning);
+                }
             }
 
             var brainParameters = behaviorParameters.BrainParameters;

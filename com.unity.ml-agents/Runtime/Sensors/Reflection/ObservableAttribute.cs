@@ -27,29 +27,45 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_Name = name;
         }
 
-        internal static List<ISensor> GetObservableSensors(object o)
+        internal static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o)
         {
-            var sensorsOut = new List<ISensor>();
-
             var fields = o.GetType().GetFields(k_BindingFlags);
             foreach (var field in fields)
             {
                 var attr = (ObservableAttribute)GetCustomAttribute(field, typeof(ObservableAttribute));
                 if (attr != null)
                 {
-                    sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
+                    yield return (field, attr);
                 }
             }
+        }
 
+        internal static IEnumerable<(PropertyInfo, ObservableAttribute)> GetObservableProperties(object o)
+        {
             var properties = o.GetType().GetProperties(k_BindingFlags);
             foreach (var prop in properties)
             {
                 var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
                 if (attr != null)
                 {
-                    sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
+                    yield return (prop, attr);
                 }
             }
+        }
+
+        internal static List<ISensor> GetObservableSensors(object o)
+        {
+            var sensorsOut = new List<ISensor>();
+            foreach (var (field, attr) in GetObservableFields(o))
+            {
+                sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
+            }
+
+            foreach (var (prop, attr) in GetObservableProperties(o))
+            {
+                sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
+            }
+
             return sensorsOut;
         }
 
@@ -123,29 +139,34 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         }
 
-        internal static int GetTotalObservationSize(object o)
+        internal static int GetTotalObservationSize(object o, List<string> errorsOut)
         {
             int sizeOut = 0;
-
-            var fields = o.GetType().GetFields(k_BindingFlags);
-            foreach (var field in fields)
+            foreach (var (field, _) in GetObservableFields(o))
             {
-                var attr = (ObservableAttribute)GetCustomAttribute(field, typeof(ObservableAttribute));
-                if (attr != null)
+                if (s_TypeSizes.ContainsKey(field.FieldType))
                 {
                     sizeOut += s_TypeSizes[field.FieldType];
                 }
+                else
+                {
+                    errorsOut.Add($"Unsupported Observable type {field.FieldType.Name} on field {field.Name}");
+                }
             }
 
-            var properties = o.GetType().GetProperties(k_BindingFlags);
-            foreach (var prop in properties)
+            foreach (var (prop, _) in GetObservableProperties(o))
             {
-                var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
-                if (attr != null)
+
+                if (s_TypeSizes.ContainsKey(prop.PropertyType))
                 {
                     sizeOut += s_TypeSizes[prop.PropertyType];
                 }
+                else
+                {
+                    errorsOut.Add($"Unsupported Observable type {prop.PropertyType.Name} on field {prop.Name}");
+                }
             }
+
             return sizeOut;
         }
 

@@ -13,6 +13,10 @@ namespace Unity.MLAgents.Tests
     {
         class TestClass
         {
+            // Non-observables
+            int m_NonObservableInt;
+            float m_NonObservableFloat;
+
             //
             // Int
             //
@@ -155,26 +159,58 @@ namespace Unity.MLAgents.Tests
                 sensorsByName[sensor.GetName()] = sensor;
             }
 
-            SensorTestHelper.CompareObservation(sensorsByName["ObservableAttribute:TestClass.m_IntMember"], new[] {1.0f});
-            SensorTestHelper.CompareObservation(sensorsByName["ObservableAttribute:TestClass.IntProperty"], new[] {2.0f});
+            SensorTestHelper.CompareObservation(sensorsByName["ObservableAttribute:TestClass.m_IntMember"], new[] { 1.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["ObservableAttribute:TestClass.IntProperty"], new[] { 2.0f });
 
-            SensorTestHelper.CompareObservation(sensorsByName["floatMember"], new[] {1.1f});
-            SensorTestHelper.CompareObservation(sensorsByName["floatProperty"], new[] {1.2f});
+            SensorTestHelper.CompareObservation(sensorsByName["floatMember"], new[] { 1.1f });
+            SensorTestHelper.CompareObservation(sensorsByName["floatProperty"], new[] { 1.2f });
 
-            SensorTestHelper.CompareObservation(sensorsByName["boolMember"], new[] {1.0f});
-            SensorTestHelper.CompareObservation(sensorsByName["boolProperty"], new[] {1.0f});
+            SensorTestHelper.CompareObservation(sensorsByName["boolMember"], new[] { 1.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["boolProperty"], new[] { 1.0f });
 
-            SensorTestHelper.CompareObservation(sensorsByName["vector2Member"], new[] {2.0f, 2.1f});
-            SensorTestHelper.CompareObservation(sensorsByName["vector2Property"], new[] {2.2f, 2.3f});
+            SensorTestHelper.CompareObservation(sensorsByName["vector2Member"], new[] { 2.0f, 2.1f });
+            SensorTestHelper.CompareObservation(sensorsByName["vector2Property"], new[] { 2.2f, 2.3f });
 
-            SensorTestHelper.CompareObservation(sensorsByName["vector3Member"], new[] {3.0f, 3.1f, 3.2f});
-            SensorTestHelper.CompareObservation(sensorsByName["vector3Property"], new[] {3.3f, 3.4f, 3.5f});
+            SensorTestHelper.CompareObservation(sensorsByName["vector3Member"], new[] { 3.0f, 3.1f, 3.2f });
+            SensorTestHelper.CompareObservation(sensorsByName["vector3Property"], new[] { 3.3f, 3.4f, 3.5f });
 
-            SensorTestHelper.CompareObservation(sensorsByName["vector4Member"], new[] {4.0f, 4.1f, 4.2f, 4.3f});
-            SensorTestHelper.CompareObservation(sensorsByName["vector4Property"], new[] {4.4f, 4.5f, 4.5f, 4.7f});
+            SensorTestHelper.CompareObservation(sensorsByName["vector4Member"], new[] { 4.0f, 4.1f, 4.2f, 4.3f });
+            SensorTestHelper.CompareObservation(sensorsByName["vector4Property"], new[] { 4.4f, 4.5f, 4.5f, 4.7f });
 
-            SensorTestHelper.CompareObservation(sensorsByName["quaternionMember"], new[] {5.0f, 5.1f, 5.2f, 5.3f});
-            SensorTestHelper.CompareObservation(sensorsByName["quaternionProperty"], new[] {5.4f, 5.5f, 5.5f, 5.7f});
+            SensorTestHelper.CompareObservation(sensorsByName["quaternionMember"], new[] { 5.0f, 5.1f, 5.2f, 5.3f });
+            SensorTestHelper.CompareObservation(sensorsByName["quaternionProperty"], new[] { 5.4f, 5.5f, 5.5f, 5.7f });
+
+        }
+        [Test]
+        public void TestGetTotalObservationSize()
+        {
+            var testClass = new TestClass();
+            var errors = new List<string>();
+            var expectedObsSize = 2 * (1 + 1 + 1 + 2 + 3 + 4 + 4);
+            Assert.AreEqual(expectedObsSize, ObservableAttribute.GetTotalObservationSize(testClass, errors));
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        class BadClass
+        {
+            [Observable]
+            double m_Double;
+
+            [Observable]
+            double DoubleProperty
+            {
+                get => m_Double;
+                set => m_Double = value;
+            }
+        }
+
+        [Test]
+        public void TestGetTotalObservationSizeErrors()
+        {
+            var bad = new BadClass();
+            var errors = new List<string>();
+            Assert.AreEqual(0, ObservableAttribute.GetTotalObservationSize(bad, errors));
+            Assert.AreEqual(2, errors.Count);
         }
     }
 }
