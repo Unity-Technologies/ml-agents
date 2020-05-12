@@ -3602,13 +3602,13 @@ PrefabInstance:
     - target: {fileID: 3284846713654268850, guid: 001d1b295f8df4798b00a691b6882732,
         type: 3}
       propertyPath: targetSpawnRadius
-      value: 20
+      value: 40
       objectReference: {fileID: 0}
     - target: {fileID: 3284846713654268851, guid: 001d1b295f8df4798b00a691b6882732,
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 8b4174e75a11c4f0eb5958c04eeab1d1,
+      objectReference: {fileID: 11400000, guid: dc4712fd0c6584fb98db5490e6fff40d,
         type: 3}
     - target: {fileID: 5756232957735828584, guid: 001d1b295f8df4798b00a691b6882732,
         type: 3}

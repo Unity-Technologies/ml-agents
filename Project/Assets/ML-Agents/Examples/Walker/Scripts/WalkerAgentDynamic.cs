@@ -345,10 +345,10 @@ public class WalkerAgentDynamic : Agent
 //            facingReward * velReward //max reward is moving towards while facing otherwise it is a penalty
 //            +0.02f * Vector3.Dot(m_WalkDir.normalized, m_JdController.bodyPartsDict[hips].rb.velocity)
 //            + 0.02f * Vector3.Dot(m_OrientationCube.transform.forward,Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity,5))
-            +0.01f * Vector3.Dot(m_OrientationCube.transform.forward,
+            +0.02f * Vector3.Dot(m_OrientationCube.transform.forward,
                 Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, 5))
             + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
-            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
+//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, head.forward)
 
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, chest.rotation) //reward looking at
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
