@@ -124,7 +124,10 @@ namespace Unity.MLAgents.Editor
         static void DrawContinuousVectorAction(Rect position, SerializedProperty property)
         {
             var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
-            vecActionSize.arraySize = 1;
+            if (vecActionSize.arraySize != 1)
+            {
+                vecActionSize.arraySize = 1;
+            }
             var continuousActionSize =
                 vecActionSize.GetArrayElementAtIndex(0);
             EditorGUI.PropertyField(
@@ -142,8 +145,12 @@ namespace Unity.MLAgents.Editor
         static void DrawDiscreteVectorAction(Rect position, SerializedProperty property)
         {
             var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
-            vecActionSize.arraySize = EditorGUI.IntField(
+            var newSize = EditorGUI.IntField(
                 position, "Branches Size", vecActionSize.arraySize);
+            if (newSize != vecActionSize.arraySize)
+            {
+                vecActionSize.arraySize = newSize;
+            }
             position.y += k_LineHeight;
             position.x += 20;
             position.width -= 20;
