@@ -181,9 +181,10 @@ class TorchPolicy(Policy):
         )
 
         run_out = {}
-        action, log_probs, entropy, value_heads, memories = self.sample_actions(
-            vec_obs, vis_obs, masks=masks, memories=memories
-        )
+        with torch.no_grad():
+            action, log_probs, entropy, value_heads, memories = self.sample_actions(
+                vec_obs, vis_obs, masks=masks, memories=memories
+            )
         run_out["action"] = action.detach().numpy()
         run_out["pre_action"] = action.detach().numpy()
         # Todo - make pre_action difference
