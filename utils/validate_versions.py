@@ -39,9 +39,9 @@ def _escape_non_none(s: Optional[str]) -> str:
 
 def extract_version_string(filename):
     with open(filename) as f:
-        for l in f.readlines():
-            if l.startswith(VERSION_LINE_START):
-                return l.replace(VERSION_LINE_START, "").strip()
+        for line in f.readlines():
+            if line.startswith(VERSION_LINE_START):
+                return line.replace(VERSION_LINE_START, "").strip()
     return None
 
 
