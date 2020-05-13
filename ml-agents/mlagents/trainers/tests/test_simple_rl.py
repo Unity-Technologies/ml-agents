@@ -162,7 +162,7 @@ def _check_environment_trains(
 def test_simple_ppo(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = attr.evolve(PPO_CONFIG)
-    _check_environment_trains(env, config)
+    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
