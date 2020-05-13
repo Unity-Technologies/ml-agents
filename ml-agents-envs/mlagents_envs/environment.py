@@ -51,9 +51,6 @@ logger = get_logger(__name__)
 
 
 class UnityEnvironment(BaseEnv):
-    _SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
-    _SINGLE_BRAIN_ACTION_TYPES = _SCALAR_ACTION_TYPES + (list, np.ndarray)
-
     # Communication protocol version.
     # When connecting to C#, this must be compatible with Academy.k_ApiVersion.
     # We follow semantic versioning on the communication version, so existing
@@ -432,7 +429,7 @@ class UnityEnvironment(BaseEnv):
         :param arr: numpy vector.
         :return: flattened list.
         """
-        if isinstance(arr, cls._SCALAR_ACTION_TYPES):
+        if isinstance(arr, (int, np.int32, np.int64, float, np.float32, np.float64)):
             arr = [float(arr)]
         if isinstance(arr, np.ndarray):
             arr = arr.tolist()
