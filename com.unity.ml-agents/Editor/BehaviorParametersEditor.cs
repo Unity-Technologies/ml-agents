@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Editor
             if (agent != null)
             {
                 List<string> observableErrors = new List<string>();
-                observableSensorSizes = ObservableAttribute.GetTotalObservationSize(agent, observableErrors);
+                observableSensorSizes = ObservableAttribute.GetTotalObservationSize(agent, false, observableErrors);
                 foreach (var check in observableErrors)
                 {
                     EditorGUILayout.HelpBox(check, MessageType.Warning);

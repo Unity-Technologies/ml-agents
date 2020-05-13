@@ -35,9 +35,10 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_NumStackedObservations = numStackedObservations;
         }
 
-        internal static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o)
+        internal static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o, bool declaredOnly)
         {
-            var fields = o.GetType().GetFields(k_BindingFlags);
+            var bindingFlags = k_BindingFlags | (declaredOnly ? BindingFlags.DeclaredOnly : 0);
+            var fields = o.GetType().GetFields(bindingFlags);
             foreach (var field in fields)
             {
                 var attr = (ObservableAttribute)GetCustomAttribute(field, typeof(ObservableAttribute));
@@ -48,9 +49,11 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
         }
 
-        internal static IEnumerable<(PropertyInfo, ObservableAttribute)> GetObservableProperties(object o)
+        internal static IEnumerable<(PropertyInfo, ObservableAttribute)> GetObservableProperties(object o, bool declaredOnly)
         {
-            var properties = o.GetType().GetProperties(k_BindingFlags);
+            var bindingFlags = k_BindingFlags | (declaredOnly ? BindingFlags.DeclaredOnly : 0);
+            // TODO check PropertyInfo.CanRead or filter via bindingFlag
+            var properties = o.GetType().GetProperties(bindingFlags);
             foreach (var prop in properties)
             {
                 var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
@@ -61,15 +64,15 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
         }
 
-        internal static List<ISensor> GetObservableSensors(object o)
+        internal static List<ISensor> GetObservableSensors(object o, bool declaredOnly)
         {
             var sensorsOut = new List<ISensor>();
-            foreach (var (field, attr) in GetObservableFields(o))
+            foreach (var (field, attr) in GetObservableFields(o, declaredOnly))
             {
                 sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
             }
 
-            foreach (var (prop, attr) in GetObservableProperties(o))
+            foreach (var (prop, attr) in GetObservableProperties(o, declaredOnly))
             {
                 sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
             }
@@ -156,16 +159,12 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
 
             return sensor;
-
-
-
-
         }
 
-        internal static int GetTotalObservationSize(object o, List<string> errorsOut)
+        internal static int GetTotalObservationSize(object o, bool declaredOnly, List<string> errorsOut)
         {
             int sizeOut = 0;
-            foreach (var (field, attr) in GetObservableFields(o))
+            foreach (var (field, attr) in GetObservableFields(o, declaredOnly))
             {
                 if (s_TypeSizes.ContainsKey(field.FieldType))
                 {
@@ -177,7 +176,7 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
             }
 
-            foreach (var (prop, attr) in GetObservableProperties(o))
+            foreach (var (prop, attr) in GetObservableProperties(o, declaredOnly))
             {
 
                 if (s_TypeSizes.ContainsKey(prop.PropertyType))

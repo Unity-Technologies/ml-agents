@@ -397,7 +397,11 @@ namespace Unity.MLAgents
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             Initialize();
-            InitializeSensors();
+
+            using (TimerStack.Instance.Scoped("InitializeSensors"))
+            {
+                InitializeSensors();
+            }
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -818,29 +822,12 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
-//            // Iterate over Observables
-//            var fields = this.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-//            foreach (var field in fields)
-//            {
-//                var attr = (ObservableAttribute)Attribute.GetCustomAttribute(field, typeof(ObservableAttribute));
-//                if (attr != null)
-//                {
-//                    sensors.Add(new AttributeFieldSensor(this, field, attr));
-//                }
-//            }
-//
-//            var properties = this.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-//            foreach (var prop in properties)
-//            {
-//                var attr = (ObservableAttribute)Attribute.GetCustomAttribute(prop, typeof(ObservableAttribute));
-//                if (attr != null)
-//                {
-//                    sensors.Add(new AttributePropertySensor(this, prop, attr));
-//                }
-//            }
-
-            var observableSensors = ObservableAttribute.GetObservableSensors(this);
-            sensors.AddRange(observableSensors);
+            using (TimerStack.Instance.Scoped("GetObservableSensors"))
+            {
+                // TODO enum for whether or not to search full hierarchy
+                var observableSensors = ObservableAttribute.GetObservableSensors(this, false);
+                sensors.AddRange(observableSensors);
+            }
 
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
