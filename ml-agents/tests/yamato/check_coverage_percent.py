@@ -25,9 +25,9 @@ def check_coverage(root_dir, min_percentage):
         # Rather than try to parse the XML, just look for a line of the form
         # <Linecoverage>73.9</Linecoverage>
         lines = f.readlines()
-        for l in lines:
-            if "Linecoverage" in l:
-                pct = l.replace("<Linecoverage>", "").replace("</Linecoverage>", "")
+        for line in lines:
+            if "Linecoverage" in line:
+                pct = line.replace("<Linecoverage>", "").replace("</Linecoverage>", "")
                 pct = float(pct)
                 if pct < min_percentage:
                     print(
