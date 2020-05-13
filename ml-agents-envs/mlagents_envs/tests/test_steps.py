@@ -11,10 +11,10 @@ from mlagents_envs.base_env import (
 
 def test_decision_steps():
     ds = DecisionSteps(
-        obs=[np.array(range(12)).reshape(3, 4)],
-        reward=np.array(range(3)),
-        agent_id=np.array(range(10, 13)),
-        action_mask=[np.zeros((3, 4))],
+        obs=[np.array(range(12), dtype=np.float32).reshape(3, 4)],
+        reward=np.array(range(3), dtype=np.float32),
+        agent_id=np.array(range(10, 13), dtype=np.int32),
+        action_mask=[np.zeros((3, 4), dtype=np.bool)],
     )
 
     assert ds.agent_id_to_index[10] == 0
@@ -27,7 +27,7 @@ def test_decision_steps():
     mask_agent = ds[10].action_mask
     assert isinstance(mask_agent, list)
     assert len(mask_agent) == 1
-    assert np.array_equal(mask_agent[0], np.zeros((4)))
+    assert np.array_equal(mask_agent[0], np.zeros((4), dtype=np.bool))
 
     for agent_id in ds:
         assert ds.agent_id_to_index[agent_id] in range(3)
@@ -47,10 +47,10 @@ def test_empty_decision_steps():
 
 def test_terminal_steps():
     ts = TerminalSteps(
-        obs=[np.array(range(12)).reshape(3, 4)],
-        reward=np.array(range(3)),
-        agent_id=np.array(range(10, 13)),
-        interrupted=np.array([1, 0, 1]),
+        obs=[np.array(range(12), dtype=np.float32).reshape(3, 4)],
+        reward=np.array(range(3), dtype=np.float32),
+        agent_id=np.array(range(10, 13), dtype=np.int32),
+        interrupted=np.array([1, 0, 1], dtype=np.bool),
     )
 
     assert ts.agent_id_to_index[10] == 0
