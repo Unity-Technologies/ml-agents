@@ -220,7 +220,10 @@ namespace Unity.MLAgents
         [FormerlySerializedAs("maxStep")]
         [HideInInspector] public int MaxStep;
 
-        public enum ObservableAttributeBehavior
+        /// <summary>
+        /// Options for controlling how the Agent class is searched for <see cref="ObservableAttribute"/>s.
+        /// </summary>
+        public enum ObservableAttributeHandling
         {
             /// <summary>
             /// All ObservableAttributes on the Agent will be ignored. If there are no
@@ -246,6 +249,19 @@ namespace Unity.MLAgents
             /// </summary>
             ExamineAll
         }
+
+        [HideInInspector, SerializeField]
+        ObservableAttributeHandling m_observableAttributeBehavior = ObservableAttributeHandling.SkipInherited;
+
+        /// <summary>
+        /// Determines how the Agent class is searched for <see cref="ObservableAttribute"/>s.
+        /// </summary>
+        public ObservableAttributeHandling ObservableAttributeBehavior
+        {
+            get { return m_observableAttributeBehavior; }
+            set { m_observableAttributeBehavior = value; }
+        }
+
 
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
@@ -849,11 +865,14 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
-            using (TimerStack.Instance.Scoped("GetObservableSensors"))
+            if (ObservableAttributeBehavior != ObservableAttributeHandling.Ignore)
             {
-                // TODO enum for whether or not to search full hierarchy
-                var observableSensors = ObservableAttribute.GetObservableSensors(this, false);
-                sensors.AddRange(observableSensors);
+                var declaredOnly = (ObservableAttributeBehavior == ObservableAttributeHandling.SkipInherited);
+                using (TimerStack.Instance.Scoped("GetObservableSensors"))
+                {
+                    var observableSensors = ObservableAttribute.GetObservableSensors(this, declaredOnly);
+                    sensors.AddRange(observableSensors);
+                }
             }
 
             // Get all attached sensor components

@@ -136,7 +136,7 @@ namespace Unity.MLAgents.Tests
             BrainParametersProto.Parser.ParseDelimitedFrom(reader);
 
             var agentInfoProto = AgentInfoActionPairProto.Parser.ParseDelimitedFrom(reader).AgentInfo;
-            var obs = agentInfoProto.Observations[3]; // skip dummy sensors
+            var obs = agentInfoProto.Observations[2]; // skip dummy sensors
             {
                 var vecObs = obs.FloatData.Data;
                 Assert.AreEqual(bpA.BrainParameters.VectorObservationSize, vecObs.Count);
