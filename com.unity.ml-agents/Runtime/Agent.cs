@@ -220,6 +220,33 @@ namespace Unity.MLAgents
         [FormerlySerializedAs("maxStep")]
         [HideInInspector] public int MaxStep;
 
+        public enum ObservableAttributeBehavior
+        {
+            /// <summary>
+            /// All ObservableAttributes on the Agent will be ignored. If there are no
+            /// ObservableAttributes on the Agent, this will result in the fastest
+            /// initialization time.
+            /// </summary>
+            Ignore,
+
+            /// <summary>
+            /// Only members on the declared class will be examined; members that are
+            /// inherited are ignored. This is the default behavior, and a reasonable
+            /// tradeoff between performance and flexibility.
+            /// </summary>
+            /// <remarks>This corresponds to setting the
+            /// [BindingFlags.DeclaredOnly](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.bindingflags?view=netcore-3.1)
+            /// when examining the fields and properties of the Agent class instance.
+            /// </remarks>
+            SkipInherited,
+
+            /// <summary>
+            /// All members on the class will be examined. This can lead to slower
+            /// startup times
+            /// </summary>
+            ExamineAll
+        }
+
         /// Current Agent information (message sent to Brain).
         AgentInfo m_Info;
 

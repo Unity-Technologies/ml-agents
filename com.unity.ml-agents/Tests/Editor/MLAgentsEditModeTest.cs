@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
 
@@ -60,6 +61,9 @@ namespace Unity.MLAgents.Tests
         public int heuristicCalls;
         public TestSensor sensor1;
         public TestSensor sensor2;
+
+        [Observable("observableFloat")]
+        public float observableFloat;
 
         public override void Initialize()
         {
@@ -271,8 +275,9 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, agent2.agentActionCalls);
 
             // Make sure the Sensors were sorted
-            Assert.AreEqual(agent1.sensors[0].GetName(), "testsensor1");
-            Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor2");
+            Assert.AreEqual(agent1.sensors[0].GetName(), "observableFloat");
+            Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor1");
+            Assert.AreEqual(agent1.sensors[2].GetName(), "testsensor2");
         }
     }
 
