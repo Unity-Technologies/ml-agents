@@ -32,9 +32,9 @@ def test_initialization(mock_communicator, mock_launcher):
         # Non-None base port value will always be used
         (6001, "foo.exe", 6001),
         # No port specified and environment specified, so use BASE_ENVIRONMENT_PORT
-        (None, "foo.exe", UnityEnvironment._BASE_ENVIRONMENT_PORT),
+        (None, "foo.exe", UnityEnvironment.BASE_ENVIRONMENT_PORT),
         # No port specified and no environment, so use DEFAULT_EDITOR_PORT
-        (None, None, UnityEnvironment._DEFAULT_EDITOR_PORT),
+        (None, None, UnityEnvironment.DEFAULT_EDITOR_PORT),
     ],
 )
 @mock.patch("mlagents_envs.env_utils.launch_executable")

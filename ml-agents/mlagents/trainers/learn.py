@@ -153,7 +153,7 @@ def _create_parser():
     )
     argparser.add_argument(
         "--base-port",
-        default=5005,
+        default=UnityEnvironment.BASE_ENVIRONMENT_PORT,
         type=int,
         help="The starting port for environment communication. Each concurrent Unity environment "
         "instance will get assigned a port sequentially, starting from the base-port. Each instance "

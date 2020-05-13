@@ -62,11 +62,11 @@ class UnityEnvironment(BaseEnv):
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
-    _DEFAULT_EDITOR_PORT = 5004
+    DEFAULT_EDITOR_PORT = 5004
 
     # Default base port for environments. Each environment will be offset from this
     # by it's worker_id.
-    _BASE_ENVIRONMENT_PORT = 5005
+    BASE_ENVIRONMENT_PORT = 5005
 
     # Command line argument used to pass the port to the executable environment.
     _PORT_COMMAND_LINE_ARG = "--mlagents-port"
@@ -166,7 +166,7 @@ class UnityEnvironment(BaseEnv):
         # an environment, otherwise DEFAULT_EDITOR_PORT
         if base_port is None:
             base_port = (
-                self._BASE_ENVIRONMENT_PORT if file_name else self._DEFAULT_EDITOR_PORT
+                self.BASE_ENVIRONMENT_PORT if file_name else self.DEFAULT_EDITOR_PORT
             )
         self._port = base_port + worker_id
         self._buffer_size = 12000
