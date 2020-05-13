@@ -49,7 +49,7 @@ class UnityToGymWrapper(gym.Env):
         self._env = unity_env
 
         # Take a single step so that the brain information will be sent over
-        if not self._env.get_behavior_names():
+        if not self._env.behavior_specs:
             self._env.step()
 
         self.visual_obs = None
@@ -63,14 +63,14 @@ class UnityToGymWrapper(gym.Env):
         self._allow_multiple_visual_obs = allow_multiple_visual_obs
 
         # Check brain configuration
-        if len(self._env.get_behavior_names()) != 1:
+        if len(self._env.behavior_specs) != 1:
             raise UnityGymException(
                 "There can only be one behavior in a UnityEnvironment "
                 "if it is wrapped in a gym."
             )
 
-        self.name = self._env.get_behavior_names()[0]
-        self.group_spec = self._env.get_behavior_spec(self.name)
+        self.name = list(self._env.behavior_specs.keys())[0]
+        self.group_spec = self._env.behavior_specs[self.name]
 
         if use_visual and self._get_n_vis_obs() == 0:
             raise UnityGymException(

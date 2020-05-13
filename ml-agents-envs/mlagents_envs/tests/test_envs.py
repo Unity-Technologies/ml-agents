@@ -22,7 +22,7 @@ def test_initialization(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    assert env.get_behavior_names() == ["RealFakeBrain"]
+    assert list(env.behavior_specs.keys()) == ["RealFakeBrain"]
     env.close()
 
 
@@ -68,7 +68,7 @@ def test_reset(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_behavior_spec("RealFakeBrain")
+    spec = env.behavior_specs["RealFakeBrain"]
     env.reset()
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     env.close()
@@ -91,7 +91,7 @@ def test_step(mock_communicator, mock_launcher):
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(" ")
-    spec = env.get_behavior_spec("RealFakeBrain")
+    spec = env.behavior_specs["RealFakeBrain"]
     env.step()
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
