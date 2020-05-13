@@ -4,7 +4,7 @@ from distutils.version import StrictVersion
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional, Any, Tuple, Mapping as MappingType
+from typing import Dict, List, Optional, Tuple, Mapping as MappingType
 
 import mlagents_envs
 
@@ -421,28 +421,6 @@ class UnityEnvironment(BaseEnv):
                 self._proc1.kill()
             # Set to None so we don't try to close multiple times.
             self._proc1 = None
-
-    @classmethod
-    def _flatten(cls, arr: Any) -> List[float]:
-        """
-        Converts arrays to list.
-        :param arr: numpy vector.
-        :return: flattened list.
-        """
-        if isinstance(arr, (int, np.int32, np.int64, float, np.float32, np.float64)):
-            arr = [float(arr)]
-        if isinstance(arr, np.ndarray):
-            arr = arr.tolist()
-        if len(arr) == 0:
-            return arr
-        if isinstance(arr[0], np.ndarray):
-            # pylint: disable=no-member
-            arr = [item for sublist in arr for item in sublist.tolist()]
-        if isinstance(arr[0], list):
-            # pylint: disable=not-an-iterable
-            arr = [item for sublist in arr for item in sublist]
-        arr = [float(x) for x in arr]
-        return arr
 
     @timed
     def _generate_step_input(
