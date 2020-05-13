@@ -85,6 +85,7 @@ def test_load_save(dummy_config, tmp_path):
     trainer_params["output_path"] = path1
     policy = create_policy_mock(trainer_params)
     policy.initialize_or_load()
+    policy._set_step(2000)
     policy.save_model(2000)
 
     assert len(os.listdir(tmp_path)) > 0
@@ -93,6 +94,7 @@ def test_load_save(dummy_config, tmp_path):
     policy2 = create_policy_mock(trainer_params, load=True, seed=1)
     policy2.initialize_or_load()
     _compare_two_policies(policy, policy2)
+    assert policy2.get_current_step() == 2000
 
     # Try initialize from path 1
     trainer_params["model_path"] = path2
@@ -101,6 +103,8 @@ def test_load_save(dummy_config, tmp_path):
     policy3.initialize_or_load()
 
     _compare_two_policies(policy2, policy3)
+    # Assert that the steps are 0.
+    assert policy3.get_current_step() == 0
 
 
 def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
