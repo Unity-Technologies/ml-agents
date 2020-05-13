@@ -37,6 +37,7 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         internal static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o, bool declaredOnly)
         {
+            // TODO cache these (and properties) by type, so that we only have to reflect once.
             var bindingFlags = k_BindingFlags | (declaredOnly ? BindingFlags.DeclaredOnly : 0);
             var fields = o.GetType().GetFields(bindingFlags);
             foreach (var field in fields)
@@ -52,10 +53,14 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal static IEnumerable<(PropertyInfo, ObservableAttribute)> GetObservableProperties(object o, bool declaredOnly)
         {
             var bindingFlags = k_BindingFlags | (declaredOnly ? BindingFlags.DeclaredOnly : 0);
-            // TODO check PropertyInfo.CanRead or filter via bindingFlag
             var properties = o.GetType().GetProperties(bindingFlags);
             foreach (var prop in properties)
             {
+                if (!prop.CanRead)
+                {
+                    // Ignore write-only properties.
+                    continue;
+                }
                 var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
                 if (attr != null)
                 {

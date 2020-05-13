@@ -202,13 +202,22 @@ namespace Unity.MLAgents.Tests
                 get => m_Double;
                 set => m_Double = value;
             }
-            // TODO handle a set-only [Observable] property
+
+            float m_WriteOnlyProperty;
+
+            [Observable]
+            // No get property, so we shouldn't be able to make a sensor out of this.
+            public float WriteOnlyProperty
+            {
+                set => m_WriteOnlyProperty = value;
+            }
         }
 
         [Test]
         public void TestGetTotalObservationSizeErrors()
         {
             var bad = new BadClass();
+            bad.WriteOnlyProperty = 1.0f;
             var errors = new List<string>();
             Assert.AreEqual(0, ObservableAttribute.GetTotalObservationSize(bad, false, errors));
             Assert.AreEqual(2, errors.Count);
