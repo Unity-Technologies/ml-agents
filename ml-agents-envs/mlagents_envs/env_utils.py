@@ -7,6 +7,13 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.exception import UnityEnvironmentException
 
 
+def get_platform():
+    """
+    returns the platform of the operating system : linux, darwin or win32
+    """
+    return platform
+
+
 def validate_environment_path(env_path: str) -> Optional[str]:
     """
     Strip out executable extensions of the env_path
@@ -28,7 +35,7 @@ def validate_environment_path(env_path: str) -> Optional[str]:
     cwd = os.getcwd()
     launch_string = None
     true_filename = os.path.basename(os.path.normpath(env_path))
-    if platform == "linux" or platform == "linux2":
+    if get_platform() == "linux" or get_platform() == "linux2":
         candidates = glob.glob(os.path.join(cwd, env_path) + ".x86_64")
         if len(candidates) == 0:
             candidates = glob.glob(os.path.join(cwd, env_path) + ".x86")
@@ -39,7 +46,7 @@ def validate_environment_path(env_path: str) -> Optional[str]:
         if len(candidates) > 0:
             launch_string = candidates[0]
 
-    elif platform == "darwin":
+    elif get_platform() == "darwin":
         candidates = glob.glob(
             os.path.join(cwd, env_path + ".app", "Contents", "MacOS", true_filename)
         )
@@ -57,7 +64,7 @@ def validate_environment_path(env_path: str) -> Optional[str]:
             )
         if len(candidates) > 0:
             launch_string = candidates[0]
-    elif platform == "win32":
+    elif get_platform() == "win32":
         candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
         if len(candidates) == 0:
             candidates = glob.glob(env_path + ".exe")

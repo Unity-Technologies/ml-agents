@@ -4,7 +4,7 @@ from distutils.version import StrictVersion
 import numpy as np
 import os
 import subprocess
-from typing import Dict, List, Optional, Any, Tuple, Mapping as MappingType
+from typing import Dict, List, Optional, Tuple, Mapping as MappingType
 
 import mlagents_envs
 
@@ -51,9 +51,6 @@ logger = get_logger(__name__)
 
 
 class UnityEnvironment(BaseEnv):
-    SCALAR_ACTION_TYPES = (int, np.int32, np.int64, float, np.float32, np.float64)
-    SINGLE_BRAIN_ACTION_TYPES = SCALAR_ACTION_TYPES + (list, np.ndarray)
-
     # Communication protocol version.
     # When connecting to C#, this must be compatible with Academy.k_ApiVersion.
     # We follow semantic versioning on the communication version, so existing
@@ -70,7 +67,7 @@ class UnityEnvironment(BaseEnv):
     BASE_ENVIRONMENT_PORT = 5005
 
     # Command line argument used to pass the port to the executable environment.
-    PORT_COMMAND_LINE_ARG = "--mlagents-port"
+    _PORT_COMMAND_LINE_ARG = "--mlagents-port"
 
     @staticmethod
     def _raise_version_exception(unity_com_ver: str) -> None:
@@ -82,7 +79,7 @@ class UnityEnvironment(BaseEnv):
         )
 
     @staticmethod
-    def check_communication_compatibility(
+    def _check_communication_compatibility(
         unity_com_ver: str, python_api_version: str, unity_package_version: str
     ) -> bool:
         unity_communicator_version = StrictVersion(unity_com_ver)
@@ -114,13 +111,13 @@ class UnityEnvironment(BaseEnv):
         return True
 
     @staticmethod
-    def get_capabilities_proto() -> UnityRLCapabilitiesProto:
+    def _get_capabilities_proto() -> UnityRLCapabilitiesProto:
         capabilities = UnityRLCapabilitiesProto()
         capabilities.baseRLCapabilities = True
         return capabilities
 
     @staticmethod
-    def warn_csharp_base_capabilities(
+    def _warn_csharp_base_capabilities(
         caps: UnityRLCapabilitiesProto, unity_package_ver: str, python_package_ver: str
     ) -> None:
         if not caps.baseRLCapabilities:
@@ -161,25 +158,25 @@ class UnityEnvironment(BaseEnv):
         :str log_folder: Optional folder to write the Unity Player log file into.  Requires absolute path.
         """
         atexit.register(self._close)
-        self.additional_args = additional_args or []
-        self.no_graphics = no_graphics
+        self._additional_args = additional_args or []
+        self._no_graphics = no_graphics
         # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
         # an environment, otherwise DEFAULT_EDITOR_PORT
         if base_port is None:
             base_port = (
                 self.BASE_ENVIRONMENT_PORT if file_name else self.DEFAULT_EDITOR_PORT
             )
-        self.port = base_port + worker_id
+        self._port = base_port + worker_id
         self._buffer_size = 12000
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
-        self.proc1 = None
-        self.timeout_wait: int = timeout_wait
-        self.communicator = self.get_communicator(worker_id, base_port, timeout_wait)
-        self.worker_id = worker_id
-        self.side_channel_manager = SideChannelManager(side_channels)
-        self.log_folder = log_folder
+        self._proc1 = None
+        self._timeout_wait: int = timeout_wait
+        self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
+        self._worker_id = worker_id
+        self._side_channel_manager = SideChannelManager(side_channels)
+        self._log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -191,15 +188,15 @@ class UnityEnvironment(BaseEnv):
             )
         if file_name is not None:
             try:
-                self.proc1 = env_utils.launch_executable(
-                    file_name, self.executable_args()
+                self._proc1 = env_utils.launch_executable(
+                    file_name, self._executable_args()
                 )
             except UnityEnvironmentException:
                 self._close(0)
                 raise
         else:
             logger.info(
-                f"Listening on port {self.port}. "
+                f"Listening on port {self._port}. "
                 f"Start training by pressing the Play button in the Unity Editor."
             )
         self._loaded = True
@@ -208,16 +205,16 @@ class UnityEnvironment(BaseEnv):
             seed=seed,
             communication_version=self.API_VERSION,
             package_version=mlagents_envs.__version__,
-            capabilities=UnityEnvironment.get_capabilities_proto(),
+            capabilities=UnityEnvironment._get_capabilities_proto(),
         )
         try:
-            aca_output = self.send_academy_parameters(rl_init_parameters_in)
+            aca_output = self._send_academy_parameters(rl_init_parameters_in)
             aca_params = aca_output.rl_initialization_output
         except UnityTimeOutException:
             self._close(0)
             raise
 
-        if not UnityEnvironment.check_communication_compatibility(
+        if not UnityEnvironment._check_communication_compatibility(
             aca_params.communication_version,
             UnityEnvironment.API_VERSION,
             aca_params.package_version,
@@ -225,7 +222,7 @@ class UnityEnvironment(BaseEnv):
             self._close(0)
             UnityEnvironment._raise_version_exception(aca_params.communication_version)
 
-        UnityEnvironment.warn_csharp_base_capabilities(
+        UnityEnvironment._warn_csharp_base_capabilities(
             aca_params.capabilities,
             aca_params.package_version,
             UnityEnvironment.API_VERSION,
@@ -238,21 +235,21 @@ class UnityEnvironment(BaseEnv):
         self._update_behavior_specs(aca_output)
 
     @staticmethod
-    def get_communicator(worker_id, base_port, timeout_wait):
+    def _get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
-    def executable_args(self) -> List[str]:
+    def _executable_args(self) -> List[str]:
         args: List[str] = []
-        if self.no_graphics:
+        if self._no_graphics:
             args += ["-nographics", "-batchmode"]
-        args += [UnityEnvironment.PORT_COMMAND_LINE_ARG, str(self.port)]
-        if self.log_folder:
+        args += [UnityEnvironment._PORT_COMMAND_LINE_ARG, str(self._port)]
+        if self._log_folder:
             log_file_path = os.path.join(
-                self.log_folder, f"Player-{self.worker_id}.log"
+                self._log_folder, f"Player-{self._worker_id}.log"
             )
             args += ["-logFile", log_file_path]
         # Add in arguments passed explicitly by the user.
-        args += self.additional_args
+        args += self._additional_args
         return args
 
     def _update_behavior_specs(self, output: UnityOutputProto) -> None:
@@ -282,11 +279,11 @@ class UnityEnvironment(BaseEnv):
                     DecisionSteps.empty(self._env_specs[brain_name]),
                     TerminalSteps.empty(self._env_specs[brain_name]),
                 )
-        self.side_channel_manager.process_side_channel_message(output.side_channel)
+        self._side_channel_manager.process_side_channel_message(output.side_channel)
 
     def reset(self) -> None:
         if self._loaded:
-            outputs = self.communicator.exchange(self._generate_reset_input())
+            outputs = self._communicator.exchange(self._generate_reset_input())
             if outputs is None:
                 raise UnityCommunicatorStoppedException("Communicator has exited.")
             self._update_behavior_specs(outputs)
@@ -314,7 +311,7 @@ class UnityEnvironment(BaseEnv):
                 ].create_empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
-            outputs = self.communicator.exchange(step_input)
+            outputs = self._communicator.exchange(step_input)
         if outputs is None:
             raise UnityCommunicatorStoppedException("Communicator has exited.")
         self._update_behavior_specs(outputs)
@@ -342,9 +339,9 @@ class UnityEnvironment(BaseEnv):
         expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The behavior {0} needs an input of dimension {1} but received input of dimension {2}".format(
-                    behavior_name, expected_shape, action.shape
-                )
+                "The behavior {0} needs an input of dimension {1} for "
+                "(<number of agents>, <action size>) but received input of "
+                "dimension {2}".format(behavior_name, expected_shape, action.shape)
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
@@ -408,44 +405,22 @@ class UnityEnvironment(BaseEnv):
             force-killing it.  Defaults to `self.timeout_wait`.
         """
         if timeout is None:
-            timeout = self.timeout_wait
+            timeout = self._timeout_wait
         self._loaded = False
-        self.communicator.close()
-        if self.proc1 is not None:
+        self._communicator.close()
+        if self._proc1 is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self.proc1.wait(timeout=timeout)
-                signal_name = self.returncode_to_signal_name(self.proc1.returncode)
+                self._proc1.wait(timeout=timeout)
+                signal_name = self._returncode_to_signal_name(self._proc1.returncode)
                 signal_name = f" ({signal_name})" if signal_name else ""
-                return_info = f"Environment shut down with return code {self.proc1.returncode}{signal_name}."
+                return_info = f"Environment shut down with return code {self._proc1.returncode}{signal_name}."
                 logger.info(return_info)
             except subprocess.TimeoutExpired:
                 logger.info("Environment timed out shutting down. Killing...")
-                self.proc1.kill()
+                self._proc1.kill()
             # Set to None so we don't try to close multiple times.
-            self.proc1 = None
-
-    @classmethod
-    def _flatten(cls, arr: Any) -> List[float]:
-        """
-        Converts arrays to list.
-        :param arr: numpy vector.
-        :return: flattened list.
-        """
-        if isinstance(arr, cls.SCALAR_ACTION_TYPES):
-            arr = [float(arr)]
-        if isinstance(arr, np.ndarray):
-            arr = arr.tolist()
-        if len(arr) == 0:
-            return arr
-        if isinstance(arr[0], np.ndarray):
-            # pylint: disable=no-member
-            arr = [item for sublist in arr for item in sublist.tolist()]
-        if isinstance(arr[0], list):
-            # pylint: disable=not-an-iterable
-            arr = [item for sublist in arr for item in sublist]
-        arr = [float(x) for x in arr]
-        return arr
+            self._proc1 = None
 
     @timed
     def _generate_step_input(
@@ -461,33 +436,33 @@ class UnityEnvironment(BaseEnv):
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
         rl_in.side_channel = bytes(
-            self.side_channel_manager.generate_side_channel_messages()
+            self._side_channel_manager.generate_side_channel_messages()
         )
-        return self.wrap_unity_input(rl_in)
+        return self._wrap_unity_input(rl_in)
 
     def _generate_reset_input(self) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         rl_in.command = RESET
         rl_in.side_channel = bytes(
-            self.side_channel_manager.generate_side_channel_messages()
+            self._side_channel_manager.generate_side_channel_messages()
         )
-        return self.wrap_unity_input(rl_in)
+        return self._wrap_unity_input(rl_in)
 
-    def send_academy_parameters(
+    def _send_academy_parameters(
         self, init_parameters: UnityRLInitializationInputProto
     ) -> UnityOutputProto:
         inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
-        return self.communicator.initialize(inputs)
+        return self._communicator.initialize(inputs)
 
     @staticmethod
-    def wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:
+    def _wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:
         result = UnityInputProto()
         result.rl_input.CopyFrom(rl_input)
         return result
 
     @staticmethod
-    def returncode_to_signal_name(returncode: int) -> Optional[str]:
+    def _returncode_to_signal_name(returncode: int) -> Optional[str]:
         """
         Try to convert return codes into their corresponding signal name.
         E.g. returncode_to_signal_name(-2) -> "SIGINT"

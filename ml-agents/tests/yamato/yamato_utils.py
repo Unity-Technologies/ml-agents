@@ -149,7 +149,7 @@ def undo_git_checkout():
     subprocess.check_call("git reset HEAD .", shell=True)
     subprocess.check_call("git checkout -- .", shell=True)
     # Ensure the cache isn't polluted with old compiled assemblies.
-    subprocess.check_call(f"rm -rf Project/Library", shell=True)
+    subprocess.check_call("rm -rf Project/Library", shell=True)
 
 
 def override_config_file(src_path, dest_path, **kwargs):

@@ -356,7 +356,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             os.path.join(base_path, options.run_id) if options.initialize_from else None
         )
         run_logs_dir = os.path.join(write_path, "run_logs")
-        port = options.base_port
+        port: Optional[int] = options.base_port
         # Check if directory exists
         handle_existing_directories(
             write_path, options.resume, options.force, maybe_init_path
@@ -381,7 +381,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         StatsReporter.add_writer(console_writer)
 
         if options.env_path is None:
-            port = UnityEnvironment.DEFAULT_EDITOR_PORT
+            port = None
         env_factory = create_environment_factory(
             options.env_path,
             options.no_graphics,
@@ -504,7 +504,7 @@ def create_environment_factory(
     env_path: Optional[str],
     no_graphics: bool,
     seed: int,
-    start_port: int,
+    start_port: Optional[int],
     env_args: Optional[List[str]],
     log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
