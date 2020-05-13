@@ -209,7 +209,7 @@ class TrainerSettings(ExportableSettings):
 
     @hyperparameters.default
     def _set_default_hyperparameters(self):
-        return self.trainer_type.to_settings()
+        return self.trainer_type.to_settings()()
 
     network_settings: NetworkSettings = attr.ib(default=NetworkSettings())
     reward_signals: Dict[RewardSignalType, RewardSignalSettings] = {
