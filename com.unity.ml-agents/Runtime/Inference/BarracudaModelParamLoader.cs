@@ -498,7 +498,6 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
-            // TODO account for totalVectorSensorSize in error message
             totalVectorSensorSize += observableAttributeTotalSize;
 
             if (vecObsSizeBp * numStackedVector + totalVectorSensorSize != totalVecObsSizeT)
@@ -522,7 +521,9 @@ namespace Unity.MLAgents.Inference
 
                 sensorSizes += "]";
                 return $"Vector Observation Size of the model does not match. Was expecting {totalVecObsSizeT} " +
-                    $"but received {vecObsSizeBp} x {numStackedVector} vector observations and " +
+                    $"but received: \n" +
+                    $"Vector observations: {vecObsSizeBp} x {numStackedVector}\n" +
+                    $"Total [Observable] attributes: {observableAttributeTotalSize}\n"+
                     $"SensorComponent sizes: {sensorSizes}.";
             }
             return null;
