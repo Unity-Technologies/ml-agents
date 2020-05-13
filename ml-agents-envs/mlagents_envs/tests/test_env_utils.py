@@ -28,10 +28,6 @@ def mock_glob_method(path):
     return []
 
 
-def mock_permission_error_popen(*args, **kwargs):
-    raise PermissionError("Fake permission error")
-
-
 @mock.patch("sys.platform")
 @mock.patch("glob.glob")
 def test_validate_path_empty(glob_mock, platform_mock):
@@ -57,7 +53,7 @@ def test_launch_executable(mock_popen, glob_mock):
         launch_executable(" ", [])
     glob_mock.return_value = ["FakeLaunchPath"]
     launch_executable(" ", [])
-    mock_popen.side_effect = mock_permission_error_popen
+    mock_popen.side_effect = PermissionError("Fake permission error")
     with pytest.raises(UnityEnvironmentException):
         launch_executable(" ", [])
 
