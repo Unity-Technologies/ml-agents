@@ -27,8 +27,6 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         public ReflectionSensorBase(ReflectionSensorInfo reflectionSensorInfo, int size)
         {
-            // TODO 2 constructors?
-
             m_Object = reflectionSensorInfo.Object;
             m_FieldInfo = reflectionSensorInfo.FieldInfo;
             m_PropertyInfo = reflectionSensorInfo.PropertyInfo;
