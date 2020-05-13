@@ -28,7 +28,7 @@ repos:
         args: [--ignore-missing-imports, --disallow-incomplete-defs]
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
     -   id: mixed-line-ending
         exclude: >
