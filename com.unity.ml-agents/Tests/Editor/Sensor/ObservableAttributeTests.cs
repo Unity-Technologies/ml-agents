@@ -251,7 +251,7 @@ namespace Unity.MLAgents.Tests
         class BaseClass
         {
             [Observable("base")]
-            protected float m_BaseField;
+            public float m_BaseField;
 
             [Observable("private")]
             float m_PrivateField;
@@ -267,6 +267,7 @@ namespace Unity.MLAgents.Tests
         public void TestObservableAttributeDeclaredOnly()
         {
             var d = new DerivedClass();
+            d.m_BaseField = 1.0f;
 
             // declaredOnly=false will get fields in the derived class, plus public and protected inherited fields
             var sensorAll = ObservableAttribute.GetObservableSensors(d, false);

@@ -5,6 +5,44 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Sensors.Reflection
 {
+    /// <summary>
+    /// Specify that a field or property should be used to generate observations for an Agent.
+    /// For each field or property that uses ObservableAttribute, a corresponding
+    /// <see cref="ISensor"/> will be created during Agent initialization, and this
+    /// sensor will read the values during training and inference.
+    /// </summary>
+    /// <remarks>
+    /// ObservableAttribute is intended to make initial setup of an Agent easier. Because it
+    /// uses reflection to read the values of fields and properties at runtime, this may
+    /// be much slower than reading the values directly. If the performance of
+    /// ObservableAttribute is an issue, you can get the same functionality by overriding
+    /// <see cref="Agent.CollectObservations(VectorSensor)"/> or creating a custom
+    /// <see cref="ISensor"/> implementation to read the values without reflection.
+    ///
+    /// Note that you do not need to adjust the VectorObservationSize in
+    /// <see cref="Unity.MLAgents.Policies.BrainParameters"/> when adding ObservableAttribute
+    /// to fields or properties.
+    /// </remarks>
+    /// <example>
+    /// This sample class will produce two observations, one for the m_Health field, and one
+    /// for the HealthPercent property.
+    /// <code>
+    /// using Unity.MLAgents;
+    /// using Unity.MLAgents.Sensors.Reflection;
+    ///
+    /// public class MyAgent : Agent
+    /// {
+    ///     [Observable]
+    ///     int m_Health;
+    ///
+    ///     [Observable]
+    ///     float HealthPercent
+    ///     {
+    ///         get => return 100.0f * m_Health / float(m_MaxHealth);
+    ///     }
+    /// }
+    /// </code>
+    /// </example>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
     public class ObservableAttribute : Attribute
     {
@@ -29,7 +67,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         /// <param name="name">Optional override for the sensor name. Note that all sensors for an Agent
         /// must have a unique name.</param>
         /// <param name="numStackedObservations">Number of frames to concatenate observations from.</param>
-        public ObservableAttribute(string name=null, int numStackedObservations=1)
+        public ObservableAttribute(string name = null, int numStackedObservations = 1)
         {
             m_Name = name;
             m_NumStackedObservations = numStackedObservations;
@@ -72,12 +110,12 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal static List<ISensor> GetObservableSensors(object o, bool declaredOnly)
         {
             var sensorsOut = new List<ISensor>();
-            foreach (var (field, attr) in GetObservableFields(o, declaredOnly))
+            foreach (var(field, attr) in GetObservableFields(o, declaredOnly))
             {
                 sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
             }
 
-            foreach (var (prop, attr) in GetObservableProperties(o, declaredOnly))
+            foreach (var(prop, attr) in GetObservableProperties(o, declaredOnly))
             {
                 sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
             }
@@ -129,7 +167,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
             if (memberType == typeof(float))
             {
-                sensor = new  FloatReflectionSensor(reflectionSensorInfo);
+                sensor = new FloatReflectionSensor(reflectionSensorInfo);
             }
             if (memberType == typeof(bool))
             {
@@ -169,7 +207,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal static int GetTotalObservationSize(object o, bool declaredOnly, List<string> errorsOut)
         {
             int sizeOut = 0;
-            foreach (var (field, attr) in GetObservableFields(o, declaredOnly))
+            foreach (var(field, attr) in GetObservableFields(o, declaredOnly))
             {
                 if (s_TypeSizes.ContainsKey(field.FieldType))
                 {
@@ -181,9 +219,8 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
             }
 
-            foreach (var (prop, attr) in GetObservableProperties(o, declaredOnly))
+            foreach (var(prop, attr) in GetObservableProperties(o, declaredOnly))
             {
-
                 if (s_TypeSizes.ContainsKey(prop.PropertyType))
                 {
                     sizeOut += s_TypeSizes[prop.PropertyType] * attr.m_NumStackedObservations;
@@ -196,7 +233,5 @@ namespace Unity.MLAgents.Sensors.Reflection
 
             return sizeOut;
         }
-
     }
-
 }
