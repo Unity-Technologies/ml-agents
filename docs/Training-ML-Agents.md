@@ -390,7 +390,7 @@ The curriculum for each Behavior has the following parameters:
 #### Training with a Curriculum
 
 Once we have specified our metacurriculum and curricula, we can launch
-`mlagents-learn` using the `–curriculum` flag to point to the config file for
+`mlagents-learn` using the config file for
 our curricula and PPO will train using Curriculum Learning. For example, to
 train agents in the Wall Jump environment with curriculum learning, we can run:
 
