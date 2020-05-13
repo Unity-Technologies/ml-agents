@@ -23,8 +23,9 @@ from mlagents.trainers.settings import (
     NetworkSettings,
     SelfPlaySettings,
     BehavioralCloningSettings,
-    RewardSignalSettings,
     GAILSettings,
+    TrainerType,
+    RewardSignalType,
 )
 from mlagents.trainers.models import LearningRateSchedule, EncoderType
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -40,7 +41,7 @@ BRAIN_NAME = "1D"
 
 
 PPO_CONFIG = TrainerSettings(
-    trainer_type=TrainerSettings.TrainerType.PPO,
+    trainer_type=TrainerType.PPO,
     hyperparameters=PPOSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=LearningRateSchedule.CONSTANT,
@@ -54,7 +55,7 @@ PPO_CONFIG = TrainerSettings(
 )
 
 SAC_CONFIG = TrainerSettings(
-    trainer_type=TrainerSettings.TrainerType.SAC,
+    trainer_type=TrainerType.SAC,
     hyperparameters=SACSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=LearningRateSchedule.CONSTANT,
@@ -433,9 +434,7 @@ def test_gail(simple_record, use_discrete, trainer_config):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
-        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
-            encoding_size=32, demo_path=demo_path
-        )
+        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
     config = attr.evolve(
         trainer_config,
@@ -458,9 +457,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
-        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
-            encoding_size=32, demo_path=demo_path
-        )
+        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
     hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3e-4)
     config = attr.evolve(
@@ -485,9 +482,7 @@ def test_gail_visual_sac(simple_record, use_discrete):
     )
     bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
     reward_signals = {
-        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
-            encoding_size=32, demo_path=demo_path
-        )
+        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
     hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters, learning_rate=3e-4, batch_size=16

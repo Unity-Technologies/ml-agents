@@ -46,13 +46,12 @@ def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
                 raise TrainerConfigError(
                     "Hyperparameters were specified but no trainer_type was given."
                 )
-
             else:
                 d_copy[key] = strict_to_cls(
-                    d_copy[key], TrainerSettings.to_settings(d_copy["trainer_type"])
+                    d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
                 )
         elif key == "reward_signals":
-            d_copy[key] = rewardsignal_settings_to_cls(val)
+            d_copy[key] = RewardSignalSettings.structure_from_dict(val)
         elif key == "max_steps":
             d_copy[key] = int(
                 float(val)
@@ -62,29 +61,8 @@ def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
     return t(**d_copy)
 
 
-def rewardsignal_settings_to_cls(d: Mapping) -> Any:
-    if d is None:
-        return None
-    d_final: Dict[RewardSignalSettings.RewardSignalType, RewardSignalSettings] = {}
-
-    for key, val in d.items():
-        try:
-            enum_key = RewardSignalSettings.RewardSignalType(key)
-            t = RewardSignalSettings.to_settings(enum_key)
-            d_final[enum_key] = strict_to_cls(val, t)
-        except KeyError:
-            raise TrainerConfigError(f"Unknown reward signal type {key}")
-    return d_final
-
-
 def defaultdict_to_dict(d: DefaultDict) -> Dict:
     return {key: cattr.unstructure(val) for key, val in d.items()}
-
-
-def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
-    return collections.defaultdict(
-        TrainerSettings, cattr.structure(d, Dict[str, TrainerSettings])
-    )
 
 
 @attr.s(auto_attribs=True)
@@ -150,24 +128,38 @@ class SACSettings(HyperparamSettings):
         return self.steps_per_update
 
 
+class RewardSignalType(Enum):
+    EXTRINSIC: str = "extrinsic"
+    GAIL: str = "gail"
+    CURIOSITY: str = "curiosity"
+
+    def to_settings(self) -> type:
+        _mapping = {
+            RewardSignalType.EXTRINSIC: RewardSignalSettings,
+            RewardSignalType.GAIL: GAILSettings,
+            RewardSignalType.CURIOSITY: CuriositySettings,
+        }
+        return _mapping[self]
+
+
 @attr.s(auto_attribs=True)
 class RewardSignalSettings:
-    class RewardSignalType(Enum):
-        EXTRINSIC: str = "extrinsic"
-        GAIL: str = "gail"
-        CURIOSITY: str = "curiosity"
-
-    @staticmethod
-    def to_settings(ttype: RewardSignalType) -> type:
-        _mapping = {
-            RewardSignalSettings.RewardSignalType.EXTRINSIC: RewardSignalSettings,
-            RewardSignalSettings.RewardSignalType.GAIL: GAILSettings,
-            RewardSignalSettings.RewardSignalType.CURIOSITY: CuriositySettings,
-        }
-        return _mapping[ttype]
-
     gamma: float = 0.99
     strength: float = 1.0
+
+    @staticmethod
+    def structure_from_dict(d: Mapping) -> Any:
+        if d is None:
+            return None
+        d_final: Dict[RewardSignalType, RewardSignalSettings] = {}
+        for key, val in d.items():
+            try:
+                enum_key = RewardSignalType(key)
+                t = enum_key.to_settings()
+                d_final[enum_key] = strict_to_cls(val, t)
+            except KeyError:
+                raise TrainerConfigError(f"Unknown reward signal type {key}")
+        return d_final
 
 
 @attr.s(auto_attribs=True)
@@ -201,34 +193,28 @@ class SelfPlaySettings:
     initial_elo: float = 1200.0
 
 
+class TrainerType(Enum):
+    PPO: str = "ppo"
+    SAC: str = "sac"
+
+    def to_settings(self) -> type:
+        _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings}
+        return _mapping[self]
+
+
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
-    # Edit these two fields to add new trainers #
-    class TrainerType(Enum):
-        PPO: str = "ppo"
-        SAC: str = "sac"
-
-    @staticmethod
-    def to_settings(ttype: TrainerType) -> type:
-        _mapping = {
-            TrainerSettings.TrainerType.PPO: PPOSettings,
-            TrainerSettings.TrainerType.SAC: SACSettings,
-        }
-        return _mapping[ttype]
-
-    ###############################################
-
     trainer_type: TrainerType = TrainerType.PPO
     hyperparameters: HyperparamSettings = attr.ib()
 
     @hyperparameters.default
     def _set_default_hyperparameters(self):
-        return TrainerSettings.to_settings(self.trainer_type)()
+        return self.trainer_type.to_settings()
 
     network_settings: NetworkSettings = attr.ib(default=NetworkSettings())
-    reward_signals: Dict[
-        RewardSignalSettings.RewardSignalType, RewardSignalSettings
-    ] = {RewardSignalSettings.RewardSignalType.EXTRINSIC: RewardSignalSettings()}
+    reward_signals: Dict[RewardSignalType, RewardSignalSettings] = {
+        RewardSignalType.EXTRINSIC: RewardSignalSettings()
+    }
     init_path: Optional[str] = None
     output_path: str = "default"
     # TODO: Remove parser default and remove from CLI
@@ -251,7 +237,11 @@ class TrainerSettings(ExportableSettings):
                     "When using memory, sequence length must be less than or equal to batch size. "
                 )
 
-    cattr.register_structure_hook(RewardSignalSettings, rewardsignal_settings_to_cls)
+    @staticmethod
+    def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
+        return collections.defaultdict(
+            TrainerSettings, cattr.structure(d, Dict[str, TrainerSettings])
+        )
 
 
 @attr.s(auto_attribs=True)
@@ -321,7 +311,7 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(TrainerSettings, trainer_settings_to_cls)
     cattr.register_structure_hook(
-        DefaultDict[str, TrainerSettings], dict_to_defaultdict
+        DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
 

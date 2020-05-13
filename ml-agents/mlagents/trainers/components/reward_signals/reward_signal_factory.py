@@ -9,20 +9,18 @@ from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.settings import RewardSignalSettings
+from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 
 
-NAME_TO_CLASS: Dict[RewardSignalSettings.RewardSignalType, Type[RewardSignal]] = {
-    RewardSignalSettings.RewardSignalType.EXTRINSIC: ExtrinsicRewardSignal,
-    RewardSignalSettings.RewardSignalType.CURIOSITY: CuriosityRewardSignal,
-    RewardSignalSettings.RewardSignalType.GAIL: GAILRewardSignal,
+NAME_TO_CLASS: Dict[RewardSignalType, Type[RewardSignal]] = {
+    RewardSignalType.EXTRINSIC: ExtrinsicRewardSignal,
+    RewardSignalType.CURIOSITY: CuriosityRewardSignal,
+    RewardSignalType.GAIL: GAILRewardSignal,
 }
 
 
 def create_reward_signal(
-    policy: TFPolicy,
-    name: RewardSignalSettings.RewardSignalType,
-    settings: RewardSignalSettings,
+    policy: TFPolicy, name: RewardSignalType, settings: RewardSignalSettings
 ) -> RewardSignal:
     """
     Creates a reward signal class based on the name and config entry provided as a dict.

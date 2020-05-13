@@ -12,7 +12,8 @@ from mlagents.trainers.settings import (
     RewardSignalSettings,
     BehavioralCloningSettings,
     NetworkSettings,
-    TrainerSettings,
+    TrainerType,
+    RewardSignalType,
 )
 
 CONTINUOUS_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
@@ -29,21 +30,17 @@ def sac_dummy_config():
 
 @pytest.fixture
 def gail_dummy_config():
-    return {
-        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
-            demo_path=CONTINUOUS_PATH
-        )
-    }
+    return {RewardSignalType.GAIL: GAILSettings(demo_path=CONTINUOUS_PATH)}
 
 
 @pytest.fixture
 def curiosity_dummy_config():
-    return {RewardSignalSettings.RewardSignalType.CURIOSITY: CuriositySettings()}
+    return {RewardSignalType.CURIOSITY: CuriositySettings()}
 
 
 @pytest.fixture
 def extrinsic_dummy_config():
-    return {RewardSignalSettings.RewardSignalType.EXTRINSIC: RewardSignalSettings()}
+    return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
 
 
 VECTOR_ACTION_SPACE = [2]
@@ -74,7 +71,7 @@ def create_optimizer_mock(
     policy = NNPolicy(
         0, mock_brain, trainer_settings, False, False, create_tf_graph=False
     )
-    if trainer_settings.trainer_type == TrainerSettings.TrainerType.SAC:
+    if trainer_settings.trainer_type == TrainerType.SAC:
         optimizer = SACOptimizer(policy, trainer_settings)
     else:
         optimizer = PPOOptimizer(policy, trainer_settings)
@@ -119,9 +116,7 @@ def test_gail_cc(trainer_config, gail_dummy_config):
 )
 def test_gail_dc_visual(trainer_config, gail_dummy_config):
     gail_dummy_config_discrete = {
-        RewardSignalSettings.RewardSignalType.GAIL: GAILSettings(
-            demo_path=DISCRETE_PATH
-        )
+        RewardSignalType.GAIL: GAILSettings(demo_path=DISCRETE_PATH)
     }
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config_discrete, False, True, True
