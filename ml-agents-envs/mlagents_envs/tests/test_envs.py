@@ -9,14 +9,14 @@ from mlagents_envs.exception import UnityEnvironmentException, UnityActionExcept
 from mlagents_envs.mock_communicator import MockCommunicator
 
 
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_handles_bad_filename(get_communicator):
     with pytest.raises(UnityEnvironmentException):
         UnityEnvironment(" ")
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_initialization(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -38,7 +38,7 @@ def test_initialization(mock_communicator, mock_launcher):
     ],
 )
 @mock.patch("mlagents_envs.env_utils.launch_executable")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_port_defaults(
     mock_communicator, mock_launcher, base_port, file_name, expected
 ):
@@ -46,23 +46,23 @@ def test_port_defaults(
         discrete_action=False, visual_inputs=0
     )
     env = UnityEnvironment(file_name=file_name, worker_id=0, base_port=base_port)
-    assert expected == env.port
+    assert expected == env._port
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_log_file_path_is_set(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator()
     env = UnityEnvironment(
         file_name="myfile", worker_id=0, log_folder="./some-log-folder-path"
     )
-    args = env.executable_args()
+    args = env._executable_args()
     log_file_index = args.index("-logFile")
     assert args[log_file_index + 1] == "./some-log-folder-path/Player-0.log"
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_reset(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -85,7 +85,7 @@ def test_reset(mock_communicator, mock_launcher):
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_step(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator(
         discrete_action=False, visual_inputs=0
@@ -123,7 +123,7 @@ def test_step(mock_communicator, mock_launcher):
 
 
 @mock.patch("mlagents_envs.env_utils.launch_executable")
-@mock.patch("mlagents_envs.environment.UnityEnvironment.get_communicator")
+@mock.patch("mlagents_envs.environment.UnityEnvironment._get_communicator")
 def test_close(mock_communicator, mock_launcher):
     comm = MockCommunicator(discrete_action=False, visual_inputs=0)
     mock_communicator.return_value = comm
@@ -138,37 +138,37 @@ def test_check_communication_compatibility():
     unity_ver = "1.0.0"
     python_ver = "1.0.0"
     unity_package_version = "0.15.0"
-    assert UnityEnvironment.check_communication_compatibility(
+    assert UnityEnvironment._check_communication_compatibility(
         unity_ver, python_ver, unity_package_version
     )
     unity_ver = "1.1.0"
-    assert UnityEnvironment.check_communication_compatibility(
+    assert UnityEnvironment._check_communication_compatibility(
         unity_ver, python_ver, unity_package_version
     )
     unity_ver = "2.0.0"
-    assert not UnityEnvironment.check_communication_compatibility(
+    assert not UnityEnvironment._check_communication_compatibility(
         unity_ver, python_ver, unity_package_version
     )
 
     unity_ver = "0.16.0"
     python_ver = "0.16.0"
-    assert UnityEnvironment.check_communication_compatibility(
+    assert UnityEnvironment._check_communication_compatibility(
         unity_ver, python_ver, unity_package_version
     )
     unity_ver = "0.17.0"
-    assert not UnityEnvironment.check_communication_compatibility(
+    assert not UnityEnvironment._check_communication_compatibility(
         unity_ver, python_ver, unity_package_version
     )
     unity_ver = "1.16.0"
-    assert not UnityEnvironment.check_communication_compatibility(
+    assert not UnityEnvironment._check_communication_compatibility(
         unity_ver, python_ver, unity_package_version
     )
 
 
 def test_returncode_to_signal_name():
-    assert UnityEnvironment.returncode_to_signal_name(-2) == "SIGINT"
-    assert UnityEnvironment.returncode_to_signal_name(42) is None
-    assert UnityEnvironment.returncode_to_signal_name("SIGINT") is None
+    assert UnityEnvironment._returncode_to_signal_name(-2) == "SIGINT"
+    assert UnityEnvironment._returncode_to_signal_name(42) is None
+    assert UnityEnvironment._returncode_to_signal_name("SIGINT") is None
 
 
 if __name__ == "__main__":
