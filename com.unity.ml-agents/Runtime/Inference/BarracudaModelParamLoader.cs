@@ -538,7 +538,7 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="tensorProxy"> The tensor that is expected by the model</param>
         /// <param name="sensorComponents">Array of attached sensor components (unused).</param>
-        /// /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes (unused).</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes (unused).</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
         static string CheckPreviousActionShape(
