@@ -339,21 +339,18 @@ class BaseEnv(ABC):
         Signals the environment that it must move the simulation forward
         by one step.
         """
-        pass
 
     @abstractmethod
     def reset(self) -> None:
         """
         Signals the environment that it must reset the simulation.
         """
-        pass
 
     @abstractmethod
     def close(self) -> None:
         """
         Signals the environment that it must close.
         """
-        pass
 
     @property
     @abstractmethod
@@ -376,7 +373,6 @@ class BaseEnv(ABC):
         :param action: A two dimensional np.ndarray corresponding to the action
         (either int or float)
         """
-        pass
 
     @abstractmethod
     def set_action_for_agent(
@@ -390,7 +386,6 @@ class BaseEnv(ABC):
         :param action: A one dimensional np.ndarray corresponding to the action
         (either int or float)
         """
-        pass
 
     @abstractmethod
     def get_steps(
@@ -408,4 +403,3 @@ class BaseEnv(ABC):
          rewards, agent ids and interrupted flags of the agents that had their
          episode terminated last step.
         """
-        pass
