@@ -24,6 +24,7 @@ and this project adheres to
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
 ### Bug Fixes
+- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
