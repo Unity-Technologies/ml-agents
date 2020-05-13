@@ -8,6 +8,7 @@ and this project adheres to
 
 ## [1.0.1-preview] - 2020-05-19
 ### Bug Fixes
+- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
