@@ -53,7 +53,6 @@ class UnityToGymWrapper(gym.Env):
             self._env.step()
 
         self.visual_obs = None
-        self._n_agents = -1
 
         # Save the step result from the last time all Agents requested decisions.
         self._previous_decision_step: DecisionSteps = None
@@ -172,6 +171,7 @@ class UnityToGymWrapper(gym.Env):
 
         self._env.step()
         decision_step, terminal_step = self._env.get_steps(self.name)
+        self._check_agents(max(len(decision_step), len(terminal_step)))
         if len(terminal_step) != 0:
             # The agent is done
             self.game_over = True
@@ -264,10 +264,11 @@ class UnityToGymWrapper(gym.Env):
         logger.warning("Could not seed environment %s", self.name)
         return
 
-    def _check_agents(self, n_agents: int) -> None:
-        if self._n_agents > 1:
+    @staticmethod
+    def _check_agents(n_agents: int) -> None:
+        if n_agents > 1:
             raise UnityGymException(
-                "There can only be one Agent in the environment but {n_agents} were detected."
+                f"There can only be one Agent in the environment but {n_agents} were detected."
             )
 
     @property
@@ -289,10 +290,6 @@ class UnityToGymWrapper(gym.Env):
     @property
     def observation_space(self):
         return self._observation_space
-
-    @property
-    def number_agents(self):
-        return self._n_agents
 
 
 class ActionFlattener:
