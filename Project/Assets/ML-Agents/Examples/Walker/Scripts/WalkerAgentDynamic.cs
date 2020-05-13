@@ -349,10 +349,10 @@ public class WalkerAgentDynamic : Agent
             +0.02f * Vector3.Dot(m_OrientationCube.transform.forward,
                 Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, 999))
 //            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
-            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, head.forward)
+//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, head.forward)
 
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, chest.rotation) //reward looking at
-//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
+            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) //reward looking at
 //            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) *
 //            .5f //penalize not looking at
