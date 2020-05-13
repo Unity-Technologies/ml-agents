@@ -342,9 +342,9 @@ class UnityEnvironment(BaseEnv):
         expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The behavior {0} needs an input of dimension {1} but received input of dimension {2}".format(
-                    behavior_name, expected_shape, action.shape
-                )
+                "The behavior {0} needs an input of dimension {1} for "
+                "(<number of agents>, <action size>) but received input of "
+                "dimension {2}".format(behavior_name, expected_shape, action.shape)
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
