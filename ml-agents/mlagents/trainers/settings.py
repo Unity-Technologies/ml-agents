@@ -186,9 +186,9 @@ class TrainerSettings(ExportableSettings):
         return self.trainer_type.to_settings()()
 
     network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
-    reward_signals: Dict[RewardSignalType, RewardSignalSettings] = {
-        RewardSignalType.EXTRINSIC: RewardSignalSettings()
-    }
+    reward_signals: Dict[RewardSignalType, RewardSignalSettings] = attr.ib(
+        factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
+    )
     init_path: Optional[str] = None
     output_path: str = "default"
     # TODO: Remove parser default and remove from CLI
@@ -305,11 +305,11 @@ class RunOptions(ExportableSettings):
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
         factory=lambda: collections.defaultdict(TrainerSettings)
     )
-    env_settings: EnvironmentSettings = EnvironmentSettings()
-    engine_settings: EngineSettings = EngineSettings()
+    env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
+    engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
     parameter_randomization: Optional[Dict] = None
     curriculum: Optional[Dict[str, CurriculumSettings]] = None
-    checkpoint_settings: CheckpointSettings = CheckpointSettings()
+    checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
