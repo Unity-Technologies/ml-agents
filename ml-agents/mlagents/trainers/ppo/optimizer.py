@@ -292,6 +292,9 @@ class PPOOptimizer(TFOptimizer):
     def _create_ppo_optimizer_ops(self):
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss)
+        self.sensitivity = self.tf_optimizer.compute_gradients(
+            self.policy.output, var_list=self.policy.vector_in
+        )
         self.update_batch = self.tf_optimizer.minimize(self.loss)
 
     @timed
@@ -315,6 +318,18 @@ class PPOOptimizer(TFOptimizer):
         update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
+
+        print(
+            len(
+                np.mean(
+                    self._execute_model(feed_dict, {"sensi": self.sensitivity})[
+                        "sensi"
+                    ][0][0],
+                    axis=0,
+                )
+            )
+        )
+
         return update_stats
 
     def _construct_feed_dict(
