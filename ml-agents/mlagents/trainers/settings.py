@@ -185,7 +185,7 @@ class TrainerSettings(ExportableSettings):
     def _set_default_hyperparameters(self):
         return self.trainer_type.to_settings()()
 
-    network_settings: NetworkSettings = attr.ib(default=NetworkSettings())
+    network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
     reward_signals: Dict[RewardSignalType, RewardSignalSettings] = {
         RewardSignalType.EXTRINSIC: RewardSignalSettings()
     }
@@ -260,7 +260,7 @@ class CurriculumSettings:
         REWARD: str = "reward"
 
     measure: str = attr.ib(default=MeasureType.REWARD)
-    thresholds: List[int] = attr.Factory(list)
+    thresholds: List[int] = attr.ib(factory=list)
     min_lesson_length: int = 0
     signal_smoothing: bool = True
     parameters: Dict[str, List[float]] = attr.ib(kw_only=True)
@@ -303,7 +303,7 @@ class EngineSettings:
 @attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
-        default=attr.Factory(lambda: collections.defaultdict(TrainerSettings))
+        factory=lambda: collections.defaultdict(TrainerSettings)
     )
     env_settings: EnvironmentSettings = EnvironmentSettings()
     engine_settings: EngineSettings = EngineSettings()
