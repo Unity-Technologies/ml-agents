@@ -12,15 +12,15 @@ public class WalkerAgentDynamic : Agent
     [Space(10)]
     [Header("Specific to Walker")]
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
+    Vector3 m_WalkDir;
+    Quaternion m_WalkDirLookRot;
     
+    [Space(10)]
     [Header("Orientation Cube")]
     [Space(10)]
     //This will be used as a stable observation platform for the ragdoll to use.
     GameObject m_OrientationCube;
-    public bool showOrientationCubeGizmo = true;
     public Transform directionIndicator;
-    Vector3 m_WalkDir;
-    Quaternion m_WalkDirLookRot;
     
     [Header("Target To Walk Towards")]
     [Space(10)]
@@ -110,8 +110,9 @@ public class WalkerAgentDynamic : Agent
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
         
-        
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));  //best
+        //Get position relative to hips in the context of our orientation cube's space
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(bp.rb.position));  //best
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));  //best
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
@@ -264,7 +265,6 @@ public class WalkerAgentDynamic : Agent
     {
         m_ChestRb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
         m_SpineRb.mass = m_ResetParams.GetWithDefault("spine_mass", 10);
-//        m_HipsRb.mass = m_ResetParams.GetWithDefault("hip_mass", 12);
         m_HipsRb.mass = m_ResetParams.GetWithDefault("hip_mass", 15);
     }
 
@@ -275,7 +275,7 @@ public class WalkerAgentDynamic : Agent
 
     private void OnDrawGizmosSelected()
     {
-        if (showOrientationCubeGizmo && Application.isPlaying)
+        if (Application.isPlaying)
         {   
             Gizmos.color = Color.green;
             Gizmos.matrix = m_OrientationCube.transform.localToWorldMatrix;
