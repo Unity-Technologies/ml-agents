@@ -124,8 +124,9 @@ public class WalkerAgentDynamic : Agent
 
 //        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
 //            bp.rb.transform != footL && bp.rb.transform != footR && bp.rb.transform != head)
-        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
-            bp.rb.transform != footL && bp.rb.transform != footR)
+//        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR &&
+//            bp.rb.transform != footL && bp.rb.transform != footR)
+        if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
             sensor.AddObservation(bp.rb.transform.localRotation);
 //            sensor.AddObservation(RagdollHelpers.GetJointRotation(bp.joint));
@@ -169,10 +170,15 @@ public class WalkerAgentDynamic : Agent
 //        m_WalkDir = target.position - hips.position;
 //        m_WalkDir = target.position - m_OrientationCube.transform.position;
         
+//        print($"fromTo: {Quaternion.FromToRotation(m_OrientationCube.transform.forward, hips.forward)} rotDelta {RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation)}");
 
-        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
+//        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, hips.rotation));
+//        sensor.AddObservation(Quaternion.FromToRotation(m_OrientationCube.transform.forward, hips.forward));
+//        sensor.AddObservation(Quaternion.FromToRotation(m_OrientationCube.transform.forward, head.forward));
+        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, m_OrientationCube.transform.forward));
+        sensor.AddObservation(Quaternion.FromToRotation(head.forward, m_OrientationCube.transform.forward));
 //        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, chest.rotation));
-        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
+//        sensor.AddObservation(RagdollHelpers.GetRotationDelta(m_WalkDirLookRot, head.rotation));
 //        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
 
@@ -353,18 +359,20 @@ public class WalkerAgentDynamic : Agent
             +0.02f * Vector3.Dot(m_OrientationCube.transform.forward,
                 Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, 999))
 //            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, hips.forward)
-//            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, head.forward)
+            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, head.forward)
 
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, chest.rotation) //reward looking at
-            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
+//            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) //reward looking at
 //            + 0.01f * Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) //reward looking at
 //            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, hips.rotation) - 1) *
 //            .5f //penalize not looking at
 //            + 0.015f * (Quaternion.Dot(m_OrientationCube.transform.rotation, head.rotation) - 1) *
 //            .5f //penalize not looking at
 
-            + 0.005f * (head.position.y - shinL.position.y)
-            + 0.005f * (head.position.y - shinR.position.y)
+//            + 0.005f * (head.position.y - shinL.position.y)
+//            + 0.005f * (head.position.y - shinR.position.y)
+            + 0.005f * (head.position.y - footL.position.y)
+            + 0.005f * (head.position.y - footR.position.y)
 //            + 0.01f * (head.position.y - shinL.position.y)
 //            + 0.01f * (head.position.y - shinR.position.y)
 //            - 0.005f * Mathf.Clamp(m_JdController.bodyPartsDict[handL].rb.velocity.magnitude,
