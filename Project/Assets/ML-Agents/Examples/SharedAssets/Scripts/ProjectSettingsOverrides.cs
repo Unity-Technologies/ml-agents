@@ -12,7 +12,6 @@ namespace Unity.MLAgentsExamples
     public class ProjectSettingsOverrides : MonoBehaviour
     {
         // Original values
-
         Vector3 m_OriginalGravity;
         float m_OriginalFixedDeltaTime;
         float m_OriginalMaximumDeltaTime;
@@ -33,8 +32,6 @@ namespace Unity.MLAgentsExamples
         public int solverIterations = 6;
         [Tooltip("Affects how accurately the Rigidbody joints and collision contacts are resolved. (default 1). Must be positive.")]
         public int solverVelocityIterations = 1;
-//        [Tooltip("Simulation in the scene is consistent regardless the actors present, provided that the game inserts the actors in a deterministic order.")]
-//        public bool useEnhancedDeterminism = false;
         [Tooltip("Determines whether the garbage collector should reuse only a single instance of a Collision type for all collision callbacks. Reduces Garbage.")]
         public bool reuseCollisionCallbacks = true;
 
