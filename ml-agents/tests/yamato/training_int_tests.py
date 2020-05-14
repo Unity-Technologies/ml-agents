@@ -64,14 +64,18 @@ def run_training(python_version, csharp_version):
 
     # Copy the default training config but override the max_steps parameter,
     # and reduce the batch_size and buffer_size enough to ensure an update step happens.
-    overrides = {"max_steps": 100, "batch_size": 10, "buffer_size": 10}
     yaml_out = "override.yaml"
     if python_version:
+        overrides = {"max_steps": 100, "batch_size": 10, "buffer_size": 10}
         override_legacy_config_file(
             python_version, "config/trainer_config.yaml", yaml_out, **overrides
         )
     else:
-        override_config_file("config/ppo/3DBall.yaml", yaml_out, **overrides)
+        overrides = {
+            "hyperparameters": {"batch_size": 10, "buffer_size": 10},
+            "max_steps": 100,
+        }
+        override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
     mla_learn_cmd = (
         f"mlagents-learn {yaml_out} --force --env="
