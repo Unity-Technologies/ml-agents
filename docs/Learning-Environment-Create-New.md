@@ -423,8 +423,8 @@ behaviors:
     use_recurrent: false
     reward_signals:
         extrinsic:
-        strength: 1.0
-        gamma: 0.99
+            strength: 1.0
+            gamma: 0.99
 ```
 
 Since this example creates a very simple training environment with only a few
