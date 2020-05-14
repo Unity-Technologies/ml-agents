@@ -22,42 +22,12 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
 
 
 def strict_to_cls(d: Mapping, t: type) -> Any:
-    if d is None:
-        return None
+    if not isinstance(d, Mapping):
+        raise TrainerConfigError(f"Unsupported config {d} for {t.__name__}.")
     d_copy: Dict[str, Any] = {}
     d_copy.update(d)
     for key, val in d_copy.items():
         d_copy[key] = check_and_structure(key, val, t)
-    return t(**d_copy)
-
-
-def trainer_settings_to_cls(d: Mapping, t: type) -> Any:
-    if d is None:
-        return None
-    d_copy: Dict[str, Any] = {}
-    d_copy.update(d)
-
-    for key, val in d_copy.items():
-        if attr.has(type(val)):
-            # Don't convert already-converted attrs classes.
-            continue
-        if key == "hyperparameters":
-            if "trainer_type" not in d_copy:
-                raise TrainerConfigError(
-                    "Hyperparameters were specified but no trainer_type was given."
-                )
-            else:
-                d_copy[key] = strict_to_cls(
-                    d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
-                )
-        elif key == "reward_signals":
-            d_copy[key] = RewardSignalSettings.structure_from_dict(val)
-        elif key == "max_steps":
-            d_copy[key] = int(
-                float(val)
-            )  # In some configs, max steps was specified as a float
-        else:
-            d_copy[key] = check_and_structure(key, val, t)
     return t(**d_copy)
 
 
@@ -148,9 +118,13 @@ class RewardSignalSettings:
     strength: float = 1.0
 
     @staticmethod
-    def structure_from_dict(d: Mapping) -> Any:
-        if d is None:
-            return None
+    def structure(d: Mapping, t: type) -> Any:
+        """
+        Helper method to structure a TrainerSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure().
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(f"Unsupported reward signal configuration {d}.")
         d_final: Dict[RewardSignalType, RewardSignalSettings] = {}
         for key, val in d.items():
             try:
@@ -226,6 +200,10 @@ class TrainerSettings(ExportableSettings):
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
 
+    cattr.register_structure_hook(
+        Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
+    )
+
     @network_settings.validator
     def _check_batch_size_seq_length(self, attribute, value):
         if self.network_settings.memory is not None:
@@ -242,6 +220,37 @@ class TrainerSettings(ExportableSettings):
         return collections.defaultdict(
             TrainerSettings, cattr.structure(d, Dict[str, TrainerSettings])
         )
+
+    @staticmethod
+    def structure(d: Mapping, t: type) -> Any:
+        """
+        Helper method to structure a TrainerSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure().
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(f"Unsupported config {d} for {t.__name__}.")
+        d_copy: Dict[str, Any] = {}
+        d_copy.update(d)
+
+        for key, val in d_copy.items():
+            if attr.has(type(val)):
+                # Don't convert already-converted attrs classes.
+                continue
+            if key == "hyperparameters":
+                if "trainer_type" not in d_copy:
+                    raise TrainerConfigError(
+                        "Hyperparameters were specified but no trainer_type was given."
+                    )
+                else:
+                    d_copy[key] = strict_to_cls(
+                        d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
+                    )
+            elif key == "max_steps":
+                d_copy[key] = int(float(val))
+                # In some legacy configs, max steps was specified as a float
+            else:
+                d_copy[key] = check_and_structure(key, val, t)
+        return t(**d_copy)
 
 
 @attr.s(auto_attribs=True)
@@ -309,14 +318,12 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
-    cattr.register_structure_hook(TrainerSettings, trainer_settings_to_cls)
+    cattr.register_structure_hook(CurriculumSettings, strict_to_cls)
+    cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
         DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
-
-    def as_dict(self):
-        return cattr.unstructure(self)
 
     @staticmethod
     def from_argparse(args: argparse.Namespace) -> "RunOptions":
