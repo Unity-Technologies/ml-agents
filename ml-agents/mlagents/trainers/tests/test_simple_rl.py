@@ -200,13 +200,16 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         step_size=0.5,
         vis_obs_size=(36, 36, 3),
     )
-    new_hyperparams = attr.evolve(
-        PPO_CONFIG.hyperparameters,
-        learning_rate=3.0e-4,
-        vis_encode_type=EncoderType(vis_encode_type),
+    new_networksettings = attr.evolve(
+        SAC_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
     )
+    new_hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3.0e-4)
     config = attr.evolve(
-        PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=500, summary_freq=100
+        PPO_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_networksettings,
+        max_steps=500,
+        summary_freq=100,
     )
     # The number of steps is pretty small for these encoders
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
