@@ -48,18 +48,21 @@ descriptions of all these features.
 
 ## Releases & Documentation
 
-**Our latest, stable release is `Release 1`. Click [here](docs/Readme.md) to
-get started with the latest release of ML-Agents.**
+**Our latest, stable release is `Release 1`. Click
+[here](https://github.com/Unity-Technologies/ml-agents/tree/release_1/docs/Readme.md)
+to get started with the latest release of ML-Agents.**
 
-The table below lists all our releases, including our `master` branch which is under active
-development and may be unstable. A few helpful guidelines:
-* The docs links in the table below include installation and usage instructions specific to each
-release. Remember to always use the documentation that corresponds to the release version you're
-using.
-* See the [GitHub releases](https://github.com/Unity-Technologies/ml-agents/releases) for more
-details of the changes between versions.
-* If you have used an earlier version of the ML-Agents Toolkit, we strongly recommend our
-[guide on migrating from earlier versions](docs/Migrating.md).
+The table below lists all our releases, including our `master` branch which is
+under active development and may be unstable. A few helpful guidelines:
+- The [Versioning page](docs/Versioning.md) overviews how we manage our GitHub
+  releases and the versioning process for each of the ML-Agents components.
+- The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
+  contains details of the changes between releases.
+- The [Migration page](docs/Migrating.md) contains details on how to upgrade
+  from earlier releases of the ML-Agents Toolkit.
+- The **Documentation** links in the table below include installation and usage
+  instructions specific to each release. Remember to always use the
+  documentation that corresponds to the release version you're using.
 
 | **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
