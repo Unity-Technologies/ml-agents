@@ -87,10 +87,10 @@ public class TennisAgent : Agent
         sensor.AddObservation(m_InvertMult * m_BallRb.velocity.x);
         sensor.AddObservation(m_BallRb.velocity.y);
 
-        //sensor.AddObservation(m_InvertMult * (OpponentRb.position.x - myArea.transform.position.x));
-        //sensor.AddObservation(OpponentRb.position.y - myArea.transform.position.y);
-        //sensor.AddObservation(m_InvertMult * OpponentRb.velocity.x);
-        //sensor.AddObservation(OpponentRb.velocity.y);
+        sensor.AddObservation(m_InvertMult * (OpponentRb.position.x - myArea.transform.position.x));
+        sensor.AddObservation(OpponentRb.position.y - myArea.transform.position.y);
+        sensor.AddObservation(m_InvertMult * OpponentRb.velocity.x);
+        sensor.AddObservation(OpponentRb.velocity.y);
 
         sensor.AddObservation(m_InvertMult * gameObject.transform.rotation.z);
         //sensor.AddObservation((m_InvertMult * (gameObject.transform.rotation.eulerAngles.z - (1f - m_InvertMult) * 180f) - 35f) / 125f);
@@ -110,7 +110,7 @@ public class TennisAgent : Agent
             upward = moveY;
         }
 
-        m_AgentRb.AddForce(new Vector3(moveX * 5f, upward * 10f, 0f), ForceMode.VelocityChange);
+        m_AgentRb.AddForce(new Vector3(moveX * 2.5f, upward * 10f, 0f), ForceMode.VelocityChange);
 
         // calculate angle between m_InvertMult * 55 and m_InvertMult * 125
         var angle = 35f * rotate + m_InvertMult * k_Angle;
@@ -127,7 +127,7 @@ public class TennisAgent : Agent
                 transform.position.z);
         }
         var rgV = m_AgentRb.velocity;
-        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -20, 20), Mathf.Min(rgV.y, 10f), rgV.z);
+        m_AgentRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -10, 10), Mathf.Min(rgV.y, 10f), rgV.z);
 
     //    timePenalty -= m_Existential;
         m_TextComponent.text = score.ToString();
