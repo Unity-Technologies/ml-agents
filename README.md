@@ -58,8 +58,8 @@ under active development and may be unstable. A few helpful guidelines:
   releases and the versioning process for each of the ML-Agents components.
 - The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
   contains details of the changes between releases.
-- If you have used an earlier version of the ML-Agents Toolkit, we strongly
-  recommend our [guide on migrating from earlier versions](docs/Migrating.md).
+- The [Migration page](docs/Migrating.md) contains details on how to upgrade
+  from earlier releases of the ML-Agents Toolkit.
 - The **Documentation** links in the table below include installation and usage
   instructions specific to each release. Remember to always use the
   documentation that corresponds to the release version you're using.
