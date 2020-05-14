@@ -214,13 +214,17 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
-        public void TestGetTotalObservationSizeErrors()
+        public void TestInvalidObservables()
         {
             var bad = new BadClass();
             bad.WriteOnlyProperty = 1.0f;
             var errors = new List<string>();
             Assert.AreEqual(0, ObservableAttribute.GetTotalObservationSize(bad, false, errors));
-            Assert.AreEqual(2, errors.Count);
+            Assert.AreEqual(3, errors.Count);
+
+            // Should be able to safely generate sensors (and get nothing back)
+            var sensors = ObservableAttribute.CreateObservableSensors(bad, false);
+            Assert.AreEqual(0, sensors.Count);
         }
 
         class StackingClass

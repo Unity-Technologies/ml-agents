@@ -113,11 +113,6 @@ namespace Unity.MLAgents.Sensors.Reflection
             var properties = o.GetType().GetProperties(bindingFlags);
             foreach (var prop in properties)
             {
-                if (!prop.CanRead)
-                {
-                    // Ignore write-only properties.
-                    continue;
-                }
                 var attr = (ObservableAttribute)GetCustomAttribute(prop, typeof(ObservableAttribute));
                 if (attr != null)
                 {
@@ -137,12 +132,25 @@ namespace Unity.MLAgents.Sensors.Reflection
             var sensorsOut = new List<ISensor>();
             foreach (var(field, attr) in GetObservableFields(o, excludeInherited))
             {
-                sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
+                var sensor = CreateReflectionSensor(o, field, null, attr);
+                if (sensor != null)
+                {
+                    sensorsOut.Add(sensor);
+                }
             }
 
             foreach (var(prop, attr) in GetObservableProperties(o, excludeInherited))
             {
-                sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
+                if (!prop.CanRead)
+                {
+                    // Skip unreadable properties.
+                    continue;
+                }
+                var sensor = CreateReflectionSensor(o, null, prop, attr);
+                if (sensor != null)
+                {
+                    sensorsOut.Add(sensor);
+                }
             }
 
             return sensorsOut;
@@ -150,6 +158,7 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         /// <summary>
         /// Create the ISensor for either the field or property on the provided object.
+        /// If the data type is unsupported, or the property is write-only, returns null.
         /// </summary>
         /// <param name="o"></param>
         /// <param name="fieldInfo"></param>
@@ -226,7 +235,8 @@ namespace Unity.MLAgents.Sensors.Reflection
 
             if (sensor == null)
             {
-                throw new UnityAgentsException($"Unsupported Observable type: {memberType.Name}");
+                // For unsupported types, return null and we'll filter them out later.
+                return null;
             }
 
             // Wrap the base sensor in a StackingSensor if we're using stacking.
@@ -265,11 +275,18 @@ namespace Unity.MLAgents.Sensors.Reflection
             {
                 if (s_TypeSizes.ContainsKey(prop.PropertyType))
                 {
-                    sizeOut += s_TypeSizes[prop.PropertyType] * attr.m_NumStackedObservations;
+                    if (prop.CanRead)
+                    {
+                        sizeOut += s_TypeSizes[prop.PropertyType] * attr.m_NumStackedObservations;
+                    }
+                    else
+                    {
+                        errorsOut.Add($"Observable property {prop.Name} is write-only.");
+                    }
                 }
                 else
                 {
-                    errorsOut.Add($"Unsupported Observable type {prop.PropertyType.Name} on field {prop.Name}");
+                    errorsOut.Add($"Unsupported Observable type {prop.PropertyType.Name} on property {prop.Name}");
                 }
             }
 
