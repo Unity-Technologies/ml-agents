@@ -49,12 +49,15 @@ public class WalkerAgentDynamic : Agent
     EnvironmentParameters m_ResetParams;
 
     private GameObject m_OrientationCube;
+    public Quaternion cubeRotation;
+    public Quaternion hipsRotation;
     public override void Initialize()
     {
         Vector3 oCubePos = hips.position;
         oCubePos.y = -.45f;
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
-        m_OrientationCube.transform.SetParent(transform.parent);
+        m_OrientationCube.transform.SetParent(transform);
+//        m_OrientationCube.transform.SetParent(transform.parent);
         UpdateOrientationCube();
 
         m_JdController = GetComponent<JointDriveController>();
@@ -294,8 +297,9 @@ public class WalkerAgentDynamic : Agent
 //        oCubePos.y = -.45f;
         m_OrientationCube.transform.position = oCubePos;
         m_OrientationCube.transform.rotation = m_WalkDirLookRot;
-        
-        
+
+        cubeRotation = m_OrientationCube.transform.rotation;
+        hipsRotation = hips.rotation;
     }
     
     
