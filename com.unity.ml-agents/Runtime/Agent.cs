@@ -223,7 +223,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Options for controlling how the Agent class is searched for <see cref="ObservableAttribute"/>s.
         /// </summary>
-        public enum ObservableAttributeHandling
+        public enum ObservableAttributeOptions
         {
             /// <summary>
             /// All ObservableAttributes on the Agent will be ignored. If there are no
@@ -241,7 +241,7 @@ namespace Unity.MLAgents
             /// [BindingFlags.DeclaredOnly](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.bindingflags?view=netcore-3.1)
             /// when examining the fields and properties of the Agent class instance.
             /// </remarks>
-            SkipInherited,
+            ExcludeInherited,
 
             /// <summary>
             /// All members on the class will be examined. This can lead to slower
@@ -251,12 +251,12 @@ namespace Unity.MLAgents
         }
 
         [HideInInspector, SerializeField]
-        ObservableAttributeHandling m_observableAttributeBehavior = ObservableAttributeHandling.SkipInherited;
+        ObservableAttributeOptions m_observableAttributeBehavior = ObservableAttributeOptions.Ignore;
 
         /// <summary>
         /// Determines how the Agent class is searched for <see cref="ObservableAttribute"/>s.
         /// </summary>
-        public ObservableAttributeHandling ObservableAttributeBehavior
+        public ObservableAttributeOptions ObservableAttributeBehavior
         {
             get { return m_observableAttributeBehavior; }
             set { m_observableAttributeBehavior = value; }
@@ -865,12 +865,12 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
-            if (ObservableAttributeBehavior != ObservableAttributeHandling.Ignore)
+            if (ObservableAttributeBehavior != ObservableAttributeOptions.Ignore)
             {
-                var declaredOnly = (ObservableAttributeBehavior == ObservableAttributeHandling.SkipInherited);
-                using (TimerStack.Instance.Scoped("GetObservableSensors"))
+                var excludeInherited = (ObservableAttributeBehavior == ObservableAttributeOptions.ExcludeInherited);
+                using (TimerStack.Instance.Scoped("CreateObservableSensors"))
                 {
-                    var observableSensors = ObservableAttribute.GetObservableSensors(this, declaredOnly);
+                    var observableSensors = ObservableAttribute.CreateObservableSensors(this, excludeInherited);
                     sensors.AddRange(observableSensors);
                 }
             }

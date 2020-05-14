@@ -254,7 +254,7 @@ namespace Unity.MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            agent2.ObservableAttributeBehavior = Agent.ObservableAttributeHandling.Ignore;
+            agent2.ObservableAttributeBehavior = Agent.ObservableAttributeOptions.Ignore;
 
             Assert.AreEqual(0, agent1.agentOnEpisodeBeginCalls);
             Assert.AreEqual(0, agent2.agentOnEpisodeBeginCalls);
@@ -775,14 +775,14 @@ namespace Unity.MLAgents.Tests
             var variants = new[]
             {
                 // No observables found
-                (Agent.ObservableAttributeHandling.Ignore, 0),
+                (Agent.ObservableAttributeOptions.Ignore, 0),
                 // Only DerivedField found
-                (Agent.ObservableAttributeHandling.SkipInherited, 1),
+                (SkipInherited: Agent.ObservableAttributeOptions.ExcludeInherited, 1),
                 // DerivedField and BaseField found
-                (Agent.ObservableAttributeHandling.ExamineAll, 2)
+                (Agent.ObservableAttributeOptions.ExamineAll, 2)
             };
 
-            foreach (var (behavior, expectedNumSensors) in variants)
+            foreach (var(behavior, expectedNumSensors) in variants)
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();
@@ -798,7 +798,6 @@ namespace Unity.MLAgents.Tests
                 }
                 Assert.AreEqual(expectedNumSensors, numAttributeSensors);
             }
-
         }
     }
 }

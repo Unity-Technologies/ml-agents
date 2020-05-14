@@ -151,7 +151,7 @@ namespace Unity.MLAgents.Tests
             testClass.m_QuaternionMember = new Quaternion(5.0f, 5.1f, 5.2f, 5.3f);
             testClass.QuaternionProperty = new Quaternion(5.4f, 5.5f, 5.5f, 5.7f);
 
-            var sensors = ObservableAttribute.GetObservableSensors(testClass, false);
+            var sensors = ObservableAttribute.CreateObservableSensors(testClass, false);
 
             var sensorsByName = new Dictionary<string, ISensor>();
             foreach (var sensor in sensors)
@@ -234,7 +234,7 @@ namespace Unity.MLAgents.Tests
         {
             var c = new StackingClass();
             c.FloatVal = 1.0f;
-            var sensors = ObservableAttribute.GetObservableSensors(c, false);
+            var sensors = ObservableAttribute.CreateObservableSensors(c, false);
             var sensor = sensors[0];
             Assert.AreEqual(typeof(StackingSensor), sensor.GetType());
             SensorTestHelper.CompareObservation(sensor, new[] { 0.0f, 1.0f });
@@ -264,25 +264,25 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
-        public void TestObservableAttributeDeclaredOnly()
+        public void TestObservableAttributeExcludeInherited()
         {
             var d = new DerivedClass();
             d.m_BaseField = 1.0f;
 
-            // declaredOnly=false will get fields in the derived class, plus public and protected inherited fields
-            var sensorAll = ObservableAttribute.GetObservableSensors(d, false);
+            // excludeInherited=false will get fields in the derived class, plus public and protected inherited fields
+            var sensorAll = ObservableAttribute.CreateObservableSensors(d, false);
             Assert.AreEqual(2, sensorAll.Count);
             // Note - actual order doesn't matter here, we can change this to use a HashSet if neeed.
             Assert.AreEqual("derived", sensorAll[0].GetName());
             Assert.AreEqual("base", sensorAll[1].GetName());
 
-            // declaredOnly=true will only get fields in the derived class
-            var sensorsDerivedOnly = ObservableAttribute.GetObservableSensors(d, true);
+            // excludeInherited=true will only get fields in the derived class
+            var sensorsDerivedOnly = ObservableAttribute.CreateObservableSensors(d, true);
             Assert.AreEqual(1, sensorsDerivedOnly.Count);
             Assert.AreEqual("derived", sensorsDerivedOnly[0].GetName());
 
             var b = new BaseClass();
-            var baseSensors =  ObservableAttribute.GetObservableSensors(b, false);
+            var baseSensors =  ObservableAttribute.CreateObservableSensors(b, false);
             Assert.AreEqual(2, baseSensors.Count);
         }
     }

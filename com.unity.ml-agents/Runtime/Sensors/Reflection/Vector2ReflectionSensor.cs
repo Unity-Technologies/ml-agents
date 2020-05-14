@@ -1,5 +1,9 @@
 namespace Unity.MLAgents.Sensors.Reflection
 {
+    /// <summary>
+    /// Sensor that wraps a Vector2 field or property of an object, and returns
+    /// that as an observation.
+    /// </summary>
     internal class Vector2ReflectionSensor : ReflectionSensorBase
     {
         internal Vector2ReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)

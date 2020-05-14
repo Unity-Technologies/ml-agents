@@ -49,7 +49,14 @@ namespace Unity.MLAgents.Sensors.Reflection
         string m_Name;
         int m_NumStackedObservations;
 
+        /// <summary>
+        /// Default binding flags used for reflection of members and properties.
+        /// </summary>
         const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        /// <summary>
+        /// Supported types and their observation sizes.
+        /// </summary>
         static Dictionary<Type, int> s_TypeSizes = new Dictionary<Type, int>()
         {
             {typeof(int), 1},
@@ -73,10 +80,16 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_NumStackedObservations = numStackedObservations;
         }
 
-        internal static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o, bool declaredOnly)
+        /// <summary>
+        /// Returns a FieldInfo for all fields that have an ObservableAttribute
+        /// </summary>
+        /// <param name="o">Object being reflected</param>
+        /// <param name="excludeInherited">Whether to exclude inherited properties or not.</param>
+        /// <returns></returns>
+        static IEnumerable<(FieldInfo, ObservableAttribute)> GetObservableFields(object o, bool excludeInherited)
         {
             // TODO cache these (and properties) by type, so that we only have to reflect once.
-            var bindingFlags = k_BindingFlags | (declaredOnly ? BindingFlags.DeclaredOnly : 0);
+            var bindingFlags = k_BindingFlags | (excludeInherited ? BindingFlags.DeclaredOnly : 0);
             var fields = o.GetType().GetFields(bindingFlags);
             foreach (var field in fields)
             {
@@ -88,9 +101,15 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
         }
 
-        internal static IEnumerable<(PropertyInfo, ObservableAttribute)> GetObservableProperties(object o, bool declaredOnly)
+        /// <summary>
+        /// Returns a PropertyInfo for all fields that have an ObservableAttribute
+        /// </summary>
+        /// <param name="o">Object being reflected</param>
+        /// <param name="excludeInherited">Whether to exclude inherited properties or not.</param>
+        /// <returns></returns>
+        static IEnumerable<(PropertyInfo, ObservableAttribute)> GetObservableProperties(object o, bool excludeInherited)
         {
-            var bindingFlags = k_BindingFlags | (declaredOnly ? BindingFlags.DeclaredOnly : 0);
+            var bindingFlags = k_BindingFlags | (excludeInherited ? BindingFlags.DeclaredOnly : 0);
             var properties = o.GetType().GetProperties(bindingFlags);
             foreach (var prop in properties)
             {
@@ -107,15 +126,21 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
         }
 
-        internal static List<ISensor> GetObservableSensors(object o, bool declaredOnly)
+        /// <summary>
+        /// Creates sensors for each field and property with ObservableAttribute.
+        /// </summary>
+        /// <param name="o">Object being reflected</param>
+        /// <param name="excludeInherited">Whether to exclude inherited properties or not.</param>
+        /// <returns></returns>
+        internal static List<ISensor> CreateObservableSensors(object o, bool excludeInherited)
         {
             var sensorsOut = new List<ISensor>();
-            foreach (var(field, attr) in GetObservableFields(o, declaredOnly))
+            foreach (var(field, attr) in GetObservableFields(o, excludeInherited))
             {
                 sensorsOut.Add(CreateReflectionSensor(o, field, null, attr));
             }
 
-            foreach (var(prop, attr) in GetObservableProperties(o, declaredOnly))
+            foreach (var(prop, attr) in GetObservableProperties(o, excludeInherited))
             {
                 sensorsOut.Add(CreateReflectionSensor(o, null, prop, attr));
             }
@@ -123,7 +148,16 @@ namespace Unity.MLAgents.Sensors.Reflection
             return sensorsOut;
         }
 
-        internal static ISensor CreateReflectionSensor(object o, FieldInfo fieldInfo, PropertyInfo propertyInfo, ObservableAttribute observableAttribute)
+        /// <summary>
+        /// Create the ISensor for either the field or property on the provided object.
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="fieldInfo"></param>
+        /// <param name="propertyInfo"></param>
+        /// <param name="observableAttribute"></param>
+        /// <returns></returns>
+        /// <exception cref="UnityAgentsException"></exception>
+        static ISensor CreateReflectionSensor(object o, FieldInfo fieldInfo, PropertyInfo propertyInfo, ObservableAttribute observableAttribute)
         {
             string memberName;
             string declaringTypeName;
@@ -204,10 +238,18 @@ namespace Unity.MLAgents.Sensors.Reflection
             return sensor;
         }
 
-        internal static int GetTotalObservationSize(object o, bool declaredOnly, List<string> errorsOut)
+        /// <summary>
+        /// Gets the sum of the observation sizes of the Observable fields and properties on an object.
+        /// Also appends errors to the errorsOut array.
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="excludeInherited"></param>
+        /// <param name="errorsOut"></param>
+        /// <returns></returns>
+        internal static int GetTotalObservationSize(object o, bool excludeInherited, List<string> errorsOut)
         {
             int sizeOut = 0;
-            foreach (var(field, attr) in GetObservableFields(o, declaredOnly))
+            foreach (var(field, attr) in GetObservableFields(o, excludeInherited))
             {
                 if (s_TypeSizes.ContainsKey(field.FieldType))
                 {
@@ -219,7 +261,7 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
             }
 
-            foreach (var(prop, attr) in GetObservableProperties(o, declaredOnly))
+            foreach (var(prop, attr) in GetObservableProperties(o, excludeInherited))
             {
                 if (s_TypeSizes.ContainsKey(prop.PropertyType))
                 {

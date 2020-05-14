@@ -2,7 +2,9 @@ using System.Reflection;
 
 namespace Unity.MLAgents.Sensors.Reflection
 {
-    // Construction info for a ReflectionSensorBase.
+    /// <summary>
+    /// Construction info for a ReflectionSensorBase.
+    /// </summary>
     internal struct ReflectionSensorInfo
     {
         public object Object;
@@ -13,15 +15,21 @@ namespace Unity.MLAgents.Sensors.Reflection
         public string SensorName;
     }
 
+    /// <summary>
+    /// Abstract base class for reflection-based sensors.
+    /// </summary>
     internal abstract class ReflectionSensorBase : ISensor
     {
         protected object m_Object;
 
+        // Exactly one of m_FieldInfo and m_PropertyInfo should be non-null.
         protected FieldInfo m_FieldInfo;
         protected PropertyInfo m_PropertyInfo;
+
         // Not currently used, but might want later.
         protected ObservableAttribute m_ObservableAttribute;
 
+        // Cached sensor names and shapes.
         string m_SensorName;
         int[] m_Shape;
 
@@ -32,7 +40,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_PropertyInfo = reflectionSensorInfo.PropertyInfo;
             m_ObservableAttribute = reflectionSensorInfo.ObservableAttribute;
             m_SensorName = reflectionSensorInfo.SensorName;
-            m_Shape = new [] {size};
+            m_Shape = new[] {size};
         }
 
         /// <inheritdoc/>
@@ -50,6 +58,11 @@ namespace Unity.MLAgents.Sensors.Reflection
 
         internal abstract void WriteReflectedField(ObservationWriter writer);
 
+        /// <summary>
+        /// Get either the reflected field, or return the reflected property.
+        /// This should be used by implementations in their WriteReflectedField() method.
+        /// </summary>
+        /// <returns></returns>
         protected object GetReflectedValue()
         {
             return m_FieldInfo != null ?
@@ -64,10 +77,10 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         /// <inheritdoc/>
-        public void Update() { }
+        public void Update() {}
 
         /// <inheritdoc/>
-        public void Reset() { }
+        public void Reset() {}
 
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()

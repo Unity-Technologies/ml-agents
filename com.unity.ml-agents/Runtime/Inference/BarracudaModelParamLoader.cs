@@ -523,7 +523,7 @@ namespace Unity.MLAgents.Inference
                 return $"Vector Observation Size of the model does not match. Was expecting {totalVecObsSizeT} " +
                     $"but received: \n" +
                     $"Vector observations: {vecObsSizeBp} x {numStackedVector}\n" +
-                    $"Total [Observable] attributes: {observableAttributeTotalSize}\n"+
+                    $"Total [Observable] attributes: {observableAttributeTotalSize}\n" +
                     $"SensorComponent sizes: {sensorSizes}.";
             }
             return null;
