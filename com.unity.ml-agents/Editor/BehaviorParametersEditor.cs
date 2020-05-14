@@ -104,7 +104,7 @@ namespace Unity.MLAgents.Editor
 
             int observableSensorSizes = 0;
             var agent = behaviorParameters.GetComponent<Agent>();
-            if (agent != null && agent.ObservableAttributeBehavior != Agent.ObservableAttributeOptions.Ignore)
+            if (agent != null && agent.ObservableAttributeHandling != Agent.ObservableAttributeOptions.Ignore)
             {
                 List<string> observableErrors = new List<string>();
                 observableSensorSizes = ObservableAttribute.GetTotalObservationSize(agent, false, observableErrors);

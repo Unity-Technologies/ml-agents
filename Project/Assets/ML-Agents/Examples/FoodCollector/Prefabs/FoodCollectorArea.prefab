@@ -2178,11 +2178,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
-    NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    vectorObservationSize: 4
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -2204,7 +2204,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -2214,6 +2214,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
   myLaser: {fileID: 1081721624670010}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114725457980523372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2259,6 +2260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+  offsetStep: 0
 --- !u!114 &1222199865870203693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2515,11 +2517,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
-    NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    vectorObservationSize: 4
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -2541,7 +2543,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -2551,6 +2553,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
   myLaser: {fileID: 1941433838307300}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114443152683847924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2596,6 +2599,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+  offsetStep: 0
 --- !u!1 &1528397385587768
 GameObject:
   m_ObjectHideFlags: 0
@@ -2844,11 +2848,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
-    NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    vectorObservationSize: 4
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -2870,7 +2874,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -2880,6 +2884,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
   myLaser: {fileID: 1421240237750412}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114986980423924774
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2925,6 +2930,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+  offsetStep: 0
 --- !u!1 &1617924810425504
 GameObject:
   m_ObjectHideFlags: 0
@@ -3436,11 +3442,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
-    NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    vectorObservationSize: 4
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -3462,7 +3468,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -3472,6 +3478,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
   myLaser: {fileID: 1617924810425504}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114644889237473510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3517,6 +3524,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+  offsetStep: 0
 --- !u!1 &1688105343773098
 GameObject:
   m_ObjectHideFlags: 0
@@ -3751,11 +3759,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 0
-    NumStackedVectorObservations: 1
-    VectorActionSize: 03000000030000000300000002000000
-    VectorActionDescriptions: []
-    VectorActionSpaceType: 0
+    vectorObservationSize: 4
+    numStackedVectorObservations: 1
+    vectorActionSize: 03000000030000000300000002000000
+    vectorActionDescriptions: []
+    vectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
@@ -3777,7 +3785,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  maxStep: 5000
   area: {fileID: 1819751139121548}
   turnSpeed: 300
   moveSpeed: 2
@@ -3787,6 +3795,7 @@ MonoBehaviour:
   frozenMaterial: {fileID: 2100000, guid: 66163cf35956a4be08e801b750c26f33, type: 2}
   myLaser: {fileID: 1045923826166930}
   contribute: 0
+  useVectorObs: 1
 --- !u!114 &114276061479012222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3832,6 +3841,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+  offsetStep: 0
 --- !u!1 &1729825611722018
 GameObject:
   m_ObjectHideFlags: 0

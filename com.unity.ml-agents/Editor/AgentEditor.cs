@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Editor
                 new GUIContent("Max Step", "The per-agent maximum number of steps.")
             );
 
-            var observableAttributeBehavior = serializedAgent.FindProperty("m_observableAttributeBehavior");
+            var observableAttributeBehavior = serializedAgent.FindProperty("m_observableAttributeHandling");
             EditorGUILayout.PropertyField(observableAttributeBehavior);
 
             serializedAgent.ApplyModifiedProperties();

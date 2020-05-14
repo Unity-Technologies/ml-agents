@@ -1,22 +1,16 @@
 using UnityEngine;
 using Unity.MLAgents;
-using Unity.MLAgents.Sensors.Reflection;
+using Unity.MLAgents.Sensors;
 
 public class FoodCollectorAgent : Agent
 {
     FoodCollectorSettings m_FoodCollecterSettings;
     public GameObject area;
     FoodCollectorArea m_MyArea;
-
-    [Observable]
     bool m_Frozen;
-
     bool m_Poisoned;
     bool m_Satiated;
-
-    [Observable]
     bool m_Shoot;
-
     float m_FrozenTime;
     float m_EffectTime;
     Rigidbody m_AgentRb;
@@ -32,6 +26,7 @@ public class FoodCollectorAgent : Agent
     public Material frozenMaterial;
     public GameObject myLaser;
     public bool contribute;
+    public bool useVectorObs;
 
     EnvironmentParameters m_ResetParams;
 
@@ -44,13 +39,15 @@ public class FoodCollectorAgent : Agent
         SetResetParameters();
     }
 
-    [Observable]
-    Vector2 localRbVelocity
+    public override void CollectObservations(VectorSensor sensor)
     {
-        get
+        if (useVectorObs)
         {
-            var rbVel = transform.InverseTransformDirection(m_AgentRb.velocity);
-            return new Vector2(rbVel.x, rbVel.z);
+            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
+            sensor.AddObservation(localVelocity.x);
+            sensor.AddObservation(localVelocity.z);
+            sensor.AddObservation(System.Convert.ToInt32(m_Frozen));
+            sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
         }
     }
 

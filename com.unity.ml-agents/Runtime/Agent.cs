@@ -251,15 +251,15 @@ namespace Unity.MLAgents
         }
 
         [HideInInspector, SerializeField]
-        ObservableAttributeOptions m_observableAttributeBehavior = ObservableAttributeOptions.Ignore;
+        ObservableAttributeOptions m_observableAttributeHandling = ObservableAttributeOptions.Ignore;
 
         /// <summary>
         /// Determines how the Agent class is searched for <see cref="ObservableAttribute"/>s.
         /// </summary>
-        public ObservableAttributeOptions ObservableAttributeBehavior
+        public ObservableAttributeOptions ObservableAttributeHandling
         {
-            get { return m_observableAttributeBehavior; }
-            set { m_observableAttributeBehavior = value; }
+            get { return m_observableAttributeHandling; }
+            set { m_observableAttributeHandling = value; }
         }
 
 
@@ -865,9 +865,9 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
-            if (ObservableAttributeBehavior != ObservableAttributeOptions.Ignore)
+            if (ObservableAttributeHandling != ObservableAttributeOptions.Ignore)
             {
-                var excludeInherited = (ObservableAttributeBehavior == ObservableAttributeOptions.ExcludeInherited);
+                var excludeInherited = (ObservableAttributeHandling == ObservableAttributeOptions.ExcludeInherited);
                 using (TimerStack.Instance.Scoped("CreateObservableSensors"))
                 {
                     var observableSensors = ObservableAttribute.CreateObservableSensors(this, excludeInherited);

@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Tests
     {
         public TestAgent()
         {
-            ObservableAttributeBehavior = ObservableAttributeOptions.ExcludeInherited;
+            ObservableAttributeHandling = ObservableAttributeOptions.ExcludeInherited;
         }
 
         internal AgentInfo _Info
@@ -259,7 +259,7 @@ namespace Unity.MLAgents.Tests
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            agent2.ObservableAttributeBehavior = Agent.ObservableAttributeOptions.Ignore;
+            agent2.ObservableAttributeHandling = Agent.ObservableAttributeOptions.Ignore;
 
             Assert.AreEqual(0, agent1.agentOnEpisodeBeginCalls);
             Assert.AreEqual(0, agent2.agentOnEpisodeBeginCalls);
@@ -791,7 +791,7 @@ namespace Unity.MLAgents.Tests
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();
-                agent.ObservableAttributeBehavior = behavior;
+                agent.ObservableAttributeHandling = behavior;
                 agent.LazyInitialize();
                 int numAttributeSensors = 0;
                 foreach (var sensor in agent.sensors)
