@@ -2,7 +2,6 @@ import pytest
 import mlagents.trainers.tests.mock_brain as mb
 
 import numpy as np
-import yaml
 import os
 
 from mlagents.trainers.policy.nn_policy import NNPolicy
@@ -12,38 +11,6 @@ from mlagents.trainers.settings import (
     BehavioralCloningSettings,
     NetworkSettings,
 )
-
-
-def ppo_dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: ppo
-        batch_size: 32
-        beta: 5.0e-3
-        buffer_size: 512
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 3.0e-4
-        max_steps: 5.0e4
-        normalize: true
-        num_epoch: 5
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 1000
-        use_recurrent: false
-        memory_size: 8
-        behavioral_cloning:
-          demo_path: ./Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-          strength: 1.0
-          steps: 10000000
-        reward_signals:
-          extrinsic:
-            strength: 1.0
-            gamma: 0.99
-        """
-    )
 
 
 def create_bc_module(mock_brain, bc_settings, use_rnn, tanhresample):
