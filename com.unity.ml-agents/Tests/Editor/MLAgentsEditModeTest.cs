@@ -30,6 +30,11 @@ namespace Unity.MLAgents.Tests
 
     public class TestAgent : Agent
     {
+        public TestAgent()
+        {
+            ObservableAttributeBehavior = ObservableAttributeOptions.ExcludeInherited;
+        }
+
         internal AgentInfo _Info
         {
             get
@@ -777,7 +782,7 @@ namespace Unity.MLAgents.Tests
                 // No observables found
                 (Agent.ObservableAttributeOptions.Ignore, 0),
                 // Only DerivedField found
-                (SkipInherited: Agent.ObservableAttributeOptions.ExcludeInherited, 1),
+                (Agent.ObservableAttributeOptions.ExcludeInherited, 1),
                 // DerivedField and BaseField found
                 (Agent.ObservableAttributeOptions.ExamineAll, 2)
             };
