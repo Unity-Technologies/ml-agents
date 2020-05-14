@@ -226,6 +226,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatformWalker (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -414,6 +419,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DynamicPlatformWalker (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -663,6 +673,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DynamicPlatformWalker (11)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -973,6 +988,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatformWalker (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1281,6 +1301,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DynamicPlatformWalker (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -1591,6 +1616,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatformWalker (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1840,6 +1870,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatformWalker (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2088,6 +2123,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DynamicPlatformWalker (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -2602,6 +2642,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatformWalker (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2851,6 +2896,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatformWalker (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3039,6 +3089,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DynamicPlatformWalker (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4715983678655513245, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
