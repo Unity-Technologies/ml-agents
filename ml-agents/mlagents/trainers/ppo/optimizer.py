@@ -324,7 +324,7 @@ class PPOOptimizer(TFOptimizer):
         feed_dict = self._construct_feed_dict(batch, num_sequences)
         sens = self._execute_model(feed_dict, {"sensi": self.sensitivity})["sensi"][0]
         for obs, grad in sorted(enumerate(sens), reverse=True, key=lambda x: x[1]):
-            print(obs, grad)
+            print("Observation {} has relevance {}".format(obs, grad))
 
     def _construct_feed_dict(
         self, mini_batch: AgentBuffer, num_sequences: int
