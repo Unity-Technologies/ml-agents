@@ -643,16 +643,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdoll
       objectReference: {fileID: 0}
-    - target: {fileID: 895268871377934296, guid: 765582efd9dda46ed98564603316353f,
-        type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 4714470935848893865}
-    - target: {fileID: 895268871377934296, guid: 765582efd9dda46ed98564603316353f,
-        type: 3}
-      propertyPath: ground
-      value: 
-      objectReference: {fileID: 4715966284166353839}
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -708,6 +698,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7408209125961349353, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 4714470935848893865}
+    - target: {fileID: 7408209125961349353, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: ground
+      value: 
+      objectReference: {fileID: 4715966284166353839}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765582efd9dda46ed98564603316353f, type: 3}
 --- !u!4 &6065910098925129092 stripped

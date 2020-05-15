@@ -3341,10 +3341,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6065910098925129094, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+    - target: {fileID: 6065910098925129092, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
-      propertyPath: showOrientationCubeGizmo
-      value: 1
+      propertyPath: m_LocalPosition.x
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f51e8260728fd4c8fa87bcda9d0e2027, type: 3}

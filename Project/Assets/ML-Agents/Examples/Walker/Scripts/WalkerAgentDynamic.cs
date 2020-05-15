@@ -149,7 +149,6 @@ public class WalkerAgentDynamic : Agent
         bpDict[footR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
         bpDict[footL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], vectorAction[++i]);
 
-
         bpDict[armL].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
         bpDict[armR].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
         bpDict[forearmL].SetJointTargetRotation(vectorAction[++i], 0, 0);
