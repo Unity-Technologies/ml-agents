@@ -249,7 +249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 895268871377934298}
   - component: {fileID: 895268871377934297}
-  - component: {fileID: 895268871377934296}
+  - component: {fileID: 7408209125961349353}
   - component: {fileID: 895268871377934303}
   - component: {fileID: 895268871377934302}
   - component: {fileID: 895268871377934301}
@@ -301,7 +301,7 @@ MonoBehaviour:
   m_BehaviorName: WalkerDynamic
   TeamId: 0
   m_UseChildSensors: 1
---- !u!114 &895268871377934296
+--- !u!114 &7408209125961349353
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -310,7 +310,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 895268871377934275}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21bcc2d3e08144151a0df9fa506dbbe7, type: 3}
+  m_Script: {fileID: 11500000, guid: ccb0f85f0009540d7ad997952e2aed7b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   agentParameters:
