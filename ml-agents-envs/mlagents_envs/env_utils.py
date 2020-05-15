@@ -1,6 +1,7 @@
 import glob
 import os
 import subprocess
+import signal
 from sys import platform
 from typing import Optional, List
 from mlagents_envs.logging_util import get_logger
@@ -106,3 +107,17 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
                 f"permissions are set correctly. For example "
                 f'"chmod -R 755 {launch_string}"'
             ) from perm
+
+
+def returncode_to_signal_name(returncode: int) -> Optional[str]:
+    """
+    Try to convert return codes into their corresponding signal name.
+    E.g. returncode_to_signal_name(-2) -> "SIGINT"
+    """
+    try:
+        # A negative value -N indicates that the child was terminated by signal N (POSIX only).
+        s = signal.Signals(-returncode)  # pylint: disable=no-member
+        return s.name
+    except Exception:
+        # Should generally be a ValueError, but catch everything just in case.
+        return None

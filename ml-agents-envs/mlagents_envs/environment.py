@@ -2,9 +2,8 @@ import atexit
 from distutils.version import StrictVersion
 
 import numpy as np
-import os
 import subprocess
-from typing import Dict, List, Optional, Tuple, Mapping as MappingType
+from typing import Dict, List, Optional, Tuple, Any, Mapping as MappingType
 
 import mlagents_envs
 
@@ -45,7 +44,6 @@ from mlagents_envs.communicator_objects.unity_rl_initialization_input_pb2 import
 from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 
 from .rpc_communicator import RpcCommunicator
-import signal
 
 logger = get_logger(__name__)
 
@@ -136,11 +134,10 @@ class UnityEnvironment(BaseEnv):
         worker_id: int = 0,
         base_port: Optional[int] = None,
         seed: int = 0,
-        no_graphics: bool = False,
         timeout_wait: int = 60,
         additional_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
-        log_folder: Optional[str] = None,
+        **kwargs: Dict[str, Any],
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -159,7 +156,6 @@ class UnityEnvironment(BaseEnv):
         """
         atexit.register(self._close)
         self._additional_args = additional_args or []
-        self._no_graphics = no_graphics
         # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
         # an environment, otherwise DEFAULT_EDITOR_PORT
         if base_port is None:
@@ -176,7 +172,6 @@ class UnityEnvironment(BaseEnv):
         self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
         self._worker_id = worker_id
         self._side_channel_manager = SideChannelManager(side_channels)
-        self._log_folder = log_folder
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -189,7 +184,7 @@ class UnityEnvironment(BaseEnv):
         if file_name is not None:
             try:
                 self._proc1 = env_utils.launch_executable(
-                    file_name, self._executable_args()
+                    file_name, self._executable_args(additional_args, kwargs)
                 )
             except UnityEnvironmentException:
                 self._close(0)
@@ -238,18 +233,24 @@ class UnityEnvironment(BaseEnv):
     def _get_communicator(worker_id, base_port, timeout_wait):
         return RpcCommunicator(worker_id, base_port, timeout_wait)
 
-    def _executable_args(self) -> List[str]:
+    def _executable_args(
+        self, additional_args: Optional[List[str]], kwargs: Dict[str, Any]
+    ) -> List[str]:
         args: List[str] = []
-        if self._no_graphics:
-            args += ["-nographics", "-batchmode"]
         args += [UnityEnvironment._PORT_COMMAND_LINE_ARG, str(self._port)]
-        if self._log_folder:
-            log_file_path = os.path.join(
-                self._log_folder, f"Player-{self._worker_id}.log"
-            )
-            args += ["-logFile", log_file_path]
-        # Add in arguments passed explicitly by the user.
-        args += self._additional_args
+        if additional_args is not None:
+            # Add in arguments passed explicitly by the user.
+            args += additional_args
+        for key, value in kwargs.items():
+            if isinstance(value, bool):
+                # If the argument is boolean, add the name of the argument
+                # example : "-batchmode"
+                if value:
+                    args += "-" + key
+            else:
+                # If the argument is not a boolean, add "-key value"
+                args += ["-" + key, str(value)]
+        logger.debug("Unity executable arguments : " + " ".join(args))
         return args
 
     def _update_behavior_specs(self, output: UnityOutputProto) -> None:
@@ -412,7 +413,9 @@ class UnityEnvironment(BaseEnv):
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
                 self._proc1.wait(timeout=timeout)
-                signal_name = self._returncode_to_signal_name(self._proc1.returncode)
+                signal_name = env_utils.returncode_to_signal_name(
+                    self._proc1.returncode
+                )
                 signal_name = f" ({signal_name})" if signal_name else ""
                 return_info = f"Environment shut down with return code {self._proc1.returncode}{signal_name}."
                 logger.info(return_info)
@@ -460,17 +463,3 @@ class UnityEnvironment(BaseEnv):
         result = UnityInputProto()
         result.rl_input.CopyFrom(rl_input)
         return result
-
-    @staticmethod
-    def _returncode_to_signal_name(returncode: int) -> Optional[str]:
-        """
-        Try to convert return codes into their corresponding signal name.
-        E.g. returncode_to_signal_name(-2) -> "SIGINT"
-        """
-        try:
-            # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)  # pylint: disable=no-member
-            return s.name
-        except Exception:
-            # Should generally be a ValueError, but catch everything just in case.
-            return None
