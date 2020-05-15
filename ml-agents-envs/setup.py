@@ -51,7 +51,7 @@ setup(
         "numpy>=1.14.1,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
-        "pyyaml",
+        "pyyaml>=5.1.1",
     ],
     python_requires=">=3.5",
     cmdclass={"verify": VerifyVersionCommand},
