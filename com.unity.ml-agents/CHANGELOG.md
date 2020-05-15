@@ -11,6 +11,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - A bug that would cause the editor to go into a loop when a prefab was selected was fixed. (#3949)
 - BrainParameters.ToProto() no longer throws an exception if none of the fields have been set. (#3930)
+- The Barracuda dependency was upgraded to 0.7.0-preview. (#3977)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
 - The gym wrapper error for the wrong number of agents now fires more consistently, and more details
