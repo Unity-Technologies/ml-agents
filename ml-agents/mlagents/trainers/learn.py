@@ -82,6 +82,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         # Make run logs directory
         os.makedirs(run_logs_dir, exist_ok=True)
+        # Load any needed states
+        if checkpoint_settings.resume:
+            StatsReporter.load_state(os.path.join(run_logs_dir, "training_status.json"))
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
@@ -160,6 +163,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager.close()
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
+        StatsReporter.save_state(os.path.join(run_logs_dir, "training_status.json"))
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:

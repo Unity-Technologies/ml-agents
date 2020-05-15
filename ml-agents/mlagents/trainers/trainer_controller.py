@@ -25,6 +25,7 @@ from mlagents_envs.timers import (
     merge_gauges,
 )
 from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
@@ -309,6 +310,9 @@ class TrainerController(object):
                 if brain_name in self.trainers:
                     self.trainers[brain_name].stats_reporter.set_stat(
                         "Environment/Lesson", curr.lesson_num
+                    )
+                    self.trainers[brain_name].stats_reporter.store_parameter_state(
+                        StatsPropertyType.LESSON_NUM, curr.lesson_num
                     )
 
         for trainer in self.trainers.values():

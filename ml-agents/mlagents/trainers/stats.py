@@ -6,6 +6,7 @@ import abc
 import csv
 import os
 import time
+import json
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
@@ -28,6 +29,7 @@ class StatsSummary(NamedTuple):
 class StatsPropertyType(Enum):
     HYPERPARAMETERS = "hyperparameters"
     SELF_PLAY = "selfplay"
+    LESSON_NUM = "lesson_num"
 
 
 class StatsWriter(abc.ABC):
@@ -290,6 +292,7 @@ class CSVWriter(StatsWriter):
 class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
+    saved_state: Dict[str, Dict[StatsPropertyType, Any]] = defaultdict(lambda: {})
 
     def __init__(self, category: str):
         """
@@ -303,6 +306,27 @@ class StatsReporter:
     @staticmethod
     def add_writer(writer: StatsWriter) -> None:
         StatsReporter.writers.append(writer)
+
+    @staticmethod
+    def load_state(path: str) -> None:
+        """
+        Load a JSON file that contains saved state.
+        :param path: Path to the JSON file containing the state.
+        """
+        try:
+            with open(path, "r") as f:
+                StatsReporter.saved_state = json.load(f)
+        except FileNotFoundError:
+            pass
+
+    @staticmethod
+    def save_state(path: str) -> None:
+        """
+        Save a JSON file that contains saved state.
+        :param path: Path to the JSON file containing the state.
+        """
+        with open(path, "w") as f:
+            json.dump(StatsReporter.saved_state, f, indent=4)
 
     def add_property(self, property_type: StatsPropertyType, value: Any) -> None:
         """
@@ -362,3 +386,20 @@ class StatsReporter:
                 num=len(StatsReporter.stats_dict[self.category][key]),
             )
         return StatsSummary.empty()
+
+    def store_parameter_state(self, key: StatsPropertyType, value: Any) -> None:
+        """
+        Stores an arbitrary-named parameter in the global saved state.
+        :param key: The parameter, e.g. lesson number.
+        :param value: The value.
+        """
+        StatsReporter.saved_state[self.category][key] = value
+
+    def restore_parameter_state(self, key: StatsPropertyType) -> Any:
+        """
+        Stores an arbitrary-named parameter in training_status.json.
+        If not found, returns None.
+        :param key: The statistic, e.g. lesson number.
+        :param value: The value.
+        """
+        StatsReporter.saved_state[self.category].get(key, None)
