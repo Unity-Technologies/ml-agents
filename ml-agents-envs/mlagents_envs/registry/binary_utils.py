@@ -11,6 +11,10 @@ from zipfile import ZipFile
 from sys import platform
 from typing import Tuple, Optional, Dict, Any
 
+from mlagents_envs.logging_util import get_logger
+
+logger = get_logger(__name__)
+
 # The default logical block size is 8192 bytes (8 KB) for UFS file systems.
 BLOCK_SIZE = 8192
 
@@ -25,7 +29,9 @@ def get_local_binary_path(name: str, url: str) -> str:
     """
     path = get_local_binary_path_if_exists(name, url)
     if path is None:
-        print(f"Local environment {name} not found, downloading environment from {url}")
+        logger.debug(
+            f"Local environment {name} not found, downloading environment from {url}"
+        )
         download_and_extract_zip(url, name)
     path = get_local_binary_path_if_exists(name, url)
     if path is None:
