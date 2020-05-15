@@ -292,7 +292,7 @@ class CSVWriter(StatsWriter):
 class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
-    saved_state: Dict[str, Dict[StatsPropertyType, Any]] = defaultdict(lambda: {})
+    saved_state: Dict[str, Dict[str, Any]] = defaultdict(lambda: {})
 
     def __init__(self, category: str):
         """
@@ -393,7 +393,7 @@ class StatsReporter:
         :param key: The parameter, e.g. lesson number.
         :param value: The value.
         """
-        StatsReporter.saved_state[self.category][key] = value
+        StatsReporter.saved_state[self.category][key.value] = value
 
     def restore_parameter_state(self, key: StatsPropertyType) -> Any:
         """
@@ -402,4 +402,4 @@ class StatsReporter:
         :param key: The statistic, e.g. lesson number.
         :param value: The value.
         """
-        StatsReporter.saved_state[self.category].get(key, None)
+        StatsReporter.saved_state[self.category].get(key.value, None)
