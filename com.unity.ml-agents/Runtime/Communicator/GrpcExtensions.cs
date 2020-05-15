@@ -26,10 +26,11 @@ namespace Unity.MLAgents
         {
             var agentInfoProto = ai.ToAgentInfoProto();
 
-            var agentActionProto = new AgentActionProto
+            var agentActionProto = new AgentActionProto();
+            if(ai.storedVectorActions != null)
             {
-                VectorActions = { ai.storedVectorActions }
-            };
+                agentActionProto.VectorActions.AddRange(ai.storedVectorActions);
+            }
 
             return new AgentInfoActionPairProto
             {
@@ -95,12 +96,14 @@ namespace Unity.MLAgents
             var brainParametersProto = new BrainParametersProto
             {
                 VectorActionSize = { bp.VectorActionSize },
-                VectorActionSpaceType =
-                    (SpaceTypeProto)bp.VectorActionSpaceType,
+                VectorActionSpaceType = (SpaceTypeProto) bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
-            brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
+            if(bp.VectorActionDescriptions != null)
+            {
+                brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
+            }
             return brainParametersProto;
         }
 
@@ -128,13 +131,14 @@ namespace Unity.MLAgents
         /// </summary>
         public static DemonstrationMetaProto ToProto(this DemonstrationMetaData dm)
         {
+            var demonstrationName = dm.demonstrationName ?? "";
             var demoProto = new DemonstrationMetaProto
             {
                 ApiVersion = DemonstrationMetaData.ApiVersion,
                 MeanReward = dm.meanReward,
                 NumberSteps = dm.numberSteps,
                 NumberEpisodes = dm.numberEpisodes,
-                DemonstrationName = dm.demonstrationName
+                DemonstrationName = demonstrationName
             };
             return demoProto;
         }
