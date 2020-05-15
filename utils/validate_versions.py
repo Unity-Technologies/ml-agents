@@ -117,6 +117,30 @@ def set_academy_version_string(new_version):
         f.writelines(lines)
 
 
+def print_release_tag_commands(
+    python_version: str, csharp_version: str, release_tag: str
+):
+    python_tag = f"python-packages_{python_version}"
+    csharp_tag = f"com.unity.ml-agents_{csharp_version}"
+    docs_tag = f"{release_tag}_docs"
+    print(
+        f"""
+###
+Use these commands to create the tags after the release:
+###
+git checkout {release_tag}
+git tag -f latest_release
+git push -f origin latest_release
+git tag -f {docs_tag}
+git push -f origin {docs_tag}
+git tag {python_tag}
+git push -f origin {python_tag}
+git tag {csharp_tag}
+git push -f origin {csharp_tag}
+"""
+    )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--python-version", default=None)
@@ -131,6 +155,10 @@ if __name__ == "__main__":
         if args.csharp_version:
             print(f"Updating C# package to version {args.csharp_version}")
         set_version(args.python_version, args.csharp_version, args.release_tag)
+        if args.release_tag is not None:
+            print_release_tag_commands(
+                args.python_version, args.csharp_version, args.release_tag
+            )
     else:
         ok = check_versions()
         return_code = 0 if ok else 1
