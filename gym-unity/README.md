@@ -30,8 +30,10 @@ from the root of the project repository use:
 
 ```python
 from gym_unity.envs import UnityToGymWrapper
+from mlagents_envs.environment import UnityEnvironment
 
-env = UnityToGymWrapper(unity_environment, worker_id, use_visual, uint8_visual)
+unity_environment = UnityEnvironment(path_to_unity_binary)
+env = UnityToGymWrapper(unity_environment, use_visual, uint8_visual, flatten_branched, allow_multiple_visual_obs)
 ```
 
 - `unity_environment` refers to the Unity environment to be wrapped.
@@ -48,7 +50,7 @@ env = UnityToGymWrapper(unity_environment, worker_id, use_visual, uint8_visual)
   Discrete. Otherwise, it will be converted into a MultiDiscrete. Defaults to
   `False`.
 
-- `allow_multiple_visual_obs` will return a list of observation instead of only
+- `allow_multiple_visual_obs` will return a list of observations instead of only
   one if disabled. Defaults to `False`.
 
 The returned environment `env` will function as a gym.
@@ -61,6 +63,7 @@ The returned environment `env` will function as a gym.
   visual observations by using the `allow_multiple_visual_obs=True` option in
   the gym parameters. If set to `True`, you will receive a list of `observation`
   instead of only the first one.
+- It is not possible to provide visual and vector observations at the same time. 
 - The `TerminalSteps` or `DecisionSteps` output from the environment can still
   be accessed from the `info` provided by `env.step(action)`.
 - Stacked vector observations are not supported.
