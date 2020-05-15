@@ -458,7 +458,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         use_discrete=use_discrete,
         step_size=0.2,
     )
-    bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
+    bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1500)
     reward_signals = {
         RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
     }
