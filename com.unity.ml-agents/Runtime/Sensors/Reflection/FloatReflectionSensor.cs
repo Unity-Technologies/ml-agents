@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Sensors.Reflection
     /// </summary>
     internal class FloatReflectionSensor : ReflectionSensorBase
     {
-        internal FloatReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
+        public FloatReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
             : base(reflectionSensorInfo, 1)
         {}
 

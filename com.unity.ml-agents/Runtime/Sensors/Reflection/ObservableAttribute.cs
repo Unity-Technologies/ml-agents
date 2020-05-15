@@ -55,17 +55,18 @@ namespace Unity.MLAgents.Sensors.Reflection
         const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         /// <summary>
-        /// Supported types and their observation sizes.
+        /// Supported types and their observation sizes and corresponding sensor type.
         /// </summary>
-        static Dictionary<Type, int> s_TypeSizes = new Dictionary<Type, int>()
+        static Dictionary<Type, (int, Type)> s_TypeToSensorInfo = new Dictionary<Type, (int, Type)>()
         {
-            {typeof(int), 1},
-            {typeof(bool), 1},
-            {typeof(float), 1},
-            {typeof(Vector2), 2},
-            {typeof(Vector3), 3},
-            {typeof(Vector4), 4},
-            {typeof(Quaternion), 4},
+            {typeof(int), (1, typeof(IntReflectionSensor))},
+            {typeof(bool), (1, typeof(BoolReflectionSensor))},
+            {typeof(float), (1, typeof(FloatReflectionSensor))},
+
+            {typeof(Vector2), (2, typeof(Vector2ReflectionSensor))},
+            {typeof(Vector3), (3, typeof(Vector3ReflectionSensor))},
+            {typeof(Vector4), (4, typeof(Vector4ReflectionSensor))},
+            {typeof(Quaternion), (4, typeof(QuaternionReflectionSensor))},
         };
 
         /// <summary>
@@ -184,6 +185,12 @@ namespace Unity.MLAgents.Sensors.Reflection
                 memberType = propertyInfo.PropertyType;
             }
 
+            if (!s_TypeToSensorInfo.ContainsKey(memberType))
+            {
+                // For unsupported types, return null and we'll filter them out later.
+                return null;
+            }
+
             string sensorName;
             if (string.IsNullOrEmpty(observableAttribute.m_Name))
             {
@@ -203,40 +210,8 @@ namespace Unity.MLAgents.Sensors.Reflection
                 SensorName = sensorName
             };
 
-            ISensor sensor = null;
-            if (memberType == typeof(Int32))
-            {
-                sensor = new IntReflectionSensor(reflectionSensorInfo);
-            }
-            else if (memberType == typeof(float))
-            {
-                sensor = new FloatReflectionSensor(reflectionSensorInfo);
-            }
-            else if (memberType == typeof(bool))
-            {
-                sensor = new BoolReflectionSensor(reflectionSensorInfo);
-            }
-            else if (memberType == typeof(Vector2))
-            {
-                sensor = new Vector2ReflectionSensor(reflectionSensorInfo);
-            }
-            else if (memberType == typeof(Vector3))
-            {
-                sensor = new Vector3ReflectionSensor(reflectionSensorInfo);
-            }
-            else if (memberType == typeof(Vector4))
-            {
-                sensor = new Vector4ReflectionSensor(reflectionSensorInfo);
-            }
-            else if (memberType == typeof(Quaternion))
-            {
-                sensor = new QuaternionReflectionSensor(reflectionSensorInfo);
-            }
-            else
-            {
-                // For unsupported types, return null and we'll filter them out later.
-                return null;
-            }
+            var (_, sensorType) = s_TypeToSensorInfo[memberType];
+            var sensor = (ISensor) Activator.CreateInstance(sensorType, reflectionSensorInfo);
 
             // Wrap the base sensor in a StackingSensor if we're using stacking.
             if (observableAttribute.m_NumStackedObservations > 1)
@@ -260,9 +235,10 @@ namespace Unity.MLAgents.Sensors.Reflection
             int sizeOut = 0;
             foreach (var(field, attr) in GetObservableFields(o, excludeInherited))
             {
-                if (s_TypeSizes.ContainsKey(field.FieldType))
+                if (s_TypeToSensorInfo.ContainsKey(field.FieldType))
                 {
-                    sizeOut += s_TypeSizes[field.FieldType] * attr.m_NumStackedObservations;
+                    var (obsSize, _) = s_TypeToSensorInfo[field.FieldType];
+                    sizeOut += obsSize * attr.m_NumStackedObservations;
                 }
                 else
                 {
@@ -272,11 +248,12 @@ namespace Unity.MLAgents.Sensors.Reflection
 
             foreach (var(prop, attr) in GetObservableProperties(o, excludeInherited))
             {
-                if (s_TypeSizes.ContainsKey(prop.PropertyType))
+                if (s_TypeToSensorInfo.ContainsKey(prop.PropertyType))
                 {
                     if (prop.CanRead)
                     {
-                        sizeOut += s_TypeSizes[prop.PropertyType] * attr.m_NumStackedObservations;
+                        var (obsSize, _) = s_TypeToSensorInfo[prop.PropertyType];
+                        sizeOut += obsSize * attr.m_NumStackedObservations;
                     }
                     else
                     {
