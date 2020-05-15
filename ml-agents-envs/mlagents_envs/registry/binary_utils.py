@@ -5,6 +5,7 @@ import uuid
 import shutil
 import glob
 import yaml
+import hashlib
 
 from zipfile import ZipFile
 from sys import platform
@@ -22,21 +23,23 @@ def get_local_binary_path(name: str, url: str) -> str:
     :param name: The name that will be given to the folder containing the extracted data
     :param url: The URL of the zip file
     """
-    path = get_local_binary_path_if_exists(name)
+    path = get_local_binary_path_if_exists(name, url)
     if path is None:
         print(f"Local environment {name} not found, downloading environment from {url}")
         download_and_extract_zip(url, name)
-    path = get_local_binary_path_if_exists(name)
+    path = get_local_binary_path_if_exists(name, url)
     if path is None:
         raise FileNotFoundError("Binary not found")
     return path
 
 
-def get_local_binary_path_if_exists(name: str) -> Optional[str]:
+def get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]:
     """
     Recursively searches for a Unity executable in the extracted files folders. This is
     platform dependent : It will only return a Unity executable compatible with the
     computer's OS. If no executable is found, None will be returned.
+    :param name: The name/identifier of the executable
+    :param url: The url the executable was downloaded from (for verification)
     """
     _, bin_dir = get_tmp_dir()
     extension = None
@@ -49,7 +52,8 @@ def get_local_binary_path_if_exists(name: str) -> Optional[str]:
         extension = "*.exe"
     if extension is None:
         raise NotImplementedError("No extensions found for this platform.")
-    path = os.path.join(bin_dir, name, "**", extension)
+    url_hash = "-" + hashlib.md5(url.encode()).hexdigest()
+    path = os.path.join(bin_dir, name + url_hash, "**", extension)
     candidates = glob.glob(path, recursive=True)
     if len(candidates) == 0:
         return None
@@ -64,12 +68,12 @@ def get_tmp_dir() -> Tuple[str, str]:
     :retrun: Tuple containing path to : (zip folder, extracted files folder)
     """
     MLAGENTS = "ml-agents-binaries"
-    ZIP_FOLDER_NAME = "tmp_zip"
+    TMP_FOLDER_NAME = "tmp"
     BINARY_FOLDER_NAME = "binaries"
     mla_directory = os.path.join(tempfile.gettempdir(), MLAGENTS)
     if not os.path.exists(mla_directory):
         os.makedirs(mla_directory)
-    zip_directory = os.path.join(tempfile.gettempdir(), MLAGENTS, ZIP_FOLDER_NAME)
+    zip_directory = os.path.join(tempfile.gettempdir(), MLAGENTS, TMP_FOLDER_NAME)
     if not os.path.exists(zip_directory):
         os.makedirs(zip_directory)
     bin_directory = os.path.join(tempfile.gettempdir(), MLAGENTS, BINARY_FOLDER_NAME)
@@ -87,7 +91,8 @@ def download_and_extract_zip(url: str, name: str) -> None:
     :param name: The name that will be given to the folder containing the extracted data
     """
     zip_dir, bin_dir = get_tmp_dir()
-    binary_path = os.path.join(bin_dir, name)
+    url_hash = "-" + hashlib.md5(url.encode()).hexdigest()
+    binary_path = os.path.join(bin_dir, name + url_hash)
     if os.path.exists(binary_path):
         shutil.rmtree(binary_path)
 
