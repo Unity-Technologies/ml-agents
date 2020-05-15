@@ -137,6 +137,13 @@ def test_reward_signal_structure():
             reward_signals_dict, Dict[RewardSignalType, RewardSignalSettings]
         )
 
+    # Check missing GAIL demo path
+    reward_signals_dict = {"gail": {"strength": 1.0}}
+    with pytest.raises(TypeError):
+        RewardSignalSettings.structure(
+            reward_signals_dict, Dict[RewardSignalType, RewardSignalSettings]
+        )
+
     # Check non-Dict input
     with pytest.raises(TrainerConfigError):
         RewardSignalSettings.structure(
