@@ -301,7 +301,7 @@ class SubprocessEnvManager(EnvManager):
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:
-        logger.debug(f"SubprocessEnvManager closing.")
+        logger.debug("SubprocessEnvManager closing.")
         self.step_queue.close()
         self.step_queue.join_thread()
         for env_worker in self.env_workers:
