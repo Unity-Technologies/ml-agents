@@ -4,10 +4,14 @@ import os
 import uuid
 import shutil
 import glob
+import yaml
 
 from zipfile import ZipFile
 from sys import platform
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict, Any
+
+# The default logical block size is 8192 bytes (8 KB) for UFS file systems.
+BLOCK_SIZE = 8192
 
 
 def get_local_binary_path(name: str, url: str) -> str:
@@ -82,15 +86,17 @@ def download_and_extract_zip(url: str, name: str) -> None:
     :param url: The URL of the zip file
     :param name: The name that will be given to the folder containing the extracted data
     """
-    # The default logical block size is 8192 bytes (8 KB) for UFS file systems.
-    BLOCK_SIZE = 8192
     zip_dir, bin_dir = get_tmp_dir()
     binary_path = os.path.join(bin_dir, name)
     if os.path.exists(binary_path):
         shutil.rmtree(binary_path)
 
     # Download zip
-    request = urllib.request.urlopen(url)
+    try:
+        request = urllib.request.urlopen(url)
+    except urllib.error.HTTPError as e:  # type: ignore
+        e.msg += " " + url
+        raise
     zip_size = int(request.headers["content-length"])
     zip_file_path = os.path.join(zip_dir, str(uuid.uuid4()) + ".zip")
     with open(zip_file_path, "wb") as zip_file:
@@ -135,6 +141,39 @@ def print_progress(prefix: str, percent: float) -> None:
     bar = "|" + "\u2588" * bar_progress + " " * (BAR_LEN - bar_progress) + "|"
     str_percent = "%3.0f%%" % percent
     print(f"{prefix} : {bar} {str_percent} \r", end="", flush=True)
+
+
+def load_remote_manifest(url: str) -> Dict[str, Any]:
+    """
+    Converts a remote yaml file into a Python dictionary
+    """
+    tmp_dir, _ = get_tmp_dir()
+    try:
+        request = urllib.request.urlopen(url)
+    except urllib.error.HTTPError as e:  # type: ignore
+        e.msg += " " + url
+        raise
+    manifest_path = os.path.join(tmp_dir, str(uuid.uuid4()) + ".yaml")
+    with open(manifest_path, "wb") as manifest:
+        while True:
+            buffer = request.read(BLOCK_SIZE)
+            if not buffer:
+                # There is nothing more to read
+                break
+            manifest.write(buffer)
+    try:
+        result = load_local_manifest(manifest_path)
+    finally:
+        os.remove(manifest_path)
+    return result
+
+
+def load_local_manifest(path: str) -> Dict[str, Any]:
+    """
+    Converts a local yaml file into a Python dictionary
+    """
+    with open(path) as data_file:
+        return yaml.safe_load(data_file)
 
 
 class ZipFileWithProgress(ZipFile):
