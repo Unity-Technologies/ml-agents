@@ -109,7 +109,7 @@ A `BaseEnv` has the following methods:
   act.
 - **Close : `env.close()`** Sends a shutdown signal to the environment and
   terminates the communication.
-- **Behavior Specs : `env.behavior_specs`** Returns a Mapping of
+- **Behavior Specs : `env.get_behavior_spec(behavior_name: str)`** Returns a Mapping of
   `BehaviorName` to `BehaviorSpec` objects (read only).
   A `BehaviorSpec` contains information such as the observation shapes, the
   action type (multi-discrete or continuous) and the action shape. Note that
