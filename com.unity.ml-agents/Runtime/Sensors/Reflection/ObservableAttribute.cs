@@ -55,7 +55,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         const BindingFlags k_BindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         /// <summary>
-        /// Supported types and their observation sizes.
+        /// Supported types and their observation sizes and corresponding sensor type.
         /// </summary>
         static Dictionary<Type, (int, Type)> s_TypeToSensorInfo = new Dictionary<Type, (int, Type)>()
         {
