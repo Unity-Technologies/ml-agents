@@ -122,8 +122,7 @@ namespace Unity.MLAgentsExamples
                 startingPos = t.position,
                 startingRot = t.rotation
             };
-            bp.rb.maxAngularVelocity = 30;
-//            bp.rb.maxAngularVelocity = 100;
+            bp.rb.maxAngularVelocity = 50;
 
             // Add & setup the ground contact script
             bp.groundContact = t.GetComponent<GroundContact>();

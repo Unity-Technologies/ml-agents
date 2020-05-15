@@ -253,7 +253,6 @@ GameObject:
   - component: {fileID: 895268871377934303}
   - component: {fileID: 895268871377934302}
   - component: {fileID: 895268871377934301}
-  - component: {fileID: 895268871377934300}
   m_Layer: 0
   m_Name: WalkerRagdoll
   m_TagString: Untagged
@@ -383,34 +382,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &895268871377934300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 895268871377934275}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35bd0d2facf4149ad86cde561dcedd64, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  showCOMGizmos: 0
-  avgCOMWorldSpace: {x: -499.97733, y: 2.196562, z: -250.00104}
-  avgCOMColor: {r: 0, g: 1, b: 0, a: 1}
-  bodyPartCOMColor: {r: 0.3820755, g: 0.8758695, b: 1, a: 1}
-  totalMass: 94
-  showBPPosRelToBody: 0
-  useTransformPoint: 0
-  useTransformVector: 0
-  useTransformDir: 0
-  showRBPos: 0
-  showRelPosVectorOnly: 0
-  showInverseTransformPointUnscaledRelToBody: 0
-  showInverseTransformPointRelToBody: 0
-  showInverseTransformVectorRelToBody: 0
-  showInverseTransformDirRelToBody: 0
-  body_T: {fileID: 895268871264836332}
 --- !u!1 &895268871382313704
 GameObject:
   m_ObjectHideFlags: 0
