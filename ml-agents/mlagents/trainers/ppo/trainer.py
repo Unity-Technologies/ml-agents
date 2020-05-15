@@ -205,7 +205,7 @@ class PPOTrainer(RLTrainer):
             self.update_buffer, self.policy.sequence_length
         )
         self.csv_writer.write_stats("sensitivity", sensitivities, self.step)
-        
+
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.update_buffer
