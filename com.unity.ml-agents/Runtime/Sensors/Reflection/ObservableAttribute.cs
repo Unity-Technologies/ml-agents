@@ -208,32 +208,31 @@ namespace Unity.MLAgents.Sensors.Reflection
             {
                 sensor = new IntReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(float))
+            else if (memberType == typeof(float))
             {
                 sensor = new FloatReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(bool))
+            else if (memberType == typeof(bool))
             {
                 sensor = new BoolReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(Vector2))
+            else if (memberType == typeof(Vector2))
             {
                 sensor = new Vector2ReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(Vector3))
+            else if (memberType == typeof(Vector3))
             {
                 sensor = new Vector3ReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(Vector4))
+            else if (memberType == typeof(Vector4))
             {
                 sensor = new Vector4ReflectionSensor(reflectionSensorInfo);
             }
-            if (memberType == typeof(Quaternion))
+            else if (memberType == typeof(Quaternion))
             {
                 sensor = new QuaternionReflectionSensor(reflectionSensorInfo);
             }
-
-            if (sensor == null)
+            else
             {
                 // For unsupported types, return null and we'll filter them out later.
                 return null;
