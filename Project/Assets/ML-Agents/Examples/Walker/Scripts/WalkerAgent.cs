@@ -128,7 +128,7 @@ public class WalkerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, m_OrientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, m_OrientationCube.transform.forward));
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
