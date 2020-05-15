@@ -6,10 +6,11 @@ from mlagents_envs.base_env import (
     BehaviorName,
     AgentId,
     ActionType,
+    BehaviorMapping,
 )
 from mlagents_envs.exception import UnityActionException, UnityObservationException
 
-from typing import List, Tuple, Union, Optional
+from typing import Tuple, Union, Optional
 
 import numpy as np
 
@@ -39,10 +40,10 @@ class GymToUnityWrapper(BaseEnv):
         if isinstance(self._gym_env.action_space, gym.spaces.Box):
             action_type = ActionType.CONTINUOUS
             action_shape = np.prod(self._gym_env.action_space.shape)
-            self.act_ratio = np.maximum(
+            self._act_ratio = np.maximum(
                 self._gym_env.action_space.high, -self._gym_env.action_space.low
             )
-            self.act_ratio[self.act_ratio > 1e38] = 1
+            self._act_ratio[self._act_ratio > 1e38] = 1
         elif isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             action_shape = (self._gym_env.action_space.n,)
             action_type = ActionType.DISCRETE
@@ -54,11 +55,11 @@ class GymToUnityWrapper(BaseEnv):
             raise UnityObservationException(
                 f"Unknown observation type {self._gym_env.observation_space}"
             )
-        self.obs_ratio = np.maximum(
+        self._obs_ratio = np.maximum(
             self._gym_env.observation_space.high, -self._gym_env.observation_space.low
         )
         # If the range is infinity, just don't normalize
-        self.obs_ratio[self.obs_ratio > 1e38] = 1
+        self._obs_ratio[self._obs_ratio > 1e38] = 1
         self._behavior_specs = BehaviorSpec(
             observation_shapes=[self._gym_env.observation_space.shape],
             action_type=action_type,
@@ -70,6 +71,10 @@ class GymToUnityWrapper(BaseEnv):
             TerminalSteps.empty(self._behavior_specs),
         )
 
+    @property
+    def behavior_specs(self) -> BehaviorMapping:
+        return BehaviorMapping({self._behavior_name: self._behavior_specs})
+
     def step(self) -> None:
         if self._first_message:
             self.reset()
@@ -78,7 +83,7 @@ class GymToUnityWrapper(BaseEnv):
         if not done:
             self._current_steps = (
                 DecisionSteps(
-                    obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
+                    obs=[np.expand_dims(obs / self._obs_ratio, axis=0)],
                     reward=np.array([rew], dtype=np.float32),
                     agent_id=np.array([self._AGENT_ID], dtype=np.int32),
                     action_mask=None,
@@ -90,7 +95,7 @@ class GymToUnityWrapper(BaseEnv):
             self._current_steps = (
                 DecisionSteps.empty(self._behavior_specs),
                 TerminalSteps(
-                    obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
+                    obs=[np.expand_dims(obs / self._obs_ratio, axis=0)],
                     reward=np.array([rew], dtype=np.float32),
                     interrupted=np.array(
                         [info.get("TimeLimit.truncated", False)], dtype=np.bool
@@ -104,7 +109,7 @@ class GymToUnityWrapper(BaseEnv):
         obs = self._gym_env.reset()
         self._current_steps = (
             DecisionSteps(
-                obs=[np.expand_dims(obs / self.obs_ratio, axis=0)],
+                obs=[np.expand_dims(obs / self._obs_ratio, axis=0)],
                 reward=np.array([0], dtype=np.float32),
                 agent_id=np.array([self._AGENT_ID], dtype=np.int32),
                 action_mask=None,
@@ -114,9 +119,6 @@ class GymToUnityWrapper(BaseEnv):
 
     def close(self) -> None:
         self._gym_env.close()
-
-    def get_behavior_names(self) -> List[BehaviorName]:
-        return [self._behavior_name]
 
     def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
         assert behavior_name == self._behavior_name
@@ -137,7 +139,7 @@ class GymToUnityWrapper(BaseEnv):
         if isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             self._g_action = int(action[0, 0])
         elif isinstance(self._gym_env.action_space, gym.spaces.Box):
-            self._g_action = action[0] / self.act_ratio
+            self._g_action = action[0] / self._act_ratio
         else:
             raise UnityActionException(
                 f"Unknown action type {self._gym_env.action_space}"
@@ -163,7 +165,7 @@ class GymToUnityWrapper(BaseEnv):
         if isinstance(self._gym_env.action_space, gym.spaces.Discrete):
             self._g_action = int(action[0])
         elif isinstance(self._gym_env.action_space, gym.spaces.Box):
-            self._g_action = action / self.act_ratio
+            self._g_action = action / self._act_ratio
         else:
             raise UnityActionException(
                 f"Unknown action type {self._gym_env.action_space}"
@@ -174,7 +176,3 @@ class GymToUnityWrapper(BaseEnv):
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         assert behavior_name == self._behavior_name
         return self._current_steps
-
-    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
-        assert behavior_name == self._behavior_name
-        return self._behavior_specs
