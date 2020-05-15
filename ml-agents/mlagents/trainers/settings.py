@@ -122,19 +122,17 @@ class RewardSignalSettings:
     @staticmethod
     def structure(d: Mapping, t: type) -> Any:
         """
-        Helper method to structure a TrainerSettings class. Meant to be registered with
-        cattr.register_structure_hook() and called with cattr.structure().
+        Helper method to structure a Dict of RewardSignalSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure(). This is needed to handle
+        the special Enum selection of RewardSignalSettings classes.
         """
         if not isinstance(d, Mapping):
             raise TrainerConfigError(f"Unsupported reward signal configuration {d}.")
         d_final: Dict[RewardSignalType, RewardSignalSettings] = {}
         for key, val in d.items():
-            try:
-                enum_key = RewardSignalType(key)
-                t = enum_key.to_settings()
-                d_final[enum_key] = strict_to_cls(val, t)
-            except KeyError:
-                raise TrainerConfigError(f"Unknown reward signal type {key}")
+            enum_key = RewardSignalType(key)
+            t = enum_key.to_settings()
+            d_final[enum_key] = strict_to_cls(val, t)
         return d_final
 
 
