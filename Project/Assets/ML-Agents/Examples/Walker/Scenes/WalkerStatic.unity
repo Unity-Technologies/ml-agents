@@ -1863,7 +1863,7 @@ GameObject:
   - component: {fileID: 1409355323}
   - component: {fileID: 1409355321}
   m_Layer: 0
-  m_Name: WalkerSettings
+  m_Name: WalkerStaticSettings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

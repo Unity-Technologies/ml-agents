@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4878380427462518}
   m_Layer: 0
-  m_Name: WalkerPair
+  m_Name: WalkerWithTargetPair
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -151,6 +151,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdoll
+      objectReference: {fileID: 0}
+    - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: m_BehaviorName
+      value: WalkerStatic
       objectReference: {fileID: 0}
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
