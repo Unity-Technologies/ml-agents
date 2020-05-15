@@ -15,6 +15,8 @@ and this project adheres to
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
+  observations via reflection.
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
