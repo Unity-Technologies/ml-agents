@@ -199,6 +199,9 @@ class PPOTrainer(RLTrainer):
         )
         num_epoch = self.trainer_parameters["num_epoch"]
         batch_update_stats = defaultdict(list)
+        self.optimizer.compute_input_sensitivity(
+            self.update_buffer, self.policy.sequence_length
+        )
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.update_buffer
