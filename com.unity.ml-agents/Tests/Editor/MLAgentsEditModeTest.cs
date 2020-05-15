@@ -30,11 +30,6 @@ namespace Unity.MLAgents.Tests
 
     public class TestAgent : Agent
     {
-        public TestAgent()
-        {
-            ObservableAttributeHandling = ObservableAttributeOptions.ExcludeInherited;
-        }
-
         internal AgentInfo _Info
         {
             get
@@ -255,11 +250,12 @@ namespace Unity.MLAgents.Tests
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
+            var bp1 = agentGo1.GetComponent<BehaviorParameters>();
+            bp1.ObservableAttributeHandling = ObservableAttributeOptions.ExcludeInherited;
 
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
-            agent2.ObservableAttributeHandling = Agent.ObservableAttributeOptions.Ignore;
 
             Assert.AreEqual(0, agent1.agentOnEpisodeBeginCalls);
             Assert.AreEqual(0, agent2.agentOnEpisodeBeginCalls);
@@ -780,18 +776,19 @@ namespace Unity.MLAgents.Tests
             var variants = new[]
             {
                 // No observables found
-                (Agent.ObservableAttributeOptions.Ignore, 0),
+                (ObservableAttributeOptions.Ignore, 0),
                 // Only DerivedField found
-                (Agent.ObservableAttributeOptions.ExcludeInherited, 1),
+                (ObservableAttributeOptions.ExcludeInherited, 1),
                 // DerivedField and BaseField found
-                (Agent.ObservableAttributeOptions.ExamineAll, 2)
+                (ObservableAttributeOptions.ExamineAll, 2)
             };
 
             foreach (var(behavior, expectedNumSensors) in variants)
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();
-                agent.ObservableAttributeHandling = behavior;
+                var bp = go.GetComponent <BehaviorParameters>();
+                bp.ObservableAttributeHandling = behavior;
                 agent.LazyInitialize();
                 int numAttributeSensors = 0;
                 foreach (var sensor in agent.sensors)

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Tests
 {
@@ -19,18 +20,20 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        static List<TestAgent> GetFakeAgents()
+        static List<TestAgent> GetFakeAgents(ObservableAttributeOptions observableAttributeOptions = ObservableAttributeOptions.Ignore)
         {
             var goA = new GameObject("goA");
             var bpA = goA.AddComponent<BehaviorParameters>();
             bpA.BrainParameters.VectorObservationSize = 3;
             bpA.BrainParameters.NumStackedVectorObservations = 1;
+            bpA.ObservableAttributeHandling = observableAttributeOptions;
             var agentA = goA.AddComponent<TestAgent>();
 
             var goB = new GameObject("goB");
             var bpB = goB.AddComponent<BehaviorParameters>();
             bpB.BrainParameters.VectorObservationSize = 3;
             bpB.BrainParameters.NumStackedVectorObservations = 1;
+            bpB.ObservableAttributeHandling = observableAttributeOptions;
             var agentB = goB.AddComponent<TestAgent>();
 
             var agents = new List<TestAgent> { agentA, agentB };
@@ -103,7 +106,7 @@ namespace Unity.MLAgents.Tests
                 shape = new long[] { 2, 4 }
             };
             const int batchSize = 4;
-            var agentInfos = GetFakeAgents();
+            var agentInfos = GetFakeAgents(ObservableAttributeOptions.ExamineAll);
             var alloc = new TensorCachingAllocator();
             var generator = new VectorObservationGenerator(alloc);
             generator.AddSensorIndex(0); // ObservableAttribute (size 1)
