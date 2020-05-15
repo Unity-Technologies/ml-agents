@@ -65,8 +65,15 @@ in python, run:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
+# This is a non-blocking call that only loads the environment.
 env = UnityEnvironment(file_name="3DBall", seed=1, side_channels=[])
+# Start interacting with the evironment.
+env.reset()
+behavior_names = env.behavior_spec.keys()
+...
 ```
+**NOTE:** Please read [Interacting with a Unity Environment](#interacting-with-a-unity-environment)
+to read more about how you can interact with the Unity environment from Python.
 
 - `file_name` is the name of the environment binary (located in the root
   directory of the python project).
@@ -102,14 +109,13 @@ A `BaseEnv` has the following methods:
   act.
 - **Close : `env.close()`** Sends a shutdown signal to the environment and
   terminates the communication.
-- **Get Behavior Names : `env.get_behavior_names()`** Returns a list of
-  `BehaviorName`. Note that the number of groups can change over time in the
-  simulation if new Agent behaviors are created in the simulation.
-- **Get Behavior Spec : `env.get_behavior_spec(behavior_name: str)`** Returns
-  the `BehaviorSpec` corresponding to the behavior_name given as input. A
-  `BehaviorSpec` contains information such as the observation shapes, the action
-  type (multi-discrete or continuous) and the action shape. Note that the
-  `BehaviorSpec` for a specific group is fixed throughout the simulation.
+- **Behavior Specs : `env.behavior_specs`** Returns a Mapping of
+  `BehaviorName` to `BehaviorSpec` objects (read only).
+  A `BehaviorSpec` contains information such as the observation shapes, the
+  action type (multi-discrete or continuous) and the action shape. Note that
+  the `BehaviorSpec` for a specific group is fixed throughout the simulation.
+  The number of entries in the Mapping can change over time in the simulation
+  if new Agent behaviors are created in the simulation.
 - **Get Steps : `env.get_steps(behavior_name: str)`** Returns a tuple
   `DecisionSteps, TerminalSteps` corresponding to the behavior_name given as
   input. The `DecisionSteps` contains information about the state of the agents

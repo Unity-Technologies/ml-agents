@@ -27,7 +27,7 @@ from mlagents.trainers.settings import (
     TrainerType,
     RewardSignalType,
 )
-from mlagents.trainers.models import LearningRateSchedule, EncoderType
+from mlagents.trainers.models import EncoderType, ScheduleType
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
@@ -44,7 +44,7 @@ PPO_CONFIG = TrainerSettings(
     trainer_type=TrainerType.PPO,
     hyperparameters=PPOSettings(
         learning_rate=5.0e-3,
-        learning_rate_schedule=LearningRateSchedule.CONSTANT,
+        learning_rate_schedule=ScheduleType.CONSTANT,
         batch_size=16,
         buffer_size=64,
     ),
@@ -58,7 +58,7 @@ SAC_CONFIG = TrainerSettings(
     trainer_type=TrainerType.SAC,
     hyperparameters=SACSettings(
         learning_rate=5.0e-3,
-        learning_rate_schedule=LearningRateSchedule.CONSTANT,
+        learning_rate_schedule=ScheduleType.CONSTANT,
         batch_size=8,
         buffer_init_steps=100,
         buffer_size=5000,
@@ -468,7 +468,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         reward_signals=reward_signals,
         hyperparameters=hyperparams,
         behavioral_cloning=bc_settings,
-        max_steps=750,
+        max_steps=1000,
     )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 

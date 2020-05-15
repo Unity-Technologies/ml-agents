@@ -100,14 +100,15 @@ def test_run_training(
 
 def test_bad_env_path():
     with pytest.raises(UnityEnvironmentException):
-        learn.create_environment_factory(
+        factory = learn.create_environment_factory(
             env_path="/foo/bar",
             no_graphics=True,
-            seed=None,
+            seed=-1,
             start_port=8000,
             env_args=None,
             log_folder="results/log_folder",
         )
+        factory(worker_id=-1, side_channels=[])
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_YAML)

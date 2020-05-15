@@ -8,6 +8,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     ActionType,
+    BehaviorMapping,
 )
 from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -94,11 +95,12 @@ class SimpleEnvironment(BaseEnv):
             obs.append(np.ones((1,) + self.vis_obs_size, dtype=np.float32) * value)
         return obs
 
-    def get_behavior_names(self):
-        return self.names
-
-    def get_behavior_spec(self, behavior_name):
-        return self.behavior_spec
+    @property
+    def behavior_specs(self):
+        behavior_dict = {}
+        for n in self.names:
+            behavior_dict[n] = self.behavior_spec
+        return BehaviorMapping(behavior_dict)
 
     def set_action_for_agent(self, behavior_name, agent_id, action):
         pass

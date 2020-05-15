@@ -115,8 +115,12 @@ class SACOptimizer(TFOptimizer):
                 # The optimizer's m_size is 3 times the policy (Q1, Q2, and Value)
                 self.m_size = 3 * self.policy.m_size
                 self._create_inputs_and_outputs()
-                self.learning_rate = ModelUtils.create_learning_rate(
-                    lr_schedule, lr, self.policy.global_step, int(max_step)
+                self.learning_rate = ModelUtils.create_schedule(
+                    lr_schedule,
+                    lr,
+                    self.policy.global_step,
+                    int(max_step),
+                    min_value=1e-10,
                 )
                 self._create_losses(
                     self.policy_network.q1_heads,

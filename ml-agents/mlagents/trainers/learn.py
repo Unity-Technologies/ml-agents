@@ -29,7 +29,6 @@ from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
-from mlagents_envs.exception import UnityEnvironmentException
 from mlagents_envs.timers import (
     hierarchical_timer,
     get_timer_tree,
@@ -73,7 +72,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             else None
         )
         run_logs_dir = os.path.join(write_path, "run_logs")
-        port = env_settings.base_port
+        port: Optional[int] = env_settings.base_port
         # Check if directory exists
         handle_existing_directories(
             write_path,
@@ -103,7 +102,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         StatsReporter.add_writer(console_writer)
 
         if env_settings.env_path is None:
-            port = UnityEnvironment.DEFAULT_EDITOR_PORT
+            port = None
         env_factory = create_environment_factory(
             env_settings.env_path,
             engine_settings.no_graphics,
@@ -227,17 +226,10 @@ def create_environment_factory(
     env_path: Optional[str],
     no_graphics: bool,
     seed: int,
-    start_port: int,
+    start_port: Optional[int],
     env_args: Optional[List[str]],
     log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
-    if env_path is not None:
-        launch_string = UnityEnvironment.validate_environment_path(env_path)
-        if launch_string is None:
-            raise UnityEnvironmentException(
-                f"Couldn't launch the {env_path} environment. Provided filename does not match any environments."
-            )
-
     def create_unity_environment(
         worker_id: int, side_channels: List[SideChannel]
     ) -> UnityEnvironment:

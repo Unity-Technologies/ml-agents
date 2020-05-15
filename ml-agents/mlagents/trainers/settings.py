@@ -8,7 +8,7 @@ import argparse
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.models import LearningRateSchedule, EncoderType
+from mlagents.trainers.models import ScheduleType, EncoderType
 
 
 def check_and_structure(key: str, value: Any, class_type: type) -> Any:
@@ -70,7 +70,7 @@ class HyperparamSettings:
     batch_size: int = 1024
     buffer_size: int = 10240
     learning_rate: float = 3.0e-4
-    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.CONSTANT
+    learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
 
 
 @attr.s(auto_attribs=True)
@@ -79,7 +79,7 @@ class PPOSettings(HyperparamSettings):
     epsilon: float = 0.2
     lambd: float = 0.95
     num_epoch: int = 3
-    learning_rate_schedule: LearningRateSchedule = LearningRateSchedule.LINEAR
+    learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 @attr.s(auto_attribs=True)
