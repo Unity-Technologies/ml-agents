@@ -147,7 +147,7 @@ class GAILSettings(RewardSignalSettings):
 
 @attr.s(auto_attribs=True)
 class CuriositySettings(RewardSignalSettings):
-    encoding_size: int = 128
+    encoding_size: int = 64
     learning_rate: float = 3e-4
 
 

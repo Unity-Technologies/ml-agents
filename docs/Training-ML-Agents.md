@@ -242,7 +242,7 @@ behaviors:
       init_path:
 
     reward_signals:
-      # environment reward
+      # environment reward (default)
       extrinsic:
         strength: 1.0
         gamma: 0.99
@@ -331,7 +331,8 @@ behaviors:
 We now break apart the components of the configuration file and describe what
 each of these parameters mean and provide guidelines on how to set them. See
 [Training Configuration File](Training-Configuration-File.md) for a detailed
-description of all the configurations listed above.
+description of all the configurations listed above, along with their defaults.
+Unless otherwise specified, omitting a configuration will revert it to its default.
 
 ### Curriculum Learning
 
