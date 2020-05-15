@@ -7,7 +7,6 @@ using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Tests
 {
-
     [TestFixture]
     public class ObservableAttributeTests
     {
@@ -179,8 +178,8 @@ namespace Unity.MLAgents.Tests
 
             SensorTestHelper.CompareObservation(sensorsByName["quaternionMember"], new[] { 5.0f, 5.1f, 5.2f, 5.3f });
             SensorTestHelper.CompareObservation(sensorsByName["quaternionProperty"], new[] { 5.4f, 5.5f, 5.5f, 5.7f });
-
         }
+
         [Test]
         public void TestGetTotalObservationSize()
         {

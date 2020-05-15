@@ -1,4 +1,4 @@
-﻿#if UNITY_INCLUDE_TESTS
+#if UNITY_INCLUDE_TESTS
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
@@ -11,7 +11,6 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-
     public class PublicApiAgent : Agent
     {
         public int numHeuristicCalls;
@@ -40,7 +39,7 @@ namespace Tests
 
         public override int[] GetObservationShape()
         {
-            int[] shape = (int[]) wrappedComponent.GetObservationShape().Clone();
+            int[] shape = (int[])wrappedComponent.GetObservationShape().Clone();
             for (var i = 0; i < shape.Length; i++)
             {
                 shape[i] *= numStacks;

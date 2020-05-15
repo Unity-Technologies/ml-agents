@@ -787,7 +787,7 @@ namespace Unity.MLAgents.Tests
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();
-                var bp = go.GetComponent <BehaviorParameters>();
+                var bp = go.GetComponent<BehaviorParameters>();
                 bp.ObservableAttributeHandling = behavior;
                 agent.LazyInitialize();
                 int numAttributeSensors = 0;
