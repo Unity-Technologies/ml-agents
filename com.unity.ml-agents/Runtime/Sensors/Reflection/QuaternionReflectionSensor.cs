@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Sensors.Reflection
     /// </summary>
     internal class QuaternionReflectionSensor : ReflectionSensorBase
     {
-        internal QuaternionReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
+        public QuaternionReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
             : base(reflectionSensorInfo, 4)
         {}
 
