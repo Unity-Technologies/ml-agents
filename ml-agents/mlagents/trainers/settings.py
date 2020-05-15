@@ -368,4 +368,8 @@ class RunOptions(ExportableSettings):
                     configured_dict["engine_settings"][key] = val
                 else:  # Base options
                     configured_dict[key] = val
-        return cattr.structure(configured_dict, RunOptions)
+        return RunOptions.from_dict(configured_dict)
+
+    @staticmethod
+    def from_dict(options_dict: Dict[str, Any]) -> "RunOptions":
+        return cattr.structure(options_dict, RunOptions)
