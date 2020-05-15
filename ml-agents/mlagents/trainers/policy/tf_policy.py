@@ -138,6 +138,7 @@ class TFPolicy(Policy):
                     )
                 )
             if reset_global_steps:
+                self._set_step(0)
                 logger.info(
                     "Starting training from step 0 and saving to {}.".format(
                         self.model_path

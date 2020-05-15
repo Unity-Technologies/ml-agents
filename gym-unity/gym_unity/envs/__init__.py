@@ -49,11 +49,10 @@ class UnityToGymWrapper(gym.Env):
         self._env = unity_env
 
         # Take a single step so that the brain information will be sent over
-        if not self._env.get_behavior_names():
+        if not self._env.behavior_specs:
             self._env.step()
 
         self.visual_obs = None
-        self._n_agents = -1
 
         # Save the step result from the last time all Agents requested decisions.
         self._previous_decision_step: DecisionSteps = None
@@ -63,14 +62,14 @@ class UnityToGymWrapper(gym.Env):
         self._allow_multiple_visual_obs = allow_multiple_visual_obs
 
         # Check brain configuration
-        if len(self._env.get_behavior_names()) != 1:
+        if len(self._env.behavior_specs) != 1:
             raise UnityGymException(
                 "There can only be one behavior in a UnityEnvironment "
                 "if it is wrapped in a gym."
             )
 
-        self.name = self._env.get_behavior_names()[0]
-        self.group_spec = self._env.get_behavior_spec(self.name)
+        self.name = list(self._env.behavior_specs.keys())[0]
+        self.group_spec = self._env.behavior_specs[self.name]
 
         if use_visual and self._get_n_vis_obs() == 0:
             raise UnityGymException(
@@ -172,6 +171,7 @@ class UnityToGymWrapper(gym.Env):
 
         self._env.step()
         decision_step, terminal_step = self._env.get_steps(self.name)
+        self._check_agents(max(len(decision_step), len(terminal_step)))
         if len(terminal_step) != 0:
             # The agent is done
             self.game_over = True
@@ -264,10 +264,11 @@ class UnityToGymWrapper(gym.Env):
         logger.warning("Could not seed environment %s", self.name)
         return
 
-    def _check_agents(self, n_agents: int) -> None:
-        if self._n_agents > 1:
+    @staticmethod
+    def _check_agents(n_agents: int) -> None:
+        if n_agents > 1:
             raise UnityGymException(
-                "There can only be one Agent in the environment but {n_agents} were detected."
+                f"There can only be one Agent in the environment but {n_agents} were detected."
             )
 
     @property
@@ -289,10 +290,6 @@ class UnityToGymWrapper(gym.Env):
     @property
     def observation_space(self):
         return self._observation_space
-
-    @property
-    def number_agents(self):
-        return self._n_agents
 
 
 class ActionFlattener:
