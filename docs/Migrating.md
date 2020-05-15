@@ -21,14 +21,19 @@ double-check that the versions are in the same. The versions can be found in
   instead of `summaries/` and `models/`.
 - Trainer configuration, curriculum configuration, and parameter randomization
   configuration have all been moved to a single YAML file. (#3791)
+- Trainer configuration format has changed, and using a "default" behavior name has
+  been deprecated. (#3936)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - On the UnityEnvironment API, `get_behavior_names()` and `get_behavior_specs()` methods were combined into the property `behavior_specs` that contains a mapping from behavior names to behavior spec.
 
 ### Steps to Migrate
-- Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
-  a separate trainer configuration file, under a `behaviors` section. You can move the `default` section too
-  if it's being used. This file should be specific to your environment, and not contain configurations for
-  multiple environments (unless they have the same Behavior Names).
+- To upgrade your configuration files, an upgrade script has been provided. Run `python config/update_config.py
+  -h` to see the script usage.
+
+  To do it manually, copy your `<BehaviorName>` sections from `trainer_config.yaml` into a separate trainer configuration file, under a `behaviors` section.
+  The `default` section is no longer needed. This new file should be specific to your environment, and not contain
+  configurations for multiple environments (unless they have the same Behavior Names).
+  - You will need to reformat your trainer settings as per the [example](Training-ML-Agents.md).
   - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under
   the `Behavior Name` section.
   - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
