@@ -16,6 +16,7 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
+from mlagents.trainers.stats import CSVWriter
 
 logger = get_logger(__name__)
 
@@ -70,6 +71,7 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
+        self.csv_writer = CSVWriter("sensitivity")
 
     def _check_param_keys(self):
         super()._check_param_keys()
@@ -199,9 +201,11 @@ class PPOTrainer(RLTrainer):
         )
         num_epoch = self.trainer_parameters["num_epoch"]
         batch_update_stats = defaultdict(list)
-        self.optimizer.compute_input_sensitivity(
+        sensitivities = self.optimizer.compute_input_sensitivity(
             self.update_buffer, self.policy.sequence_length
         )
+        self.csv_writer.write_stats("sensitivity", sensitivities, self.step)
+        
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.update_buffer
