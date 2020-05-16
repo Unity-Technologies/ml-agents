@@ -225,7 +225,8 @@ WalkerDynamic:
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
-    max_steps: 2e7
+    # max_steps: 2e7
+    max_steps: 1e8
     summary_freq: 30000
     num_layers: 3
     hidden_units: 512
