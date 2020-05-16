@@ -402,4 +402,4 @@ class StatsReporter:
         :param key: The statistic, e.g. lesson number.
         :param value: The value.
         """
-        StatsReporter.saved_state[self.category].get(key.value, None)
+        return StatsReporter.saved_state[self.category].get(key.value, None)

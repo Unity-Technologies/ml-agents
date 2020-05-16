@@ -126,7 +126,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             env_factory, engine_config, env_settings.num_envs
         )
         maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum, env_manager, checkpoint_settings.lesson
+            options.curriculum, env_manager, restore=checkpoint_settings.resume
         )
         sampler_manager, resampling_interval = create_sampler_manager(
             options.parameter_randomization, run_seed
@@ -214,15 +214,14 @@ def create_sampler_manager(sampler_config, run_seed=None):
 
 
 def try_create_meta_curriculum(
-    curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
+    curriculum_config: Optional[Dict], env: SubprocessEnvManager, restore: bool = False
 ) -> Optional[MetaCurriculum]:
     if curriculum_config is None or len(curriculum_config) <= 0:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_config)
-        # TODO: Should be able to start learning at different lesson numbers
-        # for each curriculum.
-        meta_curriculum.set_all_curricula_to_lesson_num(lesson)
+        if restore:
+            meta_curriculum.try_restore_all_curriculum()
         return meta_curriculum
 
 
