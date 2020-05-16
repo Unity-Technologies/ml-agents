@@ -1,5 +1,5 @@
 from sys import platform
-from typing import Optional, Any
+from typing import Optional, Any, List
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.base_env import BaseEnv
 from mlagents_envs.registry.binary_utils import get_local_binary_path
@@ -15,6 +15,7 @@ class RemoteRegistryEntry(BaseRegistryEntry):
         linux_url: Optional[str],
         darwin_url: Optional[str],
         win_url: Optional[str],
+        additional_args: Optional[List[str]] = None,
     ):
         """
         A RemoteRegistryEntry is an implementation of BaseRegistryEntry that uses a
@@ -37,6 +38,7 @@ class RemoteRegistryEntry(BaseRegistryEntry):
         self._linux_url = linux_url
         self._darwin_url = darwin_url
         self._win_url = win_url
+        self._add_args = additional_args
 
     def make(self, **kwargs: Any) -> BaseEnv:
         """
@@ -59,4 +61,11 @@ class RemoteRegistryEntry(BaseRegistryEntry):
         path = get_local_binary_path(self.identifier, url)
         if "file_name" in kwargs:
             kwargs.pop("file_name")
+        args: List[str] = []
+        if "additional_args" in kwargs:
+            if kwargs["additional_args"] is not None:
+                args += kwargs["additional_args"]
+        if self._add_args is not None:
+            args += self._add_args
+        kwargs["additional_args"] = args
         return UnityEnvironment(file_name=path, **kwargs)
