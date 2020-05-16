@@ -97,6 +97,8 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
                 # This is generally good since we want the environment to have a chance to shutdown,
                 # but may be undesirable in come cases; if so, we'll add a command-line toggle.
                 # Note that on Windows, the CTRL_C signal will still be sent.
+                stderr=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
                 start_new_session=True,
             )
         except PermissionError as perm:
