@@ -192,6 +192,10 @@ class UnityToGymWrapper(gym.Env):
                 self.visual_obs = self._preprocess_single(visual_obs[0][0])
 
             default_observation = self.visual_obs
+            if self._get_vec_obs_size() > 0:
+                if not isinstance(default_observation, list):
+                    default_observation = [default_observation]
+                default_observation.append(self._get_vector_obs(info)[0, :])
         elif self._get_vec_obs_size() > 0:
             default_observation = self._get_vector_obs(info)[0, :]
         else:
