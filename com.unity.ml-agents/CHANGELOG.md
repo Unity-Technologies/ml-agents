@@ -13,7 +13,7 @@ and this project adheres to
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
-- Visual and vector observations can now be used simultaneously. 
+- Visual and vector observations can now be used simultaneously. (#3981)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
