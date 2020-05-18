@@ -4,7 +4,7 @@ The Unity Environment Registry is a database of pre-built Unity environments tha
 
 ## Loading an Environment from the Registry
 
-To get started, you can access the default registry we provide with our [Example Environments](Learning-Environment-Examples.md). The Unity Environment Registry implements a _Mapping_, therefore, you can access an entry with its identifier with the square brackets `[ ]`. Use the following code to list all of the environments identifiers presents in the default registry:
+To get started, you can access the default registry we provide with our [Example Environments](Learning-Environment-Examples.md). The Unity Environment Registry implements a _Mapping_, therefore, you can access an entry with its identifier with the square brackets `[ ]`. Use the following code to list all of the environment identifiers present in the default registry:
 
 ```python
 from mlagents_envs.registry import default_registry
@@ -57,5 +57,4 @@ registry = UnityEnvRegistry()
 registry.register_from_yaml("url-or-path-to-your-yaml-file")
 ```
  __Note__: The `"url-or-path-to-your-yaml-file"` can be either a url or a local path.
-
 
