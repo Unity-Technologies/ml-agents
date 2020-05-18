@@ -82,6 +82,33 @@ def test_gym_wrapper_visual(use_uint8):
     assert isinstance(info, dict)
 
 
+@pytest.mark.parametrize("use_uint8", [True, False], ids=["float", "uint8"])
+def test_gym_wrapper_visual_and_vector(use_uint8):
+    mock_env = mock.MagicMock()
+    mock_spec = create_mock_group_spec(
+        number_visual_observations=1, vector_observation_space_size=3
+    )
+    mock_decision_step, mock_terminal_step = create_mock_vector_steps(
+        mock_spec, number_visual_observations=1
+    )
+    setup_mock_unityenvironment(
+        mock_env, mock_spec, mock_decision_step, mock_terminal_step
+    )
+
+    env = UnityToGymWrapper(mock_env, use_visual=True, uint8_visual=use_uint8)
+    assert isinstance(env, UnityToGymWrapper)
+    assert isinstance(env.reset()[0], np.ndarray)
+    assert isinstance(env.reset()[1], np.ndarray)
+    actions = env.action_space.sample()
+    assert actions.shape[0] == 2
+    obs, rew, done, info = env.step(actions)
+    assert isinstance(obs[0], np.ndarray)
+    assert isinstance(obs[1], np.ndarray)
+    assert isinstance(rew, float)
+    assert isinstance(done, (bool, np.bool_))
+    assert isinstance(info, dict)
+
+
 # Helper methods
 
 
