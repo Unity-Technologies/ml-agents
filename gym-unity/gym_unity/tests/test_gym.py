@@ -59,7 +59,7 @@ def test_branched_flatten():
 @pytest.mark.parametrize("use_uint8", [True, False], ids=["float", "uint8"])
 def test_gym_wrapper_visual(use_uint8):
     mock_env = mock.MagicMock()
-    mock_spec = create_mock_group_spec(number_visual_observations=1)
+    mock_spec = create_mock_group_spec(number_visual_observations=1, vector_observation_space_size=0)
     mock_decision_step, mock_terminal_step = create_mock_vector_steps(
         mock_spec, number_visual_observations=1
     )
