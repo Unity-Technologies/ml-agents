@@ -111,7 +111,7 @@ public class WalkerAgent : Agent
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
         
         //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));  //best
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
@@ -127,6 +127,14 @@ public class WalkerAgent : Agent
     {
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, m_OrientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, m_OrientationCube.transform.forward));
+        
+        //clamp the distance vector in case the target is far away. normalized to 1.
+//        var clampedDistFromCubeToTarget = (Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.position), 15))/15;
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(clampedDistFromCubeToTarget));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
+
+//        print(m_OrientationCube.transform.InverseTransformPoint(target.position));
+//        sensor.AddObservation(target.position - m_OrientationCube.transform.position);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
