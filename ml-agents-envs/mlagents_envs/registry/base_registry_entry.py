@@ -1,10 +1,15 @@
 from abc import abstractmethod
-from typing import Any
+from typing import Any, Optional
 from mlagents_envs.base_env import BaseEnv
 
 
 class BaseRegistryEntry:
-    def __init__(self, identifier: str, expected_reward: float, description: str):
+    def __init__(
+        self,
+        identifier: str,
+        expected_reward: Optional[float],
+        description: Optional[str],
+    ):
         """
         BaseRegistryEntry allows launching a Unity Environment with its make method.
         :param identifier: The name of the Unity Environment.
@@ -27,7 +32,7 @@ class BaseRegistryEntry:
         return self._identifier
 
     @property
-    def expected_reward(self) -> float:
+    def expected_reward(self) -> Optional[float]:
         """
         The cumulative reward that an Agent must receive for the task to be considered
         solved.
@@ -35,7 +40,7 @@ class BaseRegistryEntry:
         return self._expected_reward
 
     @property
-    def description(self) -> str:
+    def description(self) -> Optional[str]:
         """
         A description of the Unity Environment the entry can make.
         """

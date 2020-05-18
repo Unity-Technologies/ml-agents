@@ -29,7 +29,7 @@ env.close()
 ## Create and share your own registry
 
 In order to share the `UnityEnvironemnt` you created, you must :
- - Create a Unity executable of your environment for each platform (Linux, OSX and/or Windows)
+ - [Create a Unity executable](Learning-Environment-Executable.md) of your environment for each platform (Linux, OSX and/or Windows)
  - Place each executable in a `zip` compressed folder
  - Upload each zip file online
  - Create a `yaml` file that will contain the description and path to your environment

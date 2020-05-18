@@ -27,13 +27,23 @@ def get_local_binary_path(name: str, url: str) -> str:
     :param name: The name that will be given to the folder containing the extracted data
     :param url: The URL of the zip file
     """
+    NUMBER_ATTEMPTS = 5
     path = get_local_binary_path_if_exists(name, url)
     if path is None:
         logger.debug(
             f"Local environment {name} not found, downloading environment from {url}"
         )
-        download_and_extract_zip(url, name)
-    path = get_local_binary_path_if_exists(name, url)
+    for attempt in range(NUMBER_ATTEMPTS):  # Perform 5 attempts at downloading the file
+        if path is not None:
+            break
+        try:
+            download_and_extract_zip(url, name)
+        except IOError:
+            logger.debug(
+                f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS} : Failed to download"
+            )
+        path = get_local_binary_path_if_exists(name, url)
+
     if path is None:
         raise FileNotFoundError(
             f"Binary not found, make sure {url} is a valid url to "
@@ -114,7 +124,7 @@ def download_and_extract_zip(url: str, name: str) -> None:
 
     # Download zip
     try:
-        request = urllib.request.urlopen(url)
+        request = urllib.request.urlopen(url, timeout=30)
     except urllib.error.HTTPError as e:  # type: ignore
         e.msg += " " + url
         raise
@@ -170,7 +180,7 @@ def load_remote_manifest(url: str) -> Dict[str, Any]:
     """
     tmp_dir, _ = get_tmp_dir()
     try:
-        request = urllib.request.urlopen(url)
+        request = urllib.request.urlopen(url, timeout=30)
     except urllib.error.HTTPError as e:  # type: ignore
         e.msg += " " + url
         raise

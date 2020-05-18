@@ -10,8 +10,8 @@ class RemoteRegistryEntry(BaseRegistryEntry):
     def __init__(
         self,
         identifier: str,
-        expected_reward: float,
-        description: str,
+        expected_reward: Optional[float],
+        description: Optional[str],
         linux_url: Optional[str],
         darwin_url: Optional[str],
         win_url: Optional[str],
