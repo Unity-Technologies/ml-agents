@@ -204,6 +204,7 @@ BehaviorPPO:
   normalize: false
   num_layers: 2
   time_horizon: 64
+  summary_freq: 10000
   vis_encoder_type: simple
 
   # PPO-specific configs
@@ -239,7 +240,7 @@ BehaviorPPO:
       strength: 0.02
       gamma: 0.99
       encoding_size: 256
-      learning_rate: 3e-4
+      learning_rate: 3.0e-4
 
     # GAIL
     gail:
@@ -247,7 +248,7 @@ BehaviorPPO:
       gamma: 0.99
       encoding_size: 128
       demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-      learning_rate: 3e-4
+      learning_rate: 3.0e-4
       use_actions: false
       use_vail: false
 
