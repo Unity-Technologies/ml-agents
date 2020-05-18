@@ -35,7 +35,10 @@ def get_local_binary_path(name: str, url: str) -> str:
         download_and_extract_zip(url, name)
     path = get_local_binary_path_if_exists(name, url)
     if path is None:
-        raise FileNotFoundError("Binary not found")
+        raise FileNotFoundError(
+            f"Binary not found, make sure {url} is a valid url to "
+            "a zip folder containing a valid Unity executable"
+        )
     return path
 
 
@@ -64,7 +67,11 @@ def get_local_binary_path_if_exists(name: str, url: str) -> Optional[str]:
     if len(candidates) == 0:
         return None
     else:
-        return candidates[0]
+        for c in candidates:
+            # Unity sometimes produces another .exe file that we must filter out
+            if "UnityCrashHandler64" not in c:
+                return c
+        return None
 
 
 def get_tmp_dir() -> Tuple[str, str]:
