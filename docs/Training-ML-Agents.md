@@ -206,6 +206,7 @@ BehaviorPPO:
   time_horizon: 64
   summary_freq: 10000
   vis_encoder_type: simple
+  init_path: null
 
   # PPO-specific configs
   beta: 5.0e-3
@@ -227,7 +228,6 @@ BehaviorPPO:
     batch_size: 512
     num_epoch: 3
     samples_per_update: 0
-    init_path:
 
   reward_signals:
     # environment reward
