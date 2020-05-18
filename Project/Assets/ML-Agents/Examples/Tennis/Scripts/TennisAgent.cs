@@ -158,7 +158,7 @@ public class TennisAgent : Agent
 
         timePenalty = 0;
         m_InvertMult = invertX ? -1f : 1f;
-        var agentOutX = Random.Range(10f, 12f);
+        var agentOutX = Random.Range(14f, 16f);
         var agentOutY = Random.Range(-1.5f, 0f);
         transform.position = new Vector3(-m_InvertMult * agentOutX, agentOutY, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);
