@@ -14,9 +14,9 @@ def delete_binaries():
 
 def test_basic_in_registry():
     delete_binaries()
-    for _ in range(2):
+    for worker_id in range(2):
         assert BASIC_ID in default_registry
-        env = default_registry[BASIC_ID].make()
+        env = default_registry[BASIC_ID].make(worker_id=worker_id)
         env.reset()
         env.step()
         assert len(env.behavior_specs) == 1
