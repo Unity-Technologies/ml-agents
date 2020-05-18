@@ -39,7 +39,7 @@ class PPOTrainer(RLTrainer):
         Responsible for collecting experiences and training PPO model.
         :param brain_name: The name of the brain associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_settings: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with

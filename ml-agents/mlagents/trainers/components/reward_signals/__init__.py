@@ -24,8 +24,7 @@ class RewardSignal(abc.ABC):
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
         :param policy: The Policy object (e.g. NNPolicy) that this Reward Signal will apply to.
-        :param strength: The strength of the reward. The reward's raw value will be multiplied by this value.
-        :param gamma: The time discounting factor used for this reward.
+        :param settings: Settings parameters for this Reward Signal, including gamma and strength.
         :return: A RewardSignal object.
         """
         class_name = self.__class__.__name__

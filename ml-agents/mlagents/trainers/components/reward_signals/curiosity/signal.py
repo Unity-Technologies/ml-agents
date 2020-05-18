@@ -14,11 +14,8 @@ class CuriosityRewardSignal(RewardSignal):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
-        :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        reward multiplied by the strength parameter
-        :param gamma: The time discounting factor used for this reward.
-        :param encoding_size: The size of the hidden encoding layer for the ICM
-        :param learning_rate: The learning rate for the ICM.
+        :param settings: CuriositySettings object that contains the parameters
+            (including encoding size and learning rate) for this CuriosityRewardSignal.
         """
         super().__init__(policy, settings)
         self.model = CuriosityModel(
