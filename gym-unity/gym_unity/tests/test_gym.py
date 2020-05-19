@@ -86,7 +86,9 @@ def test_gym_wrapper_visual(use_uint8):
 def test_gym_wrapper_visual_and_vector(use_uint8):
     mock_env = mock.MagicMock()
     mock_spec = create_mock_group_spec(
-        number_visual_observations=1, vector_observation_space_size=3
+        number_visual_observations=1,
+        vector_observation_space_size=3,
+        vector_action_space_size=[2],
     )
     mock_decision_step, mock_terminal_step = create_mock_vector_steps(
         mock_spec, number_visual_observations=1
@@ -100,7 +102,7 @@ def test_gym_wrapper_visual_and_vector(use_uint8):
     assert isinstance(env.reset()[0], np.ndarray)
     assert isinstance(env.reset()[1], np.ndarray)
     actions = env.action_space.sample()
-    assert actions.shape[0] == 2
+    assert actions.shape == (2,)
     obs, rew, done, info = env.step(actions)
     assert isinstance(obs[0], np.ndarray)
     assert isinstance(obs[1], np.ndarray)
