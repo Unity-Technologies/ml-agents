@@ -1,6 +1,7 @@
 from unittest import mock
 import os
 import pytest
+import json
 import tempfile
 import unittest
 import csv
@@ -68,6 +69,28 @@ def test_stat_reporter_property():
     mock_writer.add_property.assert_called_once_with(
         "category1", "key", "this is a text"
     )
+
+
+def test_stats_reporter_store_restore(tmpdir):
+    statsreporter = StatsReporter("Category1")
+    path_dir = os.path.join(tmpdir, "test.json")
+
+    statsreporter.store_parameter_state(StatsPropertyType.LESSON_NUM, 3)
+    StatsReporter.save_state(path_dir)
+
+    with open(path_dir, "r") as fp:
+        test_json = json.load(fp)
+
+    assert "Category1" in test_json
+    assert StatsPropertyType.LESSON_NUM.value in test_json["Category1"]
+    assert test_json["Category1"][StatsPropertyType.LESSON_NUM.value] == 3
+
+    statsreporter_new = StatsReporter("Category1")
+    StatsReporter.load_state(path_dir)
+    restored_val = statsreporter_new.restore_parameter_state(
+        StatsPropertyType.LESSON_NUM
+    )
+    assert restored_val == 3
 
 
 @mock.patch("mlagents.tf_utils.tf.Summary")
