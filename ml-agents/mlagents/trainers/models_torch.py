@@ -220,30 +220,22 @@ class ActorCritic(nn.Module):
             entropies = entropies.squeeze(-1)
         return log_probs, entropies
 
-    def get_dist_and_value(
+    def forward(
         self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
     ):
         embedding, memories = self.network_body(
             vec_inputs, vis_inputs, memories, sequence_length
         )
+        value_outputs = self.critic(vec_inputs, vis_inputs)
         if self.act_type == ActionType.CONTINUOUS:
             dists = self.distribution(embedding)
         else:
             dists = self.distribution(embedding, masks=masks)
-        if self.separate_critic:
-            value_outputs = self.critic(vec_inputs, vis_inputs)
-        else:
-            value_outputs = self.value_heads(embedding)
+        # if self.separate_critic:
+        #     value_outputs = self.critic(vec_inputs, vis_inputs)
+        # else:
+        #     value_outputs = self.value_heads(embedding)
         return dists, value_outputs, memories
-
-    def forward(
-        self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
-    ):
-        dists, value_outputs, memories = self.get_dist_and_value(
-            vec_inputs, vis_inputs, masks, memories, sequence_length
-        )
-        sampled_actions = self.sample_action(dists)
-        return sampled_actions, memories
 
 
 class Critic(nn.Module):

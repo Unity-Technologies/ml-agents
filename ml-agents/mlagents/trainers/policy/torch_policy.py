@@ -18,6 +18,12 @@ from mlagents.trainers.models_torch import EncoderType, ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
+print("Torch threads", torch.get_num_threads())
+print("Torch intra-op threads", torch.get_num_interop_threads())
+
+# torch.set_num_interop_threads(8)
+# torch.set_num_threads(6)
+
 
 class TorchPolicy(Policy):
     def __init__(
@@ -89,7 +95,7 @@ class TorchPolicy(Policy):
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
         # TF defaults to 32-bit, so we use the same here.
-        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_tensor_type(torch.FloatTensor)
 
         reward_signal_configs = trainer_params["reward_signals"]
         self.stats_name_to_update_name = {
@@ -138,10 +144,7 @@ class TorchPolicy(Policy):
 
     @timed
     def sample_actions(self, vec_obs, vis_obs, masks=None, memories=None, seq_len=1):
-        dists, (
-            value_heads,
-            mean_value,
-        ), memories = self.actor_critic.get_dist_and_value(
+        dists, (value_heads, mean_value), memories = self.actor_critic(
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
@@ -155,7 +158,7 @@ class TorchPolicy(Policy):
     def evaluate_actions(
         self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
     ):
-        dists, (value_heads, mean_value), _ = self.actor_critic.get_dist_and_value(
+        dists, (value_heads, mean_value), _ = self.actor_critic(
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
@@ -197,7 +200,6 @@ class TorchPolicy(Policy):
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memories"] = memories.detach().numpy()
-        self.actor_critic.update_normalization(vec_obs)
         return run_out
 
     def get_action(
