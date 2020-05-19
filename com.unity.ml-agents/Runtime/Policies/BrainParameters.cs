@@ -34,11 +34,9 @@ namespace Unity.MLAgents.Policies
     public class BrainParameters
     {
         /// <summary>
-        /// The size of the observation space.
-        /// </summary>
-        /// <remarks>An agent creates the observation vector in its
+        /// The number of the observations that are added in
         /// <see cref="Agent.CollectObservations(Sensors.VectorSensor)"/>
-        /// implementation.</remarks>
+        /// </summary>
         /// <value>
         /// The length of the vector containing observation values.
         /// </value>

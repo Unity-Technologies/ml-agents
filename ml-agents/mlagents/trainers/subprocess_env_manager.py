@@ -131,15 +131,15 @@ def worker(
 
     def _generate_all_results() -> AllStepResult:
         all_step_result: AllStepResult = {}
-        for brain_name in env.get_behavior_names():
+        for brain_name in env.behavior_specs:
             all_step_result[brain_name] = env.get_steps(brain_name)
         return all_step_result
 
     def external_brains():
         result = {}
-        for brain_name in env.get_behavior_names():
-            result[brain_name] = behavior_spec_to_brain_parameters(
-                brain_name, env.get_behavior_spec(brain_name)
+        for behavior_name, behavior_specs in env.behavior_specs.items():
+            result[behavior_name] = behavior_spec_to_brain_parameters(
+                behavior_name, behavior_specs
             )
         return result
 
@@ -301,7 +301,7 @@ class SubprocessEnvManager(EnvManager):
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:
-        logger.debug(f"SubprocessEnvManager closing.")
+        logger.debug("SubprocessEnvManager closing.")
         self.step_queue.close()
         self.step_queue.join_thread()
         for env_worker in self.env_workers:

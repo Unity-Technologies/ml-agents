@@ -12,8 +12,11 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
+- `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
+  observations via reflection.
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
@@ -23,6 +26,7 @@ and this project adheres to
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
 ### Bug Fixes
+- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 

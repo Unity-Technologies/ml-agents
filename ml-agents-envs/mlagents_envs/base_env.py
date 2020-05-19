@@ -18,7 +18,17 @@ not necessarily correspond to a fixed simulation time increment.
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from typing import List, NamedTuple, Tuple, Optional, Union, Dict, Iterator, Any
+from typing import (
+    List,
+    NamedTuple,
+    Tuple,
+    Optional,
+    Union,
+    Dict,
+    Iterator,
+    Any,
+    Mapping as MappingType,
+)
 import numpy as np
 from enum import Enum
 
@@ -308,6 +318,20 @@ class BehaviorSpec(NamedTuple):
             return np.zeros((n_agents, self.action_size), dtype=np.float32)
 
 
+class BehaviorMapping(Mapping):
+    def __init__(self, specs: Dict[BehaviorName, BehaviorSpec]):
+        self._dict = specs
+
+    def __len__(self) -> int:
+        return len(self._dict)
+
+    def __getitem__(self, behavior: BehaviorName) -> BehaviorSpec:
+        return self._dict[behavior]
+
+    def __iter__(self) -> Iterator[Any]:
+        yield from self._dict
+
+
 class BaseEnv(ABC):
     @abstractmethod
     def step(self) -> None:
@@ -315,33 +339,29 @@ class BaseEnv(ABC):
         Signals the environment that it must move the simulation forward
         by one step.
         """
-        pass
 
     @abstractmethod
     def reset(self) -> None:
         """
         Signals the environment that it must reset the simulation.
         """
-        pass
 
     @abstractmethod
     def close(self) -> None:
         """
         Signals the environment that it must close.
         """
-        pass
 
+    @property
     @abstractmethod
-    def get_behavior_names(self) -> List[BehaviorName]:
+    def behavior_specs(self) -> MappingType[str, BehaviorSpec]:
         """
-        Returns the list of the behavior names present in the environment.
+        Returns a Mapping from behavior names to behavior specs.
         Agents grouped under the same behavior name have the same action and
         observation specs, and are expected to behave similarly in the
         environment.
-        This list can grow with time as new policies are instantiated.
-        :return: the list of agent BehaviorName.
+        Note that new keys can be added to this mapping as new policies are instantiated.
         """
-        pass
 
     @abstractmethod
     def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
@@ -353,7 +373,6 @@ class BaseEnv(ABC):
         :param action: A two dimensional np.ndarray corresponding to the action
         (either int or float)
         """
-        pass
 
     @abstractmethod
     def set_action_for_agent(
@@ -367,7 +386,6 @@ class BaseEnv(ABC):
         :param action: A one dimensional np.ndarray corresponding to the action
         (either int or float)
         """
-        pass
 
     @abstractmethod
     def get_steps(
@@ -385,13 +403,3 @@ class BaseEnv(ABC):
          rewards, agent ids and interrupted flags of the agents that had their
          episode terminated last step.
         """
-        pass
-
-    @abstractmethod
-    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
-        """
-        Get the BehaviorSpec corresponding to the behavior name
-        :param behavior_name: The name of the behavior the agents are part of
-        :return: A BehaviorSpec corresponding to that behavior
-        """
-        pass

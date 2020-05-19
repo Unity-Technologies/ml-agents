@@ -1,19 +1,22 @@
-﻿#if UNITY_INCLUDE_TESTS
+#if UNITY_INCLUDE_TESTS
 using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
-
     public class PublicApiAgent : Agent
     {
         public int numHeuristicCalls;
+
+        [Observable]
+        public float ObservableFloat;
 
         public override void Heuristic(float[] actionsOut)
         {
@@ -36,7 +39,7 @@ namespace Tests
 
         public override int[] GetObservationShape()
         {
-            int[] shape = (int[]) wrappedComponent.GetObservationShape().Clone();
+            int[] shape = (int[])wrappedComponent.GetObservationShape().Clone();
             for (var i = 0; i < shape.Length; i++)
             {
                 shape[i] *= numStacks;
@@ -69,6 +72,7 @@ namespace Tests
             behaviorParams.BehaviorName = "TestBehavior";
             behaviorParams.TeamId = 42;
             behaviorParams.UseChildSensors = true;
+            behaviorParams.ObservableAttributeHandling = ObservableAttributeOptions.ExamineAll;
 
 
             // Can't actually create an Agent with InferenceOnly and no model, so change back
