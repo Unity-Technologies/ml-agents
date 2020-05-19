@@ -10,6 +10,13 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class ObservableAttributeTests
     {
+        public enum TestEnum
+        {
+            ValueA = -100,
+            ValueB = 1,
+            ValueC = 42,
+        }
+
         class TestClass
         {
             // Non-observables
@@ -120,6 +127,23 @@ namespace Unity.MLAgents.Tests
                 get => m_QuaternionProperty;
                 set => m_QuaternionProperty = value;
             }
+
+            //
+            // Enum
+            //
+
+            [Observable("enumMember")]
+            public TestEnum m_EnumMember = TestEnum.ValueA;
+
+            TestEnum m_EnumProperty = TestEnum.ValueC;
+
+            [Observable("enumProperty")]
+            public TestEnum EnumProperty
+            {
+                get => m_EnumProperty;
+                set => m_EnumProperty = value;
+            }
+
         }
 
         [Test]
@@ -178,6 +202,10 @@ namespace Unity.MLAgents.Tests
 
             SensorTestHelper.CompareObservation(sensorsByName["quaternionMember"], new[] { 5.0f, 5.1f, 5.2f, 5.3f });
             SensorTestHelper.CompareObservation(sensorsByName["quaternionProperty"], new[] { 5.4f, 5.5f, 5.5f, 5.7f });
+
+            // Actual ordering is B, C, A
+            SensorTestHelper.CompareObservation(sensorsByName["enumMember"], new[] { 0.0f, 0.0f, 1.0f });
+            //SensorTestHelper.CompareObservation(sensorsByName["enumProperty"], new[] { 0.0f, 1.0f, 0.0f });
         }
 
         [Test]
@@ -185,7 +213,7 @@ namespace Unity.MLAgents.Tests
         {
             var testClass = new TestClass();
             var errors = new List<string>();
-            var expectedObsSize = 2 * (1 + 1 + 1 + 2 + 3 + 4 + 4);
+            var expectedObsSize = 2 * (1 + 1 + 1 + 2 + 3 + 4 + 4 + 3);
             Assert.AreEqual(expectedObsSize, ObservableAttribute.GetTotalObservationSize(testClass, false, errors));
             Assert.AreEqual(0, errors.Count);
         }
