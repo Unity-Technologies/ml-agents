@@ -418,11 +418,9 @@ train agents in the Wall Jump environment with curriculum learning, we can run:
 mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
 ```
 
-We can then keep track of the current lessons and progresses via TensorBoard.
-
-**Note**: If you are resuming a training session that uses curriculum, please
-pass the number of the last-reached lesson using the `--lesson` flag when
-running `mlagents-learn`.
+We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
+the run, you can resume it using `--resume` and lesson progress will start off where it
+ended.
 
 ### Environment Parameter Randomization
 
