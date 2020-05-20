@@ -1,9 +1,9 @@
 behaviors:
   WalkerDynamic:
     trainer: ppo
-    batch_size: 16384 #2048
+    batch_size: 2048
     beta: 0.005
-    buffer_size: 163840 #20480
+    buffer_size: 20480
     epsilon: 0.2
     hidden_units: 512
     lambd: 0.95
@@ -12,7 +12,7 @@ behaviors:
     max_steps: 2e7
     memory_size: 128
     normalize: true
-    num_epoch: 3
+    num_epoch: 10
     num_layers: 3
     time_horizon: 1000
     sequence_length: 64
