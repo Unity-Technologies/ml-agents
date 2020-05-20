@@ -20,7 +20,7 @@ def test_gym_wrapper():
     setup_mock_unityenvironment(
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
-    env = UnityToGymWrapper(mock_env, use_visual=False)
+    env = UnityToGymWrapper(mock_env)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.reset(), np.ndarray)
     actions = env.action_space.sample()
@@ -45,14 +45,14 @@ def test_branched_flatten():
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
 
-    env = UnityToGymWrapper(mock_env, use_visual=False, flatten_branched=True)
+    env = UnityToGymWrapper(mock_env, flatten_branched=True)
     assert isinstance(env.action_space, spaces.Discrete)
     assert env.action_space.n == 12
     assert env._flattener.lookup_action(0) == [0, 0, 0]
     assert env._flattener.lookup_action(11) == [1, 1, 2]
 
     # Check that False produces a MultiDiscrete
-    env = UnityToGymWrapper(mock_env, use_visual=False, flatten_branched=False)
+    env = UnityToGymWrapper(mock_env, flatten_branched=False)
     assert isinstance(env.action_space, spaces.MultiDiscrete)
 
 
@@ -69,7 +69,7 @@ def test_gym_wrapper_visual(use_uint8):
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
 
-    env = UnityToGymWrapper(mock_env, use_visual=True, uint8_visual=use_uint8)
+    env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.reset(), np.ndarray)
     actions = env.action_space.sample()
@@ -83,7 +83,7 @@ def test_gym_wrapper_visual(use_uint8):
 
 
 @pytest.mark.parametrize("use_uint8", [True, False], ids=["float", "uint8"])
-def test_gym_wrapper_visual_and_vector(use_uint8):
+def test_gym_wrapper_single_visual_and_vector(use_uint8):
     mock_env = mock.MagicMock()
     mock_spec = create_mock_group_spec(
         number_visual_observations=1,
@@ -97,18 +97,77 @@ def test_gym_wrapper_visual_and_vector(use_uint8):
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
 
-    env = UnityToGymWrapper(mock_env, use_visual=True, uint8_visual=use_uint8)
+    env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=True)
     assert isinstance(env, UnityToGymWrapper)
-    assert isinstance(env.reset()[0], np.ndarray)
-    assert isinstance(env.reset()[1], np.ndarray)
+    reset_obs = env.reset()
+    assert isinstance(reset_obs, list)
+    assert len(reset_obs) == 2
+    assert all(isinstance(ob, np.ndarray) for ob in reset_obs)
+    assert reset_obs[-1].shape == (3,)
+    assert len(reset_obs[0].shape) == 3
     actions = env.action_space.sample()
     assert actions.shape == (2,)
     obs, rew, done, info = env.step(actions)
-    assert isinstance(obs[0], np.ndarray)
-    assert isinstance(obs[1], np.ndarray)
+    assert isinstance(obs, list)
+    assert len(obs) == 2
+    assert all(isinstance(ob, np.ndarray) for ob in obs)
+    assert reset_obs[-1].shape == (3,)
     assert isinstance(rew, float)
     assert isinstance(done, (bool, np.bool_))
     assert isinstance(info, dict)
+
+    # check behaviour for allow_multiple_obs = False
+    env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
+    assert isinstance(env, UnityToGymWrapper)
+    reset_obs = env.reset()
+    assert isinstance(reset_obs, np.ndarray)
+    assert len(reset_obs.shape) == 3
+    actions = env.action_space.sample()
+    assert actions.shape == (2,)
+    obs, rew, done, info = env.step(actions)
+    assert isinstance(obs, np.ndarray)
+
+
+@pytest.mark.parametrize("use_uint8", [True, False], ids=["float", "uint8"])
+def test_gym_wrapper_multi_visual_and_vector(use_uint8):
+    mock_env = mock.MagicMock()
+    mock_spec = create_mock_group_spec(
+        number_visual_observations=2,
+        vector_observation_space_size=3,
+        vector_action_space_size=[2],
+    )
+    mock_decision_step, mock_terminal_step = create_mock_vector_steps(
+        mock_spec, number_visual_observations=2
+    )
+    setup_mock_unityenvironment(
+        mock_env, mock_spec, mock_decision_step, mock_terminal_step
+    )
+
+    env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=True)
+    assert isinstance(env, UnityToGymWrapper)
+    reset_obs = env.reset()
+    assert isinstance(reset_obs, list)
+    assert len(reset_obs) == 3
+    assert all(isinstance(ob, np.ndarray) for ob in reset_obs)
+    assert reset_obs[-1].shape == (3,)
+    actions = env.action_space.sample()
+    assert actions.shape == (2,)
+    obs, rew, done, info = env.step(actions)
+    assert all(isinstance(ob, np.ndarray) for ob in obs)
+    assert isinstance(rew, float)
+    assert isinstance(done, (bool, np.bool_))
+    assert isinstance(info, dict)
+
+    # check behaviour for allow_multiple_obs = False
+    env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
+    assert isinstance(env, UnityToGymWrapper)
+    reset_obs = env.reset()
+    assert isinstance(reset_obs, np.ndarray)
+    assert len(reset_obs.shape) == 3
+    actions = env.action_space.sample()
+    assert actions.shape == (2,)
+    obs, rew, done, info = env.step(actions)
+    assert isinstance(obs, np.ndarray)
 
 
 # Helper methods
