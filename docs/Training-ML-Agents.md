@@ -8,7 +8,7 @@
     - [Stopping and Resuming Training](#stopping-and-resuming-training)
     - [Loading an Existing Model](#loading-an-existing-model)
 - [Training Configurations](#training-configurations)
-  - [Trainer Config File](#trainer-config-file)
+  - [Behavior Configurations](#behavior-configurations)
   - [Curriculum Learning](#curriculum-learning)
     - [Specifying Curricula](#specifying-curricula)
     - [Training with a Curriculum](#training-with-a-curriculum)
