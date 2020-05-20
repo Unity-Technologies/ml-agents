@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.0.2-preview] - 2020-05-19
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Fix missing .meta file
+
 ## [1.0.1-preview] - 2020-05-19
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
