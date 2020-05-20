@@ -229,6 +229,7 @@ behaviors:
     # Trainer configurations common to all trainers
     max_steps: 5.0e5
     time_horizon: 64
+    keep_checkpoints: 5
     threaded: true
 
     # behavior cloning

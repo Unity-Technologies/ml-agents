@@ -191,8 +191,7 @@ class TrainerSettings(ExportableSettings):
     )
     init_path: Optional[str] = None
     output_path: str = "default"
-    # TODO: Remove parser default and remove from CLI
-    keep_checkpoints: int = parser.get_default("keep_checkpoints")
+    keep_checkpoints: int = 5
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
