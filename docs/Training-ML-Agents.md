@@ -206,7 +206,9 @@ behaviors:
     normalize: false
     num_layers: 2
     time_horizon: 64
+    summary_freq: 10000
     vis_encoder_type: simple
+    init_path: null
 
     # PPO-specific configs
     beta: 5.0e-3
@@ -228,7 +230,6 @@ behaviors:
       batch_size: 512
       num_epoch: 3
       samples_per_update: 0
-      init_path:
 
     reward_signals:
       # environment reward
@@ -241,7 +242,7 @@ behaviors:
         strength: 0.02
         gamma: 0.99
         encoding_size: 256
-        learning_rate: 3e-4
+        learning_rate: 3.0e-4
 
       # GAIL
       gail:
@@ -249,7 +250,7 @@ behaviors:
         gamma: 0.99
         encoding_size: 128
         demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-        learning_rate: 3e-4
+        learning_rate: 3.0e-4
         use_actions: false
         use_vail: false
 
