@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
+using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
-using Unity.Barracuda;
 using UnityEngine.Serialization;
 
 namespace Unity.MLAgents
@@ -395,7 +396,11 @@ namespace Unity.MLAgents
             m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
             ResetData();
             Initialize();
-            InitializeSensors();
+
+            using (TimerStack.Instance.Scoped("InitializeSensors"))
+            {
+                InitializeSensors();
+            }
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -816,6 +821,17 @@ namespace Unity.MLAgents
         /// </summary>
         internal void InitializeSensors()
         {
+            if (m_PolicyFactory.ObservableAttributeHandling != ObservableAttributeOptions.Ignore)
+            {
+                var excludeInherited =
+                    m_PolicyFactory.ObservableAttributeHandling == ObservableAttributeOptions.ExcludeInherited;
+                using (TimerStack.Instance.Scoped("CreateObservableSensors"))
+                {
+                    var observableSensors = ObservableAttribute.CreateObservableSensors(this, excludeInherited);
+                    sensors.AddRange(observableSensors);
+                }
+            }
+
             // Get all attached sensor components
             SensorComponent[] attachedSensorComponents;
             if (m_PolicyFactory.UseChildSensors)

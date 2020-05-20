@@ -147,9 +147,8 @@ def _check_environment_trains(
             env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
-            summaries_dir=dir,
             run_id=run_id,
-            model_path=dir,
+            output_path=dir,
             keep_checkpoints=1,
             train_model=True,
             load_model=False,
@@ -160,8 +159,7 @@ def _check_environment_trains(
 
         tc = TrainerController(
             trainer_factory=trainer_factory,
-            summaries_dir=dir,
-            model_path=dir,
+            output_path=dir,
             run_id=run_id,
             meta_curriculum=meta_curriculum,
             train=True,
@@ -477,9 +475,9 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         step_size=0.2,
     )
     override_vals = {
-        "max_steps": 750,
+        "max_steps": 1000,
         "learning_rate": 3.0e-4,
-        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1000},
+        "behavioral_cloning": {"demo_path": demo_path, "strength": 1.0, "steps": 1500},
         "reward_signals": {
             "gail": {
                 "strength": 1.0,

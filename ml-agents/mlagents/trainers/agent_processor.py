@@ -125,7 +125,7 @@ class AgentProcessor:
             else:
                 memory = None
             done = terminated  # Since this is an ongoing step
-            max_step = step.max_step if terminated else False
+            interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
             action = stored_take_action_outputs["action"][idx]
             if self.policy.use_continuous_act:
@@ -144,7 +144,7 @@ class AgentProcessor:
                 action_pre=action_pre,
                 action_mask=action_mask,
                 prev_action=prev_action,
-                max_step=max_step,
+                interrupted=interrupted,
                 memory=memory,
             )
             # Add the value outputs if needed

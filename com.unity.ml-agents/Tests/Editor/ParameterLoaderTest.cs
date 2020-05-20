@@ -1,10 +1,10 @@
+using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
+using Unity.Barracuda;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
-using Unity.Barracuda;
-using System.Linq;
 using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Tests

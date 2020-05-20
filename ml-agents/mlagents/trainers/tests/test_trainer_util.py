@@ -5,7 +5,11 @@ import os
 from unittest.mock import patch
 
 from mlagents.trainers import trainer_util
-from mlagents.trainers.trainer_util import load_config, _load_config
+from mlagents.trainers.trainer_util import (
+    load_config,
+    _load_config,
+    assemble_curriculum_config,
+)
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
 from mlagents.trainers.brain import BrainParameters
@@ -86,9 +90,8 @@ def dummy_bad_config():
 def test_initialize_trainer_parameters_override_defaults(
     BrainParametersMock, dummy_config_with_override
 ):
-    summaries_dir = "test_dir"
     run_id = "testrun"
-    model_path = "model_dir"
+    output_path = "model_dir"
     keep_checkpoints = 1
     train_model = True
     load_model = False
@@ -97,8 +100,7 @@ def test_initialize_trainer_parameters_override_defaults(
 
     base_config = dummy_config_with_override
     expected_config = base_config["default"]
-    expected_config["summary_path"] = f"{run_id}_testbrain"
-    expected_config["model_path"] = model_path + "/testbrain"
+    expected_config["output_path"] = output_path + "/testbrain"
     expected_config["keep_checkpoints"] = keep_checkpoints
 
     # Override value from specific brain config
@@ -122,9 +124,8 @@ def test_initialize_trainer_parameters_override_defaults(
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=base_config,
-            summaries_dir=summaries_dir,
             run_id=run_id,
-            model_path=model_path,
+            output_path=output_path,
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
@@ -144,9 +145,8 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     brain_params_mock = BrainParametersMock()
     BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
-    summaries_dir = "test_dir"
     run_id = "testrun"
-    model_path = "model_dir"
+    output_path = "results_dir"
     keep_checkpoints = 1
     train_model = True
     load_model = False
@@ -155,8 +155,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
 
     base_config = dummy_config
     expected_config = base_config["default"]
-    expected_config["summary_path"] = f"{run_id}_testbrain"
-    expected_config["model_path"] = model_path + "/testbrain"
+    expected_config["output_path"] = output_path + "/testbrain"
     expected_config["keep_checkpoints"] = keep_checkpoints
 
     def mock_constructor(
@@ -173,9 +172,8 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=base_config,
-            summaries_dir=summaries_dir,
             run_id=run_id,
-            model_path=model_path,
+            output_path=output_path,
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
@@ -192,9 +190,8 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
 def test_initialize_invalid_trainer_raises_exception(
     BrainParametersMock, dummy_bad_config
 ):
-    summaries_dir = "test_dir"
     run_id = "testrun"
-    model_path = "model_dir"
+    output_path = "results_dir"
     keep_checkpoints = 1
     train_model = True
     load_model = False
@@ -206,9 +203,8 @@ def test_initialize_invalid_trainer_raises_exception(
     with pytest.raises(TrainerConfigError):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=bad_config,
-            summaries_dir=summaries_dir,
             run_id=run_id,
-            model_path=model_path,
+            output_path=output_path,
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
@@ -223,9 +219,8 @@ def test_initialize_invalid_trainer_raises_exception(
     with pytest.raises(TrainerConfigError):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=bad_config,
-            summaries_dir=summaries_dir,
             run_id=run_id,
-            model_path=model_path,
+            output_path=output_path,
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
@@ -240,9 +235,8 @@ def test_initialize_invalid_trainer_raises_exception(
     with pytest.raises(UnityTrainerException):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=bad_config,
-            summaries_dir=summaries_dir,
             run_id=run_id,
-            model_path=model_path,
+            output_path=output_path,
             keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
@@ -270,9 +264,8 @@ def test_handles_no_default_section(dummy_config):
 
     trainer_factory = trainer_util.TrainerFactory(
         trainer_config=no_default_config,
-        summaries_dir="test_dir",
         run_id="testrun",
-        model_path="model_dir",
+        output_path="output_path",
         keep_checkpoints=1,
         train_model=True,
         load_model=False,
@@ -299,9 +292,8 @@ def test_raise_if_no_config_for_brain(dummy_config):
 
     trainer_factory = trainer_util.TrainerFactory(
         trainer_config=bad_config,
-        summaries_dir="test_dir",
         run_id="testrun",
-        model_path="model_dir",
+        output_path="output_path",
         keep_checkpoints=1,
         train_model=True,
         load_model=False,
@@ -338,34 +330,63 @@ you:
         _load_config(fp)
 
 
+def test_assemble_curriculum_config():
+    file_contents = """
+behavior1:
+    curriculum:
+        foo: 5
+behavior2:
+    curriculum:
+        foo: 6
+    """
+    trainer_config = _load_config(file_contents)
+    curriculum_config = assemble_curriculum_config(trainer_config)
+    assert curriculum_config == {"behavior1": {"foo": 5}, "behavior2": {"foo": 6}}
+
+    # Check that nothing is returned if no curriculum.
+    file_contents = """
+behavior1:
+    foo: 3
+behavior2:
+    foo: 4
+    """
+    trainer_config = _load_config(file_contents)
+    curriculum_config = assemble_curriculum_config(trainer_config)
+    assert curriculum_config == {}
+
+    # Check that method doesn't break if 1st level entity isn't a dict.
+    # Note: this is a malformed configuration.
+    file_contents = """
+behavior1: 3
+behavior2: 4
+    """
+    trainer_config = _load_config(file_contents)
+    curriculum_config = assemble_curriculum_config(trainer_config)
+    assert curriculum_config == {}
+
+
 def test_existing_directories(tmp_path):
-    model_path = os.path.join(tmp_path, "runid")
-    # Unused summary path
-    summary_path = os.path.join(tmp_path, "runid")
+    output_path = os.path.join(tmp_path, "runid")
     # Test fresh new unused path - should do nothing.
-    trainer_util.handle_existing_directories(model_path, summary_path, False, False)
+    trainer_util.handle_existing_directories(output_path, False, False)
     # Test resume with fresh path - should throw an exception.
     with pytest.raises(UnityTrainerException):
-        trainer_util.handle_existing_directories(model_path, summary_path, True, False)
+        trainer_util.handle_existing_directories(output_path, True, False)
 
     # make a directory
-    os.mkdir(model_path)
+    os.mkdir(output_path)
     # Test try to train w.o. force, should complain
     with pytest.raises(UnityTrainerException):
-        trainer_util.handle_existing_directories(model_path, summary_path, False, False)
+        trainer_util.handle_existing_directories(output_path, False, False)
     # Test try to train w/ resume - should work
-    trainer_util.handle_existing_directories(model_path, summary_path, True, False)
+    trainer_util.handle_existing_directories(output_path, True, False)
     # Test try to train w/ force - should work
-    trainer_util.handle_existing_directories(model_path, summary_path, False, True)
+    trainer_util.handle_existing_directories(output_path, False, True)
 
     # Test initialize option
     init_path = os.path.join(tmp_path, "runid2")
     with pytest.raises(UnityTrainerException):
-        trainer_util.handle_existing_directories(
-            model_path, summary_path, False, True, init_path
-        )
+        trainer_util.handle_existing_directories(output_path, False, True, init_path)
     os.mkdir(init_path)
     # Should pass since the directory exists now.
-    trainer_util.handle_existing_directories(
-        model_path, summary_path, False, True, init_path
-    )
+    trainer_util.handle_existing_directories(output_path, False, True, init_path)

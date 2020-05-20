@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Barracuda;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
-using Unity.Barracuda;
 
 namespace Unity.MLAgents.Inference
 {
@@ -126,10 +126,12 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="sensorComponents">Attached sensor components</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
         /// <returns>The list the error messages of the checks that failed</returns>
         public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters,
-            SensorComponent[] sensorComponents, BehaviorType behaviorType = BehaviorType.Default)
+            SensorComponent[] sensorComponents, int observableAttributeTotalSize = 0,
+            BehaviorType behaviorType = BehaviorType.Default)
         {
             List<string> failedModelChecks = new List<string>();
             if (model == null)
@@ -182,7 +184,7 @@ namespace Unity.MLAgents.Inference
                 CheckOutputTensorPresence(model, memorySize))
             ;
             failedModelChecks.AddRange(
-                CheckInputTensorShape(model, brainParameters, sensorComponents)
+                CheckInputTensorShape(model, brainParameters, sensorComponents, observableAttributeTotalSize)
             );
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, isContinuous, actionSize)
@@ -253,6 +255,7 @@ namespace Unity.MLAgents.Inference
         /// Whether the model is expecting continuous or discrete control.
         /// </param>
         /// <param name="sensorComponents">Array of attached sensor components</param>
+        /// <param name="observableAttributeTotalSize">Total size of ObservableAttributes</param>
         /// <returns>
         /// A IEnumerable of string corresponding to the failed input presence checks.
         /// </returns>
@@ -404,25 +407,27 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="sensorComponents">Attached sensors</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <returns>The list the error messages of the checks that failed</returns>
         static IEnumerable<string> CheckInputTensorShape(
-            Model model, BrainParameters brainParameters, SensorComponent[] sensorComponents)
+            Model model, BrainParameters brainParameters, SensorComponent[] sensorComponents,
+            int observableAttributeTotalSize)
         {
             var failedModelChecks = new List<string>();
             var tensorTester =
-                new Dictionary<string, Func<BrainParameters, TensorProxy, SensorComponent[], string>>()
+                new Dictionary<string, Func<BrainParameters, TensorProxy, SensorComponent[], int, string>>()
             {
                 {TensorNames.VectorObservationPlaceholder, CheckVectorObsShape},
                 {TensorNames.PreviousActionPlaceholder, CheckPreviousActionShape},
-                {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs) => null)},
-                {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs) => null)},
-                {TensorNames.SequenceLengthPlaceholder, ((bp, tensor, scs) => null)},
-                {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs) => null)},
+                {TensorNames.RandomNormalEpsilonPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.ActionMaskPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.SequenceLengthPlaceholder, ((bp, tensor, scs, i) => null)},
+                {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
             foreach (var mem in model.memories)
             {
-                tensorTester[mem.input] = ((bp, tensor, scs) => null);
+                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
             }
 
             var visObsIndex = 0;
@@ -434,7 +439,7 @@ namespace Unity.MLAgents.Inference
                     continue;
                 }
                 tensorTester[TensorNames.VisualObservationPlaceholderPrefix + visObsIndex] =
-                    (bp, tensor, scs) => CheckVisualObsShape(tensor, sensorComponent);
+                    (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sensorComponent);
                 visObsIndex++;
             }
 
@@ -452,7 +457,7 @@ namespace Unity.MLAgents.Inference
                 else
                 {
                     var tester = tensorTester[tensor.name];
-                    var error = tester.Invoke(brainParameters, tensor, sensorComponents);
+                    var error = tester.Invoke(brainParameters, tensor, sensorComponents, observableAttributeTotalSize);
                     if (error != null)
                     {
                         failedModelChecks.Add(error);
@@ -471,12 +476,14 @@ namespace Unity.MLAgents.Inference
         /// </param>
         /// <param name="tensorProxy">The tensor that is expected by the model</param>
         /// <param name="sensorComponents">Array of attached sensor components</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <returns>
         /// If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.
         /// </returns>
         static string CheckVectorObsShape(
-            BrainParameters brainParameters, TensorProxy tensorProxy, SensorComponent[] sensorComponents)
+            BrainParameters brainParameters, TensorProxy tensorProxy, SensorComponent[] sensorComponents,
+            int observableAttributeTotalSize)
         {
             var vecObsSizeBp = brainParameters.VectorObservationSize;
             var numStackedVector = brainParameters.NumStackedVectorObservations;
@@ -490,6 +497,8 @@ namespace Unity.MLAgents.Inference
                     totalVectorSensorSize += sensorComp.GetObservationShape()[0];
                 }
             }
+
+            totalVectorSensorSize += observableAttributeTotalSize;
 
             if (vecObsSizeBp * numStackedVector + totalVectorSensorSize != totalVecObsSizeT)
             {
@@ -512,7 +521,9 @@ namespace Unity.MLAgents.Inference
 
                 sensorSizes += "]";
                 return $"Vector Observation Size of the model does not match. Was expecting {totalVecObsSizeT} " +
-                    $"but received {vecObsSizeBp} x {numStackedVector} vector observations and " +
+                    $"but received: \n" +
+                    $"Vector observations: {vecObsSizeBp} x {numStackedVector}\n" +
+                    $"Total [Observable] attributes: {observableAttributeTotalSize}\n" +
                     $"SensorComponent sizes: {sensorSizes}.";
             }
             return null;
@@ -526,11 +537,13 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="tensorProxy"> The tensor that is expected by the model</param>
-        /// <param name="sensorComponents">Array of attached sensor components</param>
+        /// <param name="sensorComponents">Array of attached sensor components (unused).</param>
+        /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes (unused).</param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
         static string CheckPreviousActionShape(
-            BrainParameters brainParameters, TensorProxy tensorProxy, SensorComponent[] sensorComponents)
+            BrainParameters brainParameters, TensorProxy tensorProxy,
+            SensorComponent[] sensorComponents, int observableAttributeTotalSize)
         {
             var numberActionsBp = brainParameters.VectorActionSize.Length;
             var numberActionsT = tensorProxy.shape[tensorProxy.shape.Length - 1];

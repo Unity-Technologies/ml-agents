@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Unity.MLAgents.Policies;
 using Unity.Barracuda;
+using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Inference
 {

@@ -135,12 +135,11 @@ def checkout_csharp_version(csharp_version):
     if csharp_version is None:
         return
 
+    csharp_tag = f"com.unity.ml-agents_{csharp_version}"
     csharp_dirs = ["com.unity.ml-agents", "Project"]
     for csharp_dir in csharp_dirs:
         subprocess.check_call(f"rm -rf {csharp_dir}", shell=True)
-        subprocess.check_call(
-            f"git checkout {csharp_version} -- {csharp_dir}", shell=True
-        )
+        subprocess.check_call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
 
 
 def undo_git_checkout():
@@ -159,6 +158,28 @@ def override_config_file(src_path, dest_path, **kwargs):
         override_config_file(src_path, dest_path, max_steps=42)
     will copy the config file at src_path to dest_path, but override the max_steps field to 42 for all brains.
     """
+    with open(src_path) as f:
+        configs = yaml.safe_load(f)
+        behavior_configs = configs["behaviors"]
+
+    for config in behavior_configs.values():
+        config.update(**kwargs)
+
+    with open(dest_path, "w") as f:
+        yaml.dump(configs, f)
+
+
+def override_legacy_config_file(python_version, src_path, dest_path, **kwargs):
+    """
+    Override settings in a trainer config file, using an old version of the src_path. For example,
+        override_config_file("0.16.0", src_path, dest_path, max_steps=42)
+    will sync the file at src_path from version 0.16.0, copy it to dest_path, and override the
+    max_steps field to 42 for all brains.
+    """
+    # Sync the old version of the file
+    python_tag = f"python-packages_{python_version}"
+    subprocess.check_call(f"git checkout {python_tag} -- {src_path}", shell=True)
+
     with open(src_path) as f:
         configs = yaml.safe_load(f)
 

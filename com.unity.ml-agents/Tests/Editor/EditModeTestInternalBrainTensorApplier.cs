@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using NUnit.Framework;
+using Unity.Barracuda;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
-using Unity.Barracuda;
 
 namespace Unity.MLAgents.Tests
 {

@@ -17,8 +17,25 @@ double-check that the versions are in the same. The versions can be found in
 ## Migrating from Release 1 to latest
 
 ### Important changes
+- Training artifacts (trained models, summaries) are now found under `results/`
+  instead of `summaries/` and `models/`.
+- Trainer configuration, curriculum configuration, and parameter randomization
+  configuration have all been moved to a single YAML file. (#3791)
+- `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
+- On the UnityEnvironment API, `get_behavior_names()` and `get_behavior_specs()` methods were combined into the property `behavior_specs` that contains a mapping from behavior names to behavior spec.
 
 ### Steps to Migrate
+- Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
+  a separate trainer configuration file, under a `behaviors` section. You can move the `default` section too
+  if it's being used. This file should be specific to your environment, and not contain configurations for
+  multiple environments (unless they have the same Behavior Names).
+  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under
+  the `Behavior Name` section.
+  - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
+  the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
+- If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
+in the `TerminalStep` and `TerminalSteps` objects.
+ - Replace usage of `get_behavior_names()` and `get_behavior_specs()` in UnityEnvironment with `behavior_specs`.
 
 ## Migrating from 0.15 to Release 1
 
@@ -93,9 +110,6 @@ double-check that the versions are in the same. The versions can be found in
   longer takes a file name as input but a fully constructed `UnityEnvironment`
   instead.
 - Update uses of "camelCase" fields and properties to "PascalCase".
-- If you have a custom `ISensor` implementation, you will need to change the
-  signature of its `Write()` method to use `ObservationWriter` instead of
-  `WriteAdapter`.
 
 ## Migrating from 0.14 to 0.15
 
@@ -243,7 +257,7 @@ double-check that the versions are in the same. The versions can be found in
     data in the new MonoBehaviour instead.
   - If the class overrode the virtual methods, create a new MonoBehaviour and
     move the logic to it:
-    - Move the InitializeAcademy code to MonoBehaviour.OnAwake
+    - Move the InitializeAcademy code to MonoBehaviour.Awake
     - Move the AcademyStep code to MonoBehaviour.FixedUpdate
     - Move the OnDestroy code to MonoBehaviour.OnDestroy.
     - Move the AcademyReset code to a new method and add it to the
@@ -251,7 +265,7 @@ double-check that the versions are in the same. The versions can be found in
 - Multiply `max_steps` and `summary_freq` in your `trainer_config.yaml` by the
   number of Agents in the scene.
 - Combine curriculum configs into a single file. See
-  [the WallJump curricula](../config/curricula/wall_jump.yaml) for an example of
+  [the WallJump curricula](https://github.com/Unity-Technologies/ml-agents/blob/0.14.1/config/curricula/wall_jump.yaml) for an example of
   the new curriculum config format. A tool like https://www.json2yaml.com may be
   useful to help with the conversion.
 - If you have a model trained which uses RayPerceptionSensor and has non-1.0
@@ -558,7 +572,7 @@ double-check that the versions are in the same. The versions can be found in
 
 - It is now required to specify the path to the yaml trainer configuration file
   when running `mlagents-learn`. For an example trainer configuration file, see
-  [trainer_config.yaml](../config/trainer_config.yaml). An example of passing a
+  [trainer_config.yaml](https://github.com/Unity-Technologies/ml-agents/blob/0.5.0a/config/trainer_config.yaml). An example of passing a
   trainer configuration to `mlagents-learn` is shown above.
 - The environment name is now passed through the `--env` option.
 - Curriculum learning has been changed. In summary:

@@ -28,13 +28,13 @@ test_mac_protobuf_generation:
       git diff -- :/ ":(exclude,top)$CS_PROTO_PATH/*.meta" > artifacts/proto.patch; exit $GIT_ERR; }
   triggers:
     cancel_old_ci: true
-    changes:
-      only:
-        - "protobuf-definitions/**"
-        - ".yamato/protobuf-generation-test.yml"
-      except:
-        - "protobuf-definitions/*.md"
-        - "protobuf-definitions/**/*.md"
+    expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "protobuf-definitions/**" OR
+      pull_request.changes.any match ".yamato/protobuf-generation-test.yml") AND
+      NOT pull_request.changes.all match "protobuf-definitions/**/*.md"
   artifacts:
     patch:
       paths:

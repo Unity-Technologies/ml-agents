@@ -18,7 +18,17 @@ not necessarily correspond to a fixed simulation time increment.
 
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from typing import List, NamedTuple, Tuple, Optional, Union, Dict, Iterator, Any
+from typing import (
+    List,
+    NamedTuple,
+    Tuple,
+    Optional,
+    Union,
+    Dict,
+    Iterator,
+    Any,
+    Mapping as MappingType,
+)
 import numpy as np
 from enum import Enum
 
@@ -144,14 +154,15 @@ class TerminalStep(NamedTuple):
      - obs is a list of numpy arrays observations collected by the agent.
      - reward is a float. Corresponds to the rewards collected by the agent
      since the last simulation step.
-     - max_step is a bool. Is true if the Agent reached its maximum number of
-     steps during the last simulation step.
+     - interrupted is a bool. Is true if the Agent was interrupted since the last
+     decision step. For example, if the Agent reached the maximum number of steps for
+     the episode.
      - agent_id is an int and an unique identifier for the corresponding Agent.
     """
 
     obs: List[np.ndarray]
     reward: float
-    max_step: bool
+    interrupted: bool
     agent_id: AgentId
 
 
@@ -165,18 +176,18 @@ class TerminalSteps(Mapping):
      first dimension of the array corresponds to the batch size of the batch.
      - reward is a float vector of length batch size. Corresponds to the
      rewards collected by each agent since the last simulation step.
-     - max_step is an array of booleans of length batch size. Is true if the
-     associated Agent reached its maximum number of steps during the last
-     simulation step.
+     - interrupted is an array of booleans of length batch size. Is true if the
+     associated Agent was interrupted since the last decision step. For example, if the
+     Agent reached the maximum number of steps for the episode.
      - agent_id is an int vector of length batch size containing unique
      identifier for the corresponding Agent. This is used to track Agents
      across simulation steps.
     """
 
-    def __init__(self, obs, reward, max_step, agent_id):
+    def __init__(self, obs, reward, interrupted, agent_id):
         self.obs: List[np.ndarray] = obs
         self.reward: np.ndarray = reward
-        self.max_step: np.ndarray = max_step
+        self.interrupted: np.ndarray = interrupted
         self.agent_id: np.ndarray = agent_id
         self._agent_id_to_index: Optional[Dict[AgentId, int]] = None
 
@@ -213,7 +224,7 @@ class TerminalSteps(Mapping):
         return TerminalStep(
             obs=agent_obs,
             reward=self.reward[agent_index],
-            max_step=self.max_step[agent_index],
+            interrupted=self.interrupted[agent_index],
             agent_id=agent_id,
         )
 
@@ -232,7 +243,7 @@ class TerminalSteps(Mapping):
         return TerminalSteps(
             obs=obs,
             reward=np.zeros(0, dtype=np.float32),
-            max_step=np.zeros(0, dtype=np.bool),
+            interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
         )
 
@@ -307,6 +318,20 @@ class BehaviorSpec(NamedTuple):
             return np.zeros((n_agents, self.action_size), dtype=np.float32)
 
 
+class BehaviorMapping(Mapping):
+    def __init__(self, specs: Dict[BehaviorName, BehaviorSpec]):
+        self._dict = specs
+
+    def __len__(self) -> int:
+        return len(self._dict)
+
+    def __getitem__(self, behavior: BehaviorName) -> BehaviorSpec:
+        return self._dict[behavior]
+
+    def __iter__(self) -> Iterator[Any]:
+        yield from self._dict
+
+
 class BaseEnv(ABC):
     @abstractmethod
     def step(self) -> None:
@@ -314,33 +339,29 @@ class BaseEnv(ABC):
         Signals the environment that it must move the simulation forward
         by one step.
         """
-        pass
 
     @abstractmethod
     def reset(self) -> None:
         """
         Signals the environment that it must reset the simulation.
         """
-        pass
 
     @abstractmethod
     def close(self) -> None:
         """
         Signals the environment that it must close.
         """
-        pass
 
+    @property
     @abstractmethod
-    def get_behavior_names(self) -> List[BehaviorName]:
+    def behavior_specs(self) -> MappingType[str, BehaviorSpec]:
         """
-        Returns the list of the behavior names present in the environment.
+        Returns a Mapping from behavior names to behavior specs.
         Agents grouped under the same behavior name have the same action and
         observation specs, and are expected to behave similarly in the
         environment.
-        This list can grow with time as new policies are instantiated.
-        :return: the list of agent BehaviorName.
+        Note that new keys can be added to this mapping as new policies are instantiated.
         """
-        pass
 
     @abstractmethod
     def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
@@ -352,7 +373,6 @@ class BaseEnv(ABC):
         :param action: A two dimensional np.ndarray corresponding to the action
         (either int or float)
         """
-        pass
 
     @abstractmethod
     def set_action_for_agent(
@@ -366,7 +386,6 @@ class BaseEnv(ABC):
         :param action: A one dimensional np.ndarray corresponding to the action
         (either int or float)
         """
-        pass
 
     @abstractmethod
     def get_steps(
@@ -381,16 +400,6 @@ class BaseEnv(ABC):
          the rewards, the agent ids and the action masks for the Agents
          of the specified behavior. These Agents need an action this step.
          - A TerminalSteps NamedTuple containing the observations,
-         rewards, agent ids and max_step flags of the agents that had their
+         rewards, agent ids and interrupted flags of the agents that had their
          episode terminated last step.
         """
-        pass
-
-    @abstractmethod
-    def get_behavior_spec(self, behavior_name: BehaviorName) -> BehaviorSpec:
-        """
-        Get the BehaviorSpec corresponding to the behavior name
-        :param behavior_name: The name of the behavior the agents are part of
-        :return: A BehaviorSpec corresponding to that behavior
-        """
-        pass

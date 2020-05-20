@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
-from mlagents.trainers.models import LearningRateSchedule, EncoderType, ModelUtils
+from mlagents.trainers.models import ScheduleType, EncoderType, ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -45,7 +45,7 @@ class SACOptimizer(TFOptimizer):
             with tf.variable_scope(""):
                 super().__init__(policy, trainer_params)
                 lr = float(trainer_params["learning_rate"])
-                lr_schedule = LearningRateSchedule(
+                lr_schedule = ScheduleType(
                     trainer_params.get("learning_rate_schedule", "constant")
                 )
                 self.policy = policy
@@ -111,8 +111,12 @@ class SACOptimizer(TFOptimizer):
                 # The optimizer's m_size is 3 times the policy (Q1, Q2, and Value)
                 self.m_size = 3 * self.policy.m_size
                 self._create_inputs_and_outputs()
-                self.learning_rate = ModelUtils.create_learning_rate(
-                    lr_schedule, lr, self.policy.global_step, int(max_step)
+                self.learning_rate = ModelUtils.create_schedule(
+                    lr_schedule,
+                    lr,
+                    self.policy.global_step,
+                    int(max_step),
+                    min_value=1e-10,
                 )
                 self._create_losses(
                     self.policy_network.q1_heads,

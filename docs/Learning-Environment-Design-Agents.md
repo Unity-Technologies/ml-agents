@@ -345,6 +345,9 @@ Both sensor components have several settings:
   0, rays will be used instead of spheres. Rays may be more efficient,
   especially in complex scenes.
 - _Ray Length_ The length of the casts
+- _Ray Layer Mask_ The [LayerMask](https://docs.unity3d.com/ScriptReference/LayerMask.html)
+  passed to the raycast or spherecast. This can be used to ignore certain types
+  of objects when casting.
 - _Observation Stacks_ The number of previous results to "stack" with the cast
   results. Note that this can be independent of the "Stacked Vectors" setting in
   `Behavior Parameters`.

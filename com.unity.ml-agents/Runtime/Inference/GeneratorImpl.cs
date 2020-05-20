@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System;
-using Unity.MLAgents.Inference.Utils;
-using Unity.Barracuda;
 using UnityEngine;
+using Unity.Barracuda;
+using Unity.MLAgents.Inference.Utils;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Inference

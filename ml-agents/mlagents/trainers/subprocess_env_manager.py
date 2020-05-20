@@ -131,15 +131,15 @@ def worker(
 
     def _generate_all_results() -> AllStepResult:
         all_step_result: AllStepResult = {}
-        for brain_name in env.get_behavior_names():
+        for brain_name in env.behavior_specs:
             all_step_result[brain_name] = env.get_steps(brain_name)
         return all_step_result
 
     def external_brains():
         result = {}
-        for brain_name in env.get_behavior_names():
-            result[brain_name] = behavior_spec_to_brain_parameters(
-                brain_name, env.get_behavior_spec(brain_name)
+        for behavior_name, behavior_specs in env.behavior_specs.items():
+            result[behavior_name] = behavior_spec_to_brain_parameters(
+                behavior_name, behavior_specs
             )
         return result
 

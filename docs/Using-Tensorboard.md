@@ -5,14 +5,14 @@ with a TensorFlow utility named,
 [TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
 
 The `mlagents-learn` command saves training statistics to a folder named
-`summaries`, organized by the `run-id` value you assign to a training session.
+`results`, organized by the `run-id` value you assign to a training session.
 
 In order to observe the training process, either during training or afterward,
 start TensorBoard:
 
 1. Open a terminal or console window:
 1. Navigate to the directory where the ML-Agents Toolkit is installed.
-1. From the command line run: `tensorboard --logdir=summaries --port=6006`
+1. From the command line run: `tensorboard --logdir=results --port=6006`
 1. Open a browser window and navigate to
    [localhost:6006](http://localhost:6006).
 

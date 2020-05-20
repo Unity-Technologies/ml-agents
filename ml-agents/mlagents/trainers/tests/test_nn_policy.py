@@ -39,8 +39,7 @@ def dummy_config():
         memory_size: 8
         curiosity_strength: 0.0
         curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
+        output_path: test
         reward_signals:
           extrinsic:
             strength: 1.0
@@ -83,7 +82,7 @@ def test_load_save(dummy_config, tmp_path):
     path1 = os.path.join(tmp_path, "runid1")
     path2 = os.path.join(tmp_path, "runid2")
     trainer_params = dummy_config
-    trainer_params["model_path"] = path1
+    trainer_params["output_path"] = path1
     policy = create_policy_mock(trainer_params)
     policy.initialize_or_load()
     policy._set_step(2000)
@@ -148,8 +147,7 @@ def test_normalization(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["summary_path"] = "./summaries/test_trainer_summary"
-    dummy_config["model_path"] = "./models/test_trainer_models/TestModel"
+    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
 
     time_horizon = 6
     trajectory = make_fake_trajectory(

@@ -6,10 +6,36 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [1.0.2-preview] - 2020-05-19
+## [Unreleased]
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
+- `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
+- `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
+- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Unity-Environment-Registry.md)(#3967)
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
+  observations via reflection.
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Curriculum and Parameter Randomization configurations have been merged
+  into the main training configuration file. Note that this means training
+  configuration files are now environment-specific. (#3791)
+- Training artifacts (trained models, summaries) are now found in the `results/`
+  directory. (#3829)
+- Unity Player logs are now written out to the results directory. (#3877)
+- Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+
+## [1.0.2-preview] - 2020-05-20
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 - Fix missing .meta file
+
 
 ## [1.0.1-preview] - 2020-05-19
 ### Bug Fixes
@@ -22,10 +48,9 @@ and this project adheres to
 - The gym wrapper error for the wrong number of agents now fires more consistently, and more details
   were added to the error message when the input dimension is wrong. (#3963)
 
-## [1.0.0-preview] - 2020-05-06
 
+## [1.0.0-preview] - 2020-04-30
 ### Major Changes
-
 #### com.unity.ml-agents (C#)
 
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested

@@ -43,7 +43,7 @@ def ppo_dummy_config():
 
 def create_bc_module(mock_brain, trainer_config, use_rnn, demo_file, tanhresample):
     # model_path = env.external_brain_names[0]
-    trainer_config["model_path"] = "testpath"
+    trainer_config["output_path"] = "testpath"
     trainer_config["keep_checkpoints"] = 3
     trainer_config["use_recurrent"] = use_rnn
     trainer_config["behavioral_cloning"]["demo_path"] = (
