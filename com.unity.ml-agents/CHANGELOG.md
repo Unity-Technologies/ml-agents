@@ -13,8 +13,9 @@ and this project adheres to
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
-- `use_visual` and `allow_multiple_visual_obs` are replaced by `allow_multiple_obs` which allows
-  visual and vector observations to be used simultaneously. (#3981)
+- `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
+were replaced by `allow_multiple_obs` which allows one or more visual observations and
+vector observations to be used simultaneously. (#3981)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
