@@ -99,7 +99,7 @@ class UnityToGymWrapper(gym.Env):
             logger.warning(
                 "The environment contains visual and vector observations. "
                 "You must define allow_multiple_obs=True to receive them all. "
-                "Otherwise, please note that only the first visual observations will be provided int the observation. "
+                "Otherwise, please note that only the first visual observations will be provided in the observation. "
             )
 
         # Check for number of agents in scene.
@@ -129,7 +129,7 @@ class UnityToGymWrapper(gym.Env):
             high = np.array([1] * self.group_spec.action_shape)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
         high = np.array([np.inf] * self._get_vec_obs_size())
-        if self._get_n_vis_obs() == 1:
+        if self._get_n_vis_obs() > 0 and not self._allow_multiple_obs:
             shape = self._get_vis_obs_shape()
             if uint8_visual:
                 self._observation_space = spaces.Box(
