@@ -113,16 +113,7 @@ class NetworkBody(nn.Module):
             hidden = encoder(vis_input)
             vis_embeds.append(hidden)
 
-        if len(vec_embeds) > 0:
-            vec_embeds = torch.cat(vec_embeds)
-        if len(vis_embeds) > 0:
-            vis_embeds = torch.cat(vis_embeds)
-        if len(vec_embeds) > 0 and len(vis_embeds) > 0:
-            embedding = torch.cat([vec_embeds, vis_embeds])
-        elif len(vec_embeds) > 0:
-            embedding = vec_embeds
-        else:
-            embedding = vis_embeds
+        embedding = torch.cat(vec_embeds + vis_embeds)
 
         if self.use_lstm:
             embedding = embedding.reshape([sequence_length, -1, self.h_size])
@@ -220,6 +211,16 @@ class ActorCritic(nn.Module):
             entropies = entropies.squeeze(-1)
         return log_probs, entropies
 
+    def evaluate(
+        self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
+    ):
+        embedding, memories = self.network_body(
+            vec_inputs, vis_inputs, memories, sequence_length
+        )
+        dists = self.distribution(embedding, masks=masks)
+
+        return dists, memories
+
     def forward(
         self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
     ):
@@ -227,14 +228,7 @@ class ActorCritic(nn.Module):
             vec_inputs, vis_inputs, memories, sequence_length
         )
         value_outputs = self.critic(vec_inputs, vis_inputs)
-        if self.act_type == ActionType.CONTINUOUS:
-            dists = self.distribution(embedding)
-        else:
-            dists = self.distribution(embedding, masks=masks)
-        # if self.separate_critic:
-        #     value_outputs = self.critic(vec_inputs, vis_inputs)
-        # else:
-        #     value_outputs = self.value_heads(embedding)
+        dists = self.distribution(embedding, masks=masks)
         return dists, value_outputs, memories
 
 

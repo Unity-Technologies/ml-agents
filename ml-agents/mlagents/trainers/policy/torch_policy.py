@@ -18,12 +18,6 @@ from mlagents.trainers.models_torch import EncoderType, ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
-print("Torch threads", torch.get_num_threads())
-print("Torch intra-op threads", torch.get_num_interop_threads())
-
-# torch.set_num_interop_threads(8)
-# torch.set_num_threads(6)
-
 
 class TorchPolicy(Policy):
     def __init__(
@@ -94,9 +88,6 @@ class TorchPolicy(Policy):
 
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
-        # TF defaults to 32-bit, so we use the same here.
-        torch.set_default_tensor_type(torch.FloatTensor)
-
         reward_signal_configs = trainer_params["reward_signals"]
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
@@ -144,7 +135,7 @@ class TorchPolicy(Policy):
 
     @timed
     def sample_actions(self, vec_obs, vis_obs, masks=None, memories=None, seq_len=1):
-        dists, (value_heads, mean_value), memories = self.actor_critic(
+        dists, memories = self.actor_critic.evaluate(
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
@@ -153,7 +144,7 @@ class TorchPolicy(Policy):
         if self.act_type == "continuous":
             actions.squeeze_(-1)
 
-        return actions, log_probs, entropies, value_heads, memories
+        return actions, log_probs, entropies, memories
 
     def evaluate_actions(
         self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
@@ -185,7 +176,7 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, value_heads, memories = self.sample_actions(
+            action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
         run_out["action"] = action.detach().numpy()
@@ -193,10 +184,6 @@ class TorchPolicy(Policy):
         # Todo - make pre_action difference
         run_out["log_probs"] = log_probs.detach().numpy()
         run_out["entropy"] = entropy.detach().numpy()
-        run_out["value_heads"] = {
-            name: t.detach().numpy() for name, t in value_heads.items()
-        }
-        run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memories"] = memories.detach().numpy()

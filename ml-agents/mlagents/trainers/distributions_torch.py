@@ -20,7 +20,7 @@ class GaussianDistribution(nn.Module):
                 torch.zeros(1, num_outputs, requires_grad=True)
             )
 
-    def forward(self, inputs):
+    def forward(self, inputs, masks):
         mu = self.mu(inputs)
         if self.conditional_sigma:
             log_sigma = self.log_sigma(inputs)
