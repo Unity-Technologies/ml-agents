@@ -79,7 +79,6 @@ def test_handles_no_config_provided(BrainParametersMock):
         trainer_config=no_default_config,
         run_id="testrun",
         output_path="output_path",
-        keep_checkpoints=1,
         train_model=True,
         load_model=False,
         seed=42,
