@@ -219,38 +219,39 @@ WormStatic:
             strength: 1.0
             gamma: 0.995
 
-# WalkerDynamic:
-#     normalize: true
-#     # learning_rate_schedule: constant
-#     num_epoch: 3
-#     time_horizon: 80
-#     batch_size: 512
-#     buffer_size: 5120
-#     max_steps: 2e7
-#     # max_steps: 1e8
-#     summary_freq: 30000
-#     # learning_rate: 1.0e-3
-#     num_layers: 3
-#     hidden_units: 512
-#     reward_signals:
-#         extrinsic:
-#             strength: 1.0
-#             gamma: 0.995
-
 WalkerDynamic:
     normalize: true
+    # learning_rate_schedule: constant
     num_epoch: 3
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
     max_steps: 2e7
+    beta: 9.0e-3
+    # max_steps: 1e8
     summary_freq: 30000
+    # learning_rate: 1.0e-3
     num_layers: 3
     hidden_units: 512
     reward_signals:
         extrinsic:
             strength: 1.0
             gamma: 0.995
+
+# WalkerDynamic:
+#     normalize: true
+#     num_epoch: 3
+#     time_horizon: 1000
+#     batch_size: 2048
+#     buffer_size: 20480
+#     max_steps: 2e7
+#     summary_freq: 30000
+#     num_layers: 3
+#     hidden_units: 512
+#     reward_signals:
+#         extrinsic:
+#             strength: 1.0
+#             gamma: 0.995
 
 WalkerStatic:
     normalize: true
