@@ -268,7 +268,6 @@ class CurriculumSettings:
 @attr.s(auto_attribs=True)
 class CheckpointSettings:
     save_freq: int = parser.get_default("save_freq")
-    keep_checkpoints: int = parser.get_default("keep_checkpoints")
     run_id: str = parser.get_default("run_id")
     initialize_from: str = parser.get_default("initialize_from")
     load_model: bool = parser.get_default("load_model")

@@ -34,7 +34,6 @@ MOCK_PARAMETER_YAML = """
         lesson: 2
         run_id: uselessrun
         save_freq: 654321
-        keep_checkpoints: 34
     debug: false
     """
 
@@ -121,7 +120,6 @@ def test_commandline_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path is None
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.keep_checkpoints == 5
     assert opt.checkpoint_settings.lesson == 0
     assert opt.checkpoint_settings.resume is False
     assert opt.checkpoint_settings.inference is False
@@ -137,7 +135,6 @@ def test_commandline_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--keep-checkpoints=42",
         "--lesson=3",
         "--resume",
         "--inference",
@@ -155,7 +152,6 @@ def test_commandline_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.keep_checkpoints == 42
     assert opt.checkpoint_settings.lesson == 3
     assert opt.checkpoint_settings.run_id == "myawesomerun"
     assert opt.checkpoint_settings.save_freq == 123456
@@ -176,7 +172,6 @@ def test_yaml_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./oldenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.keep_checkpoints == 34
     assert opt.checkpoint_settings.lesson == 2
     assert opt.checkpoint_settings.run_id == "uselessrun"
     assert opt.checkpoint_settings.save_freq == 654321
@@ -190,7 +185,6 @@ def test_yaml_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--keep-checkpoints=42",
         "--lesson=3",
         "--resume",
         "--inference",
@@ -208,7 +202,6 @@ def test_yaml_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.keep_checkpoints == 42
     assert opt.checkpoint_settings.lesson == 3
     assert opt.checkpoint_settings.run_id == "myawesomerun"
     assert opt.checkpoint_settings.save_freq == 123456

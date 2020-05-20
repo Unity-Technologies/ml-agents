@@ -126,7 +126,6 @@ def _check_environment_trains(
             trainer_config=trainer_config,
             run_id=run_id,
             output_path=dir,
-            keep_checkpoints=1,
             train_model=True,
             load_model=False,
             seed=seed,

@@ -22,7 +22,6 @@ class TrainerFactory:
         trainer_config: Dict[str, TrainerSettings],
         run_id: str,
         output_path: str,
-        keep_checkpoints: int,
         train_model: bool,
         load_model: bool,
         seed: int,
@@ -34,7 +33,6 @@ class TrainerFactory:
         self.run_id = run_id
         self.output_path = output_path
         self.init_path = init_path
-        self.keep_checkpoints = keep_checkpoints
         self.train_model = train_model
         self.load_model = load_model
         self.seed = seed
@@ -48,7 +46,6 @@ class TrainerFactory:
             brain_name,
             self.run_id,
             self.output_path,
-            self.keep_checkpoints,
             self.train_model,
             self.load_model,
             self.ghost_controller,
@@ -64,7 +61,6 @@ def initialize_trainer(
     brain_name: str,
     run_id: str,
     output_path: str,
-    keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
     ghost_controller: GhostController,
