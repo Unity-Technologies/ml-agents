@@ -37,11 +37,11 @@ vector observations to be used simultaneously.
   - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
 - If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
-in the `TerminalStep` and `TerminalSteps` objects.
+ in the `TerminalStep` and `TerminalSteps` objects.
  - Replace usage of `get_behavior_names()` and `get_behavior_specs()` in UnityEnvironment with `behavior_specs`.
  - If you use the `UnityToGymWrapper`, remove `use_visual` and `allow_multiple_visual_obs`
- from the constructor and use `allow_multiple_obs` if the environment contains both
- visual and vector observations or multiple visual observations.
+ from the constructor and add `allow_multiple_obs = True` if the environment contains either
+ both visual and vector observations or multiple visual observations.
 
 ## Migrating from 0.15 to Release 1
 
