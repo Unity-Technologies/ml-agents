@@ -110,7 +110,7 @@ public class TennisAgent : Agent
             upward = moveY;
         }
 
-        m_AgentRb.AddForce(new Vector3(moveX * 2.5f, upward * 10f, 0f), ForceMode.VelocityChange);
+        m_AgentRb.AddForce(new Vector3(moveX * 5f, upward * 10f, 0f), ForceMode.VelocityChange);
 
         // calculate angle between m_InvertMult * 55 and m_InvertMult * 125
         var angle = 35f * rotate + m_InvertMult * k_Angle;
@@ -158,7 +158,7 @@ public class TennisAgent : Agent
 
         timePenalty = 0;
         m_InvertMult = invertX ? -1f : 1f;
-        var agentOutX = Random.Range(14f, 16f);
+        var agentOutX = Random.Range(18f, 20f);
         var agentOutY = Random.Range(-1.5f, 0f);
         transform.position = new Vector3(-m_InvertMult * agentOutX, agentOutY, -1.8f) + transform.parent.transform.position;
         m_AgentRb.velocity = new Vector3(0f, 0f, 0f);

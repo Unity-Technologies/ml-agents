@@ -27,7 +27,7 @@ public class TennisArea : MonoBehaviour
             serve = -1f;
         }
         ball.transform.position = new Vector3(serve * ballOut, 1f, 0f) + transform.position;
-        m_BallRb.velocity = new Vector3(serve * 2f, 20f, 0f);
+        m_BallRb.velocity = new Vector3(serve * 5f, 10f, 0f);
         ball.transform.localScale = new Vector3(.5f, .5f, .5f);
         m_BallScript.ResetPoint();
     }
