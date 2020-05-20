@@ -17,7 +17,6 @@ from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 
@@ -76,19 +75,6 @@ class SACTrainer(RLTrainer):
         )
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
-
-    def _check_param_keys(self):
-        super()._check_param_keys()
-        # Check that batch size is greater than sequence length. Else, throw
-        # an exception.
-        if (
-            self.trainer_settings["sequence_length"]
-            > self.trainer_settings["batch_size"]
-            and self.trainer_settings["use_recurrent"]
-        ):
-            raise UnityTrainerException(
-                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
-            )
 
     def save_model(self, name_behavior_id: str) -> None:
         """
