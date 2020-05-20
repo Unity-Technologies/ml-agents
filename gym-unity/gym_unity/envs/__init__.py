@@ -1,6 +1,6 @@
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import gym
 from gym import error, spaces
@@ -129,19 +129,31 @@ class UnityToGymWrapper(gym.Env):
             high = np.array([1] * self.group_spec.action_shape)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
         high = np.array([np.inf] * self._get_vec_obs_size())
-        if self._get_n_vis_obs() > 0 and not self._allow_multiple_obs:
-            shape = self._get_vis_obs_shape()
-            if uint8_visual:
-                self._observation_space = spaces.Box(
-                    0, 255, dtype=np.uint8, shape=shape
-                )
+        if not self._allow_multiple_obs:
+            if self._get_n_vis_obs() > 0:
+                shape = self._get_vis_obs_shape()[0]
+                if uint8_visual:
+                    self._observation_space = spaces.Box(
+                        0, 255, dtype=np.uint8, shape=shape
+                    )
+                else:
+                    self._observation_space = spaces.Box(
+                        0, 1, dtype=np.float32, shape=shape
+                    )
             else:
-                self._observation_space = spaces.Box(
-                    0, 1, dtype=np.float32, shape=shape
-                )
-
+                self._observation_space = spaces.Box(-high, high, dtype=np.float32)
         else:
-            self._observation_space = spaces.Box(-high, high, dtype=np.float32)
+            # There are multiple Observations
+            list_spaces: List[gym.Space] = []
+            shapes = self._get_vis_obs_shape()
+            for shape in shapes:
+                if uint8_visual:
+                    list_spaces.append(spaces.Box(0, 255, dtype=np.uint8, shape=shape))
+                else:
+                    list_spaces.append(spaces.Box(0, 1, dtype=np.float32, shape=shape))
+            if self._get_vec_obs_size() > 0:
+                list_spaces.append(spaces.Box(-high, high, dtype=np.float32))
+            self._observation_space = spaces.Tuple(list_spaces)
 
     def reset(self) -> Union[List[np.ndarray], np.ndarray]:
         """Resets the state of the environment and returns an initial observation.
@@ -223,11 +235,12 @@ class UnityToGymWrapper(gym.Env):
                 result += 1
         return result
 
-    def _get_vis_obs_shape(self) -> Optional[Tuple]:
+    def _get_vis_obs_shape(self) -> List[Tuple]:
+        result: List[Tuple] = []
         for shape in self.group_spec.observation_shapes:
             if len(shape) == 3:
-                return shape
-        return None
+                result.append(shape)
+        return result
 
     def _get_vis_obs_list(
         self, step_result: Union[DecisionSteps, TerminalSteps]

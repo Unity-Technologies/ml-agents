@@ -70,6 +70,7 @@ def test_gym_wrapper_visual(use_uint8):
     )
 
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8)
+    assert isinstance(env.observation_space, spaces.Box)
     assert isinstance(env, UnityToGymWrapper)
     assert isinstance(env.reset(), np.ndarray)
     actions = env.action_space.sample()
@@ -99,6 +100,8 @@ def test_gym_wrapper_single_visual_and_vector(use_uint8):
 
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=True)
     assert isinstance(env, UnityToGymWrapper)
+    assert isinstance(env.observation_space, spaces.Tuple)
+    assert len(env.observation_space) == 2
     reset_obs = env.reset()
     assert isinstance(reset_obs, list)
     assert len(reset_obs) == 2
@@ -119,6 +122,7 @@ def test_gym_wrapper_single_visual_and_vector(use_uint8):
     # check behaviour for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env, UnityToGymWrapper)
+    assert isinstance(env.observation_space, spaces.Box)
     reset_obs = env.reset()
     assert isinstance(reset_obs, np.ndarray)
     assert len(reset_obs.shape) == 3
@@ -145,6 +149,8 @@ def test_gym_wrapper_multi_visual_and_vector(use_uint8):
 
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=True)
     assert isinstance(env, UnityToGymWrapper)
+    assert isinstance(env.observation_space, spaces.Tuple)
+    assert len(env.observation_space) == 3
     reset_obs = env.reset()
     assert isinstance(reset_obs, list)
     assert len(reset_obs) == 3
@@ -161,6 +167,7 @@ def test_gym_wrapper_multi_visual_and_vector(use_uint8):
     # check behaviour for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env, UnityToGymWrapper)
+    assert isinstance(env.observation_space, spaces.Box)
     reset_obs = env.reset()
     assert isinstance(reset_obs, np.ndarray)
     assert len(reset_obs.shape) == 3
