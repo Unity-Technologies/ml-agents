@@ -19,6 +19,7 @@ public class TennisArea : MonoBehaviour
 
     public void MatchReset()
     {
+        m_BallScript.ResetPoint();
         var ballOut = Random.Range(12.5f, 14f);
         var flip = Random.Range(0, 2);
         var serve = 1f;
@@ -29,7 +30,6 @@ public class TennisArea : MonoBehaviour
         ball.transform.position = new Vector3(serve * ballOut, 1f, 0f) + transform.position;
         m_BallRb.velocity = new Vector3(serve * 5f, 10f, 0f);
         ball.transform.localScale = new Vector3(.5f, .5f, .5f);
-        m_BallScript.ResetPoint();
     }
 
     void FixedUpdate()
