@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Sensors.Reflection;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
 
@@ -60,6 +61,9 @@ namespace Unity.MLAgents.Tests
         public int heuristicCalls;
         public TestSensor sensor1;
         public TestSensor sensor2;
+
+        [Observable("observableFloat")]
+        public float observableFloat;
 
         public override void Initialize()
         {
@@ -246,6 +250,9 @@ namespace Unity.MLAgents.Tests
             var agentGo1 = new GameObject("TestAgent");
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
+            var bp1 = agentGo1.GetComponent<BehaviorParameters>();
+            bp1.ObservableAttributeHandling = ObservableAttributeOptions.ExcludeInherited;
+
             var agentGo2 = new GameObject("TestAgent");
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
@@ -271,8 +278,13 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, agent2.agentActionCalls);
 
             // Make sure the Sensors were sorted
-            Assert.AreEqual(agent1.sensors[0].GetName(), "testsensor1");
-            Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor2");
+            Assert.AreEqual(agent1.sensors[0].GetName(), "observableFloat");
+            Assert.AreEqual(agent1.sensors[1].GetName(), "testsensor1");
+            Assert.AreEqual(agent1.sensors[2].GetName(), "testsensor2");
+
+            // agent2 should only have two sensors (no observableFloat)
+            Assert.AreEqual(agent2.sensors[0].GetName(), "testsensor1");
+            Assert.AreEqual(agent2.sensors[1].GetName(), "testsensor2");
         }
     }
 
@@ -739,6 +751,55 @@ namespace Unity.MLAgents.Tests
         public void TestAgentDontCallBaseOnEnable()
         {
             _InnerAgentTestOnEnableOverride();
+        }
+    }
+
+    [TestFixture]
+    public class ObservableAttributeBehaviorTests
+    {
+        public class BaseObservableAgent : Agent
+        {
+            [Observable]
+            public float BaseField;
+        }
+
+        public class DerivedObservableAgent : BaseObservableAgent
+        {
+            [Observable]
+            public float DerivedField;
+        }
+
+
+        [Test]
+        public void TestObservableAttributeBehaviorIgnore()
+        {
+            var variants = new[]
+            {
+                // No observables found
+                (ObservableAttributeOptions.Ignore, 0),
+                // Only DerivedField found
+                (ObservableAttributeOptions.ExcludeInherited, 1),
+                // DerivedField and BaseField found
+                (ObservableAttributeOptions.ExamineAll, 2)
+            };
+
+            foreach (var(behavior, expectedNumSensors) in variants)
+            {
+                var go = new GameObject();
+                var agent = go.AddComponent<DerivedObservableAgent>();
+                var bp = go.GetComponent<BehaviorParameters>();
+                bp.ObservableAttributeHandling = behavior;
+                agent.LazyInitialize();
+                int numAttributeSensors = 0;
+                foreach (var sensor in agent.sensors)
+                {
+                    if (sensor.GetType() != typeof(VectorSensor))
+                    {
+                        numAttributeSensors++;
+                    }
+                }
+                Assert.AreEqual(expectedNumSensors, numAttributeSensors);
+            }
         }
     }
 }
