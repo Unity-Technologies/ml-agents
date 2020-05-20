@@ -92,8 +92,7 @@ class UnityToGymWrapper(gym.Env):
                 "Otherwise, please note that only the first will be provided in the observation."
             )
         if (
-            self._get_n_vis_obs() >= 1
-            and self._get_vec_obs_size() >= 1
+            self._get_n_vis_obs() + self._get_vec_obs_size() >= 2
             and not self._allow_multiple_obs
         ):
             logger.warning(
@@ -108,7 +107,7 @@ class UnityToGymWrapper(gym.Env):
         self._check_agents(len(decision_steps))
         self._previous_decision_step = decision_steps
 
-        # Set observation and action spaces
+        # Set action spaces
         if self.group_spec.is_action_discrete():
             branches = self.group_spec.discrete_action_branches
             if self.group_spec.action_shape == 1:
@@ -128,32 +127,23 @@ class UnityToGymWrapper(gym.Env):
                 )
             high = np.array([1] * self.group_spec.action_shape)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
-        high = np.array([np.inf] * self._get_vec_obs_size())
-        if not self._allow_multiple_obs:
-            if self._get_n_vis_obs() > 0:
-                shape = self._get_vis_obs_shape()[0]
-                if uint8_visual:
-                    self._observation_space = spaces.Box(
-                        0, 255, dtype=np.uint8, shape=shape
-                    )
-                else:
-                    self._observation_space = spaces.Box(
-                        0, 1, dtype=np.float32, shape=shape
-                    )
+
+        # Set observations space
+        list_spaces: List[gym.Space] = []
+        shapes = self._get_vis_obs_shape()
+        for shape in shapes:
+            if uint8_visual:
+                list_spaces.append(spaces.Box(0, 255, dtype=np.uint8, shape=shape))
             else:
-                self._observation_space = spaces.Box(-high, high, dtype=np.float32)
-        else:
-            # There are multiple Observations
-            list_spaces: List[gym.Space] = []
-            shapes = self._get_vis_obs_shape()
-            for shape in shapes:
-                if uint8_visual:
-                    list_spaces.append(spaces.Box(0, 255, dtype=np.uint8, shape=shape))
-                else:
-                    list_spaces.append(spaces.Box(0, 1, dtype=np.float32, shape=shape))
-            if self._get_vec_obs_size() > 0:
-                list_spaces.append(spaces.Box(-high, high, dtype=np.float32))
+                list_spaces.append(spaces.Box(0, 1, dtype=np.float32, shape=shape))
+        if self._get_vec_obs_size() > 0:
+            # vector observation is last
+            high = np.array([np.inf] * self._get_vec_obs_size())
+            list_spaces.append(spaces.Box(-high, high, dtype=np.float32))
+        if self._allow_multiple_obs:
             self._observation_space = spaces.Tuple(list_spaces)
+        else:
+            self._observation_space = list_spaces[0]  # only return the first one
 
     def reset(self) -> Union[List[np.ndarray], np.ndarray]:
         """Resets the state of the environment and returns an initial observation.
