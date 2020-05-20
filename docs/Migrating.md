@@ -23,6 +23,9 @@ double-check that the versions are in the same. The versions can be found in
   configuration have all been moved to a single YAML file. (#3791)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - On the UnityEnvironment API, `get_behavior_names()` and `get_behavior_specs()` methods were combined into the property `behavior_specs` that contains a mapping from behavior names to behavior spec.
+- `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
+were replaced by `allow_multiple_obs` which allows one or more visual observations and
+vector observations to be used simultaneously.
 
 ### Steps to Migrate
 - Before upgrading, copy your `Behavior Name` sections from `trainer_config.yaml` into
@@ -36,6 +39,9 @@ double-check that the versions are in the same. The versions can be found in
 - If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
 in the `TerminalStep` and `TerminalSteps` objects.
  - Replace usage of `get_behavior_names()` and `get_behavior_specs()` in UnityEnvironment with `behavior_specs`.
+ - If you use the `UnityToGymWrapper`, remove `use_visual` and `allow_multiple_visual_obs`
+ from the constructor and use `allow_multiple_obs` if the environment contains both
+ visual and vector observations or multiple visual observations.
 
 ## Migrating from 0.15 to Release 1
 
