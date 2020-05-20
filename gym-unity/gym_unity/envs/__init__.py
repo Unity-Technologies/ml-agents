@@ -190,17 +190,19 @@ class UnityToGymWrapper(gym.Env):
             visual_obs_list = []
             for obs in visual_obs:
                 visual_obs_list.append(self._preprocess_single(obs[0]))
-            self.visual_obs = visual_obs_list
-            default_observation = self.visual_obs
+            default_observation = visual_obs_list
             if self._get_vec_obs_size() >= 1:
                 default_observation.append(self._get_vector_obs(info)[0, :])
         else:
             if self._get_n_vis_obs() >= 1:
                 visual_obs = self._get_vis_obs_list(info)
-                self.visual_obs = self._preprocess_single(visual_obs[0][0])
-                default_observation = self.visual_obs
+                default_observation = self._preprocess_single(visual_obs[0][0])
             else:
                 default_observation = self._get_vector_obs(info)[0, :]
+
+        if self._get_n_vis_obs() >= 1:
+            visual_obs = self._get_vis_obs_list(info)
+            self.visual_obs = self._preprocess_single(visual_obs[0][0])
 
         done = isinstance(info, TerminalSteps)
 
