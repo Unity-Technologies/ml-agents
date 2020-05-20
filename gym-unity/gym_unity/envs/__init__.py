@@ -74,31 +74,25 @@ class UnityToGymWrapper(gym.Env):
 
         if self._get_n_vis_obs() == 0 and self._get_vec_obs_size() == 0:
             raise UnityGymException(
-                "There are no observations provided by the environment. "
+                "There are no observations provided by the environment."
             )
 
         if not self._get_n_vis_obs() >= 1 and uint8_visual:
             logger.warning(
-                "`uint8_visual was set to true, but visual observations are not in use. "
+                "uint8_visual was set to true, but visual observations are not in use. "
                 "This setting will not have any effect."
             )
         else:
             self.uint8_visual = uint8_visual
-
-        if self._get_n_vis_obs() > 1 and not self._allow_multiple_obs:
-            logger.warning(
-                "The environment contains more than one visual observation. "
-                "You must define allow_multiple_obs=True to received them all. "
-                "Otherwise, please note that only the first will be provided in the observation."
-            )
         if (
             self._get_n_vis_obs() + self._get_vec_obs_size() >= 2
             and not self._allow_multiple_obs
         ):
             logger.warning(
-                "The environment contains visual and vector observations. "
+                "The environment contains multiple observations. "
                 "You must define allow_multiple_obs=True to receive them all. "
-                "Otherwise, please note that only the first visual observations will be provided in the observation. "
+                "Otherwise, only the first visual observation (or vector observation if"
+                "there are no visual observations) will be provided in the observation."
             )
 
         # Check for number of agents in scene.
