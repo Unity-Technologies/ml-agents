@@ -222,12 +222,15 @@ WormStatic:
 WalkerDynamic:
     normalize: true
     # learning_rate_schedule: constant
-    num_epoch: 3
+    num_epoch: 10
     time_horizon: 1000
     batch_size: 2048
     buffer_size: 20480
+    # batch_size: 24576 #2048
+    # buffer_size: 245760 #20480
     max_steps: 2e7
     beta: 9.0e-3
+    epsilon: 0.3
     # max_steps: 1e8
     summary_freq: 30000
     # learning_rate: 1.0e-3
