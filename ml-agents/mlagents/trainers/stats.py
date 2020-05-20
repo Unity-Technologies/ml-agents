@@ -7,13 +7,19 @@ import csv
 import os
 import time
 import json
+import attr
+import cattr
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
-
+from mlagents.trainers import __version__
+from mlagents.trainers.exception import TrainerError
 
 logger = get_logger(__name__)
+
+# Stats format version covers both training_status.json and output files.
+STATS_FORMAT_VERSION = "0.1.0"
 
 
 class StatsSummary(NamedTuple):
@@ -30,6 +36,7 @@ class StatsPropertyType(Enum):
     HYPERPARAMETERS = "hyperparameters"
     SELF_PLAY = "selfplay"
     LESSON_NUM = "lesson_num"
+    STATS_METADATA = "metadata"
 
 
 class StatsWriter(abc.ABC):
@@ -289,6 +296,35 @@ class CSVWriter(StatsWriter):
         return file_dir
 
 
+@attr.s(auto_attribs=True)
+class StatsMetaData:
+    stats_format_version: str = STATS_FORMAT_VERSION
+    mlagents_version: str = __version__
+    tensorflow_version: str = tf.__version__
+
+    def to_dict(self) -> Dict[str, str]:
+        return cattr.unstructure(self)
+
+    @staticmethod
+    def from_dict(import_dict: Dict[str, str]) -> "StatsMetaData":
+        return cattr.structure(import_dict, StatsMetaData)
+
+    def check_compatibility(self, other: "StatsMetaData") -> None:
+        """
+        Check compatibility with a loaded StatsMetaData and warn the user
+        if versions mismatch. This is used for resuming from old checkpoints.
+        """
+        # This should cover all stats version mismatches as well.
+        if self.mlagents_version != other.mlagents_version:
+            logger.warning(
+                "Checkpoint was loaded from a different version of ML-Agents. Some things may not resume properly."
+            )
+        if self.tensorflow_version != other.tensorflow_version:
+            logger.warning(
+                "Tensorflow checkpoint was saved with a different version of Tensorflow. Model may not resume properly."
+            )
+
+
 class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
@@ -315,9 +351,18 @@ class StatsReporter:
         """
         try:
             with open(path, "r") as f:
-                StatsReporter.saved_state = json.load(f)
+                loaded_dict = json.load(f)
+            # Compare the metadata
+            _metadata = loaded_dict[StatsPropertyType.STATS_METADATA.value]
+            StatsMetaData.from_dict(_metadata).check_compatibility(StatsMetaData())
+            # Update saved state.
+            StatsReporter.saved_state.update(loaded_dict)
         except FileNotFoundError:
             pass
+        except KeyError:
+            raise TrainerError(
+                "Metadata not found, resuming from an incompatible version of ML-Agents."
+            )
 
     @staticmethod
     def save_state(path: str) -> None:
@@ -325,6 +370,9 @@ class StatsReporter:
         Save a JSON file that contains saved state.
         :param path: Path to the JSON file containing the state.
         """
+        StatsReporter.saved_state[
+            StatsPropertyType.STATS_METADATA.value
+        ] = StatsMetaData().to_dict()
         with open(path, "w") as f:
             json.dump(StatsReporter.saved_state, f, indent=4)
 
