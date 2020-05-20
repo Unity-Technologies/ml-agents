@@ -25,7 +25,7 @@ behaviors:
                 gamma: 0.99
 
 parameter_randomization:
-    resampling-interval: 2000
+    resampling-interval: 5000
     mass:
         sampler-type: "uniform"
         min_value: 0.5
