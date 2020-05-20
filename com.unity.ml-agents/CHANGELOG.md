@@ -15,7 +15,7 @@ and this project adheres to
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
-vector observations to be used simultaneously. (#3981)
+vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
