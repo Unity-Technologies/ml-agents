@@ -1,7 +1,7 @@
 behaviors:
   WalkerDynamic:
     trainer: ppo
-    batch_size: 2048
+    batch_size: 16384 #2048
     beta: 0.005
     buffer_size: 163840 #20480
     epsilon: 0.2
