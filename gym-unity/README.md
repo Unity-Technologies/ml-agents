@@ -31,14 +31,10 @@ from the root of the project repository use:
 ```python
 from gym_unity.envs import UnityToGymWrapper
 
-env = UnityToGymWrapper(unity_environment, worker_id, use_visual, uint8_visual)
+env = UnityToGymWrapper(unity_environment, uint8_visual, allow_multiple_obs)
 ```
 
 - `unity_environment` refers to the Unity environment to be wrapped.
-
-- `use_visual` refers to whether to use visual observations (True) or vector
-  observations (False) as the default observation provided by the `reset` and
-  `step` functions. Defaults to `False`.
 
 - `uint8_visual` refers to whether to output visual observations as `uint8`
   values (0-255). Many common Gym environments (e.g. Atari) do this. By default
@@ -48,8 +44,9 @@ env = UnityToGymWrapper(unity_environment, worker_id, use_visual, uint8_visual)
   Discrete. Otherwise, it will be converted into a MultiDiscrete. Defaults to
   `False`.
 
-- `allow_multiple_visual_obs` will return a list of observation instead of only
-  one if disabled. Defaults to `False`.
+- `allow_multiple_obs` will return a list of observations. The first elements contain the visual observations and the
+  last element contains the array of vector observations. If False the environment returns a single array (containing
+  a single visual observations, if present, otherwise the vector observation)
 
 The returned environment `env` will function as a gym.
 
@@ -58,9 +55,9 @@ The returned environment `env` will function as a gym.
 - It is only possible to use an environment with a **single** Agent.
 - By default, the first visual observation is provided as the `observation`, if
   present. Otherwise, vector observations are provided. You can receive all
-  visual observations by using the `allow_multiple_visual_obs=True` option in
+  visual and vector observations by using the `allow_multiple_obs=True` option in
   the gym parameters. If set to `True`, you will receive a list of `observation`
-  instead of only the first one.
+  instead of only one.
 - The `TerminalSteps` or `DecisionSteps` output from the environment can still
   be accessed from the `info` provided by `env.step(action)`.
 - Stacked vector observations are not supported.
@@ -105,7 +102,7 @@ from gym_unity.envs import UnityToGymWrapper
 
 def main():
     unity_env = UnityEnvironment("./envs/GridWorld")
-    env = UnityToGymWrapper(unity_env, 0, use_visual=True, uint8_visual=True)
+    env = UnityToGymWrapper(unity_env, 0, uint8_visual=True)
     logger.configure('./logs') # Çhange to log in a different directory
     act = deepq.learn(
         env,
@@ -178,7 +175,7 @@ def make_unity_env(env_directory, num_env, visual, start_index=0):
     def make_env(rank, use_visual=True): # pylint: disable=C0111
         def _thunk():
             unity_env = UnityEnvironment(env_directory)
-            env = UnityToGymWrapper(unity_env, rank, use_visual=use_visual, uint8_visual=True)
+            env = UnityToGymWrapper(unity_env, rank, uint8_visual=True)
             env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
             return env
         return _thunk
@@ -241,7 +238,7 @@ method with the following code.
     game_version = 'v0' if sticky_actions else 'v4'
     full_game_name = '{}NoFrameskip-{}'.format(game_name, game_version)
     unity_env = UnityEnvironment('./envs/GridWorld')
-    env = UnityToGymWrapper(unity_env, use_visual=True, uint8_visual=True)
+    env = UnityToGymWrapper(unity_env, uint8_visual=True)
     return env
 ```
 
