@@ -24,6 +24,7 @@ namespace Unity.MLAgentsExamples
     public class ModelOverrider : MonoBehaviour
     {
         const string k_CommandLineModelOverrideFlag = "--mlagents-override-model";
+        const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineQuitAfterEpisodesFlag = "--mlagents-quit-after-episodes";
         const string k_CommandLineQuitOnLoadFailure = "--mlagents-quit-on-load-failure";
 
@@ -33,8 +34,11 @@ namespace Unity.MLAgentsExamples
         // Assets paths to use, with the behavior name as the key.
         Dictionary<string, string> m_BehaviorNameOverrides = new Dictionary<string, string>();
 
+        string m_BehaviorNameOverrideDirectory;
+
         // Cached loaded NNModels, with the behavior name as the key.
         Dictionary<string, NNModel> m_CachedModels = new Dictionary<string, NNModel>();
+
 
         // Max episodes to run. Only used if > 0
         // Will default to 1 if override models are specified, otherwise 0.
@@ -63,6 +67,16 @@ namespace Unity.MLAgentsExamples
             get { return m_PreviousNumSteps + m_NumSteps; }
         }
 
+        public bool HasOverrides
+        {
+            get { return m_BehaviorNameOverrides.Count > 0 || !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory);  }
+        }
+
+        public static string GetOverrideBehaviorName(string originalBehaviorName)
+        {
+            return $"Override_{originalBehaviorName}";
+        }
+
         /// <summary>
         /// Get the asset path to use from the commandline arguments.
         /// </summary>
@@ -86,6 +100,10 @@ namespace Unity.MLAgentsExamples
                     var key = args[i + 1].Trim();
                     var value = args[i + 2].Trim();
                     m_BehaviorNameOverrides[key] = value;
+                }
+                else if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length-1)
+                {
+                    m_BehaviorNameOverrideDirectory = args[i + 1].Trim();
                 }
                 else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length-1)
                 {
@@ -114,7 +132,7 @@ namespace Unity.MLAgentsExamples
             m_Agent = GetComponent<Agent>();
 
             GetAssetPathFromCommandLine();
-            if (m_BehaviorNameOverrides.Count > 0)
+            if (HasOverrides)
             {
                 OverrideModel();
             }
@@ -149,20 +167,28 @@ namespace Unity.MLAgentsExamples
             m_NumSteps++;
         }
 
-        NNModel GetModelForBehaviorName(string behaviorName)
+        public NNModel GetModelForBehaviorName(string behaviorName)
         {
             if (m_CachedModels.ContainsKey(behaviorName))
             {
                 return m_CachedModels[behaviorName];
             }
 
-            if (!m_BehaviorNameOverrides.ContainsKey(behaviorName))
+            string assetPath = null;
+            if (m_BehaviorNameOverrides.ContainsKey(behaviorName))
             {
-                Debug.Log($"No override for BehaviorName {behaviorName}");
-                return null;
+                assetPath = m_BehaviorNameOverrides[behaviorName];
+            }
+            else if(!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
+            {
+                assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.nn");
             }
 
-            var assetPath = m_BehaviorNameOverrides[behaviorName];
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                Debug.Log($"No override for BehaviorName {behaviorName}, and no directory set.");
+                return null;
+            }
 
             byte[] model = null;
             try
@@ -171,7 +197,7 @@ namespace Unity.MLAgentsExamples
             }
             catch(IOException)
             {
-                Debug.Log($"Couldn't load file {assetPath}", this);
+                Debug.Log($"Couldn't load file {assetPath} at full path {Path.GetFullPath(assetPath)}", this);
                 // Cache the null so we don't repeatedly try to load a missing file
                 m_CachedModels[behaviorName] = null;
                 return null;
@@ -204,11 +230,14 @@ namespace Unity.MLAgentsExamples
                     $"and that the model file exists"
                 );
                 Application.Quit(1);
+#if UNITY_EDITOR
+                EditorApplication.isPlaying = false;
+#endif
             }
             var modelName = nnModel != null ? nnModel.name : "<null>";
             Debug.Log($"Overriding behavior {behaviorName} for agent with model {modelName}");
             // This might give a null model; that's better because we'll fall back to the Heuristic
-            m_Agent.SetModel($"Override_{behaviorName}", nnModel);
+            m_Agent.SetModel(GetOverrideBehaviorName(behaviorName), nnModel);
 
         }
     }
