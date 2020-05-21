@@ -115,7 +115,7 @@ namespace Unity.MLAgentsExamples
                 }
             }
 
-            if (m_BehaviorNameOverrides.Count > 0)
+            if (HasOverrides)
             {
                 // If overriding models, set maxEpisodes to 1 or the command line value
                 m_MaxEpisodes = maxEpisodes > 0 ? maxEpisodes : 1;
