@@ -29,4 +29,4 @@ behaviors:
       play_against_latest_model_ratio: 0.0
       save_steps: 100000
       swap_steps: 2000
-      team_change: 1.0e8
+      team_change: 100000000
