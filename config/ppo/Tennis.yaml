@@ -25,7 +25,7 @@ behaviors:
         strength: 1.0
         gamma: 0.995
     self_play:
-      window: 100
+      window: 30
       play_against_latest_model_ratio: 0.0
       save_steps: 100000
       swap_steps: 2000
