@@ -30,14 +30,30 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
 ### Bug Fixes
-- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
+
+## [1.0.2-preview] - 2020-05-20
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Fix missing .meta file
+
+
+## [1.0.1-preview] - 2020-05-19
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- A bug that would cause the editor to go into a loop when a prefab was selected was fixed. (#3949)
+- BrainParameters.ToProto() no longer throws an exception if none of the fields have been set. (#3930)
+- The Barracuda dependency was upgraded to 0.7.1-preview. (#3977)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
+- The gym wrapper error for the wrong number of agents now fires more consistently, and more details
+  were added to the error message when the input dimension is wrong. (#3963)
+
+
 ## [1.0.0-preview] - 2020-04-30
-
 ### Major Changes
-
 #### com.unity.ml-agents (C#)
 
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
