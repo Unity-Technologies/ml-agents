@@ -8,43 +8,41 @@ namespace Unity.MLAgents.Sensors.Reflection
         Array m_Values;
 
         internal EnumReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
-            : base(reflectionSensorInfo, GetEnumObservationSize(reflectionSensorInfo))
+            : base(reflectionSensorInfo, GetEnumObservationSize(reflectionSensorInfo.GetMemberType()))
         {
-            var t = reflectionSensorInfo.FieldInfo != null ? reflectionSensorInfo.FieldInfo.FieldType : reflectionSensorInfo.PropertyInfo.PropertyType;
-            m_Values = Enum.GetValues(t);
+            m_Values = Enum.GetValues(reflectionSensorInfo.GetMemberType());
         }
 
         internal override void WriteReflectedField(ObservationWriter writer)
         {
+            // Write the enum value as a one-hot encoding.
+            // If it's not one of the enum values, put a 1 in the last "bit"
             var enumValue = GetReflectedValue();
+
+            var knownValue = false;
             int i = 0;
             foreach(var val in m_Values)
             {
-                //Debug.Log($"{val.GetType()}  {enumValue.GetType()}");
                 if (val.Equals(enumValue))
                 {
                     writer[i] = 1.0f;
+                    knownValue = true;
                 }
                 else
                 {
                     writer[i] = 0.0f;
                 }
-
                 i++;
             }
-        }
 
-        internal static int GetEnumObservationSize(ReflectionSensorInfo reflectionSensorInfo)
-        {
-            var t = reflectionSensorInfo.FieldInfo != null ? reflectionSensorInfo.FieldInfo.FieldType : reflectionSensorInfo.PropertyInfo.PropertyType;
-            return GetEnumObservationSize(t);
+            writer[i] = knownValue ? 0.0f : 1.0f;
         }
 
         internal static int GetEnumObservationSize(Type t)
         {
-            // TODO allow for unknown value
             var values = Enum.GetValues(t);
-            return values.Length;
+            // Account for all enum values, plus an extra for unknown values.
+            return values.Length + 1;
         }
     }
 }

@@ -144,6 +144,9 @@ namespace Unity.MLAgents.Tests
                 set => m_EnumProperty = value;
             }
 
+            [Observable("badEnumMember")]
+            public TestEnum m_BadEnumMember = (TestEnum)1337;
+
         }
 
         [Test]
@@ -204,8 +207,10 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensorsByName["quaternionProperty"], new[] { 5.4f, 5.5f, 5.5f, 5.7f });
 
             // Actual ordering is B, C, A
-            SensorTestHelper.CompareObservation(sensorsByName["enumMember"], new[] { 0.0f, 0.0f, 1.0f });
-            //SensorTestHelper.CompareObservation(sensorsByName["enumProperty"], new[] { 0.0f, 1.0f, 0.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["enumMember"], new[] { 0.0f, 0.0f, 1.0f, 0.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["enumProperty"], new[] { 0.0f, 1.0f, 0.0f, 0.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["badEnumMember"], new[] { 0.0f, 0.0f, 0.0f, 1.0f });
+
         }
 
         [Test]
@@ -213,7 +218,17 @@ namespace Unity.MLAgents.Tests
         {
             var testClass = new TestClass();
             var errors = new List<string>();
-            var expectedObsSize = 2 * (1 + 1 + 1 + 2 + 3 + 4 + 4 + 3);
+            var expectedObsSize = 2 * ( // two fields each of these
+                    1 // int
+                    + 1 // float
+                    + 1 // bool
+                    + 2 // vector2
+                    + 3 // vector3
+                    + 4 // vector4
+                    + 4 // quaternion
+                    + 4 // TestEnum - 3 values + 1 invalid
+                )
+                + 4; // TestEnum with bad value
             Assert.AreEqual(expectedObsSize, ObservableAttribute.GetTotalObservationSize(testClass, false, errors));
             Assert.AreEqual(0, errors.Count);
         }
