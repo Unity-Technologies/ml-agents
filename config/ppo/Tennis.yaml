@@ -15,7 +15,7 @@ behaviors:
     num_epoch: 3
     num_layers: 2
     threaded: false
-    time_horizon: 1000
+    time_horizon: 50
     sequence_length: 64
     summary_freq: 10000
     use_recurrent: false
