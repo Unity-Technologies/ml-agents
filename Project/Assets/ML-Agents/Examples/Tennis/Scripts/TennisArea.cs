@@ -36,6 +36,6 @@ public class TennisArea : MonoBehaviour
     {
         m_BallRb.AddForce(m_Down);
         var rgV = m_BallRb.velocity;
-        m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -40f, 40f), Mathf.Min(rgV.y, 35f), rgV.z);
+        m_BallRb.velocity = new Vector3(Mathf.Clamp(rgV.x, -50f, 50f), Mathf.Min(rgV.y, 35f), rgV.z);
     }
 }
