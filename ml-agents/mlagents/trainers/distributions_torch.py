@@ -7,8 +7,8 @@ EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
 class GaussianDistribution(nn.Module):
-    def __init__(self, hidden_size, num_outputs, conditional_sigma=False, **kwargs):
-        super(GaussianDistribution, self).__init__(**kwargs)
+    def __init__(self, hidden_size, num_outputs, conditional_sigma=False):
+        super(GaussianDistribution, self).__init__()
         self.conditional_sigma = conditional_sigma
         self.mu = nn.Linear(hidden_size, num_outputs)
         nn.init.xavier_uniform_(self.mu.weight, gain=0.01)
@@ -20,12 +20,13 @@ class GaussianDistribution(nn.Module):
                 torch.zeros(1, num_outputs, requires_grad=True)
             )
 
+    @torch.jit.ignore
     def forward(self, inputs, masks):
         mu = self.mu(inputs)
-        if self.conditional_sigma:
-            log_sigma = self.log_sigma(inputs)
-        else:
-            log_sigma = self.log_sigma
+        # if self.conditional_sigma:
+        #     log_sigma = self.log_sigma(inputs)
+        # else:
+        log_sigma = self.log_sigma
         return [distributions.normal.Normal(loc=mu, scale=torch.exp(log_sigma))]
 
 

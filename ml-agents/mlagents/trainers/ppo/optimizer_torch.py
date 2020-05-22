@@ -90,7 +90,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             old_values[name] = torch.as_tensor(batch["{}_value_estimates".format(name)])
             returns[name] = torch.as_tensor(batch["{}_returns".format(name)])
 
-        vec_obs = [torch.as_tensor(batch["vector_obs"])]
+        vec_obs = torch.as_tensor([batch["vector_obs"]])
         act_masks = torch.as_tensor(batch["action_mask"])
         if self.policy.use_continuous_act:
             actions = torch.as_tensor(batch["actions"]).unsqueeze(-1)
@@ -101,8 +101,9 @@ class TorchPPOOptimizer(TorchOptimizer):
             torch.as_tensor(batch["memory"][i])
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
-        if len(memories) > 0:
-            memories = torch.stack(memories).unsqueeze(0)
+        memories = torch.as_tensor([1])
+        # if len(memories) > 0:
+        #     memories = torch.stack(memories).unsqueeze(0)
 
         if self.policy.use_vis_obs:
             vis_obs = []
@@ -112,7 +113,7 @@ class TorchPPOOptimizer(TorchOptimizer):
                 vis_ob = torch.as_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
         else:
-            vis_obs = []
+            vis_obs = torch.as_tensor([])
         log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,

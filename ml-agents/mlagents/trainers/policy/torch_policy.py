@@ -16,6 +16,7 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models_torch import EncoderType, ActorCritic
 
+torch.set_num_interop_threads(6)
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
@@ -94,22 +95,25 @@ class TorchPolicy(Policy):
             "Losses/Policy Loss": "policy_loss",
         }
 
-        self.actor_critic = ActorCritic(
-            h_size=int(trainer_params["hidden_units"]),
-            act_type=self.act_type,
-            vector_sizes=[brain.vector_observation_space_size],
-            act_size=brain.vector_action_space_size,
-            normalize=trainer_params["normalize"],
-            num_layers=int(trainer_params["num_layers"]),
-            m_size=trainer_params["memory_size"],
-            use_lstm=self.use_recurrent,
-            visual_sizes=brain.camera_resolutions,
-            vis_encode_type=EncoderType(
-                trainer_params.get("vis_encode_type", "simple")
-            ),
-            stream_names=list(reward_signal_configs.keys()),
-            separate_critic=self.use_continuous_act,
+        self.actor_critic = torch.jit.script(
+            ActorCritic(
+                h_size=int(trainer_params["hidden_units"]),
+                act_type=self.act_type,
+                vector_sizes=[brain.vector_observation_space_size],
+                act_size=brain.vector_action_space_size,
+                normalize=trainer_params["normalize"],
+                num_layers=int(trainer_params["num_layers"]),
+                m_size=trainer_params["memory_size"],
+                use_lstm=self.use_recurrent,
+                visual_sizes=brain.camera_resolutions,
+                vis_encode_type=EncoderType(
+                    trainer_params.get("vis_encode_type", "simple")
+                ),
+                stream_names=list(reward_signal_configs.keys()),
+                separate_critic=self.use_continuous_act,
+            )
         )
+        print(self.actor_critic)
 
     def split_decision_step(self, decision_requests):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
@@ -150,7 +154,7 @@ class TorchPolicy(Policy):
         self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
     ):
         dists, (value_heads, mean_value), _ = self.actor_critic(
-            vec_obs, vis_obs, masks, memories, seq_len
+            vec_obs, vis_obs, masks, memories, torch.as_tensor(seq_len)
         )
 
         log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
