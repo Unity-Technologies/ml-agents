@@ -20,7 +20,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
-  observations via reflection.
+  observations via reflection. (#3925, #4006)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
