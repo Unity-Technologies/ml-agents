@@ -122,7 +122,7 @@ class MetaCurriculum:
         """
 
         for brain_name, curriculum in self.brains_to_curricula.items():
-            # Create a fake StatsReporter wiht the right brain name
+            # Create a temporary StatsReporter with the right brain name
             _statsreporter = StatsReporter(brain_name)
             lesson_num = _statsreporter.restore_parameter_state(
                 StatsPropertyType.LESSON_NUM
