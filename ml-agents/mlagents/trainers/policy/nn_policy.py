@@ -6,6 +6,7 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
@@ -19,7 +20,7 @@ class NNPolicy(TFPolicy):
         self,
         seed: int,
         brain: BrainParameters,
-        trainer_params: Dict[str, Any],
+        trainer_params: TrainerSettings,
         is_training: bool,
         load: bool,
         tanh_squash: bool = False,
@@ -42,14 +43,12 @@ class NNPolicy(TFPolicy):
         super().__init__(seed, brain, trainer_params, load)
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
-        num_layers = trainer_params["num_layers"]
-        self.h_size = trainer_params["hidden_units"]
+        num_layers = self.network_settings.num_layers
+        self.h_size = self.network_settings.hidden_units
         if num_layers < 1:
             num_layers = 1
         self.num_layers = num_layers
-        self.vis_encode_type = EncoderType(
-            trainer_params.get("vis_encode_type", "simple")
-        )
+        self.vis_encode_type = self.network_settings.vis_encode_type
         self.tanh_squash = tanh_squash
         self.reparameterize = reparameterize
         self.condition_sigma_on_obs = condition_sigma_on_obs

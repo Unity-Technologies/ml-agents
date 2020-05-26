@@ -1,6 +1,8 @@
 import argparse
 from typing import Optional, List
-from mlagents.trainers.learn import RunOptions, run_cli, load_config
+from mlagents.trainers.learn import run_cli
+from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.cli_utils import load_config
 
 
 def parse_command_line(argv: Optional[List[str]] = None) -> argparse.Namespace:
@@ -19,7 +21,7 @@ def main():
     """
     args = parse_command_line()
     expt_config = load_config(args.experiment_config_path)
-    run_cli(RunOptions(**expt_config))
+    run_cli(RunOptions.from_dict(expt_config))
 
 
 if __name__ == "__main__":

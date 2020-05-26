@@ -12,6 +12,8 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.brain import BrainParameters
 
 
 logger = get_logger(__name__)
@@ -31,22 +33,29 @@ class TFPolicy(Policy):
     functions to save/load models and create the input placeholders.
     """
 
-    def __init__(self, seed, brain, trainer_parameters, load=False):
+    def __init__(
+        self,
+        seed: int,
+        brain: BrainParameters,
+        trainer_settings: TrainerSettings,
+        load: bool = False,
+    ):
         """
         Initialized the policy.
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
-        :param trainer_parameters: The trainer parameters.
+        :param trainer_settings: The trainer parameters.
         """
         self._version_number_ = 2
         self.m_size = 0
-
+        self.trainer_settings = trainer_settings
+        self.network_settings: NetworkSettings = trainer_settings.network_settings
         # for ghost trainer save/load snapshots
-        self.assign_phs = []
-        self.assign_ops = []
+        self.assign_phs: List[tf.Tensor] = []
+        self.assign_ops: List[tf.Operation] = []
 
-        self.inference_dict = {}
-        self.update_dict = {}
+        self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.update_dict: Dict[str, tf.Tensor] = {}
         self.sequence_length = 1
         self.seed = seed
         self.brain = brain
@@ -55,26 +64,26 @@ class TFPolicy(Policy):
         self.vec_obs_size = brain.vector_observation_space_size
         self.vis_obs_size = brain.number_visual_observations
 
-        self.use_recurrent = trainer_parameters["use_recurrent"]
+        self.use_recurrent = self.network_settings.memory is not None
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
-        self.normalize = trainer_parameters.get("normalize", False)
+        self.normalize = self.network_settings.normalize
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = trainer_parameters["output_path"]
-        self.initialize_path = trainer_parameters.get("init_path", None)
-        self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
+        self.model_path = self.trainer_settings.output_path
+        self.initialize_path = self.trainer_settings.init_path
+        self.keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.graph = tf.Graph()
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
-        self.saver = None
+        self.saver: Optional[tf.Operation] = None
         self.seed = seed
-        if self.use_recurrent:
-            self.m_size = trainer_parameters["memory_size"]
-            self.sequence_length = trainer_parameters["sequence_length"]
+        if self.network_settings.memory is not None:
+            self.m_size = self.network_settings.memory.memory_size
+            self.sequence_length = self.network_settings.memory.sequence_length
             if self.m_size == 0:
                 raise UnityPolicyException(
                     "The memory size for brain {0} is 0 even "

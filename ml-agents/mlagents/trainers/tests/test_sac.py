@@ -1,6 +1,6 @@
 import pytest
 from unittest import mock
-import yaml
+import copy
 
 from mlagents.tf_utils import tf
 
@@ -12,39 +12,16 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.tests.test_simple_rl import SAC_CONFIG
+from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
+    curiosity_dummy_config,
+)
 
 
 @pytest.fixture
 def dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: sac
-        batch_size: 8
-        buffer_size: 10240
-        buffer_init_steps: 0
-        hidden_units: 32
-        init_entcoef: 0.1
-        learning_rate: 3.0e-4
-        max_steps: 1024
-        memory_size: 10
-        normalize: true
-        steps_per_update: 1
-        num_layers: 1
-        time_horizon: 64
-        sequence_length: 16
-        summary_freq: 1000
-        tau: 0.005
-        use_recurrent: false
-        curiosity_enc_size: 128
-        demo_path: None
-        vis_encode_type: simple
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
-        """
-    )
+    return copy.deepcopy(SAC_CONFIG)
 
 
 VECTOR_ACTION_SPACE = [2]
@@ -62,16 +39,16 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-
-    trainer_parameters = dummy_config
-    model_path = "testmodel"
-    trainer_parameters["output_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    trainer_parameters["use_recurrent"] = use_rnn
-    policy = NNPolicy(
-        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+    trainer_settings = dummy_config
+    trainer_settings.network_settings.memory = (
+        NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
+        if use_rnn
+        else None
     )
-    optimizer = SACOptimizer(policy, trainer_parameters)
+    policy = NNPolicy(
+        0, mock_brain, trainer_settings, False, False, create_tf_graph=False
+    )
+    optimizer = SACOptimizer(policy, trainer_settings)
     return optimizer
 
 
@@ -95,14 +72,13 @@ def test_sac_optimizer_update(dummy_config, rnn, visual, discrete):
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
-def test_sac_update_reward_signals(dummy_config, discrete):
+def test_sac_update_reward_signals(
+    dummy_config, curiosity_dummy_config, discrete  # noqa: F811
+):
     # Test evaluate
     tf.reset_default_graph()
     # Add a Curiosity module
-    dummy_config["reward_signals"]["curiosity"] = {}
-    dummy_config["reward_signals"]["curiosity"]["strength"] = 1.0
-    dummy_config["reward_signals"]["curiosity"]["gamma"] = 0.99
-    dummy_config["reward_signals"]["curiosity"]["encoding_size"] = 128
+    dummy_config.reward_signals = curiosity_dummy_config
     optimizer = create_sac_optimizer_mock(
         dummy_config, use_rnn=False, use_discrete=discrete, use_visual=False
     )
@@ -127,8 +103,7 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
     trainer_params = dummy_config
-    trainer_params["output_path"] = str(tmpdir)
-    trainer_params["save_replay_buffer"] = True
+    trainer_params.hyperparameters.save_replay_buffer = True
     trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
     policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
@@ -154,7 +129,6 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     mock_optimizer.reward_signals = {}
     sac_optimizer.return_value = mock_optimizer
 
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
@@ -176,8 +150,8 @@ def test_advance(dummy_config):
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
-    dummy_config["steps_per_update"] = 20
+    dummy_config.hyperparameters.steps_per_update = 20
+    dummy_config.hyperparameters.buffer_init_steps = 0
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
@@ -245,19 +219,6 @@ def test_advance(dummy_config):
     trainer.advance()
     with pytest.raises(AgentManagerQueue.Empty):
         policy_queue.get_nowait()
-
-
-def test_bad_config(dummy_config):
-    brain_params = make_brain_parameters(
-        discrete_action=False, visual_inputs=0, vec_obs_size=6
-    )
-    # Test that we throw an error if we have sequence length greater than batch size
-    dummy_config["sequence_length"] = 64
-    dummy_config["batch_size"] = 32
-    dummy_config["use_recurrent"] = True
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
-    with pytest.raises(UnityTrainerException):
-        _ = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
 
 
 if __name__ == "__main__":

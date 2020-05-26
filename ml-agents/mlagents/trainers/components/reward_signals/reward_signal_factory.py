@@ -1,4 +1,4 @@
-from typing import Any, Dict, Type
+from typing import Dict, Type
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignal
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
@@ -9,17 +9,18 @@ from mlagents.trainers.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
 
 
-NAME_TO_CLASS: Dict[str, Type[RewardSignal]] = {
-    "extrinsic": ExtrinsicRewardSignal,
-    "curiosity": CuriosityRewardSignal,
-    "gail": GAILRewardSignal,
+NAME_TO_CLASS: Dict[RewardSignalType, Type[RewardSignal]] = {
+    RewardSignalType.EXTRINSIC: ExtrinsicRewardSignal,
+    RewardSignalType.CURIOSITY: CuriosityRewardSignal,
+    RewardSignalType.GAIL: GAILRewardSignal,
 }
 
 
 def create_reward_signal(
-    policy: TFPolicy, name: str, config_entry: Dict[str, Any]
+    policy: TFPolicy, name: RewardSignalType, settings: RewardSignalSettings
 ) -> RewardSignal:
     """
     Creates a reward signal class based on the name and config entry provided as a dict.
@@ -31,11 +32,6 @@ def create_reward_signal(
     rcls = NAME_TO_CLASS.get(name)
     if not rcls:
         raise UnityTrainerException("Unknown reward signal type {0}".format(name))
-    rcls.check_config(config_entry)
-    try:
-        class_inst = rcls(policy, **config_entry)
-    except TypeError:
-        raise UnityTrainerException(
-            "Unknown parameters given for reward signal {0}".format(name)
-        )
+
+    class_inst = rcls(policy, settings)
     return class_inst

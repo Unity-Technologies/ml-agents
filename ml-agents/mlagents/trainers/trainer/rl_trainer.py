@@ -7,7 +7,6 @@ import time
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
 from mlagents.trainers.agent_processor import AgentManagerQueue
@@ -24,13 +23,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
     def __init__(self, *args, **kwargs):
         super(RLTrainer, self).__init__(*args, **kwargs)
-        # Make sure we have at least one reward_signal
-        if not self.trainer_parameters["reward_signals"]:
-            raise UnityTrainerException(
-                "No reward signals were defined. At least one must be used with {}.".format(
-                    self.__class__.__name__
-                )
-            )
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
@@ -40,7 +32,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
         self._stats_reporter.add_property(
-            StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
+            StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
 
     def end_episode(self) -> None:

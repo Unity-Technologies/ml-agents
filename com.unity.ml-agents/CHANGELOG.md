@@ -25,6 +25,8 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
   configuration files are now environment-specific. (#3791)
+- The format for trainer configuration has changed, and the "default" behavior has been deprecated.
+  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Migrating.md) for more details. (#3936)
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
 - Unity Player logs are now written out to the results directory. (#3877)

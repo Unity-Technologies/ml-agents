@@ -1,24 +1,10 @@
-import yaml
 from unittest import mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 from mlagents.trainers.agent_processor import AgentManagerQueue
-
-
-def dummy_config():
-    return yaml.safe_load(
-        """
-        output_path: "test/"
-        summary_freq: 1000
-        max_steps: 100
-        reward_signals:
-          extrinsic:
-            strength: 1.0
-            gamma: 0.99
-        """
-    )
+from mlagents.trainers.settings import TrainerSettings
 
 
 def create_mock_brain():
@@ -57,7 +43,7 @@ class FakeTrainer(RLTrainer):
 
 def create_rl_trainer():
     mock_brainparams = create_mock_brain()
-    trainer = FakeTrainer(mock_brainparams, dummy_config(), True, 0)
+    trainer = FakeTrainer(mock_brainparams, TrainerSettings(max_steps=100), True, 0)
     trainer.set_is_policy_updating(True)
     return trainer
 

@@ -179,6 +179,11 @@ use during training, and the answers to the above questions will dictate its con
 The rest of this guide breaks down the different sub-sections of the trainer config file
 and explains the possible settings for each.
 
+**NOTE:** The configuration file format has been changed from 0.17.0 and onwards. To convert
+an old set of configuration files (trainer config, curriculum, and sampler files) to the new
+format, a script has been provided. Run `python config/upgrade_config.py -h` in your  console
+to see the script's usage.
+
 ### Behavior Configurations
 
 The primary section of the trainer config file is a
@@ -194,33 +199,40 @@ configuration, but their settings live in different sections that we'll cover su
 ```yaml
 behaviors:
   BehaviorPPO:
-    trainer: ppo
+    trainer_type: ppo
 
-    # Trainer configs common to PPO/SAC (excluding reward signals)
-    batch_size: 1024
-    buffer_size: 10240
-    hidden_units: 128
-    learning_rate: 3.0e-4
-    learning_rate_schedule: linear
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      batch_size: 1024
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      learning_rate_schedule: linear
+
+      # PPO-specific hyperparameters
+      # Replaces the "PPO-specific hyperparameters" section above
+      beta: 5.0e-3
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      vis_encoder_type: simple
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+      # memory
+      memory:
+        sequence_length: 64
+        memory_size: 256
+
+    # Trainer configurations common to all trainers
     max_steps: 5.0e5
-    normalize: false
-    num_layers: 2
     time_horizon: 64
     summary_freq: 10000
-    vis_encoder_type: simple
-    init_path: null
-
-    # PPO-specific configs
-    beta: 5.0e-3
-    epsilon: 0.2
-    lambd: 0.95
-    num_epoch: 3
+    keep_checkpoints: 5
     threaded: true
-
-    # memory
-    use_recurrent: true
-    sequence_length: 64
-    memory_size: 256
+    init_path: null
 
     # behavior cloning
     behavioral_cloning:
@@ -232,7 +244,7 @@ behaviors:
       samples_per_update: 0
 
     reward_signals:
-      # environment reward
+      # environment reward (default)
       extrinsic:
         strength: 1.0
         gamma: 0.99
@@ -270,29 +282,37 @@ curiosity and self-play) remain unchanged.
 ```yaml
 behaviors:
   BehaviorSAC:
-    trainer: sac
+    trainer_type: sac
 
     # Trainer configs common to PPO/SAC (excluding reward signals)
     # same as PPO config
 
-    # SAC-specific configs (replaces the "PPO-specific configs" section above)
-    buffer_init_steps: 0
-    tau: 0.005
-    steps_per_update: 1
-    train_interval: 1
-    init_entcoef: 1.0
-    save_replay_buffer: false
+    # SAC-specific configs (replaces the hyperparameters section above)
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      # Same as PPO config
 
-    # memory
-    # same as PPO config
+      # SAC-specific hyperparameters
+      # Replaces the "PPO-specific hyperparameters" section above
+      buffer_init_steps: 0
+      tau: 0.005
+      steps_per_update: 10.0
+      save_replay_buffer: false
+      init_entcoef: 0.5
+      reward_signal_steps_per_update: 10.0
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      # Same as PPO config
+
+    # Trainer configurations common to all trainers
+      # <Same as PPO config>
 
     # pre-training using behavior cloning
     behavioral_cloning:
       # same as PPO config
 
     reward_signals:
-      reward_signal_num_update: 1 # only applies to SAC
-
       # environment reward
       extrinsic:
         # same as PPO config
@@ -313,27 +333,29 @@ behaviors:
 We now break apart the components of the configuration file and describe what
 each of these parameters mean and provide guidelines on how to set them. See
 [Training Configuration File](Training-Configuration-File.md) for a detailed
-description of all the configurations listed above.
+description of all the configurations listed above, along with their defaults.
+Unless otherwise specified, omitting a configuration will revert it to its default.
 
 ### Curriculum Learning
 
-To enable curriculum learning, you need to add a sub-section to the corresponding
-`behaivors` entry in the trainer config YAML file that defines the curriculum for that
-behavior. Here is one example:
+To enable curriculum learning, you need to add a `curriculum ` sub-section to the trainer
+configuration YAML file. Within this sub-section, add an entry for each behavior that defines
+the curriculum for thatbehavior. Here is one example:
 
 ```yml
 behaviors:
   BehaviorY:
     # < Same as above >
 
-    # Add this section
-    curriculum:
-      measure: progress
-      thresholds: [0.1, 0.3, 0.5]
-      min_lesson_length: 100
-      signal_smoothing: true
-      parameters:
-        wall_height: [1.5, 2.0, 2.5, 4.0]
+# Add this section
+curriculum:
+  BehaviorY:
+    measure: progress
+    thresholds: [0.1, 0.3, 0.5]
+    min_lesson_length: 100
+    signal_smoothing: true
+    parameters:
+      wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
 Each group of Agents under the same `Behavior Name` in an environment can have a
@@ -356,8 +378,11 @@ example config for the curricula for the Wall Jump environment.
 behaviors:
   BigWallJump:
     # < Trainer parameters for BigWallJump >
-    # Curriculum configuration
-    curriculum:
+  SmallWallJump:
+    # < Trainer parameters for SmallWallJump >
+
+curriculum:
+  BigWallJump:
       measure: progress
       thresholds: [0.1, 0.3, 0.5]
       min_lesson_length: 100
@@ -365,17 +390,13 @@ behaviors:
       parameters:
         big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
         big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
-
   SmallWallJump:
-    # < Trainer parameters for BigWallJump >
-    # Curriculum configuration
-    curriculum:
-      measure: progress
-      thresholds: [0.1, 0.3, 0.5]
-      min_lesson_length: 100
-      signal_smoothing: true
-      parameters:
-        small_wall_height: [1.5, 2.0, 2.5, 4.0]
+    measure: progress
+    thresholds: [0.1, 0.3, 0.5]
+    min_lesson_length: 100
+    signal_smoothing: true
+    parameters:
+      small_wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
 The curriculum for each Behavior has the following parameters:
@@ -391,7 +412,7 @@ The curriculum for each Behavior has the following parameters:
 #### Training with a Curriculum
 
 Once we have specified our metacurriculum and curricula, we can launch
-`mlagents-learn` using the config file for
+`mlagents-learn` to point to the config file containing
 our curricula and PPO will train using Curriculum Learning. For example, to
 train agents in the Wall Jump environment with curriculum learning, we can run:
 
