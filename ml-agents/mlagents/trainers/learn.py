@@ -135,7 +135,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.behaviors,
             checkpoint_settings.run_id,
             write_path,
-            checkpoint_settings.keep_checkpoints,
             not checkpoint_settings.inference,
             checkpoint_settings.resume,
             run_seed,

@@ -8,7 +8,7 @@
     - [Stopping and Resuming Training](#stopping-and-resuming-training)
     - [Loading an Existing Model](#loading-an-existing-model)
 - [Training Configurations](#training-configurations)
-  - [Trainer Config File](#trainer-config-file)
+  - [Behavior Configurations](#behavior-configurations)
   - [Curriculum Learning](#curriculum-learning)
     - [Specifying Curricula](#specifying-curricula)
     - [Training with a Curriculum](#training-with-a-curriculum)
@@ -229,7 +229,10 @@ behaviors:
     # Trainer configurations common to all trainers
     max_steps: 5.0e5
     time_horizon: 64
+    summary_freq: 10000
+    keep_checkpoints: 5
     threaded: true
+    init_path: null
 
     # behavior cloning
     behavioral_cloning:
@@ -239,7 +242,6 @@ behaviors:
       batch_size: 512
       num_epoch: 3
       samples_per_update: 0
-      init_path:
 
     reward_signals:
       # environment reward (default)
@@ -252,7 +254,7 @@ behaviors:
         strength: 0.02
         gamma: 0.99
         encoding_size: 256
-        learning_rate: 3e-4
+        learning_rate: 3.0e-4
 
       # GAIL
       gail:
@@ -260,7 +262,7 @@ behaviors:
         gamma: 0.99
         encoding_size: 128
         demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-        learning_rate: 3e-4
+        learning_rate: 3.0e-4
         use_actions: false
         use_vail: false
 

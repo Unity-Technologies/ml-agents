@@ -12,7 +12,6 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
 
@@ -59,14 +58,6 @@ class Trainer(abc.ABC):
         Returns the stats reporter associated with this Trainer.
         """
         return self._stats_reporter
-
-    def _check_param_keys(self):
-        for k in self.param_keys:
-            if k not in self.trainer_settings:
-                raise UnityTrainerException(
-                    "The hyper-parameter {0} could not be found for the {1} trainer of "
-                    "brain {2}.".format(k, self.__class__, self.brain_name)
-                )
 
     @property
     def parameters(self) -> TrainerSettings:

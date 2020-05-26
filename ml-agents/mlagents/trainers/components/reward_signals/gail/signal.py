@@ -15,15 +15,7 @@ class GAILRewardSignal(RewardSignal):
         """
         The GAIL Reward signal generator. https://arxiv.org/abs/1606.03476
         :param policy: The policy of the learning model
-        :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        reward multiplied by the strength parameter
-        :param gamma: The time discounting factor used for this reward.
-        :param demo_path: The path to the demonstration file
-        :param num_epoch: The number of epochs to train over the training buffer for the discriminator.
-        :param encoding_size: The size of the the hidden layers of the discriminator
-        :param learning_rate: The Learning Rate used during GAIL updates.
-        :param use_actions: Whether or not to use the actions for the discriminator.
-        :param use_vail: Whether or not to use a variational bottleneck for the discriminator.
+        :param settings: The settings for this GAILRewardSignal.
         See https://arxiv.org/abs/1810.00821.
         """
         super().__init__(policy, settings)

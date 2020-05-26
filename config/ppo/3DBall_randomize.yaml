@@ -27,7 +27,7 @@ behaviors:
     threaded: true
 
 parameter_randomization:
-  resampling-interval: 500
+  resampling-interval: 5000
   mass:
     sampler-type: uniform
     min_value: 0.5

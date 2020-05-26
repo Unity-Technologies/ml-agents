@@ -53,7 +53,7 @@ class GhostTrainer(Trainer):
         :param brain_name: The name of the brain associated with trainer config
         :param controller: GhostController that coordinates all ghost trainers and calculates ELO
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_settings: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
         :param run_id: The identifier of the current run
         """

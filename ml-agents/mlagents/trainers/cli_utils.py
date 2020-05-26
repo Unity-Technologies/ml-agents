@@ -60,15 +60,6 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
     )
     argparser.add_argument(
-        "--keep-checkpoints",
-        default=5,
-        type=int,
-        help="The maximum number of model checkpoints to keep. Checkpoints are saved after the"
-        "number of steps specified by the save-freq option. Once the maximum number of checkpoints"
-        "has been reached, the oldest checkpoint is deleted when saving a new checkpoint.",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
         "--load",
         default=False,
         dest="load_model",

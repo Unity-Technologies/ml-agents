@@ -24,7 +24,6 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     external_brains = {"testbrain": BrainParametersMock()}
     run_id = "testrun"
     output_path = "results_dir"
-    keep_checkpoints = 1
     train_model = True
     load_model = False
     seed = 11
@@ -49,7 +48,6 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
             trainer_config=base_config,
             run_id=run_id,
             output_path=output_path,
-            keep_checkpoints=keep_checkpoints,
             train_model=train_model,
             load_model=load_model,
             seed=seed,
@@ -81,7 +79,6 @@ def test_handles_no_config_provided(BrainParametersMock):
         trainer_config=no_default_config,
         run_id="testrun",
         output_path="output_path",
-        keep_checkpoints=1,
         train_model=True,
         load_model=False,
         seed=42,
