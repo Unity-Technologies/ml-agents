@@ -157,6 +157,11 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: WalkerStatic
       objectReference: {fileID: 0}
+    - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 236
+      objectReference: {fileID: 0}
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_LocalPosition.x
