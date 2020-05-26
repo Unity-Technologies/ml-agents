@@ -419,6 +419,7 @@ behaviors:
     num_epoch: 3
     num_layers: 2
     time_horizon: 64
+    sequence_length: 64
     summary_freq: 10000
     use_recurrent: false
     reward_signals:
