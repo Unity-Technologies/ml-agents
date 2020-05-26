@@ -28,6 +28,8 @@ double-check that the versions are in the same. The versions can be found in
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously.
+- `--lesson` has been removed from the CLI. Lessons will resume when using `--resume`.
+  To start at a different lesson, modify your Curriculum configuration.
 
 ### Steps to Migrate
 - To upgrade your configuration files, an upgrade script has been provided. Run `python config/update_config.py
