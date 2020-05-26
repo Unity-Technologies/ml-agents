@@ -17,6 +17,14 @@ namespace Unity.MLAgents.Tests
             ValueC = 42,
         }
 
+        [Flags]
+        public enum TestFlags
+        {
+            FlagA = 1,
+            FlagB = 2,
+            FlagC = 4
+        }
+
         class TestClass
         {
             // Non-observables
@@ -147,6 +155,21 @@ namespace Unity.MLAgents.Tests
             [Observable("badEnumMember")]
             public TestEnum m_BadEnumMember = (TestEnum)1337;
 
+            //
+            // Flags
+            //
+            [Observable("flagMember")]
+            public TestFlags m_FlagMember = TestFlags.FlagA;
+
+            TestFlags m_FlagProperty = TestFlags.FlagB | TestFlags.FlagC;
+
+            [Observable("flagProperty")]
+            public TestFlags FlagProperty
+            {
+                get => m_FlagProperty;
+                set => m_FlagProperty = value;
+            }
+
         }
 
         [Test]
@@ -207,10 +230,12 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensorsByName["quaternionProperty"], new[] { 5.4f, 5.5f, 5.5f, 5.7f });
 
             // Actual ordering is B, C, A
-            SensorTestHelper.CompareObservation(sensorsByName["enumMember"], new[] { 0.0f, 0.0f, 1.0f, 0.0f });
-            SensorTestHelper.CompareObservation(sensorsByName["enumProperty"], new[] { 0.0f, 1.0f, 0.0f, 0.0f });
-            SensorTestHelper.CompareObservation(sensorsByName["badEnumMember"], new[] { 0.0f, 0.0f, 0.0f, 1.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["enumMember"], new[] { 0.0f, 0.0f, 1.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["enumProperty"], new[] { 0.0f, 1.0f, 0.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["badEnumMember"], new[] { 0.0f, 0.0f, 0.0f });
 
+            SensorTestHelper.CompareObservation(sensorsByName["flagMember"], new[] { 1.0f, 0.0f, 0.0f });
+            SensorTestHelper.CompareObservation(sensorsByName["flagProperty"], new[] { 0.0f, 1.0f, 1.0f });
         }
 
         [Test]
@@ -226,9 +251,10 @@ namespace Unity.MLAgents.Tests
                     + 3 // vector3
                     + 4 // vector4
                     + 4 // quaternion
-                    + 4 // TestEnum - 3 values + 1 invalid
+                    + 3 // TestEnum - 3 values
+                    + 3 // TestFlags - 3 values
                 )
-                + 4; // TestEnum with bad value
+                + 3; // TestEnum with bad value
             Assert.AreEqual(expectedObsSize, ObservableAttribute.GetTotalObservationSize(testClass, false, errors));
             Assert.AreEqual(0, errors.Count);
         }
