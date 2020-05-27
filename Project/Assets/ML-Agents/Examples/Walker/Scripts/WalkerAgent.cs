@@ -194,8 +194,19 @@ public class WalkerAgent : Agent
         directionIndicator.rotation = m_WalkDirLookRot;
     }
     
+    public int fuTimer = 0;
+    public float fudeltatime = 0;
+    public float deltatime = 0;
+
+    void Update()
+    {
+        deltatime = Time.deltaTime;
+    }
+
     void FixedUpdate()
     {
+        fuTimer++;
+        fudeltatime = Time.fixedDeltaTime;
         if (detectTargets)
         {
             foreach (var bodyPart in m_JdController.bodyPartsDict.Values)

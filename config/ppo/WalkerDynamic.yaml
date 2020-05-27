@@ -3,7 +3,7 @@ behaviors:
     trainer: ppo
     batch_size: 2048
     beta: 0.005
-    buffer_size: 163840 #20480
+    buffer_size: 40960
     epsilon: 0.2
     hidden_units: 512
     lambd: 0.95
