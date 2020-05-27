@@ -312,10 +312,38 @@ class BehaviorSpec(NamedTuple):
             return None
 
     def create_empty_action(self, n_agents: int) -> np.ndarray:
+        """
+        Generates a numpy array corresponding to an empty action (all zeros)
+        for a number of agents.
+        :param n_agents: The number of agents that will have actions generated
+        """
         if self.action_type == ActionType.DISCRETE:
             return np.zeros((n_agents, self.action_size), dtype=np.int32)
         else:
             return np.zeros((n_agents, self.action_size), dtype=np.float32)
+
+    def create_random_action(
+        self, n_agents: int, generator: np.random.Generator
+    ) -> np.ndarray:
+        """
+        Generates a numpy array corresponding to a random action (either discrete
+        or continuous) for a number of agents.
+        :param n_agents: The number of agents that will have actions generated
+        :param generator: The random number generator used for creating random action
+        """
+        if self.action_type == ActionType.DISCRETE:
+            action = np.zeros((n_agents, 0), dtype=np.int32)
+            for branch_size in self.action_shape:  # type: ignore
+                branch_action = generator.integers(
+                    0, branch_size, size=(n_agents, 1), dtype=np.int32
+                )
+                action = np.concatenate([action, branch_action], axis=1)
+            return action
+        else:
+            return (
+                generator.random((n_agents, self.action_size), dtype=np.float32) * 2.0
+                - 1.0
+            )
 
 
 class BehaviorMapping(Mapping):
