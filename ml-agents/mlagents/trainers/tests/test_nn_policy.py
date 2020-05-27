@@ -1,5 +1,7 @@
 import pytest
 import os
+import unittest
+import tempfile
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -12,6 +14,7 @@ from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.trainers import __version__
 
 
 VECTOR_ACTION_SPACE = [2]
@@ -72,6 +75,24 @@ def test_load_save(tmp_path):
     _compare_two_policies(policy2, policy3)
     # Assert that the steps are 0.
     assert policy3.get_current_step() == 0
+
+
+class ModelVersionTest(unittest.TestCase):
+    def test_version_compare(self):
+        # Test write_stats
+        with self.assertLogs("mlagents.trainers", level="WARNING") as cm:
+            path1 = tempfile.mkdtemp()
+            trainer_params = TrainerSettings(output_path=path1)
+            policy = create_policy_mock(trainer_params)
+            policy.initialize_or_load()
+            policy._check_model_version(
+                "0.0.0"
+            )  # This is not the right version for sure
+            # Assert that 1 warning has been thrown with incorrect version
+            assert len(cm.output) == 1
+            policy._check_model_version(__version__)  # This should be the right version
+            # Assert that no additional warnings have been thrown wth correct ver
+            assert len(cm.output) == 1
 
 
 def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:

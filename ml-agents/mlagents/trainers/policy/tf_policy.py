@@ -127,18 +127,21 @@ class TFPolicy(Policy):
             int_version.append(int(num))
         return tuple(int_version)
 
-    def _check_model_version(self):
+    def _check_model_version(self, version: str) -> None:
         """
         Checks whether the model being loaded was created with the same version of
         ML-Agents, and throw a warning if not so.
         """
-        loaded_ver = tuple(num.eval(session=self.sess) for num in self.version_tensors)
-        if loaded_ver != TFPolicy._convert_version_string(__version__):
-            logger.warning(
-                f"The model checkpoint you are loading from was saved with ML-Agents version "
-                f"{loaded_ver[0]}.{loaded_ver[1]}.{loaded_ver[2]} but your current ML-Agents"
-                f"version is {__version__}. Model may not behave properly."
+        if self.version_tensors is not None:
+            loaded_ver = tuple(
+                num.eval(session=self.sess) for num in self.version_tensors
             )
+            if loaded_ver != TFPolicy._convert_version_string(version):
+                logger.warning(
+                    f"The model checkpoint you are loading from was saved with ML-Agents version "
+                    f"{loaded_ver[0]}.{loaded_ver[1]}.{loaded_ver[2]} but your current ML-Agents"
+                    f"version is {version}. Model may not behave properly."
+                )
 
     def _initialize_graph(self):
         with self.graph.as_default():
@@ -172,7 +175,7 @@ class TFPolicy(Policy):
                         model_path
                     )
                 )
-            self._check_model_version()
+            self._check_model_version(__version__)
             if reset_global_steps:
                 self._set_step(0)
                 logger.info(
