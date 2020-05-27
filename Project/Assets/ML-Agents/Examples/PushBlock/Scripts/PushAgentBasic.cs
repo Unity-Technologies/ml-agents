@@ -134,7 +134,6 @@ public class PushAgentBasic : Agent
 
         var action = Mathf.FloorToInt(act[0]);
 
-        // Goalies and Strikers have slightly different action spaces.
         switch (action)
         {
             case 1:
