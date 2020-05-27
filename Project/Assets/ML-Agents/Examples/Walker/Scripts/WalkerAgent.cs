@@ -20,7 +20,6 @@ public class WalkerAgent : Agent
     [Space(10)]
     //This will be used as a stable observation platform for the ragdoll to use.
     GameObject m_OrientationCube;
-    public Transform directionIndicator;
     
     [Header("Target To Walk Towards")]
     [Space(10)]
@@ -189,9 +188,6 @@ public class WalkerAgent : Agent
         //UPDATE ORIENTATION CUBE POS & ROT
         m_OrientationCube.transform.position = hips.position;
         m_OrientationCube.transform.rotation = m_WalkDirLookRot;
-        
-        directionIndicator.position = new Vector3(hips.position.x, directionIndicator.position.y, hips.position.z);
-        directionIndicator.rotation = m_WalkDirLookRot;
     }
     
     public int fuTimer = 0;
