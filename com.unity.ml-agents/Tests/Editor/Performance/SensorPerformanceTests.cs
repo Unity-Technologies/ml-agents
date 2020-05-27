@@ -71,7 +71,6 @@ namespace Unity.MLAgents.Tests.Performance
                 RunAgent<CollectObservationsAgent>(10, 7);
             })
                 .MeasurementCount(10)
-                //.WarmupCount(5)
                 .Run();
         }
 
@@ -83,8 +82,36 @@ namespace Unity.MLAgents.Tests.Performance
                 RunAgent<ObservableFieldAgent>(10, 0);
             })
                 .MeasurementCount(10)
-                //.WarmupCount(5)
                 .Run();
+        }
+
+        [Test, Performance]
+        public void TestCollectObservationsAgentMarkers()
+        {
+            string[] markers =
+            {
+                "root.InitializeSensors",
+                "root.AgentSendState.CollectObservations"
+            };
+            using (Measure.ProfilerMarkers(markers))
+            {
+                RunAgent<CollectObservationsAgent>(10, 7);
+            }
+        }
+
+        [Test, Performance]
+        public void TestObservableFieldAgentMarkers()
+        {
+            string[] markers =
+            {
+                "root.InitializeSensors",
+                "root.AgentSendState.CollectObservations"
+            };
+
+            using (Measure.ProfilerMarkers(markers))
+            {
+                RunAgent<ObservableFieldAgent>(10, 0);
+            }
         }
     }
 }
