@@ -20,8 +20,8 @@ def main():
     unmatched = set()
 
     for asset_path in asset_paths:
-        for root, dirs, files in os.walk(asset_path, topdown=True):
-            # Modifying the dirs list with topdown=True will prevent us from recursing those directories
+        for root, dirs, files in os.walk(asset_path):
+            # Modifying the dirs list with topdown=True (the default) will prevent us from recursing those directories
             for ignored in ignored_dirs:
                 try:
                     dirs.remove(ignored)
