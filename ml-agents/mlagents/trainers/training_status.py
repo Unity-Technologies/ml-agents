@@ -76,7 +76,9 @@ class GlobalTrainingStatus:
             # Update saved state.
             GlobalTrainingStatus.saved_state.update(loaded_dict)
         except FileNotFoundError:
-            pass
+            logger.warning(
+                "Training status file not found. Not all functions will resume properly."
+            )
         except KeyError:
             raise TrainerError(
                 "Metadata not found, resuming from an incompatible version of ML-Agents."

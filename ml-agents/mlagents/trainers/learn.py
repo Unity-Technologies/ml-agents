@@ -39,6 +39,8 @@ from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
 
+TRAINING_STATUS_FILE_NAME = "training_status.json"
+
 
 def get_version_string() -> str:
     # pylint: disable=no-member
@@ -165,9 +167,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager.close()
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
-        GlobalTrainingStatus.save_state(
-            os.path.join(run_logs_dir, "training_status.json")
-        )
+        write_training_status(run_logs_dir)
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
@@ -182,6 +182,10 @@ def write_run_options(output_dir: str, run_options: RunOptions) -> None:
         logger.warning(
             f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
         )
+
+
+def write_training_status(output_dir: str) -> None:
+    GlobalTrainingStatus.save_state(os.path.join(output_dir, TRAINING_STATUS_FILE_NAME))
 
 
 def write_timing_tree(output_dir: str) -> None:
