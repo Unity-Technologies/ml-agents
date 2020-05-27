@@ -29,7 +29,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
-  observations via reflection.
+  observations via reflection. (#3925, #4006)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
