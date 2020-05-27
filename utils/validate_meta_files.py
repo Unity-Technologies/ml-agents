@@ -2,34 +2,56 @@ import os
 
 
 def main():
-    asset_path = "Project/Assets"
+    asset_paths = ["Project/Assets", "com.unity.ml-agents"]
     meta_suffix = ".meta"
     python_suffix = ".py"
+    whitelist = frozenset(
+        [
+            "com.unity.ml-agents/.editorconfig",
+            "com.unity.ml-agents/.gitignore",
+            "com.unity.ml-agents/.npmignore",
+            "com.unity.ml-agents/Tests/.tests.json",
+        ]
+    )
+    ignored_dirs = {"Documentation~"}
 
     num_matched = 0
 
     unmatched = set()
 
-    for root, dirs, files in os.walk(asset_path):
-        dirs = set(dirs)
-        files = set(files)
+    for asset_path in asset_paths:
+        for root, dirs, files in os.walk(asset_path):
+            # Modifying the dirs list with topdown=True (the default) will prevent us from recursing those directories
+            for ignored in ignored_dirs:
+                try:
+                    dirs.remove(ignored)
+                except ValueError:
+                    pass
 
-        combined = dirs | files
-        for f in combined:
-            if f.endswith(python_suffix):
-                # Probably this script; skip it
-                continue
+            dirs = set(dirs)
+            files = set(files)
 
-            # We expect each non-.meta file to have a .meta file, and each .meta file to have a non-.meta file
-            if f.endswith(meta_suffix):
-                expected = f.replace(meta_suffix, "")
-            else:
-                expected = f + meta_suffix
+            combined = dirs | files
+            for f in combined:
 
-            if expected not in combined:
-                unmatched.add(os.path.join(root, f))
-            else:
-                num_matched += 1
+                if f.endswith(python_suffix):
+                    # Probably this script; skip it
+                    continue
+
+                full_path = os.path.join(root, f)
+                if full_path in whitelist:
+                    continue
+
+                # We expect each non-.meta file to have a .meta file, and each .meta file to have a non-.meta file
+                if f.endswith(meta_suffix):
+                    expected = f.replace(meta_suffix, "")
+                else:
+                    expected = f + meta_suffix
+
+                if expected not in combined:
+                    unmatched.add(full_path)
+                else:
+                    num_matched += 1
 
     if unmatched:
         raise Exception(
