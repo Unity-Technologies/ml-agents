@@ -31,7 +31,6 @@ MOCK_PARAMETER_YAML = """
         base_port: 4001
         seed: 9870
     checkpoint_settings:
-        lesson: 2
         run_id: uselessrun
         save_freq: 654321
     debug: false

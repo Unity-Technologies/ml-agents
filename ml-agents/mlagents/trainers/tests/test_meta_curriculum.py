@@ -11,7 +11,7 @@ from mlagents.trainers.tests.test_simple_rl import (
 )
 from mlagents.trainers.tests.test_curriculum import dummy_curriculum_config
 from mlagents.trainers.settings import CurriculumSettings
-from mlagents.trainers.stats import StatsPropertyType
+from mlagents.trainers.training_status import StatusType
 
 
 @pytest.fixture
@@ -78,7 +78,7 @@ def test_increment_lessons_with_reward_buff_sizes(
     curriculum_b.increment_lesson.assert_not_called()
 
 
-@patch("mlagents.trainers.meta_curriculum.StatsReporter")
+@patch("mlagents.trainers.meta_curriculum.GlobalTrainingStatus")
 def test_restore_curriculums(mock_reporter_creation):
     meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
     mock_reporter = Mock()
@@ -90,8 +90,7 @@ def test_restore_curriculums(mock_reporter_creation):
         [call("Brain1"), call("Brain2")], any_order=True
     )
     mock_reporter.restore_parameter_state.assert_has_calls(
-        [call(StatsPropertyType.LESSON_NUM), call(StatsPropertyType.LESSON_NUM)],
-        any_order=True,
+        [call(StatusType.LESSON_NUM), call(StatusType.LESSON_NUM)], any_order=True
     )
     assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 2
     assert meta_curriculum.brains_to_curricula["Brain2"].lesson_num == 2
