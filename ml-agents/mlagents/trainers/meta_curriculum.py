@@ -3,7 +3,7 @@
 from typing import Dict, Set
 from mlagents.trainers.curriculum import Curriculum
 from mlagents.trainers.settings import CurriculumSettings
-from mlagents.trainers.stats import StatsReporter, StatsPropertyType
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 from mlagents_envs.logging_util import get_logger
 
@@ -122,10 +122,8 @@ class MetaCurriculum:
         """
 
         for brain_name, curriculum in self.brains_to_curricula.items():
-            # Create a temporary StatsReporter with the right brain name
-            _statsreporter = StatsReporter(brain_name)
-            lesson_num = _statsreporter.restore_parameter_state(
-                StatsPropertyType.LESSON_NUM
+            lesson_num = GlobalTrainingStatus(brain_name).restore_parameter_state(
+                StatusType.LESSON_NUM
             )
             if lesson_num is not None:
                 logger.info(

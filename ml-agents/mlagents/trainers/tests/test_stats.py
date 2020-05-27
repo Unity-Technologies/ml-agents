@@ -1,7 +1,6 @@
 from unittest import mock
 import os
 import pytest
-import json
 import tempfile
 import unittest
 import csv
@@ -15,7 +14,6 @@ from mlagents.trainers.stats import (
     GaugeWriter,
     ConsoleWriter,
     StatsPropertyType,
-    StatsMetaData,
 )
 
 
@@ -70,44 +68,6 @@ def test_stat_reporter_property():
     mock_writer.add_property.assert_called_once_with(
         "category1", "key", "this is a text"
     )
-
-
-def test_stats_reporter_store_restore(tmpdir):
-    statsreporter = StatsReporter("Category1")
-    path_dir = os.path.join(tmpdir, "test.json")
-
-    statsreporter.store_parameter_state(StatsPropertyType.LESSON_NUM, 3)
-    StatsReporter.save_state(path_dir)
-
-    with open(path_dir, "r") as fp:
-        test_json = json.load(fp)
-
-    assert "Category1" in test_json
-    assert StatsPropertyType.LESSON_NUM.value in test_json["Category1"]
-    assert test_json["Category1"][StatsPropertyType.LESSON_NUM.value] == 3
-    assert "metadata" in test_json
-
-    statsreporter_new = StatsReporter("Category1")
-    StatsReporter.load_state(path_dir)
-    restored_val = statsreporter_new.restore_parameter_state(
-        StatsPropertyType.LESSON_NUM
-    )
-    assert restored_val == 3
-
-
-class StatsMetaDataTest(unittest.TestCase):
-    def test_metadata_compare(self):
-        # Test write_stats
-        with self.assertLogs("mlagents.trainers", level="WARNING") as cm:
-            default_metadata = StatsMetaData()
-            version_statsmetadata = StatsMetaData(mlagents_version="test")
-            default_metadata.check_compatibility(version_statsmetadata)
-
-            tf_version_statsmetadata = StatsMetaData(tensorflow_version="test")
-            default_metadata.check_compatibility(tf_version_statsmetadata)
-
-        # Assert that 2 warnings have been thrown
-        assert len(cm.output) == 2
 
 
 @mock.patch("mlagents.tf_utils.tf.Summary")

@@ -25,6 +25,7 @@ from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
 from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
@@ -84,7 +85,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         os.makedirs(run_logs_dir, exist_ok=True)
         # Load any needed states
         if checkpoint_settings.resume:
-            StatsReporter.load_state(os.path.join(run_logs_dir, "training_status.json"))
+            GlobalTrainingStatus.load_state(
+                os.path.join(run_logs_dir, "training_status.json")
+            )
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
@@ -162,7 +165,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager.close()
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
-        StatsReporter.save_state(os.path.join(run_logs_dir, "training_status.json"))
+        GlobalTrainingStatus.save_state(
+            os.path.join(run_logs_dir, "training_status.json")
+        )
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
