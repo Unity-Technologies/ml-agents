@@ -45,7 +45,14 @@ POSSIBLE_OUTPUT_NODES = frozenset(
 )
 
 MODEL_CONSTANTS = frozenset(
-    ["action_output_shape", "is_continuous_control", "memory_size", "version_number"]
+    [
+        "action_output_shape",
+        "is_continuous_control",
+        "memory_size",
+        "major_version",
+        "minor_version",
+        "patch_version",
+    ]
 )
 VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
