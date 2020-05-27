@@ -8,11 +8,20 @@ public class Ball3DAgent : Agent
     public GameObject ball;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
+    float m_MinMass;
+    float m_MaxMass;
+    float m_MinScale;
+    float m_MaxScale;
+
 
     public override void Initialize()
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+        m_MinMass = m_ResetParams.GetWithDefault("min_mass", -1.0f);
+        m_MaxMass = m_ResetParams.GetWithDefault("max_mass", -1.0f);
+        m_MinScale = m_ResetParams.GetWithDefault("min_scale", -1.0f);
+        m_MaxScale = m_ResetParams.GetWithDefault("max_scale", -1.0f);
         SetResetParameters();
     }
 
@@ -74,8 +83,17 @@ public class Ball3DAgent : Agent
     public void SetBall()
     {
         //Set the attributes of the ball by fetching the information from the academy
-        m_BallRb.mass = m_ResetParams.GetWithDefault("mass", 1.0f);
-        var scale = m_ResetParams.GetWithDefault("scale", 1.0f);
+        var scale = 0f;
+        if (m_MinMass > 0f)
+        {
+            m_BallRb.mass = Random.Range(m_MinMass, m_MaxMass);
+            scale = Random.Range(m_MinScale, m_MaxScale);
+        }
+        else
+        {
+            m_BallRb.mass = m_ResetParams.GetWithDefault("mass", 1.0f);
+            scale = m_ResetParams.GetWithDefault("scale", 1.0f);
+        }
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 
