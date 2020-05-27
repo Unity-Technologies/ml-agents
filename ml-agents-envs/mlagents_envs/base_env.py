@@ -322,28 +322,32 @@ class BehaviorSpec(NamedTuple):
         else:
             return np.zeros((n_agents, self.action_size), dtype=np.float32)
 
-    def create_random_action(
-        self, n_agents: int, generator: np.random.Generator
-    ) -> np.ndarray:
+    def create_random_action(self, n_agents: int) -> np.ndarray:
         """
         Generates a numpy array corresponding to a random action (either discrete
         or continuous) for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         :param generator: The random number generator used for creating random action
         """
-        if self.action_type == ActionType.DISCRETE:
-            action = np.zeros((n_agents, 0), dtype=np.int32)
-            for branch_size in self.action_shape:  # type: ignore
-                branch_action = generator.integers(
-                    0, branch_size, size=(n_agents, 1), dtype=np.int32
-                )
-                action = np.concatenate([action, branch_action], axis=1)
+        if self.is_action_continuous():
+            action = np.random.uniform(
+                low=-1.0, high=1.0, size=(n_agents, self.action_size)
+            ).astype(np.float32)
             return action
-        else:
-            return (
-                generator.random((n_agents, self.action_size), dtype=np.float32) * 2.0
-                - 1.0
+        elif self.is_action_discrete():
+            branch_size = self.discrete_action_branches
+            action = np.column_stack(
+                [
+                    np.random.randint(
+                        0,
+                        branch_size[i],  # type: ignore
+                        size=(n_agents),
+                        dtype=np.int32,
+                    )
+                    for i in range(self.action_size)
+                ]
             )
+            return action
 
 
 class BehaviorMapping(Mapping):
