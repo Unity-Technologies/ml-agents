@@ -83,7 +83,6 @@ def test_run_training(
                 trainer_factory_mock.return_value,
                 "results/ppo",
                 "ppo",
-                50000,
                 None,
                 True,
                 0,
