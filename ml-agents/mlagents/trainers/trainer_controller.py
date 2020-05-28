@@ -38,7 +38,6 @@ class TrainerController(object):
         trainer_factory: TrainerFactory,
         output_path: str,
         run_id: str,
-        save_freq: int,
         meta_curriculum: Optional[MetaCurriculum],
         train: bool,
         training_seed: int,
@@ -49,7 +48,6 @@ class TrainerController(object):
         :param output_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
-        :param save_freq: Frequency at which to save model
         :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
         :param train: Whether to train model, or only run inference.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
@@ -63,7 +61,6 @@ class TrainerController(object):
         self.output_path = output_path
         self.logger = get_logger(__name__)
         self.run_id = run_id
-        self.save_freq = save_freq
         self.train_model = train
         self.meta_curriculum = meta_curriculum
         self.sampler_manager = sampler_manager
@@ -150,11 +147,6 @@ class TrainerController(object):
         )
         sampled_reset_param.update(new_meta_curriculum_config)
         env.reset(config=sampled_reset_param)
-
-    def _should_save_model(self, global_step: int) -> bool:
-        return (
-            global_step % self.save_freq == 0 and global_step != 0 and self.train_model
-        )
 
     def _not_done_training(self) -> bool:
         return (
