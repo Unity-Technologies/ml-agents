@@ -15,6 +15,7 @@ Run_Mac_Perfomance_Tests{{ editor.version }}:
     - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
     - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - curl -s https://artifactory.internal.unity3d.com/core-automation/tools/utr-standalone/utr --output utr
+    - chmod +x ./utr
     - ./utr --suite=editmode --platform=StandaloneOSX --editor-location=.Editor --testproject=DevProject --artifacts_path=build/test-results --report-performance-data --performance-project-id=ML-Agents --zero-tests-are-ok=1
   triggers:
     cancel_old_ci: true
