@@ -32,10 +32,6 @@ Run_Mac_Perfomance_Tests{{ editor.version }}:
   artifacts:
     logs:
       paths:
+        - "build/test-results/**"
         - "*.log"
-        - "*.xml"
-        - "artifacts/**/*"
-    standalonebuild:
-      paths:
-        - "artifacts/testplayer*/**"
 {% endfor %}
