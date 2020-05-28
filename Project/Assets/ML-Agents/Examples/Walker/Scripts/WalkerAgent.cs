@@ -3,7 +3,6 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
-using UnityEditor;
 using BodyPart = Unity.MLAgentsExamples.BodyPart;
 
 public class WalkerAgent : Agent
@@ -12,8 +11,8 @@ public class WalkerAgent : Agent
     [Space(10)]
     [Header("Specific to Walker")]
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
-    Vector3 m_WalkDir;
-    Quaternion m_WalkDirLookRot;
+    Vector3 m_WalkDir; //Direction to the target
+    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
     
     [Space(10)]
     [Header("Orientation Cube")]
@@ -29,7 +28,6 @@ public class WalkerAgent : Agent
     public bool detectTargets;
     public bool targetIsStatic;
     public bool respawnTargetWhenTouched;
-    
 
     [Header("Body Parts")]
     [Space(10)]
@@ -56,8 +54,6 @@ public class WalkerAgent : Agent
     Rigidbody m_SpineRb;
 
     EnvironmentParameters m_ResetParams;
-    
-
 
     public override void Initialize()
     {
@@ -128,12 +124,7 @@ public class WalkerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, m_OrientationCube.transform.forward));
         
         //clamp the distance vector in case the target is far away. normalized to 1.
-//        var clampedDistFromCubeToTarget = (Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.position), 15))/15;
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(clampedDistFromCubeToTarget));
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
-
-//        print(m_OrientationCube.transform.InverseTransformPoint(target.position));
-//        sensor.AddObservation(target.position - m_OrientationCube.transform.position);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -190,19 +181,8 @@ public class WalkerAgent : Agent
         m_OrientationCube.transform.rotation = m_WalkDirLookRot;
     }
     
-    public int fuTimer = 0;
-    public float fudeltatime = 0;
-    public float deltatime = 0;
-
-    void Update()
-    {
-        deltatime = Time.deltaTime;
-    }
-
     void FixedUpdate()
     {
-        fuTimer++;
-        fudeltatime = Time.fixedDeltaTime;
         if (detectTargets)
         {
             foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
@@ -256,12 +236,13 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+        //Reset all of the body parts
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
         
-        //Random start rotation
+        //Random start rotation to help generalize
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
         
         UpdateOrientationCube();

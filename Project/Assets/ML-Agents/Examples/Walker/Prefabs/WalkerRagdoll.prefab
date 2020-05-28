@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 233
+    VectorObservationSize: 236
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -300,6 +300,7 @@ MonoBehaviour:
   m_BehaviorName: WalkerDynamic
   TeamId: 0
   m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &7408209125961349353
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -317,7 +318,6 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   maximumWalkingSpeed: 999
-  directionIndicator: {fileID: 6359877977706987617}
   targetSpawnRadius: 40
   target: {fileID: 0}
   ground: {fileID: 0}
@@ -382,6 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &895268871382313704
 GameObject:
   m_ObjectHideFlags: 0
