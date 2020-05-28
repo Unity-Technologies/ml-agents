@@ -1,16 +1,18 @@
 {
-    "name": "Tests",
+    "name": "Unity.ML-Agents.Performance.Tests",
     "references": [
+        "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
         "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
-        "Unity.ML-Agents.Editor",
         "Unity.PerformanceTesting"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
