@@ -228,13 +228,8 @@ class TrainerController(object):
                 for _ in range(n_steps):
                     global_step += 1
                     self.reset_env_if_ready(env_manager, global_step)
-                    if self._should_save_model(global_step):
-                        self._save_model()
             # Stop advancing trainers
             self.join_threads()
-            # Final save Tensorflow model
-            if global_step != 0 and self.train_model:
-                self._save_model()
         except (
             KeyboardInterrupt,
             UnityCommunicationException,
@@ -242,9 +237,9 @@ class TrainerController(object):
             UnityCommunicatorStoppedException,
         ) as ex:
             self.join_threads()
-            if self.train_model:
-                self._save_model_when_interrupted()
-
+            self.logger.info(
+                "Learning was interrupted. Please wait while the graph is generated."
+            )
             if isinstance(ex, KeyboardInterrupt) or isinstance(
                 ex, UnityCommunicatorStoppedException
             ):
@@ -255,6 +250,7 @@ class TrainerController(object):
                 raise ex
         finally:
             if self.train_model:
+                self._save_model()
                 self._export_graph()
 
     def end_trainer_episodes(

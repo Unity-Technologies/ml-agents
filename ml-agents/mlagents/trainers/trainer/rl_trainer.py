@@ -4,6 +4,7 @@ from collections import defaultdict
 import abc
 import time
 
+from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
@@ -14,6 +15,8 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsPropertyType
 
 RewardSignalResults = Dict[str, RewardSignalResult]
+
+logger = get_logger(__name__)
 
 
 class RLTrainer(Trainer):  # pylint: disable=abstract-method
@@ -34,6 +37,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
+        self._next_save_step = 0
 
     def end_episode(self) -> None:
         """
@@ -89,16 +93,20 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param n_steps: number of steps to increment the step count by
         """
         self.step += n_steps
-        self.next_summary_step = self._get_next_summary_step()
+        self.next_summary_step = self._get_next_interval_step(self.summary_freq)
+        self._next_save_step = self._get_next_interval_step(
+            self.trainer_settings.summary_freq
+        )
         p = self.get_policy(name_behavior_id)
         if p:
             p.increment_step(n_steps)
 
-    def _get_next_summary_step(self) -> int:
+    def _get_next_interval_step(self, interval: int) -> int:
         """
-        Get the next step count that should result in a summary write.
+        Get the next step count that should result in an action.
+        :param interval: The interval between actions.
         """
-        return self.step + (self.summary_freq - self.step % self.summary_freq)
+        return self.step + (interval - self.step % interval)
 
     def _write_summary(self, step: int) -> None:
         """
@@ -114,6 +122,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         self._maybe_write_summary(self.get_step + len(trajectory.steps))
+        self._maybe_save_model(self.get_step + len(trajectory.steps))
         self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
@@ -124,6 +133,20 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         if step_after_process >= self.next_summary_step and self.get_step != 0:
             self._write_summary(self.next_summary_step)
+
+    def _maybe_save_model(self, step_after_process: int) -> None:
+        """
+        If processing the trajectory will make the step exceed the next model write,
+        save the model. This logic ensures models are written on the update step and not in between.
+        :param step_after_process: the step count after processing the next trajectory.
+        """
+        if self._next_save_step == 0:  # Don't save the first one
+            self._next_save_step = self._get_next_interval_step(
+                self.trainer_settings.summary_freq
+            )
+        if step_after_process >= self._next_save_step and self.get_step != 0:
+            logger.info(f"Saving model for {self.brain_name}")
+            self.save_model(self.brain_name)
 
     def advance(self) -> None:
         """
