@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import abc
 import os
 import numpy as np
+from distutils.version import LooseVersion
+
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
@@ -22,7 +24,7 @@ logger = get_logger(__name__)
 
 # This is the version number of the inputs and outputs of the model, and
 # determines compatibility with inference in Barracuda.
-API_VERSION_NUMBER = 2
+MODEL_FORMAT_VERSION = 2
 
 
 class UnityPolicyException(UnityException):
@@ -127,11 +129,8 @@ class TFPolicy(Policy):
         :param version_string: The semantic-versioned version string (X.Y.Z).
         :return: A Tuple containing (major_ver, minor_ver, patch_ver).
         """
-        split_ver = version_string.split(".")[0:3]  # Remove dev tag
-        int_version = []
-        for num in split_ver:
-            int_version.append(int(num))
-        return tuple(int_version)
+        ver = LooseVersion(version_string)
+        return tuple(map(int, ver.version[0:3]))
 
     def _check_model_version(self, version: str) -> None:
         """
@@ -528,7 +527,7 @@ class TFPolicy(Policy):
                 self.m_size, name="memory_size", trainable=False, dtype=tf.int32
             )
             tf.Variable(
-                API_VERSION_NUMBER,
+                MODEL_FORMAT_VERSION,
                 name="version_number",
                 trainable=False,
                 dtype=tf.int32,
