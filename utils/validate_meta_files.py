@@ -2,7 +2,7 @@ import os
 
 
 def main():
-    asset_paths = ["Project/Assets", "com.unity.ml-agents"]
+    asset_paths = ["Project/Assets", "com.unity.ml-agents", "DevProject/Assets"]
     meta_suffix = ".meta"
     python_suffix = ".py"
     whitelist = frozenset(

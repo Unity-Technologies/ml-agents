@@ -27,7 +27,7 @@ Run_Mac_Perfomance_Tests{{ editor.version }}:
       pull_request.changes.any match "DevProject/**" OR
       pull_request.changes.any match "ml-agents/**" OR
       pull_request.changes.any match "ml-agents-envs/**" OR
-      pull_request.changes.any match ".yamato/training-int-tests.yml") AND
+      pull_request.changes.any match ".yamato/com.unity.ml-agents-performance.yml") AND
       NOT pull_request.changes.all match "**/*.md"
   artifacts:
     logs:
