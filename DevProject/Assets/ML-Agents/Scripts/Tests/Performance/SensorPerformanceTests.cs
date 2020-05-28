@@ -1,20 +1,27 @@
 using NUnit.Framework;
+using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 using Unity.PerformanceTesting;
 using UnityEngine;
 
-namespace Unity.MLAgents.Tests.Performance
+namespace MLAgentsExamples.Tests.Performance
 {
     [TestFixture]
     public class SensorPerformanceTests
     {
+        string[] s_Markers =
+        {
+            "root.InitializeSensors",
+            "root.AgentSendState.CollectObservations"
+        };
+
         [SetUp]
         public void SetUp()
         {
             // Run Academy initialization here, so that we don't time the connection attempt.
-            Academy.Instance.LazyInitialize();
+            var academy = Academy.Instance;
         }
 
         class CollectObservationsAgent : Agent
@@ -50,7 +57,6 @@ namespace Unity.MLAgents.Tests.Performance
 
             var decisionRequester = agent.gameObject.AddComponent<DecisionRequester>();
             decisionRequester.DecisionPeriod = 1;
-            decisionRequester.Awake();
 
             var behaviorParams = agent.GetComponent<BehaviorParameters>();
             behaviorParams.BrainParameters.VectorObservationSize = obsSize;
@@ -88,12 +94,7 @@ namespace Unity.MLAgents.Tests.Performance
         [Test, Performance]
         public void TestCollectObservationsAgentMarkers()
         {
-            string[] markers =
-            {
-                "root.InitializeSensors",
-                "root.AgentSendState.CollectObservations"
-            };
-            using (Measure.ProfilerMarkers(markers))
+            using (Measure.ProfilerMarkers(s_Markers))
             {
                 RunAgent<CollectObservationsAgent>(10, 7);
             }
@@ -102,13 +103,7 @@ namespace Unity.MLAgents.Tests.Performance
         [Test, Performance]
         public void TestObservableFieldAgentMarkers()
         {
-            string[] markers =
-            {
-                "root.InitializeSensors",
-                "root.AgentSendState.CollectObservations"
-            };
-
-            using (Measure.ProfilerMarkers(markers))
+            using (Measure.ProfilerMarkers(s_Markers))
             {
                 RunAgent<ObservableFieldAgent>(10, 0);
             }
