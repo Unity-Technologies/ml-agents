@@ -45,7 +45,7 @@ def create_rl_trainer():
     mock_brainparams = create_mock_brain()
     trainer = FakeTrainer(
         mock_brainparams,
-        TrainerSettings(max_steps=100, checkpoint_freq=10, summary_freq=20),
+        TrainerSettings(max_steps=100, checkpoint_interval=10, summary_freq=20),
         True,
         0,
     )
@@ -124,7 +124,7 @@ def test_summary_checkpoint(mock_write_summary, mock_save_model):
     trainer.publish_policy_queue(policy_queue)
     time_horizon = 10
     summary_freq = trainer.trainer_settings.summary_freq
-    checkpoint_freq = trainer.trainer_settings.checkpoint_freq
+    checkpoint_interval = trainer.trainer_settings.checkpoint_interval
     trajectory = mb.make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
@@ -150,7 +150,7 @@ def test_summary_checkpoint(mock_write_summary, mock_save_model):
     calls = [
         mock.call(trainer.brain_name)
         for step in range(
-            checkpoint_freq, num_trajectories * time_horizon, checkpoint_freq
+            checkpoint_interval, num_trajectories * time_horizon, checkpoint_interval
         )
     ]
     mock_save_model.assert_has_calls(calls, any_order=True)

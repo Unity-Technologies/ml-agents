@@ -48,7 +48,7 @@ vector observations to be used simultaneously.
  - If you use the `UnityToGymWrapper`, remove `use_visual` and `allow_multiple_visual_obs`
  from the constructor and add `allow_multiple_obs = True` if the environment contains either
  both visual and vector observations or multiple visual observations.
- - If you were setting `--save-freq` in the CLI, add a `checkpoint_freq` value in your
+ - If you were setting `--save-freq` in the CLI, add a `checkpoint_interval` value in your
   trainer configuration, and set it equal to `save-freq * n_agents_in_scene`.
 
 ## Migrating from 0.15 to Release 1

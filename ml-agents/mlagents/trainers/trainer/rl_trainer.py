@@ -96,7 +96,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self.step += n_steps
         self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         self._next_save_step = self._get_next_interval_step(
-            self.trainer_settings.checkpoint_freq
+            self.trainer_settings.checkpoint_interval
         )
         p = self.get_policy(name_behavior_id)
         if p:
@@ -145,7 +145,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         if self._next_save_step == 0:  # Don't save the first one
             self._next_save_step = self._get_next_interval_step(
-                self.trainer_settings.checkpoint_freq
+                self.trainer_settings.checkpoint_interval
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
             logger.info(f"Checkpointing model for {self.brain_name}.")
