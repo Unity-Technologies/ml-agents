@@ -38,6 +38,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
         self._next_save_step = 0
+        self._next_summary_step = 0
 
     def end_episode(self) -> None:
         """
@@ -93,7 +94,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param n_steps: number of steps to increment the step count by
         """
         self.step += n_steps
-        self.next_summary_step = self._get_next_interval_step(self.summary_freq)
+        self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         self._next_save_step = self._get_next_interval_step(
             self.trainer_settings.summary_freq
         )
@@ -131,8 +132,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         write the summary. This logic ensures summaries are written on the update step and not in between.
         :param step_after_process: the step count after processing the next trajectory.
         """
-        if step_after_process >= self.next_summary_step and self.get_step != 0:
-            self._write_summary(self.next_summary_step)
+        if self._next_summary_step == 0:  # Don't write out the first one
+            self._next_summary_step = self._get_next_interval_step(self.summary_freq)
+        if step_after_process >= self._next_summary_step and self.get_step != 0:
+            self._write_summary(self._next_summary_step)
 
     def _maybe_save_model(self, step_after_process: int) -> None:
         """
@@ -142,10 +145,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         if self._next_save_step == 0:  # Don't save the first one
             self._next_save_step = self._get_next_interval_step(
-                self.trainer_settings.summary_freq
+                self.trainer_settings.checkpoint_freq
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
-            logger.info(f"Saving model for {self.brain_name}")
+            logger.info(f"Checkpointing model for {self.brain_name}.")
             self.save_model(self.brain_name)
 
     def advance(self) -> None:

@@ -51,7 +51,6 @@ class Trainer(abc.ABC):
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
         self.summary_freq = self.trainer_settings.summary_freq
-        self.next_summary_step = self.summary_freq
 
     @property
     def stats_reporter(self):
