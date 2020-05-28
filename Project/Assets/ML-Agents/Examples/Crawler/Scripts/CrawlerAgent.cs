@@ -10,6 +10,12 @@ public class CrawlerAgent : Agent
     [Space(10)]
     public Transform target;
 
+    [Space(10)]
+    [Header("Orientation Cube")]
+    [Space(10)]
+    //This will be used as a stable observation platform for the ragdoll to use.
+    GameObject m_OrientationCube;
+
     public Transform ground;
     public bool detectTargets;
     public bool targetIsStatic;
@@ -54,9 +60,14 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
+        //Spawn an orientation cube
+        Vector3 oCubePos = hips.position;
+        oCubePos.y = -.45f;
+        m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
+        m_OrientationCube.transform.SetParent(transform);
+
         m_JdController = GetComponent<JointDriveController>();
         m_DirToTarget = target.position - body.position;
-
 
         //Setup each body part
         m_JdController.SetupBodyPart(body);
@@ -69,7 +80,7 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
     }
-
+    
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -78,52 +89,99 @@ public class CrawlerAgent : Agent
         var rb = bp.rb;
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
-        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
-        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
-
-        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
-        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
+        //Get velocities in the context of our orientation cube's space
+        //Note: You can get these velocities in world space as well but it may not train as well.
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        
+        //Get position relative to hips in the context of our orientation cube's space
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
 
         if (bp.rb.transform != body)
         {
-            var localPosRelToBody = body.InverseTransformPoint(rb.position);
-            sensor.AddObservation(localPosRelToBody);
-            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
-            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
-            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
+            sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
 
+//    /// <summary>
+//    /// Add relevant information on each body part to observations.
+//    /// </summary>
+//    public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
+//    {
+//        var rb = bp.rb;
+//        sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
+//
+//        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
+//        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
+//
+//        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+//        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
+//
+//        if (bp.rb.transform != body)
+//        {
+//            var localPosRelToBody = body.InverseTransformPoint(rb.position);
+//            sensor.AddObservation(localPosRelToBody);
+//            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
+//            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
+//            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
+//            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+//        }
+//    }
+
+    /// <summary>
+    /// Loop over body parts to add them to observation.
+    /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_JdController.GetCurrentJointForces();
-
-        // Update pos to target
-        m_DirToTarget = target.position - body.position;
-        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
-        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
-
+        sensor.AddObservation(Quaternion.FromToRotation(body.forward, m_OrientationCube.transform.forward));
+        
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
+       
         RaycastHit hit;
-        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        float maxRaycastDist = 10;
+        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
         {
-            sensor.AddObservation(hit.distance);
+            sensor.AddObservation(hit.distance/maxRaycastDist);
         }
         else
-            sensor.AddObservation(10.0f);
-
-        // Forward & up to help with orientation
-        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
-        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
-
-        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
-        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
-
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+            sensor.AddObservation(maxRaycastDist);
+        
+        foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
     }
+    
+//    public override void CollectObservations(VectorSensor sensor)
+//    {
+//        m_JdController.GetCurrentJointForces();
+//
+//        // Update pos to target
+//        m_DirToTarget = target.position - body.position;
+//        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
+//        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
+//
+//        RaycastHit hit;
+//        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+//        {
+//            sensor.AddObservation(hit.distance);
+//        }
+//        else
+//            sensor.AddObservation(10.0f);
+//
+//        // Forward & up to help with orientation
+//        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
+//        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
+//
+//        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
+//        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
+//
+//        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+//        {
+//            CollectObservationBodyPart(bodyPart, sensor);
+//        }
+//    }
 
     /// <summary>
     /// Agent touched the target
