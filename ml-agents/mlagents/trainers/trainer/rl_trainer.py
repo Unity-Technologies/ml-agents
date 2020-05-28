@@ -96,7 +96,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self.step += n_steps
         self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         self._next_save_step = self._get_next_interval_step(
-            self.trainer_settings.summary_freq
+            self.trainer_settings.checkpoint_freq
         )
         p = self.get_policy(name_behavior_id)
         if p:
