@@ -33,7 +33,6 @@ public class CrawlerAgent : Agent
     public Transform leg3Lower;
 
     [Header("Joint Settings")] [Space(10)] JointDriveController m_JdController;
-    Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
     float m_FacingDot;
 
@@ -61,13 +60,12 @@ public class CrawlerAgent : Agent
     public override void Initialize()
     {
         //Spawn an orientation cube
-        Vector3 oCubePos = hips.position;
+        Vector3 oCubePos = body.position;
         oCubePos.y = -.45f;
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
         m_OrientationCube.transform.SetParent(transform);
 
         m_JdController = GetComponent<JointDriveController>();
-        m_DirToTarget = target.position - body.position;
 
         //Setup each body part
         m_JdController.SetupBodyPart(body);
@@ -285,7 +283,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
+        m_MovingTowardsDot = Vector3.Dot(m_OrientationCube.transform.forward, m_JdController.bodyPartsDict[body].rb.velocity);
         AddReward(0.03f * m_MovingTowardsDot);
     }
 
@@ -294,8 +292,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, body.forward);
-        AddReward(0.01f * m_FacingDot);
+        AddReward(0.01f * Vector3.Dot(m_OrientationCube.transform.forward, body.forward));
     }
 
     /// <summary>
@@ -311,19 +308,26 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
-        if (m_DirToTarget != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
-        }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
-
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
+        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
+
         if (!targetIsStatic)
         {
             GetRandomTargetPos();
+        }
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        if (Application.isPlaying)
+        {   
+            Gizmos.color = Color.green;
+            Gizmos.matrix = m_OrientationCube.transform.localToWorldMatrix;
+            Gizmos.DrawWireCube(Vector3.zero, m_OrientationCube.transform.localScale);
+            Gizmos.DrawRay(Vector3.zero, Vector3.forward);
         }
     }
 }
