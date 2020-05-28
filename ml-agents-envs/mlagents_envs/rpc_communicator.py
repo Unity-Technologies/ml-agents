@@ -76,6 +76,8 @@ class RpcCommunicator(Communicator):
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         if platform == "linux" or platform == "linux2":
+            # On linux, the port remains unusable for TIME_WAIT=60 seconds after closing
+            # This change allows to reuse the port right after closing the environment
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             s.bind(("localhost", port))
