@@ -1,6 +1,7 @@
 import grpc
 from typing import Optional
 
+from sys import platform
 import socket
 from multiprocessing import Pipe
 from concurrent.futures import ThreadPoolExecutor
@@ -56,9 +57,7 @@ class RpcCommunicator(Communicator):
 
         try:
             # Establish communication grpc
-            self.server = grpc.server(
-                ThreadPoolExecutor(max_workers=10), options=(("grpc.so_reuseport", 0),)
-            )
+            self.server = grpc.server(ThreadPoolExecutor(max_workers=10))
             self.unity_to_external = UnityToExternalServicerImplementation()
             add_UnityToExternalProtoServicer_to_server(
                 self.unity_to_external, self.server
@@ -76,7 +75,8 @@ class RpcCommunicator(Communicator):
         Attempts to bind to the requested communicator port, checking if it is already in use.
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        if platform == "linux" or platform == "linux2":
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             s.bind(("localhost", port))
         except socket.error:
