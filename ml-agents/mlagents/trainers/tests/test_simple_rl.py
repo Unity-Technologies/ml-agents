@@ -308,14 +308,14 @@ def test_recurrent_sac(use_discrete):
         SAC_CONFIG.hyperparameters,
         batch_size=64,
         learning_rate=1e-3,
-        buffer_init_steps=500,
+        buffer_init_steps=1000,
         steps_per_update=2,
     )
     config = attr.evolve(
         SAC_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=5000,
+        max_steps=7000,
     )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
