@@ -31,7 +31,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
   directory. (#3829)
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
-- The `--save-freq` CLI option has been removed, and replaced by a `checkpoint_freq` option in the trainer configuration YAML. (#4034)
+- The `--save-freq` CLI option has been removed, and replaced by a `checkpoint_interval` option in the trainer configuration YAML. (#4034)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
