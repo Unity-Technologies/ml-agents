@@ -49,9 +49,10 @@ MODEL_CONSTANTS = frozenset(
         "action_output_shape",
         "is_continuous_control",
         "memory_size",
-        "major_version",
-        "minor_version",
-        "patch_version",
+        "version_number",
+        "trainer_major_version",
+        "trainer_minor_version",
+        "trainer_patch_version",
     ]
 )
 VISUAL_OBSERVATION_PREFIX = "visual_observation_"

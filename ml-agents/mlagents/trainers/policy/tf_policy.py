@@ -20,6 +20,11 @@ from mlagents.trainers import __version__
 logger = get_logger(__name__)
 
 
+# This is the version number of the inputs and outputs of the model, and
+# determines compatibility with inference in Barracuda.
+API_VERSION_NUMBER = 2
+
+
 class UnityPolicyException(UnityException):
     """
     Related to errors with the Trainer.
@@ -47,6 +52,7 @@ class TFPolicy(Policy):
         :param brain: The corresponding Brain for this policy.
         :param trainer_settings: The trainer parameters.
         """
+
         self.m_size = 0
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
@@ -500,17 +506,32 @@ class TFPolicy(Policy):
             )
             int_version = TFPolicy._convert_version_string(__version__)
             major_ver_t = tf.Variable(
-                int_version[0], name="major_version", trainable=False, dtype=tf.int32
+                int_version[0],
+                name="trainer_major_version",
+                trainable=False,
+                dtype=tf.int32,
             )
             minor_ver_t = tf.Variable(
-                int_version[1], name="minor_version", trainable=False, dtype=tf.int32
+                int_version[1],
+                name="trainer_minor_version",
+                trainable=False,
+                dtype=tf.int32,
             )
             patch_ver_t = tf.Variable(
-                int_version[2], name="patch_version", trainable=False, dtype=tf.int32
+                int_version[2],
+                name="trainer_patch_version",
+                trainable=False,
+                dtype=tf.int32,
             )
             self.version_tensors = (major_ver_t, minor_ver_t, patch_ver_t)
             tf.Variable(
                 self.m_size, name="memory_size", trainable=False, dtype=tf.int32
+            )
+            tf.Variable(
+                API_VERSION_NUMBER,
+                name="version_number",
+                trainable=False,
+                dtype=tf.int32,
             )
             if self.brain.vector_action_space_type == "continuous":
                 tf.Variable(
