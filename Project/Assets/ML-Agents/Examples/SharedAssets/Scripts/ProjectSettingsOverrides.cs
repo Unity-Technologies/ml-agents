@@ -17,7 +17,6 @@ namespace Unity.MLAgentsExamples
         float m_OriginalMaximumDeltaTime;
         int m_OriginalSolverIterations;
         int m_OriginalSolverVelocityIterations;
-        bool m_OriginalUseEnhancedDeterminism;
         bool m_OriginalReuseCollisionCallbacks;
 
         [Tooltip("Increase or decrease the scene gravity. Use ~3x to make things less floaty")]
