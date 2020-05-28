@@ -123,7 +123,6 @@ public class WalkerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, m_OrientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, m_OrientationCube.transform.forward));
         
-        //clamp the distance vector in case the target is far away. normalized to 1.
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
