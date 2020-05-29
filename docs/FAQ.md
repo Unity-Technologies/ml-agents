@@ -44,6 +44,8 @@ then either of the required DLLs, `msvcp140.dll` (old) or `msvcp140_1.dll` (new)
 
 To solve it, download and install (with a reboot) the install [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-my/help/2977003/the-latest-supported-visual-c-downloads).
 
+For more details, please see the [TensorFlow 2.1.0 release notes](https://github.com/tensorflow/tensorflow/releases/tag/v2.1.0)
+and the [TensorFlow github issue](https://github.com/tensorflow/tensorflow/issues/22794#issuecomment-573297027).
 
 ## Environment Permission Error
 
