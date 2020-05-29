@@ -138,6 +138,7 @@ public class CrawlerAgent : Agent
     {
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, m_OrientationCube.transform.forward));
         
+        //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
        
         RaycastHit hit;
