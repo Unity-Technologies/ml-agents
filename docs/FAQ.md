@@ -42,9 +42,7 @@ ImportError: DLL load failed: The specified module could not be found.
 
 then either of the required DLLs, `msvcp140.dll` (old) or `msvcp140_1.dll` (new), are missing on your machine. The `import tensorflow` command will print this warning message.
 
-To solve it, download and install (with a reboot) the install Visual C++ Redistributable exe
-
-https://support.microsoft.com/en-my/help/2977003/the-latest-supported-visual-c-downloads
+To solve it, download and install (with a reboot) the install [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-my/help/2977003/the-latest-supported-visual-c-downloads).
 
 
 ## Environment Permission Error
