@@ -9,6 +9,8 @@ public class CrawlerAgent : Agent
     [Header("Target To Walk Towards")]
     [Space(10)]
     public Transform target;
+    Vector3 m_WalkDir; //Direction to the target
+    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
     [Space(10)]
     [Header("Orientation Cube")]
@@ -64,6 +66,7 @@ public class CrawlerAgent : Agent
         oCubePos.y = -.45f;
         m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
         m_OrientationCube.transform.SetParent(transform);
+        UpdateOrientationCube();
 
         m_JdController = GetComponent<JointDriveController>();
 
@@ -229,7 +232,18 @@ public class CrawlerAgent : Agent
         bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
         bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
     }
-
+    void UpdateOrientationCube()
+    {
+        //FACING DIR
+        m_WalkDir = target.position - m_OrientationCube.transform.position;
+        m_WalkDir.y = 0; //flatten dir on the y
+        m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir); //get our look rot to the target
+        
+        //UPDATE ORIENTATION CUBE POS & ROT
+        m_OrientationCube.transform.position = body.position;
+        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+    }
+    
     void FixedUpdate()
     {
         if (detectTargets)
@@ -241,6 +255,8 @@ public class CrawlerAgent : Agent
                     TouchedTarget();
                 }
             }
+            
+            UpdateOrientationCube();
         }
 
         // If enabled the feet will light up green when the foot is grounded.
@@ -312,9 +328,13 @@ public class CrawlerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
+        
+        //Random start rotation to help generalize
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
-        if (!targetIsStatic)
+        UpdateOrientationCube();
+
+        if (detectTargets && !targetIsStatic)
         {
             GetRandomTargetPos();
         }
