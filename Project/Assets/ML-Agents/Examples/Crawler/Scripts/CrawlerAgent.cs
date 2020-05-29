@@ -248,7 +248,7 @@ public class CrawlerAgent : Agent
     {
         if (detectTargets)
         {
-            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+            foreach (var bodyPart in m_JdController.bodyPartsList)
             {
                 if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
                 {
