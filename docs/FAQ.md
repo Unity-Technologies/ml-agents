@@ -33,6 +33,20 @@ In all of these cases, the issue is a pip/python environment setup issue. Please
 search the tensorflow github issues for similar problems and solutions before
 creating a new issue.
 
+#### Visual C++ Dependency (Windows Users)
+When running `mlagents-learn`, if you see a stack trace with a message like this:
+
+```console
+ImportError: DLL load failed: The specified module could not be found.
+```
+
+then either of the required DLLs, `msvcp140.dll` (old) or `msvcp140_1.dll` (new), are missing on your machine. The `import tensorflow` command will print this warning message.
+
+To solve it, download and install (with a reboot) the install Visual C++ Redistributable exe
+
+https://support.microsoft.com/en-my/help/2977003/the-latest-supported-visual-c-downloads
+
+
 ## Environment Permission Error
 
 If you directly import your Unity environment without building it in the editor,
