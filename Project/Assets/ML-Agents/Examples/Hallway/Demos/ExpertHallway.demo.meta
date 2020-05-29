@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 41c6af18564fe425fa1c047d603ee34e
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/Hallway/Demos/ExpertHallway.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/Hallway/Demos/ExpertHallway.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 
   assetBundleVariant: 

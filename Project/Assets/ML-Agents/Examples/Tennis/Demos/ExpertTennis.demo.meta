@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 9676a67fc4a8d420aab12eb513a845a8
 ScriptedImporter:
-  fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/Tennis/Demos/ExpertTennis.demo
+  internalIDToNameTable:
+  - first:
+      114: 11400000
+    second: Assets/ML-Agents/Examples/Tennis/Demos/ExpertTennis.demo
   externalObjects: {}
+  serializedVersion: 2
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 
   assetBundleVariant: 
