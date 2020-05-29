@@ -32,6 +32,8 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
 ### Bug Fixes
+- Fixed an issue where SAC would perform a large number of model updates when resuming from a
+  checkpoint (#4038)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
