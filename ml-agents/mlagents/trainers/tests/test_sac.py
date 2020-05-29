@@ -227,11 +227,14 @@ def test_advance(dummy_config):
     policy.get_current_step = lambda: 200
     trainer.add_policy(brain_params.brain_name, policy)
     trainer.optimizer.update = mock.Mock()
+    trainer.optimizer.update_reward_signals = mock.Mock()
+    trainer.optimizer.update_reward_signals.return_value = {}
     trainer.optimizer.update.return_value = {}
     trajectory_queue.put(trajectory)
     trainer.advance()
     # Make sure we did exactly 1 update
     assert trainer.optimizer.update.call_count == 1
+    assert trainer.optimizer.update_reward_signals.call_count == 1
 
 
 if __name__ == "__main__":
