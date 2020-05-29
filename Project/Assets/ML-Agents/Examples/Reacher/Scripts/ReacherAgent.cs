@@ -13,7 +13,7 @@ namespace Unity.MLAgentsExamples
         public GameObject pendulumB;
         public GameObject hand;
         public GameObject goal;
-        //private ReacherAcademy m_MyAcademy;
+
         float m_GoalDegree;
         private Rigidbody m_RbA;
         private Rigidbody m_RbB;
@@ -30,6 +30,8 @@ namespace Unity.MLAgentsExamples
         // Frequency of the cosine deviation of the goal along the vertical dimension
         private float m_DeviationFreq;
 
+        EnvironmentParameters m_ResetParams;
+
         /// <summary>
         /// Collect the rigidbodies of the reacher in order to resue them for
         /// observations and actions.
@@ -39,7 +41,7 @@ namespace Unity.MLAgentsExamples
             m_RbA = pendulumA.GetComponent<Rigidbody>();
             m_RbB = pendulumB.GetComponent<Rigidbody>();
 
-            //m_MyAcademy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
+            m_ResetParams = Academy.Instance.EnvironmentParameters;
 
             SetResetParameters();
         }
@@ -121,11 +123,10 @@ namespace Unity.MLAgentsExamples
 
         public void SetResetParameters()
         {
-            // TODO
-//            m_GoalSize = m_MyAcademy.resetParameters["goal_size"];
-//            m_GoalSpeed = Random.Range(-1f, 1f) * m_MyAcademy.resetParameters["goal_speed"];
-//            m_Deviation = m_MyAcademy.resetParameters["deviation"];
-//            m_DeviationFreq = m_MyAcademy.resetParameters["deviation_freq"];
+            m_GoalSize = m_ResetParams.GetWithDefault("goal_size", 5);
+            m_GoalSpeed = Random.Range(-1f, 1f) * m_ResetParams.GetWithDefault("goal_speed", 1);
+            m_Deviation = m_ResetParams.GetWithDefault("deviation", 0);
+            m_DeviationFreq = m_ResetParams.GetWithDefault("deviation_freq", 0);
         }
 
         public override void Heuristic(float[] actionsOut)

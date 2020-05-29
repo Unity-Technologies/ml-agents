@@ -14,7 +14,7 @@ namespace Unity.MLAgentsExamples
         public GameObject goal;
         public GameObject reacherRootPrefab;
 
-        //private ReacherAcademy m_MyAcademy;
+        EnvironmentParameters m_ResetParams;
         float m_GoalDegree;
 
         private string m_PendulumAName;
@@ -45,7 +45,7 @@ namespace Unity.MLAgentsExamples
         {
             m_RbA = pendulumA.GetComponent<ArticulationBody>();
             m_RbB = pendulumB.GetComponent<ArticulationBody>();
-            //m_MyAcademy = GameObject.Find("Academy").GetComponent<ReacherAcademy>();
+            m_ResetParams = Academy.Instance.EnvironmentParameters;
 
 
             m_PendulumAName = pendulumA.name;
@@ -167,11 +167,10 @@ namespace Unity.MLAgentsExamples
 
         public void SetResetParameters()
         {
-            // TODO use m_ResetParams.GetWithDefault
-//            m_GoalSize = m_MyAcademy.resetParameters["goal_size"];
-//            m_GoalSpeed = Random.Range(-1f, 1f) * m_MyAcademy.resetParameters["goal_speed"];
-//            m_Deviation = m_MyAcademy.resetParameters["deviation"];
-//            m_DeviationFreq = m_MyAcademy.resetParameters["deviation_freq"];
+            m_GoalSize = m_ResetParams.GetWithDefault("goal_size", 5);
+            m_GoalSpeed = Random.Range(-1f, 1f) * m_ResetParams.GetWithDefault("goal_speed", 1);
+            m_Deviation = m_ResetParams.GetWithDefault("deviation", 0);
+            m_DeviationFreq = m_ResetParams.GetWithDefault("deviation_freq", 0);
         }
 
     }

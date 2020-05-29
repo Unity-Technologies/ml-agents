@@ -67,8 +67,6 @@ namespace Unity.MLAgentsExamples
         public MeshRenderer foot3;
         public Material groundedMaterial;
         public Material unGroundedMaterial;
-        bool m_IsNewDecisionStep;
-        int m_CurrentDecisionStep;
 
         Quaternion m_LookRotation;
         Matrix4x4 m_TargetDirMatrix;
@@ -76,7 +74,6 @@ namespace Unity.MLAgentsExamples
         public override void Initialize()
         {
             m_JdController = GetComponent<ArticulatedJointDriveController>();
-            m_CurrentDecisionStep = 1;
             m_DirToTarget = target.position - body.position;
 
             m_JdController.Reset();
@@ -112,25 +109,6 @@ namespace Unity.MLAgentsExamples
             leg2LowerName = leg2Lower.name;
             leg3UpperName = leg3Upper.name;
             leg3LowerName = leg3Lower.name;
-        }
-
-        /// <summary>
-        /// We only need to change the joint settings based on decision freq.
-        /// </summary>
-        public void IncrementDecisionTimer()
-        {
-            // TODO DecisionRequester
-//            if (m_CurrentDecisionStep == agentParameters.numberOfActionsBetweenDecisions
-//                || agentParameters.numberOfActionsBetweenDecisions == 1)
-//            {
-//                m_CurrentDecisionStep = 1;
-//                m_IsNewDecisionStep = true;
-//            }
-//            else
-//            {
-//                m_CurrentDecisionStep++;
-//                m_IsNewDecisionStep = false;
-//            }
         }
 
         /// <summary>
@@ -210,6 +188,34 @@ namespace Unity.MLAgentsExamples
 
         public override void OnActionReceived(float[] vectorAction)
         {
+            // The dictionary with all the body parts in it are in the jdController
+            var bpDict = m_JdController.bodyPartsDict;
+
+            var i = -1;
+
+            // Pick a new target joint rotation
+            bpDict[leg0Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg1Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg2Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg3Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
+            bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+            bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+
+            // Update joint strength
+            bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
+            bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
+            bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
+        }
+
+        void FixedUpdate()
+        {
             if (detectTargets)
             {
                 foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
@@ -241,35 +247,6 @@ namespace Unity.MLAgentsExamples
                     : unGroundedMaterial;
             }
 
-            // Joint update logic only needs to happen when a new decision is made
-            if (m_IsNewDecisionStep)
-            {
-                // The dictionary with all the body parts in it are in the jdController
-                var bpDict = m_JdController.bodyPartsDict;
-
-                var i = -1;
-
-                // Pick a new target joint rotation
-                bpDict[leg0Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
-                bpDict[leg1Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
-                bpDict[leg2Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
-                bpDict[leg3Upper].SetJointTargetRotation(0, vectorAction[++i], vectorAction[++i]);
-                bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-                bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-                bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-                bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-
-                // Update joint strength
-                bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
-                bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
-                bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
-                bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
-                bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
-                bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
-                bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
-                bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
-            }
-
             // Set reward for this step according to mixture of the following elements.
             if (rewardMovingTowardsTarget)
             {
@@ -285,8 +262,6 @@ namespace Unity.MLAgentsExamples
             {
                 RewardFunctionTimePenalty();
             }
-
-            IncrementDecisionTimer();
         }
 
         /// <summary>
@@ -346,9 +321,6 @@ namespace Unity.MLAgentsExamples
             {
                 GetRandomTargetPos();
             }
-
-            m_IsNewDecisionStep = true;
-            m_CurrentDecisionStep = 1;
         }
 
         /// <summary>

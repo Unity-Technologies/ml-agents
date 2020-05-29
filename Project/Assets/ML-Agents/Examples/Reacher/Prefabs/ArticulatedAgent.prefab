@@ -55,6 +55,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -90,6 +91,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4067321601414524}
   - component: {fileID: 8825304141050044247}
+  - component: {fileID: 3631661136292700196}
+  - component: {fileID: 4734153522148485267}
   m_Layer: 0
   m_Name: ArticulatedAgent
   m_TagString: Untagged
@@ -125,14 +128,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6143635a8af8679a8a563a8820c9c9ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: aee5a4acc5804447682bf509557afa4f, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 4000
-    resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 4
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 4000
   reacherRoot: {fileID: 3423762949051111643}
   pendulumA: {fileID: 1612288809266921535}
   pendulumB: {fileID: 2828438114980972834}
@@ -140,6 +139,45 @@ MonoBehaviour:
   goal: {fileID: 1986879271678326}
   reacherRootPrefab: {fileID: 4151261966004313255, guid: f517fb76e96ed5801877e6fed9d8e45e,
     type: 3}
+--- !u!114 &3631661136292700196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395682910799436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 4
+  TakeActionsBetweenDecisions: 1
+--- !u!114 &4734153522148485267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395682910799436}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 33
+    NumStackedVectorObservations: 1
+    VectorActionSize: 04000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: ArticulatedReacher
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
 --- !u!1 &1986879271678326
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,6 +250,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
