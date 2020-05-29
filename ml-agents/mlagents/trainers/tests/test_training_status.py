@@ -1,6 +1,7 @@
 import os
 import unittest
 import json
+from enum import Enum
 
 from mlagents.trainers.training_status import (
     StatusType,
@@ -28,6 +29,20 @@ def test_globaltrainingstatus(tmpdir):
         "Category1", StatusType.LESSON_NUM
     )
     assert restored_val == 3
+
+    # Test unknown categories and status types (keys)
+    unknown_category = GlobalTrainingStatus.get_parameter_state(
+        "Category3", StatusType.LESSON_NUM
+    )
+
+    class FakeStatusType(Enum):
+        NOTAREALKEY = "notarealkey"
+
+    unknown_key = GlobalTrainingStatus.get_parameter_state(
+        "Category1", FakeStatusType.NOTAREALKEY
+    )
+    assert unknown_category is None
+    assert unknown_key is None
 
 
 class StatsMetaDataTest(unittest.TestCase):
