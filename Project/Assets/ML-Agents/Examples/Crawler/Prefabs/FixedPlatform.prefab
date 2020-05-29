@@ -535,6 +535,12 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: CrawlerStatic
       objectReference: {fileID: 0}
+    - target: {fileID: 4845971001715176648, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: 3a0adb82c7ed34a64a431dd0a6fd9391,
+        type: 3}
     - target: {fileID: 4845971001715176649, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
         type: 3}
       propertyPath: target
