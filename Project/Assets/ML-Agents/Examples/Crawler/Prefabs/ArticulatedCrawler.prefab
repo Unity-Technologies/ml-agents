@@ -11,6 +11,8 @@ GameObject:
   - component: {fileID: 4283901937423508}
   - component: {fileID: 201389242582710296}
   - component: {fileID: 7737080709538424164}
+  - component: {fileID: 3485593964014911945}
+  - component: {fileID: 2075637133560856131}
   m_Layer: 0
   m_Name: ArticulatedCrawler
   m_TagString: Untagged
@@ -61,14 +63,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7fe662b41d94ad2b94ff2f5fc596210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 11400000, guid: 0505e961608004377974940ed17e03d5, type: 2}
   agentParameters:
-    agentCameras: []
-    agentRenderTextures: []
     maxStep: 5000
-    resetOnDone: 1
-    onDemandDecision: 0
-    numberOfActionsBetweenDecisions: 5
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
   target: {fileID: 0}
   ground: {fileID: 0}
   detectTargets: 1
@@ -96,6 +94,45 @@ MonoBehaviour:
   foot3: {fileID: 0}
   groundedMaterial: {fileID: 0}
   unGroundedMaterial: {fileID: 0}
+--- !u!114 &3485593964014911945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129387478859796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d1c4e0b1822b495aa52bc52839ecb30, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_BrainParameters:
+    VectorObservationSize: 126
+    NumStackedVectorObservations: 1
+    VectorActionSize: 14000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
+  m_Model: {fileID: 0}
+  m_InferenceDevice: 0
+  m_BehaviorType: 0
+  m_BehaviorName: My Behavior
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
+--- !u!114 &2075637133560856131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1129387478859796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DecisionPeriod: 5
+  TakeActionsBetweenDecisions: 1
 --- !u!1001 &3873886807597560832
 PrefabInstance:
   m_ObjectHideFlags: 0

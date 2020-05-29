@@ -332,7 +332,8 @@ namespace Unity.MLAgentsExamples
             m_JdController.Reset();
 
             string bodyName = body.name;
-            DestroyImmediate(body.gameObject);
+            //DestroyImmediate(body.gameObject);
+            Destroy(body.gameObject);
             body = Instantiate(rootBodyPrefab, position, rotation);
             body.transform.parent = transform;
             body.name = bodyName;
