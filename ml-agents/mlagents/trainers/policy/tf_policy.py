@@ -524,13 +524,13 @@ class TFPolicy(Policy):
             )
             self.version_tensors = (major_ver_t, minor_ver_t, patch_ver_t)
             tf.Variable(
-                self.m_size, name="memory_size", trainable=False, dtype=tf.int32
-            )
-            tf.Variable(
                 MODEL_FORMAT_VERSION,
                 name="version_number",
                 trainable=False,
                 dtype=tf.int32,
+            )
+            tf.Variable(
+                self.m_size, name="memory_size", trainable=False, dtype=tf.int32
             )
             if self.brain.vector_action_space_type == "continuous":
                 tf.Variable(
