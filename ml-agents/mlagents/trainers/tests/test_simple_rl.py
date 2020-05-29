@@ -169,7 +169,8 @@ def test_2d_ppo(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
     )
-    config = attr.evolve(PPO_CONFIG)
+    new_hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, batch_size=64)
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams)
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -299,7 +300,10 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    step_size = 0.2 if use_discrete else 0.5
+    env = MemoryEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
+    )
     new_networksettings = attr.evolve(
         SAC_CONFIG.network_settings,
         memory=NetworkSettings.MemorySettings(memory_size=16, sequence_length=32),
@@ -308,14 +312,14 @@ def test_recurrent_sac(use_discrete):
         SAC_CONFIG.hyperparameters,
         batch_size=64,
         learning_rate=1e-3,
-        buffer_init_steps=1000,
+        buffer_init_steps=500,
         steps_per_update=2,
     )
     config = attr.evolve(
         SAC_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=7000,
+        max_steps=5000,
     )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
