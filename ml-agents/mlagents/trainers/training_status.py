@@ -96,19 +96,23 @@ class GlobalTrainingStatus:
         with open(path, "w") as f:
             json.dump(GlobalTrainingStatus.saved_state, f, indent=4)
 
-    def store_parameter_state(self, key: StatusType, value: Any) -> None:
+    @staticmethod
+    def set_parameter_state(category: str, key: StatusType, value: Any) -> None:
         """
         Stores an arbitrary-named parameter in the global saved state.
+        :param category: The category (usually behavior name) of the parameter.
         :param key: The parameter, e.g. lesson number.
         :param value: The value.
         """
-        GlobalTrainingStatus.saved_state[self.category][key.value] = value
+        GlobalTrainingStatus.saved_state[category][key.value] = value
 
-    def restore_parameter_state(self, key: StatusType) -> Any:
+    @staticmethod
+    def get_parameter_state(category: str, key: StatusType) -> Any:
         """
-        Stores an arbitrary-named parameter in training_status.json.
+        Loads an arbitrary-named parameter from training_status.json.
         If not found, returns None.
+        :param category: The category (usually behavior name) of the parameter.
         :param key: The statistic, e.g. lesson number.
         :param value: The value.
         """
-        return GlobalTrainingStatus.saved_state[self.category].get(key.value, None)
+        return GlobalTrainingStatus.saved_state[category].get(key.value, None)

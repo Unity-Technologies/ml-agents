@@ -79,24 +79,20 @@ def test_increment_lessons_with_reward_buff_sizes(
 
 
 @patch("mlagents.trainers.meta_curriculum.GlobalTrainingStatus")
-def test_restore_curriculums(mock_reporter_creation):
+def test_restore_curriculums(mock_trainingstatus):
     meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
-    mock_reporter = Mock()
-    mock_reporter_creation.return_value = mock_reporter
     # Test restore to value
-    mock_reporter.restore_parameter_state.return_value = 2
+    mock_trainingstatus.get_parameter_state.return_value = 2
     meta_curriculum.try_restore_all_curriculum()
-    mock_reporter_creation.assert_has_calls(
-        [call("Brain1"), call("Brain2")], any_order=True
-    )
-    mock_reporter.restore_parameter_state.assert_has_calls(
-        [call(StatusType.LESSON_NUM), call(StatusType.LESSON_NUM)], any_order=True
+    mock_trainingstatus.get_parameter_state.assert_has_calls(
+        [call("Brain1", StatusType.LESSON_NUM), call("Brain2", StatusType.LESSON_NUM)],
+        any_order=True,
     )
     assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 2
     assert meta_curriculum.brains_to_curricula["Brain2"].lesson_num == 2
 
     # Test restore to None
-    mock_reporter.restore_parameter_state.return_value = None
+    mock_trainingstatus.get_parameter_state.return_value = None
     meta_curriculum.try_restore_all_curriculum()
 
     assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 0

@@ -9,11 +9,10 @@ from mlagents.trainers.training_status import (
 )
 
 
-def test_stats_reporter_store_restore(tmpdir):
-    trainingstatus = GlobalTrainingStatus("Category1")
+def test_globaltrainingstatus(tmpdir):
     path_dir = os.path.join(tmpdir, "test.json")
 
-    trainingstatus.store_parameter_state(StatusType.LESSON_NUM, 3)
+    GlobalTrainingStatus.set_parameter_state("Category1", StatusType.LESSON_NUM, 3)
     GlobalTrainingStatus.save_state(path_dir)
 
     with open(path_dir, "r") as fp:
@@ -24,9 +23,10 @@ def test_stats_reporter_store_restore(tmpdir):
     assert test_json["Category1"][StatusType.LESSON_NUM.value] == 3
     assert "metadata" in test_json
 
-    statsreporter_new = GlobalTrainingStatus("Category1")
     GlobalTrainingStatus.load_state(path_dir)
-    restored_val = statsreporter_new.restore_parameter_state(StatusType.LESSON_NUM)
+    restored_val = GlobalTrainingStatus.get_parameter_state(
+        "Category1", StatusType.LESSON_NUM
+    )
     assert restored_val == 3
 
 

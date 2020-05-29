@@ -122,8 +122,8 @@ class MetaCurriculum:
         """
 
         for brain_name, curriculum in self.brains_to_curricula.items():
-            lesson_num = GlobalTrainingStatus(brain_name).restore_parameter_state(
-                StatusType.LESSON_NUM
+            lesson_num = GlobalTrainingStatus.get_parameter_state(
+                brain_name, StatusType.LESSON_NUM
             )
             if lesson_num is not None:
                 logger.info(

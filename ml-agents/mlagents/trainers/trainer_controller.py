@@ -311,8 +311,8 @@ class TrainerController(object):
                     self.trainers[brain_name].stats_reporter.set_stat(
                         "Environment/Lesson", curr.lesson_num
                     )
-                    GlobalTrainingStatus(brain_name).store_parameter_state(
-                        StatusType.LESSON_NUM, curr.lesson_num
+                    GlobalTrainingStatus.set_parameter_state(
+                        brain_name, StatusType.LESSON_NUM, curr.lesson_num
                     )
 
         for trainer in self.trainers.values():
