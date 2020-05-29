@@ -167,12 +167,12 @@ def test_simple_ppo(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_2d_ppo(use_discrete):
     env = SimpleEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
+        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
     new_hyperparams = attr.evolve(
         PPO_CONFIG.hyperparameters, batch_size=64, buffer_size=640
     )
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams)
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -312,8 +312,8 @@ def test_recurrent_sac(use_discrete):
     )
     new_hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters,
-        batch_size=64,
-        learning_rate=1e-3,
+        batch_size=128,
+        learning_rate=3e-4,
         buffer_init_steps=500,
         steps_per_update=2,
     )
