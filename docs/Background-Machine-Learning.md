@@ -101,7 +101,7 @@ to the configuration of the robot (e.g. position of its base, position of its
 water hose and whether the hose is on or off).
 
 The last remaining piece of the reinforcement learning task is the **reward
-signal**. When training a robot to be a mean firefighting machine, we provide it
+signal**.  The robot is usually trained to learn a policy that maximizes its overall rewards. When training a robot to be a mean firefighting machine, we provide it
 with rewards (positive and negative) indicating how well it is doing on
 completing the task. Note that the robot does not _know_ how to put out fires
 before it is trained. It learns the objective because it receives a large
