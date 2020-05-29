@@ -128,7 +128,7 @@ namespace Unity.MLAgentsExamples
             if (bp.arb.transform != body)
             {
                 var localPosRelToBody = body.InverseTransformPoint(arb.transform.position); // Translate from world space to body local space, since all articulations are children of body in hiearchy
-                vectorSensor.AddObservation(localPosRelToBody);
+                //vectorSensor.AddObservation(localPosRelToBody);
                 vectorSensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
                 vectorSensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
                 vectorSensor.AddObservation(bp.currentZNormalizedRot); // Current z rot

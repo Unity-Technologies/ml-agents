@@ -54,8 +54,6 @@ namespace Unity.MLAgentsExamples
         public MeshRenderer foot3;
         public Material groundedMaterial;
         public Material unGroundedMaterial;
-        bool m_IsNewDecisionStep;
-        int m_CurrentDecisionStep;
 
         Quaternion m_LookRotation;
         Matrix4x4 m_TargetDirMatrix;
@@ -63,7 +61,6 @@ namespace Unity.MLAgentsExamples
         public override void Initialize()
         {
             m_JdController = GetComponent<JointDriveController>();
-            m_CurrentDecisionStep = 1;
             m_DirToTarget = target.position - body.position;
 
 
@@ -282,9 +279,6 @@ namespace Unity.MLAgentsExamples
             {
                 GetRandomTargetPos();
             }
-
-            m_IsNewDecisionStep = true;
-            m_CurrentDecisionStep = 1;
         }
     }
 }
