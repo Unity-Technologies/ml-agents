@@ -302,7 +302,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    step_size = 0.2 if use_discrete else 0.8
+    step_size = 0.2 if use_discrete else 1.0
     env = MemoryEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
     )
