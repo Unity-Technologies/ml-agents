@@ -145,12 +145,12 @@ contributions. If you wish to contribute, be sure to review our
 [contribution guidelines](com.unity.ml-agents/CONTRIBUTING.md) and
 [code of conduct](CODE_OF_CONDUCT.md).
 
-For problems with the installation and setup of the the ML-Agents Toolkit, or
+For problems with the installation and setup of the ML-Agents Toolkit, or
 discussions about how to best setup or train your agents, please create a new
 thread on the
 [Unity ML-Agents forum](https://forum.unity.com/forums/ml-agents.453/) and make
 sure to include as much detail as possible. If you run into any other problems
-using the ML-Agents Toolkit, or have a specific feature requests, please
+using the ML-Agents Toolkit or have a specific feature request, please
 [submit a GitHub issue](https://github.com/Unity-Technologies/ml-agents/issues).
 
 Your opinion matters a great deal to us. Only by hearing your thoughts on the
