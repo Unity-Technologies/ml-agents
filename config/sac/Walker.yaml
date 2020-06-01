@@ -14,8 +14,8 @@ behaviors:
       reward_signal_steps_per_update: 30.0
     network_settings:
       normalize: true
-      hidden_units: 512
-      num_layers: 4
+      hidden_units: 256
+      num_layers: 3
       vis_encode_type: simple
     reward_signals:
       extrinsic:
