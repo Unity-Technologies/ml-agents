@@ -16,14 +16,35 @@ namespace MLAgentsExamples.Tests.Performance
             "root.InitializeSensors",
             "root.AgentSendState.CollectObservations"
         };
+        const int k_NumAgentSteps = 10;
+        const int k_MeasurementCount = 25;
+        const int k_MarkerTestSteps = 10;
 
         [SetUp]
         public void SetUp()
         {
-            // Run Academy initialization here, so that we don't time the connection attempt.
-            var academy = Academy.Instance;
+            // Step a dummy agent here, so that we don't time the Academy initialization connection attempt and
+            // any other static setup costs.
+            RunAgent<DummyAgent>(1, 0);
         }
 
+        /// <summary>
+        /// Simple Agent just used for "burning in" the Academy for testing.
+        /// </summary>
+        class DummyAgent : Agent
+        {
+            public override void CollectObservations(VectorSensor sensor)
+            {
+            }
+
+            public override void Heuristic(float[] actionsOut)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Agent used for performance testing that uses the CollectObservations interface.
+        /// </summary>
         class CollectObservationsAgent : Agent
         {
             public override void CollectObservations(VectorSensor sensor)
@@ -37,6 +58,9 @@ namespace MLAgentsExamples.Tests.Performance
             }
         }
 
+        /// <summary>
+        /// Agent used for performance testing that uses the ObservableAttributes on fields.
+        /// </summary>
         class ObservableFieldAgent : Agent
         {
             [Observable]
@@ -50,13 +74,36 @@ namespace MLAgentsExamples.Tests.Performance
             }
         }
 
+        /// <summary>
+        /// Agent used for performance testing that uses the ObservableAttributes on properties.
+        /// </summary>
+        class ObservablePropertyAgent : Agent
+        {
+            Vector3 m_Vector3Field = new Vector3(1, 2, 3);
+
+            [Observable]
+            Vector3 Vector3Property
+            {
+                get { return m_Vector3Field; }
+            }
+
+            Quaternion m_QuaternionField = new Quaternion(1, 2, 3, 4);
+
+            [Observable]
+            Quaternion QuaternionProperty
+            {
+                get { return m_QuaternionField; }
+            }
+
+            public override void Heuristic(float[] actionsOut)
+            {
+            }
+        }
+
         void RunAgent<T>(int numSteps, int obsSize) where T : Agent
         {
             var agentGameObj = new GameObject();
             var agent = agentGameObj.AddComponent<T>();
-
-            var decisionRequester = agent.gameObject.AddComponent<DecisionRequester>();
-            decisionRequester.DecisionPeriod = 1;
 
             var behaviorParams = agent.GetComponent<BehaviorParameters>();
             behaviorParams.BrainParameters.VectorObservationSize = obsSize;
@@ -64,6 +111,7 @@ namespace MLAgentsExamples.Tests.Performance
             agent.LazyInitialize();
             for (var i = 0; i < numSteps; i++)
             {
+                agent.RequestDecision();
                 Academy.Instance.EnvironmentStep();
             }
             Object.DestroyImmediate(agentGameObj);
@@ -74,9 +122,10 @@ namespace MLAgentsExamples.Tests.Performance
         {
             Measure.Method(() =>
             {
-                RunAgent<CollectObservationsAgent>(10, 7);
+                RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7);
             })
-                .MeasurementCount(10)
+                .MeasurementCount(k_MeasurementCount)
+                .GC()
                 .Run();
         }
 
@@ -85,9 +134,22 @@ namespace MLAgentsExamples.Tests.Performance
         {
             Measure.Method(() =>
             {
-                RunAgent<ObservableFieldAgent>(10, 0);
+                RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0);
             })
-                .MeasurementCount(10)
+                .MeasurementCount(k_MeasurementCount)
+                .GC()
+                .Run();
+        }
+
+        [Test, Performance]
+        public void TestObservablePropertyAgent()
+        {
+            Measure.Method(() =>
+                {
+                    RunAgent<ObservablePropertyAgent>(k_NumAgentSteps, 0);
+                })
+                .MeasurementCount(k_MeasurementCount)
+                .GC()
                 .Run();
         }
 
@@ -96,7 +158,10 @@ namespace MLAgentsExamples.Tests.Performance
         {
             using (Measure.ProfilerMarkers(s_Markers))
             {
-                RunAgent<CollectObservationsAgent>(10, 7);
+                for(var i=0; i<k_MarkerTestSteps; i++)
+                {
+                    RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7);
+                }
             }
         }
 
@@ -105,7 +170,22 @@ namespace MLAgentsExamples.Tests.Performance
         {
             using (Measure.ProfilerMarkers(s_Markers))
             {
-                RunAgent<ObservableFieldAgent>(10, 0);
+                for (var i = 0; i < k_MarkerTestSteps; i++)
+                {
+                    RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0);
+                }
+            }
+        }
+
+        [Test, Performance]
+        public void TestObservablePropertyAgentMarkers()
+        {
+            using (Measure.ProfilerMarkers(s_Markers))
+            {
+                for (var i = 0; i < k_MarkerTestSteps; i++)
+                {
+                    RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0);
+                }
             }
         }
     }
