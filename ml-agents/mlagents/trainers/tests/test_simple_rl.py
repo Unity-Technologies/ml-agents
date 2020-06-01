@@ -312,7 +312,7 @@ def test_recurrent_sac(use_discrete):
         SAC_CONFIG.hyperparameters,
         batch_size=128,
         learning_rate=1e-3,
-        buffer_init_steps=500,
+        buffer_init_steps=1000,
         steps_per_update=2,
     )
     config = attr.evolve(
