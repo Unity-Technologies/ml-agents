@@ -151,6 +151,7 @@ def test_advance(dummy_config):
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
     dummy_config.hyperparameters.steps_per_update = 20
+    dummy_config.hyperparameters.reward_signal_steps_per_update = 20
     dummy_config.hyperparameters.buffer_init_steps = 0
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
@@ -219,6 +220,21 @@ def test_advance(dummy_config):
     trainer.advance()
     with pytest.raises(AgentManagerQueue.Empty):
         policy_queue.get_nowait()
+
+    # Call add_policy and check that we update the correct number of times.
+    # This is to emulate a load from checkpoint.
+    policy = trainer.create_policy(brain_params.brain_name, brain_params)
+    policy.get_current_step = lambda: 200
+    trainer.add_policy(brain_params.brain_name, policy)
+    trainer.optimizer.update = mock.Mock()
+    trainer.optimizer.update_reward_signals = mock.Mock()
+    trainer.optimizer.update_reward_signals.return_value = {}
+    trainer.optimizer.update.return_value = {}
+    trajectory_queue.put(trajectory)
+    trainer.advance()
+    # Make sure we did exactly 1 update
+    assert trainer.optimizer.update.call_count == 1
+    assert trainer.optimizer.update_reward_signals.call_count == 1
 
 
 if __name__ == "__main__":

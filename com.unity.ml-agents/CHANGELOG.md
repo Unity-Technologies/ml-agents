@@ -34,6 +34,8 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - When trying to load/resume from a checkpoint created with an earlier verison of ML-Agents,
   a warning will be thrown. (#4035)
 ### Bug Fixes
+- Fixed an issue where SAC would perform too many model updates when resuming from a
+  checkpoint, and too few when using `buffer_init_steps`. (#4038)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
