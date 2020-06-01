@@ -408,8 +408,8 @@ behaviors:
     hyperparameters:
       batch_size: 10
       buffer_size: 100
-      learning_rate: 0.0003
-      beta: 0.0005
+      learning_rate: 3.0e-4
+      beta: 5.0e-4
       epsilon: 0.2
       lambd: 0.99
       num_epoch: 3
@@ -418,7 +418,6 @@ behaviors:
       normalize: false
       hidden_units: 128
       num_layers: 2
-      vis_encode_type: simple
     reward_signals:
       extrinsic:
         gamma: 0.99
