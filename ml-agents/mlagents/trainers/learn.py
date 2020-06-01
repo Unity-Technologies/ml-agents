@@ -125,9 +125,12 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         maybe_meta_curriculum = try_create_meta_curriculum(
             options.curriculum, env_manager, checkpoint_settings.lesson
         )
+        maybe_add_samplers(options.parameter_randomization, env_manager)
+
         sampler_manager, resampling_interval = create_sampler_manager(
             options.parameter_randomization, run_seed
         )
+
         trainer_factory = TrainerFactory(
             options.behaviors,
             checkpoint_settings.run_id,
@@ -184,6 +187,20 @@ def write_timing_tree(output_dir: str) -> None:
         logger.warning(
             f"Unable to save to {timing_path}. Make sure the directory exists"
         )
+
+
+def maybe_add_samplers(sampler_config, env):
+    restructured_sampler_config: Dict[str, List[float]] = {}
+    if sampler_config is not None:
+        for v, config in sampler_config.items():
+            if v != "resampling-interval":
+                sampler_type = 0.0 if config["sampler-type"] == "uniform" else 1.0
+                restructured_sampler_config[v] = [
+                    sampler_type,
+                    config["min_value"],
+                    config["max_value"],
+                ]
+        env.reset(config=restructured_sampler_config)
 
 
 def create_sampler_manager(sampler_config, run_seed=None):

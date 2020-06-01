@@ -2,6 +2,7 @@ from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMes
 from mlagents_envs.exception import UnityCommunicationException
 import uuid
 from enum import IntEnum
+from typing import List
 
 
 class EnvironmentParametersChannel(SideChannel):
@@ -13,6 +14,7 @@ class EnvironmentParametersChannel(SideChannel):
 
     class EnvironmentDataTypes(IntEnum):
         FLOAT = 0
+        SAMPLER = 1
 
     def __init__(self) -> None:
         channel_id = uuid.UUID(("534c891e-810f-11ea-a9d0-822485860400"))
@@ -34,4 +36,17 @@ class EnvironmentParametersChannel(SideChannel):
         msg.write_string(key)
         msg.write_int32(self.EnvironmentDataTypes.FLOAT)
         msg.write_float32(value)
+        super().queue_message_to_send(msg)
+
+    def set_sampler_parameters(self, key: str, values: List[float]) -> None:
+        """
+        Sets a float environment parameter in the Unity Environment.
+        :param key: The string identifier of the parameter.
+        :param value: The float value of the parameter.
+        """
+        msg = OutgoingMessage()
+        msg.write_string(key)
+        msg.write_int32(self.EnvironmentDataTypes.SAMPLER)
+        for value in values:
+            msg.write_float32(value)
         super().queue_message_to_send(msg)

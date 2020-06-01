@@ -175,7 +175,10 @@ def worker(
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
             elif req.cmd == EnvironmentCommand.RESET:
                 for k, v in req.payload.items():
-                    env_parameters.set_float_parameter(k, v)
+                    if isinstance(v, float):
+                        env_parameters.set_float_parameter(k, v)
+                    elif isinstance(v, list):
+                        env_parameters.set_sampler_parameters(k, v)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)

@@ -13,6 +13,12 @@ public class Ball3DAgent : Agent
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
+        var samplerType = m_ResetParams.GetWithDefault("mass-sampler-type", -1.0f);
+        var min = m_ResetParams.GetWithDefault("mass-min", -1.0f);
+        var max = m_ResetParams.GetWithDefault("mass-max", -1.0f);
+        Debug.Log(samplerType);
+        Debug.Log(min);
+        Debug.Log(max);
         SetResetParameters();
     }
 

@@ -9,7 +9,8 @@ namespace Unity.MLAgents.SideChannels
     /// </summary>
     internal enum EnvironmentDataTypes
     {
-        Float = 0
+        Float = 0,
+        Sampler = 1
     }
 
     /// <summary>
@@ -48,6 +49,16 @@ namespace Unity.MLAgents.SideChannels
                 m_RegisteredActions.TryGetValue(key, out action);
                 action?.Invoke(value);
             }
+            else if ((int)EnvironmentDataTypes.Sampler == type)
+            {
+                var samplerType = msg.ReadFloat32();
+                var statOne = msg.ReadFloat32();
+                var statTwo = msg.ReadFloat32();
+
+                m_Parameters[key+"-sampler-type"] = samplerType;
+                m_Parameters[key+"-min"] = statOne;
+                m_Parameters[key+"-max"] = statTwo;
+            }
             else
             {
                 Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");
@@ -62,6 +73,20 @@ namespace Unity.MLAgents.SideChannels
         /// <param name="defaultValue">Default value to return.</param>
         /// <returns></returns>
         public float GetWithDefault(string key, float defaultValue)
+        {
+            float valueOut;
+            bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
+            return hasKey ? valueOut : defaultValue;
+        }
+
+        /// <summary>
+        /// Returns the parameter value associated with the provided key. Returns the default
+        /// value if one doesn't exist.
+        /// </summary>
+        /// <param name="key">Parameter key.</param>
+        /// <param name="defaultValue">Default value to return.</param>
+        /// <returns></returns>
+        public float GetListWithDefault(string key, float defaultValue)
         {
             float valueOut;
             bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
