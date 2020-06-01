@@ -2,8 +2,8 @@ behaviors:
   Tennis:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 1024
-      buffer_size: 10240
+      batch_size: 2048
+      buffer_size: 20480
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
@@ -28,7 +28,7 @@ behaviors:
     self_play:
       save_steps: 50000
       team_change: 100000
-      swap_steps: 50000
+      swap_steps: 2000
       window: 10
       play_against_latest_model_ratio: 0.5
       initial_elo: 1200.0
