@@ -404,27 +404,28 @@ and include the following hyperparameter values:
 ```yml
 behaviors:
   RollerBall:
-    trainer: ppo
-    batch_size: 10
-    beta: 5.0e-3
-    buffer_size: 100
-    epsilon: 0.2
-    hidden_units: 128
-    lambd: 0.95
-    learning_rate: 3.0e-4
-    learning_rate_schedule: linear
-    max_steps: 5.0e4
-    memory_size: 128
-    normalize: false
-    num_epoch: 3
-    num_layers: 2
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 10
+      buffer_size: 100
+      learning_rate: 0.0003
+      beta: 0.0005
+      epsilon: 0.2
+      lambd: 0.99
+      num_epoch: 3
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: true
+      hidden_units: 128
+      num_layers: 2
+      vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        gamma: 0.99
+        strength: 1.0
+    max_steps: 500000
     time_horizon: 64
     summary_freq: 10000
-    use_recurrent: false
-    reward_signals:
-        extrinsic:
-            strength: 1.0
-            gamma: 0.99
 ```
 
 Since this example creates a very simple training environment with only a few
