@@ -14,7 +14,8 @@ namespace MLAgentsExamples.Tests.Performance
         string[] s_Markers =
         {
             "root.InitializeSensors",
-            "root.AgentSendState.CollectObservations"
+            "root.AgentSendState.CollectObservations",
+            "root.AgentSendState.RequestDecision"
         };
         const int k_NumAgentSteps = 10;
         const int k_MeasurementCount = 25;
