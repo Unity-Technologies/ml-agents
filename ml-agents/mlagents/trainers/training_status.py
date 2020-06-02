@@ -50,16 +50,13 @@ class StatusMetaData:
 
 
 class GlobalTrainingStatus:
-    saved_state: Dict[str, Dict[str, Any]] = defaultdict(lambda: {})
+    """
+    GlobalTrainingStatus class that contains static methods to save global training status and
+    load it on a resume. These are values that might be needed for the training resume that
+    cannot/should not be captured in a model checkpoint, such as curriclum lesson.
+    """
 
-    def __init__(self, category: str):
-        """
-        Generic GlobalTrainingStatus writer. A category is the broadest type of storage (would
-        correspond the run name and trainer name, e.g. 3DBalltest_3DBall. A key is the
-        type of status needed to be saved (e.g. Lesson Number). Finally the Value is the float value
-        attached to this stat.
-        """
-        self.category: str = category
+    saved_state: Dict[str, Dict[str, Any]] = defaultdict(lambda: {})
 
     @staticmethod
     def load_state(path: str) -> None:
