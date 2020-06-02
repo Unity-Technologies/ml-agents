@@ -46,7 +46,7 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
     return all_behavior_config_dict
 
 
-def write_to_yaml_file(config: Dict[str, Any], output_config: str):
+def write_to_yaml_file(config: Dict[str, Any], output_config: str) -> None:
     unstructed_config = cattr.unstructure(config)
     unstructed_config = remove_nones(unstructed_config)
     with open(output_config, "w") as f:
@@ -56,7 +56,7 @@ def write_to_yaml_file(config: Dict[str, Any], output_config: str):
             yaml.dump(unstructed_config, f)
 
 
-def remove_nones(config: Dict[Any, Any]):
+def remove_nones(config: Dict[Any, Any]) -> None:
     new_config = {}
     for key, val in config.items():
         if isinstance(val, dict):
@@ -66,8 +66,7 @@ def remove_nones(config: Dict[Any, Any]):
     return new_config
 
 
-if __name__ == "__main__":
-
+def main() -> None:
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -108,3 +107,7 @@ if __name__ == "__main__":
         full_config["parameter_randomization"] = sampler_config_dict
 
     write_to_yaml_file(full_config, args.output_config_path)
+
+
+if __name__ == "__main__":
+    main()
