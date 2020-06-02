@@ -112,7 +112,7 @@ public class WalkerAgent : Agent
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
-    
+
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
