@@ -215,14 +215,14 @@ public class WalkerAgent : Agent
         AddReward(1f);
         if (respawnTargetWhenTouched)
         {
-            GetRandomTargetPos();
+            MoveTargetToRandomPosition();
         }
     }
 
     /// <summary>
     /// Moves target to a random position within specified radius.
     /// </summary>
-    public void GetRandomTargetPos()
+    public void MoveTargetToRandomPosition()
     {
         var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
         newTargetPos.y = 5;
@@ -247,7 +247,7 @@ public class WalkerAgent : Agent
 
         if (detectTargets && !targetIsStatic)
         {
-            GetRandomTargetPos();
+            MoveTargetToRandomPosition();
         }
 
         SetResetParameters();
