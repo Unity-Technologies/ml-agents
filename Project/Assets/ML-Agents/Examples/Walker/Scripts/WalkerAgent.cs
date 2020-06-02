@@ -24,9 +24,8 @@ public class WalkerAgent : Agent
     public float targetSpawnRadius;
     public Transform target;
     public Transform ground;
-    public bool detectTargets;
-    public bool targetIsStatic;
-    public bool respawnTargetWhenTouched;
+    public bool detectTargets; //Should this agent detect targets
+    public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
 
     [Header("Body Parts")]
     [Space(10)]
@@ -245,7 +244,7 @@ public class WalkerAgent : Agent
         
         UpdateOrientationCube();
 
-        if (detectTargets && !targetIsStatic)
+        if (detectTargets && respawnTargetWhenTouched)
         {
             MoveTargetToRandomPosition();
         }
