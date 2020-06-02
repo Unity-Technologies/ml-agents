@@ -9,16 +9,16 @@ namespace Unity.MLAgentsExamples
         public Transform transformToFollow; //ex: hips or body
         public Transform targetToLookAt; //target in the scene the indicator will point to
         public float heightOffset;
-        private Vector3 m_StartingPos;
+        private float m_StartingYPos;
         
         void OnEnable()
         {
-            m_StartingPos = transform.position;
+            m_StartingYPos = transform.position.y;
         }
 
         void Update()
         {
-            transform.position = new Vector3(transformToFollow.position.x, m_StartingPos.y + heightOffset, transformToFollow.position.z);
+            transform.position = new Vector3(transformToFollow.position.x, m_StartingYPos + heightOffset, transformToFollow.position.z);
             Vector3 m_WalkDir = targetToLookAt.position - transform.position;
             m_WalkDir.y = 0; //flatten dir on the y
             transform.rotation = Quaternion.LookRotation(m_WalkDir);
