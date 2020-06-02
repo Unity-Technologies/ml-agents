@@ -19,9 +19,9 @@ namespace Unity.MLAgentsExamples
         void Update()
         {
             transform.position = new Vector3(transformToFollow.position.x, m_StartingYPos + heightOffset, transformToFollow.position.z);
-            Vector3 m_WalkDir = targetToLookAt.position - transform.position;
-            m_WalkDir.y = 0; //flatten dir on the y
-            transform.rotation = Quaternion.LookRotation(m_WalkDir);
+            Vector3 walkDir = targetToLookAt.position - transform.position;
+            walkDir.y = 0; //flatten dir on the y
+            transform.rotation = Quaternion.LookRotation(walkDir);
         }
     }
 }
