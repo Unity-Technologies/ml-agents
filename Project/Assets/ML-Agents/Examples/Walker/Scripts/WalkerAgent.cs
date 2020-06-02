@@ -13,9 +13,6 @@ public class WalkerAgent : Agent
     Vector3 m_WalkDir; //Direction to the target
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
     
-    [Space(10)]
-    [Header("Orientation Cube")]
-    [Space(10)]
     //This will be used as a stable observation platform for the ragdoll to use.
     GameObject m_OrientationCube;
     
