@@ -18,9 +18,9 @@ public class WalkerAgent : Agent
     
     [Header("Target To Walk Towards")]
     [Space(10)]
-    public float targetSpawnRadius;
-    public Transform target;
-    public Transform ground;
+    public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
+    public Transform target; //Target the agent will walk towards.
+    public Transform ground; //Ground gameobject. The height will be used for target spawning
     public bool detectTargets; //Should this agent detect targets
     public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
 
