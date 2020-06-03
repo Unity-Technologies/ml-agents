@@ -30,8 +30,8 @@ were replaced by `allow_multiple_obs` which allows one or more visual observatio
 vector observations to be used simultaneously.
 
 ### Steps to Migrate
-- To upgrade your configuration files, an upgrade script has been provided. Run `python config/update_config.py
-  -h` to see the script usage.
+- To upgrade your configuration files, an upgrade script has been provided. Run
+  `python -m mlagents.trainers.upgrade_config -h` to see the script usage.
 
   To do it manually, copy your `<BehaviorName>` sections from `trainer_config.yaml` into a separate trainer configuration file, under a `behaviors` section.
   The `default` section is no longer needed. This new file should be specific to your environment, and not contain

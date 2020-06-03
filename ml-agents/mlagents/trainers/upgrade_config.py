@@ -56,7 +56,7 @@ def write_to_yaml_file(config: Dict[str, Any], output_config: str) -> None:
             yaml.dump(unstructed_config, f)
 
 
-def remove_nones(config: Dict[Any, Any]) -> None:
+def remove_nones(config: Dict[Any, Any]) -> Dict[str, Any]:
     new_config = {}
     for key, val in config.items():
         if isinstance(val, dict):

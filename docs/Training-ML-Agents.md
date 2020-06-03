@@ -181,8 +181,8 @@ and explains the possible settings for each.
 
 **NOTE:** The configuration file format has been changed from 0.17.0 and onwards. To convert
 an old set of configuration files (trainer config, curriculum, and sampler files) to the new
-format, a script has been provided. Run `python config/upgrade_config.py -h` in your  console
-to see the script's usage.
+format, a script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` in your
+console to see the script's usage.
 
 ### Behavior Configurations
 
