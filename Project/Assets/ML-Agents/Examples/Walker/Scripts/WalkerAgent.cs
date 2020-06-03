@@ -179,14 +179,16 @@ public class WalkerAgent : Agent
 
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
+        var moveTowardsTargetReward = Vector3.Dot(orientationCube.transform.forward,
+            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
+        var lookAtTargetReward = Vector3.Dot(orientationCube.transform.forward, head.forward);
         // c. Encourage head height.
+        var headHeightOverFeetReward = (head.position.y - footL.position.y) + (head.position.y - footR.position.y);
         AddReward(
-            +0.02f * Vector3.Dot(orientationCube.transform.forward,
-                Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed))
-            + 0.01f * Vector3.Dot(orientationCube.transform.forward, head.forward)
-            + 0.005f * (head.position.y - footL.position.y)
-            + 0.005f * (head.position.y - footR.position.y)
+            +0.02f * moveTowardsTargetReward
+            + 0.01f * lookAtTargetReward
+            + 0.01f * headHeightOverFeetReward
         );
     }
 
