@@ -26,7 +26,7 @@ namespace MLAgentsExamples.Tests.Performance
         {
             // Step a dummy agent here, so that we don't time the Academy initialization connection attempt and
             // any other static setup costs.
-            RunAgent<DummyAgent>(1, 0);
+            RunAgent<DummyAgent>(1, 0, ObservableAttributeOptions.ExamineAll);
         }
 
         /// <summary>
@@ -101,13 +101,14 @@ namespace MLAgentsExamples.Tests.Performance
             }
         }
 
-        void RunAgent<T>(int numSteps, int obsSize) where T : Agent
+        void RunAgent<T>(int numSteps, int obsSize, ObservableAttributeOptions obsOptions) where T : Agent
         {
             var agentGameObj = new GameObject();
             var agent = agentGameObj.AddComponent<T>();
 
             var behaviorParams = agent.GetComponent<BehaviorParameters>();
             behaviorParams.BrainParameters.VectorObservationSize = obsSize;
+            behaviorParams.ObservableAttributeHandling = obsOptions;
 
             agent.LazyInitialize();
             for (var i = 0; i < numSteps; i++)
@@ -123,7 +124,7 @@ namespace MLAgentsExamples.Tests.Performance
         {
             Measure.Method(() =>
             {
-                RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7);
+                RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7, ObservableAttributeOptions.Ignore);
             })
                 .MeasurementCount(k_MeasurementCount)
                 .GC()
@@ -135,7 +136,7 @@ namespace MLAgentsExamples.Tests.Performance
         {
             Measure.Method(() =>
             {
-                RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0);
+                RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0, ObservableAttributeOptions.ExcludeInherited);
             })
                 .MeasurementCount(k_MeasurementCount)
                 .GC()
@@ -147,7 +148,7 @@ namespace MLAgentsExamples.Tests.Performance
         {
             Measure.Method(() =>
                 {
-                    RunAgent<ObservablePropertyAgent>(k_NumAgentSteps, 0);
+                    RunAgent<ObservablePropertyAgent>(k_NumAgentSteps, 0, ObservableAttributeOptions.ExcludeInherited);
                 })
                 .MeasurementCount(k_MeasurementCount)
                 .GC()
@@ -161,7 +162,7 @@ namespace MLAgentsExamples.Tests.Performance
             {
                 for(var i=0; i<k_MarkerTestSteps; i++)
                 {
-                    RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7);
+                    RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7, ObservableAttributeOptions.Ignore);
                 }
             }
         }
@@ -173,7 +174,7 @@ namespace MLAgentsExamples.Tests.Performance
             {
                 for (var i = 0; i < k_MarkerTestSteps; i++)
                 {
-                    RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0);
+                    RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0, ObservableAttributeOptions.ExcludeInherited);
                 }
             }
         }
@@ -185,7 +186,7 @@ namespace MLAgentsExamples.Tests.Performance
             {
                 for (var i = 0; i < k_MarkerTestSteps; i++)
                 {
-                    RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0);
+                    RunAgent<ObservableFieldAgent>(k_NumAgentSteps, 0, ObservableAttributeOptions.ExcludeInherited);
                 }
             }
         }
