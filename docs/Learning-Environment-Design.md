@@ -132,7 +132,7 @@ the scene that otherwise represents the actor — for example, to a player objec
 in a football game or a car object in a vehicle simulation. Every Agent must
 have appropriate `Behavior Parameters`.
 
-Generally, when creating an Agent, yo should extend the Agent class and implement
+Generally, when creating an Agent, you should extend the Agent class and implement
 the `CollectObservations(VectorSensor sensor)` and `OnActionReceived()` methods:
 
 - `CollectObservations(VectorSensor sensor)` — Collects the Agent's observation
