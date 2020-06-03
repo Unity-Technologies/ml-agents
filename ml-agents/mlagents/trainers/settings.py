@@ -161,7 +161,7 @@ class SelfPlaySettings:
         # Assign team_change to about 4x save_steps
         return self.save_steps * 5
 
-    swap_steps: int = 10000
+    swap_steps: int = 2000
     window: int = 10
     play_against_latest_model_ratio: float = 0.5
     initial_elo: float = 1200.0
@@ -275,7 +275,6 @@ class CheckpointSettings:
     force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
-    lesson: int = parser.get_default("lesson")
 
 
 @attr.s(auto_attribs=True)

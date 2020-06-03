@@ -31,5 +31,3 @@ scene with the ML-Agents SDK, check out the main
   cooperative behavior among different agents is not stable.
 - Resuming self-play from a checkpoint resets the reported ELO to the default
   value.
-- Resuming curriculum learning from a checkpoint requires the last lesson be
-  specified using the `--lesson` CLI option

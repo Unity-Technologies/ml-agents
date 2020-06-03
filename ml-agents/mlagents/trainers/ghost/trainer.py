@@ -104,7 +104,7 @@ class GhostTrainer(Trainer):
                 )
             )
 
-        # Counts the The number of steps of the ghost policies. Snapshot swapping
+        # Counts the number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
         # on the wrapped. This ensures that all teams train for the same number of trainer
         # steps.

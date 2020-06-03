@@ -60,13 +60,6 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
     )
     argparser.add_argument(
-        "--lesson",
-        default=0,
-        type=int,
-        help="The lesson to start with when performing curriculum training",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
         "--load",
         default=False,
         dest="load_model",

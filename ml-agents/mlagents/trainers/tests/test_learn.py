@@ -31,7 +31,6 @@ MOCK_PARAMETER_YAML = """
         base_port: 4001
         seed: 9870
     checkpoint_settings:
-        lesson: 2
         run_id: uselessrun
     debug: false
     """
@@ -118,7 +117,6 @@ def test_commandline_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path is None
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 0
     assert opt.checkpoint_settings.resume is False
     assert opt.checkpoint_settings.inference is False
     assert opt.checkpoint_settings.run_id == "ppo"
@@ -132,7 +130,6 @@ def test_commandline_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--lesson=3",
         "--resume",
         "--inference",
         "--run-id=myawesomerun",
@@ -148,7 +145,6 @@ def test_commandline_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 3
     assert opt.checkpoint_settings.run_id == "myawesomerun"
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
@@ -167,7 +163,6 @@ def test_yaml_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./oldenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 2
     assert opt.checkpoint_settings.run_id == "uselessrun"
     assert opt.env_settings.seed == 9870
     assert opt.env_settings.base_port == 4001
@@ -179,7 +174,6 @@ def test_yaml_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--lesson=3",
         "--resume",
         "--inference",
         "--run-id=myawesomerun",
@@ -195,7 +189,6 @@ def test_yaml_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 3
     assert opt.checkpoint_settings.run_id == "myawesomerun"
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
