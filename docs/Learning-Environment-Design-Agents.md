@@ -4,22 +4,27 @@
 
 - [Decisions](#decisions)
 - [Observations and Sensors](#observations-and-sensors)
+  - [Generating Observations](#generating-observations)
+    - [Agent.CollectObservations()](#agentcollectobservations--)
+    - [Observable Fields and Properties](#observable-fields-and-properties)
+    - [ISensor interface and SensorComponents](#isensor-interface-and-sensorcomponents)
   - [Vector Observations](#vector-observations)
     - [One-hot encoding categorical information](#one-hot-encoding-categorical-information)
     - [Normalization](#normalization)
-    - [Vector Observation Summary & Best Practices](#vector-observation-summary--best-practices)
+    - [Stacking](#stacking)
+    - [Vector Observation Summary & Best Practices](#vector-observation-summary---best-practices)
   - [Visual Observations](#visual-observations)
-    - [Visual Observation Summary & Best Practices](#visual-observation-summary--best-practices)
+    - [Visual Observation Summary & Best Practices](#visual-observation-summary---best-practices)
   - [Raycast Observations](#raycast-observations)
-    - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
+    - [RayCast Observation Summary & Best Practices](#raycast-observation-summary---best-practices)
 - [Actions](#actions)
   - [Continuous Action Space](#continuous-action-space)
   - [Discrete Action Space](#discrete-action-space)
     - [Masking Discrete Actions](#masking-discrete-actions)
-  - [Actions Summary & Best Practices](#actions-summary--best-practices)
+  - [Actions Summary & Best Practices](#actions-summary---best-practices)
 - [Rewards](#rewards)
   - [Examples](#examples)
-  - [Rewards Summary & Best Practices](#rewards-summary--best-practices)
+  - [Rewards Summary & Best Practices](#rewards-summary---best-practices)
 - [Agent Properties](#agent-properties)
 - [Destroying an Agent](#destroying-an-agent)
 - [Defining Teams for Multi-agent Scenarios](#defining-teams-for-multi-agent-scenarios)
@@ -102,7 +107,7 @@ reasonable approach for determining what information should be included is to
 consider what you would need to calculate an analytical solution to the problem,
 or what you would expect a human to be able to use to solve the problem.
 
-### Making Observations
+### Generating Observations
 ML-Agents provides multiple ways for an Agent to make observations:
   1. Overriding the `Agent.CollectObservations()` method and passing the
     observations to the provided `VectorSensor`.
@@ -193,7 +198,7 @@ noticably affect performance.
 `Behavior Parameters` when you add `[Observable]` fields or properties to an
 Agent, since their size can be computed before they are used.
 
-#### ISensor interface and SensorComponent
+#### ISensor interface and SensorComponents
 The `ISensor` interface is generally intended for advanced users or internal
 developers. The `Write()` method is used to actually generate the observation,
 but some other methods such as returning the shape of the observations must also
