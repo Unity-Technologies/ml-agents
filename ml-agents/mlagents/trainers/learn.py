@@ -22,7 +22,6 @@ from mlagents.trainers.stats import (
 )
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.sampler_utils import SamplerUtils
 from mlagents.trainers.settings import RunOptions
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
@@ -182,20 +181,19 @@ def write_timing_tree(output_dir: str) -> None:
         )
 
 
-def maybe_add_samplers(sampler_config, env):
+def maybe_add_samplers(
+    sampler_config: Optional[Dict], env: SubprocessEnvManager
+) -> None:
     restructured_sampler_config: Dict[str, List[float]] = {}
     # TODO send seed
     if sampler_config is not None:
         if "resampling-interval" in sampler_config:
             logger.warning(
-                "The resampling-interval is no longer necessary to specify for parameter randomization and is being ignored."
+                "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
             )
             sampler_config.pop("resampling-interval")
         for param, config in sampler_config.items():
-            list_of_config_floats = SamplerUtils.validate_and_structure_config(
-                param, config
-            )
-            restructured_sampler_config[param] = list_of_config_floats
+            restructured_sampler_config[param] = config
         env.reset(config=restructured_sampler_config)
 
 

@@ -164,6 +164,14 @@ class ParameterRandomizationType(Enum):
         }
         return _mapping[self]
 
+    def to_float(self) -> float:
+        _mapping = {
+            ParameterRandomizationType.UNIFORM: 0.0,
+            ParameterRandomizationType.GAUSSIAN: 1.0,
+            ParameterRandomizationType.MULTIRANGEUNIFORM: 2.0,
+        }
+        return _mapping[self]
+
 
 @attr.s(auto_attribs=True)
 class ParameterRandomizationSettings:
@@ -178,11 +186,12 @@ class ParameterRandomizationSettings:
             raise TrainerConfigError(
                 f"Unsupported parameter randomization configuration {d}."
             )
-        d_final: Dict[ParameterRandomizationType, ParameterRandomizationSettings] = {}
-        for key, val in d.items():
-            enum_key = ParameterRandomizationType(key)
-            t = enum_key.to_settings()
-            d_final[enum_key] = strict_to_cls(val, t)
+        d_final: Dict[str, List[float]] = {}
+        for param, param_config in d.items():
+            for key, val in param_config.items():
+                enum_key = ParameterRandomizationType(key)
+                t = enum_key.to_settings()
+                d_final[param] = strict_to_cls(val, t).to_float()
         return d_final
 
 
@@ -191,16 +200,25 @@ class UniformSettings(ParameterRandomizationSettings):
     min_value: float = 1.0
     max_value: float = 1.0
 
+    def to_float(self) -> List[float]:
+        return [0.0, self.min_value, self.max_value]
+
 
 @attr.s(auto_attribs=True)
 class GaussianSettings(ParameterRandomizationSettings):
     mean: float = 1.0
     st_dev: float = 1.0
 
+    def to_float(self) -> List[float]:
+        return [1.0, self.mean, self.st_dev]
+
 
 @attr.s(auto_attribs=True)
 class MultiRangeUniformSettings(ParameterRandomizationSettings):
     intervals: List[List[float]] = [[1.0, 1.0]]
+
+    def to_float(self) -> List[float]:
+        return [2.0] + [val for interval in self.intervals for val in interval]
 
 
 @attr.s(auto_attribs=True)
@@ -357,7 +375,7 @@ class RunOptions(ExportableSettings):
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
-    parameter_randomization: Optional[Dict] = None
+    parameter_randomization: Optional[Dict[str, ParameterRandomizationSettings]] = None
     curriculum: Optional[Dict[str, CurriculumSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
@@ -368,6 +386,10 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
+    cattr.register_structure_hook(
+        Dict[str, ParameterRandomizationSettings],
+        ParameterRandomizationSettings.structure,
+    )
     cattr.register_structure_hook(CurriculumSettings, strict_to_cls)
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
