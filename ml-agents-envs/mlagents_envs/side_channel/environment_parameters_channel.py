@@ -47,6 +47,8 @@ class EnvironmentParametersChannel(SideChannel):
         msg = OutgoingMessage()
         msg.write_string(key)
         msg.write_int32(self.EnvironmentDataTypes.SAMPLER)
+        # length of list
+        msg.write_int32(len(values))
         for value in values:
             msg.write_float32(value)
         super().queue_message_to_send(msg)

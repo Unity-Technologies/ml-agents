@@ -151,6 +151,58 @@ class CuriositySettings(RewardSignalSettings):
     learning_rate: float = 3e-4
 
 
+class ParameterRandomizationType(Enum):
+    UNIFORM: str = "uniform"
+    GAUSSIAN: str = "gaussian"
+    MULTIRANGEUNIFORM: str = "multirangeuniform"
+
+    def to_settings(self) -> type:
+        _mapping = {
+            ParameterRandomizationType.UNIFORM: UniformSettings,
+            ParameterRandomizationType.GAUSSIAN: GaussianSettings,
+            ParameterRandomizationType.MULTIRANGEUNIFORM: MultiRangeUniformSettings,
+        }
+        return _mapping[self]
+
+
+@attr.s(auto_attribs=True)
+class ParameterRandomizationSettings:
+    @staticmethod
+    def structure(d: Mapping, t: type) -> Any:
+        """
+        Helper method to structure a Dict of ParameterRandomizationSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure(). This is needed to handle
+        the special Enum selection of ParameterRandomizationSettings classes.
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported parameter randomization configuration {d}."
+            )
+        d_final: Dict[ParameterRandomizationType, ParameterRandomizationSettings] = {}
+        for key, val in d.items():
+            enum_key = ParameterRandomizationType(key)
+            t = enum_key.to_settings()
+            d_final[enum_key] = strict_to_cls(val, t)
+        return d_final
+
+
+@attr.s(auto_attribs=True)
+class UniformSettings(ParameterRandomizationSettings):
+    min_value: float = 1.0
+    max_value: float = 1.0
+
+
+@attr.s(auto_attribs=True)
+class GaussianSettings(ParameterRandomizationSettings):
+    mean: float = 1.0
+    st_dev: float = 1.0
+
+
+@attr.s(auto_attribs=True)
+class MultiRangeUniformSettings(ParameterRandomizationSettings):
+    intervals: List[List[float]] = [[1.0, 1.0]]
+
+
 @attr.s(auto_attribs=True)
 class SelfPlaySettings:
     save_steps: int = 20000

@@ -20,8 +20,11 @@ namespace Unity.MLAgents.SideChannels
     internal class EnvironmentParametersChannel : SideChannel
     {
         Dictionary<string, float> m_Parameters = new Dictionary<string, float>();
+        Dictionary<string, Func<float>> m_Samplers = new Dictionary<string, Func<float>>();
         Dictionary<string, Action<float>> m_RegisteredActions =
             new Dictionary<string, Action<float>>();
+
+        SamplerFactory m_SamplerFactory = new SamplerFactory(1);
 
         const string k_EnvParamsId = "534c891e-810f-11ea-a9d0-822485860400";
 
@@ -51,13 +54,14 @@ namespace Unity.MLAgents.SideChannels
             }
             else if ((int)EnvironmentDataTypes.Sampler == type)
             {
-                var samplerType = msg.ReadFloat32();
-                var statOne = msg.ReadFloat32();
-                var statTwo = msg.ReadFloat32();
-
-                m_Parameters[key+"-sampler-type"] = samplerType;
-                m_Parameters[key+"-min"] = statOne;
-                m_Parameters[key+"-max"] = statTwo;
+                var encoding = msg.ReadFloatList(); 
+                m_Samplers[key] = m_SamplerFactory.CreateSampler(encoding);
+                //var samplerType = msg.ReadFloat32();
+                //var statOne = msg.ReadFloat32();
+                //var statTwo = msg.ReadFloat32();
+                //m_Parameters[key+"-sampler-type"] = samplerType;
+                //m_Parameters[key+"-min"] = statOne;
+                //m_Parameters[key+"-max"] = statTwo;
             }
             else
             {
@@ -77,6 +81,13 @@ namespace Unity.MLAgents.SideChannels
             float valueOut;
             bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
             return hasKey ? valueOut : defaultValue;
+        }
+
+        public float Sample(string key, float defaultValue)
+        {
+            Func<float> valueOut;
+            bool hasKey = m_Samplers.TryGetValue(key, out valueOut);
+            return hasKey ? valueOut() : defaultValue;
         }
 
         /// <summary>

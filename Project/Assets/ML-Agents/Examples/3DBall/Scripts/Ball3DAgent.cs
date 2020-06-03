@@ -13,12 +13,6 @@ public class Ball3DAgent : Agent
     {
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-        var samplerType = m_ResetParams.GetWithDefault("mass-sampler-type", -1.0f);
-        var min = m_ResetParams.GetWithDefault("mass-min", -1.0f);
-        var max = m_ResetParams.GetWithDefault("mass-max", -1.0f);
-        Debug.Log(samplerType);
-        Debug.Log(min);
-        Debug.Log(max);
         SetResetParameters();
     }
 
@@ -80,8 +74,9 @@ public class Ball3DAgent : Agent
     public void SetBall()
     {
         //Set the attributes of the ball by fetching the information from the academy
-        m_BallRb.mass = m_ResetParams.GetWithDefault("mass", 1.0f);
-        var scale = m_ResetParams.GetWithDefault("scale", 1.0f);
+        //m_BallRb.mass = m_ResetParams.GetWithDefault("mass", 1.0f);
+        m_BallRb.mass = m_ResetParams.Sample("mass", 1.0f);
+        var scale = m_ResetParams.Sample("scale", 1.0f);
         ball.transform.localScale = new Vector3(scale, scale, scale);
     }
 

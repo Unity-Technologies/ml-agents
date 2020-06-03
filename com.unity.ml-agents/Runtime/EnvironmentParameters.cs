@@ -41,6 +41,11 @@ namespace Unity.MLAgents
             return m_Channel.GetWithDefault(key, defaultValue);
         }
 
+        public float Sample(string key, float defaultValue)
+        {
+            return m_Channel.Sample(key, defaultValue);
+        }
+
         /// <summary>
         /// Registers a callback action for the provided parameter key. Will overwrite any
         /// existing action for that parameter. The callback will be called whenever the parameter

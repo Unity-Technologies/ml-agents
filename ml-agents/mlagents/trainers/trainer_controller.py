@@ -17,7 +17,6 @@ from mlagents_envs.exception import (
     UnityCommunicationException,
     UnityCommunicatorStoppedException,
 )
-from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import (
     hierarchical_timer,
     timed,
@@ -42,8 +41,6 @@ class TrainerController(object):
         meta_curriculum: Optional[MetaCurriculum],
         train: bool,
         training_seed: int,
-        sampler_manager: SamplerManager,
-        resampling_interval: Optional[int],
     ):
         """
         :param output_path: Path to save the model.
@@ -53,8 +50,6 @@ class TrainerController(object):
         :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
         :param train: Whether to train model, or only run inference.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
-        :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
-        :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         :param threaded: Whether or not to run trainers in a separate thread. Disable for testing/debugging.
         """
         self.trainers: Dict[str, Trainer] = {}
@@ -66,8 +61,6 @@ class TrainerController(object):
         self.save_freq = save_freq
         self.train_model = train
         self.meta_curriculum = meta_curriculum
-        self.sampler_manager = sampler_manager
-        self.resampling_interval = resampling_interval
         self.ghost_controller = self.trainer_factory.ghost_controller
 
         self.trainer_threads: List[threading.Thread] = []
@@ -144,12 +137,10 @@ class TrainerController(object):
             A Data structure corresponding to the initial reset state of the
             environment.
         """
-        sampled_reset_param = self.sampler_manager.sample_all()
         new_meta_curriculum_config = (
             self.meta_curriculum.get_config() if self.meta_curriculum else {}
         )
-        sampled_reset_param.update(new_meta_curriculum_config)
-        env.reset(config=sampled_reset_param)
+        env.reset(config=new_meta_curriculum_config)
 
     def _should_save_model(self, global_step: int) -> bool:
         return (
@@ -227,7 +218,7 @@ class TrainerController(object):
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
                     global_step += 1
-                    self.reset_env_if_ready(env_manager, global_step)
+                    self.reset_env_if_ready(env_manager)
                     if self._should_save_model(global_step):
                         self._save_model()
             # Stop advancing trainers
@@ -269,7 +260,7 @@ class TrainerController(object):
             if changed:
                 self.trainers[brain_name].reward_buffer.clear()
 
-    def reset_env_if_ready(self, env: EnvManager, steps: int) -> None:
+    def reset_env_if_ready(self, env: EnvManager) -> None:
         if self.meta_curriculum:
             # Get the sizes of the reward buffers.
             reward_buff_sizes = {
@@ -285,16 +276,9 @@ class TrainerController(object):
         # If any lessons were incremented or the environment is
         # ready to be reset
         meta_curriculum_reset = any(lessons_incremented.values())
-        # Check if we are performing generalization training and we have finished the
-        # specified number of steps for the lesson
-        generalization_reset = (
-            not self.sampler_manager.is_empty()
-            and (steps != 0)
-            and (self.resampling_interval)
-            and (steps % self.resampling_interval == 0)
-        )
+        # If ghost trainer swapped teams
         ghost_controller_reset = self.ghost_controller.should_reset()
-        if meta_curriculum_reset or generalization_reset or ghost_controller_reset:
+        if meta_curriculum_reset or ghost_controller_reset:
             self.end_trainer_episodes(env, lessons_incremented)
 
     @timed
