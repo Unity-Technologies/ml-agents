@@ -57,8 +57,10 @@ includes implementing the following methods:
 
 - `Agent.OnEpisodeBegin()` — Called at the beginning of an Agent's episode,
   including at the beginning of the simulation.
-- `Agent.CollectObservations(VectorSensor sensor)` — Called every simulation
-  step. One possible way for collecting the Agent's observations of the environment.
+- `Agent.CollectObservations(VectorSensor sensor)` — Called every step that the Agent
+  requests a decision. This is one possible way for collecting the Agent's
+  observations of the environment; see [Generating Observations](#generating-observations)
+  below for more options.
 - `Agent.OnActionReceived()` — Called every time the Agent receives an action to
   take. Receives the action chosen by the Agent. It is also common to assign a
   reward in this method.
@@ -71,7 +73,8 @@ As a concrete example, here is how the Ball3DAgent class implements these method
 
 - `Agent.OnEpisodeBegin()` — Resets the agent cube and ball to their starting
   positions. The function randomizes the reset values so that the training
-  generalizes to more than a specific starting position and agent cube attitude.
+  generalizes to more than a specific starting position and agent cube
+  orientation.
 - `Agent.CollectObservations(VectorSensor sensor)` — Adds information about the
   orientation of the agent cube, the ball velocity, and the relative position
   between the ball and the cube. Since the  `CollectObservations()`
@@ -167,7 +170,7 @@ to equal the number of floats that are written by `CollectObservations()`.
 
 #### Observable Fields and Properties
 Another approach is to define the relevant observations as fields or properties
-on your Agent class, and annotate them with an ObservableAttribute. For
+on your Agent class, and annotate them with an `ObservableAttribute`. For
 example, in the 3DBall example above, the rigid body velocity could be observed
 by adding a property to the Agent:
 ```csharp
@@ -182,27 +185,38 @@ public class Ball3DAgent : Agent {
     }
 }
 ```
-In order to enable ObservableAttribute, you must also set "Observable Attribute
-Handling" to "Exclude Inherited" or "Examine All" in the Agent's
-`Behavior Parameters`. "Exclude Inherited" is generally sufficient, but if your
-Agent inherits from another Agent implementation that has Observable members,
-you will need to use "Examine All".
+`ObservableAttribute` currently supports most basic types (e.g. floats, ints,
+bools), as well as `Vector2`, `Vector3`, `Vector4`, `Quaternion`, and enums.
+
+The behavior of `ObservableAttribute`s are controlled by the "Observable Attribute
+Handling" in the Agent's `Behavior Parameters`. The possible values for this are:
+ * **Ignore** (default) - All ObservableAttributes on the Agent will be ignored.
+  If there are no ObservableAttributes on the Agent, this will result in the
+  fastest  initialization time.
+ * **Exclude Inherited** - Only members on the declared class will be examined;
+  members that are inherited are ignored. This is a reasonable tradeoff between
+  performance and flexibility.
+ * **Examine All** All members on the class will be examined. This can lead to
+  slower startup times.
+
+"Exclude Inherited" is generally sufficient, but if your Agent inherits from
+another Agent implementation that has Observable members, you will need to use
+"Examine All".
 
 Internally, ObservableAttribute uses reflection to determine which members of
 the Agent have ObservableAttributes, and also uses reflection to access the
 fields or invoke the properties at runtime. This may be slower than using
 CollectObservations or an ISensor, although this might not be enough to
-noticably affect performance.
+noticeably affect performance.
 
 **NOTE**: you do not need to adjust the Space Size in the Agent's
 `Behavior Parameters` when you add `[Observable]` fields or properties to an
 Agent, since their size can be computed before they are used.
 
 #### ISensor interface and SensorComponents
-The `ISensor` interface is generally intended for advanced users or internal
-developers. The `Write()` method is used to actually generate the observation,
-but some other methods such as returning the shape of the observations must also
-be implemented.
+The `ISensor` interface is generally intended for advanced users. The `Write()`
+method is used to actually generate the observation, but some other methods
+such as returning the shape of the observations must also be implemented.
 
 The `SensorComponent` abstract class is used to create the actual `ISensor` at
 runtime. It must be attached to the same `GameObject` as the `Agent`, or to a
@@ -266,11 +280,12 @@ public override void CollectObservations(VectorSensor sensor)
 }
 ```
 
-`ObservableAttribute` has built-in support for enums:
+`ObservableAttribute` has built-in support for enums. Note that you don't need
+the `LastItem` placeholder in this case:
 ```csharp
 enum ItemType { Sword, Shield, Bow }
 
-class HeroAgent : Agent
+public class HeroAgent : Agent
 {
     [Observable]
     ItemType m_CurrentItem;
@@ -340,6 +355,9 @@ The steps for enabling stacking depends on how you generate observations:
 * For `ISensor`s, wrap them in a `StackingSensor` (which is also an `ISensor`).
   Generally, this should happen in the `CreateSensor()` method of your
   `SensorComponent`.
+
+Note that stacking currently only supports for vector observations; stacking
+for visual observations is not supported.
 
 #### Vector Observation Summary & Best Practices
 
