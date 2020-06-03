@@ -82,7 +82,7 @@ Please make sure you enable 'Preview Packages' in the 'Advanced' dropdown in
 order to find it.
 
 **NOTE:** If you do not see the ML-Agents package listed in the Package Manager
-please follow the the [advanced installation instructions](#advanced-local-installation-for-development) below.
+please follow the [advanced installation instructions](#advanced-local-installation-for-development) below.
 
 #### Advanced: Local Installation for Development
 
