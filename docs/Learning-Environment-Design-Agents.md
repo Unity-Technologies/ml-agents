@@ -47,32 +47,39 @@ method to make decisions which can allow you to control the Agent manually or
 write your own Policy. If the Agent has a `Model` file, its Policy will use the
 neural network `Model` to take decisions.
 
-When you create an Agent, you must extend the base Agent class. This includes
-implementing the following methods:
+When you create an Agent, you should usually extend the base Agent class. This
+includes implementing the following methods:
 
 - `Agent.OnEpisodeBegin()` — Called at the beginning of an Agent's episode,
-  including at the beginning of the simulation. The Ball3DAgent class uses this
-  function to reset the agent cube and ball to their starting positions. The
-  function randomizes the reset values so that the training generalizes to more
-  than a specific starting position and agent cube attitude.
+  including at the beginning of the simulation.
 - `Agent.CollectObservations(VectorSensor sensor)` — Called every simulation
-  step. Responsible for collecting the Agent's observations of the environment.
-  Since the Behavior Parameters of the Agent are set with vector observation
-  space with a state size of 8, the `CollectObservations(VectorSensor sensor)`
-  must call `VectorSensor.AddObservation()` such that vector size adds up to 8.
+  step. One possible way for collecting the Agent's observations of the environment.
 - `Agent.OnActionReceived()` — Called every time the Agent receives an action to
-  take. Receives the action chosen by the Agent. The vector action spaces result
-  in a small change in the agent cube's rotation at each step. The
-  `OnActionReceived()` method assigns a reward to the Agent; in this example, an
-  Agent receives a small positive reward for each step it keeps the ball on the
-  agent cube's head and a larger, negative reward for dropping the ball. An
-  Agent's episode is also ended when it drops the ball so that it will reset
-  with a new ball for the next simulation step.
+  take. Receives the action chosen by the Agent. It is also common to assign a
+  reward in this method.
 - `Agent.Heuristic()` - When the `Behavior Type` is set to `Heuristic Only` in
   the Behavior Parameters of the Agent, the Agent will use the `Heuristic()`
   method to generate the actions of the Agent. As such, the `Heuristic()` method
-  returns an array of floats. In the case of the Ball 3D Agent, the
-  `Heuristic()` method converts the keyboard inputs into actions.
+  writes to a provided array of floats.
+
+As a concrete example, here is how the Ball3DAgent class implements these methods:
+
+- `Agent.OnEpisodeBegin()` — Resets the agent cube and ball to their starting
+  positions. The function randomizes the reset values so that the training
+  generalizes to more than a specific starting position and agent cube attitude.
+- `Agent.CollectObservations(VectorSensor sensor)` — Adds information about the
+  orientation of the agent cube, the ball velocity, and the relative position
+  between the ball and the cube. Since the  `CollectObservations()`
+  method calls `VectorSensor.AddObservation()` such that vector size adds up to 8,
+  the Behavior Parameters of the Agent are set with vector observation space
+  with a state size of 8.
+- `Agent.OnActionReceived()` — The vector action spaces result
+  in a small change in the agent cube's rotation at each step. In this example,
+  an Agent receives a small positive reward for each step it keeps the ball on the
+  agent cube's head and a larger, negative reward for dropping the ball. An
+  Agent's episode is also ended when it drops the ball so that it will reset
+  with a new ball for the next simulation step.
+- `Agent.Heuristic()` - Converts the keyboard inputs into actions.
 
 ## Decisions
 
@@ -88,29 +95,6 @@ when certain game or simulation events occur, such as in a turn-based game,
 should call `Agent.RequestDecision()` manually.
 
 ## Observations and Sensors
-
-To make informed decisions, an agent must first make observations of the state
-of the environment. The observations are collected by Sensors attached to the
-agent GameObject. By default, agents come with a `VectorSensor` which allows
-them to collect floating-point observations into a single array. There are
-additional sensor components which can be attached to the agent GameObject which
-collect their own observations, or modify other observations. These are:
-
-- `CameraSensorComponent` - Allows image from `Camera` to be used as
-  observation.
-- `RenderTextureSensorComponent` - Allows content of `RenderTexture` to be used
-  as observation.
-- `RayPerceptionSensorComponent` - Allows information from set of ray-casts to
-  be used as observation.
-
-### Vector Observations
-
-Vector observations are best used for aspects of the environment which are
-numerical and non-visual. The Policy class calls the
-`CollectObservations(VectorSensor sensor)` method of each Agent. Your
-implementation of this function must call `VectorSensor.AddObservation` to add
-vector observations.
-
 In order for an agent to learn, the observations should include all the
 information an agent needs to accomplish its task. Without sufficient and
 relevant information, an agent may learn poorly or may not learn at all. A
@@ -118,51 +102,120 @@ reasonable approach for determining what information should be included is to
 consider what you would need to calculate an analytical solution to the problem,
 or what you would expect a human to be able to use to solve the problem.
 
-For examples of various state observation functions, you can look at the
-[example environments](Learning-Environment-Examples.md) included in the
-ML-Agents SDK. For instance, the 3DBall example uses the rotation of the
-platform, the relative position of the ball, and the velocity of the ball as its
-state observation. As an experiment, you can remove the velocity components from
-the observation and retrain the 3DBall agent. While it will learn to balance the
-ball reasonably well, the performance of the agent without using velocity is
-noticeably worse.
+ML-Agents provides multiple ways for an Agent to make observations:
+  1. Overriding the `Agent.CollectObservations()` method and passing the
+    observations to the provided `VectorSensor`.
+  1. Adding the `[Observable]` attribute to fields and properties on the Agent.
+  1. Implementing the `ISensor` interface, using a `SensorComponent` attached to
+  the Agent to create the `ISensor`.
 
-```csharp
-public GameObject ball;
-
-private List<float> state = new List<float>();
-public override void CollectObservations(VectorSensor sensor)
-{
-    sensor.AddObservation(gameObject.transform.rotation.z);
-    sensor.AddObservation(gameObject.transform.rotation.x);
-    sensor.AddObservation((ball.transform.position.x - gameObject.transform.position.x));
-    sensor.AddObservation((ball.transform.position.y - gameObject.transform.position.y));
-    sensor.AddObservation((ball.transform.position.z - gameObject.transform.position.z));
-    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.x);
-    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.y);
-    sensor.AddObservation(ball.transform.GetComponent<Rigidbody>().velocity.z);
-}
-```
-
-The feature vector must always contain the same number of elements and
-observations must always be in the same position within the list. If the number
-of observed entities in an environment can vary you can pad the feature vector
-with zeros for any missing entities in a specific observation or you can limit
-an agent's observations to a fixed subset. For example, instead of observing
-every enemy agent in an environment, you could only observe the closest five.
-
-When you set up an Agent's `Behavior Parameters` in the Unity Editor, set the
-following properties to use a vector observation:
-
-- **Space Size** — The state size must match the length of your feature vector.
-
-The observation feature vector is a list of floating point numbers, which means
-you must convert any other data types to a float or a list of floats.
+### Agent.CollectObservations()
+Agent.CollectObservations() is best used for aspects of the environment which are
+numerical and non-visual. The Policy class calls the
+`CollectObservations(VectorSensor sensor)` method of each Agent. Your
+implementation of this function must call `VectorSensor.AddObservation` to add
+vector observations.
 
 The `VectorSensor.AddObservation` method provides a number of overloads for
 adding common types of data to your observation vector. You can add Integers and
 booleans directly to the observation vector, as well as some common Unity data
 types such as `Vector2`, `Vector3`, and `Quaternion`.
+
+For examples of various state observation functions, you can look at the
+[example environments](Learning-Environment-Examples.md) included in the
+ML-Agents SDK. For instance, the 3DBall example uses the rotation of the
+platform, the relative position of the ball, and the velocity of the ball as its
+state observation.
+
+```csharp
+public GameObject ball;
+
+public override void CollectObservations(VectorSensor sensor)
+{
+    // Orientation of the cube (2 floats)
+    sensor.AddObservation(gameObject.transform.rotation.z);
+    sensor.AddObservation(gameObject.transform.rotation.x);
+    // Relative position of the ball to the cube (3 floats)
+    sensor.AddObservation(ball.transform.position - gameObject.transform.position);
+    // Velocity of the ball (3 floats)
+    sensor.AddObservation(m_BallRb.velocity);
+    // 8 floats total
+}
+```
+
+As an experiment, you can remove the velocity components from
+the observation and retrain the 3DBall agent. While it will learn to balance the
+ball reasonably well, the performance of the agent without using velocity is
+noticeably worse.
+
+The observations passed to `VectorSensor.AddObservation()` must always contain
+the same number of elements must always be in the same order. If the number
+of observed entities in an environment can vary you can pad the calls
+with zeros for any missing entities in a specific observation, or you can limit
+an agent's observations to a fixed subset. For example, instead of observing
+every enemy in an environment, you could only observe the closest five.
+
+Additionally, when you set up an Agent's `Behavior Parameters` in the Unity
+Editor, you must set the **Vector Observations > Space Size**
+to equal the number of floats that are written by `CollectObservations()`.
+
+### Observable Fields and Properties
+Another approach is to define the relevant observations as fields or properties
+on your Agent class, and annotate them with an ObservableAttribute. For
+example, in the 3DBall example above, the rigid body velocity could be observed
+by adding a property to the Agent:
+```csharp
+using Unity.MLAgents.Sensors.Reflection;
+
+public class Ball3DAgent : Agent {
+
+    [Observable]
+    public Vector3 RigidBodyVelocity
+    {
+        get { return m_BallRb.velocity;  }
+    }
+}
+```
+In order to enable ObservableAttribute, you must also set "Observable Attribute
+Handling" to "Exclude Inherited" or "Examine All" in the Agent's
+`Behavior Parameters`. "Exclude Inherited" is generally sufficient, but if your
+Agent inherits from another Agent implementation that has Observable members,
+you will need to use "Examine All".
+
+Internally, ObservableAttribute uses reflection to determine which members of
+the Agent have ObservableAttributes, and also uses reflection to access the
+fields or invoke the properties at runtime. This may be slower than using
+CollectObservations or an ISensor, although this might not be enough to
+noticably affect performance.
+
+**NOTE**: you do not need to adjust the Space Size in the Agent's
+`Behavior Parameters` when you add `[Observable]` fields or properties to an
+Agent, since their size can be computed before they are used.
+
+### ISensor interface and SensorComponent
+The `ISensor` interface is generally intended for advanced users or internal
+developers. The `Write()` method is used to actually generate the observation,
+but some other methods such as returning the shape of the observations must also
+be implemented.
+
+The `SensorComponent` abstract class is used to create the actual `ISensor` at
+runtime. It must be attached to the same `GameObject` as the `Agent`, or to a
+child `GameObject`.
+
+There are several SensorComponents provided in the API:
+- `CameraSensorComponent` - Allows image from `Camera` to be used as
+  observation.
+- `RenderTextureSensorComponent` - Allows content of `RenderTexture` to be used
+  as observation.
+- `RayPerceptionSensorComponent` - Allows information from set of ray-casts to
+  be used as observation.
+
+**NOTE**: you do not need to adjust the Space Size in the Agent's
+`Behavior Parameters` when using an ISensor SensorComponents.
+
+Internally, both `Agent.CollectObservations` and `[Observable]` attribute use an
+ISensors to write observations, although this is mostly abstracted from the user.
+
 
 #### One-hot encoding categorical information
 
@@ -244,7 +297,8 @@ used in your normalization formula.
   value in the agent GameObject's `Behavior Parameters` should be changed.
 - Categorical variables such as type of object (Sword, Shield, Bow) should be
   encoded in one-hot fashion (i.e. `3` -> `0, 0, 1`). This can be done
-  automatically using the `AddOneHotObservation()` method of the `VectorSensor`.
+  automatically using the `AddOneHotObservation()` method of the `VectorSensor`,
+  or using `[Observable]` on an enum field or property of the Agent.
 - In general, all inputs should be normalized to be in the range 0 to +1 (or -1
   to 1). For example, the `x` position information of an agent where the maximum
   possible value is `maxValue` should be recorded as
