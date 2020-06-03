@@ -4,8 +4,7 @@
         "Unity.ML-Agents",
         "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
-        "Unity.ML-Agents.Editor",
-        "Unity.PerformanceTesting"
+        "Unity.ML-Agents.Editor"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
