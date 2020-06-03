@@ -2,3 +2,7 @@
   search: /ML[ -]Agents toolkit/
   replacement: ML-Agents Toolkit
   insensitive: true
+- description: Replace "the the"
+  search: /the the/
+  replacement: the
+  insensitive: true

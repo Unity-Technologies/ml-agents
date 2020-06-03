@@ -28,8 +28,10 @@ The ML-Agents Academy class orchestrates the agent simulation loop as follows:
 
 1. Calls your Academy's `OnEnvironmentReset` delegate.
 1. Calls the `OnEpisodeBegin()` function for each Agent in the scene.
-1. Calls the `CollectObservations(VectorSensor sensor)` function for each Agent
-   in the scene.
+1. Gathers information about the scene. This is done by calling the
+  `CollectObservations(VectorSensor sensor)` function for each Agent in the
+  scene, as well as updating their sensor and collecting the resulting
+  observations.
 1. Uses each Agent's Policy to decide on the Agent's next action.
 1. Calls the `OnActionReceived()` function for each Agent in the scene, passing
    in the action chosen by the Agent's Policy.
@@ -130,8 +132,8 @@ the scene that otherwise represents the actor — for example, to a player objec
 in a football game or a car object in a vehicle simulation. Every Agent must
 have appropriate `Behavior Parameters`.
 
-To create an Agent, extend the Agent class and implement the essential
-`CollectObservations(VectorSensor sensor)` and `OnActionReceived()` methods:
+Generally, when creating an Agent, you should extend the Agent class and implement
+the `CollectObservations(VectorSensor sensor)` and `OnActionReceived()` methods:
 
 - `CollectObservations(VectorSensor sensor)` — Collects the Agent's observation
   of its environment.
