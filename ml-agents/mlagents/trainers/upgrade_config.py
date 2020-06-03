@@ -1,3 +1,7 @@
+# NOTE: This upgrade script is a temporary measure for the transition between the old-format
+# configuration file and the new format. It will be marked for deprecation once the
+# Python CLI and configuration files are finalized, and removed the following release.
+
 import attr
 import cattr
 import yaml
