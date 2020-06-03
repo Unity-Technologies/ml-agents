@@ -31,14 +31,14 @@ vector observations to be used simultaneously.
 
 ### Steps to Migrate
 - To upgrade your configuration files, an upgrade script has been provided. Run
-  `python -m mlagents.trainers.upgrade_config -h` to see the script usage.
+  `python -m mlagents.trainers.upgrade_config -h` to see the script usage. Note that you will have
+  had to upgrade to/install the current version of ML-Agents before running the script.
 
   To do it manually, copy your `<BehaviorName>` sections from `trainer_config.yaml` into a separate trainer configuration file, under a `behaviors` section.
   The `default` section is no longer needed. This new file should be specific to your environment, and not contain
   configurations for multiple environments (unless they have the same Behavior Names).
   - You will need to reformat your trainer settings as per the [example](Training-ML-Agents.md).
-  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under
-  the `Behavior Name` section.
+  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under a `curriculum` section.
   - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
 - If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
