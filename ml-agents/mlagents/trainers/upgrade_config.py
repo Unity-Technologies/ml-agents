@@ -5,6 +5,7 @@ from typing import Dict, Any
 import argparse
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings, TrainerType
 from mlagents.trainers.cli_utils import load_config
+from mlagents.trainers.exception import TrainerConfigError
 
 
 # Take an existing trainer config (e.g. trainer_config.yaml) and turn it into the new format.
@@ -18,7 +19,13 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
 
             # Convert to split TrainerSettings, Hyperparameters, NetworkSettings
             # Set trainer_type and get appropriate hyperparameter settings
-            trainer_type = config["trainer"]
+            try:
+                trainer_type = config["trainer"]
+            except KeyError:
+                raise TrainerConfigError(
+                    "Config doesn't specify a trainer type. "
+                    "Please specify trainer: in your config."
+                )
             new_config = {}
             new_config["trainer_type"] = trainer_type
             hyperparam_cls = TrainerType(trainer_type).to_settings()
@@ -28,12 +35,19 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
             # Try to absorb as much as possible into the network settings
             new_config["network_settings"] = cattr.structure(config, NetworkSettings)
             # Deal with recurrent
-            if config["use_recurrent"]:
-                new_config["network_settings"].memory = NetworkSettings.MemorySettings(
-                    sequence_length=config["sequence_length"],
-                    memory_size=config["memory_size"],
+            try:
+                if config["use_recurrent"]:
+                    new_config[
+                        "network_settings"
+                    ].memory = NetworkSettings.MemorySettings(
+                        sequence_length=config["sequence_length"],
+                        memory_size=config["memory_size"],
+                    )
+            except KeyError:
+                raise TrainerConfigError(
+                    "Config doesn't specify use_recurrent. "
+                    "Please specify true or false for use_recurrent in your config."
                 )
-
             # Absorb the rest into the base TrainerSettings
             for key, val in config.items():
                 if key in attr.fields_dict(TrainerSettings):
