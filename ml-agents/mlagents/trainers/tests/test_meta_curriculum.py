@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, call
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 
@@ -11,6 +11,7 @@ from mlagents.trainers.tests.test_simple_rl import (
 )
 from mlagents.trainers.tests.test_curriculum import dummy_curriculum_config
 from mlagents.trainers.settings import CurriculumSettings
+from mlagents.trainers.training_status import StatusType
 
 
 @pytest.fixture
@@ -77,13 +78,25 @@ def test_increment_lessons_with_reward_buff_sizes(
     curriculum_b.increment_lesson.assert_not_called()
 
 
-def test_set_all_curriculums_to_lesson_num():
+@patch("mlagents.trainers.meta_curriculum.GlobalTrainingStatus")
+def test_restore_curriculums(mock_trainingstatus):
     meta_curriculum = MetaCurriculum(test_meta_curriculum_config)
-
-    meta_curriculum.set_all_curricula_to_lesson_num(2)
-
+    # Test restore to value
+    mock_trainingstatus.get_parameter_state.return_value = 2
+    meta_curriculum.try_restore_all_curriculum()
+    mock_trainingstatus.get_parameter_state.assert_has_calls(
+        [call("Brain1", StatusType.LESSON_NUM), call("Brain2", StatusType.LESSON_NUM)],
+        any_order=True,
+    )
     assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 2
     assert meta_curriculum.brains_to_curricula["Brain2"].lesson_num == 2
+
+    # Test restore to None
+    mock_trainingstatus.get_parameter_state.return_value = None
+    meta_curriculum.try_restore_all_curriculum()
+
+    assert meta_curriculum.brains_to_curricula["Brain1"].lesson_num == 0
+    assert meta_curriculum.brains_to_curricula["Brain2"].lesson_num == 0
 
 
 def test_get_config():

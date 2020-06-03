@@ -3,6 +3,7 @@
 from typing import Dict, Set
 from mlagents.trainers.curriculum import Curriculum
 from mlagents.trainers.settings import CurriculumSettings
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 from mlagents_envs.logging_util import get_logger
 
@@ -115,16 +116,22 @@ class MetaCurriculum:
                 )
         return ret
 
-    def set_all_curricula_to_lesson_num(self, lesson_num):
-        """Sets all the curricula in this meta curriculum to a specified
-        lesson number.
-
-        Args:
-            lesson_num (int): The lesson number which all the curricula will
-                be set to.
+    def try_restore_all_curriculum(self):
         """
-        for _, curriculum in self.brains_to_curricula.items():
-            curriculum.lesson_num = lesson_num
+        Tries to restore all the curriculums to what is saved in training_status.json
+        """
+
+        for brain_name, curriculum in self.brains_to_curricula.items():
+            lesson_num = GlobalTrainingStatus.get_parameter_state(
+                brain_name, StatusType.LESSON_NUM
+            )
+            if lesson_num is not None:
+                logger.info(
+                    f"Resuming curriculum for {brain_name} at lesson {lesson_num}."
+                )
+                curriculum.lesson_num = lesson_num
+            else:
+                curriculum.lesson_num = 0
 
     def get_config(self):
         """Get the combined configuration of all curricula in this
