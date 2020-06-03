@@ -19,8 +19,7 @@ namespace Unity.MLAgents.SideChannels
     /// </summary>
     internal class EnvironmentParametersChannel : SideChannel
     {
-        Dictionary<string, float> m_Parameters = new Dictionary<string, float>();
-        Dictionary<string, Func<float>> m_Samplers = new Dictionary<string, Func<float>>();
+        Dictionary<string, Func<float>> m_Parameters = new Dictionary<string, Func<float>>();
         Dictionary<string, Action<float>> m_RegisteredActions =
             new Dictionary<string, Action<float>>();
 
@@ -46,7 +45,7 @@ namespace Unity.MLAgents.SideChannels
             {
                 var value = msg.ReadFloat32();
 
-                m_Parameters[key] = value;
+                m_Parameters[key] = () => value;
 
                 Action<float> action;
                 m_RegisteredActions.TryGetValue(key, out action);
@@ -55,13 +54,7 @@ namespace Unity.MLAgents.SideChannels
             else if ((int)EnvironmentDataTypes.Sampler == type)
             {
                 var encoding = msg.ReadFloatList(); 
-                m_Samplers[key] = m_SamplerFactory.CreateSampler(encoding);
-                //var samplerType = msg.ReadFloat32();
-                //var statOne = msg.ReadFloat32();
-                //var statTwo = msg.ReadFloat32();
-                //m_Parameters[key+"-sampler-type"] = samplerType;
-                //m_Parameters[key+"-min"] = statOne;
-                //m_Parameters[key+"-max"] = statTwo;
+                m_Parameters[key] = m_SamplerFactory.CreateSampler(encoding);
             }
             else
             {
@@ -78,32 +71,11 @@ namespace Unity.MLAgents.SideChannels
         /// <returns></returns>
         public float GetWithDefault(string key, float defaultValue)
         {
-            float valueOut;
-            bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
-            return hasKey ? valueOut : defaultValue;
-        }
-
-        public float Sample(string key, float defaultValue)
-        {
             Func<float> valueOut;
-            bool hasKey = m_Samplers.TryGetValue(key, out valueOut);
+            bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
             return hasKey ? valueOut() : defaultValue;
         }
-
-        /// <summary>
-        /// Returns the parameter value associated with the provided key. Returns the default
-        /// value if one doesn't exist.
-        /// </summary>
-        /// <param name="key">Parameter key.</param>
-        /// <param name="defaultValue">Default value to return.</param>
-        /// <returns></returns>
-        public float GetListWithDefault(string key, float defaultValue)
-        {
-            float valueOut;
-            bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
-            return hasKey ? valueOut : defaultValue;
-        }
-
+        
         /// <summary>
         /// Registers a callback for the associated parameter key. Will overwrite any existing
         /// actions for this parameter key.

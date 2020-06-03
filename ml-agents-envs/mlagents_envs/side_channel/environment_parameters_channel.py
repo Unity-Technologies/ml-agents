@@ -40,9 +40,9 @@ class EnvironmentParametersChannel(SideChannel):
 
     def set_sampler_parameters(self, key: str, values: List[float]) -> None:
         """
-        Sets a float environment parameter in the Unity Environment.
+        Sets a float encoding of an environment parameter sampelr.
         :param key: The string identifier of the parameter.
-        :param value: The float value of the parameter.
+        :param value: The float encoding  of the sampler.
         """
         msg = OutgoingMessage()
         msg.write_string(key)

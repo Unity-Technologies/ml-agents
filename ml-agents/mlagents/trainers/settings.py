@@ -201,6 +201,10 @@ class UniformSettings(ParameterRandomizationSettings):
     max_value: float = 1.0
 
     def to_float(self) -> List[float]:
+        if self.min_value > self.max_value:
+            raise TrainerConfigError(
+                "Minimum value is greater than maximum value in uniform sampler."
+            )
         return [0.0, self.min_value, self.max_value]
 
 
@@ -218,7 +222,19 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
     intervals: List[List[float]] = [[1.0, 1.0]]
 
     def to_float(self) -> List[float]:
-        return [2.0] + [val for interval in self.intervals for val in interval]
+        floats: List[float] = []
+        for interval in self.intervals:
+            if len(interval) != 2:
+                raise TrainerConfigError(
+                    f"The sampling interval {interval} must contain exactly two values."
+                )
+            [min_value, max_value] = interval
+            if min_value > max_value:
+                raise TrainerConfigError(
+                    f"Minimum value is greater than maximum value in interval {interval}."
+                )
+            floats += interval
+        return [2.0] + floats
 
 
 @attr.s(auto_attribs=True)
