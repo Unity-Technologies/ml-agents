@@ -102,6 +102,7 @@ reasonable approach for determining what information should be included is to
 consider what you would need to calculate an analytical solution to the problem,
 or what you would expect a human to be able to use to solve the problem.
 
+### Making Observations
 ML-Agents provides multiple ways for an Agent to make observations:
   1. Overriding the `Agent.CollectObservations()` method and passing the
     observations to the provided `VectorSensor`.
@@ -109,7 +110,7 @@ ML-Agents provides multiple ways for an Agent to make observations:
   1. Implementing the `ISensor` interface, using a `SensorComponent` attached to
   the Agent to create the `ISensor`.
 
-### Agent.CollectObservations()
+#### Agent.CollectObservations()
 Agent.CollectObservations() is best used for aspects of the environment which are
 numerical and non-visual. The Policy class calls the
 `CollectObservations(VectorSensor sensor)` method of each Agent. Your
@@ -150,7 +151,7 @@ noticeably worse.
 
 The observations passed to `VectorSensor.AddObservation()` must always contain
 the same number of elements must always be in the same order. If the number
-of observed entities in an environment can vary you can pad the calls
+of observed entities in an environment can vary, you can pad the calls
 with zeros for any missing entities in a specific observation, or you can limit
 an agent's observations to a fixed subset. For example, instead of observing
 every enemy in an environment, you could only observe the closest five.
@@ -159,7 +160,7 @@ Additionally, when you set up an Agent's `Behavior Parameters` in the Unity
 Editor, you must set the **Vector Observations > Space Size**
 to equal the number of floats that are written by `CollectObservations()`.
 
-### Observable Fields and Properties
+#### Observable Fields and Properties
 Another approach is to define the relevant observations as fields or properties
 on your Agent class, and annotate them with an ObservableAttribute. For
 example, in the 3DBall example above, the rigid body velocity could be observed
@@ -192,7 +193,7 @@ noticably affect performance.
 `Behavior Parameters` when you add `[Observable]` fields or properties to an
 Agent, since their size can be computed before they are used.
 
-### ISensor interface and SensorComponent
+#### ISensor interface and SensorComponent
 The `ISensor` interface is generally intended for advanced users or internal
 developers. The `Write()` method is used to actually generate the observation,
 but some other methods such as returning the shape of the observations must also
@@ -216,6 +217,13 @@ There are several SensorComponents provided in the API:
 Internally, both `Agent.CollectObservations` and `[Observable]` attribute use an
 ISensors to write observations, although this is mostly abstracted from the user.
 
+### Vector Observations
+Both `Agent.CollectObservations()` and `ObservableAttribute`s produce vector
+observations, which are represented at lists of `float`s. `ISensor`s can
+produce both vector observations and visual observations, which are
+multi-dimensional arrays of floats.
+
+Below are some additional considerations when dealing with vector observations:
 
 #### One-hot encoding categorical information
 
@@ -227,11 +235,10 @@ observes that the current item is a Bow, you would add the elements: 0, 0, 1 to
 the feature vector. The following code example illustrates how to add.
 
 ```csharp
-enum CarriedItems { Sword, Shield, Bow, LastItem }
-private List<float> state = new List<float>();
+enum ItemType { Sword, Shield, Bow, LastItem }
 public override void CollectObservations(VectorSensor sensor)
 {
-    for (int ci = 0; ci < (int)CarriedItems.LastItem; ci++)
+    for (int ci = 0; ci < (int)ItemType.LastItem; ci++)
     {
         sensor.AddObservation((int)currentItem == ci ? 1.0f : 0.0f);
     }
@@ -243,14 +250,25 @@ a shortcut for _one-hot_ style observations. The following example is identical
 to the previous one.
 
 ```csharp
-enum CarriedItems { Sword, Shield, Bow, LastItem }
-const int NUM_ITEM_TYPES = (int)CarriedItems.LastItem;
+enum ItemType { Sword, Shield, Bow, LastItem }
+const int NUM_ITEM_TYPES = (int)ItemType.LastItem;
 
 public override void CollectObservations(VectorSensor sensor)
 {
     // The first argument is the selection index; the second is the
     // number of possibilities
     sensor.AddOneHotObservation((int)currentItem, NUM_ITEM_TYPES);
+}
+```
+
+`ObservableAttribute` has built-in support for enums:
+```csharp
+enum ItemType { Sword, Shield, Bow }
+
+class HeroAgent : Agent
+{
+    [Observable]
+    ItemType m_CurrentItem;
 }
 ```
 
@@ -286,6 +304,37 @@ Vector3 normalized = rotation.eulerAngles / 360.0f;  // [0,1]
 For angles that can be outside the range [0,360], you can either reduce the
 angle, or, if the number of turns is significant, increase the maximum value
 used in your normalization formula.
+
+#### Stacking
+Stacking refers to repeating observations from previous steps as part of a
+larger observation. For example, consider an Agent that generates these
+observations in four steps
+```
+step 1: [0.1]
+step 2: [0.2]
+step 3: [0.3]
+step 4: [0.4]
+```
+
+If we use a stack size of 3, the observations would instead be:
+```csharp
+step 1: [0.1, 0.0, 0.0]
+step 2: [0.2, 0.1, 0.0]
+step 3: [0.3, 0.2, 0.1]
+step 4: [0.4, 0.3, 0.2]
+```
+(The observations are padded with zeroes for the first `stackSize-1` steps).
+This is a simple way to give an Agent limited "memory" without the complexity
+of adding a recurrent neural network (RNN).
+
+The steps for enabling stacking depends on how you generate observations:
+* For Agent.CollectObservations(), set "Stacked Vectors" on the Agent's
+  `Behavior Parameters` to a value greater than 1.
+* For ObservableAttribute, set the `numStackedObservations` parameter in the
+  constructor, e.g. `[Observable(numStackedObservations: 2)]`.
+* For `ISensor`s, wrap them in a `StackingSensor` (which is also an `ISensor`).
+  Generally, this should happen in the `CreateSensor()` method of your
+  `SensorComponent`.
 
 #### Vector Observation Summary & Best Practices
 
