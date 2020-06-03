@@ -7,9 +7,7 @@ using BodyPart = Unity.MLAgentsExamples.BodyPart;
 
 public class WalkerAgent : Agent
 {
-    [Header("Walking Speed")] [Space(10)]
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
-
     Vector3 m_WalkDir; //Direction to the target
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
