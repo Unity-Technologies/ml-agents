@@ -149,6 +149,16 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
+            foreach (var constantName in TensorNames.RequiredConstants)
+            {
+                var tensor = model.GetTensorByName(constantName);
+                if (tensor == null)
+                {
+                    failedModelChecks.Add($"Required constant \"{constantName}\" was not found in the model file.");
+                    return failedModelChecks;
+                }
+            }
+
             var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
             var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
             var isContinuousInt = (int)model.GetTensorByName(TensorNames.IsContinuousControl)[0];

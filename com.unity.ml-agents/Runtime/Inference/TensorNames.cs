@@ -25,5 +25,10 @@ namespace Unity.MLAgents.Inference
         public const string IsContinuousControl = "is_continuous_control";
         public const string ActionOutputShape = "action_output_shape";
         public const string ActionOutput = "action";
+
+        public static readonly string[] RequiredConstants =
+        {
+            VersionNumber, MemorySize, IsContinuousControl, ActionOutputShape
+        };
     }
 }
