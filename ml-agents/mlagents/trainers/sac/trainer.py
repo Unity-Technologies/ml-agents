@@ -50,7 +50,7 @@ class SACTrainer(RLTrainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param run_id: The identifier of the current run
         """
         super().__init__(
             brain_name, trainer_settings, training, run_id, reward_buff_cap

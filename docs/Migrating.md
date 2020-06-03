@@ -358,7 +358,7 @@ vector observations to be used simultaneously.
   `RayPerception3d.Perceive()` that was causing the `endOffset` to be used
   incorrectly. However this may produce different behavior from previous
   versions if you use a non-zero `startOffset`. To reproduce the old behavior,
-  you should increase the the value of `endOffset` by `startOffset`. You can
+  you should increase the value of `endOffset` by `startOffset`. You can
   verify your raycasts are performing as expected in scene view using the debug
   rays.
 - If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D
