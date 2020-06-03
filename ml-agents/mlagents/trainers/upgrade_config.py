@@ -46,9 +46,7 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
     return all_behavior_config_dict
 
 
-def write_to_yaml_file(config: Dict[str, Any], output_config: str) -> None:
-    unstructed_config = cattr.unstructure(config)
-    unstructed_config = remove_nones(unstructed_config)
+def write_to_yaml_file(unstructed_config: Dict[str, Any], output_config: str) -> None:
     with open(output_config, "w") as f:
         try:
             yaml.dump(unstructed_config, f, sort_keys=False)
@@ -66,7 +64,7 @@ def remove_nones(config: Dict[Any, Any]) -> Dict[str, Any]:
     return new_config
 
 
-def main() -> None:
+def parse_args():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -88,6 +86,11 @@ def main() -> None:
         "output_config_path", help="Path to write converted YAML file."
     )
     args = argparser.parse_args()
+    return args
+
+
+def main() -> None:
+    args = parse_args()
     print(
         f"Converting {args.trainer_config_path} and saving to {args.output_config_path}."
     )
@@ -103,10 +106,13 @@ def main() -> None:
         full_config["curriculum"] = curriculum_config_dict
 
     if args.sampler is not None:
-        sampler_config_dict = load_config(args.curriculum)
+        sampler_config_dict = load_config(args.sampler)
         full_config["parameter_randomization"] = sampler_config_dict
 
-    write_to_yaml_file(full_config, args.output_config_path)
+    # Convert config to dict
+    unstructed_config = cattr.unstructure(full_config)
+    unstructed_config = remove_nones(unstructed_config)
+    write_to_yaml_file(unstructed_config, args.output_config_path)
 
 
 if __name__ == "__main__":
