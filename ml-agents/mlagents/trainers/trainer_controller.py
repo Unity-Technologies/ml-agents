@@ -29,6 +29,7 @@ from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 from mlagents.trainers.settings import CurriculumSettings
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 
 class TrainerController(object):
@@ -293,6 +294,9 @@ class TrainerController(object):
                 if brain_name in self.trainers:
                     self.trainers[brain_name].stats_reporter.set_stat(
                         "Environment/Lesson", curr.lesson_num
+                    )
+                    GlobalTrainingStatus.set_parameter_state(
+                        brain_name, StatusType.LESSON_NUM, curr.lesson_num
                     )
 
         for trainer in self.trainers.values():

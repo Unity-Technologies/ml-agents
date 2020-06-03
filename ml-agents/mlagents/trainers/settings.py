@@ -345,7 +345,6 @@ class CheckpointSettings:
     force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
-    lesson: int = parser.get_default("lesson")
 
 
 @attr.s(auto_attribs=True)

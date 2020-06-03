@@ -61,3 +61,11 @@ def test_take_action_returns_action_info_when_available():
         policy_eval_out["action"], policy_eval_out["value"], policy_eval_out, [0]
     )
     assert result == expected
+
+
+def test_convert_version_string():
+    result = TFPolicy._convert_version_string("200.300.100")
+    assert result == (200, 300, 100)
+    # Test dev versions
+    result = TFPolicy._convert_version_string("200.300.100.dev0")
+    assert result == (200, 300, 100)

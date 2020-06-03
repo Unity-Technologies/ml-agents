@@ -28,6 +28,8 @@ double-check that the versions are in the same. The versions can be found in
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously.
+- `--lesson` has been removed from the CLI. Lessons will resume when using `--resume`.
+  To start at a different lesson, modify your Curriculum configuration.
 
 ### Steps to Migrate
 - To upgrade your configuration files, an upgrade script has been provided. Run `python config/update_config.py
@@ -356,7 +358,7 @@ vector observations to be used simultaneously.
   `RayPerception3d.Perceive()` that was causing the `endOffset` to be used
   incorrectly. However this may produce different behavior from previous
   versions if you use a non-zero `startOffset`. To reproduce the old behavior,
-  you should increase the the value of `endOffset` by `startOffset`. You can
+  you should increase the value of `endOffset` by `startOffset`. You can
   verify your raycasts are performing as expected in scene view using the debug
   rays.
 - If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D
