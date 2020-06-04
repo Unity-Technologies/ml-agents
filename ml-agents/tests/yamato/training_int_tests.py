@@ -103,7 +103,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
 
 def run_inference(env_path: str, output_path: str) -> bool:
     exes = find_executables(env_path)
-    if len(exes) != 0:
+    if len(exes) != 1:
         print(f"Can't determine the player executable in {env_path}. Found {exes}.")
         return False
 
