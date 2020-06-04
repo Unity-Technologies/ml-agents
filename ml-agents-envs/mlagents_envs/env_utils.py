@@ -89,6 +89,7 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
         get_logger(__name__).debug("This is the launch string {}".format(launch_string))
         # Launch Unity environment
         subprocess_args = [launch_string] + args
+        print(subprocess_args)
         try:
             return subprocess.Popen(
                 subprocess_args,
