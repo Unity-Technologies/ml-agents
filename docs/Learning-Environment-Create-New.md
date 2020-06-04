@@ -379,8 +379,7 @@ code.
    window.
 1. Add the `Decision Requester` script with the Add Component button from the
    RollerAgent Inspector.
-<!-- what does this do, and why would i want to change it here or in general? -->
-1. Change **Decision Period** to `10`.
+1. Change **Decision Period** to `10`. For more information on decisions, see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
 1. Drag the Target GameObject from the Hierarchy window to the RollerAgent
    Target field.
 1. Add the `Behavior Parameters` script with the Add Component button from the
