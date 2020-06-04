@@ -38,10 +38,13 @@ def get_local_binary_path(name: str, url: str) -> str:
             break
         try:
             download_and_extract_zip(url, name)
-        except IOError:
-            logger.debug(
-                f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS} : Failed to download"
-            )
+        except Exception:  # pylint: disable=W0702
+            if attempt + 1 < NUMBER_ATTEMPTS:
+                logger.debug(
+                    f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS} : Failed to download"
+                )
+            else:
+                raise
         path = get_local_binary_path_if_exists(name, url)
 
     if path is None:
@@ -128,6 +131,8 @@ def download_and_extract_zip(url: str, name: str) -> None:
     except urllib.error.HTTPError as e:  # type: ignore
         e.msg += " " + url
         raise
+    except urllib.error.URLError:  # type:ignore # pylint: disable=W0706
+        raise
     zip_size = int(request.headers["content-length"])
     zip_file_path = os.path.join(zip_dir, str(uuid.uuid4()) + ".zip")
     with open(zip_file_path, "wb") as zip_file:
@@ -183,6 +188,8 @@ def load_remote_manifest(url: str) -> Dict[str, Any]:
         request = urllib.request.urlopen(url, timeout=30)
     except urllib.error.HTTPError as e:  # type: ignore
         e.msg += " " + url
+        raise
+    except urllib.error.URLError:  # type:ignore # pylint: disable=W0706
         raise
     manifest_path = os.path.join(tmp_dir, str(uuid.uuid4()) + ".yaml")
     with open(manifest_path, "wb") as manifest:
