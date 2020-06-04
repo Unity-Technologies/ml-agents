@@ -75,7 +75,7 @@ namespace Unity.MLAgents.SideChannels
             bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
             return hasKey ? valueOut() : defaultValue;
         }
-        
+
         /// <summary>
         /// Registers a callback for the associated parameter key. Will overwrite any existing
         /// actions for this parameter key.

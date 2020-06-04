@@ -40,9 +40,9 @@ class EnvironmentParametersChannel(SideChannel):
 
     def set_sampler_parameters(self, key: str, values: List[float]) -> None:
         """
-        Sets a float encoding of an environment parameter sampelr.
+        Sets a float encoding of an environment parameter sampler.
         :param key: The string identifier of the parameter.
-        :param value: The float encoding  of the sampler.
+        :param values: The float encoding of the sampler.
         """
         msg = OutgoingMessage()
         msg.write_string(key)
