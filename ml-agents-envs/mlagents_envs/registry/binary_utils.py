@@ -40,8 +40,9 @@ def get_local_binary_path(name: str, url: str) -> str:
             download_and_extract_zip(url, name)
         except Exception:  # pylint: disable=W0702
             if attempt + 1 < NUMBER_ATTEMPTS:
-                logger.debug(
-                    f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS} : Failed to download"
+                logger.warning(
+                    f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS}"
+                    ": Failed to download and extract binary."
                 )
             else:
                 raise
