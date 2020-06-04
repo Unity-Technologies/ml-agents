@@ -191,20 +191,27 @@ class ParameterRandomizationSettings:
             for key, val in param_config.items():
                 enum_key = ParameterRandomizationType(key)
                 t = enum_key.to_settings()
-                d_final[param] = strict_to_cls(val, t).to_float()
+                d_final[param] = strict_to_cls(val, t).to_float_encoding()
         return d_final
 
 
 @attr.s(auto_attribs=True)
 class UniformSettings(ParameterRandomizationSettings):
-    min_value: float = 1.0
+    min_value: float = attr.ib()
     max_value: float = 1.0
 
-    def to_float(self) -> List[float]:
+    @min_value.default
+    def _min_value_default(self):
+        return 1.0
+
+    @min_value.validator
+    def _check_intervals(self, attribute, value):
         if self.min_value > self.max_value:
             raise TrainerConfigError(
                 "Minimum value is greater than maximum value in uniform sampler."
             )
+
+    def to_float_encoding(self) -> List[float]:
         return [0.0, self.min_value, self.max_value]
 
 
@@ -213,16 +220,20 @@ class GaussianSettings(ParameterRandomizationSettings):
     mean: float = 1.0
     st_dev: float = 1.0
 
-    def to_float(self) -> List[float]:
+    def to_float_encoding(self) -> List[float]:
         return [1.0, self.mean, self.st_dev]
 
 
 @attr.s(auto_attribs=True)
 class MultiRangeUniformSettings(ParameterRandomizationSettings):
-    intervals: List[List[float]] = [[1.0, 1.0]]
+    intervals: List[List[float]] = attr.ib()
 
-    def to_float(self) -> List[float]:
-        floats: List[float] = []
+    @intervals.default
+    def _intervals_default(self):
+        return [[1.0, 1.0]]
+
+    @intervals.validator
+    def _check_intervals(self, attribute, value):
         for interval in self.intervals:
             if len(interval) != 2:
                 raise TrainerConfigError(
@@ -233,6 +244,10 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
                 raise TrainerConfigError(
                     f"Minimum value is greater than maximum value in interval {interval}."
                 )
+
+    def to_float_encoding(self) -> List[float]:
+        floats: List[float] = []
+        for interval in self.intervals:
             floats += interval
         return [2.0] + floats
 

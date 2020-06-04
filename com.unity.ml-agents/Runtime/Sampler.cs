@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Inference.Utils;
 using UnityEngine;
-using Random=UnityEngine.Random;
 
 namespace Unity.MLAgents
 {
     /// <summary>
     /// The types of distributions from which to sample reset parameters.
     /// </summary>
-    public enum SamplerType
+    internal enum SamplerType
     {
         /// <summary>
         /// Samples a reset parameter from a uniform distribution.
@@ -26,7 +25,7 @@ namespace Unity.MLAgents
     /// <summary>
     /// Takes a list of floats that encode a sampling distribution and returns the sampling function.
     /// </summary>
-    public sealed class SamplerFactory
+    internal sealed class SamplerFactory
     {
 
         int m_Seed;
@@ -62,7 +61,7 @@ namespace Unity.MLAgents
 
         public Func<float> CreateUniformSampler(float min, float max)
         {
-            return () => Random.Range(min, max);
+            return () => UnityEngine.Random.Range(min, max);
         }
 
         public Func<float> CreateGaussianSampler(float mean, float stddev)
