@@ -366,6 +366,8 @@ namespace Unity.MLAgents
                         port = port
                     }
                 );
+                Communicator.QuitCommandReceived += OnQuitCommandReceived;
+                Communicator.ResetCommandReceived += OnResetCommand;
             }
 
             if (Communicator != null)
@@ -396,12 +398,6 @@ namespace Unity.MLAgents
                         "Will perform inference instead."
                     );
                     Communicator = null;
-                }
-
-                if (Communicator != null)
-                {
-                    Communicator.QuitCommandReceived += OnQuitCommandReceived;
-                    Communicator.ResetCommandReceived += OnResetCommand;
                 }
             }
 
