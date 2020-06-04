@@ -40,6 +40,8 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 ### Bug Fixes
 - Fixed an issue where SAC would perform too many model updates when resuming from a
   checkpoint, and too few when using `buffer_init_steps`. (#4038)
+- Fixed a bug in the onnx export that would cause constants needed for inference to not be visible to some versions of
+  the Barracuda importer. (#4073)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
