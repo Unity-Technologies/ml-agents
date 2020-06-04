@@ -10,12 +10,7 @@ public class WalkerAgent : Agent
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
     Vector3 m_WalkDir; //Direction to the target
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
-
-    [Header("Orientation")] [Space(10)]
-    //This will be used as a stable reference point for observations
-    //Because ragdolls can move erratically, using a standalone reference point can significantly improve learning
-    public GameObject orientationCube;
-
+    
     [Header("Target To Walk Towards")] [Space(10)]
     public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
 
@@ -40,6 +35,12 @@ public class WalkerAgent : Agent
     public Transform armR;
     public Transform forearmR;
     public Transform handR;
+    
+    [Header("Orientation")] [Space(10)]
+    //This will be used as a stable reference point for observations
+    //Because ragdolls can move erratically, using a standalone reference point can significantly improve learning
+    public GameObject orientationCube;
+
     JointDriveController m_JdController;
 
     EnvironmentParameters m_ResetParams;
