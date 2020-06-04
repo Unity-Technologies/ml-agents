@@ -6,6 +6,7 @@ import time
 from typing import Any
 
 from .yamato_utils import (
+    find_executables,
     get_base_path,
     get_base_output_path,
     run_standalone_build,
@@ -78,8 +79,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         }
         override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
-    env_path = os.path.join(get_base_output_path(), standalone_player_path)
-    exe_path = env_path + ".app/Contents/MacOS/UnityEnvironment"
+    env_path = os.path.join(get_base_output_path(), standalone_player_path + ".app")
     mla_learn_cmd = (
         f"mlagents-learn {yaml_out} --force --env={env_path} "
         f"--run-id={run_id} --no-graphics --env-args -logFile -"
@@ -93,7 +93,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         return False
 
     if csharp_version is None and python_version is None:
-        inference_ok = run_inference(exe_path, os.path.dirname(nn_file_expected))
+        inference_ok = run_inference(env_path, os.path.dirname(nn_file_expected))
         if not inference_ok:
             return False
 
@@ -101,7 +101,13 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     return True
 
 
-def run_inference(exe_path: str, output_path: str) -> bool:
+def run_inference(env_path: str, output_path: str) -> bool:
+    exes = find_executables(env_path)
+    if len(exes) != 0:
+        print(f"Can't determine the player executable in {env_path}. Found {exes}.")
+        return False
+
+    exe_path = exes[0]
     args = [
         exe_path,
         "-nographics",
