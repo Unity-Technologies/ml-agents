@@ -111,6 +111,7 @@ def run_inference(env_path: str, output_path: str) -> bool:
     args = [
         exe_path,
         "-nographics",
+        "-batchmode",
         "-logfile",
         "-",
         "--mlagents-override-model-directory",
