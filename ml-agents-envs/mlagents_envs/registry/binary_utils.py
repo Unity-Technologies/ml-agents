@@ -131,8 +131,6 @@ def download_and_extract_zip(url: str, name: str) -> None:
     except urllib.error.HTTPError as e:  # type: ignore
         e.msg += " " + url
         raise
-    except urllib.error.URLError:  # type:ignore # pylint: disable=W0706
-        raise
     zip_size = int(request.headers["content-length"])
     zip_file_path = os.path.join(zip_dir, str(uuid.uuid4()) + ".zip")
     with open(zip_file_path, "wb") as zip_file:
@@ -188,8 +186,6 @@ def load_remote_manifest(url: str) -> Dict[str, Any]:
         request = urllib.request.urlopen(url, timeout=30)
     except urllib.error.HTTPError as e:  # type: ignore
         e.msg += " " + url
-        raise
-    except urllib.error.URLError:  # type:ignore # pylint: disable=W0706
         raise
     manifest_path = os.path.join(tmp_dir, str(uuid.uuid4()) + ".yaml")
     with open(manifest_path, "wb") as manifest:
