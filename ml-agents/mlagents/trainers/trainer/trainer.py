@@ -38,7 +38,6 @@ class Trainer(abc.ABC):
         :str run_id: The identifier of the current run
         :int reward_buff_cap:
         """
-        self.param_keys: List[str] = []
         self.brain_name = brain_name
         self.run_id = run_id
         self.trainer_settings = trainer_settings
