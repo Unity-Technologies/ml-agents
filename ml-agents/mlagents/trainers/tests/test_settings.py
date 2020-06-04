@@ -11,6 +11,10 @@ from mlagents.trainers.settings import (
     RewardSignalType,
     RewardSignalSettings,
     CuriositySettings,
+    ParameterRandomizationSettings,
+    UniformSettings,
+    GaussianSettings,
+    MultiRangeUniformSettings,
     TrainerType,
     strict_to_cls,
 )
@@ -148,4 +152,63 @@ def test_reward_signal_structure():
     with pytest.raises(TrainerConfigError):
         RewardSignalSettings.structure(
             "notadict", Dict[RewardSignalType, RewardSignalSettings]
+        )
+
+
+def test_parameter_randomization_structure():
+    """
+    Tests the ParameterRandomizationSettings structure method and all validators.
+    """
+    parameter_randomization_dict = {
+        "mass": {"uniform": {"min_value": 1.0, "max_value": 2.0}},
+        "scale": {"gaussian": {"mean": 1.0, "st_dev": 2.0}},
+        "length": {"multirangeuniform": {"intervals": [[1.0, 2.0], [3.0, 4.0]]}},
+    }
+    parameter_randomization_distributions = ParameterRandomizationSettings.structure(
+        parameter_randomization_dict, Dict[str, ParameterRandomizationSettings]
+    )
+    assert isinstance(parameter_randomization_distributions["mass"], UniformSettings)
+    assert isinstance(parameter_randomization_distributions["scale"], GaussianSettings)
+    assert isinstance(
+        parameter_randomization_distributions["length"], MultiRangeUniformSettings
+    )
+
+    # Check invalid distribution type
+    invalid_distribution_dict = {"mass": {"beta": {"alpha": 1.0, "beta": 2.0}}}
+    with pytest.raises(ValueError):
+        ParameterRandomizationSettings.structure(
+            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        )
+
+    # Check min less than max in uniform
+    invalid_distribution_dict = {
+        "mass": {"uniform": {"min_value": 2.0, "max_value": 1.0}}
+    }
+    with pytest.raises(TrainerConfigError):
+        ParameterRandomizationSettings.structure(
+            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        )
+
+    # Check min less than max in multirange
+    invalid_distribution_dict = {
+        "mass": {"multirangeuniform": {"intervals": [[2.0, 1.0]]}}
+    }
+    with pytest.raises(TrainerConfigError):
+        ParameterRandomizationSettings.structure(
+            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        )
+
+    # Check multirange has valid intervals
+    invalid_distribution_dict = {
+        "mass": {"multirangeuniform": {"intervals": [[1.0, 2.0], [3.0]]}}
+    }
+    with pytest.raises(TrainerConfigError):
+        ParameterRandomizationSettings.structure(
+            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        )
+
+    # Check non-Dict input
+    with pytest.raises(TrainerConfigError):
+        ParameterRandomizationSettings.structure(
+            "notadict", Dict[str, ParameterRandomizationSettings]
         )
