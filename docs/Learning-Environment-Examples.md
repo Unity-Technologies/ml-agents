@@ -455,23 +455,25 @@ you would like to contribute environments, please see our
 
 ![Walker](images/walker.png)
 
-- Set-up: Physics-based Humanoids agents with 26 degrees of freedom. These DOFs
+- Set-up: Physics-based Humanoid agents with 26 degrees of freedom. These DOFs
   correspond to articulation of the following body-parts: hips, chest, spine,
   head, thighs, shins, feet, arms, forearms and hands.
 - Goal: The agents must move its body toward the goal direction as quickly as
   possible without falling.
-- Agents: The environment contains 11 independent agents with same Behavior
+  - `WalkerStatic` - Goal direction is always forward.
+  - `WalkerDynamic`- Goal direction is randomized.
+- Agents: The environment contains 10 independent agents with same Behavior
   Parameters.
 - Agent Reward Function (independent):
-  - +0.03 times body velocity in the goal direction.
-  - +0.01 times head y position.
-  - +0.01 times body direction alignment with goal direction.
-  - -0.01 times head velocity difference from body velocity.
+  - +0.02 times body velocity in the goal direction. (run towards target)
+  - +0.01 times head direction alignment with goal direction. (face towards target)
+  - +0.005 times head y position - left foot y position. (encourage head height)
+  - +0.005 times head y position - right foot y position. (encourage head height)
 - Behavior Parameters:
-  - Vector Observation space: 215 variables corresponding to position, rotation,
+  - Vector Observation space: 236 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb, along with goal direction.
   - Vector Action space: (Continuous) Size of 39, corresponding to target
-    rotations applicable to the joints.
+    rotations and strength applicable to the joints.
   - Visual Observations: None
 - Float Properties: Four
   - gravity: Magnitude of gravity
@@ -490,7 +492,8 @@ you would like to contribute environments, please see our
     - Default: 10
     - Recommended Minimum: 3
     - Recommended Maximum: 20
-- Benchmark Mean Reward: 1000
+- Benchmark Mean Reward for `WalkerStatic`: 1500
+- Benchmark Mean Reward for `WalkerDynamic`: 700
 
 ## Pyramids
 

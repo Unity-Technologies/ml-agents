@@ -12,12 +12,12 @@ namespace Unity.MLAgentsExamples
     public class ProjectSettingsOverrides : MonoBehaviour
     {
         // Original values
-
         Vector3 m_OriginalGravity;
         float m_OriginalFixedDeltaTime;
         float m_OriginalMaximumDeltaTime;
         int m_OriginalSolverIterations;
         int m_OriginalSolverVelocityIterations;
+        bool m_OriginalReuseCollisionCallbacks;
 
         [Tooltip("Increase or decrease the scene gravity. Use ~3x to make things less floaty")]
         public float gravityMultiplier = 1.0f;
@@ -31,6 +31,8 @@ namespace Unity.MLAgentsExamples
         public int solverIterations = 6;
         [Tooltip("Affects how accurately the Rigidbody joints and collision contacts are resolved. (default 1). Must be positive.")]
         public int solverVelocityIterations = 1;
+        [Tooltip("Determines whether the garbage collector should reuse only a single instance of a Collision type for all collision callbacks. Reduces Garbage.")]
+        public bool reuseCollisionCallbacks = true;
 
         public void Awake()
         {
@@ -40,6 +42,7 @@ namespace Unity.MLAgentsExamples
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
             m_OriginalSolverIterations = Physics.defaultSolverIterations;
             m_OriginalSolverVelocityIterations = Physics.defaultSolverVelocityIterations;
+            m_OriginalReuseCollisionCallbacks = Physics.reuseCollisionCallbacks ;
 
             // Override
             Physics.gravity *= gravityMultiplier;
@@ -47,6 +50,7 @@ namespace Unity.MLAgentsExamples
             Time.maximumDeltaTime = maximumDeltaTime;
             Physics.defaultSolverIterations = solverIterations;
             Physics.defaultSolverVelocityIterations = solverVelocityIterations;
+            Physics.reuseCollisionCallbacks = reuseCollisionCallbacks;
 
             // Make sure the Academy singleton is initialized first, since it will create the SideChannels.
             Academy.Instance.EnvironmentParameters.RegisterCallback("gravity", f => { Physics.gravity = new Vector3(0, -f, 0); });
@@ -59,6 +63,7 @@ namespace Unity.MLAgentsExamples
             Time.maximumDeltaTime = m_OriginalMaximumDeltaTime;
             Physics.defaultSolverIterations = m_OriginalSolverIterations;
             Physics.defaultSolverVelocityIterations = m_OriginalSolverVelocityIterations;
+            Physics.reuseCollisionCallbacks = m_OriginalReuseCollisionCallbacks;
         }
     }
 }
