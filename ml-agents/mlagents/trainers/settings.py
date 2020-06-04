@@ -205,7 +205,7 @@ class UniformSettings(ParameterRandomizationSettings):
         return 1.0
 
     @min_value.validator
-    def _check_intervals(self, attribute, value):
+    def _check_min_value(self, attribute, value):
         if self.min_value > self.max_value:
             raise TrainerConfigError(
                 "Minimum value is greater than maximum value in uniform sampler."
