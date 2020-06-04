@@ -31,9 +31,7 @@ MOCK_PARAMETER_YAML = """
         base_port: 4001
         seed: 9870
     checkpoint_settings:
-        lesson: 2
         run_id: uselessrun
-        save_freq: 654321
     debug: false
     """
 
@@ -84,7 +82,6 @@ def test_run_training(
                 trainer_factory_mock.return_value,
                 "results/ppo",
                 "ppo",
-                50000,
                 None,
                 True,
                 0,
@@ -120,11 +117,9 @@ def test_commandline_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path is None
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 0
     assert opt.checkpoint_settings.resume is False
     assert opt.checkpoint_settings.inference is False
     assert opt.checkpoint_settings.run_id == "ppo"
-    assert opt.checkpoint_settings.save_freq == 50000
     assert opt.env_settings.seed == -1
     assert opt.env_settings.base_port == 5005
     assert opt.env_settings.num_envs == 1
@@ -135,11 +130,9 @@ def test_commandline_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--lesson=3",
         "--resume",
         "--inference",
         "--run-id=myawesomerun",
-        "--save-freq=123456",
         "--seed=7890",
         "--train",
         "--base-port=4004",
@@ -152,9 +145,7 @@ def test_commandline_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 3
     assert opt.checkpoint_settings.run_id == "myawesomerun"
-    assert opt.checkpoint_settings.save_freq == 123456
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
     assert opt.env_settings.num_envs == 2
@@ -172,9 +163,7 @@ def test_yaml_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./oldenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 2
     assert opt.checkpoint_settings.run_id == "uselessrun"
-    assert opt.checkpoint_settings.save_freq == 654321
     assert opt.env_settings.seed == 9870
     assert opt.env_settings.base_port == 4001
     assert opt.env_settings.num_envs == 4
@@ -185,11 +174,9 @@ def test_yaml_args(mock_file):
     full_args = [
         "mytrainerpath",
         "--env=./myenvfile",
-        "--lesson=3",
         "--resume",
         "--inference",
         "--run-id=myawesomerun",
-        "--save-freq=123456",
         "--seed=7890",
         "--train",
         "--base-port=4004",
@@ -202,9 +189,7 @@ def test_yaml_args(mock_file):
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
-    assert opt.checkpoint_settings.lesson == 3
     assert opt.checkpoint_settings.run_id == "myawesomerun"
-    assert opt.checkpoint_settings.save_freq == 123456
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
     assert opt.env_settings.num_envs == 2

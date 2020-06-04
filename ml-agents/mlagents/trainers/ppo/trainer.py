@@ -253,7 +253,6 @@ class PPOTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

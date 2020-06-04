@@ -18,11 +18,6 @@ and this project adheres to
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously. (#3981) Thank you @shakenes !
-### Minor Changes
-#### com.unity.ml-agents (C#)
-- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
-  observations via reflection. (#3925, #4006)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
   configuration files are now environment-specific. (#3791)
@@ -30,9 +25,21 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
   See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Migrating.md) for more details. (#3936)
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
+- When using Curriculum, the current lesson will resume if training is quit and resumed. As such,
+  the `--lesson` CLI option has been removed. (#4025)
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
+  observations via reflection. (#3925, #4006)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
+- The `--save-freq` CLI option has been removed, and replaced by a `checkpoint_interval` option in the trainer configuration YAML. (#4034)
+- When trying to load/resume from a checkpoint created with an earlier verison of ML-Agents,
+  a warning will be thrown. (#4035)
 ### Bug Fixes
+- Fixed an issue where SAC would perform too many model updates when resuming from a
+  checkpoint, and too few when using `buffer_init_steps`. (#4038)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 

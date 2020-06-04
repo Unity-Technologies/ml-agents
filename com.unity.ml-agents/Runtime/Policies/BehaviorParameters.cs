@@ -37,16 +37,16 @@ namespace Unity.MLAgents.Policies
     public enum ObservableAttributeOptions
     {
         /// <summary>
-        /// All ObservableAttributes on the Agent will be ignored. If there are no
-        /// ObservableAttributes on the Agent, this will result in the fastest
-        /// initialization time.
+        /// All ObservableAttributes on the Agent will be ignored. This is the
+        /// default behavior. If there are no  ObservableAttributes on the
+        /// Agent, this will result in the fastest initialization time.
         /// </summary>
         Ignore,
 
         /// <summary>
         /// Only members on the declared class will be examined; members that are
-        /// inherited are ignored. This is the default behavior, and a reasonable
-        /// tradeoff between performance and flexibility.
+        /// inherited are ignored. This is a reasonable tradeoff between
+        /// performance and flexibility.
         /// </summary>
         /// <remarks>This corresponds to setting the
         /// [BindingFlags.DeclaredOnly](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.bindingflags?view=netcore-3.1)
@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Policies
 
         /// <summary>
         /// All members on the class will be examined. This can lead to slower
-        /// startup times
+        /// startup times.
         /// </summary>
         ExamineAll
     }
