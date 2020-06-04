@@ -78,7 +78,8 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         }
         override_config_file("config/ppo/3DBall.yaml", yaml_out, overrides)
 
-    env_path = os.path.join(get_base_output_path(), standalone_player_path + ".app")
+    env_path = os.path.join(get_base_output_path(), standalone_player_path)
+    exe_path = env_path + ".app/Contents/MacOS/UnityEnvironment"
     mla_learn_cmd = (
         f"mlagents-learn {yaml_out} --force --env={env_path} "
         f"--run-id={run_id} --no-graphics --env-args -logFile -"
@@ -92,7 +93,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         return False
 
     if csharp_version is None and python_version is None:
-        inference_ok = run_inference(env_path, os.path.dirname(nn_file_expected))
+        inference_ok = run_inference(exe_path, os.path.dirname(nn_file_expected))
         if not inference_ok:
             return False
 
@@ -100,9 +101,9 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     return True
 
 
-def run_inference(env_path: str, output_path: str) -> bool:
+def run_inference(exe_path: str, output_path: str) -> bool:
     args = [
-        env_path,
+        exe_path,
         "-nographics",
         "-logfile",
         "-",
