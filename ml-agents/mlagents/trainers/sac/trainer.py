@@ -333,7 +333,6 @@ class SACTrainer(RLTrainer):
         self.reward_signal_update_steps = int(
             max(1, self.step / self.reward_signal_steps_per_update)
         )
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

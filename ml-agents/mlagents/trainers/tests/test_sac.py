@@ -138,7 +138,6 @@ def test_add_get_policy(sac_optimizer, dummy_config):
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
-    assert trainer.next_summary_step > 2000
 
     # Test incorrect class of policy
     policy = mock.Mock()

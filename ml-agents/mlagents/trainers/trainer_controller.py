@@ -39,7 +39,6 @@ class TrainerController(object):
         trainer_factory: TrainerFactory,
         output_path: str,
         run_id: str,
-        save_freq: int,
         meta_curriculum: Optional[MetaCurriculum],
         train: bool,
         training_seed: int,
@@ -50,7 +49,6 @@ class TrainerController(object):
         :param output_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
-        :param save_freq: Frequency at which to save model
         :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
         :param train: Whether to train model, or only run inference.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
@@ -64,7 +62,6 @@ class TrainerController(object):
         self.output_path = output_path
         self.logger = get_logger(__name__)
         self.run_id = run_id
-        self.save_freq = save_freq
         self.train_model = train
         self.meta_curriculum = meta_curriculum
         self.sampler_manager = sampler_manager
@@ -152,11 +149,6 @@ class TrainerController(object):
         sampled_reset_param.update(new_meta_curriculum_config)
         env.reset(config=sampled_reset_param)
 
-    def _should_save_model(self, global_step: int) -> bool:
-        return (
-            global_step % self.save_freq == 0 and global_step != 0 and self.train_model
-        )
-
     def _not_done_training(self) -> bool:
         return (
             any(t.should_still_train for t in self.trainers.values())
@@ -229,13 +221,8 @@ class TrainerController(object):
                 for _ in range(n_steps):
                     global_step += 1
                     self.reset_env_if_ready(env_manager, global_step)
-                    if self._should_save_model(global_step):
-                        self._save_model()
             # Stop advancing trainers
             self.join_threads()
-            # Final save Tensorflow model
-            if global_step != 0 and self.train_model:
-                self._save_model()
         except (
             KeyboardInterrupt,
             UnityCommunicationException,
@@ -243,9 +230,9 @@ class TrainerController(object):
             UnityCommunicatorStoppedException,
         ) as ex:
             self.join_threads()
-            if self.train_model:
-                self._save_model_when_interrupted()
-
+            self.logger.info(
+                "Learning was interrupted. Please wait while the graph is generated."
+            )
             if isinstance(ex, KeyboardInterrupt) or isinstance(
                 ex, UnityCommunicatorStoppedException
             ):
@@ -256,6 +243,7 @@ class TrainerController(object):
                 raise ex
         finally:
             if self.train_model:
+                self._save_model()
                 self._export_graph()
 
     def end_trainer_episodes(

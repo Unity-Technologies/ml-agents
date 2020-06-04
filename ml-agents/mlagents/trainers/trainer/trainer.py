@@ -5,6 +5,7 @@ import abc
 from collections import deque
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.timers import timed
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
@@ -50,7 +51,6 @@ class Trainer(abc.ABC):
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
         self.summary_freq = self.trainer_settings.summary_freq
-        self.next_summary_step = self.summary_freq
 
     @property
     def stats_reporter(self):
@@ -110,6 +110,7 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
+    @timed
     def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model

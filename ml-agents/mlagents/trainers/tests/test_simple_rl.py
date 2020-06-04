@@ -115,7 +115,6 @@ def _check_environment_trains(
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
-        save_freq = 99999
         seed = 1337
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
@@ -142,7 +141,6 @@ def _check_environment_trains(
             training_seed=seed,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
-            save_freq=save_freq,
         )
 
         # Begin training

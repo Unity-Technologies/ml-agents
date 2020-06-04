@@ -28,6 +28,8 @@ double-check that the versions are in the same. The versions can be found in
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously.
+- `--save-freq` has been removed from the CLI and is now configurable in the trainer configuration
+  file.
 - `--lesson` has been removed from the CLI. Lessons will resume when using `--resume`.
   To start at a different lesson, modify your Curriculum configuration.
 
@@ -49,6 +51,8 @@ vector observations to be used simultaneously.
  - If you use the `UnityToGymWrapper`, remove `use_visual` and `allow_multiple_visual_obs`
  from the constructor and add `allow_multiple_obs = True` if the environment contains either
  both visual and vector observations or multiple visual observations.
+ - If you were setting `--save-freq` in the CLI, add a `checkpoint_interval` value in your
+  trainer configuration, and set it equal to `save-freq * n_agents_in_scene`.
 
 ## Migrating from 0.15 to Release 1
 

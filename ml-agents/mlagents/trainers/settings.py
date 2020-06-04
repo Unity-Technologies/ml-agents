@@ -192,6 +192,7 @@ class TrainerSettings(ExportableSettings):
     init_path: Optional[str] = None
     output_path: str = "default"
     keep_checkpoints: int = 5
+    checkpoint_interval: int = 500000
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
@@ -267,7 +268,6 @@ class CurriculumSettings:
 
 @attr.s(auto_attribs=True)
 class CheckpointSettings:
-    save_freq: int = parser.get_default("save_freq")
     run_id: str = parser.get_default("run_id")
     initialize_from: str = parser.get_default("initialize_from")
     load_model: bool = parser.get_default("load_model")

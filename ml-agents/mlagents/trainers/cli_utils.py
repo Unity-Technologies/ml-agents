@@ -106,13 +106,6 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
     )
     argparser.add_argument(
-        "--save-freq",
-        default=50000,
-        type=int,
-        help="How often (in steps) to save the model during training",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
         "--seed",
         default=-1,
         type=int,
