@@ -742,8 +742,8 @@ if (gameObject.transform.position.y < 0.0f ||
     Mathf.Abs(gameObject.transform.position.x - area.transform.position.x) > 8f ||
     Mathf.Abs(gameObject.transform.position.z + 5 - area.transform.position.z) > 8)
 {
-    EndEpisode();
     AddReward(-1f);
+    EndEpisode();
 }
 ```
 
