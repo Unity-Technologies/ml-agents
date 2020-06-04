@@ -1,10 +1,10 @@
 {
   "name": "com.unity.ml-agents",
   "displayName": "ML Agents",
-  "version": "1.0.2-preview",
+  "version": "1.0.2",
   "unity": "2018.4",
   "description": "Use state-of-the-art machine learning to create intelligent character behaviors in any Unity environment (games, robotics, film, etc.).",
   "dependencies": {
-    "com.unity.barracuda": "0.7.1-preview"
+    "com.unity.barracuda": "1.0.0"
   }
 }
