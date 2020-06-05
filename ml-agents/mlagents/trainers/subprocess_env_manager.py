@@ -179,7 +179,9 @@ def worker(
                     if isinstance(v, float):
                         env_parameters.set_float_parameter(k, v)
                     elif isinstance(v, ParameterRandomizationSettings):
-                        env_parameters.set_sampler_parameters(k, v.to_float_encoding())
+                        env_parameters.set_sampler_parameters(
+                            k, v.to_float_encoding(), v.seed
+                        )
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)

@@ -169,13 +169,14 @@ class ParameterRandomizationType(Enum):
         }
         return _mapping[self]
 
-    def to_float(self) -> float:
-        _mapping = {
-            ParameterRandomizationType.UNIFORM: 0.0,
-            ParameterRandomizationType.GAUSSIAN: 1.0,
-            ParameterRandomizationType.MULTIRANGEUNIFORM: 2.0,
+    @staticmethod
+    def to_float(t: type) -> float:
+        _mapping: Dict[type, float] = {
+            UniformSettings: 0.0,
+            GaussianSettings: 1.0,
+            MultiRangeUniformSettings: 2.0,
         }
-        return _mapping[self]
+        return _mapping[t]
 
 
 @attr.s(auto_attribs=True)
@@ -234,7 +235,11 @@ class UniformSettings(ParameterRandomizationSettings):
 
     def to_float_encoding(self) -> List[float]:
         "Returns the sampler type followed by the min and max values"
-        return [self.seed, 0.0, self.min_value, self.max_value]
+        return [
+            ParameterRandomizationType.to_float(type(self)),
+            self.min_value,
+            self.max_value,
+        ]
 
 
 @attr.s(auto_attribs=True)
@@ -244,7 +249,7 @@ class GaussianSettings(ParameterRandomizationSettings):
 
     def to_float_encoding(self) -> List[float]:
         "Returns the sampler type followed by the mean and standard deviation"
-        return [self.seed, 1.0, self.mean, self.st_dev]
+        return [ParameterRandomizationType.to_float(type(self)), self.mean, self.st_dev]
 
 
 @attr.s(auto_attribs=True)
@@ -273,7 +278,7 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
         floats: List[float] = []
         for interval in self.intervals:
             floats += interval
-        return [self.seed, 2.0] + floats
+        return [ParameterRandomizationType.to_float(type(self))] + floats
 
 
 @attr.s(auto_attribs=True)

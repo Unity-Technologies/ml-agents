@@ -38,19 +38,21 @@ class EnvironmentParametersChannel(SideChannel):
         msg.write_float32(value)
         super().queue_message_to_send(msg)
 
-    def set_sampler_parameters(self, key: str, values: List[float]) -> None:
+    def set_sampler_parameters(
+        self, key: str, encoding: List[float], seed: int
+    ) -> None:
         """
         Sets a float encoding of an environment parameter sampler.
         :param key: The string identifier of the parameter.
-        :param values: The float encoding of the sampler.
+        :param encoding: The float encoding of the sampler.
+        :param seed: The random seed to initialize the sampler.
         """
         msg = OutgoingMessage()
         msg.write_string(key)
         msg.write_int32(self.EnvironmentDataTypes.SAMPLER)
-        # Write seed
-        msg.write_int32(int(values[0]))
-        msg.write_int32(len(values[1:]))
-        # Sampler encoding
-        for value in values[1:]:
+        msg.write_int32(seed)
+        # for read float list in C#
+        msg.write_int32(len(encoding))
+        for value in encoding:
             msg.write_float32(value)
         super().queue_message_to_send(msg)
