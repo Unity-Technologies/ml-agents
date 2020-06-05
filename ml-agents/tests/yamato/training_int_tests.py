@@ -124,6 +124,7 @@ def run_inference(env_path: str, output_path: str) -> bool:
     if res.returncode != 0:
         print(res.stdout)
         print("Error running inference!")
+        return False
 
     return True
 
