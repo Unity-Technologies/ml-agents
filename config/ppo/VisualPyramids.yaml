@@ -24,7 +24,6 @@ behaviors:
         strength: 0.01
         encoding_size: 256
         learning_rate: 0.0003
-    output_path: default
     keep_checkpoints: 5
     max_steps: 10000000
     time_horizon: 128
