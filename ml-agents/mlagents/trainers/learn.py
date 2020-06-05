@@ -197,17 +197,9 @@ def write_timing_tree(output_dir: str) -> None:
 def maybe_add_samplers(
     sampler_config: Optional[Dict], env: SubprocessEnvManager
 ) -> None:
-    restructured_sampler_config: Dict[str, List[float]] = {}
     # TODO send seed
     if sampler_config is not None:
-        if "resampling-interval" in sampler_config:
-            logger.warning(
-                "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
-            )
-            sampler_config.pop("resampling-interval")
-        for param, config in sampler_config.items():
-            restructured_sampler_config[param] = config
-        env.reset(config=restructured_sampler_config)
+        env.reset(config=sampler_config)
 
 
 def try_create_meta_curriculum(

@@ -11,6 +11,10 @@ from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.models import ScheduleType, EncoderType
 
+from mlagents_envs import logging_util
+
+logger = logging_util.get_logger(__name__)
+
 
 def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     attr_fields_dict = attr.fields_dict(class_type)
@@ -189,6 +193,15 @@ class ParameterRandomizationSettings(abc.ABC):
             )
         d_final: Dict[str, List[float]] = {}
         for param, param_config in d.items():
+            if param == "resampling-interval":
+                logger.warning(
+                    "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
+                )
+                continue
+            if not isinstance(param_config, Mapping):
+                raise TrainerConfigError(
+                    f"Unsupported distribution configuration {param_config}."
+                )
             for key, val in param_config.items():
                 enum_key = ParameterRandomizationType(key)
                 t = enum_key.to_settings()
