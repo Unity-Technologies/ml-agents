@@ -63,6 +63,7 @@ versions = [
     ReleaseInfo.from_simple_tag("0.15.1", "March 30, 2020"),
     ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
     ReleaseInfo("release_2", "1.0.2", "0.16.1", "May 20, 2020"),
+    ReleaseInfo("release_3", "1.1.0", "0.17.0", "June 10, 2020"),
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days
