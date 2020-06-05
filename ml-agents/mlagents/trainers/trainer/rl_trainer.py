@@ -150,6 +150,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         if step_after_process >= self._next_save_step and self.get_step != 0:
             logger.info(f"Checkpointing model for {self.brain_name}.")
             self.save_model(self.brain_name)
+            logger.info(f"Exporting a checkpoint model for {self.brain_name}.")
+            self.export_model(self.brain_name, is_checkpoint=True)
 
     def advance(self) -> None:
         """
