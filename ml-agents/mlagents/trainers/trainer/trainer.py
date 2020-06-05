@@ -125,7 +125,6 @@ class Trainer(abc.ABC):
         policy = self.get_policy(name_behavior_id)
         if is_checkpoint:
             checkpoint_path = f"{name_behavior_id}-{self.get_step}"
-
             settings = SerializationSettings(
                 policy.model_path, policy.brain.brain_name, checkpoint_path
             )
