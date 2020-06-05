@@ -112,6 +112,7 @@ class TrainerController(object):
             "Learning was interrupted. Please wait while the graph is generated."
         )
         self._save_model()
+        self._export_graph()
 
     def _export_graph(self):
         """
@@ -120,6 +121,7 @@ class TrainerController(object):
         for brain_name in self.trainers.keys():
             for name_behavior_id in self.brain_name_to_identifier[brain_name]:
                 self.trainers[brain_name].export_model(name_behavior_id)
+        self.logger.info("Exported Model")
 
     @staticmethod
     def _create_output_path(output_path):

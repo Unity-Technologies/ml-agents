@@ -117,13 +117,18 @@ class Trainer(abc.ABC):
         """
         self.get_policy(name_behavior_id).save_model(self.get_step)
 
-    def export_model(self, name_behavior_id: str) -> None:
+    def export_model(self, name_behavior_id: str, is_checkpoint=False) -> None:
         """
         Exports the model
         """
         policy = self.get_policy(name_behavior_id)
-        settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
-        export_policy_model(settings, policy.graph, policy.sess)
+        if is_checkpoint:
+            checkpoint_path = f"{name_behavior_id}-{self.get_step}"
+            settings = SerializationSettings(policy.model_path, policy.brain.brain_name, checkpoint_path)
+        else:
+            settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+        export_policy_model(settings, policy.graph, policy.sess, is_checkpoint)
+
 
     @abc.abstractmethod
     def end_episode(self):
