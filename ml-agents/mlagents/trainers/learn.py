@@ -131,7 +131,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         maybe_meta_curriculum = try_create_meta_curriculum(
             options.curriculum, env_manager, restore=checkpoint_settings.resume
         )
-        maybe_add_samplers(options.parameter_randomization, env_manager)
+        maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
 
         trainer_factory = TrainerFactory(
             options.behaviors,
@@ -195,10 +195,13 @@ def write_timing_tree(output_dir: str) -> None:
 
 
 def maybe_add_samplers(
-    sampler_config: Optional[Dict], env: SubprocessEnvManager
+    sampler_config: Optional[Dict], env: SubprocessEnvManager, run_seed: int
 ) -> None:
-    # TODO send seed
     if sampler_config is not None:
+        # If the seed is not specified in yaml, this will grab the run seed
+        for _, v in sampler_config.items():
+            if v.seed == -1:
+                v.seed = run_seed
         env.reset(config=sampler_config)
 
 

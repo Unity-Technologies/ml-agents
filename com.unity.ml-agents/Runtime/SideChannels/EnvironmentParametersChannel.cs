@@ -54,10 +54,6 @@ namespace Unity.MLAgents.SideChannels
             else if ((int)EnvironmentDataTypes.Sampler == type)
             {
                 int seed = msg.ReadInt32();
-                if (seed == -1)
-                {
-                    seed = UnityEngine.Random.Range(0, 10000);
-                }
                 var encoding = msg.ReadFloatList(); 
                 m_Parameters[key] = m_SamplerFactory.CreateSampler(encoding, seed);
             }
