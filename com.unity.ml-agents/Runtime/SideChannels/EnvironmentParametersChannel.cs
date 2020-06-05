@@ -23,7 +23,7 @@ namespace Unity.MLAgents.SideChannels
         Dictionary<string, Action<float>> m_RegisteredActions =
             new Dictionary<string, Action<float>>();
 
-        SamplerFactory m_SamplerFactory = new SamplerFactory(1);
+        SamplerFactory m_SamplerFactory = new SamplerFactory();
 
         const string k_EnvParamsId = "534c891e-810f-11ea-a9d0-822485860400";
 
@@ -53,8 +53,13 @@ namespace Unity.MLAgents.SideChannels
             }
             else if ((int)EnvironmentDataTypes.Sampler == type)
             {
+                int seed = msg.ReadInt32();
+                if (seed == -1)
+                {
+                    seed = UnityEngine.Random.Range(0, 10000);
+                }
                 var encoding = msg.ReadFloatList(); 
-                m_Parameters[key] = m_SamplerFactory.CreateSampler(encoding);
+                m_Parameters[key] = m_SamplerFactory.CreateSampler(encoding, seed);
             }
             else
             {

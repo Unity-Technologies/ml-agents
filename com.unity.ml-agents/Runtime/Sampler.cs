@@ -27,30 +27,26 @@ namespace Unity.MLAgents
     /// </summary>
     internal sealed class SamplerFactory
     {
-
-        int m_Seed;
-
         /// <summary>
         /// Constructor.
         /// </summary>
-        internal SamplerFactory(int seed)
+        internal SamplerFactory()
         {
-            m_Seed = seed;    
         }
 
         /// <summary>
         /// Create the sampling distribution described by the encoding.
         /// </summary>
         /// <param name="encoding"> List of floats the describe sampling destribution.</param>
-        public Func<float> CreateSampler(IList<float> encoding)
+        public Func<float> CreateSampler(IList<float> encoding, int seed)
         {
             if ((int)encoding[0] == (int)SamplerType.Uniform)
             {
-                return CreateUniformSampler(encoding[1], encoding[2]);
+                return CreateUniformSampler(encoding[1], encoding[2], seed);
             }
             else if ((int)encoding[0] == (int)SamplerType.Gaussian)
             {
-                return CreateGaussianSampler(encoding[1], encoding[2]);
+                return CreateGaussianSampler(encoding[1], encoding[2], seed);
             }
             else{
                 Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");
@@ -59,14 +55,15 @@ namespace Unity.MLAgents
 
         }
 
-        public Func<float> CreateUniformSampler(float min, float max)
+        public Func<float> CreateUniformSampler(float min, float max, int seed)
         {
-            return () => UnityEngine.Random.Range(min, max);
+            System.Random distr = new System.Random(seed);
+            return () => min + (float)distr.NextDouble() * (max - min);
         }
 
-        public Func<float> CreateGaussianSampler(float mean, float stddev)
+        public Func<float> CreateGaussianSampler(float mean, float stddev, int seed)
         {
-            RandomNormal distr = new RandomNormal(m_Seed, mean, stddev);
+            RandomNormal distr = new RandomNormal(seed, mean, stddev);
             return () => (float)distr.NextDouble();
         }
     }

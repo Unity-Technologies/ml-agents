@@ -180,6 +180,8 @@ class ParameterRandomizationType(Enum):
 
 @attr.s(auto_attribs=True)
 class ParameterRandomizationSettings(abc.ABC):
+    seed: int = parser.get_default("seed")
+
     @staticmethod
     def structure(d: Mapping, t: type) -> Any:
         """
@@ -232,7 +234,7 @@ class UniformSettings(ParameterRandomizationSettings):
 
     def to_float_encoding(self) -> List[float]:
         "Returns the sampler type followed by the min and max values"
-        return [0.0, self.min_value, self.max_value]
+        return [self.seed, 0.0, self.min_value, self.max_value]
 
 
 @attr.s(auto_attribs=True)
@@ -242,7 +244,7 @@ class GaussianSettings(ParameterRandomizationSettings):
 
     def to_float_encoding(self) -> List[float]:
         "Returns the sampler type followed by the mean and standard deviation"
-        return [1.0, self.mean, self.st_dev]
+        return [self.seed, 1.0, self.mean, self.st_dev]
 
 
 @attr.s(auto_attribs=True)
@@ -271,7 +273,7 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
         floats: List[float] = []
         for interval in self.intervals:
             floats += interval
-        return [2.0] + floats
+        return [self.seed, 2.0] + floats
 
 
 @attr.s(auto_attribs=True)

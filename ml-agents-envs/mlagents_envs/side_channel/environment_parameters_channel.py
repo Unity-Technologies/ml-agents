@@ -47,8 +47,10 @@ class EnvironmentParametersChannel(SideChannel):
         msg = OutgoingMessage()
         msg.write_string(key)
         msg.write_int32(self.EnvironmentDataTypes.SAMPLER)
-        # length of list
-        msg.write_int32(len(values))
-        for value in values:
+        # Write seed
+        msg.write_int32(int(values[0]))
+        msg.write_int32(len(values[1:]))
+        # Sampler encoding
+        for value in values[1:]:
             msg.write_float32(value)
         super().queue_message_to_send(msg)
