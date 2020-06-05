@@ -10,7 +10,7 @@
         },
         {
             "pattern": "https://github.com/Unity-Technologies/ml-agents/(tree|archive)/release_[0-9]+.*",
-            "comment": "Whitelist future release tags"
+            "comment": "Allow future release tags"
         }
     ]
 }

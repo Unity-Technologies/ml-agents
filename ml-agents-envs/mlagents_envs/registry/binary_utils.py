@@ -38,10 +38,14 @@ def get_local_binary_path(name: str, url: str) -> str:
             break
         try:
             download_and_extract_zip(url, name)
-        except IOError:
-            logger.debug(
-                f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS} : Failed to download"
-            )
+        except Exception:  # pylint: disable=W0702
+            if attempt + 1 < NUMBER_ATTEMPTS:
+                logger.warning(
+                    f"Attempt {attempt + 1} / {NUMBER_ATTEMPTS}"
+                    ": Failed to download and extract binary."
+                )
+            else:
+                raise
         path = get_local_binary_path_if_exists(name, url)
 
     if path is None:

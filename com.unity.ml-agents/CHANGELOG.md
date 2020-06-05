@@ -7,9 +7,24 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.1.0-preview] - 2020-06-10
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added new Walker environments. Improved ragdoll stability/performance. (#4037)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
@@ -33,11 +48,14 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
+- The `--save-freq` CLI option has been removed, and replaced by a `checkpoint_interval` option in the trainer configuration YAML. (#4034)
 - When trying to load/resume from a checkpoint created with an earlier verison of ML-Agents,
   a warning will be thrown. (#4035)
 ### Bug Fixes
 - Fixed an issue where SAC would perform too many model updates when resuming from a
   checkpoint, and too few when using `buffer_init_steps`. (#4038)
+- Fixed a bug in the onnx export that would cause constants needed for inference to not be visible to some versions of
+  the Barracuda importer. (#4073)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 

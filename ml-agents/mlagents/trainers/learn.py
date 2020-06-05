@@ -149,7 +149,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             trainer_factory,
             write_path,
             checkpoint_settings.run_id,
-            checkpoint_settings.save_freq,
             maybe_meta_curriculum,
             not checkpoint_settings.inference,
             run_seed,
