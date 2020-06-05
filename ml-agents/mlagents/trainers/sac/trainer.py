@@ -89,9 +89,7 @@ class SACTrainer(RLTrainer):
         """
         Save the training buffer's update buffer to a pickle file.
         """
-        filename = os.path.join(
-            self.trainer_settings.output_path, "last_replay_buffer.hdf5"
-        )
+        filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
         logger.info("Saving Experience Replay Buffer to {}".format(filename))
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
@@ -100,9 +98,7 @@ class SACTrainer(RLTrainer):
         """
         Loads the last saved replay buffer from a file.
         """
-        filename = os.path.join(
-            self.trainer_settings.output_path, "last_replay_buffer.hdf5"
-        )
+        filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
         logger.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
@@ -197,6 +193,7 @@ class SACTrainer(RLTrainer):
             self.trainer_settings,
             self.is_training,
             self.load,
+            self.artifact_path,
             tanh_squash=True,
             reparameterize=True,
             create_tf_graph=False,

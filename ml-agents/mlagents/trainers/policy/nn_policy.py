@@ -23,6 +23,7 @@ class NNPolicy(TFPolicy):
         trainer_params: TrainerSettings,
         is_training: bool,
         load: bool,
+        model_path: str,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
@@ -37,10 +38,11 @@ class NNPolicy(TFPolicy):
         :param trainer_params: Defined training parameters.
         :param is_training: Whether the model should be trained.
         :param load: Whether a pre-trained model will be loaded or a new one created.
+        :param model_path: Path where the model should be saved and loaded.
         :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
         :param reparameterize: Whether we are using the resampling trick to update the policy in continuous output.
         """
-        super().__init__(seed, brain, trainer_params, load)
+        super().__init__(seed, brain, trainer_params, model_path, load)
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = self.network_settings.num_layers

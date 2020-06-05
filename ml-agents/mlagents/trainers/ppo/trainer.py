@@ -32,7 +32,7 @@ class PPOTrainer(RLTrainer):
         training: bool,
         load: bool,
         seed: int,
-        run_id: str,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -42,10 +42,10 @@ class PPOTrainer(RLTrainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
+        :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super(PPOTrainer, self).__init__(
-            brain_name, trainer_settings, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, self.trainer_settings.hyperparameters
@@ -204,6 +204,7 @@ class PPOTrainer(RLTrainer):
             self.trainer_settings,
             self.is_training,
             self.load,
+            self.artifact_path,
             condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
         )

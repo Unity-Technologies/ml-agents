@@ -46,6 +46,7 @@ class TFPolicy(Policy):
         seed: int,
         brain: BrainParameters,
         trainer_settings: TrainerSettings,
+        model_path: str,
         load: bool = False,
     ):
         """
@@ -53,6 +54,8 @@ class TFPolicy(Policy):
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
         :param trainer_settings: The trainer parameters.
+        :param model_path: Where to load/save the model.
+        :param load: If True, load model from model_path. Otherwise, create new model.
         """
 
         self.m_size = 0
@@ -80,7 +83,7 @@ class TFPolicy(Policy):
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = self.trainer_settings.output_path
+        self.model_path = model_path
         self.initialize_path = self.trainer_settings.init_path
         self.keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.graph = tf.Graph()
