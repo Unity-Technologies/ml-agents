@@ -132,7 +132,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.curriculum, env_manager, restore=checkpoint_settings.resume
         )
         maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
-
         trainer_factory = TrainerFactory(
             options.behaviors,
             checkpoint_settings.run_id,
@@ -196,6 +195,12 @@ def write_timing_tree(output_dir: str) -> None:
 def maybe_add_samplers(
     sampler_config: Optional[Dict], env: SubprocessEnvManager, run_seed: int
 ) -> None:
+    """
+    Adds samplers to env if sampler config provided and sets seed if not configured.
+    :param sampler_config: validated dict of sampler configs. None if not included.
+    :param env: env manager to pass samplers via reset
+    :param run_seed: Random seed used for training.
+    """
     if sampler_config is not None:
         # If the seed is not specified in yaml, this will grab the run seed
         for _, v in sampler_config.items():
