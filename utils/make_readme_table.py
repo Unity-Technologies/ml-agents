@@ -9,7 +9,12 @@ from typing import NamedTuple
 
 def table_line(display_name, name, date, bold=False):
     bold_str = "**" if bold else ""
-    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
+    # For release_X branches, docs are on a separate tag.
+    if name.startswith("release"):
+        docs_name = name + "_docs"
+    else:
+        docs_name = name
+    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
 
 
 class ReleaseInfo(NamedTuple):
