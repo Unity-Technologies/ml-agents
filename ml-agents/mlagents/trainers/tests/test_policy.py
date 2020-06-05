@@ -24,7 +24,7 @@ class FakePolicy(TFPolicy):
 
 def test_take_action_returns_empty_with_no_agents():
     test_seed = 3
-    policy = FakePolicy(test_seed, basic_mock_brain(), TrainerSettings())
+    policy = FakePolicy(test_seed, basic_mock_brain(), TrainerSettings(), "output")
     # Doesn't really matter what this is
     dummy_groupspec = BehaviorSpec([(1,)], "continuous", 1)
     no_agent_step = DecisionSteps.empty(dummy_groupspec)
@@ -34,7 +34,7 @@ def test_take_action_returns_empty_with_no_agents():
 
 def test_take_action_returns_nones_on_missing_values():
     test_seed = 3
-    policy = FakePolicy(test_seed, basic_mock_brain(), TrainerSettings())
+    policy = FakePolicy(test_seed, basic_mock_brain(), TrainerSettings(), "output")
     policy.evaluate = MagicMock(return_value={})
     policy.save_memories = MagicMock()
     step_with_agents = DecisionSteps(
@@ -46,7 +46,7 @@ def test_take_action_returns_nones_on_missing_values():
 
 def test_take_action_returns_action_info_when_available():
     test_seed = 3
-    policy = FakePolicy(test_seed, basic_mock_brain(), TrainerSettings())
+    policy = FakePolicy(test_seed, basic_mock_brain(), TrainerSettings(), "output")
     policy_eval_out = {
         "action": np.array([1.0], dtype=np.float32),
         "memory_out": np.array([[2.5]], dtype=np.float32),
