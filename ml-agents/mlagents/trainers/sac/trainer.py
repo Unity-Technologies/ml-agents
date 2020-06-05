@@ -40,7 +40,7 @@ class SACTrainer(RLTrainer):
         training: bool,
         load: bool,
         seed: int,
-        run_id: str,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training SAC model.
@@ -50,10 +50,10 @@ class SACTrainer(RLTrainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
+        :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 
         self.load = load
@@ -192,8 +192,8 @@ class SACTrainer(RLTrainer):
             brain_parameters,
             self.trainer_settings,
             self.is_training,
-            self.load,
             self.artifact_path,
+            self.load,
             tanh_squash=True,
             reparameterize=True,
             create_tf_graph=False,

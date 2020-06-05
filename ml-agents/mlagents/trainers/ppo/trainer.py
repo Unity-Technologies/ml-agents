@@ -203,8 +203,8 @@ class PPOTrainer(RLTrainer):
             brain_parameters,
             self.trainer_settings,
             self.is_training,
-            self.load,
             self.artifact_path,
+            self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
         )
