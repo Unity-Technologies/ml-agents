@@ -112,6 +112,7 @@ class TrainerController(object):
             "Learning was interrupted. Please wait while the graph is generated."
         )
         self._save_model()
+        self._export_graph()
 
     def _export_graph(self):
         """
