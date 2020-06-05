@@ -20,6 +20,8 @@ def basic_options(extra_args=None):
 MOCK_YAML = """
     behaviors:
         {}
+    checkpoint_settings:
+        initialize_from: notuselessrun
     """
 
 MOCK_PARAMETER_YAML = """
@@ -32,6 +34,7 @@ MOCK_PARAMETER_YAML = """
         seed: 9870
     checkpoint_settings:
         run_id: uselessrun
+        initialize_from: notuselessrun
     debug: false
     """
 
@@ -88,7 +91,9 @@ def test_run_training(
                 sampler_manager_mock.return_value,
                 None,
             )
-            handle_dir_mock.assert_called_once_with("results/ppo", False, False, None)
+            handle_dir_mock.assert_called_once_with(
+                "results/ppo", False, False, "results/notuselessrun"
+            )
             write_timing_tree_mock.assert_called_once_with("results/ppo/run_logs")
             write_run_options_mock.assert_called_once_with("results/ppo", options)
     StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
@@ -120,6 +125,7 @@ def test_commandline_args(mock_file):
     assert opt.checkpoint_settings.resume is False
     assert opt.checkpoint_settings.inference is False
     assert opt.checkpoint_settings.run_id == "ppo"
+    assert opt.checkpoint_settings.initialize_from is None
     assert opt.env_settings.seed == -1
     assert opt.env_settings.base_port == 5005
     assert opt.env_settings.num_envs == 1
@@ -136,6 +142,7 @@ def test_commandline_args(mock_file):
         "--seed=7890",
         "--train",
         "--base-port=4004",
+        "--initialize-from=testdir",
         "--num-envs=2",
         "--no-graphics",
         "--debug",
@@ -146,6 +153,7 @@ def test_commandline_args(mock_file):
     assert opt.env_settings.env_path == "./myenvfile"
     assert opt.parameter_randomization is None
     assert opt.checkpoint_settings.run_id == "myawesomerun"
+    assert opt.checkpoint_settings.initialize_from == "testdir"
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
     assert opt.env_settings.num_envs == 2
