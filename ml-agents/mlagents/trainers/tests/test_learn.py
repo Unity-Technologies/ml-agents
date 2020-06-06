@@ -20,8 +20,6 @@ def basic_options(extra_args=None):
 MOCK_YAML = """
     behaviors:
         {}
-    checkpoint_settings:
-        initialize_from: notuselessrun
     """
 
 MOCK_PARAMETER_YAML = """
@@ -172,6 +170,7 @@ def test_yaml_args(mock_file):
     assert opt.env_settings.env_path == "./oldenvfile"
     assert opt.parameter_randomization is None
     assert opt.checkpoint_settings.run_id == "uselessrun"
+    assert opt.checkpoint_settings.initialize_from == "notuselessrun"
     assert opt.env_settings.seed == 9870
     assert opt.env_settings.base_port == 4001
     assert opt.env_settings.num_envs == 4
