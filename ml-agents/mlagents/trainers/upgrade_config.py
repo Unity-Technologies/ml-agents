@@ -1,3 +1,7 @@
+# NOTE: This upgrade script is a temporary measure for the transition between the old-format
+# configuration file and the new format. It will be marked for deprecation once the
+# Python CLI and configuration files are finalized, and removed the following release.
+
 import attr
 import cattr
 import yaml
@@ -5,6 +9,7 @@ from typing import Dict, Any
 import argparse
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings, TrainerType
 from mlagents.trainers.cli_utils import load_config
+from mlagents.trainers.exception import TrainerConfigError
 
 
 # Take an existing trainer config (e.g. trainer_config.yaml) and turn it into the new format.
@@ -18,7 +23,13 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
 
             # Convert to split TrainerSettings, Hyperparameters, NetworkSettings
             # Set trainer_type and get appropriate hyperparameter settings
-            trainer_type = config["trainer"]
+            try:
+                trainer_type = config["trainer"]
+            except KeyError:
+                raise TrainerConfigError(
+                    "Config doesn't specify a trainer type. "
+                    "Please specify trainer: in your config."
+                )
             new_config = {}
             new_config["trainer_type"] = trainer_type
             hyperparam_cls = TrainerType(trainer_type).to_settings()
@@ -28,12 +39,19 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
             # Try to absorb as much as possible into the network settings
             new_config["network_settings"] = cattr.structure(config, NetworkSettings)
             # Deal with recurrent
-            if config["use_recurrent"]:
-                new_config["network_settings"].memory = NetworkSettings.MemorySettings(
-                    sequence_length=config["sequence_length"],
-                    memory_size=config["memory_size"],
+            try:
+                if config["use_recurrent"]:
+                    new_config[
+                        "network_settings"
+                    ].memory = NetworkSettings.MemorySettings(
+                        sequence_length=config["sequence_length"],
+                        memory_size=config["memory_size"],
+                    )
+            except KeyError:
+                raise TrainerConfigError(
+                    "Config doesn't specify use_recurrent. "
+                    "Please specify true or false for use_recurrent in your config."
                 )
-
             # Absorb the rest into the base TrainerSettings
             for key, val in config.items():
                 if key in attr.fields_dict(TrainerSettings):
@@ -46,9 +64,7 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
     return all_behavior_config_dict
 
 
-def write_to_yaml_file(config: Dict[str, Any], output_config: str):
-    unstructed_config = cattr.unstructure(config)
-    unstructed_config = remove_nones(unstructed_config)
+def write_to_yaml_file(unstructed_config: Dict[str, Any], output_config: str) -> None:
     with open(output_config, "w") as f:
         try:
             yaml.dump(unstructed_config, f, sort_keys=False)
@@ -56,7 +72,7 @@ def write_to_yaml_file(config: Dict[str, Any], output_config: str):
             yaml.dump(unstructed_config, f)
 
 
-def remove_nones(config: Dict[Any, Any]):
+def remove_nones(config: Dict[Any, Any]) -> Dict[str, Any]:
     new_config = {}
     for key, val in config.items():
         if isinstance(val, dict):
@@ -66,8 +82,7 @@ def remove_nones(config: Dict[Any, Any]):
     return new_config
 
 
-if __name__ == "__main__":
-
+def parse_args():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
@@ -89,6 +104,11 @@ if __name__ == "__main__":
         "output_config_path", help="Path to write converted YAML file."
     )
     args = argparser.parse_args()
+    return args
+
+
+def main() -> None:
+    args = parse_args()
     print(
         f"Converting {args.trainer_config_path} and saving to {args.output_config_path}."
     )
@@ -104,7 +124,14 @@ if __name__ == "__main__":
         full_config["curriculum"] = curriculum_config_dict
 
     if args.sampler is not None:
-        sampler_config_dict = load_config(args.curriculum)
+        sampler_config_dict = load_config(args.sampler)
         full_config["parameter_randomization"] = sampler_config_dict
 
-    write_to_yaml_file(full_config, args.output_config_path)
+    # Convert config to dict
+    unstructed_config = cattr.unstructure(full_config)
+    unstructed_config = remove_nones(unstructed_config)
+    write_to_yaml_file(unstructed_config, args.output_config_path)
+
+
+if __name__ == "__main__":
+    main()

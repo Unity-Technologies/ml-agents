@@ -2,7 +2,7 @@ fileFormatVersion: 2
 guid: 720007cd6923e410abaa4ba800400cb0
 ScriptedImporter:
   fileIDToRecycleName:
-    11400000: Assets/Demonstrations/ExpertWalkerStat.demo
+    11400002: Assets/ML-Agents/Examples/Walker/Demos/ExpertWalkerStat.demo
   externalObjects: {}
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 

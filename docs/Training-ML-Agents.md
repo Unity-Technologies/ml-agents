@@ -181,8 +181,8 @@ and explains the possible settings for each.
 
 **NOTE:** The configuration file format has been changed from 0.17.0 and onwards. To convert
 an old set of configuration files (trainer config, curriculum, and sampler files) to the new
-format, a script has been provided. Run `python config/upgrade_config.py -h` in your  console
-to see the script's usage.
+format, a script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` in your
+console to see the script's usage.
 
 ### Behavior Configurations
 
@@ -231,6 +231,7 @@ behaviors:
     time_horizon: 64
     summary_freq: 10000
     keep_checkpoints: 5
+    checkpoint_interval: 50000
     threaded: true
     init_path: null
 
@@ -271,7 +272,7 @@ behaviors:
       window: 10
       play_against_latest_model_ratio: 0.5
       save_steps: 50000
-      swap_steps: 50000
+      swap_steps: 2000
       team_change: 100000
 ```
 
@@ -420,11 +421,9 @@ train agents in the Wall Jump environment with curriculum learning, we can run:
 mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
 ```
 
-We can then keep track of the current lessons and progresses via TensorBoard.
-
-**Note**: If you are resuming a training session that uses curriculum, please
-pass the number of the last-reached lesson using the `--lesson` flag when
-running `mlagents-learn`.
+We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
+the run, you can resume it using `--resume` and lesson progress will start off where it
+ended.
 
 ### Environment Parameter Randomization
 

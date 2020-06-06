@@ -28,17 +28,21 @@ double-check that the versions are in the same. The versions can be found in
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously.
+- `--save-freq` has been removed from the CLI and is now configurable in the trainer configuration
+  file.
+- `--lesson` has been removed from the CLI. Lessons will resume when using `--resume`.
+  To start at a different lesson, modify your Curriculum configuration.
 
 ### Steps to Migrate
-- To upgrade your configuration files, an upgrade script has been provided. Run `python config/update_config.py
-  -h` to see the script usage.
+- To upgrade your configuration files, an upgrade script has been provided. Run
+  `python -m mlagents.trainers.upgrade_config -h` to see the script usage. Note that you will have
+  had to upgrade to/install the current version of ML-Agents before running the script.
 
   To do it manually, copy your `<BehaviorName>` sections from `trainer_config.yaml` into a separate trainer configuration file, under a `behaviors` section.
   The `default` section is no longer needed. This new file should be specific to your environment, and not contain
   configurations for multiple environments (unless they have the same Behavior Names).
   - You will need to reformat your trainer settings as per the [example](Training-ML-Agents.md).
-  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under
-  the `Behavior Name` section.
+  - If your training uses [curriculum](Training-ML-Agents.md#curriculum-learning), move those configurations under a `curriculum` section.
   - If your training uses [parameter randomization](Training-ML-Agents.md#environment-parameter-randomization), move
   the contents of the sampler config to `parameter_randomization` in the main trainer configuration.
 - If you are using `UnityEnvironment` directly, replace `max_step` with `interrupted`
@@ -47,6 +51,8 @@ vector observations to be used simultaneously.
  - If you use the `UnityToGymWrapper`, remove `use_visual` and `allow_multiple_visual_obs`
  from the constructor and add `allow_multiple_obs = True` if the environment contains either
  both visual and vector observations or multiple visual observations.
+ - If you were setting `--save-freq` in the CLI, add a `checkpoint_interval` value in your
+  trainer configuration, and set it equal to `save-freq * n_agents_in_scene`.
 
 ## Migrating from 0.15 to Release 1
 
@@ -356,7 +362,7 @@ vector observations to be used simultaneously.
   `RayPerception3d.Perceive()` that was causing the `endOffset` to be used
   incorrectly. However this may produce different behavior from previous
   versions if you use a non-zero `startOffset`. To reproduce the old behavior,
-  you should increase the the value of `endOffset` by `startOffset`. You can
+  you should increase the value of `endOffset` by `startOffset`. You can
   verify your raycasts are performing as expected in scene view using the debug
   rays.
 - If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D

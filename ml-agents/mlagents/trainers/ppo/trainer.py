@@ -47,26 +47,6 @@ class PPOTrainer(RLTrainer):
         super(PPOTrainer, self).__init__(
             brain_name, trainer_settings, training, run_id, reward_buff_cap
         )
-        self.param_keys = [
-            "batch_size",
-            "beta",
-            "buffer_size",
-            "epsilon",
-            "hidden_units",
-            "lambd",
-            "learning_rate",
-            "max_steps",
-            "normalize",
-            "num_epoch",
-            "num_layers",
-            "time_horizon",
-            "sequence_length",
-            "summary_freq",
-            "use_recurrent",
-            "memory_size",
-            "output_path",
-            "reward_signals",
-        ]
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, self.trainer_settings.hyperparameters
         )
@@ -253,7 +233,6 @@ class PPOTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

@@ -7,31 +7,19 @@ using BodyPart = Unity.MLAgentsExamples.BodyPart;
 
 public class WalkerAgent : Agent
 {
-    [Header("Walking Speed")]
-    [Space(10)]
-    [Header("Specific to Walker")]
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
     Vector3 m_WalkDir; //Direction to the target
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
     
-    [Space(10)]
-    [Header("Orientation Cube")]
-    [Space(10)]
-    //This will be used as a stable observation platform for the ragdoll to use.
-    GameObject m_OrientationCube;
-    
-    [Header("Target To Walk Towards")]
-    [Space(10)]
-    public float targetSpawnRadius;
-    public Transform target;
-    public Transform ground;
-    public bool detectTargets;
-    public bool targetIsStatic;
-    public bool respawnTargetWhenTouched;
+    [Header("Target To Walk Towards")] [Space(10)]
+    public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
 
-    [Header("Body Parts")]
-    [Space(10)]
-    public Transform hips;
+    public Transform target; //Target the agent will walk towards.
+    public Transform ground; //Ground gameobject. The height will be used for target spawning
+    public bool detectTargets; //Should this agent detect targets
+    public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
+
+    [Header("Body Parts")] [Space(10)] public Transform hips;
     public Transform chest;
     public Transform spine;
     public Transform head;
@@ -47,22 +35,19 @@ public class WalkerAgent : Agent
     public Transform armR;
     public Transform forearmR;
     public Transform handR;
-    JointDriveController m_JdController;
+    
+    [Header("Orientation")] [Space(10)]
+    //This will be used as a stable reference point for observations
+    //Because ragdolls can move erratically, using a standalone reference point can significantly improve learning
+    public GameObject orientationCube;
 
-    Rigidbody m_HipsRb;
-    Rigidbody m_ChestRb;
-    Rigidbody m_SpineRb;
+    JointDriveController m_JdController;
 
     EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
-        //Spawn an orientation cube
-        Vector3 oCubePos = hips.position;
-        oCubePos.y = -.45f;
-        m_OrientationCube = Instantiate(Resources.Load<GameObject>("OrientationCube"), oCubePos, Quaternion.identity);
-        m_OrientationCube.transform.SetParent(transform);
-        
+
         UpdateOrientationCube();
 
         m_JdController = GetComponent<JointDriveController>();
@@ -83,10 +68,6 @@ public class WalkerAgent : Agent
         m_JdController.SetupBodyPart(forearmR);
         m_JdController.SetupBodyPart(handR);
 
-        m_HipsRb = hips.GetComponent<Rigidbody>();
-        m_ChestRb = chest.GetComponent<Rigidbody>();
-        m_SpineRb = spine.GetComponent<Rigidbody>();
-
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
@@ -99,17 +80,14 @@ public class WalkerAgent : Agent
     {
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Is this bp touching the ground
-        
+
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
-        
-        //Add pos of target relative to orientation cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
-        
-//        //Get position relative to hips in the context of our orientation cube's space
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+
+        //Get position relative to hips in the context of our orientation cube's space
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
@@ -123,10 +101,10 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, m_OrientationCube.transform.forward));
-        sensor.AddObservation(Quaternion.FromToRotation(head.forward, m_OrientationCube.transform.forward));
-        
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.position));
+        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
+        sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
+
+        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -174,15 +152,15 @@ public class WalkerAgent : Agent
     void UpdateOrientationCube()
     {
         //FACING DIR
-        m_WalkDir = target.position - m_OrientationCube.transform.position;
+        m_WalkDir = target.position - orientationCube.transform.position;
         m_WalkDir.y = 0; //flatten dir on the y
         m_WalkDirLookRot = Quaternion.LookRotation(m_WalkDir); //get our look rot to the target
-        
+
         //UPDATE ORIENTATION CUBE POS & ROT
-        m_OrientationCube.transform.position = hips.position;
-        m_OrientationCube.transform.rotation = m_WalkDirLookRot;
+        orientationCube.transform.position = hips.position;
+        orientationCube.transform.rotation = m_WalkDirLookRot;
     }
-    
+
     void FixedUpdate()
     {
         if (detectTargets)
@@ -195,19 +173,21 @@ public class WalkerAgent : Agent
                 }
             }
         }
-        
+
         UpdateOrientationCube();
-        
+
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
+        var moveTowardsTargetReward = Vector3.Dot(orientationCube.transform.forward,
+            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
+        var lookAtTargetReward = Vector3.Dot(orientationCube.transform.forward, head.forward);
         // c. Encourage head height.
+        var headHeightOverFeetReward = (head.position.y - footL.position.y) + (head.position.y - footR.position.y);
         AddReward(
-            +0.02f * Vector3.Dot(m_OrientationCube.transform.forward,
-                Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed))
-            + 0.01f * Vector3.Dot(m_OrientationCube.transform.forward, head.forward)
-            + 0.005f * (head.position.y - footL.position.y)
-            + 0.005f * (head.position.y - footR.position.y)
+            +0.02f * moveTowardsTargetReward
+            + 0.01f * lookAtTargetReward
+            + 0.01f * headHeightOverFeetReward
         );
     }
 
@@ -219,14 +199,14 @@ public class WalkerAgent : Agent
         AddReward(1f);
         if (respawnTargetWhenTouched)
         {
-            GetRandomTargetPos();
+            MoveTargetToRandomPosition();
         }
     }
 
     /// <summary>
     /// Moves target to a random position within specified radius.
     /// </summary>
-    public void GetRandomTargetPos()
+    public void MoveTargetToRandomPosition()
     {
         var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
         newTargetPos.y = 5;
@@ -243,15 +223,15 @@ public class WalkerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
-        
+
         //Random start rotation to help generalize
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-        
+
         UpdateOrientationCube();
 
-        if (detectTargets && !targetIsStatic)
+        if (detectTargets && respawnTargetWhenTouched)
         {
-            GetRandomTargetPos();
+            MoveTargetToRandomPosition();
         }
 
         SetResetParameters();
@@ -259,9 +239,9 @@ public class WalkerAgent : Agent
 
     public void SetTorsoMass()
     {
-        m_ChestRb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
-        m_SpineRb.mass = m_ResetParams.GetWithDefault("spine_mass", 10);
-        m_HipsRb.mass = m_ResetParams.GetWithDefault("hip_mass", 15);
+        m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
+        m_JdController.bodyPartsDict[spine].rb.mass = m_ResetParams.GetWithDefault("spine_mass", 8);
+        m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
     }
 
     public void SetResetParameters()
@@ -272,10 +252,10 @@ public class WalkerAgent : Agent
     private void OnDrawGizmosSelected()
     {
         if (Application.isPlaying)
-        {   
+        {
             Gizmos.color = Color.green;
-            Gizmos.matrix = m_OrientationCube.transform.localToWorldMatrix;
-            Gizmos.DrawWireCube(Vector3.zero, m_OrientationCube.transform.localScale);
+            Gizmos.matrix = orientationCube.transform.localToWorldMatrix;
+            Gizmos.DrawWireCube(Vector3.zero, orientationCube.transform.localScale);
             Gizmos.DrawRay(Vector3.zero, Vector3.forward);
         }
     }

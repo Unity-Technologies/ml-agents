@@ -115,7 +115,6 @@ def _check_environment_trains(
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
-        save_freq = 99999
         seed = 1337
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
@@ -142,7 +141,6 @@ def _check_environment_trains(
             training_seed=seed,
             sampler_manager=SamplerManager(None),
             resampling_interval=None,
-            save_freq=save_freq,
         )
 
         # Begin training
@@ -167,9 +165,12 @@ def test_simple_ppo(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_2d_ppo(use_discrete):
     env = SimpleEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.5
+        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
-    config = attr.evolve(PPO_CONFIG)
+    new_hyperparams = attr.evolve(
+        PPO_CONFIG.hyperparameters, batch_size=64, buffer_size=640
+    )
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -299,16 +300,19 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
+    step_size = 0.2 if use_discrete else 1.0
+    env = MemoryEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
+    )
     new_networksettings = attr.evolve(
         SAC_CONFIG.network_settings,
-        memory=NetworkSettings.MemorySettings(memory_size=16, sequence_length=32),
+        memory=NetworkSettings.MemorySettings(memory_size=16, sequence_length=16),
     )
     new_hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters,
-        batch_size=64,
+        batch_size=128,
         learning_rate=1e-3,
-        buffer_init_steps=500,
+        buffer_init_steps=1000,
         steps_per_update=2,
     )
     config = attr.evolve(
