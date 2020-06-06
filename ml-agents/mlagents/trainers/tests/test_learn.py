@@ -22,6 +22,13 @@ MOCK_YAML = """
         {}
     """
 
+MOCK_INITIALIZE_YAML = """
+    behaviors:
+        {}
+    checkpoint_settings:
+        initialize_from: notuselessrun
+    """
+
 MOCK_PARAMETER_YAML = """
     behaviors:
         {}
@@ -72,7 +79,7 @@ def test_run_training(
     mock_env.external_brain_names = []
     mock_env.academy_name = "TestAcademyName"
     create_environment_factory.return_value = mock_env
-    load_config.return_value = yaml.safe_load(MOCK_YAML)
+    load_config.return_value = yaml.safe_load(MOCK_INITIALIZE_YAML)
 
     mock_init = MagicMock(return_value=None)
     with patch.object(TrainerController, "__init__", mock_init):
