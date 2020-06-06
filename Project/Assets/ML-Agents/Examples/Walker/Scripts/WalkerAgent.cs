@@ -12,12 +12,12 @@ public class WalkerAgent : Agent
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
     
     [Header("Target To Walk Towards")] [Space(10)]
-    public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
-
     public Transform target; //Target the agent will walk towards.
-    public Transform ground; //Ground gameobject. The height will be used for target spawning
+    public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
     public bool detectTargets; //Should this agent detect targets
     public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
+
+    public Transform ground; //Ground gameobject. The height will be used for target spawning
 
     [Header("Body Parts")] [Space(10)] public Transform hips;
     public Transform chest;
