@@ -74,7 +74,7 @@ namespace Unity.MLAgents.SideChannels
         {
             Func<float> valueOut;
             bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
-            return hasKey ? valueOut() : defaultValue;
+            return hasKey ? valueOut.Invoke() : defaultValue;
         }
 
         /// <summary>
