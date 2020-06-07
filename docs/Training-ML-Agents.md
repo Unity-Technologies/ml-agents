@@ -435,12 +435,11 @@ behaviors:
   # < Same as above>
 
 parameter_randomization:
-  resampling-interval: 5000
 
   mass:
-    sampler-type: "uniform"
-    min_value: 0.5
-    max_value: 10
+    uniform:
+        min_value: 0.5
+        max_value: 10
 
   gravity:
     sampler-type: "multirange_uniform"
