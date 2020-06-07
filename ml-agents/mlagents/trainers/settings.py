@@ -4,7 +4,6 @@ from typing import Dict, Optional, List, Any, DefaultDict, Mapping
 from enum import Enum
 import collections
 import argparse
-import abc
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
@@ -169,18 +168,9 @@ class ParameterRandomizationType(Enum):
         }
         return _mapping[self]
 
-    @staticmethod
-    def to_float(t: type) -> float:
-        _mapping: Dict[type, float] = {
-            UniformSettings: 0.0,
-            GaussianSettings: 1.0,
-            MultiRangeUniformSettings: 2.0,
-        }
-        return _mapping[t]
-
 
 @attr.s(auto_attribs=True)
-class ParameterRandomizationSettings(abc.ABC):
+class ParameterRandomizationSettings:
     seed: int = parser.get_default("seed")
 
     @staticmethod
@@ -211,11 +201,6 @@ class ParameterRandomizationSettings(abc.ABC):
                 d_final[param] = strict_to_cls(val, t)
         return d_final
 
-    @abc.abstractmethod
-    def to_float_encoding(self) -> List[float]:
-        "Returns the float encoding of the sampler"
-        pass
-
 
 @attr.s(auto_attribs=True)
 class UniformSettings(ParameterRandomizationSettings):
@@ -233,23 +218,11 @@ class UniformSettings(ParameterRandomizationSettings):
                 "Minimum value is greater than maximum value in uniform sampler."
             )
 
-    def to_float_encoding(self) -> List[float]:
-        "Returns the sampler type followed by the min and max values"
-        return [
-            ParameterRandomizationType.to_float(type(self)),
-            self.min_value,
-            self.max_value,
-        ]
-
 
 @attr.s(auto_attribs=True)
 class GaussianSettings(ParameterRandomizationSettings):
     mean: float = 1.0
     st_dev: float = 1.0
-
-    def to_float_encoding(self) -> List[float]:
-        "Returns the sampler type followed by the mean and standard deviation"
-        return [ParameterRandomizationType.to_float(type(self)), self.mean, self.st_dev]
 
 
 @attr.s(auto_attribs=True)
@@ -275,10 +248,7 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
 
     def to_float_encoding(self) -> List[float]:
         "Returns the sampler type followed by a flattened list of the interval values"
-        floats: List[float] = []
-        for interval in self.intervals:
-            floats += interval
-        return [ParameterRandomizationType.to_float(type(self))] + floats
+        return [value for interval in self.intervals for value in interval]
 
 
 @attr.s(auto_attribs=True)

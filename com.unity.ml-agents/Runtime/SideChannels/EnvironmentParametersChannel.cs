@@ -14,6 +14,28 @@ namespace Unity.MLAgents.SideChannels
     }
 
     /// <summary>
+    /// The types of distributions from which to sample reset parameters.
+    /// </summary>
+    internal enum SamplerType
+    {
+        /// <summary>
+        /// Samples a reset parameter from a uniform distribution.
+        /// </summary>
+        Uniform = 0,
+
+        /// <summary>
+        /// Samples a reset parameter from a Gaussian distribution.
+        /// </summary>
+        Gaussian = 1,
+
+        /// <summary>
+        /// Samples a reset parameter from a Gaussian distribution.
+        /// </summary>
+        MultiRangeUniform = 2
+
+    }
+
+    /// <summary>
     /// A side channel that manages the environment parameter values from Python. Currently
     /// limited to parameters of type float.
     /// </summary>
@@ -54,8 +76,30 @@ namespace Unity.MLAgents.SideChannels
             else if ((int)EnvironmentDataTypes.Sampler == type)
             {
                 int seed = msg.ReadInt32();
-                var encoding = msg.ReadFloatList(); 
-                m_Parameters[key] = m_SamplerFactory.CreateSampler(encoding, seed);
+                int samplerType = msg.ReadInt32();
+                Func<float> sampler = () => 0.0f;
+                if ((int)SamplerType.Uniform == samplerType)
+                {
+                    float min = msg.ReadFloat32();
+                    float max = msg.ReadFloat32();
+                    sampler = m_SamplerFactory.CreateUniformSampler(min, max, seed);
+                }
+                else if ((int)SamplerType.Gaussian == samplerType)
+                {
+                    float mean = msg.ReadFloat32();
+                    float stddev = msg.ReadFloat32();
+
+                    sampler = m_SamplerFactory.CreateGaussianSampler(mean, stddev, seed);
+                }
+                else if ((int)SamplerType.MultiRangeUniform == samplerType)
+                {
+                    IList<float> intervals = msg.ReadFloatList();
+                    sampler = m_SamplerFactory.CreateMultiRangeUniformSampler(intervals, seed);
+                }
+                else{
+                    Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");
+                }
+                m_Parameters[key] = sampler;
             }
             else
             {
