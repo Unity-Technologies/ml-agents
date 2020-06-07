@@ -83,40 +83,40 @@ namespace Unity.MLAgents
             //RNG
             System.Random distr = new System.Random(seed);
             // Skip type of distribution since already checked to get into this function
-            var sampler_encoding = encoding.Skip(1);
+            var samplerEncoding = encoding.Skip(1);
             // Will be used to normalize intervals
-            float sum_interval_sizes = 0;
+            float sumIntervalSizes = 0;
             //The number of intervals
-            int num_intervals = (int)(sampler_encoding.Count()/2);
+            int numIntervals = (int)(samplerEncoding.Count()/2);
             // List that will store interval lengths
-            float[] interval_sizes = new float[num_intervals];
+            float[] intervalSizes = new float[numIntervals];
             // List that will store uniform distributions
-            IList<Func<float>> intervals = new Func<float>[num_intervals];
+            IList<Func<float>> intervals = new Func<float>[numIntervals];
             // Collect all intervals and store as uniform distrus
             // Collect all interval sizes
-            for(int i = 0; i < num_intervals; i++)
+            for(int i = 0; i < numIntervals; i++)
             {
-                var min = sampler_encoding.ElementAt(2 * i);
-                var max = sampler_encoding.ElementAt(2 * i + 1);
-                var interval_size = max - min;
-                sum_interval_sizes += interval_size;
-                interval_sizes[i] = interval_size;
-                intervals[i] = () => min + (float)distr.NextDouble() * interval_size;
+                var min = samplerEncoding.ElementAt(2 * i);
+                var max = samplerEncoding.ElementAt(2 * i + 1);
+                var intervalSize = max - min;
+                sumIntervalSizes += intervalSize;
+                intervalSizes[i] = intervalSize;
+                intervals[i] = () => min + (float)distr.NextDouble() * intervalSize;
             }
             // Normalize interval lengths
-            for(int i = 0; i < num_intervals; i++)
+            for(int i = 0; i < numIntervals; i++)
             {
-                interval_sizes[i] = interval_sizes[i] / sum_interval_sizes;
+                intervalSizes[i] = intervalSizes[i] / sumIntervalSizes;
             } 
             // Build cmf for intervals
-            for(int i = 1; i < num_intervals; i++)
+            for(int i = 1; i < numIntervals; i++)
             {
-                interval_sizes[i] += interval_sizes[i - 1];
+                intervalSizes[i] += intervalSizes[i - 1];
             } 
             Multinomial intervalDistr = new Multinomial(seed);
             float MultiRange()
             {
-                int sampledInterval = intervalDistr.Sample(interval_sizes);
+                int sampledInterval = intervalDistr.Sample(intervalSizes);
                 return intervals[sampledInterval].Invoke();
             }
             return MultiRange;
