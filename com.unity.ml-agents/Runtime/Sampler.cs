@@ -1,9 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
-using Unity.MLAgents;
 using Unity.MLAgents.Inference.Utils;
-using UnityEngine;
 
 namespace Unity.MLAgents
 {
@@ -22,7 +19,7 @@ namespace Unity.MLAgents
 
         public Func<float> CreateUniformSampler(float min, float max, int seed)
         {
-            System.Random distr = new System.Random(seed);
+            Random distr = new Random(seed);
             return () => min + (float)distr.NextDouble() * (max - min);
         }
 
@@ -35,11 +32,11 @@ namespace Unity.MLAgents
         public Func<float> CreateMultiRangeUniformSampler(IList<float> intervals, int seed)
         {
             //RNG
-            System.Random distr = new System.Random(seed);
+            Random distr = new Random(seed);
             // Will be used to normalize intervalFuncs
             float sumIntervalSizes = 0;
             //The number of intervals
-            int numIntervals = (int)(intervals.Count()/2);
+            int numIntervals = (int)(intervals.Count/2);
             // List that will store interval lengths
             float[] intervalSizes = new float[numIntervals];
             // List that will store uniform distributions
@@ -48,8 +45,8 @@ namespace Unity.MLAgents
             // Collect all interval sizes
             for(int i = 0; i < numIntervals; i++)
             {
-                var min = intervals.ElementAt(2 * i);
-                var max = intervals.ElementAt(2 * i + 1);
+                var min = intervals[2 * i];
+                var max = intervals[2 * i + 1];
                 var intervalSize = max - min;
                 sumIntervalSizes += intervalSize;
                 intervalSizes[i] = intervalSize;
