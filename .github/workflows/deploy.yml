@@ -1,0 +1,77 @@
+name: ML-Agents Python CI
+
+on: push
+
+jobs:
+  pytest:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ['3.6', '3.7', '3.8']
+        pip-constraints: ['test_constraints_max_tf1_version.txt', 'test_constraints_max_tf2_version.txt', 'test_constraints_min_version.txt']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Combine pip dependencies for caching
+      run: cat ml-agents/setup.py ml-agents-envs/setup.py gym-unity/setup.py test_requirements.txt ${{ matrix.pip_constraints }} > python_deps.txt
+    - uses: actions/cache@v2
+      if: startsWith(runner.os, 'Linux')
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('python_deps.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version }}-pip-
+    - uses: actions/cache@v2
+      if: startsWith(runner.os, 'macOS')
+      with:
+        path: ~/Library/Caches/pip
+        key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('python_deps.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version }}-pip-
+    - uses: actions/cache@v2
+      if: startsWith(runner.os, 'Windows')
+      with:
+        path: ~\AppData\Local\pip\Cache
+        key: ${{ runner.os }}-${{ matrix.python-version }}-pip-${{ hashFiles('python_deps.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python-version }}-pip-
+    - name: Install dependencies
+      run: |
+        python3 -m venv venv
+        . venv/bin/activate
+        pip install --upgrade pip
+        pip install --upgrade setuptools
+        pip install --progress-bar=off -e ./ml-agents-envs -c ${{ matrix.pip_constraints }}
+        pip install --progress-bar=off -e ./ml-agents -c ${{ matrix.pip_constraints }}
+        pip install --progress-bar=off -r test_requirements.txt -c ${{ matrix.pip_constraints }}
+        pip install --progress-bar=off -e ./gym-unity -c ${{ matrix.pip_constraints }}
+    - name: Run Tests for ml-agents and gym_unity
+      run: |
+        . venv/bin/activate
+        mkdir test-reports
+        pip freeze > test-reports/pip_versions.txt
+        pytest -n 2 --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+    - name: Verify there are no hidden/missing metafiles.
+      # Renaming files or deleting files can leave metafiles behind that makes Unity very unhappy.
+      run: |
+        . venv/bin/activate
+        python utils/validate_meta_files.py
+
+
+      #  pre-commit:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v2
+#    - name: Set up Python
+#      uses: actions/setup-python@v1
+#    - name: set PY
+#      run: echo "::set-env name=PY::$(python -c 'import hashlib, sys;print(hashlib.sha256(sys.version.encode()+sys.executable.encode()).hexdigest())')"
+#    - uses: actions/cache@v1
+#      with:
+#        path: ~/.cache/pre-commit
+#        key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+#    - uses: pre-commit/action@v1.1.0
