@@ -240,7 +240,7 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
                 raise TrainerConfigError(
                     f"The sampling interval {interval} must contain exactly two values."
                 )
-            [min_value, max_value] = interval
+            min_value, max_value = interval
             if min_value > max_value:
                 raise TrainerConfigError(
                     f"Minimum value is greater than maximum value in interval {interval}."
