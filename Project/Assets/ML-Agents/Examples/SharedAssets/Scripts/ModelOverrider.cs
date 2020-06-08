@@ -250,7 +250,7 @@ namespace Unity.MLAgentsExamples
                 }
                 catch (Exception e)
                 {
-                    overrideError = e.ToString();
+                    overrideError = $"Exception calling Agent.SetModel: {e}";
                 }
             }
 
