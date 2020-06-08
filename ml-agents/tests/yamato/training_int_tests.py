@@ -123,7 +123,7 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         "--mlagents-quit-on-load-failure",
         "--mlagents-quit-after-episodes",
         "2",
-        "--mlagents-override-model-directory",
+        "--mlagents-override-model-extension",
         model_extension,
     ]
     res = subprocess.run(args)
