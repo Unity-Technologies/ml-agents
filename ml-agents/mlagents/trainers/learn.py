@@ -319,10 +319,10 @@ def run_cli(options: RunOptions) -> None:
     run_training(run_seed, options)
 
 
-def main():
+def ain():
     run_cli(parse_command_line())
 
 
 # For python debugger to directly run this script
 if __name__ == "__main__":
-    main()
+    ain()
