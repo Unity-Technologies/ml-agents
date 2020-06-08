@@ -15,7 +15,7 @@ namespace Unity.MLAgentsExamples
     /// Utility class to allow the NNModel file for an agent to be overriden during inference.
     /// This is used internally to validate the file after training is done.
     /// The behavior name to override and file path are specified on the commandline, e.g.
-    /// player.exe --mlagents-override-model behavior1 /path/to/model1.nn --mlagents-override-model behavior2 /path/to/model2.nn
+    /// player.exe --mlagents-override-model-directory /path/to/models
     ///
     /// Additionally, a number of episodes to run can be specified; after this, the application will quit.
     /// Note this will only work with example scenes that have 1:1 Agent:Behaviors. More complicated scenes like WallJump
@@ -25,6 +25,7 @@ namespace Unity.MLAgentsExamples
     {
         const string k_CommandLineModelOverrideFlag = "--mlagents-override-model";
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
+        const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
         const string k_CommandLineQuitAfterEpisodesFlag = "--mlagents-quit-after-episodes";
         const string k_CommandLineQuitOnLoadFailure = "--mlagents-quit-on-load-failure";
 
@@ -35,6 +36,8 @@ namespace Unity.MLAgentsExamples
         Dictionary<string, string> m_BehaviorNameOverrides = new Dictionary<string, string>();
 
         string m_BehaviorNameOverrideDirectory;
+
+        string m_OverrideExtension = ".nn";
 
         // Cached loaded NNModels, with the behavior name as the key.
         Dictionary<string, NNModel> m_CachedModels = new Dictionary<string, NNModel>();
@@ -104,6 +107,10 @@ namespace Unity.MLAgentsExamples
                 else if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length-1)
                 {
                     m_BehaviorNameOverrideDirectory = args[i + 1].Trim();
+                }
+                else if (args[i] == k_CommandLineModelOverrideExtensionFlag && i < args.Length-1)
+                {
+                    m_OverrideExtension = args[i + 1].Trim();
                 }
                 else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length-1)
                 {
@@ -181,7 +188,7 @@ namespace Unity.MLAgentsExamples
             }
             else if(!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
             {
-                assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.nn");
+                assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}{m_OverrideExtension}");
             }
 
             if (string.IsNullOrEmpty(assetPath))

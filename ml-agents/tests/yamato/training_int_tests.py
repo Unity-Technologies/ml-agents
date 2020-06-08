@@ -94,17 +94,18 @@ def run_training(python_version: str, csharp_version: str) -> bool:
 
     if csharp_version is None and python_version is None:
         # Use abs path so that loading doesn't get confused
-        inference_ok = run_inference(
-            env_path, os.path.abspath(os.path.dirname(nn_file_expected))
-        )
-        if not inference_ok:
-            return False
+        model_path = os.path.abspath(os.path.dirname(nn_file_expected))
+        for extension in [".nn", ".onnx"]:
+            inference_ok = run_inference(env_path, model_path, extension)
+            if not inference_ok:
+                return False
 
     print("mlagents-learn run SUCCEEDED!")
     return True
 
 
-def run_inference(env_path: str, output_path: str) -> bool:
+def run_inference(env_path: str, output_path: str, model_extension: str) -> bool:
+    start_time = time.time()
     exes = find_executables(env_path)
     if len(exes) != 1:
         print(f"Can't determine the player executable in {env_path}. Found {exes}.")
@@ -115,19 +116,25 @@ def run_inference(env_path: str, output_path: str) -> bool:
         exe_path,
         "-nographics",
         "-batchmode",
-        "-logfile",
-        "-",
+        # "-logfile",
+        # "-",
         "--mlagents-override-model-directory",
         output_path,
         "--mlagents-quit-on-load-failure",
         "--mlagents-quit-after-episodes",
         "2",
+        "--mlagents-override-model-directory",
+        model_extension,
     ]
     res = subprocess.run(args)
+    end_time = time.time()
     if res.returncode != 0:
+        print(" ".join(args))
         print(res.stdout)
         print("Error running inference!")
         return False
+    else:
+        print(f"Inference succeeded! Took {end_time - start_time} seconds")
 
     return True
 
