@@ -224,27 +224,47 @@ namespace Unity.MLAgentsExamples
         /// </summary>
         void OverrideModel()
         {
+            bool overrideOk = false;
+            string overrideError = null;
+
             m_Agent.LazyInitialize();
             var bp = m_Agent.GetComponent<BehaviorParameters>();
             var behaviorName = bp.BehaviorName;
 
             var nnModel = GetModelForBehaviorName(behaviorName);
-            if (nnModel == null && m_QuitOnLoadFailure)
+            if (nnModel == null)
             {
-                Debug.Log(
+                overrideError =
                     $"Didn't find a model for behaviorName {behaviorName}. Make " +
                     $"sure the behaviorName is set correctly in the commandline " +
-                    $"and that the model file exists"
-                );
+                    $"and that the model file exists";
+            }
+            else
+            {
+                var modelName = nnModel != null ? nnModel.name : "<null>";
+                Debug.Log($"Overriding behavior {behaviorName} for agent with model {modelName}");
+                try
+                {
+                    m_Agent.SetModel(GetOverrideBehaviorName(behaviorName), nnModel);
+                    overrideOk = true;
+                }
+                catch (Exception e)
+                {
+                    overrideError = e.ToString();
+                }
+            }
+
+            if (!overrideOk && m_QuitOnLoadFailure)
+            {
+                if(!string.IsNullOrEmpty(overrideError))
+                {
+                    Debug.LogWarning(overrideError);
+                }
                 Application.Quit(1);
 #if UNITY_EDITOR
                 EditorApplication.isPlaying = false;
 #endif
             }
-            var modelName = nnModel != null ? nnModel.name : "<null>";
-            Debug.Log($"Overriding behavior {behaviorName} for agent with model {modelName}");
-            // This might give a null model; that's better because we'll fall back to the Heuristic
-            m_Agent.SetModel(GetOverrideBehaviorName(behaviorName), nnModel);
 
         }
     }
