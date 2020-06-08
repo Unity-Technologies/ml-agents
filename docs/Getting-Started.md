@@ -206,12 +206,12 @@ follow the instructions in
 ### Observing Training Progress
 
 Once you start training using `mlagents-learn` in the way described in the
-previous section, the `ml-agents` directory will contain a `summaries`
+previous section, the `ml-agents` directory will contain a `results`
 directory. In order to observe the training process in more detail, you can use
 TensorBoard. From the command line run:
 
 ```sh
-tensorboard --logdir=summaries
+tensorboard --logdir=results
 ```
 
 Then navigate to `localhost:6006` in your browser to view the TensorBoard
