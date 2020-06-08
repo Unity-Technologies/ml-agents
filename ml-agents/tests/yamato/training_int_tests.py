@@ -93,7 +93,10 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         return False
 
     if csharp_version is None and python_version is None:
-        inference_ok = run_inference(env_path, os.path.dirname(nn_file_expected))
+        # Use abs path so that loading doesn't get confused
+        inference_ok = run_inference(
+            env_path, os.path.abspath(os.path.dirname(nn_file_expected))
+        )
         if not inference_ok:
             return False
 
