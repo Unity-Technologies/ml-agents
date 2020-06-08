@@ -95,7 +95,5 @@ class EnvironmentParametersChannel(SideChannel):
         msg.write_int32(self.EnvironmentDataTypes.SAMPLER)
         msg.write_int32(seed)
         msg.write_int32(self.SamplerTypes.MULTIRANGEUNIFORM)
-        msg.write_int32(len(intervals))
-        for value in intervals:
-            msg.write_float32(value)
+        msg.write_float32_list(intervals)
         super().queue_message_to_send(msg)
