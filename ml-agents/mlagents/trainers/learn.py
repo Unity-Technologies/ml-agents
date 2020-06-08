@@ -203,7 +203,7 @@ def maybe_add_samplers(
     """
     if sampler_config is not None:
         # If the seed is not specified in yaml, this will grab the run seed
-        for _, v in sampler_config.items():
+        for v in sampler_config.values():
             if v.seed == -1:
                 v.seed = run_seed
         env.reset(config=sampler_config)
