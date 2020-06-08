@@ -104,7 +104,7 @@ class GhostTrainer(Trainer):
                 )
             )
 
-        # Counts the The number of steps of the ghost policies. Snapshot swapping
+        # Counts the number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
         # on the wrapped. This ensures that all teams train for the same number of trainer
         # steps.
@@ -240,7 +240,7 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        self.next_summary_step = self.trainer.next_summary_step
+        self._next_summary_step = self.trainer._next_summary_step
         self.trainer.advance()
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.change_training_team(self.get_step)

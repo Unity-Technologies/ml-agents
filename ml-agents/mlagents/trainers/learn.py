@@ -25,6 +25,7 @@ from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.exception import SamplerException
 from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
@@ -37,6 +38,8 @@ from mlagents_envs.timers import (
 from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
+
+TRAINING_STATUS_FILE_NAME = "training_status.json"
 
 
 def get_version_string() -> str:
@@ -67,7 +70,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         base_path = "results"
         write_path = os.path.join(base_path, checkpoint_settings.run_id)
         maybe_init_path = (
-            os.path.join(base_path, checkpoint_settings.run_id)
+            os.path.join(base_path, checkpoint_settings.initialize_from)
             if checkpoint_settings.initialize_from
             else None
         )
@@ -82,6 +85,11 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
         # Make run logs directory
         os.makedirs(run_logs_dir, exist_ok=True)
+        # Load any needed states
+        if checkpoint_settings.resume:
+            GlobalTrainingStatus.load_state(
+                os.path.join(run_logs_dir, "training_status.json")
+            )
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
@@ -123,7 +131,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             env_factory, engine_config, env_settings.num_envs
         )
         maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum, env_manager, checkpoint_settings.lesson
+            options.curriculum, env_manager, restore=checkpoint_settings.resume
         )
         sampler_manager, resampling_interval = create_sampler_manager(
             options.parameter_randomization, run_seed
@@ -144,7 +152,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             trainer_factory,
             write_path,
             checkpoint_settings.run_id,
-            checkpoint_settings.save_freq,
             maybe_meta_curriculum,
             not checkpoint_settings.inference,
             run_seed,
@@ -159,6 +166,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager.close()
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
+        write_training_status(run_logs_dir)
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
@@ -173,6 +181,10 @@ def write_run_options(output_dir: str, run_options: RunOptions) -> None:
         logger.warning(
             f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
         )
+
+
+def write_training_status(output_dir: str) -> None:
+    GlobalTrainingStatus.save_state(os.path.join(output_dir, TRAINING_STATUS_FILE_NAME))
 
 
 def write_timing_tree(output_dir: str) -> None:
@@ -209,15 +221,14 @@ def create_sampler_manager(sampler_config, run_seed=None):
 
 
 def try_create_meta_curriculum(
-    curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
+    curriculum_config: Optional[Dict], env: SubprocessEnvManager, restore: bool = False
 ) -> Optional[MetaCurriculum]:
     if curriculum_config is None or len(curriculum_config) <= 0:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_config)
-        # TODO: Should be able to start learning at different lesson numbers
-        # for each curriculum.
-        meta_curriculum.set_all_curricula_to_lesson_num(lesson)
+        if restore:
+            meta_curriculum.try_restore_all_curriculum()
         return meta_curriculum
 
 

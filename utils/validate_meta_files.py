@@ -5,7 +5,7 @@ def main():
     asset_paths = ["Project/Assets", "com.unity.ml-agents"]
     meta_suffix = ".meta"
     python_suffix = ".py"
-    whitelist = frozenset(
+    allow_list = frozenset(
         [
             "com.unity.ml-agents/.editorconfig",
             "com.unity.ml-agents/.gitignore",
@@ -39,7 +39,7 @@ def main():
                     continue
 
                 full_path = os.path.join(root, f)
-                if full_path in whitelist:
+                if full_path in allow_list:
                     continue
 
                 # We expect each non-.meta file to have a .meta file, and each .meta file to have a non-.meta file

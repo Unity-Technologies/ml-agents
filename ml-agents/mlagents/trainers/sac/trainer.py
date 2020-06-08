@@ -50,7 +50,7 @@ class SACTrainer(RLTrainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param run_id: The identifier of the current run
         """
         super().__init__(
             brain_name, trainer_settings, training, run_id, reward_buff_cap
@@ -333,7 +333,6 @@ class SACTrainer(RLTrainer):
         self.reward_signal_update_steps = int(
             max(1, self.step / self.reward_signal_steps_per_update)
         )
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

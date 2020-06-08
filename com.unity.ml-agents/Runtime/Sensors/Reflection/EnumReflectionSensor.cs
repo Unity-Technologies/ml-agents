@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Sensors.Reflection
 {
-    internal class EnumReflectionSensor: ReflectionSensorBase
+    internal class EnumReflectionSensor : ReflectionSensorBase
     {
         Array m_Values;
         bool m_IsFlags;
@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             var enumValue = (Enum)GetReflectedValue();
 
             int i = 0;
-            foreach(var val in m_Values)
+            foreach (var val in m_Values)
             {
                 if (m_IsFlags)
                 {

@@ -60,13 +60,6 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
     )
     argparser.add_argument(
-        "--lesson",
-        default=0,
-        type=int,
-        help="The lesson to start with when performing curriculum training",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
         "--load",
         default=False,
         dest="load_model",
@@ -110,13 +103,6 @@ def _create_parser() -> argparse.ArgumentParser:
         "This can be used, for instance, to fine-tune an existing model on a new environment. "
         "Note that the previously saved models must have the same behavior parameters as your "
         "current environment.",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--save-freq",
-        default=50000,
-        type=int,
-        help="How often (in steps) to save the model during training",
         action=DetectDefault,
     )
     argparser.add_argument(

@@ -303,7 +303,7 @@ X.Org X Server 1.18.4
 Fatal server error:
 (EE) no screens found(EE)
 (EE)
-Please consult the The X.Org Foundation support
+Please consult the X.Org Foundation support
          at http://wiki.x.org
  for help.
 (EE) Please also check the log file at "/var/log/Xorg.0.log" for additional information.

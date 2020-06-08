@@ -214,10 +214,16 @@ namespace Unity.MLAgents
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
-            unityInput = m_Client.Exchange(WrapMessage(null, 200)).UnityInput;
+            var inputMessage = m_Client.Exchange(WrapMessage(null, 200));
+            unityInput = inputMessage.UnityInput;
 #if UNITY_EDITOR
             EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
 #endif
+            if (result.Header.Status != 200 || inputMessage.Header.Status != 200)
+            {
+                m_IsOpen = false;
+                QuitCommandReceived?.Invoke();
+            }
             return result.UnityInput;
 #else
             throw new UnityAgentsException(
