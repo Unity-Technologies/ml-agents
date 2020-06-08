@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: ['3.6', '3.7', '3.8']
         pip-constraints: ['test_constraints_max_tf1_version.txt', 'test_constraints_max_tf2_version.txt', 'test_constraints_min_version.txt']
     env:
