@@ -9,9 +9,10 @@ public class CrawlerAgent : Agent
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
     Vector3 m_WalkDir; //Direction to the target
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
-    
+
     [Header("Target To Walk Towards")] [Space(10)]
     public Transform target; //Target the agent will walk towards.
+
     public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
     public bool detectTargets; //Should this agent detect targets
     public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
@@ -38,6 +39,7 @@ public class CrawlerAgent : Agent
 
     [Header("Reward Functions To Use")] [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
+
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
@@ -74,7 +76,6 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
     {
-        var rb = bp.rb;
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
         //Get velocities in the context of our orientation cube's space
@@ -83,7 +84,6 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(bp.rb.position));
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
 
         if (bp.rb.transform != body)
@@ -234,8 +234,9 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        var movingTowardsDot =
-            Vector3.Dot(orientationCube.transform.forward, m_JdController.bodyPartsDict[body].rb.velocity);
+        var movingTowardsDot = Vector3.Dot(orientationCube.transform.forward,
+            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[body].rb.velocity, maximumWalkingSpeed));
+        ;
         AddReward(0.03f * movingTowardsDot);
     }
 
