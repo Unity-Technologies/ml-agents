@@ -185,20 +185,27 @@ class ParameterRandomizationSettings:
                 f"Unsupported parameter randomization configuration {d}."
             )
         d_final: Dict[str, List[float]] = {}
-        for param, param_config in d.items():
-            if param == "resampling-interval":
+        for environment_parameter, environment_parameter_config in d.items():
+            if environment_parameter == "resampling-interval":
                 logger.warning(
                     "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
                 )
                 continue
-            if not isinstance(param_config, Mapping):
+            if "sampler_type" not in environment_parameter_config:
                 raise TrainerConfigError(
-                    f"Unsupported distribution configuration {param_config}."
+                    f"Sampler configuration for {environment_parameter} does not contain sampler_type."
                 )
-            for key, val in param_config.items():
-                enum_key = ParameterRandomizationType(key)
-                t = enum_key.to_settings()
-                d_final[param] = strict_to_cls(val, t)
+            if "sampler_parameters" not in environment_parameter_config:
+                raise TrainerConfigError(
+                    f"Sampler configuration for {environment_parameter} does not contain sampler_parameters."
+                )
+            enum_key = ParameterRandomizationType(
+                environment_parameter_config["sampler_type"]
+            )
+            t = enum_key.to_settings()
+            d_final[environment_parameter] = strict_to_cls(
+                environment_parameter_config["sampler_parameters"], t
+            )
         return d_final
 
 

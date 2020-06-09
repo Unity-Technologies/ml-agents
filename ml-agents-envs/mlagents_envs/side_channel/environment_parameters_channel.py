@@ -85,7 +85,7 @@ class EnvironmentParametersChannel(SideChannel):
         self, key: str, intervals: List[float], seed: int
     ) -> None:
         """
-        Sets a gaussian environment parameter sampler.
+        Sets a multirangeuniform environment parameter sampler.
         :param key: The string identifier of the parameter.
         :param intervals: The min and max that define each uniform distribution.
         :param seed: The random seed to initialize the sampler.

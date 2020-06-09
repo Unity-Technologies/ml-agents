@@ -28,10 +28,12 @@ behaviors:
 
 parameter_randomization:
   mass:
-    uniform:
+    sampler_type: uniform
+    sampler_parameters:
       min_value: 0.5
       max_value: 10
   scale:
-    uniform:
+    sampler_type: uniform
+    sampler_parameters:
       min_value: 0.75
       max_value: 3
