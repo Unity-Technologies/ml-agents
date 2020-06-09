@@ -67,7 +67,10 @@ class SerializationSettings(NamedTuple):
 
 
 def export_policy_model(
-    settings: SerializationSettings, graph: tf.Graph, sess: tf.Session, is_checkpoint: bool = False,
+    settings: SerializationSettings,
+    graph: tf.Graph,
+    sess: tf.Session,
+    is_checkpoint: bool = False
 ) -> None:
     """
     Exports latest saved model to .nn format for Unity embedding.
