@@ -29,6 +29,7 @@ def create_policy_mock(
     use_rnn: bool = False,
     use_discrete: bool = True,
     use_visual: bool = False,
+    model_path: str = "",
     load: bool = False,
     seed: int = 0,
 ) -> NNPolicy:
@@ -45,15 +46,15 @@ def create_policy_mock(
     trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
-    policy = NNPolicy(seed, mock_brain, trainer_settings, False, load)
+    policy = NNPolicy(seed, mock_brain, trainer_settings, False, model_path, load)
     return policy
 
 
 def test_load_save(tmp_path):
     path1 = os.path.join(tmp_path, "runid1")
     path2 = os.path.join(tmp_path, "runid2")
-    trainer_params = TrainerSettings(output_path=path1)
-    policy = create_policy_mock(trainer_params)
+    trainer_params = TrainerSettings()
+    policy = create_policy_mock(trainer_params, model_path=path1)
     policy.initialize_or_load()
     policy._set_step(2000)
     policy.save_model(2000)
@@ -61,7 +62,7 @@ def test_load_save(tmp_path):
     assert len(os.listdir(tmp_path)) > 0
 
     # Try load from this path
-    policy2 = create_policy_mock(trainer_params, load=True, seed=1)
+    policy2 = create_policy_mock(trainer_params, model_path=path1, load=True, seed=1)
     policy2.initialize_or_load()
     _compare_two_policies(policy, policy2)
     assert policy2.get_current_step() == 2000
@@ -69,7 +70,7 @@ def test_load_save(tmp_path):
     # Try initialize from path 1
     trainer_params.output_path = path2
     trainer_params.init_path = path1
-    policy3 = create_policy_mock(trainer_params, load=False, seed=2)
+    policy3 = create_policy_mock(trainer_params, model_path=path1, load=False, seed=2)
     policy3.initialize_or_load()
 
     _compare_two_policies(policy2, policy3)
@@ -82,8 +83,8 @@ class ModelVersionTest(unittest.TestCase):
         # Test write_stats
         with self.assertLogs("mlagents.trainers", level="WARNING") as cm:
             path1 = tempfile.mkdtemp()
-            trainer_params = TrainerSettings(output_path=path1)
-            policy = create_policy_mock(trainer_params)
+            trainer_params = TrainerSettings()
+            policy = create_policy_mock(trainer_params, model_path=path1)
             policy.initialize_or_load()
             policy._check_model_version(
                 "0.0.0"
@@ -152,6 +153,7 @@ def test_normalization():
         brain_params,
         TrainerSettings(network_settings=NetworkSettings(normalize=True)),
         False,
+        "testdir",
         False,
     )
 

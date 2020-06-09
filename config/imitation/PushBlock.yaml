@@ -24,7 +24,6 @@ behaviors:
         use_actions: false
         use_vail: false
         demo_path: Project/Assets/ML-Agents/Examples/PushBlock/Demos/ExpertPush.demo
-    output_path: default
     keep_checkpoints: 5
     max_steps: 15000000
     time_horizon: 64

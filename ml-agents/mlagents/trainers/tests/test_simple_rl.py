@@ -123,7 +123,6 @@ def _check_environment_trains(
             env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
-            run_id=run_id,
             output_path=dir,
             train_model=True,
             load_model=False,
