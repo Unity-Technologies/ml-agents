@@ -20,7 +20,7 @@ def create_bc_module(mock_brain, bc_settings, use_rnn, tanhresample):
         NetworkSettings.MemorySettings() if use_rnn else None
     )
     policy = NNPolicy(
-        0, mock_brain, trainer_config, False, False, tanhresample, tanhresample
+        0, mock_brain, trainer_config, False, "test", False, tanhresample, tanhresample
     )
     with policy.graph.as_default():
         bc_module = BCModule(

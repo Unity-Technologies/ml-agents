@@ -20,7 +20,6 @@ class TrainerFactory:
     def __init__(
         self,
         trainer_config: Dict[str, TrainerSettings],
-        run_id: str,
         output_path: str,
         train_model: bool,
         load_model: bool,
@@ -30,7 +29,6 @@ class TrainerFactory:
         multi_gpu: bool = False,
     ):
         self.trainer_config = trainer_config
-        self.run_id = run_id
         self.output_path = output_path
         self.init_path = init_path
         self.train_model = train_model
@@ -44,7 +42,6 @@ class TrainerFactory:
         return initialize_trainer(
             self.trainer_config[brain_name],
             brain_name,
-            self.run_id,
             self.output_path,
             self.train_model,
             self.load_model,
@@ -59,7 +56,6 @@ class TrainerFactory:
 def initialize_trainer(
     trainer_settings: TrainerSettings,
     brain_name: str,
-    run_id: str,
     output_path: str,
     train_model: bool,
     load_model: bool,
@@ -75,7 +71,6 @@ def initialize_trainer(
 
     :param trainer_settings: Original trainer configuration loaded from YAML
     :param brain_name: Name of the brain to be associated with trainer
-    :param run_id: Run ID to associate with this training run
     :param output_path: Path to save the model and summary statistics
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
@@ -86,7 +81,7 @@ def initialize_trainer(
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
-    trainer_settings.output_path = os.path.join(output_path, brain_name)
+    trainer_artifact_path = os.path.join(output_path, brain_name)
     if init_path is not None:
         trainer_settings.init_path = os.path.join(init_path, brain_name)
 
@@ -113,7 +108,7 @@ def initialize_trainer(
             train_model,
             load_model,
             seed,
-            run_id,
+            trainer_artifact_path,
         )
     elif trainer_type == TrainerType.SAC:
         trainer = SACTrainer(
@@ -123,7 +118,7 @@ def initialize_trainer(
             train_model,
             load_model,
             seed,
-            run_id,
+            trainer_artifact_path,
         )
     else:
         raise TrainerConfigError(
@@ -138,7 +133,7 @@ def initialize_trainer(
             min_lesson_length,
             trainer_settings,
             train_model,
-            run_id,
+            trainer_artifact_path,
         )
     return trainer
 
