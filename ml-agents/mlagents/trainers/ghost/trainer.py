@@ -306,13 +306,13 @@ class GhostTrainer(Trainer):
         brain_name = parsed_behavior_id.brain_name
         self.trainer.save_model(brain_name)
 
-    def export_model(self, name_behavior_id: str) -> None:
+    def export_model(self, name_behavior_id: str, is_checkpoint: bool = False) -> None:
         """
         Forwarding call to wrapped trainers export_model.
         """
         parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
         brain_name = parsed_behavior_id.brain_name
-        self.trainer.export_model(brain_name)
+        self.trainer.export_model(brain_name, is_checkpoint)
 
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
