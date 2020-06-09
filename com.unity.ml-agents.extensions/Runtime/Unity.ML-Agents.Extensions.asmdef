@@ -1,0 +1,9 @@
+{
+    "name": "Unity.ML-Agents.Extensions",
+    "references": [
+        "Unity.Barracuda",
+        "Unity.ML-Agents"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}
