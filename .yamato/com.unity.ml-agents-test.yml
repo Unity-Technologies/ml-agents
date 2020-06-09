@@ -63,6 +63,7 @@ test_{{ platform.name }}_{{ editor.version }}:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
+    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents.extensions
   artifacts:
     logs:
       paths:
@@ -77,6 +78,7 @@ test_{{ platform.name }}_{{ editor.version }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
     {% endif %}
   {% endfor %}
