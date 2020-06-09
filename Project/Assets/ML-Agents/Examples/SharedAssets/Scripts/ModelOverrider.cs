@@ -111,6 +111,15 @@ namespace Unity.MLAgentsExamples
                 else if (args[i] == k_CommandLineModelOverrideExtensionFlag && i < args.Length-1)
                 {
                     m_OverrideExtension = args[i + 1].Trim();
+                    if (m_OverrideExtension.Equals(".onnx", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Not supported yet - need to update the model loading code to support
+                        Debug.LogError("ONNX loading not supported yet.");
+                        Application.Quit(1);
+#if UNITY_EDITOR
+                        EditorApplication.isPlaying = false;
+#endif
+                    }
                 }
                 else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length-1)
                 {

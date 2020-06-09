@@ -111,7 +111,9 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     if csharp_version is None and python_version is None:
         # Use abs path so that loading doesn't get confused
         model_path = os.path.abspath(os.path.dirname(nn_file_expected))
-        for extension in [".onnx", ".nn"]:
+        # Onnx loading for overrides not currently supported, but this is
+        # where to add it in when it is.
+        for extension in [".nn"]:
             inference_ok = run_inference(env_path, model_path, extension)
             if not inference_ok:
                 return False
@@ -147,9 +149,9 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
     res = subprocess.run(args)
     end_time = time.time()
     if res.returncode != 0:
-        print(" ".join(args))
-        print(res.stdout)
         print("Error running inference!")
+        print("Command line: " + " ".join(args))
+        subprocess.run(["cat", log_output_path])
         return False
     else:
         print(f"Inference succeeded! Took {end_time - start_time} seconds")
