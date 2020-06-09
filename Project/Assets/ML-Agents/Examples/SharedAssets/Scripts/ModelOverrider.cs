@@ -219,6 +219,8 @@ namespace Unity.MLAgentsExamples
                 return null;
             }
 
+            // Note - this approach doesn't work for onnx files. Need to replace with
+            // the equivalent of ONNXModelImporter.OnImportAsset()
             var asset = ScriptableObject.CreateInstance<NNModel>();
             asset.modelData = ScriptableObject.CreateInstance<NNModelData>();
             asset.modelData.Value = model;
