@@ -366,8 +366,6 @@ namespace Unity.MLAgents
                         port = port
                     }
                 );
-                Communicator.QuitCommandReceived += OnQuitCommandReceived;
-                Communicator.ResetCommandReceived += OnResetCommand;
             }
 
             if (Communicator != null)
@@ -399,6 +397,11 @@ namespace Unity.MLAgents
                     );
                     Communicator = null;
                 }
+            }
+            if (Communicator != null)
+            {
+                Communicator.QuitCommandReceived += OnQuitCommandReceived;
+                Communicator.ResetCommandReceived += OnResetCommand;
             }
 
             // If a communicator is enabled/provided, then we assume we are in
