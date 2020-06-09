@@ -36,9 +36,13 @@ def test_barracuda_converter():
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 def test_policy_conversion(tmpdir, rnn, visual, discrete):
     tf.reset_default_graph()
-    dummy_config = TrainerSettings(output_path=os.path.join(tmpdir, "test"))
+    dummy_config = TrainerSettings()
     policy = create_policy_mock(
-        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
+        dummy_config,
+        use_rnn=rnn,
+        model_path=os.path.join(tmpdir, "test"),
+        use_discrete=discrete,
+        use_visual=visual,
     )
     policy.save_model(1000)
     settings = SerializationSettings(

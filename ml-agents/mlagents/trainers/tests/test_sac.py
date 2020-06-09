@@ -46,7 +46,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         else None
     )
     policy = NNPolicy(
-        0, mock_brain, trainer_settings, False, False, create_tf_graph=False
+        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
     )
     optimizer = SACOptimizer(policy, trainer_settings)
     return optimizer
@@ -104,7 +104,9 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     )
     trainer_params = dummy_config
     trainer_params.hyperparameters.save_replay_buffer = True
-    trainer = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, False, 0, 0)
+    trainer = SACTrainer(
+        mock_brain.brain_name, 1, trainer_params, True, False, 0, "testdir"
+    )
     policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
 
@@ -113,7 +115,9 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     trainer.save_model(mock_brain.brain_name)
 
     # Wipe Trainer and try to load
-    trainer2 = SACTrainer(mock_brain.brain_name, 1, trainer_params, True, True, 0, 0)
+    trainer2 = SACTrainer(
+        mock_brain.brain_name, 1, trainer_params, True, True, 0, "testdir"
+    )
 
     policy = trainer2.create_policy(mock_brain.brain_name, mock_brain)
     trainer2.add_policy(mock_brain.brain_name, policy)

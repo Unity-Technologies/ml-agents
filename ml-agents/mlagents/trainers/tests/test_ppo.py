@@ -51,7 +51,7 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         else None
     )
     policy = NNPolicy(
-        0, mock_brain, trainer_settings, False, False, create_tf_graph=False
+        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
     )
     optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer

@@ -22,7 +22,6 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     brain_params_mock = BrainParametersMock()
     BrainParametersMock.return_value.brain_name = "testbrain"
     external_brains = {"testbrain": BrainParametersMock()}
-    run_id = "testrun"
     output_path = "results_dir"
     train_model = True
     load_model = False
@@ -33,7 +32,14 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
     expected_config = PPO_CONFIG
 
     def mock_constructor(
-        self, brain, reward_buff_cap, trainer_settings, training, load, seed, run_id
+        self,
+        brain,
+        reward_buff_cap,
+        trainer_settings,
+        training,
+        load,
+        seed,
+        artifact_path,
     ):
         assert brain == brain_params_mock.brain_name
         assert trainer_settings == expected_config
@@ -41,12 +47,11 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
         assert training == train_model
         assert load == load_model
         assert seed == seed
-        assert run_id == run_id
+        assert artifact_path == os.path.join(output_path, brain_name)
 
     with patch.object(PPOTrainer, "__init__", mock_constructor):
         trainer_factory = trainer_util.TrainerFactory(
             trainer_config=base_config,
-            run_id=run_id,
             output_path=output_path,
             train_model=train_model,
             load_model=load_model,
@@ -77,7 +82,6 @@ def test_handles_no_config_provided(BrainParametersMock):
 
     trainer_factory = trainer_util.TrainerFactory(
         trainer_config=no_default_config,
-        run_id="testrun",
         output_path="output_path",
         train_model=True,
         load_model=False,
