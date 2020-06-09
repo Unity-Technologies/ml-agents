@@ -39,7 +39,8 @@ MOCK_PARAMETER_YAML = """
 MOCK_SAMPLER_CURRICULUM_YAML = """
     parameter_randomization:
         sampler1:
-            uniform:
+            sampler_type: uniform
+            sampler_parameters:
                 min_value: 0.2
 
     curriculum:

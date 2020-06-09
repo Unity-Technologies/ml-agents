@@ -160,9 +160,18 @@ def test_parameter_randomization_structure():
     Tests the ParameterRandomizationSettings structure method and all validators.
     """
     parameter_randomization_dict = {
-        "mass": {"uniform": {"min_value": 1.0, "max_value": 2.0}},
-        "scale": {"gaussian": {"mean": 1.0, "st_dev": 2.0}},
-        "length": {"multirangeuniform": {"intervals": [[1.0, 2.0], [3.0, 4.0]]}},
+        "mass": {
+            "sampler_type": "uniform",
+            "sampler_parameters": {"min_value": 1.0, "max_value": 2.0},
+        },
+        "scale": {
+            "sampler_type": "gaussian",
+            "sampler_parameters": {"mean": 1.0, "st_dev": 2.0},
+        },
+        "length": {
+            "sampler_type": "multirangeuniform",
+            "sampler_parameters": {"intervals": [[1.0, 2.0], [3.0, 4.0]]},
+        },
     }
     parameter_randomization_distributions = ParameterRandomizationSettings.structure(
         parameter_randomization_dict, Dict[str, ParameterRandomizationSettings]
@@ -174,7 +183,12 @@ def test_parameter_randomization_structure():
     )
 
     # Check invalid distribution type
-    invalid_distribution_dict = {"mass": {"beta": {"alpha": 1.0, "beta": 2.0}}}
+    invalid_distribution_dict = {
+        "mass": {
+            "sampler_type": "beta",
+            "sampler_parameters": {"alpha": 1.0, "beta": 2.0},
+        }
+    }
     with pytest.raises(ValueError):
         ParameterRandomizationSettings.structure(
             invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
@@ -182,7 +196,10 @@ def test_parameter_randomization_structure():
 
     # Check min less than max in uniform
     invalid_distribution_dict = {
-        "mass": {"uniform": {"min_value": 2.0, "max_value": 1.0}}
+        "mass": {
+            "sampler_type": "uniform",
+            "sampler_parameters": {"min_value": 2.0, "max_value": 1.0},
+        }
     }
     with pytest.raises(TrainerConfigError):
         ParameterRandomizationSettings.structure(
@@ -191,7 +208,10 @@ def test_parameter_randomization_structure():
 
     # Check min less than max in multirange
     invalid_distribution_dict = {
-        "mass": {"multirangeuniform": {"intervals": [[2.0, 1.0]]}}
+        "mass": {
+            "sampler_type": "multirangeuniform",
+            "sampler_parameters": {"intervals": [[2.0, 1.0]]},
+        }
     }
     with pytest.raises(TrainerConfigError):
         ParameterRandomizationSettings.structure(
@@ -200,7 +220,10 @@ def test_parameter_randomization_structure():
 
     # Check multirange has valid intervals
     invalid_distribution_dict = {
-        "mass": {"multirangeuniform": {"intervals": [[1.0, 2.0], [3.0]]}}
+        "mass": {
+            "sampler_type": "multirangeuniform",
+            "sampler_parameters": {"intervals": [[1.0, 2.0], [3.0]]},
+        }
     }
     with pytest.raises(TrainerConfigError):
         ParameterRandomizationSettings.structure(

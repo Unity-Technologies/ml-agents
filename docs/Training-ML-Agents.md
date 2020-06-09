@@ -486,7 +486,7 @@ Below is a list of included `sampler-type` as part of the toolkit.
   - **sub-arguments** - `intervals`
 
 The implementation of the samplers can be found in the
-[sampler_class.py file](../ml-agents/mlagents/trainers/sampler_class.py).
+[Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
 
 #### Defining a New Sampler Type
 
