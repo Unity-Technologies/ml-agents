@@ -443,7 +443,7 @@ parameter_randomization:
         max_value: 10
 
   length:
-    sampler_type: multirange_uniform
+    sampler_type: multirangeuniform
     sampler_parameters:
         intervals: [[7, 10], [15, 20]]
 
@@ -465,7 +465,7 @@ exist in the environment, then this parameter will be ignored.
 
 #### Supported Sampler Types
 
-Below is a list of the `sampler_type`s supported by the toolkit.
+Below is a list of the `sampler_type` values supported by the toolkit.
 
 - `uniform` - Uniform sampler
   - Uniformly samples a single float value from a range with a given minimum
