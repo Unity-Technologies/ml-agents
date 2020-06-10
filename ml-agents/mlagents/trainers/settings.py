@@ -259,7 +259,7 @@ class CurriculumSettings:
         REWARD: str = "reward"
 
     measure: str = attr.ib(default=MeasureType.REWARD)
-    thresholds: List[int] = attr.ib(factory=list)
+    thresholds: List[float] = attr.ib(factory=list)
     min_lesson_length: int = 0
     signal_smoothing: bool = True
     parameters: Dict[str, List[float]] = attr.ib(kw_only=True)
