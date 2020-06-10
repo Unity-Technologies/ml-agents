@@ -189,8 +189,9 @@ public class CrawlerAgent : Agent
                 }
             }
 
-            UpdateOrientationCube();
         }
+        
+        UpdateOrientationCube();
 
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
