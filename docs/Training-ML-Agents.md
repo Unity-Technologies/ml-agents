@@ -487,44 +487,6 @@ Below is a list of the `sampler_type` values supported by the toolkit.
 The implementation of the samplers can be found in the
 [Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
 
-#### Defining a New Sampler Type
-
-If you want to define your own sampler type, you must first inherit the
-_Sampler_ base class (included in the `sampler_class` file) and preserve the
-interface. Once the class for the required method is specified, it must be
-registered in the Sampler Factory.
-
-This can be done by subscribing to the _register_sampler_ method of the
-`SamplerFactory`. The command is as follows:
-
-`SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
-
-Once the Sampler Factory reflects the new register, the new sampler type can be
-used for sample any `Environment Parameter`. For example, lets say a new sampler
-type was implemented as below and we register the `CustomSampler` class with the
-string `custom-sampler` in the Sampler Factory.
-
-```python
-class CustomSampler(Sampler):
-
-    def __init__(self, argA, argB, argC):
-        self.possible_vals = [argA, argB, argC]
-
-    def sample_all(self):
-        return np.random.choice(self.possible_vals)
-```
-
-Now we need to specify the new sampler type in the sampler YAML file. For
-example, we use this new sampler type for the `Environment Parameter` _mass_.
-
-```yaml
-mass:
-  sampler-type: "custom-sampler"
-  argB: 1
-  argA: 2
-  argC: 3
-```
-
 #### Training with Environment Parameter Randomization
 
 After the sampler configuration is defined, we proceed by launching `mlagents-learn`
