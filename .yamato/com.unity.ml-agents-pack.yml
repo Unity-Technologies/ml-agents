@@ -7,6 +7,7 @@ pack:
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package pack --package-path com.unity.ml-agents
+    - upm-ci package pack --package-path com.unity.ml-agents.extensions
   artifacts:
     packages:
       paths:
