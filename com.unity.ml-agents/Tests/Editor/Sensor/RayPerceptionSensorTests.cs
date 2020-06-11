@@ -31,7 +31,8 @@ namespace Unity.MLAgents.Tests
         public void RemoveGameObjects()
         {
             var objects = GameObject.FindObjectsOfType<GameObject>();
-            foreach (var o in objects) {
+            foreach (var o in objects)
+            {
                 UnityEngine.Object.DestroyImmediate(o);
             }
         }
