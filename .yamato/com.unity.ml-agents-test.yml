@@ -29,6 +29,9 @@ test_platforms:
     type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.medium
+packages:
+  - name: com.unity.ml-agents
+  - name: com.unity.ml-agents.extensions
 ---
 
 all_package_tests:
@@ -51,25 +54,25 @@ all_package_tests:
       - branch: master
         frequency: daily
 
-{% for editor in test_editors %}
-  {% for platform in test_platforms %}
-test_{{ platform.name }}_{{ editor.version }}:
-  name : com.unity.ml-agents test {{ editor.version }} on {{ platform.name }}
+{% for package in packages %}
+  {% for editor in test_editors %}
+    {% for platform in test_platforms %}
+test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
+  name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
+    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ editor.coverageOptions }}
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
-    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents.extensions
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack
+    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
   triggers:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
@@ -81,13 +84,15 @@ test_{{ platform.name }}_{{ editor.version }}:
       pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
     {% endif %}
+    {% endfor %}
   {% endfor %}
 {% endfor %}
 
-{% for editor in trunk_editor %}
-  {% for platform in test_platforms %}
-test_{{ platform.name }}_trunk:
-  name : com.unity.ml-agents test {{ editor.version }} on {{ platform.name }}
+{% for package in packages %}
+  {% for editor in trunk_editor %}
+    {% for platform in test_platforms %}
+test_{{ package.name }}_{{ platform.name }}_trunk:
+  name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}
@@ -96,15 +101,16 @@ test_{{ platform.name }}_trunk:
     - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
+    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ editor.coverageOptions }}
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack
+    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
   triggers:
     cancel_old_ci: true
     {% endfor %}
   {% endfor %}
+{% endfor %}
