@@ -68,7 +68,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         base_path = "results"
         write_path = os.path.join(base_path, checkpoint_settings.run_id)
         maybe_init_path = (
-            os.path.join(base_path, checkpoint_settings.run_id)
+            os.path.join(base_path, checkpoint_settings.initialize_from)
             if checkpoint_settings.initialize_from
             else None
         )
@@ -134,7 +134,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
         trainer_factory = TrainerFactory(
             options.behaviors,
-            checkpoint_settings.run_id,
             write_path,
             not checkpoint_settings.inference,
             checkpoint_settings.resume,

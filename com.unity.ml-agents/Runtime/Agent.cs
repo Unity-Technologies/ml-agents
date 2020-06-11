@@ -770,6 +770,8 @@ namespace Unity.MLAgents
         /// <seealso cref="OnActionReceived(float[])"/> function, which receives this array and
         /// implements the corresponding agent behavior. See [Actions] for more information
         /// about agent actions.
+        /// Note : Do not create a new float array of action in the `Heuristic()` method,
+        /// as this will prevent writing floats to the original action array.
         ///
         /// An agent calls this `Heuristic()` function to make a decision when you set its behavior
         /// type to <see cref="BehaviorType.HeuristicOnly"/>. The agent also calls this function if

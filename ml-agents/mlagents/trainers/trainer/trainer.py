@@ -28,19 +28,18 @@ class Trainer(abc.ABC):
         brain_name: str,
         trainer_settings: TrainerSettings,
         training: bool,
-        run_id: str,
+        artifact_path: str,
         reward_buff_cap: int = 1,
     ):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
-        :dict trainer_settings: The parameters for the trainer (dictionary).
-        :bool training: Whether the trainer is set for training.
-        :str run_id: The identifier of the current run
-        :int reward_buff_cap:
+        :param trainer_settings: The parameters for the trainer (dictionary).
+        :param training: Whether the trainer is set for training.
+        :param artifact_path: The directory within which to store artifacts from this trainer
+        :param reward_buff_cap:
         """
         self.brain_name = brain_name
-        self.run_id = run_id
         self.trainer_settings = trainer_settings
         self._threaded = trainer_settings.threaded
         self._stats_reporter = StatsReporter(brain_name)
@@ -49,6 +48,7 @@ class Trainer(abc.ABC):
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
+        self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
 
     @property
