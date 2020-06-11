@@ -27,6 +27,15 @@ namespace Unity.MLAgents.Tests
         const string k_CubeTag = "Player";
         const string k_SphereTag = "Respawn";
 
+        [TearDown]
+        public void RemoveGameObjects()
+        {
+            var objects = GameObject.FindObjectsOfType<GameObject>();
+            foreach (var o in objects) {
+                UnityEngine.Object.DestroyImmediate(o);
+            }
+        }
+
         void SetupScene()
         {
             /* Creates game objects in the world for testing.
