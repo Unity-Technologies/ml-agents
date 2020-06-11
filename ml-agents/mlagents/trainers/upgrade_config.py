@@ -82,6 +82,34 @@ def remove_nones(config: Dict[Any, Any]) -> Dict[str, Any]:
     return new_config
 
 
+# Take a sampler from the old format and convert to new sampler structure
+def convert_samplers(old_sampler_config: Dict[str, Any]) -> Dict[str, Any]:
+    new_sampler_config: Dict[str, Any] = {}
+    for parameter, parameter_config in old_sampler_config.items():
+        if parameter == "resampling-interval":
+            print(
+                "resampling-interval is no longer necessary for parameter randomization and is being ignored."
+            )
+            continue
+        new_sampler_config[parameter] = {}
+        new_sampler_config[parameter]["sampler_type"] = parameter_config["sampler-type"]
+        if parameter_config["sampler-type"] == "uniform":
+            new_sampler_config[parameter]["sampler_parameters"] = {
+                "min_value": parameter_config["min_value"],
+                "max_value": parameter_config["max_value"],
+            }
+        elif parameter_config["sampler-type"] == "gaussian":
+            new_sampler_config[parameter]["sampler_parameters"] = {
+                "mean": parameter_config["mean"],
+                "st_dev": parameter_config["st_dev"],
+            }
+        elif parameter_config["sampler-type"] == "multirangeuniform":
+            new_sampler_config[parameter]["sampler_parameters"] = {
+                "intervals": parameter_config["intervals"]
+            }
+    return new_sampler_config
+
+
 def parse_args():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -124,7 +152,8 @@ def main() -> None:
         full_config["curriculum"] = curriculum_config_dict
 
     if args.sampler is not None:
-        sampler_config_dict = load_config(args.sampler)
+        old_sampler_config_dict = load_config(args.sampler)
+        sampler_config_dict = convert_samplers(old_sampler_config_dict)
         full_config["parameter_randomization"] = sampler_config_dict
 
     # Convert config to dict
