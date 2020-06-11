@@ -190,7 +190,6 @@ class TrainerSettings(ExportableSettings):
         factory=lambda: {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
     )
     init_path: Optional[str] = None
-    output_path: str = "default"
     keep_checkpoints: int = 5
     checkpoint_interval: int = 500000
     max_steps: int = 500000
@@ -260,7 +259,7 @@ class CurriculumSettings:
         REWARD: str = "reward"
 
     measure: str = attr.ib(default=MeasureType.REWARD)
-    thresholds: List[int] = attr.ib(factory=list)
+    thresholds: List[float] = attr.ib(factory=list)
     min_lesson_length: int = 0
     signal_smoothing: bool = True
     parameters: Dict[str, List[float]] = attr.ib(kw_only=True)
