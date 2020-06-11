@@ -78,11 +78,14 @@ public class CrawlerAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        sensor.AddObservation(bp.rb.velocity);
+        sensor.AddObservation(bp.rb.angularVelocity);
 
         //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
+        sensor.AddObservation(bp.rb.position - body.position);
 
         if (bp.rb.transform != body)
         {
@@ -90,16 +93,39 @@ public class CrawlerAgent : Agent
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
+//    /// <summary>
+//    /// Add relevant information on each body part to observations.
+//    /// </summary>
+//    public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
+//    {
+//        sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
+//
+//        //Get velocities in the context of our orientation cube's space
+//        //Note: You can get these velocities in world space as well but it may not train as well.
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+//
+//        //Get position relative to hips in the context of our orientation cube's space
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
+//
+//        if (bp.rb.transform != body)
+//        {
+//            sensor.AddObservation(bp.rb.transform.localRotation);
+//            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+//        }
+//    }
 
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+//        sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
 
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
+        sensor.AddObservation(body.InverseTransformPoint(target.position));
 
         RaycastHit hit;
         float maxRaycastDist = 10;
