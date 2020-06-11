@@ -67,7 +67,9 @@ includes implementing the following methods:
 - `Agent.Heuristic()` - When the `Behavior Type` is set to `Heuristic Only` in
   the Behavior Parameters of the Agent, the Agent will use the `Heuristic()`
   method to generate the actions of the Agent. As such, the `Heuristic()` method
-  writes to a provided array of floats.
+  writes to the array of floats provided to the Heuristic method as argument.
+  __Note__: Do not create a new float array of action in the `Heuristic()` method,
+  as this will prevent writing floats to the original action array.
 
 As a concrete example, here is how the Ball3DAgent class implements these methods:
 
