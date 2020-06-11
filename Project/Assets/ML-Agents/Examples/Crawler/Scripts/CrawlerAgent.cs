@@ -108,7 +108,7 @@ public class CrawlerAgent : Agent
             sensor.AddObservation(hit.distance / maxRaycastDist);
         }
         else
-            sensor.AddObservation(maxRaycastDist);
+            sensor.AddObservation(1);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
