@@ -23,11 +23,7 @@ from mlagents_envs.timers import (
     get_timer_root,
 )
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.settings import (
-    UniformSettings,
-    GaussianSettings,
-    MultiRangeUniformSettings,
-)
+from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -182,18 +178,8 @@ def worker(
                 for k, v in req.payload.items():
                     if isinstance(v, float):
                         env_parameters.set_float_parameter(k, v)
-                    elif isinstance(v, UniformSettings):
-                        env_parameters.set_uniform_sampler_parameters(
-                            k, v.min_value, v.max_value, v.seed
-                        )
-                    elif isinstance(v, GaussianSettings):
-                        env_parameters.set_gaussian_sampler_parameters(
-                            k, v.mean, v.st_dev, v.seed
-                        )
-                    elif isinstance(v, MultiRangeUniformSettings):
-                        env_parameters.set_multirangeuniform_sampler_parameters(
-                            k, v.intervals, v.seed
-                        )
+                    elif isinstance(v, ParameterRandomizationSettings):
+                        env_parameters.set_sampler_parameters(k, v)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)
