@@ -48,7 +48,7 @@ class SimpleEnvManager(EnvManager):
                 if isinstance(v, float):
                     self.env_params.set_float_parameter(k, v)
                 elif isinstance(v, ParameterRandomizationSettings):
-                    self.env_params.set_sampler_parameters(k, v)
+                    v.apply(k, self.env_params)
         self.env.reset()
         all_step_result = self._generate_all_results()
         self.previous_step = EnvironmentStep(all_step_result, 0, {}, {})

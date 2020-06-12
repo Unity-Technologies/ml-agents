@@ -1,11 +1,5 @@
 from mlagents_envs.side_channel import SideChannel, IncomingMessage, OutgoingMessage
 from mlagents_envs.exception import UnityCommunicationException
-from mlagents.trainers.settings import (
-    ParameterRandomizationSettings,
-    UniformSettings,
-    GaussianSettings,
-    MultiRangeUniformSettings,
-)
 import uuid
 from enum import IntEnum
 from typing import List, Tuple
@@ -48,33 +42,6 @@ class EnvironmentParametersChannel(SideChannel):
         msg.write_int32(self.EnvironmentDataTypes.FLOAT)
         msg.write_float32(value)
         super().queue_message_to_send(msg)
-
-    def set_sampler_parameters(
-        self, key: str, sampler_settings: ParameterRandomizationSettings
-    ) -> None:
-        """
-        Sets an environment parameter sampler.
-        :param key: The string identifier of the parameter.
-        :param sampler_settings: The sampler specific hyperparameters
-        """
-        if isinstance(sampler_settings, UniformSettings):
-            self.set_uniform_sampler_parameters(
-                key,
-                sampler_settings.min_value,
-                sampler_settings.max_value,
-                sampler_settings.seed,
-            )
-        elif isinstance(sampler_settings, GaussianSettings):
-            self.set_gaussian_sampler_parameters(
-                key,
-                sampler_settings.mean,
-                sampler_settings.st_dev,
-                sampler_settings.seed,
-            )
-        elif isinstance(sampler_settings, MultiRangeUniformSettings):
-            self.set_multirangeuniform_sampler_parameters(
-                key, sampler_settings.intervals, sampler_settings.seed
-            )
 
     def set_uniform_sampler_parameters(
         self, key: str, min_value: float, max_value: float, seed: int

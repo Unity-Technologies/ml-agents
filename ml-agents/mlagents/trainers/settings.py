@@ -4,6 +4,7 @@ from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple
 from enum import Enum
 import collections
 import argparse
+import abc
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
@@ -11,6 +12,9 @@ from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.models import ScheduleType, EncoderType
 
 from mlagents_envs import logging_util
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
 
 logger = logging_util.get_logger(__name__)
 
@@ -170,7 +174,7 @@ class ParameterRandomizationType(Enum):
 
 
 @attr.s(auto_attribs=True)
-class ParameterRandomizationSettings:
+class ParameterRandomizationSettings(abc.ABC):
     seed: int = parser.get_default("seed")
 
     @staticmethod
@@ -208,6 +212,16 @@ class ParameterRandomizationSettings:
             )
         return d_final
 
+    @abc.abstractmethod
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the appropriate sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        pass
+
 
 @attr.s(auto_attribs=True)
 class UniformSettings(ParameterRandomizationSettings):
@@ -225,11 +239,33 @@ class UniformSettings(ParameterRandomizationSettings):
                 "Minimum value is greater than maximum value in uniform sampler."
             )
 
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the uniform sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_uniform_sampler_parameters(
+            key, self.min_value, self.max_value, self.seed
+        )
+
 
 @attr.s(auto_attribs=True)
 class GaussianSettings(ParameterRandomizationSettings):
     mean: float = 1.0
     st_dev: float = 1.0
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the gaussian sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_gaussian_sampler_parameters(
+            key, self.mean, self.st_dev, self.seed
+        )
 
 
 @attr.s(auto_attribs=True)
@@ -252,6 +288,17 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
                 raise TrainerConfigError(
                     f"Minimum value is greater than maximum value in interval {interval}."
                 )
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the multirangeuniform sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_multirangeuniform_sampler_parameters(
+            key, self.intervals, self.seed
+        )
 
 
 @attr.s(auto_attribs=True)
