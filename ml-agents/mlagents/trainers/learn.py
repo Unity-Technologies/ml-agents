@@ -22,8 +22,6 @@ from mlagents.trainers.stats import (
 )
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.trainers.exception import SamplerException
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
@@ -133,9 +131,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         maybe_meta_curriculum = try_create_meta_curriculum(
             options.curriculum, env_manager, restore=checkpoint_settings.resume
         )
-        sampler_manager, resampling_interval = create_sampler_manager(
-            options.parameter_randomization, run_seed
-        )
+        maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
         trainer_factory = TrainerFactory(
             options.behaviors,
             write_path,
@@ -154,8 +150,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             maybe_meta_curriculum,
             not checkpoint_settings.inference,
             run_seed,
-            sampler_manager,
-            resampling_interval,
         )
 
     # Begin training
@@ -197,26 +191,21 @@ def write_timing_tree(output_dir: str) -> None:
         )
 
 
-def create_sampler_manager(sampler_config, run_seed=None):
-    resample_interval = None
+def maybe_add_samplers(
+    sampler_config: Optional[Dict], env: SubprocessEnvManager, run_seed: int
+) -> None:
+    """
+    Adds samplers to env if sampler config provided and sets seed if not configured.
+    :param sampler_config: validated dict of sampler configs. None if not included.
+    :param env: env manager to pass samplers via reset
+    :param run_seed: Random seed used for training.
+    """
     if sampler_config is not None:
-        if "resampling-interval" in sampler_config:
-            # Filter arguments that do not exist in the environment
-            resample_interval = sampler_config.pop("resampling-interval")
-            if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
-                raise SamplerException(
-                    "Specified resampling-interval is not valid. Please provide"
-                    " a positive integer value for resampling-interval"
-                )
-
-        else:
-            raise SamplerException(
-                "Resampling interval was not specified in the sampler file."
-                " Please specify it with the 'resampling-interval' key in the sampler config file."
-            )
-
-    sampler_manager = SamplerManager(sampler_config, run_seed)
-    return sampler_manager, resample_interval
+        # If the seed is not specified in yaml, this will grab the run seed
+        for offset, v in enumerate(sampler_config.values()):
+            if v.seed == -1:
+                v.seed = run_seed + offset
+        env.reset(config=sampler_config)
 
 
 def try_create_meta_curriculum(

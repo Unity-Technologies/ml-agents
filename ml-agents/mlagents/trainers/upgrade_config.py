@@ -82,6 +82,23 @@ def remove_nones(config: Dict[Any, Any]) -> Dict[str, Any]:
     return new_config
 
 
+# Take a sampler from the old format and convert to new sampler structure
+def convert_samplers(old_sampler_config: Dict[str, Any]) -> Dict[str, Any]:
+    new_sampler_config: Dict[str, Any] = {}
+    for parameter, parameter_config in old_sampler_config.items():
+        if parameter == "resampling-interval":
+            print(
+                "resampling-interval is no longer necessary for parameter randomization and is being ignored."
+            )
+            continue
+        new_sampler_config[parameter] = {}
+        new_sampler_config[parameter]["sampler_type"] = parameter_config["sampler-type"]
+        new_samp_parameters = dict(parameter_config)  # Copy dict
+        new_samp_parameters.pop("sampler-type")
+        new_sampler_config[parameter]["sampler_parameters"] = new_samp_parameters
+    return new_sampler_config
+
+
 def parse_args():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -124,7 +141,8 @@ def main() -> None:
         full_config["curriculum"] = curriculum_config_dict
 
     if args.sampler is not None:
-        sampler_config_dict = load_config(args.sampler)
+        old_sampler_config_dict = load_config(args.sampler)
+        sampler_config_dict = convert_samplers(old_sampler_config_dict)
         full_config["parameter_randomization"] = sampler_config_dict
 
     # Convert config to dict

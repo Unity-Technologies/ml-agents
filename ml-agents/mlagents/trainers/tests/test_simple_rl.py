@@ -13,7 +13,6 @@ from mlagents.trainers.tests.simple_test_envs import (
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
-from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents.trainers.settings import (
@@ -138,8 +137,6 @@ def _check_environment_trains(
             meta_curriculum=meta_curriculum,
             train=True,
             training_seed=seed,
-            sampler_manager=SamplerManager(None),
-            resampling_interval=None,
         )
 
         # Begin training

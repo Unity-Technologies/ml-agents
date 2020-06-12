@@ -435,97 +435,57 @@ behaviors:
   # < Same as above>
 
 parameter_randomization:
-  resampling-interval: 5000
 
   mass:
-    sampler-type: "uniform"
-    min_value: 0.5
-    max_value: 10
+    sampler_type: uniform
+    sampler_parameters:
+        min_value: 0.5
+        max_value: 10
 
-  gravity:
-    sampler-type: "multirange_uniform"
-    intervals: [[7, 10], [15, 20]]
+  length:
+    sampler_type: multirangeuniform
+    sampler_parameters:
+        intervals: [[7, 10], [15, 20]]
 
   scale:
-    sampler-type: "uniform"
-    min_value: 0.75
-    max_value: 3
+    sampler_type: gaussian
+    sampler_parameters:
+        mean: 2
+        st_dev: .3
 ```
 
-Note that `mass`, `gravity` and `scale` are the names of the environment
-parameters that will be sampled. If a parameter specified in the file doesn't
-exist in the environment, then this parameter will be ignored.
+Note that `mass`, `length` and `scale` are the names of the environment
+parameters that will be sampled. These are used as keys by the `EnvironmentParameter`
+class to sample new parameters via the function `GetWithDefault`.
 
 | **Setting**                  | **Description**                                                                                                                                                                                                                                                                                                                         |
 | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resampling-interval`        | Number of steps for the agent to train under a particular environment configuration before resetting the environment with a new sample of `Environment Parameters`.                                                                                                                                                                     |
-| `sampler-type`               | Type of sampler use for this `Environment Parameter`. This is a string that should exist in the `Sampler Factory` (explained below).                                                                                                                                                                                                    |
-| `sampler-type-sub-arguments` | Specify the sub-arguments depending on the `sampler-type`. In the example above, this would correspond to the `intervals` under the `sampler-type` `multirange_uniform` for the `Environment Parameter` called `gravity`. The key name should match the name of the corresponding argument in the sampler definition (explained) below) |
+| `sampler_type`               | A string identifier for the type of sampler to use for this `Environment Parameter`.                                                                                                                                                                                                    |
+| `sampler_parameters` | The parameters for a given `sampler_type`. Samplers of different types can have different `sampler_parameters` |
 
-#### Included Sampler Types
+#### Supported Sampler Types
 
-Below is a list of included `sampler-type` as part of the toolkit.
+Below is a list of the `sampler_type` values supported by the toolkit.
 
 - `uniform` - Uniform sampler
-  - Uniformly samples a single float value between defined endpoints. The
-    sub-arguments for this sampler to specify the interval endpoints are as
-    below. The sampling is done in the range of [`min_value`, `max_value`).
-  - **sub-arguments** - `min_value`, `max_value`
+  - Uniformly samples a single float value from a range with a given minimum
+    and maximum value (inclusive).
+  - **parameters** - `min_value`, `max_value`
 - `gaussian` - Gaussian sampler
-  - Samples a single float value from the distribution characterized by the mean
-    and standard deviation. The sub-arguments to specify the Gaussian
-    distribution to use are as below.
-  - **sub-arguments** - `mean`, `st_dev`
+  - Samples a single float value from a normal distribution with a given mean
+    and standard deviation.
+  - **parameters** - `mean`, `st_dev`
 - `multirange_uniform` - Multirange uniform sampler
-  - Uniformly samples a single float value between the specified intervals.
-    Samples by first performing a weight pick of an interval from the list of
-    intervals (weighted based on interval width) and samples uniformly from the
-    selected interval (half-closed interval, same as the uniform sampler). This
-    sampler can take an arbitrary number of intervals in a list in the following
-    format: [[`interval_1_min`, `interval_1_max`], [`interval_2_min`,
+  - First, samples an interval from a set of intervals in proportion to relative
+    length of the intervals. Then, uniformly samples a single float value from the
+    sampled interval (inclusive). This sampler can take an arbitrary number of
+    intervals in a list in the following format:
+    [[`interval_1_min`, `interval_1_max`], [`interval_2_min`,
     `interval_2_max`], ...]
-  - **sub-arguments** - `intervals`
+  - **parameters** - `intervals`
 
 The implementation of the samplers can be found in the
-[sampler_class.py file](../ml-agents/mlagents/trainers/sampler_class.py).
-
-#### Defining a New Sampler Type
-
-If you want to define your own sampler type, you must first inherit the
-_Sampler_ base class (included in the `sampler_class` file) and preserve the
-interface. Once the class for the required method is specified, it must be
-registered in the Sampler Factory.
-
-This can be done by subscribing to the _register_sampler_ method of the
-`SamplerFactory`. The command is as follows:
-
-`SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
-
-Once the Sampler Factory reflects the new register, the new sampler type can be
-used for sample any `Environment Parameter`. For example, lets say a new sampler
-type was implemented as below and we register the `CustomSampler` class with the
-string `custom-sampler` in the Sampler Factory.
-
-```python
-class CustomSampler(Sampler):
-
-    def __init__(self, argA, argB, argC):
-        self.possible_vals = [argA, argB, argC]
-
-    def sample_all(self):
-        return np.random.choice(self.possible_vals)
-```
-
-Now we need to specify the new sampler type in the sampler YAML file. For
-example, we use this new sampler type for the `Environment Parameter` _mass_.
-
-```yaml
-mass:
-  sampler-type: "custom-sampler"
-  argB: 1
-  argA: 2
-  argC: 3
-```
+[Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
 
 #### Training with Environment Parameter Randomization
 

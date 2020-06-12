@@ -1,14 +1,22 @@
 import attr
 import cattr
-from typing import Dict, Optional, List, Any, DefaultDict, Mapping
+from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple
 from enum import Enum
 import collections
 import argparse
+import abc
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.models import ScheduleType, EncoderType
+
+from mlagents_envs import logging_util
+from mlagents_envs.side_channel.environment_parameters_channel import (
+    EnvironmentParametersChannel,
+)
+
+logger = logging_util.get_logger(__name__)
 
 
 def check_and_structure(key: str, value: Any, class_type: type) -> Any:
@@ -149,6 +157,148 @@ class GAILSettings(RewardSignalSettings):
 class CuriositySettings(RewardSignalSettings):
     encoding_size: int = 64
     learning_rate: float = 3e-4
+
+
+class ParameterRandomizationType(Enum):
+    UNIFORM: str = "uniform"
+    GAUSSIAN: str = "gaussian"
+    MULTIRANGEUNIFORM: str = "multirangeuniform"
+
+    def to_settings(self) -> type:
+        _mapping = {
+            ParameterRandomizationType.UNIFORM: UniformSettings,
+            ParameterRandomizationType.GAUSSIAN: GaussianSettings,
+            ParameterRandomizationType.MULTIRANGEUNIFORM: MultiRangeUniformSettings,
+        }
+        return _mapping[self]
+
+
+@attr.s(auto_attribs=True)
+class ParameterRandomizationSettings(abc.ABC):
+    seed: int = parser.get_default("seed")
+
+    @staticmethod
+    def structure(d: Mapping, t: type) -> Any:
+        """
+        Helper method to structure a Dict of ParameterRandomizationSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure(). This is needed to handle
+        the special Enum selection of ParameterRandomizationSettings classes.
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported parameter randomization configuration {d}."
+            )
+        d_final: Dict[str, List[float]] = {}
+        for environment_parameter, environment_parameter_config in d.items():
+            if environment_parameter == "resampling-interval":
+                logger.warning(
+                    "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
+                )
+                continue
+            if "sampler_type" not in environment_parameter_config:
+                raise TrainerConfigError(
+                    f"Sampler configuration for {environment_parameter} does not contain sampler_type."
+                )
+            if "sampler_parameters" not in environment_parameter_config:
+                raise TrainerConfigError(
+                    f"Sampler configuration for {environment_parameter} does not contain sampler_parameters."
+                )
+            enum_key = ParameterRandomizationType(
+                environment_parameter_config["sampler_type"]
+            )
+            t = enum_key.to_settings()
+            d_final[environment_parameter] = strict_to_cls(
+                environment_parameter_config["sampler_parameters"], t
+            )
+        return d_final
+
+    @abc.abstractmethod
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the appropriate sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        pass
+
+
+@attr.s(auto_attribs=True)
+class UniformSettings(ParameterRandomizationSettings):
+    min_value: float = attr.ib()
+    max_value: float = 1.0
+
+    @min_value.default
+    def _min_value_default(self):
+        return 0.0
+
+    @min_value.validator
+    def _check_min_value(self, attribute, value):
+        if self.min_value > self.max_value:
+            raise TrainerConfigError(
+                "Minimum value is greater than maximum value in uniform sampler."
+            )
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the uniform sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_uniform_sampler_parameters(
+            key, self.min_value, self.max_value, self.seed
+        )
+
+
+@attr.s(auto_attribs=True)
+class GaussianSettings(ParameterRandomizationSettings):
+    mean: float = 1.0
+    st_dev: float = 1.0
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the gaussian sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_gaussian_sampler_parameters(
+            key, self.mean, self.st_dev, self.seed
+        )
+
+
+@attr.s(auto_attribs=True)
+class MultiRangeUniformSettings(ParameterRandomizationSettings):
+    intervals: List[Tuple[float, float]] = attr.ib()
+
+    @intervals.default
+    def _intervals_default(self):
+        return [[0.0, 1.0]]
+
+    @intervals.validator
+    def _check_intervals(self, attribute, value):
+        for interval in self.intervals:
+            if len(interval) != 2:
+                raise TrainerConfigError(
+                    f"The sampling interval {interval} must contain exactly two values."
+                )
+            min_value, max_value = interval
+            if min_value > max_value:
+                raise TrainerConfigError(
+                    f"Minimum value is greater than maximum value in interval {interval}."
+                )
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the multirangeuniform sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_multirangeuniform_sampler_parameters(
+            key, self.intervals, self.seed
+        )
 
 
 @attr.s(auto_attribs=True)
@@ -303,7 +453,7 @@ class RunOptions(ExportableSettings):
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
-    parameter_randomization: Optional[Dict] = None
+    parameter_randomization: Optional[Dict[str, ParameterRandomizationSettings]] = None
     curriculum: Optional[Dict[str, CurriculumSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
@@ -314,6 +464,10 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
+    cattr.register_structure_hook(
+        Dict[str, ParameterRandomizationSettings],
+        ParameterRandomizationSettings.structure,
+    )
     cattr.register_structure_hook(CurriculumSettings, strict_to_cls)
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
