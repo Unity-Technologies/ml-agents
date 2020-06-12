@@ -52,8 +52,13 @@ public class CrawlerAgent : Agent
     Quaternion m_LookRotation;
     Matrix4x4 m_TargetDirMatrix;
 
+
     public override void Initialize()
     {
+        var hierarchyUtil = new RigidBodyHierarchyUtil();
+        hierarchyUtil.InitTree(this.gameObject);
+        var unused = hierarchyUtil.GetModelSpaceTransforms();
+
         m_JdController = GetComponent<JointDriveController>();
         m_DirToTarget = target.position - body.position;
 
