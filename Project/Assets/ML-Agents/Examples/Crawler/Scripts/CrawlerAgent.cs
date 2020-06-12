@@ -12,6 +12,7 @@ public class CrawlerAgent : Agent
 
     [Header("Target To Walk Towards")] [Space(10)]
     public Transform target; //Target the agent will walk towards.
+
     public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
     public bool detectTargets; //Should this agent detect targets
     public bool respawnTargetWhenTouched; //Should the target respawn to a different position when touched
@@ -38,6 +39,7 @@ public class CrawlerAgent : Agent
 
     [Header("Reward Functions To Use")] [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
+
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
@@ -188,9 +190,8 @@ public class CrawlerAgent : Agent
                     TouchedTarget();
                 }
             }
-
         }
-        
+
         UpdateOrientationCube();
 
         // If enabled the feet will light up green when the foot is grounded.
