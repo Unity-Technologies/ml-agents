@@ -29,7 +29,7 @@ namespace Unity.MLAgents.SideChannels
         Gaussian = 1,
 
         /// <summary>
-        /// Samples a reset parameter from a Gaussian distribution.
+        /// Samples a reset parameter from a MultiRangeUniform distribution.
         /// </summary>
         MultiRangeUniform = 2
 
