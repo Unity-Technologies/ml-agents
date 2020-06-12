@@ -455,8 +455,8 @@ parameter_randomization:
 ```
 
 Note that `mass`, `length` and `scale` are the names of the environment
-parameters that will be sampled. If a parameter specified in the file doesn't
-exist in the environment, then this parameter will be ignored.
+parameters that will be sampled. These are used as keys by the `EnvironmentParameter`
+class to sample new parameters via the function `GetWithDefault`.
 
 | **Setting**                  | **Description**                                                                                                                                                                                                                                                                                                                         |
 | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
