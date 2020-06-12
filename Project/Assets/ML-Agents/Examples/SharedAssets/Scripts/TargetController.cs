@@ -22,13 +22,6 @@ namespace Unity.MLAgentsExamples
         private Agent m_agentTouching; //the agent currently touching the target
 
         [System.Serializable]
-        public class TestEvent : UnityEvent<Collider, string>
-        {
-        }
-
-        public TestEvent onTrtesiggerEnterEvent = new TestEvent();
-
-        [System.Serializable]
         public class TriggerEvent : UnityEvent<Collider>
         {
         }
