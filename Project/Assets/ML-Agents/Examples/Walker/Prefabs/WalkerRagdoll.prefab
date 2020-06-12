@@ -91,7 +91,7 @@ GameObject:
   - component: {fileID: 895268871264836333}
   m_Layer: 0
   m_Name: hips
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -318,12 +318,7 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   maximumWalkingSpeed: 999
-  targetSpawnRadius: 40
   target: {fileID: 0}
-  ground: {fileID: 0}
-  detectTargets: 1
-  targetIsStatic: 0
-  respawnTargetWhenTouched: 1
   hips: {fileID: 895268871264836332}
   chest: {fileID: 7933235354845945071}
   spine: {fileID: 7933235354652902033}
@@ -340,6 +335,7 @@ MonoBehaviour:
   armR: {fileID: 7933235355057813930}
   forearmR: {fileID: 7933235353195701980}
   handR: {fileID: 7933235354616748502}
+  orientationCube: {fileID: 0}
 --- !u!114 &895268871377934303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2131,7 +2127,7 @@ GameObject:
   - component: {fileID: 7933235353030744117}
   m_Layer: 0
   m_Name: upper_arm_L
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2309,7 +2305,7 @@ GameObject:
   - component: {fileID: 7933235353041637845}
   m_Layer: 0
   m_Name: hand_L
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2485,7 +2481,7 @@ GameObject:
   - component: {fileID: 7933235353195701957}
   m_Layer: 0
   m_Name: lower_arm_R
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2663,7 +2659,7 @@ GameObject:
   - component: {fileID: 7933235353228551178}
   m_Layer: 0
   m_Name: thighL
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2841,7 +2837,7 @@ GameObject:
   - component: {fileID: 7933235353240438144}
   m_Layer: 0
   m_Name: lower_arm_L
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3019,7 +3015,7 @@ GameObject:
   - component: {fileID: 7933235353272702533}
   m_Layer: 0
   m_Name: shinL
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3197,7 +3193,7 @@ GameObject:
   - component: {fileID: 7933235353655703553}
   m_Layer: 0
   m_Name: footR
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3373,7 +3369,7 @@ GameObject:
   - component: {fileID: 7933235353711811629}
   m_Layer: 0
   m_Name: shinR
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3551,7 +3547,7 @@ GameObject:
   - component: {fileID: 7933235353713167634}
   m_Layer: 0
   m_Name: thighR
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3729,7 +3725,7 @@ GameObject:
   - component: {fileID: 7933235354074184676}
   m_Layer: 0
   m_Name: head
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3905,7 +3901,7 @@ GameObject:
   - component: {fileID: 7933235354616748520}
   m_Layer: 0
   m_Name: hand_R
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4081,7 +4077,7 @@ GameObject:
   - component: {fileID: 7933235354652902042}
   m_Layer: 0
   m_Name: spine
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4259,7 +4255,7 @@ GameObject:
   - component: {fileID: 7933235354845945040}
   m_Layer: 0
   m_Name: chest
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4439,7 +4435,7 @@ GameObject:
   - component: {fileID: 7933235354882597188}
   m_Layer: 0
   m_Name: footL
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4615,7 +4611,7 @@ GameObject:
   - component: {fileID: 7933235355057813907}
   m_Layer: 0
   m_Name: upper_arm_R
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
