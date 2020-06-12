@@ -152,12 +152,20 @@ def test_convert_behaviors(trainer_type, use_recurrent):
     assert RewardSignalType.CURIOSITY in trainer_settings.reward_signals
 
 
+@mock.patch("mlagents.trainers.upgrade_config.convert_samplers")
 @mock.patch("mlagents.trainers.upgrade_config.convert_behaviors")
 @mock.patch("mlagents.trainers.upgrade_config.remove_nones")
 @mock.patch("mlagents.trainers.upgrade_config.write_to_yaml_file")
 @mock.patch("mlagents.trainers.upgrade_config.parse_args")
 @mock.patch("mlagents.trainers.upgrade_config.load_config")
-def test_main(mock_load, mock_parse, yaml_write_mock, remove_none_mock, mock_convert):
+def test_main(
+    mock_load,
+    mock_parse,
+    yaml_write_mock,
+    remove_none_mock,
+    mock_convert_behaviors,
+    mock_convert_samplers,
+):
     test_output_file = "test.yaml"
     mock_load.side_effect = [
         yaml.safe_load(PPO_CONFIG),
@@ -171,7 +179,8 @@ def test_main(mock_load, mock_parse, yaml_write_mock, remove_none_mock, mock_con
         sampler="test",
     )
     mock_parse.return_value = mock_args
-    mock_convert.return_value = "test_converted_config"
+    mock_convert_behaviors.return_value = "test_converted_config"
+    mock_convert_samplers.return_value = "test_converted_sampler_config"
     dict_without_nones = mock.Mock(name="nonones")
     remove_none_mock.return_value = dict_without_nones
 
@@ -181,7 +190,7 @@ def test_main(mock_load, mock_parse, yaml_write_mock, remove_none_mock, mock_con
     yaml_write_mock.assert_called_with(dict_without_nones, test_output_file)
     assert saved_dict["behaviors"] == "test_converted_config"
     assert saved_dict["curriculum"] == "test_curriculum_config"
-    assert saved_dict["parameter_randomization"] == "test_sampler_config"
+    assert saved_dict["parameter_randomization"] == "test_converted_sampler_config"
 
 
 def test_remove_nones():

@@ -93,20 +93,9 @@ def convert_samplers(old_sampler_config: Dict[str, Any]) -> Dict[str, Any]:
             continue
         new_sampler_config[parameter] = {}
         new_sampler_config[parameter]["sampler_type"] = parameter_config["sampler-type"]
-        if parameter_config["sampler-type"] == "uniform":
-            new_sampler_config[parameter]["sampler_parameters"] = {
-                "min_value": parameter_config["min_value"],
-                "max_value": parameter_config["max_value"],
-            }
-        elif parameter_config["sampler-type"] == "gaussian":
-            new_sampler_config[parameter]["sampler_parameters"] = {
-                "mean": parameter_config["mean"],
-                "st_dev": parameter_config["st_dev"],
-            }
-        elif parameter_config["sampler-type"] == "multirangeuniform":
-            new_sampler_config[parameter]["sampler_parameters"] = {
-                "intervals": parameter_config["intervals"]
-            }
+        new_samp_parameters = dict(parameter_config)  # Copy dict
+        new_samp_parameters.pop("sampler-type")
+        new_sampler_config[parameter]["sampler_parameters"] = new_samp_parameters
     return new_sampler_config
 
 
