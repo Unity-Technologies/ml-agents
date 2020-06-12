@@ -216,7 +216,7 @@ class UniformSettings(ParameterRandomizationSettings):
 
     @min_value.default
     def _min_value_default(self):
-        return 1.0
+        return 0.0
 
     @min_value.validator
     def _check_min_value(self, attribute, value):
@@ -238,7 +238,7 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
 
     @intervals.default
     def _intervals_default(self):
-        return [[1.0, 1.0]]
+        return [[0.0, 1.0]]
 
     @intervals.validator
     def _check_intervals(self, attribute, value):
