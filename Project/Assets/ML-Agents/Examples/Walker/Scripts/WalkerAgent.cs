@@ -89,7 +89,8 @@ public class WalkerAgent : Agent
         sensor.AddObservation(bp.rb.angularVelocity);
         //Get position relative to hips in the context of our orientation cube's space
 //        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
-        sensor.AddObservation(bp.rb.transform.localPosition);
+        sensor.AddObservation(hips.transform.InverseTransformDirection(bp.rb.position - hips.position));
+//        sensor.AddObservation(bp.rb.transform.localPosition);
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
