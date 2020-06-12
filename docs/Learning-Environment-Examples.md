@@ -250,20 +250,20 @@ you would like to contribute environments, please see our
 - Goal: The agents must move its body toward the goal direction without falling.
   - `CrawlerStaticTarget` - Goal direction is always forward.
   - `CrawlerDynamicTarget`- Goal direction is randomized.
-- Agents: The environment contains 3 agent with same Behavior Parameters.
+- Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
   - +0.03 times body velocity in the goal direction.
   - +0.01 times body direction alignment with goal direction.
 - Behavior Parameters:
-  - Vector Observation space: 117 variables corresponding to position, rotation,
+  - Vector Observation space: 138 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
   - Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `CrawlerStaticTarget`: 2000
-- Benchmark Mean Reward for `CrawlerDynamicTarget`: 400
+- Benchmark Mean Reward for `CrawlerStaticTarget`: 1600
+- Benchmark Mean Reward for `CrawlerDynamicTarget`: 800
 
 ## Worm
 
