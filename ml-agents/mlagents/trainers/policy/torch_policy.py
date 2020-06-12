@@ -18,6 +18,8 @@ from mlagents.trainers.models_torch import EncoderType, ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
+torch.set_num_threads(1)
+
 
 class TorchPolicy(Policy):
     def __init__(
@@ -89,7 +91,7 @@ class TorchPolicy(Policy):
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
         # TF defaults to 32-bit, so we use the same here.
-        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_tensor_type(torch.FloatTensor)
 
         reward_signal_configs = trainer_params["reward_signals"]
         self.stats_name_to_update_name = {

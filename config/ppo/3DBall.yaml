@@ -19,6 +19,7 @@ behaviors:
     summary_freq: 12000
     use_recurrent: false
     vis_encode_type: simple
+    threaded: false
     reward_signals:
       extrinsic:
         strength: 1.0

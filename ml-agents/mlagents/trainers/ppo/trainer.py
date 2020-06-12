@@ -3,7 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 from collections import defaultdict
-
+import time
 import numpy as np
 from mlagents.trainers.policy import Policy
 
@@ -19,6 +19,8 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 logger = get_logger(__name__)
+
+TIMINGS = []
 
 
 class PPOTrainer(RLTrainer):
@@ -72,6 +74,7 @@ class PPOTrainer(RLTrainer):
         self.seed = seed
         self.framework = "torch"
         self.policy: Policy = None  # type: ignore
+        self.update_times = []
 
     def _check_param_keys(self):
         super()._check_param_keys()
@@ -208,9 +211,12 @@ class PPOTrainer(RLTrainer):
             buffer = self.update_buffer
             max_num_batch = buffer_length // batch_size
             for i in range(0, max_num_batch * batch_size, batch_size):
+                t1 = time.perf_counter()
                 update_stats = self.optimizer.update(
                     buffer.make_mini_batch(i, i + batch_size), n_sequences
                 )
+                t2 = time.perf_counter()
+                TIMINGS.append(t2 - t1)
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 
