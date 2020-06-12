@@ -192,7 +192,7 @@ def worker(
                         )
                     elif isinstance(v, MultiRangeUniformSettings):
                         env_parameters.set_multirangeuniform_sampler_parameters(
-                            k, v.to_float_encoding(), v.seed
+                            k, v.intervals, v.seed
                         )
                 env.reset()
                 all_step_result = _generate_all_results()

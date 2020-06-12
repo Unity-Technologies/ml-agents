@@ -253,10 +253,6 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
                     f"Minimum value is greater than maximum value in interval {interval}."
                 )
 
-    def to_float_encoding(self) -> List[float]:
-        "Returns the sampler type followed by a flattened list of the interval values"
-        return [value for interval in self.intervals for value in interval]
-
 
 @attr.s(auto_attribs=True)
 class SelfPlaySettings:

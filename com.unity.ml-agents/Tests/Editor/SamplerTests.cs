@@ -68,7 +68,7 @@ namespace Unity.MLAgents.Tests
         public void MultiRangeUniformSamplerTest()
         {
             float[] intervals = new float[4];
-            intervals[0] = 1.8f;
+            intervals[0] = 1.2f;
             intervals[1] = 2f;
             intervals[2] = 3.2f;
             intervals[3] = 4.1f;
@@ -85,8 +85,8 @@ namespace Unity.MLAgents.Tests
                 byte[] message = GetByteMessage(m_Channel, outgoingMsg);
                 SideChannelsManager.ProcessSideChannelData(message);
             }
-            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 3.388, k_Epsilon);
-            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 1.823603, k_Epsilon);
+            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 3.387999f, k_Epsilon);
+            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 1.294413f, k_Epsilon);
         }
 
         internal static byte[] GetByteMessage(SideChannel sideChannel, OutgoingMessage msg)

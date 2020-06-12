@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Inference.Utils;
+using UnityEngine;
+using Random=System.Random;
 
 namespace Unity.MLAgents
 {
@@ -62,7 +64,7 @@ namespace Unity.MLAgents
             {
                 intervalSizes[i] += intervalSizes[i - 1];
             } 
-            Multinomial intervalDistr = new Multinomial(seed);
+            Multinomial intervalDistr = new Multinomial(seed + 1);
             float MultiRange()
             {
                 int sampledInterval = intervalDistr.Sample(intervalSizes);

@@ -82,7 +82,7 @@ class EnvironmentParametersChannel(SideChannel):
         super().queue_message_to_send(msg)
 
     def set_multirangeuniform_sampler_parameters(
-        self, key: str, intervals: List[float], seed: int
+        self, key: str, intervals: List[List[float]], seed: int
     ) -> None:
         """
         Sets a multirangeuniform environment parameter sampler.
@@ -95,5 +95,6 @@ class EnvironmentParametersChannel(SideChannel):
         msg.write_int32(self.EnvironmentDataTypes.SAMPLER)
         msg.write_int32(seed)
         msg.write_int32(self.SamplerTypes.MULTIRANGEUNIFORM)
-        msg.write_float32_list(intervals)
+        flattened_intervals = [value for interval in intervals for value in interval]
+        msg.write_float32_list(flattened_intervals)
         super().queue_message_to_send(msg)
