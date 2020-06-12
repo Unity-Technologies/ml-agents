@@ -87,7 +87,7 @@ class EnvironmentParametersChannel(SideChannel):
         """
         Sets a multirangeuniform environment parameter sampler.
         :param key: The string identifier of the parameter.
-        :param intervals: The min and max that define each uniform distribution.
+        :param intervals: The lists of min and max that define each uniform distribution.
         :param seed: The random seed to initialize the sampler.
         """
         msg = OutgoingMessage()
