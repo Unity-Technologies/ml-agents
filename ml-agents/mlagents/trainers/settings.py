@@ -1,6 +1,6 @@
 import attr
 import cattr
-from typing import Dict, Optional, List, Any, DefaultDict, Mapping
+from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple
 from enum import Enum
 import collections
 import argparse
@@ -234,7 +234,7 @@ class GaussianSettings(ParameterRandomizationSettings):
 
 @attr.s(auto_attribs=True)
 class MultiRangeUniformSettings(ParameterRandomizationSettings):
-    intervals: List[List[float]] = attr.ib()
+    intervals: List[Tuple[float, float]] = attr.ib()
 
     @intervals.default
     def _intervals_default(self):

@@ -8,7 +8,7 @@ from mlagents.trainers.settings import (
 )
 import uuid
 from enum import IntEnum
-from typing import List
+from typing import List, Tuple
 
 
 class EnvironmentParametersChannel(SideChannel):
@@ -115,7 +115,7 @@ class EnvironmentParametersChannel(SideChannel):
         super().queue_message_to_send(msg)
 
     def set_multirangeuniform_sampler_parameters(
-        self, key: str, intervals: List[List[float]], seed: int
+        self, key: str, intervals: List[Tuple[float, float]], seed: int
     ) -> None:
         """
         Sets a multirangeuniform environment parameter sampler.
