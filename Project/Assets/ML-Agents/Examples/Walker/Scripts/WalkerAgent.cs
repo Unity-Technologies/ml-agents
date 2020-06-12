@@ -83,11 +83,13 @@ public class WalkerAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
-
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        sensor.AddObservation(bp.rb.velocity);
+        sensor.AddObservation(bp.rb.angularVelocity);
         //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+//        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+        sensor.AddObservation(bp.rb.transform.localPosition);
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
@@ -104,7 +106,9 @@ public class WalkerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
 
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
+        sensor.AddObservation(hips.InverseTransformPoint(target.position));
+
+//        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
