@@ -1,15 +1,22 @@
-pack:
-  name: Pack
+packages:
+  - name: com.unity.ml-agents
+  - name: com.unity.ml-agents.extensions
+---
+
+{% for package in packages %}
+pack_{{ package.name }}:
+  name: Pack {{ package.name }}
   agent:
     type: Unity::VM::osx
     image: package-ci/mac:stable
     flavor: b1.small
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package pack --package-path com.unity.ml-agents
+    - upm-ci package pack --package-path {{ package.name }}
   artifacts:
     packages:
       paths:
         - "upm-ci~/packages/**/*"
   triggers:
     cancel_old_ci: true
+{% endfor %}

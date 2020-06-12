@@ -2,7 +2,12 @@ import os
 
 
 def main():
-    asset_paths = ["Project/Assets", "com.unity.ml-agents"]
+    asset_paths = [
+        "Project/Assets",
+        "DevProject/Assets",
+        "com.unity.ml-agents",
+        "com.unity.ml-agents.extensions",
+    ]
     meta_suffix = ".meta"
     python_suffix = ".py"
     allow_list = frozenset(
@@ -11,6 +16,9 @@ def main():
             "com.unity.ml-agents/.gitignore",
             "com.unity.ml-agents/.npmignore",
             "com.unity.ml-agents/Tests/.tests.json",
+            "com.unity.ml-agents.extensions/.gitignore",
+            "com.unity.ml-agents.extensions/.npmignore",
+            "com.unity.ml-agents.extensions/Tests/.tests.json",
         ]
     )
     ignored_dirs = {"Documentation~"}

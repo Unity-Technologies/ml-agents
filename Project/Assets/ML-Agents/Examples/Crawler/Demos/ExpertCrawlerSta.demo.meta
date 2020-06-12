@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: 4975695b6ea23446a94c9be3b5d21731
+guid: f19829d1024204357b30822fc9adbfc9
 ScriptedImporter:
   fileIDToRecycleName:
-    11400000: Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
+    11400002: Assets/ML-Agents/Examples/Crawler/Demos/ExpertCrawlerSta.demo
   externalObjects: {}
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Inference;
+using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -78,7 +79,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// 3D write access at the specified height, width, and channel. Only usable with a TensorProxy target.
+        /// 3D write access at the specified height, width, and channel.
         /// </summary>
         /// <param name="h"></param>
         /// <param name="w"></param>
@@ -136,6 +137,74 @@ namespace Unity.MLAgents.Sensors
                     m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
                     index++;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Write the Vector3 components.
+        /// </summary>
+        /// <param name="vec">The Vector3 to be written.</param>
+        /// <param name="writeOffset">Optional write offset.</param>
+        public void Add(Vector3 vec, int writeOffset = 0)
+        {
+            if (m_Data != null)
+            {
+                m_Data[m_Offset + writeOffset + 0] = vec.x;
+                m_Data[m_Offset + writeOffset + 1] = vec.y;
+                m_Data[m_Offset + writeOffset + 2] = vec.z;
+            }
+            else
+            {
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+            }
+        }
+
+        /// <summary>
+        /// Write the Vector4 components.
+        /// </summary>
+        /// <param name="vec">The Vector4 to be written.</param>
+        /// <param name="writeOffset">Optional write offset.</param>
+        public void Add(Vector4 vec, int writeOffset = 0)
+        {
+            if (m_Data != null)
+            {
+                m_Data[m_Offset + writeOffset + 0] = vec.x;
+                m_Data[m_Offset + writeOffset + 1] = vec.y;
+                m_Data[m_Offset + writeOffset + 2] = vec.z;
+                m_Data[m_Offset + writeOffset + 3] = vec.w;
+            }
+            else
+            {
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = vec.w;
+            }
+        }
+
+        /// <summary>
+        /// Write the Quaternion components.
+        /// </summary>
+        /// <param name="quat">The Quaternion to be written.</param>
+        /// <param name="writeOffset">Optional write offset.</param>
+
+        public void Add(Quaternion quat, int writeOffset = 0)
+        {
+            if (m_Data != null)
+            {
+                m_Data[m_Offset + writeOffset + 0] = quat.x;
+                m_Data[m_Offset + writeOffset + 1] = quat.y;
+                m_Data[m_Offset + writeOffset + 2] = quat.z;
+                m_Data[m_Offset + writeOffset + 3] = quat.w;
+            }
+            else
+            {
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = quat.x;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = quat.y;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = quat.z;
+                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = quat.w;
             }
         }
     }
