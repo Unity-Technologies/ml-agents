@@ -45,8 +45,6 @@ namespace Unity.MLAgents.SideChannels
         Dictionary<string, Action<float>> m_RegisteredActions =
             new Dictionary<string, Action<float>>();
 
-        SamplerFactory m_SamplerFactory = new SamplerFactory();
-
         const string k_EnvParamsId = "534c891e-810f-11ea-a9d0-822485860400";
 
         /// <summary>
@@ -82,19 +80,19 @@ namespace Unity.MLAgents.SideChannels
                 {
                     float min = msg.ReadFloat32();
                     float max = msg.ReadFloat32();
-                    sampler = m_SamplerFactory.CreateUniformSampler(min, max, seed);
+                    sampler = SamplerFactory.CreateUniformSampler(min, max, seed);
                 }
                 else if ((int)SamplerType.Gaussian == samplerType)
                 {
                     float mean = msg.ReadFloat32();
                     float stddev = msg.ReadFloat32();
 
-                    sampler = m_SamplerFactory.CreateGaussianSampler(mean, stddev, seed);
+                    sampler = SamplerFactory.CreateGaussianSampler(mean, stddev, seed);
                 }
                 else if ((int)SamplerType.MultiRangeUniform == samplerType)
                 {
                     IList<float> intervals = msg.ReadFloatList();
-                    sampler = m_SamplerFactory.CreateMultiRangeUniformSampler(intervals, seed);
+                    sampler = SamplerFactory.CreateMultiRangeUniformSampler(intervals, seed);
                 }
                 else{
                     Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");

@@ -10,28 +10,22 @@ namespace Unity.MLAgents
     /// <summary>
     /// Takes a list of floats that encode a sampling distribution and returns the sampling function.
     /// </summary>
-    internal sealed class SamplerFactory
+    internal static class SamplerFactory
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        internal SamplerFactory()
-        {
-        }
 
-        public Func<float> CreateUniformSampler(float min, float max, int seed)
+        public static Func<float> CreateUniformSampler(float min, float max, int seed)
         {
             Random distr = new Random(seed);
             return () => min + (float)distr.NextDouble() * (max - min);
         }
 
-        public Func<float> CreateGaussianSampler(float mean, float stddev, int seed)
+        public static Func<float> CreateGaussianSampler(float mean, float stddev, int seed)
         {
             RandomNormal distr = new RandomNormal(seed, mean, stddev);
             return () => (float)distr.NextDouble();
         }
 
-        public Func<float> CreateMultiRangeUniformSampler(IList<float> intervals, int seed)
+        public static Func<float> CreateMultiRangeUniformSampler(IList<float> intervals, int seed)
         {
             //RNG
             Random distr = new Random(seed);
