@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &7147393771121027373
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2270141184585723037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771e78c5e980e440e8cd19716b55075f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4845970999844939481
 GameObject:
   m_ObjectHideFlags: 0
@@ -169,7 +181,7 @@ GameObject:
   - component: {fileID: 4845971000000621466}
   m_Layer: 0
   m_Name: foreleg0
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -423,7 +435,7 @@ GameObject:
   - component: {fileID: 4845971000245862062}
   m_Layer: 0
   m_Name: foreleg3
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -677,7 +689,7 @@ GameObject:
   - component: {fileID: 4845971000281612788}
   m_Layer: 0
   m_Name: foreleg2
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -932,7 +944,7 @@ GameObject:
   - component: {fileID: 4845971000566026491}
   m_Layer: 0
   m_Name: leg2
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1434,7 +1446,7 @@ GameObject:
   - component: {fileID: 4845971000943818052}
   m_Layer: 0
   m_Name: leg3
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1999,7 +2011,7 @@ GameObject:
   - component: {fileID: 4845971001325249075}
   m_Layer: 0
   m_Name: leg1
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2177,7 +2189,7 @@ GameObject:
   - component: {fileID: 4845971001327158052}
   m_Layer: 0
   m_Name: leg0
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2356,7 +2368,7 @@ GameObject:
   - component: {fileID: 4845971001588102144}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2489,7 +2501,7 @@ GameObject:
   - component: {fileID: 4845971001622533709}
   m_Layer: 0
   m_Name: foreleg1
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2822,7 +2834,7 @@ MonoBehaviour:
   leg2Lower: {fileID: 4845971000281612789}
   leg3Upper: {fileID: 4845971000943818107}
   leg3Lower: {fileID: 4845971000245862063}
-  orientationCube: {fileID: 2270141184585723037}
+  orientationCube: {fileID: 7147393771121027373}
   rewardMovingTowardsTarget: 1
   rewardFacingTarget: 1
   rewardUseTimePenalty: 0
