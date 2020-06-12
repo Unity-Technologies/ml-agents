@@ -11,15 +11,24 @@ namespace Unity.MLAgents.Tests
     {
         const int k_Seed = 1337;
         const double k_Epsilon = 0.0001;
-        EnvironmentParametersChannel m_Channel = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+        EnvironmentParametersChannel m_Channel;
     
+        public SamplerTests()
+        {
+            m_Channel = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+            // if running test on its own
+            if (m_Channel == null)
+            {
+                m_Channel = new EnvironmentParametersChannel();
+                SideChannelsManager.RegisterSideChannel(m_Channel);
+            }
+        }
         [Test]
         public void UniformSamplerTest()
         {
             float min_value = 1.0f;
             float max_value = 2.0f;
             string parameter = "parameter1";
-            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 1.0f);
             using (var outgoingMsg = new OutgoingMessage())
             {
                 outgoingMsg.WriteString(parameter);
@@ -42,7 +51,6 @@ namespace Unity.MLAgents.Tests
             float mean = 3.0f;
             float stddev = 0.2f;
             string parameter = "parameter2";
-            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 1.0f);
             using (var outgoingMsg = new OutgoingMessage())
             {
                 outgoingMsg.WriteString(parameter);
@@ -68,7 +76,6 @@ namespace Unity.MLAgents.Tests
             intervals[2] = 3.2f;
             intervals[3] = 4.1f;
             string parameter = "parameter3";
-            Assert.AreEqual(m_Channel.GetWithDefault(parameter, 1.0f), 1.0f);
             using (var outgoingMsg = new OutgoingMessage())
             {
                 outgoingMsg.WriteString(parameter);
