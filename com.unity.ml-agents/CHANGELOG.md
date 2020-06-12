@@ -16,6 +16,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - `RayPerceptionSensor.Perceive()` now additionally store the GameObject that was hit by the ray. (#4111)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added new Google Colab notebooks to show how to use `UnityEnvironment'. (#4117)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
