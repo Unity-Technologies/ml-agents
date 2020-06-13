@@ -2821,10 +2821,6 @@ MonoBehaviour:
   MaxStep: 5000
   maximumWalkingSpeed: 999
   target: {fileID: 0}
-  targetSpawnRadius: 40
-  detectTargets: 1
-  respawnTargetWhenTouched: 1
-  ground: {fileID: 0}
   body: {fileID: 4845971001588102148}
   leg0Upper: {fileID: 4845971001327157979}
   leg0Lower: {fileID: 4845971000000621467}
@@ -2839,12 +2835,12 @@ MonoBehaviour:
   rewardFacingTarget: 1
   rewardUseTimePenalty: 0
   useFootGroundedVisualization: 0
-  foot0: {fileID: 0}
-  foot1: {fileID: 0}
-  foot2: {fileID: 0}
-  foot3: {fileID: 0}
-  groundedMaterial: {fileID: 0}
-  unGroundedMaterial: {fileID: 0}
+  foot0: {fileID: 4845971001702882992}
+  foot1: {fileID: 4845970999844939483}
+  foot2: {fileID: 4845970999929964134}
+  foot3: {fileID: 4845971001308907666}
+  groundedMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
+  unGroundedMaterial: {fileID: 2100000, guid: eaad04b0e0dec42229c9cb00a981d7ac, type: 2}
 --- !u!114 &4845971001715176662
 MonoBehaviour:
   m_ObjectHideFlags: 0
