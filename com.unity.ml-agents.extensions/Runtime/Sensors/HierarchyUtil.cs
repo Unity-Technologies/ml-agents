@@ -141,11 +141,11 @@ namespace Unity.MLAgents.Extensions.Sensors
     {
         Rigidbody[] m_Bodies;
 
-        public void InitTree(GameObject sourceBody)
+        public void InitTree(Rigidbody rootBody)
         {
             // TODO pass root body, walk constraint chain for each body until reach root or parented body
-            var rbs = sourceBody.GetComponentsInChildren <Rigidbody>();
-            var joints = sourceBody.GetComponentsInChildren <Joint>();
+            var rbs = rootBody.GetComponentsInChildren <Rigidbody>();
+            var joints = rootBody.GetComponentsInChildren <Joint>();
 
             var parentMap = new Dictionary<Rigidbody, Rigidbody>();
             foreach (var rb in rbs)
@@ -160,31 +160,22 @@ namespace Unity.MLAgents.Extensions.Sensors
                 parentMap[child] = parent;
             }
 
-            int numRoots = 0;
-            Rigidbody root = null;
             foreach (var pair in parentMap)
             {
-                if (pair.Value == null)
+                if (pair.Value == null && pair.Key != rootBody)
                 {
-                    numRoots++;
-                    root = pair.Key;
+                    Debug.Log($"Found body {pair.Key} with no parent. exiting");
+                    return;
                 }
-            }
-
-            // Hopefully exactly one root
-            if (numRoots != 1)
-            {
-                Debug.Log($"Found {numRoots} roots. exiting");
-                return;
             }
 
             m_Bodies = new Rigidbody[rbs.Length];
             var parentIndices = new int[rbs.Length];
             var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
 
-            m_Bodies[0] = root;
+            m_Bodies[0] = rootBody;
             parentIndices[0] = -1;
-            bodyToIndex[root] = 0;
+            bodyToIndex[rootBody] = 0;
             var index = 1;
 
             // This is inefficient in the worst case (e.g. a chain)
@@ -195,6 +186,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     if (bodyToIndex.ContainsKey(rb))
                     {
+                        // Already found a place for this one
                         continue;
                     }
 

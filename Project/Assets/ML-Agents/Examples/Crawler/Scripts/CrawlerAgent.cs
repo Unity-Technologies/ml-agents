@@ -75,7 +75,7 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg3Lower);
 
         hierarchyUtil = new RigidBodyHierarchyUtil();
-        hierarchyUtil.InitTree(this.gameObject);
+        hierarchyUtil.InitTree(body.GetComponent<Rigidbody>());
     }
 
     /// <summary>
