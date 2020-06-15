@@ -2,6 +2,8 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Extensions.Sensors;
+
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
@@ -28,6 +30,8 @@ public class CrawlerAgent : Agent
     public Transform leg2Lower;
     public Transform leg3Upper;
     public Transform leg3Lower;
+
+    RigidBodyHierarchyUtil hierarchyUtil;
 
 
     [Header("Orientation")] [Space(10)]
@@ -69,6 +73,9 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+
+        hierarchyUtil = new RigidBodyHierarchyUtil();
+        hierarchyUtil.InitTree(this.gameObject);
     }
 
     /// <summary>
@@ -181,6 +188,9 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
+        hierarchyUtil.DrawModelSpace(orientationCube.transform.position + 5.0f * Vector3.up, Color.blue);
+        hierarchyUtil.GetLocalSpaceTransforms();
+
         if (detectTargets)
         {
             foreach (var bodyPart in m_JdController.bodyPartsList)
