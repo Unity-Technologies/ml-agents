@@ -320,9 +320,11 @@ class SelfPlaySettings:
 class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
+    PPO_Transfer: str = "ppo_transfer"
 
     def to_settings(self) -> type:
-        _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings}
+        _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings, 
+        TrainerType.PPO_Transfer: PPOSettings}
         return _mapping[self]
 
 

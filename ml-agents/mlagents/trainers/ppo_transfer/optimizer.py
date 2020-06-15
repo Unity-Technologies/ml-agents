@@ -9,11 +9,11 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 
-class PPOOptimizer(TFOptimizer):
+class PPOTransferOptimizer(TFOptimizer):
     def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
-        The PPO optimizer has a value estimator and a loss function.
+        The PPO optimizer has a value esåtimator and a loss function.
         :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the properties of the trainer.
         """

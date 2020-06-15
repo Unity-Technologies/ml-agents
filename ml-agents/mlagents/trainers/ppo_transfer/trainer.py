@@ -12,7 +12,7 @@ from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.ppo_transfer.optimizer import PPOTransferOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
@@ -21,7 +21,7 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 logger = get_logger(__name__)
 
 
-class PPOTrainer(RLTrainer):
+class PPOTransferTrainer(RLTrainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
@@ -44,7 +44,7 @@ class PPOTrainer(RLTrainer):
         :param seed: The seed the model will be initialized with
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
-        super(PPOTrainer, self).__init__(
+        super(PPOTransferTrainer, self).__init__(
             brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
         self.hyperparameters: PPOSettings = cast(
@@ -53,6 +53,7 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
+        print("The current algorithm is PPO Transfer")
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -229,7 +230,7 @@ class PPOTrainer(RLTrainer):
         if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
-        self.optimizer = PPOOptimizer(self.policy, self.trainer_settings)
+        self.optimizer = PPOTransferOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
