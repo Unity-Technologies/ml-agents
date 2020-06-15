@@ -108,6 +108,16 @@ class GlobalTrainingStatus:
         GlobalTrainingStatus.saved_state[category][key.value] = value
 
     @staticmethod
+    def append_to_parameter_state(category: str, key: StatusType, value: Any) -> None:
+        """
+        Appends an arbitrary-named parameter in the global saved state.
+        :param category: The category (usually behavior name) of the parameter.
+        :param key: The parameter, e.g. lesson number.
+        :param value: The value.
+        """
+        GlobalTrainingStatus.saved_state[category][key.value].append(value)
+
+    @staticmethod
     def remove_checkpoint(checkpoint: Dict[str, Any]) -> None:
         file_path: str = checkpoint["file_path"]
         if os.path.exists(file_path):
@@ -132,16 +142,11 @@ class GlobalTrainingStatus:
         return
 
     @staticmethod
-    def append_checkpoint_info(
-        category: str, value: Any, keep_checkpoints: int
-    ) -> None:
-        key = StatusType.CHECKPOINT.value
-        print(f"key: {key}")
-        print(GlobalTrainingStatus.saved_state)
+    def track_checkpoint_info(category: str, value: Any, keep_checkpoints: int) -> None:
         GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
-        print(GlobalTrainingStatus.saved_state)
-        checkpoint_list = GlobalTrainingStatus.saved_state[category][key]
-        checkpoint_list.append(value)
+        GlobalTrainingStatus.append_to_parameter_state(
+            category, StatusType.CHECKPOINT, value
+        )
         return
 
     @staticmethod
@@ -149,7 +154,7 @@ class GlobalTrainingStatus:
         category: str, value: str, keep_checkpoints: int
     ) -> None:
         GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
-        GlobalTrainingStatus.saved_state[category][StatusType.FINAL_PATH.value] = value
+        GlobalTrainingStatus.set_parameter_state(category, StatusType.FINAL_PATH, value)
         return
 
     @staticmethod

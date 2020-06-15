@@ -58,6 +58,47 @@ def test_globaltrainingstatus(tmpdir):
     assert final_model is not None
 
 
+def test_model_management(tmpdir):
+    results_path = os.path.join(tmpdir, "results")
+    brain_name = "Mock_brain"
+    final_model_path = os.path.join(results_path, brain_name)
+    test_checkpoint_list = [
+        {"steps": 1, "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn")},
+        {"steps": 2, "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn")},
+        {"steps": 3, "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn")},
+    ]
+    GlobalTrainingStatus.set_parameter_state(
+        brain_name, StatusType.CHECKPOINT, test_checkpoint_list
+    )
+
+    new_checkpoint_4 = {
+        "steps": 4,
+        "file_path": os.path.join(final_model_path, f"{brain_name}-4.nn"),
+    }
+    GlobalTrainingStatus.track_checkpoint_info(brain_name, new_checkpoint_4, 4)
+    assert (
+        len(GlobalTrainingStatus.saved_state[brain_name][StatusType.CHECKPOINT.value])
+        == 4
+    )
+
+    new_checkpoint_5 = {
+        "steps": 5,
+        "file_path": os.path.join(final_model_path, f"{brain_name}-5.nn"),
+    }
+    GlobalTrainingStatus.track_checkpoint_info(brain_name, new_checkpoint_5, 4)
+    assert (
+        len(GlobalTrainingStatus.saved_state[brain_name][StatusType.CHECKPOINT.value])
+        == 4
+    )
+
+    final_model_path = f"{final_model_path}.nn"
+    GlobalTrainingStatus.track_final_model_info(brain_name, final_model_path, 4)
+    assert (
+        len(GlobalTrainingStatus.saved_state[brain_name][StatusType.CHECKPOINT.value])
+        == 3
+    )
+
+
 class StatsMetaDataTest(unittest.TestCase):
     def test_metadata_compare(self):
         # Test write_stats
