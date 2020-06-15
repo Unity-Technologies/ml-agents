@@ -72,8 +72,10 @@ def test_clear_update_buffer():
         assert len(arr) == 0
 
 
+@mock.patch("mlagents.trainers.trainer.trainer.Trainer.export_model")
+@mock.patch("mlagents.trainers.trainer.trainer.Trainer.save_model")
 @mock.patch("mlagents.trainers.trainer.rl_trainer.RLTrainer._clear_update_buffer")
-def test_advance(mocked_clear_update_buffer):
+def test_advance(mocked_clear_update_buffer, mocked_save_model, mocked_export_model):
     trainer = create_rl_trainer()
     trajectory_queue = AgentManagerQueue("testbrain")
     policy_queue = AgentManagerQueue("testbrain")
@@ -112,11 +114,13 @@ def test_advance(mocked_clear_update_buffer):
     # Check that the buffer has been cleared
     assert not trainer.should_still_train
     assert mocked_clear_update_buffer.call_count > 0
+    assert mocked_save_model.call_count == mocked_export_model.call_count
 
 
+@mock.patch("mlagents.trainers.trainer.trainer.Trainer.export_model")
 @mock.patch("mlagents.trainers.trainer.trainer.Trainer.save_model")
 @mock.patch("mlagents.trainers.trainer.trainer.StatsReporter.write_stats")
-def test_summary_checkpoint(mock_write_summary, mock_save_model):
+def test_summary_checkpoint(mock_write_summary, mock_save_model, mock_export_model):
     trainer = create_rl_trainer()
     trajectory_queue = AgentManagerQueue("testbrain")
     policy_queue = AgentManagerQueue("testbrain")
@@ -154,3 +158,4 @@ def test_summary_checkpoint(mock_write_summary, mock_save_model):
         )
     ]
     mock_save_model.assert_has_calls(calls, any_order=True)
+    assert mock_save_model.call_count == mock_export_model.call_count

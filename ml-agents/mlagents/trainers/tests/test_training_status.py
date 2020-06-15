@@ -44,6 +44,19 @@ def test_globaltrainingstatus(tmpdir):
     assert unknown_category is None
     assert unknown_key is None
 
+    # Test checkpoint info
+    class CheckpointTypes(Enum):
+        CHECKPOINTS = "checkpoints"
+        FINAL_MODEL = "final_model_path"
+
+    check_checkpoints = GlobalTrainingStatus.saved_state[
+        CheckpointTypes.CHECKPOINTS.value
+    ]
+    assert check_checkpoints is not None
+
+    final_model = GlobalTrainingStatus.saved_state[CheckpointTypes.FINAL_MODEL.value]
+    assert final_model is not None
+
 
 class StatsMetaDataTest(unittest.TestCase):
     def test_metadata_compare(self):

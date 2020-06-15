@@ -1,5 +1,6 @@
 # # Unity ML-Agents Toolkit
-from typing import List, Deque
+from typing import List, Deque, Union, Dict
+import os
 import abc
 
 from collections import deque
@@ -15,6 +16,7 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.training_status import GlobalTrainingStatus
 
 
 logger = get_logger(__name__)
@@ -127,8 +129,24 @@ class Trainer(abc.ABC):
             settings = SerializationSettings(
                 policy.model_path, policy.brain.brain_name, checkpoint_path
             )
+            new_checkpoint: Dict[str, Union[int, str]] = {}
+            # Store steps and file_path
+            new_checkpoint["steps"] = int(self.get_step)
+            new_checkpoint["file_path"] = os.path.join(
+                settings.model_path, f"{settings.checkpoint_path}.nn"
+            )
+            # Record checkpoint information
+            GlobalTrainingStatus.append_checkpoint_info(
+                name_behavior_id, new_checkpoint, policy.keep_checkpoints
+            )
         else:
+            # Extracting brain name for consistent name_behavior_id
+            brain_name = policy.model_path.split("/")[-1]
             settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+            # Record final model information
+            GlobalTrainingStatus.track_final_model_info(
+                brain_name, f"{settings.model_path}.nn", policy.keep_checkpoints
+            )
         export_policy_model(settings, policy.graph, policy.sess, is_checkpoint)
 
     @abc.abstractmethod
