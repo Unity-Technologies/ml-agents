@@ -135,7 +135,7 @@ class Trainer(abc.ABC):
                 settings.model_path, f"{settings.checkpoint_path}.nn"
             )
             # Record checkpoint information
-            GlobalTrainingStatus.track_checkpoint_info(
+            GlobalTrainingStatus.append_checkpoint_info(
                 name_behavior_id, new_checkpoint, policy.keep_checkpoints
             )
         else:
