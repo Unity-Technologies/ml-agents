@@ -2,8 +2,6 @@ import pytest
 
 import numpy as np
 
-import yaml
-
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
@@ -12,44 +10,12 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
+from mlagents.trainers.settings import TrainerSettings, SelfPlaySettings
 
 
 @pytest.fixture
 def dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: ppo
-        batch_size: 32
-        beta: 5.0e-3
-        buffer_size: 512
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 3.0e-4
-        max_steps: 5.0e4
-        normalize: true
-        num_epoch: 5
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 1000
-        use_recurrent: false
-        normalize: true
-        memory_size: 8
-        curiosity_strength: 0.0
-        curiosity_enc_size: 1
-        output_path: test
-        reward_signals:
-          extrinsic:
-            strength: 1.0
-            gamma: 0.99
-        self_play:
-            window: 5
-            play_against_current_self_ratio: 0.5
-            save_steps: 1000
-            swap_steps: 1000
-        """
-    )
+    return TrainerSettings(self_play=SelfPlaySettings())
 
 
 VECTOR_ACTION_SPACE = [1]
@@ -116,7 +82,6 @@ def test_process_trajectory(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     controller = GhostController(100)
     trainer = GhostTrainer(
@@ -188,7 +153,6 @@ def test_publish_queue(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     controller = GhostController(100)
     trainer = GhostTrainer(

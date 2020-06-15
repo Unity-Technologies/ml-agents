@@ -3,6 +3,7 @@
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
 from collections import defaultdict
+from typing import cast
 
 import numpy as np
 from mlagents.trainers.policy import Policy
@@ -15,8 +16,8 @@ from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 logger = get_logger(__name__)
 
@@ -28,63 +29,32 @@ class PPOTrainer(RLTrainer):
         self,
         brain_name: str,
         reward_buff_cap: int,
-        trainer_parameters: dict,
+        trainer_settings: TrainerSettings,
         training: bool,
         load: bool,
         seed: int,
-        run_id: str,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training PPO model.
         :param brain_name: The name of the brain associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
+        :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super(PPOTrainer, self).__init__(
-            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
-        self.param_keys = [
-            "batch_size",
-            "beta",
-            "buffer_size",
-            "epsilon",
-            "hidden_units",
-            "lambd",
-            "learning_rate",
-            "max_steps",
-            "normalize",
-            "num_epoch",
-            "num_layers",
-            "time_horizon",
-            "sequence_length",
-            "summary_freq",
-            "use_recurrent",
-            "memory_size",
-            "output_path",
-            "reward_signals",
-        ]
-        self._check_param_keys()
+        self.hyperparameters: PPOSettings = cast(
+            PPOSettings, self.trainer_settings.hyperparameters
+        )
         self.load = load
         self.seed = seed
         self.framework = "torch"
         self.policy: Policy = None  # type: ignore
-
-    def _check_param_keys(self):
-        super()._check_param_keys()
-        # Check that batch size is greater than sequence length. Else, throw
-        # an exception.
-        if (
-            self.trainer_parameters["sequence_length"]
-            > self.trainer_parameters["batch_size"]
-            and self.trainer_parameters["use_recurrent"]
-        ):
-            raise UnityTrainerException(
-                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
-            )
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -143,7 +113,7 @@ class PPOTrainer(RLTrainer):
                 value_estimates=local_value_estimates,
                 value_next=bootstrap_value,
                 gamma=self.optimizer.reward_signals[name].gamma,
-                lambd=self.trainer_parameters["lambd"],
+                lambd=self.hyperparameters.lambd,
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
@@ -174,7 +144,7 @@ class PPOTrainer(RLTrainer):
         :return: A boolean corresponding to whether or not update_model() can be run
         """
         size_of_buffer = self.update_buffer.num_experiences
-        return size_of_buffer > self.trainer_parameters["buffer_size"]
+        return size_of_buffer > self.hyperparameters.buffer_size
 
     def _update_policy(self):
         """
@@ -187,21 +157,21 @@ class PPOTrainer(RLTrainer):
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
         batch_size = (
-            self.trainer_parameters["batch_size"]
-            - self.trainer_parameters["batch_size"] % self.policy.sequence_length
+            self.hyperparameters.batch_size
+            - self.hyperparameters.batch_size % self.policy.sequence_length
         )
         # Make sure there is at least one sequence
         batch_size = max(batch_size, self.policy.sequence_length)
 
         n_sequences = max(
-            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
+            int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
         advantages = self.update_buffer["advantages"].get_batch()
         self.update_buffer["advantages"].set(
             (advantages - advantages.mean()) / (advantages.std() + 1e-10)
         )
-        num_epoch = self.trainer_parameters["num_epoch"]
+        num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
@@ -244,8 +214,9 @@ class PPOTrainer(RLTrainer):
         policy = NNPolicy(
             self.seed,
             brain_parameters,
-            self.trainer_parameters,
+            self.trainer_settings,
             self.is_training,
+            self.artifact_path,
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
         )
@@ -263,7 +234,7 @@ class PPOTrainer(RLTrainer):
         policy = TorchPolicy(
             self.seed,
             brain_parameters,
-            self.trainer_parameters,
+            self.trainer_settings,
             self.is_training,
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
@@ -290,17 +261,16 @@ class PPOTrainer(RLTrainer):
         self.policy = policy
         if self.framework == "torch":
             self.optimizer = TorchPPOOptimizer(  # type: ignore
-                self.policy, self.trainer_parameters  # type: ignore
+                self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         else:
             self.optimizer = TFPPOOptimizer(  # type: ignore
-                self.policy, self.trainer_parameters  # type: ignore
+                self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> Policy:
         """

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict, cast
 import torch
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -6,10 +6,11 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 
 class TorchPPOOptimizer(TorchOptimizer):
-    def __init__(self, policy: TorchPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
@@ -19,11 +20,14 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
-        super(TorchPPOOptimizer, self).__init__(policy, trainer_params)
+        super(TorchPPOOptimizer, self).__init__(policy, trainer_settings)
         params = list(self.policy.actor_critic.parameters())
+        self.hyperparameters: PPOSettings = cast(
+            PPOSettings, trainer_settings.hyperparameters
+        )
 
         self.optimizer = torch.optim.Adam(
-            params, lr=self.trainer_params["learning_rate"]
+            params, lr=self.trainer_settings.hyperparameters.learning_rate
         )
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
@@ -40,7 +44,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         :param values:
         """
 
-        decay_epsilon = self.trainer_params["epsilon"]
+        decay_epsilon = self.hyperparameters.epsilon
 
         value_losses = []
         for name, head in values.items():
@@ -66,7 +70,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         advantage = advantages.unsqueeze(-1)
 
-        decay_epsilon = self.trainer_params["epsilon"]
+        decay_epsilon = self.hyperparameters.epsilon
 
         r_theta = torch.exp(log_probs - old_log_probs)
         p_opt_a = r_theta * advantage
@@ -131,7 +135,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss = (
             policy_loss
             + 0.5 * value_loss
-            - self.trainer_params["beta"] * torch.mean(entropy)
+            - self.hyperparameters.beta * torch.mean(entropy)
         )
         self.optimizer.zero_grad()
         loss.backward()

@@ -2,46 +2,10 @@ import pytest
 
 from mlagents.tf_utils import tf
 
-import yaml
-
 from mlagents.trainers.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-
-
-@pytest.fixture
-def dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: ppo
-        batch_size: 32
-        beta: 5.0e-3
-        buffer_size: 512
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 3.0e-4
-        max_steps: 5.0e4
-        normalize: true
-        num_epoch: 5
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 1000
-        use_recurrent: false
-        normalize: true
-        memory_size: 8
-        curiosity_strength: 0.0
-        curiosity_enc_size: 1
-        summary_path: test
-        model_path: test
-        reward_signals:
-          extrinsic:
-            strength: 1.0
-            gamma: 0.99
-        """
-    )
 
 
 VECTOR_ACTION_SPACE = [2]

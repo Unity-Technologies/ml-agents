@@ -1,5 +1,5 @@
 # # Unity ML-Agents Toolkit
-from typing import Dict, List, Deque, Any
+from typing import List, Deque
 import abc
 
 from collections import deque
@@ -10,9 +10,9 @@ from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.policy.policy import Policy
-from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.settings import TrainerSettings
 
 
 logger = get_logger(__name__)
@@ -24,32 +24,30 @@ class Trainer(abc.ABC):
     def __init__(
         self,
         brain_name: str,
-        trainer_parameters: dict,
+        trainer_settings: TrainerSettings,
         training: bool,
-        run_id: str,
+        artifact_path: str,
         reward_buff_cap: int = 1,
     ):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
-        :dict trainer_parameters: The parameters for the trainer (dictionary).
-        :bool training: Whether the trainer is set for training.
-        :str run_id: The identifier of the current run
-        :int reward_buff_cap:
+        :param trainer_settings: The parameters for the trainer (dictionary).
+        :param training: Whether the trainer is set for training.
+        :param artifact_path: The directory within which to store artifacts from this trainer
+        :param reward_buff_cap:
         """
-        self.param_keys: List[str] = []
         self.brain_name = brain_name
-        self.run_id = run_id
-        self.trainer_parameters = trainer_parameters
-        self._threaded = trainer_parameters.get("threaded", True)
+        self.trainer_settings = trainer_settings
+        self._threaded = trainer_settings.threaded
         self._stats_reporter = StatsReporter(brain_name)
         self.is_training = training
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
-        self.summary_freq = self.trainer_parameters["summary_freq"]
-        self.next_summary_step = self.summary_freq
+        self.artifact_path = artifact_path
+        self.summary_freq = self.trainer_settings.summary_freq
 
     @property
     def stats_reporter(self):
@@ -58,20 +56,12 @@ class Trainer(abc.ABC):
         """
         return self._stats_reporter
 
-    def _check_param_keys(self):
-        for k in self.param_keys:
-            if k not in self.trainer_parameters:
-                raise UnityTrainerException(
-                    "The hyper-parameter {0} could not be found for the {1} trainer of "
-                    "brain {2}.".format(k, self.__class__, self.brain_name)
-                )
-
     @property
-    def parameters(self) -> Dict[str, Any]:
+    def parameters(self) -> TrainerSettings:
         """
         Returns the trainer parameters of the trainer.
         """
-        return self.trainer_parameters
+        return self.trainer_settings
 
     @property
     def get_max_steps(self) -> int:
@@ -79,7 +69,7 @@ class Trainer(abc.ABC):
         Returns the maximum number of steps. Is used to know when the trainer should be stopped.
         :return: The maximum number of steps of the trainer
         """
-        return int(float(self.trainer_parameters["max_steps"]))
+        return self.trainer_settings.max_steps
 
     @property
     def get_step(self) -> int:

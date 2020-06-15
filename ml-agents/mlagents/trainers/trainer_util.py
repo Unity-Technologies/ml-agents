@@ -1,6 +1,5 @@
 import os
-import yaml
-from typing import Any, Dict, TextIO
+from typing import Dict
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.meta_curriculum import MetaCurriculum
@@ -11,6 +10,7 @@ from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
+from mlagents.trainers.settings import TrainerSettings, TrainerType
 
 
 logger = get_logger(__name__)
@@ -19,10 +19,8 @@ logger = get_logger(__name__)
 class TrainerFactory:
     def __init__(
         self,
-        trainer_config: Any,
-        run_id: str,
+        trainer_config: Dict[str, TrainerSettings],
         output_path: str,
-        keep_checkpoints: int,
         train_model: bool,
         load_model: bool,
         seed: int,
@@ -31,10 +29,8 @@ class TrainerFactory:
         multi_gpu: bool = False,
     ):
         self.trainer_config = trainer_config
-        self.run_id = run_id
         self.output_path = output_path
         self.init_path = init_path
-        self.keep_checkpoints = keep_checkpoints
         self.train_model = train_model
         self.load_model = load_model
         self.seed = seed
@@ -44,11 +40,9 @@ class TrainerFactory:
 
     def generate(self, brain_name: str) -> Trainer:
         return initialize_trainer(
-            self.trainer_config,
+            self.trainer_config[brain_name],
             brain_name,
-            self.run_id,
             self.output_path,
-            self.keep_checkpoints,
             self.train_model,
             self.load_model,
             self.ghost_controller,
@@ -60,11 +54,9 @@ class TrainerFactory:
 
 
 def initialize_trainer(
-    trainer_config: Any,
+    trainer_settings: TrainerSettings,
     brain_name: str,
-    run_id: str,
     output_path: str,
-    keep_checkpoints: int,
     train_model: bool,
     load_model: bool,
     ghost_controller: GhostController,
@@ -77,9 +69,8 @@ def initialize_trainer(
     Initializes a trainer given a provided trainer configuration and brain parameters, as well as
     some general training session options.
 
-    :param trainer_config: Original trainer configuration loaded from YAML
+    :param trainer_settings: Original trainer configuration loaded from YAML
     :param brain_name: Name of the brain to be associated with trainer
-    :param run_id: Run ID to associate with this training run
     :param output_path: Path to save the model and summary statistics
     :param keep_checkpoints: How many model checkpoints to keep
     :param train_model: Whether to train the model (vs. run inference)
@@ -90,27 +81,9 @@ def initialize_trainer(
     :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
-    if "default" not in trainer_config and brain_name not in trainer_config:
-        raise TrainerConfigError(
-            f'Trainer config must have either a "default" section, or a section for the brain name {brain_name}. '
-            "See the config/ directory for examples."
-        )
-
-    trainer_parameters = trainer_config.get("default", {}).copy()
-    trainer_parameters["output_path"] = os.path.join(output_path, brain_name)
+    trainer_artifact_path = os.path.join(output_path, brain_name)
     if init_path is not None:
-        trainer_parameters["init_path"] = os.path.join(init_path, brain_name)
-    trainer_parameters["keep_checkpoints"] = keep_checkpoints
-    if brain_name in trainer_config:
-        _brain_key: Any = brain_name
-        while not isinstance(trainer_config[_brain_key], dict):
-            _brain_key = trainer_config[_brain_key]
-        trainer_parameters.update(trainer_config[_brain_key])
-
-    if init_path is not None:
-        trainer_parameters["init_path"] = "{basedir}/{name}".format(
-            basedir=init_path, name=brain_name
-        )
+        trainer_settings.init_path = os.path.join(init_path, brain_name)
 
     min_lesson_length = 1
     if meta_curriculum:
@@ -125,98 +98,44 @@ def initialize_trainer(
             )
 
     trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
-    if "trainer" not in trainer_parameters:
-        raise TrainerConfigError(
-            f'The "trainer" key must be set in your trainer config for brain {brain_name} (or the default brain).'
-        )
-    trainer_type = trainer_parameters["trainer"]
+    trainer_type = trainer_settings.trainer_type
 
-    if trainer_type == "offline_bc":
-        raise UnityTrainerException(
-            "The offline_bc trainer has been removed. To train with demonstrations, "
-            "please use a PPO or SAC trainer with the GAIL Reward Signal and/or the "
-            "Behavioral Cloning feature enabled."
-        )
-    elif trainer_type == "ppo":
+    if trainer_type == TrainerType.PPO:
         trainer = PPOTrainer(
             brain_name,
             min_lesson_length,
-            trainer_parameters,
+            trainer_settings,
             train_model,
             load_model,
             seed,
-            run_id,
+            trainer_artifact_path,
         )
-    elif trainer_type == "sac":
+    elif trainer_type == TrainerType.SAC:
         trainer = SACTrainer(
             brain_name,
             min_lesson_length,
-            trainer_parameters,
+            trainer_settings,
             train_model,
             load_model,
             seed,
-            run_id,
+            trainer_artifact_path,
         )
-
     else:
         raise TrainerConfigError(
             f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
         )
 
-    if "self_play" in trainer_parameters:
+    if trainer_settings.self_play is not None:
         trainer = GhostTrainer(
             trainer,
             brain_name,
             ghost_controller,
             min_lesson_length,
-            trainer_parameters,
+            trainer_settings,
             train_model,
-            run_id,
+            trainer_artifact_path,
         )
     return trainer
-
-
-def load_config(config_path: str) -> Dict[str, Any]:
-    try:
-        with open(config_path) as data_file:
-            return _load_config(data_file)
-    except IOError:
-        abs_path = os.path.abspath(config_path)
-        raise TrainerConfigError(f"Config file could not be found at {abs_path}.")
-    except UnicodeDecodeError:
-        raise TrainerConfigError(
-            f"There was an error decoding Config file from {config_path}. "
-            f"Make sure your file is save using UTF-8"
-        )
-
-
-def _load_config(fp: TextIO) -> Dict[str, Any]:
-    """
-    Load the yaml config from the file-like object.
-    """
-    try:
-        return yaml.safe_load(fp)
-    except yaml.parser.ParserError as e:
-        raise TrainerConfigError(
-            "Error parsing yaml file. Please check for formatting errors. "
-            "A tool such as http://www.yamllint.com/ can be helpful with this."
-        ) from e
-
-
-def assemble_curriculum_config(trainer_config: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Assembles a curriculum config Dict from a trainer config. The resulting
-    dictionary should have a mapping of {brain_name: config}, where config is another
-    Dict that
-    :param trainer_config: Dict of trainer configurations (keys are brain_names).
-    :return: Dict of curriculum configurations. Returns empty dict if none are found.
-    """
-    curriculum_config: Dict[str, Any] = {}
-    for behavior_name, behavior_config in trainer_config.items():
-        # Don't try to iterate non-Dicts. This probably means your config is malformed.
-        if isinstance(behavior_config, dict) and "curriculum" in behavior_config:
-            curriculum_config[behavior_name] = behavior_config["curriculum"]
-    return curriculum_config
 
 
 def handle_existing_directories(

@@ -1,7 +1,8 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 import abc
 import os
 import numpy as np
+from distutils.version import LooseVersion
 
 from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
@@ -14,9 +15,17 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain_conversion_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers import __version__
 
 
 logger = get_logger(__name__)
+
+
+# This is the version number of the inputs and outputs of the model, and
+# determines compatibility with inference in Barracuda.
+MODEL_FORMAT_VERSION = 2
 
 
 class TFPolicy(Policy):
@@ -25,39 +34,71 @@ class TFPolicy(Policy):
     functions to save/load models and create the input placeholders.
     """
 
-    def __init__(self, seed, brain, trainer_parameters, load=False):
+    def __init__(
+        self,
+        seed: int,
+        brain: BrainParameters,
+        trainer_settings: TrainerSettings,
+        model_path: str,
+        load: bool = False,
+    ):
         """
         Initialized the policy.
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
-        :param trainer_parameters: The trainer parameters.
+        :param trainer_settings: The trainer parameters.
+        :param model_path: Where to load/save the model.
+        :param load: If True, load model from model_path. Otherwise, create new model.
         """
-        super(TFPolicy, self).__init__(
-            brain=brain, seed=seed, trainer_params=trainer_parameters
-        )
-        self._version_number_ = 2
+
+        super().__init__(brain, seed, trainer_settings)
         self.m_size = 0
-
+        self.trainer_settings = trainer_settings
+        self.network_settings: NetworkSettings = trainer_settings.network_settings
         # for ghost trainer save/load snapshots
-        self.assign_phs = []
-        self.assign_ops = []
+        self.assign_phs: List[tf.Tensor] = []
+        self.assign_ops: List[tf.Operation] = []
 
-        self.inference_dict = {}
-        self.update_dict = {}
+        self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.update_dict: Dict[str, tf.Tensor] = {}
         self.sequence_length = 1
 
         self.act_size = brain.vector_action_space_size
         self.vec_obs_size = brain.vector_observation_space_size
         self.vis_obs_size = brain.number_visual_observations
 
-        self.initialize_path = trainer_parameters.get("init_path", None)
-        self.keep_checkpoints = trainer_parameters.get("keep_checkpoints", 5)
+        self.use_recurrent = self.network_settings.memory is not None
+        self.memory_dict: Dict[str, np.ndarray] = {}
+        self.num_branches = len(self.brain.vector_action_space_size)
+        self.previous_action_dict: Dict[str, np.array] = {}
+        self.normalize = self.network_settings.normalize
+        self.use_continuous_act = brain.vector_action_space_type == "continuous"
+        if self.use_continuous_act:
+            self.num_branches = self.brain.vector_action_space_size[0]
+        self.model_path = model_path
+        self.initialize_path = self.trainer_settings.init_path
+        self.keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.graph = tf.Graph()
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
-        self.saver = None
+        self.saver: Optional[tf.Operation] = None
         self.seed = seed
+        if self.network_settings.memory is not None:
+            self.m_size = self.network_settings.memory.memory_size
+            self.sequence_length = self.network_settings.memory.sequence_length
+            if self.m_size == 0:
+                raise UnityPolicyException(
+                    "The memory size for brain {0} is 0 even "
+                    "though the trainer uses recurrent.".format(brain.brain_name)
+                )
+            elif self.m_size % 2 != 0:
+                raise UnityPolicyException(
+                    "The memory size for brain {0} is {1} "
+                    "but it must be divisible by 2.".format(
+                        brain.brain_name, self.m_size
+                    )
+                )
         self._initialize_tensorflow_references()
         self.load = load
 
@@ -79,6 +120,32 @@ class TFPolicy(Policy):
     def load_model(self, step=0):
         reset_steps = not self.load
         self._load_graph(self.model_path, reset_global_steps=reset_steps)
+
+    @staticmethod
+    def _convert_version_string(version_string: str) -> Tuple[int, ...]:
+        """
+        Converts the version string into a Tuple of ints (major_ver, minor_ver, patch_ver).
+        :param version_string: The semantic-versioned version string (X.Y.Z).
+        :return: A Tuple containing (major_ver, minor_ver, patch_ver).
+        """
+        ver = LooseVersion(version_string)
+        return tuple(map(int, ver.version[0:3]))
+
+    def _check_model_version(self, version: str) -> None:
+        """
+        Checks whether the model being loaded was created with the same version of
+        ML-Agents, and throw a warning if not so.
+        """
+        if self.version_tensors is not None:
+            loaded_ver = tuple(
+                num.eval(session=self.sess) for num in self.version_tensors
+            )
+            if loaded_ver != TFPolicy._convert_version_string(version):
+                logger.warning(
+                    f"The model checkpoint you are loading from was saved with ML-Agents version "
+                    f"{loaded_ver[0]}.{loaded_ver[1]}.{loaded_ver[2]} but your current ML-Agents"
+                    f"version is {version}. Model may not behave properly."
+                )
 
     def _initialize_graph(self):
         with self.graph.as_default():
@@ -112,6 +179,7 @@ class TFPolicy(Policy):
                         model_path
                     )
                 )
+            self._check_model_version(__version__)
             if reset_global_steps:
                 self._set_step(0)
                 logger.info(
@@ -332,6 +400,7 @@ class TFPolicy(Policy):
         self.prev_action: Optional[tf.Tensor] = None
         self.memory_in: Optional[tf.Tensor] = None
         self.memory_out: Optional[tf.Tensor] = None
+        self.version_tensors: Optional[Tuple[tf.Tensor, tf.Tensor, tf.Tensor]] = None
 
     def create_input_placeholders(self):
         with self.graph.as_default():
@@ -381,8 +450,28 @@ class TFPolicy(Policy):
                 trainable=False,
                 dtype=tf.int32,
             )
+            int_version = TFPolicy._convert_version_string(__version__)
+            major_ver_t = tf.Variable(
+                int_version[0],
+                name="trainer_major_version",
+                trainable=False,
+                dtype=tf.int32,
+            )
+            minor_ver_t = tf.Variable(
+                int_version[1],
+                name="trainer_minor_version",
+                trainable=False,
+                dtype=tf.int32,
+            )
+            patch_ver_t = tf.Variable(
+                int_version[2],
+                name="trainer_patch_version",
+                trainable=False,
+                dtype=tf.int32,
+            )
+            self.version_tensors = (major_ver_t, minor_ver_t, patch_ver_t)
             tf.Variable(
-                self._version_number_,
+                MODEL_FORMAT_VERSION,
                 name="version_number",
                 trainable=False,
                 dtype=tf.int32,

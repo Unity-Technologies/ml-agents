@@ -1,0 +1,12 @@
+artifacts/**
+build/**
+.build_script/**
+node_modules/**
+.DS_Store
+.npmrc
+!Documentation~
+!.Documentation
+npm-debug.log
+build.sh.meta
+build.bat.meta
+.idea/

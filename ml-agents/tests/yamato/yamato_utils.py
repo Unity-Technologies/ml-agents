@@ -152,7 +152,7 @@ def undo_git_checkout():
     subprocess.check_call("rm -rf Project/Library", shell=True)
 
 
-def override_config_file(src_path, dest_path, **kwargs):
+def override_config_file(src_path, dest_path, overrides):
     """
     Override settings in a trainer config file. For example,
         override_config_file(src_path, dest_path, max_steps=42)
@@ -163,10 +163,18 @@ def override_config_file(src_path, dest_path, **kwargs):
         behavior_configs = configs["behaviors"]
 
     for config in behavior_configs.values():
-        config.update(**kwargs)
+        _override_config_dict(config, overrides)
 
     with open(dest_path, "w") as f:
         yaml.dump(configs, f)
+
+
+def _override_config_dict(config, overrides):
+    for key, val in overrides.items():
+        if isinstance(val, dict):
+            _override_config_dict(config[key], val)
+        else:
+            config[key] = val
 
 
 def override_legacy_config_file(python_version, src_path, dest_path, **kwargs):

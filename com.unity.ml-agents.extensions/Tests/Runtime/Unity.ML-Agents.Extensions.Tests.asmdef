@@ -1,0 +1,11 @@
+{
+    "name": "Unity.ML-Agents.Extensions.Tests",
+    "references": [
+        "Unity.ML-Agents.Extensions"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": []
+}

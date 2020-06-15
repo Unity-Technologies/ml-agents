@@ -100,3 +100,37 @@ def test_specs():
     assert specs.action_size == 1
     assert specs.create_empty_action(5).shape == (5, 1)
     assert specs.create_empty_action(5).dtype == np.int32
+
+
+def test_action_generator():
+    # Continuous
+    action_len = 30
+    specs = BehaviorSpec(
+        observation_shapes=[(5,)],
+        action_type=ActionType.CONTINUOUS,
+        action_shape=action_len,
+    )
+    zero_action = specs.create_empty_action(4)
+    assert np.array_equal(zero_action, np.zeros((4, action_len), dtype=np.float32))
+    random_action = specs.create_random_action(4)
+    assert random_action.dtype == np.float32
+    assert random_action.shape == (4, action_len)
+    assert np.min(random_action) >= -1
+    assert np.max(random_action) <= 1
+
+    # Discrete
+    action_shape = (10, 20, 30)
+    specs = BehaviorSpec(
+        observation_shapes=[(5,)],
+        action_type=ActionType.DISCRETE,
+        action_shape=action_shape,
+    )
+    zero_action = specs.create_empty_action(4)
+    assert np.array_equal(zero_action, np.zeros((4, len(action_shape)), dtype=np.int32))
+
+    random_action = specs.create_random_action(4)
+    assert random_action.dtype == np.int32
+    assert random_action.shape == (4, len(action_shape))
+    assert np.min(random_action) >= 0
+    for index, branch_size in enumerate(action_shape):
+        assert np.max(random_action[:, index]) < branch_size

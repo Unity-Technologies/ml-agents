@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 
 namespace Unity.MLAgents.Sensors.Reflection
@@ -13,6 +14,11 @@ namespace Unity.MLAgents.Sensors.Reflection
         public PropertyInfo PropertyInfo;
         public ObservableAttribute ObservableAttribute;
         public string SensorName;
+
+        public Type GetMemberType()
+        {
+            return FieldInfo != null ? FieldInfo.FieldType : PropertyInfo.PropertyType;
+        }
     }
 
     /// <summary>

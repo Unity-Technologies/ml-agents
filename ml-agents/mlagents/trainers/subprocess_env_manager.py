@@ -23,6 +23,7 @@ from mlagents_envs.timers import (
     get_timer_root,
 )
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -175,7 +176,10 @@ def worker(
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
             elif req.cmd == EnvironmentCommand.RESET:
                 for k, v in req.payload.items():
-                    env_parameters.set_float_parameter(k, v)
+                    if isinstance(v, float):
+                        env_parameters.set_float_parameter(k, v)
+                    elif isinstance(v, ParameterRandomizationSettings):
+                        v.apply(k, env_parameters)
                 env.reset()
                 all_step_result = _generate_all_results()
                 _send_response(EnvironmentCommand.RESET, all_step_result)

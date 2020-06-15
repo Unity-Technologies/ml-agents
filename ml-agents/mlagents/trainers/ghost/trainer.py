@@ -43,9 +43,9 @@ class GhostTrainer(Trainer):
         brain_name,
         controller,
         reward_buff_cap,
-        trainer_parameters,
+        trainer_settings,
         training,
-        run_id,
+        artifact_path,
     ):
         """
         Creates a GhostTrainer.
@@ -53,13 +53,13 @@ class GhostTrainer(Trainer):
         :param brain_name: The name of the brain associated with trainer config
         :param controller: GhostController that coordinates all ghost trainers and calculates ELO
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
-        :param run_id: The identifier of the current run
+        :param artifact_path: Path to store artifacts from this trainer.
         """
 
         super(GhostTrainer, self).__init__(
-            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 
         self.trainer = trainer
@@ -79,10 +79,10 @@ class GhostTrainer(Trainer):
         # Set the logging to print ELO in the console
         self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY, True)
 
-        self_play_parameters = trainer_parameters["self_play"]
-        self.window = self_play_parameters.get("window", 10)
-        self.play_against_latest_model_ratio = self_play_parameters.get(
-            "play_against_latest_model_ratio", 0.5
+        self_play_parameters = trainer_settings.self_play
+        self.window = self_play_parameters.window
+        self.play_against_latest_model_ratio = (
+            self_play_parameters.play_against_latest_model_ratio
         )
         if (
             self.play_against_latest_model_ratio > 1.0
@@ -92,9 +92,9 @@ class GhostTrainer(Trainer):
                 "The play_against_latest_model_ratio is not between 0 and 1."
             )
 
-        self.steps_between_save = self_play_parameters.get("save_steps", 20000)
-        self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
-        self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
+        self.steps_between_save = self_play_parameters.save_steps
+        self.steps_between_swap = self_play_parameters.swap_steps
+        self.steps_to_train_team = self_play_parameters.team_change
         if self.steps_to_train_team > self.get_max_steps:
             logger.warning(
                 "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not face \
@@ -104,7 +104,7 @@ class GhostTrainer(Trainer):
                 )
             )
 
-        # Counts the The number of steps of the ghost policies. Snapshot swapping
+        # Counts the number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
         # on the wrapped. This ensures that all teams train for the same number of trainer
         # steps.
@@ -117,7 +117,7 @@ class GhostTrainer(Trainer):
         self.current_policy_snapshot: Dict[str, List[float]] = {}
 
         self.snapshot_counter: int = 0
-        self.policies: Dict[str, TFPolicy] = {}
+        self.policies: Dict[str, Policy] = {}
 
         # wrapped_training_team and learning team need to be separate
         # in the situation where new agents are created destroyed
@@ -130,7 +130,7 @@ class GhostTrainer(Trainer):
         self.last_team_change: int = 0
 
         # Chosen because it is the initial ELO in Chess
-        self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
+        self.initial_elo: float = self_play_parameters.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * (
             self.window + 1
         )  # for learning policy
@@ -240,7 +240,7 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        self.next_summary_step = self.trainer.next_summary_step
+        self._next_summary_step = self.trainer._next_summary_step
         self.trainer.advance()
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.change_training_team(self.get_step)
@@ -316,7 +316,7 @@ class GhostTrainer(Trainer):
 
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> TFPolicy:
+    ) -> Policy:
         """
         Creates policy with the wrapped trainer's create_policy function
         The first policy encountered sets the wrapped
@@ -349,7 +349,7 @@ class GhostTrainer(Trainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to GhostTrainer.
@@ -360,7 +360,7 @@ class GhostTrainer(Trainer):
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
         self.policies[name_behavior_id] = policy
 
-    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+    def get_policy(self, name_behavior_id: str) -> Policy:
         """
         Gets policy associated with name_behavior_id
         :param name_behavior_id: Fully qualified behavior name

@@ -1,88 +1,46 @@
 import pytest
-import yaml
+import copy
 import os
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG, SAC_CONFIG
+from mlagents.trainers.settings import (
+    GAILSettings,
+    CuriositySettings,
+    RewardSignalSettings,
+    BehavioralCloningSettings,
+    NetworkSettings,
+    TrainerType,
+    RewardSignalType,
+)
 
 CONTINUOUS_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
 DISCRETE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
 
 
 def ppo_dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: ppo
-        batch_size: 32
-        beta: 5.0e-3
-        buffer_size: 512
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 3.0e-4
-        max_steps: 5.0e4
-        normalize: true
-        num_epoch: 5
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 1000
-        use_recurrent: false
-        memory_size: 8
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
-        """
-    )
+    return copy.deepcopy(PPO_CONFIG)
 
 
 def sac_dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: sac
-        batch_size: 128
-        buffer_size: 50000
-        buffer_init_steps: 0
-        hidden_units: 128
-        init_entcoef: 1.0
-        learning_rate: 3.0e-4
-        max_steps: 5.0e4
-        memory_size: 256
-        normalize: false
-        steps_per_update: 1
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 64
-        summary_freq: 1000
-        tau: 0.005
-        use_recurrent: false
-        vis_encode_type: simple
-        reward_signals:
-            extrinsic:
-                strength: 1.0
-                gamma: 0.99
-        """
-    )
+    return copy.deepcopy(SAC_CONFIG)
 
 
 @pytest.fixture
 def gail_dummy_config():
-    return {
-        "gail": {
-            "strength": 0.1,
-            "gamma": 0.9,
-            "encoding_size": 128,
-            "use_vail": True,
-            "demo_path": CONTINUOUS_PATH,
-        }
-    }
+    return {RewardSignalType.GAIL: GAILSettings(demo_path=CONTINUOUS_PATH)}
 
 
 @pytest.fixture
 def curiosity_dummy_config():
-    return {"curiosity": {"strength": 0.1, "gamma": 0.9, "encoding_size": 128}}
+    return {RewardSignalType.CURIOSITY: CuriositySettings()}
+
+
+@pytest.fixture
+def extrinsic_dummy_config():
+    return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
 
 
 VECTOR_ACTION_SPACE = [2]
@@ -103,19 +61,20 @@ def create_optimizer_mock(
         vector_obs_space=VECTOR_OBS_SPACE,
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
-    trainer_parameters = trainer_config
-    model_path = "testpath"
-    trainer_parameters["output_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    trainer_parameters["reward_signals"].update(reward_signal_config)
-    trainer_parameters["use_recurrent"] = use_rnn
-    policy = NNPolicy(
-        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+    trainer_settings = trainer_config
+    trainer_settings.reward_signals = reward_signal_config
+    trainer_settings.network_settings.memory = (
+        NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
+        if use_rnn
+        else None
     )
-    if trainer_parameters["trainer"] == "sac":
-        optimizer = SACOptimizer(policy, trainer_parameters)
+    policy = NNPolicy(
+        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
+    )
+    if trainer_settings.trainer_type == TrainerType.SAC:
+        optimizer = SACOptimizer(policy, trainer_settings)
     else:
-        optimizer = TFPPOOptimizer(policy, trainer_parameters)
+        optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer
 
 
@@ -142,14 +101,8 @@ def reward_signal_update(optimizer, reward_signal_name):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_cc(trainer_config, gail_dummy_config):
-    trainer_config.update(
-        {
-            "behavioral_cloning": {
-                "demo_path": CONTINUOUS_PATH,
-                "strength": 1.0,
-                "steps": 10000000,
-            }
-        }
+    trainer_config.behavioral_cloning = BehavioralCloningSettings(
+        demo_path=CONTINUOUS_PATH
     )
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config, False, False, False
@@ -162,18 +115,11 @@ def test_gail_cc(trainer_config, gail_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_dc_visual(trainer_config, gail_dummy_config):
-    gail_dummy_config["gail"]["demo_path"] = DISCRETE_PATH
-    trainer_config.update(
-        {
-            "behavioral_cloning": {
-                "demo_path": DISCRETE_PATH,
-                "strength": 1.0,
-                "steps": 10000000,
-            }
-        }
-    )
+    gail_dummy_config_discrete = {
+        RewardSignalType.GAIL: GAILSettings(demo_path=DISCRETE_PATH)
+    }
     optimizer = create_optimizer_mock(
-        trainer_config, gail_dummy_config, False, True, True
+        trainer_config, gail_dummy_config_discrete, False, True, True
     )
     reward_signal_eval(optimizer, "gail")
     reward_signal_update(optimizer, "gail")
@@ -183,15 +129,6 @@ def test_gail_dc_visual(trainer_config, gail_dummy_config):
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
 def test_gail_rnn(trainer_config, gail_dummy_config):
-    trainer_config.update(
-        {
-            "behavioral_cloning": {
-                "demo_path": CONTINUOUS_PATH,
-                "strength": 1.0,
-                "steps": 10000000,
-            }
-        }
-    )
     policy = create_optimizer_mock(
         trainer_config, gail_dummy_config, True, False, False
     )
@@ -246,9 +183,9 @@ def test_curiosity_rnn(trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_extrinsic(trainer_config, curiosity_dummy_config):
+def test_extrinsic(trainer_config, extrinsic_dummy_config):
     policy = create_optimizer_mock(
-        trainer_config, curiosity_dummy_config, False, False, False
+        trainer_config, extrinsic_dummy_config, False, False, False
     )
     reward_signal_eval(policy, "extrinsic")
     reward_signal_update(policy, "extrinsic")

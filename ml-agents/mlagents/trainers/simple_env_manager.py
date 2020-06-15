@@ -5,6 +5,7 @@ from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepRe
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
@@ -44,7 +45,10 @@ class SimpleEnvManager(EnvManager):
     ) -> List[EnvironmentStep]:  # type: ignore
         if config is not None:
             for k, v in config.items():
-                self.env_params.set_float_parameter(k, v)
+                if isinstance(v, float):
+                    self.env_params.set_float_parameter(k, v)
+                elif isinstance(v, ParameterRandomizationSettings):
+                    v.apply(k, self.env_params)
         self.env.reset()
         all_step_result = self._generate_all_results()
         self.previous_step = EnvironmentStep(all_step_result, 0, {}, {})

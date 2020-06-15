@@ -24,6 +24,7 @@ test_mac_standalone_{{ editor.version }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       pull_request.changes.any match ".yamato/standalone-build-test.yml") AND
       NOT pull_request.changes.all match "**/*.md"
   artifacts:

@@ -27,6 +27,16 @@ namespace Unity.MLAgents.Tests
         const string k_CubeTag = "Player";
         const string k_SphereTag = "Respawn";
 
+        [TearDown]
+        public void RemoveGameObjects()
+        {
+            var objects = GameObject.FindObjectsOfType<GameObject>();
+            foreach (var o in objects)
+            {
+                UnityEngine.Object.DestroyImmediate(o);
+            }
+        }
+
         void SetupScene()
         {
             /* Creates game objects in the world for testing.
@@ -44,18 +54,22 @@ namespace Unity.MLAgents.Tests
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
             cube.transform.position = new Vector3(0, 0, 10);
             cube.tag = k_CubeTag;
+            cube.name = "cube";
 
             var sphere1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere1.transform.position = new Vector3(-5, 0, 5);
             sphere1.tag = k_SphereTag;
+            sphere1.name = "sphere1";
 
             var sphere2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere2.transform.position = new Vector3(5, 0, 5);
             // No tag for sphere2
+            sphere2.name = "sphere2";
 
             var sphere3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere3.transform.position = new Vector3(0, 0, -10);
             sphere3.tag = k_SphereTag;
+            sphere3.name = "sphere3";
 
             Physics.SyncTransforms();
         }
@@ -294,6 +308,34 @@ namespace Unity.MLAgents.Tests
                 // hit fraction is arbitrary but should be finite in [0,1]
                 Assert.GreaterOrEqual(outputBuffer[2], 0.0f);
                 Assert.LessOrEqual(outputBuffer[2], 1.0f);
+            }
+        }
+
+        [Test]
+        public void TestStaticPerceive()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.RaysPerDirection = 0; // single ray
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add(k_CubeTag);
+            perception.DetectableTags.Add(k_SphereTag);
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.SphereCastRadius = castRadius;
+                var castInput = perception.GetRayPerceptionInput();
+                var castOutput = RayPerceptionSensor.Perceive(castInput);
+
+                Assert.AreEqual(1, castOutput.RayOutputs.Length);
+
+                // Expected to hit the cube
+                Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
             }
         }
     }

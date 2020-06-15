@@ -69,7 +69,7 @@ After launching your EC2 instance using the ami and ssh into it:
 2. Clone the ML-Agents repo and install the required Python packages
 
    ```sh
-   git clone --branch release_1 https://github.com/Unity-Technologies/ml-agents.git
+   git clone --branch release_2 https://github.com/Unity-Technologies/ml-agents.git
    cd ml-agents/ml-agents/
    pip3 install -e .
    ```
@@ -303,7 +303,7 @@ X.Org X Server 1.18.4
 Fatal server error:
 (EE) no screens found(EE)
 (EE)
-Please consult the The X.Org Foundation support
+Please consult the X.Org Foundation support
          at http://wiki.x.org
  for help.
 (EE) Please also check the log file at "/var/log/Xorg.0.log" for additional information.

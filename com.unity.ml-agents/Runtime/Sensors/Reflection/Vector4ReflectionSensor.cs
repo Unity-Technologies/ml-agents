@@ -13,10 +13,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal override void WriteReflectedField(ObservationWriter writer)
         {
             var vecVal = (UnityEngine.Vector4)GetReflectedValue();
-            writer[0] = vecVal.x;
-            writer[1] = vecVal.y;
-            writer[2] = vecVal.z;
-            writer[3] = vecVal.w;
+            writer.Add(vecVal);
         }
     }
 }

@@ -6,6 +6,8 @@ from mlagents_envs.base_env import DecisionSteps
 from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.settings import TrainerSettings
 
 
 class UnityPolicyException(UnityException):
@@ -17,7 +19,9 @@ class UnityPolicyException(UnityException):
 
 
 class Policy(object):
-    def __init__(self, brain, seed, trainer_params):
+    def __init__(
+        self, brain: BrainParameters, seed: int, trainer_settings: TrainerSettings
+    ):
         self.brain = brain
         self.seed = seed
         self.model_path = None
@@ -28,13 +32,15 @@ class Policy(object):
             self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
-        self.normalize = trainer_params["normalize"]
-        self.use_recurrent = trainer_params["use_recurrent"]
-        self.model_path = trainer_params["output_path"]
+        self.normalize = trainer_settings
+        self.use_recurrent = trainer_settings.network_settings.memory is not None
+        self.model_path = trainer_settings.init_path
 
-        if self.use_recurrent:
-            self.m_size = trainer_params["memory_size"]
-            self.sequence_length = trainer_params["sequence_length"]
+        if trainer_settings.network_settings.memory is not None:
+            self.m_size = trainer_settings.network_settings.memory.memory_size
+            self.sequence_length = (
+                trainer_settings.network_settings.memory.sequence_length
+            )
             if self.m_size == 0:
                 raise UnityPolicyException(
                     "The memory size for brain {0} is 0 even "

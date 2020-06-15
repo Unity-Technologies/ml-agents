@@ -3,8 +3,8 @@ import pytest
 
 import numpy as np
 from mlagents.tf_utils import tf
-
-import yaml
+import copy
+import attr
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
@@ -14,7 +14,9 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import make_brain_parameters
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.settings import NetworkSettings, TrainerSettings, PPOSettings
+from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
+from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
     curiosity_dummy_config,
     gail_dummy_config,
@@ -23,35 +25,7 @@ from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint:
 
 @pytest.fixture
 def dummy_config():
-    return yaml.safe_load(
-        """
-        trainer: ppo
-        batch_size: 32
-        beta: 5.0e-3
-        buffer_size: 512
-        epsilon: 0.2
-        hidden_units: 128
-        lambd: 0.95
-        learning_rate: 3.0e-4
-        max_steps: 5.0e4
-        normalize: true
-        num_epoch: 5
-        num_layers: 2
-        time_horizon: 64
-        sequence_length: 16
-        summary_freq: 1000
-        use_recurrent: false
-        normalize: true
-        memory_size: 10
-        curiosity_strength: 0.0
-        curiosity_enc_size: 1
-        output_path: test
-        reward_signals:
-          extrinsic:
-            strength: 1.0
-            gamma: 0.99
-        """
-    )
+    return copy.deepcopy(PPO_CONFIG)
 
 
 VECTOR_ACTION_SPACE = [2]
@@ -70,15 +44,16 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
-    trainer_parameters = dummy_config
-    model_path = "testmodel"
-    trainer_parameters["model_path"] = model_path
-    trainer_parameters["keep_checkpoints"] = 3
-    trainer_parameters["use_recurrent"] = use_rnn
-    policy = NNPolicy(
-        0, mock_brain, trainer_parameters, False, False, create_tf_graph=False
+    trainer_settings = attr.evolve(dummy_config)
+    trainer_settings.network_settings.memory = (
+        NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
+        if use_rnn
+        else None
     )
-    optimizer = TFPPOOptimizer(policy, trainer_parameters)
+    policy = NNPolicy(
+        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
+    )
+    optimizer = TFPPOOptimizer(policy, trainer_settings)
     return optimizer
 
 
@@ -131,11 +106,11 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 # We need to test this separately from test_reward_signals.py to ensure no interactions
 def test_ppo_optimizer_update_curiosity(
-    curiosity_dummy_config, dummy_config, rnn, visual, discrete  # noqa: F811
+    dummy_config, curiosity_dummy_config, rnn, visual, discrete  # noqa: F811
 ):
     # Test evaluate
     tf.reset_default_graph()
-    dummy_config["reward_signals"].update(curiosity_dummy_config)
+    dummy_config.reward_signals = curiosity_dummy_config
     optimizer = _create_ppo_optimizer_ops_mock(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
@@ -157,9 +132,9 @@ def test_ppo_optimizer_update_curiosity(
 def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
     # Test evaluate
     tf.reset_default_graph()
-    dummy_config["reward_signals"].update(gail_dummy_config)
+    dummy_config.reward_signals = gail_dummy_config
     optimizer = _create_ppo_optimizer_ops_mock(
-        dummy_config, use_rnn=False, use_discrete=False, use_visual=False
+        PPO_CONFIG, use_rnn=False, use_discrete=False, use_visual=False
     )
     # Test update
     update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.brain)
@@ -233,8 +208,8 @@ def test_rl_functions():
 
 
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
-def test_trainer_increment_step(ppo_optimizer, dummy_config):
-    trainer_params = dummy_config
+def test_trainer_increment_step(ppo_optimizer):
+    trainer_params = PPO_CONFIG
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer
@@ -254,8 +229,8 @@ def test_trainer_increment_step(ppo_optimizer, dummy_config):
     policy_mock = mock.Mock(spec=NNPolicy)
     policy_mock.get_current_step.return_value = 0
     step_count = (
-        5
-    )  # 10 hacked because this function is no longer called through trainer
+        5  # 10 hacked because this function is no longer called through trainer
+    )
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     trainer.add_policy("testbehavior", policy_mock)
 
@@ -265,7 +240,9 @@ def test_trainer_increment_step(ppo_optimizer, dummy_config):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-def test_trainer_update_policy(dummy_config, use_discrete):
+def test_trainer_update_policy(
+    dummy_config, curiosity_dummy_config, use_discrete  # noqa: F811
+):
     mock_brain = mb.setup_mock_brain(
         use_discrete,
         False,
@@ -275,14 +252,12 @@ def test_trainer_update_policy(dummy_config, use_discrete):
     )
 
     trainer_params = dummy_config
-    trainer_params["use_recurrent"] = True
+    trainer_params.network_settings.memory = NetworkSettings.MemorySettings(
+        memory_size=10, sequence_length=16
+    )
 
     # Test curiosity reward signal
-    trainer_params["reward_signals"]["curiosity"] = {}
-    trainer_params["reward_signals"]["curiosity"]["strength"] = 1.0
-    trainer_params["reward_signals"]["curiosity"]["gamma"] = 0.99
-    trainer_params["reward_signals"]["curiosity"]["encoding_size"] = 128
-
+    trainer_params.reward_signals = curiosity_dummy_config
     trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
     policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
     trainer.add_policy(mock_brain.brain_name, policy)
@@ -310,7 +285,6 @@ def test_process_trajectory(dummy_config):
         vector_action_descriptions=[],
         vector_action_space_type=0,
     )
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
     trainer.add_policy(brain_params.brain_name, policy)
@@ -368,7 +342,6 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer
 
-    dummy_config["output_path"] = "./results/test_trainer_models/TestModel"
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
@@ -378,7 +351,6 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
-    assert trainer.next_summary_step > 2000
 
     # Test incorrect class of policy
     policy = mock.Mock()
@@ -386,15 +358,19 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
         trainer.add_policy(brain_params, policy)
 
 
-def test_bad_config(dummy_config):
+# TODO: Move this to test_settings.py
+def test_bad_config():
     brain_params = make_brain_parameters(
         discrete_action=False, visual_inputs=0, vec_obs_size=6
     )
     # Test that we throw an error if we have sequence length greater than batch size
-    dummy_config["sequence_length"] = 64
-    dummy_config["batch_size"] = 32
-    dummy_config["use_recurrent"] = True
-    with pytest.raises(UnityTrainerException):
+    with pytest.raises(TrainerConfigError):
+        TrainerSettings(
+            network_settings=NetworkSettings(
+                memory=NetworkSettings.MemorySettings(sequence_length=64)
+            ),
+            hyperparameters=PPOSettings(batch_size=32),
+        )
         _ = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
 
 

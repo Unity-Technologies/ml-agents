@@ -7,33 +7,84 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
+  `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- `RayPerceptionSensor.Perceive()` now additionally store the GameObject that was hit by the ray. (#4111)
+- The Barracuda dependency was upgraded to 1.0.0 (#4118)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added new Google Colab notebooks to show how to use `UnityEnvironment'. (#4117)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.1.0-preview] - 2020-06-10
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Added new Walker environments. Improved ragdoll stability/performance. (#4037)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
-### Minor Changes
-#### com.unity.ml-agents (C#)
-- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
-  observations via reflection.
-#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/docs/Unity-Environment-Registry.md)(#3967)
+- `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
+were replaced by `allow_multiple_obs` which allows one or more visual observations and
+vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - Curriculum and Parameter Randomization configurations have been merged
   into the main training configuration file. Note that this means training
   configuration files are now environment-specific. (#3791)
+- The format for trainer configuration has changed, and the "default" behavior has been deprecated.
+  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/docs/Migrating.md) for more details. (#3936)
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
+- When using Curriculum, the current lesson will resume if training is quit and resumed. As such,
+  the `--lesson` CLI option has been removed. (#4025)
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- `ObservableAttribute` was added. Adding the attribute to fields or properties on an Agent will allow it to generate
+  observations via reflection. (#3925, #4006)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Unity Player logs are now written out to the results directory. (#3877)
 - Run configuration YAML files are written out to the results directory at the end of the run. (#3815)
+- The `--save-freq` CLI option has been removed, and replaced by a `checkpoint_interval` option in the trainer configuration YAML. (#4034)
+- When trying to load/resume from a checkpoint created with an earlier verison of ML-Agents,
+  a warning will be thrown. (#4035)
 ### Bug Fixes
-- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
+- Fixed an issue where SAC would perform too many model updates when resuming from a
+  checkpoint, and too few when using `buffer_init_steps`. (#4038)
+- Fixed a bug in the onnx export that would cause constants needed for inference to not be visible to some versions of
+  the Barracuda importer. (#4073)
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
+
+## [1.0.2-preview] - 2020-05-20
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Fix missing .meta file
+
+
+## [1.0.1-preview] - 2020-05-19
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- A bug that would cause the editor to go into a loop when a prefab was selected was fixed. (#3949)
+- BrainParameters.ToProto() no longer throws an exception if none of the fields have been set. (#3930)
+- The Barracuda dependency was upgraded to 0.7.1-preview. (#3977)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- An issue was fixed where using `--initialize-from` would resume from the past step count. (#3962)
+- The gym wrapper error for the wrong number of agents now fires more consistently, and more details
+  were added to the error message when the input dimension is wrong. (#3963)
+
+
 ## [1.0.0-preview] - 2020-04-30
-
 ### Major Changes
-
 #### com.unity.ml-agents (C#)
 
 - The `MLAgents` C# namespace was renamed to `Unity.MLAgents`, and other nested
@@ -51,7 +102,7 @@ and this project adheres to
   - Introduced the `SideChannelManager` to register, unregister and access side
     channels. (#3807)
   - `Academy.FloatProperties` was replaced by `Academy.EnvironmentParameters`.
-    See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Migrating.md)
+    See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Migrating.md)
     for more details on upgrading. (#3807)
   - `SideChannel.OnMessageReceived` is now a protected method (was public)
   - SideChannel IncomingMessages methods now take an optional default argument,
@@ -80,9 +131,9 @@ and this project adheres to
   `--load`. (#3705)
 - The Jupyter notebooks have been removed from the repository. (#3704)
 - The multi-agent gym option was removed from the gym wrapper. For multi-agent
-  scenarios, use the [Low Level Python API](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md). (#3681)
+  scenarios, use the [Low Level Python API](https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Python-API.md). (#3681)
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Python-API.md)
+  [Low Level Python API](https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Python-API.md)
   documentation for more information. If you use `mlagents-learn` for training, this should be a
   transparent change. (#3681)
 - Added ability to start training (initialize model weights) from a previous run

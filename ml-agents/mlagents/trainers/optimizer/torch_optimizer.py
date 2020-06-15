@@ -1,4 +1,4 @@
-from typing import Dict, Any, Optional, Tuple, List
+from typing import Dict, Optional, Tuple, List
 import torch
 import numpy as np
 from mlagents_envs.base_env import DecisionSteps
@@ -10,14 +10,15 @@ from mlagents.trainers.components.reward_signals.extrinsic.signal import (
 )
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
+from mlagents.trainers.settings import TrainerSettings, RewardSignalType
 from mlagents.trainers.trajectory import SplitObservations
 
 
 class TorchOptimizer(Optimizer):  # pylint: disable=W0223
-    def __init__(self, policy: TorchPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         super(TorchOptimizer, self).__init__()
         self.policy = policy
-        self.trainer_params = trainer_params
+        self.trainer_settings = trainer_settings
         self.update_dict: Dict[str, torch.Tensor] = {}
         self.value_heads: Dict[str, torch.Tensor] = {}
         self.memory_in: torch.Tensor = None
@@ -25,7 +26,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         self.m_size: int = 0
         self.global_step = torch.tensor(0)
         self.bc_module: Optional[BCModule] = None
-        self.create_reward_signals(trainer_params["reward_signals"])
+        self.create_reward_signals(trainer_settings.reward_signals)
 
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass
@@ -36,9 +37,9 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         :param reward_signal_configs: Reward signal config.
         """
         extrinsic_signal = ExtrinsicRewardSignal(
-            self.policy, **reward_signal_configs["extrinsic"]
+            self.policy, reward_signal_configs[RewardSignalType.EXTRINSIC]
         )
-        self.reward_signals = {"extrinsic": extrinsic_signal}
+        self.reward_signals = {RewardSignalType.EXTRINSIC.value: extrinsic_signal}
         # Create reward signals
         # for reward_signal, config in reward_signal_configs.items():
         #    self.reward_signals[reward_signal] = create_reward_signal(

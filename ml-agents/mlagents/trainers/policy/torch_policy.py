@@ -12,9 +12,10 @@ from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.policy.policy import UnityPolicyException
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.models_torch import EncoderType, ActorCritic
+from mlagents.trainers.models_torch import ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -24,7 +25,7 @@ class TorchPolicy(Policy):
         self,
         seed: int,
         brain: BrainParameters,
-        trainer_params: Dict[str, Any],
+        trainer_settings: TrainerSettings,
         load: bool,
         tanh_squash: bool = False,
         reparameterize: bool = False,
@@ -36,17 +37,17 @@ class TorchPolicy(Policy):
         continuous action spaces, as well as recurrent networks.
         :param seed: Random seed.
         :param brain: Assigned BrainParameters object.
-        :param trainer_params: Defined training parameters.
+        :param trainer_settings: Defined training parameters.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         :param tanh_squash: Whether to use a tanh function on the continuous output,
         or a clipped output.
         :param reparameterize: Whether we are using the resampling trick to update the policy
         in continuous output.
         """
-        super(TorchPolicy, self).__init__(brain, seed, trainer_params)
+        super(TorchPolicy, self).__init__(brain, seed, trainer_settings)
         self.grads = None
-        num_layers = trainer_params["num_layers"]
-        self.h_size = trainer_params["hidden_units"]
+        num_layers = trainer_settings.network_settings.num_layers
+        self.h_size = trainer_settings.network_settings.hidden_units
         self.seed = seed
         self.brain = brain
         self.global_step = 0
@@ -55,9 +56,11 @@ class TorchPolicy(Policy):
         self.act_size = brain.vector_action_space_size
         self.act_type = brain.vector_action_space_type
         self.sequence_length = 1
-        if self.use_recurrent:
-            self.m_size = trainer_params["memory_size"]
-            self.sequence_length = trainer_params["sequence_length"]
+        if trainer_settings.network_settings.memory is not None:
+            self.m_size = trainer_settings.network_settings.memory.memory_size
+            self.sequence_length = (
+                trainer_settings.network_settings.memory.sequence_length
+            )
             if self.m_size == 0:
                 raise UnityPolicyException(
                     "The memory size for brain {0} is 0 even "
@@ -70,13 +73,13 @@ class TorchPolicy(Policy):
                         brain.brain_name, self.m_size
                     )
                 )
-
+        else:
+            self.m_size = 0
+            self.sequence_length = 1
         if num_layers < 1:
             num_layers = 1
         self.num_layers = num_layers
-        self.vis_encode_type = EncoderType(
-            trainer_params.get("vis_encode_type", "simple")
-        )
+        self.vis_encode_type = trainer_settings.network_settings.vis_encode_type
         self.tanh_squash = tanh_squash
         self.reparameterize = reparameterize
         self.condition_sigma_on_obs = condition_sigma_on_obs
@@ -91,26 +94,26 @@ class TorchPolicy(Policy):
         # TF defaults to 32-bit, so we use the same here.
         torch.set_default_tensor_type(torch.DoubleTensor)
 
-        reward_signal_configs = trainer_params["reward_signals"]
+        reward_signal_configs = trainer_settings.reward_signals
+        reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
+
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
         }
 
         self.actor_critic = ActorCritic(
-            h_size=int(trainer_params["hidden_units"]),
+            h_size=int(trainer_settings.network_settings.hidden_units),
             act_type=self.act_type,
             vector_sizes=[brain.vector_observation_space_size],
             act_size=brain.vector_action_space_size,
-            normalize=trainer_params["normalize"],
-            num_layers=int(trainer_params["num_layers"]),
-            m_size=trainer_params["memory_size"],
+            normalize=trainer_settings.network_settings.normalize,
+            num_layers=int(trainer_settings.network_settings.num_layers),
+            m_size=self.m_size,
             use_lstm=self.use_recurrent,
             visual_sizes=brain.camera_resolutions,
-            vis_encode_type=EncoderType(
-                trainer_params.get("vis_encode_type", "simple")
-            ),
-            stream_names=list(reward_signal_configs.keys()),
+            vis_encode_type=trainer_settings.network_settings.vis_encode_type,
+            stream_names=reward_signal_names,
             separate_critic=self.use_continuous_act,
         )
 
