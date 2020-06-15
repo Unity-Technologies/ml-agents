@@ -293,7 +293,7 @@ class SubprocessEnvManager(EnvManager):
                 step = self.step_queue.get_nowait()
                 self.env_workers[step.worker_id].waiting = False
         # Send config to environment
-        self.send_to_environment(config)
+        self.set_env_parameters(config)
         # First enqueue reset commands for all workers so that they reset in parallel
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.RESET, config)
@@ -302,7 +302,12 @@ class SubprocessEnvManager(EnvManager):
             ew.previous_step = EnvironmentStep(ew.recv().payload, ew.worker_id, {}, {})
         return list(map(lambda ew: ew.previous_step, self.env_workers))
 
-    def send_to_environment(self, config: Dict = None) -> None:
+    def set_env_parameters(self, config: Dict = None) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        EnvironmentParametersSidehannel for each worker.
+        :param config: Dict of environment parameter keys and values
+        """
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
 

@@ -68,7 +68,12 @@ class EnvManager(ABC):
         return len(self.first_step_infos)
 
     @abstractmethod
-    def send_to_environment(self, config: Dict = None) -> None:
+    def set_env_parameters(self, config: Dict = None) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        EnvironmentParametersSidehannel.
+        :param config: Dict of environment parameter keys and values
+        """
         pass
 
     @property

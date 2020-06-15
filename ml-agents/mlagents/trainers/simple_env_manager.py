@@ -43,13 +43,18 @@ class SimpleEnvManager(EnvManager):
     def _reset_env(
         self, config: Dict[BehaviorName, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
-        self.send_to_environment(config)
+        self.set_env_parameters(config)
         self.env.reset()
         all_step_result = self._generate_all_results()
         self.previous_step = EnvironmentStep(all_step_result, 0, {}, {})
         return [self.previous_step]
 
-    def send_to_environment(self, config: Dict = None) -> None:
+    def set_env_parameters(self, config: Dict = None) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        EnvironmentParametersSidehannel.
+        :param config: Dict of environment parameter keys and values
+        """
         if config is not None:
             for k, v in config.items():
                 if isinstance(v, float):
