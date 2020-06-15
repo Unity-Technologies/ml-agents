@@ -142,24 +142,11 @@ class GlobalTrainingStatus:
         return
 
     @staticmethod
-<<<<<<< HEAD
     def track_checkpoint_info(category: str, value: Any, keep_checkpoints: int) -> None:
         GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
         GlobalTrainingStatus.append_to_parameter_state(
             category, StatusType.CHECKPOINT, value
         )
-=======
-    def append_checkpoint_info(
-        category: str, value: Any, keep_checkpoints: int
-    ) -> None:
-        key = StatusType.CHECKPOINT.value
-        print(f"key: {key}")
-        print(GlobalTrainingStatus.saved_state)
-        GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
-        print(GlobalTrainingStatus.saved_state)
-        checkpoint_list = GlobalTrainingStatus.saved_state[category][key]
-        checkpoint_list.append(value)
->>>>>>> Fixed tests, checkpoint management and style
         return
 
     @staticmethod
@@ -167,11 +154,7 @@ class GlobalTrainingStatus:
         category: str, value: str, keep_checkpoints: int
     ) -> None:
         GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
-<<<<<<< HEAD
         GlobalTrainingStatus.set_parameter_state(category, StatusType.FINAL_PATH, value)
-=======
-        GlobalTrainingStatus.saved_state[category][StatusType.FINAL_PATH.value] = value
->>>>>>> Fixed tests, checkpoint management and style
         return
 
     @staticmethod
