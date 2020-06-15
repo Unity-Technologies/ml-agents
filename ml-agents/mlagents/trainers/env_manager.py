@@ -67,6 +67,10 @@ class EnvManager(ABC):
         self.first_step_infos = self._reset_env(config)
         return len(self.first_step_infos)
 
+    @abstractmethod
+    def send_to_environment(self, config: Dict = None) -> None:
+        pass
+
     @property
     @abstractmethod
     def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
