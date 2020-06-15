@@ -188,8 +188,7 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
-        hierarchyUtil.DrawModelSpace(orientationCube.transform.position + 5.0f * Vector3.up, Color.blue);
-        hierarchyUtil.GetLocalSpaceTransforms();
+        hierarchyUtil.DrawModelSpace(orientationCube.transform.position + 2.0f * Vector3.up);
 
         if (detectTargets)
         {

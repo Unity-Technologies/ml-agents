@@ -54,19 +54,92 @@ namespace Unity.MLAgents.Extensions.Sensors
 
     public abstract class HierarchyUtil
     {
+        int[] m_ParentIndices;
+        QTTransform[] m_ModelSpacePose;
+        QTTransform[] m_LocalSpacePose;
 
-//        protected SetNumParentIndices(int[] parentIndices)
-//        {
-//
-//        }
+        public IList<QTTransform> ModelSpacePose
+        {
+            get { return m_ModelSpacePose;  }
+        }
 
+        public IList<QTTransform> LocalSpacePose
+        {
+            get { return m_LocalSpacePose;  }
+        }
+
+        protected void SetParentIndices(int[] parentIndices)
+        {
+            m_ParentIndices = parentIndices;
+            var numTransforms = parentIndices.Length;
+            m_ModelSpacePose = new QTTransform[numTransforms];
+            m_LocalSpacePose = new QTTransform[numTransforms];
+        }
+
+        protected abstract QTTransform GetTransformAt(int index);
+
+        void UpdateModelSpaceTransforms()
+        {
+            var worldTransform = GetTransformAt(0);
+            var worldToModel = worldTransform.Inverse();
+
+            for (var i = 0; i < m_ModelSpacePose.Length; i++)
+            {
+                var currentTransform = GetTransformAt(i);
+                m_ModelSpacePose[i] = worldToModel * currentTransform;
+            }
+        }
+
+        void UpdateLocalSpaceTransforms()
+        {
+            for (var i = 0; i < m_LocalSpacePose.Length; i++)
+            {
+                if (m_ParentIndices[i] != -1)
+                {
+                    var parentTransform = GetTransformAt(m_ParentIndices[i]);
+                    // This is slightly inefficient, since for a body with multiple children, we'll end up inverting
+                    // the transform multiple times. Might be able to trade space for perf here.
+                    var invParent = parentTransform.Inverse();
+                    var currentTransform = GetTransformAt(i);
+                    m_LocalSpacePose[i] = invParent * currentTransform;
+                }
+                else
+                {
+                    m_LocalSpacePose[i] = QTTransform.Identity;
+                }
+            }
+        }
+
+        public void DrawModelSpace(Vector3 offset)
+        {
+            UpdateLocalSpaceTransforms();
+            UpdateModelSpaceTransforms();
+
+            var pose = m_ModelSpacePose;
+            var localPose = m_LocalSpacePose;
+            for (var i = 0; i < pose.Length; i++)
+            {
+                var current = pose[i];
+                if (m_ParentIndices[i] == -1)
+                {
+                    continue;
+                }
+
+                var parent = pose[m_ParentIndices[i]];
+                Debug.DrawLine(current.Translation+offset, parent.Translation+offset, Color.cyan);
+                var localUp = localPose[i].Rotation * Vector3.up;
+                var localFwd = localPose[i].Rotation * Vector3.forward;
+                var localRight = localPose[i].Rotation * Vector3.right;
+                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localUp, Color.red);
+                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localFwd, Color.green);
+                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localRight, Color.blue);
+            }
+        }
     }
 
-    public class RigidBodyHierarchyUtil
+    public class RigidBodyHierarchyUtil : HierarchyUtil
     {
         Rigidbody[] m_Bodies;
-        int[] m_ParentIndices;
-        Dictionary<Rigidbody, int> m_BodyToIndex;
 
         public void InitTree(GameObject sourceBody)
         {
@@ -106,101 +179,45 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             m_Bodies = new Rigidbody[rbs.Length];
-            m_ParentIndices = new int[rbs.Length];
-            m_BodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
+            var parentIndices = new int[rbs.Length];
+            var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
 
             m_Bodies[0] = root;
-            m_ParentIndices[0] = -1;
-            m_BodyToIndex[root] = 0;
+            parentIndices[0] = -1;
+            bodyToIndex[root] = 0;
             var index = 1;
 
             // This is inefficient in the worst case (e.g. a chain)
             // And might not terminate?
-            while(m_BodyToIndex.Count != rbs.Length)
+            while(bodyToIndex.Count != rbs.Length)
             {
                 foreach (var rb in rbs)
                 {
-                    if (m_BodyToIndex.ContainsKey(rb))
+                    if (bodyToIndex.ContainsKey(rb))
                     {
                         continue;
                     }
 
                     var parent = parentMap[rb];
-                    if (m_BodyToIndex.ContainsKey(parent))
+                    if (bodyToIndex.ContainsKey(parent))
                     {
                         m_Bodies[index] = rb;
-                        m_ParentIndices[index] = m_BodyToIndex[parent];
-                        m_BodyToIndex[rb] = index;
+                        parentIndices[index] = bodyToIndex[parent];
+                        bodyToIndex[rb] = index;
                         index++;
                     }
                 }
             }
 
+            SetParentIndices(parentIndices);
         }
 
-        public QTTransform[] GetModelSpaceTransforms()
+        protected override QTTransform GetTransformAt(int index)
         {
-            var rootRb = m_Bodies[0];
-            var worldTransform = new QTTransform { Rotation = rootRb.rotation, Translation = rootRb.position };
-            var worldToModel = worldTransform.Inverse();
-
-            var output = new QTTransform[m_Bodies.Length];
-            for (var i = 0; i < m_Bodies.Length; i++)
-            {
-                var body = m_Bodies[i];
-                var rbTransform = new QTTransform { Rotation = body.rotation, Translation = body.position };
-                output[i] = worldToModel * rbTransform;
-            }
-
-            return output;
+            var body = m_Bodies[index];
+            return new QTTransform { Rotation = body.rotation, Translation = body.position };
         }
 
-        public QTTransform[] GetLocalSpaceTransforms()
-        {
-            var output = new QTTransform[m_Bodies.Length];
-            for (var i = 0; i < m_Bodies.Length; i++)
-            {
-                var body = m_Bodies[i];
-                if (m_ParentIndices[i] != -1)
-                {
-                    var parentBody = m_Bodies[m_ParentIndices[i]];
-                    var parentTransform = new QTTransform { Rotation = parentBody.rotation, Translation = parentBody.position };
-                    // This is slightly inefficient, since for a body with multiple children, we'll end up inverting
-                    // the transform multiple times. Might be able to trade space for perf here.
-                    var invParent = parentTransform.Inverse();
-                    var rbTransform = new QTTransform { Rotation = body.rotation, Translation = body.position };
-                    output[i] = invParent * rbTransform;
-                }
-                else
-                {
-                    output[i] = QTTransform.Identity;
-                }
-            }
 
-            return output;
-        }
-
-        public void DrawModelSpace(Vector3 offset, Color color)
-        {
-            var pose = GetModelSpaceTransforms();
-            var localPose = GetLocalSpaceTransforms();
-            for (var i = 0; i < pose.Length; i++)
-            {
-                var current = pose[i];
-                if (m_ParentIndices[i] == -1)
-                {
-                    continue;
-                }
-
-                var parent = pose[m_ParentIndices[i]];
-                Debug.DrawLine(current.Translation+offset, parent.Translation+offset, Color.cyan);
-                var localUp = localPose[i].Rotation * Vector3.up;
-                var localFwd = localPose[i].Rotation * Vector3.forward;
-                var localRight = localPose[i].Rotation * Vector3.right;
-                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localUp, Color.red);
-                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localFwd, Color.green);
-                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localRight, Color.blue);
-            }
-        }
     }
 }
