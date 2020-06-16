@@ -80,7 +80,7 @@ public class CrawlerAgent : Agent
 
         orientationCube.UpdateOrientation(body, target.transform);
     }
-    
+
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -228,5 +228,4 @@ public class CrawlerAgent : Agent
     {
         AddReward(-0.001f);
     }
-    
 }
