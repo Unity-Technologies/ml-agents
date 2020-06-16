@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         protected abstract QTTransform GetTransformAt(int index);
 
-        void UpdateModelSpaceTransforms()
+        public  void UpdateModelSpaceTransforms()
         {
             var worldTransform = GetTransformAt(0);
             var worldToModel = worldTransform.Inverse();
@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
-        void UpdateLocalSpaceTransforms()
+        public void UpdateLocalSpaceTransforms()
         {
             for (var i = 0; i < m_LocalSpacePose.Length; i++)
             {
