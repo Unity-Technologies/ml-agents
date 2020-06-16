@@ -21,7 +21,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             var bodies = rootBody.GetComponentsInChildren <ArticulationBody>();
             if (bodies[0] != rootBody)
             {
-                Debug.Log("Expected root bodt at index 0");
+                Debug.Log("Expected root body at index 0");
+                return;
             }
 
             var numBodies = bodies.Length;
