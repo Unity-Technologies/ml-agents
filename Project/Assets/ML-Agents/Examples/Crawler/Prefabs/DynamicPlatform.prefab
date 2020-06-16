@@ -501,9 +501,6 @@ MonoBehaviour:
   tagToDetect: agent
   moveTargetToRandomPosIfTouched: 1
   targetSpawnRadius: 40
-  onTrtesiggerEnterEvent:
-    m_PersistentCalls:
-      m_Calls: []
   triggerIsTouching: 0
   onTriggerEnterEvent:
     m_PersistentCalls:
@@ -779,6 +776,11 @@ PrefabInstance:
       propertyPath: ground
       value: 
       objectReference: {fileID: 6810815557394078638}
+    - target: {fileID: 4845971001715176649, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
+        type: 3}
+      propertyPath: orientationCube
+      value: 
+      objectReference: {fileID: 186649206436789638}
     - target: {fileID: 4845971001715176651, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -844,7 +846,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7147393771121027373, guid: 0456c89e8c9c243d595b039fe7aa0bf9, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 0456c89e8c9c243d595b039fe7aa0bf9, type: 3}
 --- !u!4 &8951412967461282419 stripped
 Transform:
@@ -862,5 +865,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &186649206436789638 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4462656217269709630, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
+    type: 3}
+  m_PrefabInstance: {fileID: 4573852208357529272}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771e78c5e980e440e8cd19716b55075f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
