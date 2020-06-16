@@ -120,9 +120,7 @@ class MEDEOptimizer(TFOptimizer):
 
                 if self.policy.use_continuous_act:
                     self.discp = ModelUtils.create_discriminator(
-                        obs,
-                        self.num_diverse,
-                        action_input=self.policy.output,
+                        obs, self.num_diverse, action_input=self.policy.output
                     )
 
                 # The optimizer's m_size is 3 times the policy (Q1, Q2, and Value)
@@ -186,8 +184,13 @@ class MEDEOptimizer(TFOptimizer):
             "update_disc": self.update_batch_disc,
             "learning_rate": self.learning_rate,
         }
+
     def _split(self, observation_and_skill: tf.Tensor) -> List[tf.Tensor]:
-            return tf.split(observation_and_skill, [self.policy.vec_obs_size - self.num_diverse, self.num_diverse], 1)
+        return tf.split(
+            observation_and_skill,
+            [self.policy.vec_obs_size - self.num_diverse, self.num_diverse],
+            1,
+        )
 
     def _create_inputs_and_outputs(self) -> None:
         """
@@ -256,15 +259,22 @@ class MEDEOptimizer(TFOptimizer):
 
         self.rewards_holders = {}
         self.min_policy_qs = {}
-        
-        #discriminator loss
-        self.disc_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=self._z_one_hot, logits=self.disc))
+
+        # discriminator loss
+        self.disc_loss = tf.reduce_mean(
+            tf.nn.softmax_cross_entropy_with_logits(
+                labels=self._z_one_hot, logits=self.disc
+            )
+        )
         discriminabilityp = None
 
         if self.policy.use_continuous_act:
-            discriminabilityp = -1 * tf.nn.softmax_cross_entropy_with_logits(labels=self._z_one_hot, logits=self.discp)
-        self.discriminability = -1 * tf.nn.softmax_cross_entropy_with_logits(labels=self._z_one_hot, logits=self.disc)
-
+            discriminabilityp = -1 * tf.nn.softmax_cross_entropy_with_logits(
+                labels=self._z_one_hot, logits=self.discp
+            )
+        self.discriminability = -1 * tf.nn.softmax_cross_entropy_with_logits(
+            labels=self._z_one_hot, logits=self.disc
+        )
 
         for name in stream_names:
             if discrete:
@@ -417,7 +427,8 @@ class MEDEOptimizer(TFOptimizer):
                 ]
             )
             self.policy_loss = tf.reduce_mean(
-                tf.to_float(self.policy.mask) * tf.squeeze(branched_policy_loss) - self.discriminability
+                tf.to_float(self.policy.mask) * tf.squeeze(branched_policy_loss)
+                - self.discriminability
             )
 
             # Do vbackup entropy bonus per branch as well.
@@ -457,7 +468,7 @@ class MEDEOptimizer(TFOptimizer):
                 )
             )
             batch_policy_loss = tf.reduce_mean(
-                self.ent_coef * self.policy.all_log_probs  - self.policy_network.q1_p,
+                self.ent_coef * self.policy.all_log_probs - self.policy_network.q1_p,
                 axis=1,
             )
             self.policy_loss = tf.reduce_mean(
@@ -530,7 +541,9 @@ class MEDEOptimizer(TFOptimizer):
             )
         ]
 
-        discriminator_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope="discriminator")
+        discriminator_vars = tf.get_collection(
+            tf.GraphKeys.TRAINABLE_VARIABLES, scope="discriminator"
+        )
 
         self.update_batch_disc = discriminator_optimizer.minimize(
             self.disc_loss, var_list=discriminator_vars
