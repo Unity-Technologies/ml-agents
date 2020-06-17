@@ -290,7 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 236
+    VectorObservationSize: 240
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -337,6 +337,11 @@ MonoBehaviour:
   forearmR: {fileID: 7933235353195701980}
   handR: {fileID: 7933235354616748502}
   orientationCube: {fileID: 7559180363928843817}
+  hipsInvTranDirRelToOCube: {x: 0, y: 0, z: 0}
+  facingExpVal: 0
+  targetInvTransformPoint: {x: 0, y: 0, z: 0}
+  headFacingDot: 0
+  hipsFacingDot: 0
 --- !u!114 &895268871377934303
 MonoBehaviour:
   m_ObjectHideFlags: 0
