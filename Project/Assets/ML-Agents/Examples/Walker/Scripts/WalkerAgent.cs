@@ -87,6 +87,7 @@ public class WalkerAgent : Agent
         SetResetParameters();
     }
 
+    public  Vector3 hipsInvTranDirRelToOCube;
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -97,6 +98,8 @@ public class WalkerAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
+
+        hipsInvTranDirRelToOCube = orientationCube.transform.InverseTransformDirection(bp.rb.velocity);
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
@@ -110,15 +113,24 @@ public class WalkerAgent : Agent
         }
     }
 
+    public float facingExpVal;
+    public Vector3 targetInvTransformPoint;
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
-        sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
-
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
+//        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
+//        sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
+        sensor.AddObservation(hips.rotation);
+        sensor.AddObservation(orientationCube.transform.rotation);
+        
+        //
+        facingExpVal = Mathf.Exp(-0.1f * (orientationCube.transform.forward - hips.forward).sqrMagnitude);
+//        var reward = Mathf.Exp(-0.1f * Mathf.Pow((velocity_target - velocity).magnitude, 2));
+        targetInvTransformPoint = orientationCube.transform.InverseTransformPoint(target.transform.position);
+        sensor.AddObservation(targetInvTransformPoint);
+//        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -163,10 +175,13 @@ public class WalkerAgent : Agent
         bpDict[forearmR].SetJointStrength(vectorAction[++i]);
     }
 
+    public float headFacingDot;
+    public float hipsFacingDot;
     void FixedUpdate()
     {
         orientationCube.UpdateOrientation(hips, target.transform);
-
+        headFacingDot = Vector3.Dot(orientationCube.transform.forward, head.forward);
+        hipsFacingDot = Vector3.Dot(orientationCube.transform.forward, hips.forward);
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
         var moveTowardsTargetReward = Vector3.Dot(orientationCube.transform.forward,
