@@ -2,8 +2,8 @@ behaviors:
   Tennis:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2048
-      buffer_size: 20480
+      batch_size: 200
+      buffer_size: 20000
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
