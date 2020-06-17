@@ -10,7 +10,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     {
         ArticulationBody[] m_Bodies;
 
-        public void InitTree(ArticulationBody rootBody)
+        public ArticulationHierarchyUtil(ArticulationBody rootBody)
         {
             if (!rootBody.isRoot)
             {

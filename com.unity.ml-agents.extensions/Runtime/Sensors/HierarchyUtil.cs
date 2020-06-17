@@ -19,6 +19,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             get { return m_LocalSpacePose;  }
         }
 
+        public int NumTransforms
+        {
+            get { return m_ModelSpacePose?.Length ?? 0;  }
+        }
+
         protected void SetParentIndices(int[] parentIndices)
         {
             m_ParentIndices = parentIndices;
