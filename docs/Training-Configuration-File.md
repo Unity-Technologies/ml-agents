@@ -154,7 +154,7 @@ A few considerations when deciding to use memory:
   too large `memory_size` will slow down training.
 - Adding a recurrent layer increases the complexity of the neural network, it is
   recommended to decrease `num_layers` when using recurrent.
-- It is required that `memory_size` be divisible by 4.
+- It is required that `memory_size` be divisible by 2.
 
 ## Self-Play
 
