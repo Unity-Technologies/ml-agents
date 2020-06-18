@@ -1,5 +1,4 @@
 from typing import Dict, Any
-import os
 from enum import Enum
 from collections import defaultdict
 import json
@@ -19,9 +18,6 @@ STATUS_FORMAT_VERSION = "0.1.0"
 class StatusType(Enum):
     LESSON_NUM = "lesson_num"
     STATS_METADATA = "metadata"
-    CHECKPOINT = "checkpoint"
-    STEPS = "steps"
-    FINAL_PATH = "final_model_path"
 
 
 @attr.s(auto_attribs=True)
@@ -108,54 +104,12 @@ class GlobalTrainingStatus:
         GlobalTrainingStatus.saved_state[category][key.value] = value
 
     @staticmethod
-    def append_to_parameter_state(category: str, key: StatusType, value: Any) -> None:
+    def update_parameter_state(new_saved_state: Dict[str, Dict[str, Any]]) -> None:
         """
-        Appends an arbitrary-named parameter in the global saved state.
-        :param category: The category (usually behavior name) of the parameter.
-        :param key: The parameter, e.g. lesson number.
-        :param value: The value.
+        Updates the saved_state from an updated parameter state.
+        :param new_saved_state: Updated saved_state
         """
-        GlobalTrainingStatus.saved_state[category][key.value].append(value)
-
-    @staticmethod
-    def remove_checkpoint(checkpoint: Dict[str, Any]) -> None:
-        file_path: str = checkpoint["file_path"]
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            logger.info(f"Removed checkpoint model {file_path}.")
-        else:
-            logger.info(f"Checkpoint at {file_path} could not be found.")
-        return
-
-    @staticmethod
-    def manage_checkpoint_list(category: str, keep_checkpoints: int) -> None:
-        key = StatusType.CHECKPOINT.value
-        if key not in GlobalTrainingStatus.saved_state[category]:
-            GlobalTrainingStatus.saved_state[category][key] = []
-        checkpoint_list = GlobalTrainingStatus.saved_state[category][key]
-        num_checkpoints = len(checkpoint_list)
-        while num_checkpoints >= keep_checkpoints:
-            if keep_checkpoints <= 0:
-                break
-            GlobalTrainingStatus.remove_checkpoint(checkpoint_list.pop(0))
-            num_checkpoints = len(checkpoint_list)
-        return
-
-    @staticmethod
-    def track_checkpoint_info(category: str, value: Any, keep_checkpoints: int) -> None:
-        GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
-        GlobalTrainingStatus.append_to_parameter_state(
-            category, StatusType.CHECKPOINT, value
-        )
-        return
-
-    @staticmethod
-    def track_final_model_info(
-        category: str, value: str, keep_checkpoints: int
-    ) -> None:
-        GlobalTrainingStatus.manage_checkpoint_list(category, keep_checkpoints)
-        GlobalTrainingStatus.set_parameter_state(category, StatusType.FINAL_PATH, value)
-        return
+        GlobalTrainingStatus.saved_state.update(new_saved_state)
 
     @staticmethod
     def get_parameter_state(category: str, key: StatusType) -> Any:

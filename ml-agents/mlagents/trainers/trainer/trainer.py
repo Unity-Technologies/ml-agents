@@ -1,9 +1,13 @@
 # # Unity ML-Agents Toolkit
-from typing import List, Deque, Union, Dict
+from typing import List, Deque, Union, Dict, Any
 import os
 import abc
+from numpy import mean
 
+from enum import Enum
 from collections import deque
+import attr
+from collections import defaultdict
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
@@ -20,6 +24,125 @@ from mlagents.trainers.training_status import GlobalTrainingStatus
 
 
 logger = get_logger(__name__)
+
+
+@attr.s(auto_attribs=True)
+class Checkpoint:
+    steps: int
+    file_path: str
+    reward: int
+
+
+class CheckpointType(Enum):
+    CHECKPOINT = "checkpoint"
+    STEPS = "steps"
+    FINAL_PATH = "final_model_path"
+    REWARD = "reward"
+
+
+class CheckpointManagerClass:
+    checkpoints_saved: Dict[str, Dict[str, Any]] = defaultdict(lambda: {})
+
+    @staticmethod
+    def save_checkpoints():
+        GlobalTrainingStatus.saved_state.update(
+            CheckpointManagerClass.checkpoints_saved
+        )
+
+    @staticmethod
+    def set_parameter_state(category: str, key: CheckpointType, value: Any) -> None:
+        CheckpointManagerClass.checkpoints_saved[category][key.value] = value
+
+    @staticmethod
+    def append_to_parameter_state(
+        category: str, key: CheckpointType, value: Any
+    ) -> None:
+        CheckpointManagerClass.checkpoints_saved[category][key.value].append(value)
+
+    @staticmethod
+    def get_parameter_state(category: str, key: CheckpointType) -> Any:
+        return CheckpointManagerClass.checkpoints_saved[category].get(key.value, None)
+
+    @staticmethod
+    def remove_checkpoint(checkpoint: Dict[str, Any]) -> None:
+        """
+        Removes a checkpoint stored in checkpoint_list.
+        If checkpoint cannot be found, no action is done.
+        :param checkpoint: A checkpoint stored in checkpoint_list
+        """
+        file_path: str = checkpoint["file_path"]
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            logger.info(f"Removed checkpoint model {file_path}.")
+        else:
+            logger.info(f"Checkpoint at {file_path} could not be found.")
+        return
+
+    @staticmethod
+    def manage_checkpoint_list(category: str, keep_checkpoints: int) -> None:
+        """
+        Ensures that the number of checkpoints stored are within the number
+        of checkpoints the user defines. If the limit is hit, checkpoints are
+        removed to create room for the next checkpoint to be inserted.
+        :param category: The category (usually behavior name) of the parameter.
+        :param keep_checkpoints: Number of checkpoints to record (user-defined).
+        """
+        if not CheckpointManagerClass.get_parameter_state(
+            category, CheckpointType.CHECKPOINT
+        ):
+            CheckpointManagerClass.set_parameter_state(
+                category, CheckpointType.CHECKPOINT, []
+            )
+        checkpoint_list = CheckpointManagerClass.get_parameter_state(
+            category, CheckpointType.CHECKPOINT
+        )
+        num_checkpoints = len(checkpoint_list)
+        while num_checkpoints >= keep_checkpoints:
+            if keep_checkpoints <= 0:
+                break
+            CheckpointManagerClass.remove_checkpoint(checkpoint_list.pop(0))
+            num_checkpoints = len(checkpoint_list)
+        return
+
+    @staticmethod
+    def track_checkpoint_info(
+        category: str, value: Dict[str, Union[int, str]], keep_checkpoints: int
+    ) -> None:
+        """
+        Make room for new checkpoint if needed and insert new checkpoint information.
+        :param category: The category (usually behavior name) of the parameter.
+        :param value: The new checkpoint to be recorded.
+        :param keep_checkpoints: Number of checkpoints to record (user-defined).
+        """
+        CheckpointManagerClass.manage_checkpoint_list(category, keep_checkpoints)
+        CheckpointManagerClass.append_to_parameter_state(
+            category, CheckpointType.CHECKPOINT, value
+        )
+        return
+
+    @staticmethod
+    def track_final_model_info(
+        category: str, final_model_path: str, keep_checkpoints: int, mean_reward: int
+    ) -> None:
+        """
+        Ensures number of checkpoints stored is within the max number of checkpoints
+        defined by the user and finally stores the information about the final
+        model (or intermediate model if training is interrupted).
+        :param category: The category (usually behavior name) of the parameter.
+        :param final_model_path: The file path of the final model.
+        :param keep_checkpoints: Number of checkpoints to record (user-defined).
+        """
+        CheckpointManagerClass.manage_checkpoint_list(category, keep_checkpoints)
+        CheckpointManagerClass.set_parameter_state(
+            category, CheckpointType.FINAL_PATH, final_model_path
+        )
+        CheckpointManagerClass.set_parameter_state(
+            category, CheckpointType.REWARD, mean_reward
+        )
+        GlobalTrainingStatus.update_parameter_state(
+            CheckpointManagerClass.checkpoints_saved
+        )
+        return
 
 
 class Trainer(abc.ABC):
@@ -123,28 +246,31 @@ class Trainer(abc.ABC):
         Exports the model
         """
         policy = self.get_policy(name_behavior_id)
+        measure_val = mean(self.reward_buffer)
         if is_checkpoint:
-            checkpoint_path = f"{name_behavior_id}-{self.get_step}"
+            checkpoint_path = f"{self.brain_name}-{self.get_step}"
             settings = SerializationSettings(
                 policy.model_path, policy.brain.brain_name, checkpoint_path
             )
-            new_checkpoint: Dict[str, Union[int, str]] = {}
             # Store steps and file_path
-            new_checkpoint["steps"] = int(self.get_step)
-            new_checkpoint["file_path"] = os.path.join(
-                settings.model_path, f"{settings.checkpoint_path}.nn"
+            new_checkpoint = Checkpoint(
+                int(self.get_step),
+                os.path.join(settings.model_path, f"{settings.checkpoint_path}.nn"),
+                measure_val,
             )
             # Record checkpoint information
-            GlobalTrainingStatus.track_checkpoint_info(
-                name_behavior_id, new_checkpoint, policy.keep_checkpoints
+            CheckpointManagerClass.track_checkpoint_info(
+                name_behavior_id, attr.asdict(new_checkpoint), policy.keep_checkpoints
             )
         else:
             # Extracting brain name for consistent name_behavior_id
-            brain_name = policy.model_path.split("/")[-1]
             settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
             # Record final model information
-            GlobalTrainingStatus.track_final_model_info(
-                brain_name, f"{settings.model_path}.nn", policy.keep_checkpoints
+            CheckpointManagerClass.track_final_model_info(
+                self.brain_name,
+                f"{settings.model_path}.nn",
+                policy.keep_checkpoints,
+                measure_val,
             )
         export_policy_model(settings, policy.graph, policy.sess, is_checkpoint)
 

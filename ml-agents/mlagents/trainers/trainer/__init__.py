@@ -1,1 +1,1 @@
-from mlagents.trainers.trainer.trainer import Trainer  # noqa
+from mlagents.trainers.trainer.trainer import Trainer, CheckpointManagerClass  # noqa
