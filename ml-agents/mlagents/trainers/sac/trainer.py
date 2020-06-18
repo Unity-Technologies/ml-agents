@@ -221,6 +221,10 @@ class SACTrainer(RLTrainer):
         """
         has_updated = False
         self.cumulative_returns_since_policy_update.clear()
+        self._maybe_write_summary(self.get_step + int(self.steps_per_update))
+        self._maybe_save_model(self.get_step + int(self.steps_per_update))
+        self._increment_step(self.hyperparameters.buffer_size, self.brain_name)
+
         n_sequences = max(
             int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
