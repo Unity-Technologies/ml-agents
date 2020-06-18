@@ -25,8 +25,8 @@ public class CrawlerAgent : Agent
 
 
     [Header("Orientation")] [Space(10)]
-    //This will be used as a stable reference point for observations
-    //Because ragdolls can move erratically, using a standalone reference point can significantly improve learning
+    //This will be used as a stabilized model space reference point for observations
+    //Because ragdolls can move erratically during training, using a standalone reference point improves learning
     public OrientationCubeController orientationCube;
 
     JointDriveController m_JdController;
@@ -86,6 +86,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
     {
+        //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
         //Get velocities in the context of our orientation cube's space
@@ -94,6 +95,7 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
+        //This is the same as doing an unscaled InverseTransformPoint
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
 
         if (bp.rb.transform != body)

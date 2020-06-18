@@ -554,12 +554,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 081fea57c9c06425b8c6e441f9fd214b,
+      objectReference: {fileID: 11400000, guid: 16e27d37dbec246d1a03bf5df819ba3c,
         type: 3}
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 241
+      value: 240
       objectReference: {fileID: 0}
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
@@ -634,7 +634,7 @@ PrefabInstance:
     - target: {fileID: 7408209125961349353, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: maximumWalkingSpeed
-      value: 3
+      value: 999
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765582efd9dda46ed98564603316353f, type: 3}
