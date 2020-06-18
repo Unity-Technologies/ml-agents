@@ -30,8 +30,10 @@ namespace Unity.MLAgents.Extensions.Tests
 
             var inverseT = t.Inverse();
             var product = inverseT * t;
-            Assert.IsTrue(product.Translation.Equals(Vector3.zero));
-            Assert.IsTrue(ApproxEquals(Quaternion.identity, product.Rotation));
+            Assert.IsTrue(Vector3.zero == product.Translation);
+            Assert.IsTrue(Quaternion.identity == product.Rotation);
+
+            Assert.IsTrue(QTTransform.Identity == product);
 
         }
 

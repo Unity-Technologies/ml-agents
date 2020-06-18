@@ -18,6 +18,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="rootBody"></param>
         public RigidBodyHierarchyUtil(Rigidbody rootBody)
         {
+            if (rootBody == null)
+            {
+                return;
+            }
             var rbs = rootBody.GetComponentsInChildren <Rigidbody>();
             var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
             var parentIndices = new int[rbs.Length];
