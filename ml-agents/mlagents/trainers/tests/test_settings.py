@@ -6,6 +6,7 @@ from typing import Dict
 from mlagents.trainers.settings import (
     RunOptions,
     TrainerSettings,
+    NetworkSettings,
     PPOSettings,
     SACSettings,
     RewardSignalType,
@@ -153,6 +154,14 @@ def test_reward_signal_structure():
         RewardSignalSettings.structure(
             "notadict", Dict[RewardSignalType, RewardSignalSettings]
         )
+
+
+def test_memory_settings_validation():
+    with pytest.raises(TrainerConfigError):
+        NetworkSettings.MemorySettings(sequence_length=128, memory_size=63)
+
+    with pytest.raises(TrainerConfigError):
+        NetworkSettings.MemorySettings(sequence_length=128, memory_size=0)
 
 
 def test_parameter_randomization_structure():

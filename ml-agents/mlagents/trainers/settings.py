@@ -51,10 +51,21 @@ class ExportableSettings:
 
 @attr.s(auto_attribs=True)
 class NetworkSettings:
-    @attr.s(auto_attribs=True)
+    @attr.s
     class MemorySettings:
-        sequence_length: int = 64
-        memory_size: int = 128
+        sequence_length: int = attr.ib(default=64)
+        memory_size: int = attr.ib(default=128)
+
+        @memory_size.validator
+        def _check_valid_memory_size(self, attribute, value):
+            if value <= 0:
+                raise TrainerConfigError(
+                    "When using a recurrent network, memory size must be greater than 0."
+                )
+            elif value % 2 != 0:
+                raise TrainerConfigError(
+                    "When using a recurrent network, memory size must be divisible by 2."
+                )
 
     normalize: bool = False
     hidden_units: int = 128
