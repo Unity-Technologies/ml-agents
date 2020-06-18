@@ -45,14 +45,6 @@ def test_globaltrainingstatus(tmpdir):
     assert unknown_category is None
     assert unknown_key is None
 
-    check_checkpoints = GlobalTrainingStatus.saved_state[
-        CheckpointType.CHECKPOINTS.value
-    ]
-    assert check_checkpoints is not None
-
-    final_model = GlobalTrainingStatus.saved_state[CheckpointType.FINAL_MODEL.value]
-    assert final_model is not None
-
 
 def test_model_management(tmpdir):
 
@@ -133,6 +125,14 @@ def test_model_management(tmpdir):
         )
         == 3
     )
+
+    check_checkpoints = GlobalTrainingStatus.saved_state[brain_name][
+        CheckpointType.CHECKPOINT.value
+    ]
+    assert check_checkpoints is not None
+
+    final_model = GlobalTrainingStatus.saved_state[CheckpointType.FINAL_PATH.value]
+    assert final_model is not None
 
 
 class StatsMetaDataTest(unittest.TestCase):
