@@ -8,6 +8,7 @@ from mlagents.trainers.training_status import (
     StatusMetaData,
     GlobalTrainingStatus,
 )
+from mlagents.trainers.trainer import CheckpointManagerClass, CheckpointType
 
 
 def test_globaltrainingstatus(tmpdir):
@@ -44,57 +45,92 @@ def test_globaltrainingstatus(tmpdir):
     assert unknown_category is None
     assert unknown_key is None
 
-    # Test checkpoint info
-    class CheckpointTypes(Enum):
-        CHECKPOINTS = "checkpoints"
-        FINAL_MODEL = "final_model_path"
-
     check_checkpoints = GlobalTrainingStatus.saved_state[
-        CheckpointTypes.CHECKPOINTS.value
+        CheckpointType.CHECKPOINTS.value
     ]
     assert check_checkpoints is not None
 
-    final_model = GlobalTrainingStatus.saved_state[CheckpointTypes.FINAL_MODEL.value]
+    final_model = GlobalTrainingStatus.saved_state[CheckpointType.FINAL_MODEL.value]
     assert final_model is not None
 
 
 def test_model_management(tmpdir):
+
     results_path = os.path.join(tmpdir, "results")
     brain_name = "Mock_brain"
     final_model_path = os.path.join(results_path, brain_name)
     test_checkpoint_list = [
-        {"steps": 1, "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn")},
-        {"steps": 2, "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn")},
-        {"steps": 3, "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn")},
+        {
+            "steps": 1,
+            "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn"),
+            "reward": 1.312,
+        },
+        {
+            "steps": 2,
+            "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn"),
+            "reward": 1.912,
+        },
+        {
+            "steps": 3,
+            "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn"),
+            "reward": 2.312,
+        },
     ]
-    GlobalTrainingStatus.set_parameter_state(
-        brain_name, StatusType.CHECKPOINT, test_checkpoint_list
+    CheckpointManagerClass.set_parameter_state(
+        brain_name, CheckpointType.CHECKPOINT, test_checkpoint_list
     )
 
     new_checkpoint_4 = {
         "steps": 4,
         "file_path": os.path.join(final_model_path, f"{brain_name}-4.nn"),
+        "rewards": 2.678,
     }
-    GlobalTrainingStatus.track_checkpoint_info(brain_name, new_checkpoint_4, 4)
+    CheckpointManagerClass.track_checkpoint_info(brain_name, new_checkpoint_4, 4)
     assert (
-        len(GlobalTrainingStatus.saved_state[brain_name][StatusType.CHECKPOINT.value])
+        len(
+            CheckpointManagerClass.checkpoints_saved[brain_name][
+                CheckpointType.CHECKPOINT.value
+            ]
+        )
         == 4
     )
 
     new_checkpoint_5 = {
         "steps": 5,
         "file_path": os.path.join(final_model_path, f"{brain_name}-5.nn"),
+        "rewards": 3.122,
     }
-    GlobalTrainingStatus.track_checkpoint_info(brain_name, new_checkpoint_5, 4)
+    CheckpointManagerClass.track_checkpoint_info(brain_name, new_checkpoint_5, 4)
     assert (
-        len(GlobalTrainingStatus.saved_state[brain_name][StatusType.CHECKPOINT.value])
+        len(
+            CheckpointManagerClass.checkpoints_saved[brain_name][
+                CheckpointType.CHECKPOINT.value
+            ]
+        )
         == 4
     )
 
     final_model_path = f"{final_model_path}.nn"
-    GlobalTrainingStatus.track_final_model_info(brain_name, final_model_path, 4)
+    CheckpointManagerClass.track_final_model_info(
+        brain_name, final_model_path, 4, 3.294
+    )
     assert (
-        len(GlobalTrainingStatus.saved_state[brain_name][StatusType.CHECKPOINT.value])
+        len(
+            CheckpointManagerClass.checkpoints_saved[brain_name][
+                CheckpointType.CHECKPOINT.value
+            ]
+        )
+        == 3
+    )
+
+    # Check GlobalTrainingStatus has updated keys
+    CheckpointManagerClass.save_checkpoints()
+    assert (
+        len(
+            GlobalTrainingStatus.saved_state[brain_name][
+                CheckpointType.CHECKPOINT.value
+            ]
+        )
         == 3
     )
 
