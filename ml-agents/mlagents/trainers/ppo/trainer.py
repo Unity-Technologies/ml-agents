@@ -215,7 +215,6 @@ class PPOTrainer(RLTrainer):
             self.seed,
             brain_parameters,
             self.trainer_settings,
-            self.is_training,
             self.artifact_path,
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
@@ -235,7 +234,7 @@ class PPOTrainer(RLTrainer):
             self.seed,
             brain_parameters,
             self.trainer_settings,
-            self.is_training,
+            self.artifact_path,
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
         )

@@ -26,6 +26,7 @@ class TorchPolicy(Policy):
         seed: int,
         brain: BrainParameters,
         trainer_settings: TrainerSettings,
+        model_path: str,
         load: bool,
         tanh_squash: bool = False,
         reparameterize: bool = False,
@@ -52,6 +53,7 @@ class TorchPolicy(Policy):
         self.brain = brain
         self.global_step = 0
         self.m_size = 0
+        self.model_path = model_path
 
         self.act_size = brain.vector_action_space_size
         self.act_type = brain.vector_action_space_type
@@ -247,26 +249,23 @@ class TorchPolicy(Policy):
         self.actor_critic.load_state_dict(torch.load(load_path))
 
     def export_model(self, step=0):
-        fake_vec_obs = [torch.zeros([1] + [self.vec_obs_size])]
-        fake_vis_obs = [
-            torch.zeros(
-                [1] + [camera_res.height, camera_res.width, camera_res.num_channels]
-            )
-            for camera_res in self.brain.camera_resolutions
-        ]
-        if self.use_continuous_act:
-            fake_masks = None
-        else:
-            fake_masks = torch.ones([1] + [int(np.sum(self.act_size))])
+        fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
+        fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
+        fake_masks = torch.ones([1] + self.actor_critic.act_size)
         fake_memories = torch.zeros([1] + [self.m_size])
-        export_path = self.model_path + "/model-" + str(step) + ".onnx"
-        output_names = ["action", "value_estimates", "memories"]
+        export_path = "./model-" + str(step) + ".onnx"
+        output_names = ["action", "action_probs"]
+        input_names = ["vector_observation", "action_mask"]
+        dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
         onnx.export(
             self.actor_critic,
-            (fake_vec_obs, fake_vis_obs, fake_masks, fake_memories, 1),
+            (fake_vec_obs, fake_vis_obs, fake_masks),
             export_path,
             verbose=True,
+            opset_version=12,
+            input_names=input_names,
             output_names=output_names,
+            dynamic_axes=dynamic_axes,
         )
 
     @property

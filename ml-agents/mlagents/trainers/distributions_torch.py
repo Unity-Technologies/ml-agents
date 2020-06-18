@@ -1,9 +1,53 @@
 import torch
 from torch import nn
-from torch import distributions
 import numpy as np
+import math
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
+
+
+class GaussianDistInstance(nn.Module):
+    def __init__(self, mean, std):
+        super(GaussianDistInstance, self).__init__()
+        self.mean = mean
+        self.std = std
+
+    def sample(self):
+        return self.mean + torch.randn_like(self.mean) * self.std
+
+    def pdf(self, value):
+        var = self.std ** 2
+        log_scale = self.std.log()
+        return (
+            -((value - self.mean) ** 2) / (2 * var)
+            - log_scale
+            - math.log(math.sqrt(2 * math.pi))
+        )
+
+    def log_prob(self, value):
+        return torch.log(self.pdf(value))
+
+    def entropy(self):
+        return torch.log(2 * math.pi * math.e * self.std)
+
+
+class CategoricalDistInstance(nn.Module):
+    def __init__(self, logits):
+        super(CategoricalDistInstance, self).__init__()
+        self.logits = logits
+        self.probs = torch.softmax(self.logits, dim=-1)
+
+    def sample(self):
+        return torch.multinomial(self.probs, 1)
+
+    def pdf(self, value):
+        return self.probs[:, value]
+
+    def log_prob(self, value):
+        return torch.log(self.pdf(value))
+
+    def entropy(self):
+        return torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
 
 class GaussianDistribution(nn.Module):
@@ -26,7 +70,7 @@ class GaussianDistribution(nn.Module):
             log_sigma = self.log_sigma(inputs)
         else:
             log_sigma = self.log_sigma
-        return [distributions.normal.Normal(loc=mu, scale=torch.exp(log_sigma))]
+        return [GaussianDistInstance(mu, torch.exp(log_sigma))]
 
 
 class MultiCategoricalDistribution(nn.Module):
@@ -64,6 +108,6 @@ class MultiCategoricalDistribution(nn.Module):
         for idx, branch in enumerate(self.branches):
             logits = branch(inputs)
             norm_logits = self.mask_branch(logits, masks[idx])
-            distribution = distributions.categorical.Categorical(logits=norm_logits)
+            distribution = CategoricalDistInstance(norm_logits)
             branch_distributions.append(distribution)
         return branch_distributions
