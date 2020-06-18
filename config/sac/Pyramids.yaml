@@ -21,11 +21,6 @@ behaviors:
       extrinsic:
         gamma: 0.995
         strength: 2.0
-      # curiosity:
-      #   gamma: 0.99
-      #   strength: 0.02
-      #   encoding_size: 256
-      #   learning_rate: 0.0003
       gail:
         gamma: 0.99
         strength: 0.01
