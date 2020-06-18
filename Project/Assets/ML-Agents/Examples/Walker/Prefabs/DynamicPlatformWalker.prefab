@@ -631,6 +631,11 @@ PrefabInstance:
       propertyPath: orientationCube
       value: 
       objectReference: {fileID: 3505288349512854647}
+    - target: {fileID: 7408209125961349353, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: maximumWalkingSpeed
+      value: 3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765582efd9dda46ed98564603316353f, type: 3}
 --- !u!4 &6065910098925129092 stripped
