@@ -16,6 +16,7 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- `SideChannelsManager` was renamed to `SideChannelManager`. The old name is still supported, but deprecated. (#4137)
 - `RayPerceptionSensor.Perceive()` now additionally store the GameObject that was hit by the ray. (#4111)
 - The Barracuda dependency was upgraded to 1.0.0 (#4118)
 #### ml-agents / ml-agents-envs / gym-unity (Python)

@@ -352,7 +352,7 @@ namespace Unity.MLAgents
 
             EnableAutomaticStepping();
 
-            SideChannelsManager.RegisterSideChannel(new EngineConfigurationChannel());
+            SideChannelManager.RegisterSideChannel(new EngineConfigurationChannel());
             m_EnvironmentParameters = new EnvironmentParameters();
             m_StatsRecorder = new StatsRecorder();
 
@@ -510,7 +510,7 @@ namespace Unity.MLAgents
             // If the communicator is not on, we need to clear the SideChannel sending queue
             if (!IsCommunicatorOn)
             {
-                SideChannelsManager.GetSideChannelMessage();
+                SideChannelManager.GetSideChannelMessage();
             }
 
             using (TimerStack.Instance.Scoped("AgentAct"))
@@ -567,7 +567,7 @@ namespace Unity.MLAgents
 
             m_EnvironmentParameters.Dispose();
             m_StatsRecorder.Dispose();
-            SideChannelsManager.UnregisterAllSideChannels();  // unregister custom side channels
+            SideChannelManager.UnregisterAllSideChannels();  // unregister custom side channels
 
             if (m_ModelRunners != null)
             {
