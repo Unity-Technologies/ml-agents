@@ -34,14 +34,18 @@ public class GridAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
+    (int, int) LocalCoordinates
+    {
+        get { return ((int)transform.localPosition.x, (int)transform.localPosition.z);  }
+    }
+
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
     {
         // Mask the necessary actions if selected by the user.
         if (maskActions)
         {
            // Prevents the agent from picking an action that would make it collide with a wall
-            var positionX = (int)transform.position.x;
-            var positionZ = (int)transform.position.z;
+            var (positionX, positionZ) = LocalCoordinates;
             var maxPosition = (int)m_ResetParams.GetWithDefault("gridSize", 5f) - 1;
 
             if (positionX == 0)
@@ -69,6 +73,8 @@ public class GridAgent : Agent
     // to be implemented by the developer
     public override void OnActionReceived(float[] vectorAction)
     {
+        var (positionX, positionZ) = LocalCoordinates;
+        var (oldPositionX, oldPositionZ) = (positionX, positionZ);
         AddReward(-0.01f);
         var action = Mathf.FloorToInt(vectorAction[0]);
 
@@ -80,15 +86,19 @@ public class GridAgent : Agent
                 break;
             case k_Right:
                 targetPos = transform.position + new Vector3(1f, 0, 0f);
+                positionX++;
                 break;
             case k_Left:
                 targetPos = transform.position + new Vector3(-1f, 0, 0f);
+                positionX--;
                 break;
             case k_Up:
                 targetPos = transform.position + new Vector3(0f, 0, 1f);
+                positionZ++;
                 break;
             case k_Down:
                 targetPos = transform.position + new Vector3(0f, 0, -1f);
+                positionZ--;
                 break;
             default:
                 throw new ArgumentException("Invalid action value");
@@ -99,6 +109,8 @@ public class GridAgent : Agent
         if (hit.Where(col => col.gameObject.CompareTag("wall")).ToArray().Length == 0)
         {
             transform.position = targetPos;
+            area.board[oldPositionX, oldPositionZ] = GridArea.CellType.Empty;
+            area.board[positionX, positionZ] = GridArea.CellType.Agent;
 
             if (hit.Where(col => col.gameObject.CompareTag("goal")).ToArray().Length == 1)
             {

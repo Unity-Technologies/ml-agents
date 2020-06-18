@@ -2,14 +2,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
-
+using UnityScript.Lang;
 
 public class GridArea : MonoBehaviour
 {
+    public enum CellType
+    {
+        Empty = 0,
+        Goal = 1,
+        Pit = 2,
+        Agent = 3,
+    }
+
     [HideInInspector]
     public List<GameObject> actorObjs;
     [HideInInspector]
-    public int[] players;
+    public CellType[] players;
+
+    [HideInInspector]
+    public CellType[,] board;
 
     public GameObject trueAgent;
 
@@ -17,7 +28,7 @@ public class GridArea : MonoBehaviour
 
     public GameObject goalPref;
     public GameObject pitPref;
-    GameObject[] m_Objects;
+    Dictionary<CellType, GameObject> m_Objects;
 
     GameObject m_Plane;
     GameObject m_Sn;
@@ -33,9 +44,13 @@ public class GridArea : MonoBehaviour
     {
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
-        m_Objects = new[] { goalPref, pitPref };
+        m_Objects = new Dictionary<CellType, GameObject>
+        {
+            { CellType.Goal, goalPref },
+            { CellType.Pit, pitPref }
+        };
 
-        m_AgentCam = transform.Find("agentCam").GetComponent<Camera>();
+        m_AgentCam = transform.Find("agentCam")?.GetComponent<Camera>();
 
         actorObjs = new List<GameObject>();
 
@@ -51,21 +66,21 @@ public class GridArea : MonoBehaviour
 
     void SetEnvironment()
     {
-        transform.position = m_InitialPosition * (m_ResetParams.GetWithDefault("gridSize", 5f) + 1);
-        var playersList = new List<int>();
+        var gridSize = (int)m_ResetParams.GetWithDefault("gridSize", 5f);
+        transform.position = m_InitialPosition * (gridSize + 1);
+        var playersList = new List<CellType>();
 
         for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numObstacles", 1); i++)
         {
-            playersList.Add(1);
+            playersList.Add(CellType.Pit);
         }
 
         for (var i = 0; i < (int)m_ResetParams.GetWithDefault("numGoals", 1f); i++)
         {
-            playersList.Add(0);
+            playersList.Add(CellType.Goal);
         }
         players = playersList.ToArray();
 
-        var gridSize = (int)m_ResetParams.GetWithDefault("gridSize", 5f);
         m_Plane.transform.localScale = new Vector3(gridSize / 10.0f, 1f, gridSize / 10.0f);
         m_Plane.transform.localPosition = new Vector3((gridSize - 1) / 2f, -0.5f, (gridSize - 1) / 2f);
         m_Sn.transform.localScale = new Vector3(1, 1, gridSize + 2);
@@ -77,8 +92,26 @@ public class GridArea : MonoBehaviour
         m_Se.transform.localPosition = new Vector3(gridSize, 0.0f, (gridSize - 1) / 2f);
         m_Sw.transform.localPosition = new Vector3(-1, 0.0f, (gridSize - 1) / 2f);
 
-        m_AgentCam.orthographicSize = (gridSize) / 2f;
-        m_AgentCam.transform.localPosition = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
+        if(m_AgentCam != null)
+        {
+            m_AgentCam.orthographicSize = (gridSize) / 2f;
+            m_AgentCam.transform.localPosition = new Vector3((gridSize - 1) / 2f, gridSize + 1f, (gridSize - 1) / 2f);
+        }
+
+        if (board == null)
+        {
+            board = new CellType[gridSize, gridSize];
+        }
+        else
+        {
+            for (var i = 0; i < gridSize; i++)
+            {
+                for (var j = 0; j < gridSize; j++)
+                {
+                    board[i, j] = CellType.Empty;
+                }
+            }
+        }
     }
 
     public void AreaReset()
@@ -102,14 +135,16 @@ public class GridArea : MonoBehaviour
         for (var i = 0; i < players.Length; i++)
         {
             var x = (numbersA[i]) / gridSize;
-            var y = (numbersA[i]) % gridSize;
+            var z = (numbersA[i]) % gridSize;
             var actorObj = Instantiate(m_Objects[players[i]], transform);
-            actorObj.transform.localPosition = new Vector3(x, -0.25f, y);
+            actorObj.transform.localPosition = new Vector3(x, -0.25f, z);
             actorObjs.Add(actorObj);
+            board[x, z] = players[i];
         }
 
         var xA = (numbersA[players.Length]) / gridSize;
-        var yA = (numbersA[players.Length]) % gridSize;
-        trueAgent.transform.localPosition = new Vector3(xA, -0.25f, yA);
+        var zA = (numbersA[players.Length]) % gridSize;
+        trueAgent.transform.localPosition = new Vector3(xA, -0.25f, zA);
+        board[xA, zA] = CellType.Agent;
     }
 }
