@@ -58,5 +58,39 @@ namespace Unity.MLAgents.Extensions
 
         // TODO optimize inv(A)*B?
 
+        /// <summary>
+        /// Checks if two transforms are approximately equal. This uses the == operator from Vector3
+        /// and Quaternion; see the caveats on those.
+        /// </summary>
+        /// <param name="t1"></param>
+        /// <param name="t2"></param>
+        /// <returns></returns>
+        public static bool operator ==(QTTransform t1, QTTransform t2)
+        {
+            return (t1.Translation == t2.Translation) && (t1.Rotation == t2.Rotation);
+        }
+
+        public static bool operator !=(QTTransform t1, QTTransform t2)
+        {
+            return (t1.Translation != t2.Translation) || (t1.Rotation != t2.Rotation);
+        }
+
+        public override int GetHashCode()
+        {
+            return Translation.GetHashCode() ^ Rotation.GetHashCode();
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is QTTransform))
+                return false;
+            return this.Equals((QTTransform) other);
+        }
+
+        public bool Equals(QTTransform other)
+        {
+            return Translation.Equals(other.Translation) && Rotation.Equals(other.Rotation);
+        }
+
     }
 }

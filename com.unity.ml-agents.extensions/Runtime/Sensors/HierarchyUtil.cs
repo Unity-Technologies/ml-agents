@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Return the transform of the i'th object.
+        /// Return the world space transform of the i'th object.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
@@ -67,6 +67,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public void UpdateModelSpaceTransforms()
         {
+            if (m_ModelSpacePose == null)
+            {
+                return;
+            }
+
             var worldTransform = GetTransformAt(0);
             var worldToModel = worldTransform.Inverse();
 
@@ -82,6 +87,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public void UpdateLocalSpaceTransforms()
         {
+            if (m_LocalSpacePose == null)
+            {
+                return;
+            }
+
             for (var i = 0; i < m_LocalSpacePose.Length; i++)
             {
                 if (m_ParentIndices[i] != -1)

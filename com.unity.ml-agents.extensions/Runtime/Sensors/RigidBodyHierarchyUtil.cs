@@ -12,69 +12,49 @@ namespace Unity.MLAgents.Extensions.Sensors
     {
         Rigidbody[] m_Bodies;
 
+        /// <summary>
+        /// Initialize given a root RigidBody.
+        /// </summary>
+        /// <param name="rootBody"></param>
         public RigidBodyHierarchyUtil(Rigidbody rootBody)
         {
-            // TODO pass root body, walk constraint chain for each body until reach root or parented body
             var rbs = rootBody.GetComponentsInChildren <Rigidbody>();
+            var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
+            var parentIndices = new int[rbs.Length];
+
+            if (rbs[0] != rootBody)
+            {
+                Debug.Log("Expected root body at index 0");
+                return;
+            }
+
+            for (var i = 0; i < rbs.Length; i++)
+            {
+                bodyToIndex[rbs[i]] = i;
+            }
+
             var joints = rootBody.GetComponentsInChildren <Joint>();
 
-            var parentMap = new Dictionary<Rigidbody, Rigidbody>();
-            foreach (var rb in rbs)
-            {
-                parentMap[rb] = null;
-            }
 
             foreach (var j in joints)
             {
                 var parent = j.connectedBody;
                 var child = j.GetComponent<Rigidbody>();
-                parentMap[child] = parent;
+
+                var parentIndex = bodyToIndex[parent];
+                var childIndex = bodyToIndex[child];
+                parentIndices[childIndex] = parentIndex;
             }
 
-            foreach (var pair in parentMap)
-            {
-                if (pair.Value == null && pair.Key != rootBody)
-                {
-                    Debug.Log($"Found body {pair.Key} with no parent. exiting");
-                    return;
-                }
-            }
-
-            m_Bodies = new Rigidbody[rbs.Length];
-            var parentIndices = new int[rbs.Length];
-            var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
-
-            m_Bodies[0] = rootBody;
-            parentIndices[0] = -1;
-            bodyToIndex[rootBody] = 0;
-            var index = 1;
-
-            // This is inefficient in the worst case (e.g. a chain)
-            // And might not terminate?
-            while(bodyToIndex.Count != rbs.Length)
-            {
-                foreach (var rb in rbs)
-                {
-                    if (bodyToIndex.ContainsKey(rb))
-                    {
-                        // Already found a place for this one
-                        continue;
-                    }
-
-                    var parent = parentMap[rb];
-                    if (bodyToIndex.ContainsKey(parent))
-                    {
-                        m_Bodies[index] = rb;
-                        parentIndices[index] = bodyToIndex[parent];
-                        bodyToIndex[rb] = index;
-                        index++;
-                    }
-                }
-            }
-
+            m_Bodies = rbs;
             SetParentIndices(parentIndices);
         }
 
+        /// <summary>
+        /// Get the transform of the i'th RigidBody.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         protected override QTTransform GetTransformAt(int index)
         {
             var body = m_Bodies[index];
