@@ -121,7 +121,7 @@ class Trainer(abc.ABC):
         Exports the model
         """
         policy = self.get_policy(name_behavior_id)
-        settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+        settings = SerializationSettings(policy.model_path, self.brain_name)
         export_policy_model(settings, policy.graph, policy.sess)
 
     @abc.abstractmethod
