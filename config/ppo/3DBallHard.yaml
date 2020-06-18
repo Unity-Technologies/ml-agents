@@ -17,7 +17,7 @@ behaviors:
       vis_encode_type: simple
     reward_signals:
       extrinsic:
-        gamma: 0.995
+        gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 2000000
