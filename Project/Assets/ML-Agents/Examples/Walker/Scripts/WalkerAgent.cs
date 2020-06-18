@@ -127,8 +127,8 @@ public class WalkerAgent : Agent
         sensor.AddObservation(head.rotation);
         sensor.AddObservation(orientationCube.transform.rotation);
         
-//        velExpVal = Mathf.Exp(-0.1f * (orientationCube.transform.forward * maximumWalkingSpeed - m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
-//        sensor.AddObservation(velExpVal);
+        velExpVal = Mathf.Exp(-0.1f * (orientationCube.transform.forward * maximumWalkingSpeed - m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
+        sensor.AddObservation(velExpVal);
         
         facingExpVal = Mathf.Exp(-0.1f * (orientationCube.transform.forward - hips.forward).sqrMagnitude);
         targetInvTransformPoint = orientationCube.transform.InverseTransformPoint(target.transform.position);
@@ -180,6 +180,7 @@ public class WalkerAgent : Agent
 
     public float headFacingDot;
     public float hipsFacingDot;
+    public float headHeightOverFeetReward;
     void FixedUpdate()
     {
         var cubeForward = orientationCube.transform.forward;
@@ -188,19 +189,39 @@ public class WalkerAgent : Agent
         hipsFacingDot = Vector3.Dot(cubeForward, hips.forward);
         // Set reward for this step according to mixture of the following elements.
         // a. Velocity alignment with goal direction.
-//        var moveTowardsTargetReward =  Mathf.Exp(-0.1f * (orientationCube.transform.forward * maximumWalkingSpeed - m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
-        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
-            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
+        var moveTowardsTargetReward =  Mathf.Exp(-0.1f * (orientationCube.transform.forward * maximumWalkingSpeed - m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
+//        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
+//            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
         var lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
         // c. Encourage head height.
-        var headHeightOverFeetReward = (head.position.y - footL.position.y) + (head.position.y - footR.position.y);
+        headHeightOverFeetReward = ((head.position.y - footL.position.y) + (head.position.y - footR.position.y)/10); //Should normalize to ~1
         AddReward(
             +0.02f * moveTowardsTargetReward
             + 0.01f * lookAtTargetReward
             + 0.01f * headHeightOverFeetReward
         );
     }
+//    void FixedUpdate()
+//    {
+//        var cubeForward = orientationCube.transform.forward;
+//        orientationCube.UpdateOrientation(hips, target.transform);
+//        headFacingDot = Vector3.Dot(cubeForward, head.forward);
+//        hipsFacingDot = Vector3.Dot(cubeForward, hips.forward);
+//        // Set reward for this step according to mixture of the following elements.
+//        // a. Velocity alignment with goal direction.
+//        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
+//            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
+//        // b. Rotation alignment with goal direction.
+//        var lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
+//        // c. Encourage head height.
+//        headHeightOverFeetReward = (head.position.y - footL.position.y) + (head.position.y - footR.position.y);
+//        AddReward(
+//            +0.02f * moveTowardsTargetReward
+//            + 0.01f * lookAtTargetReward
+//            + 0.01f * headHeightOverFeetReward
+//        );
+//    }
 
     /// <summary>
     /// Agent touched the target
