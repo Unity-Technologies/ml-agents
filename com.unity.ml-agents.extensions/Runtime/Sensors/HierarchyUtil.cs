@@ -3,27 +3,50 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
+    /// <summary>
+    /// Abstract class for managing the transforms of a hierarchy of objects.
+    /// This could be GameObjects or Monobehaviours in the scene graph, but this is
+    /// not a requirement; for example, the objects could be rigid bodies whose hierarchy
+    /// is defined by Joint configurations.
+    ///
+    /// Transforms are either considered in model space, which is relative to a root body,
+    /// or in local space, which is relative to their parent.
+    /// </summary>
     public abstract class HierarchyUtil
     {
         int[] m_ParentIndices;
         QTTransform[] m_ModelSpacePose;
         QTTransform[] m_LocalSpacePose;
 
+        /// <summary>
+        /// Read access to the model space transforms.
+        /// </summary>
         public IList<QTTransform> ModelSpacePose
         {
             get { return m_ModelSpacePose;  }
         }
 
+        /// <summary>
+        /// Read access to the local space transforms.
+        /// </summary>
         public IList<QTTransform> LocalSpacePose
         {
             get { return m_LocalSpacePose;  }
         }
 
+        /// <summary>
+        /// Number of transforms in the hierarchy (read-only).
+        /// </summary>
         public int NumTransforms
         {
             get { return m_ModelSpacePose?.Length ?? 0;  }
         }
 
+        /// <summary>
+        /// Initialize with the mapping of parent indices.
+        /// The 0th element is assumed to be -1, indicating that it's the root.
+        /// </summary>
+        /// <param name="parentIndices"></param>
         protected void SetParentIndices(int[] parentIndices)
         {
             m_ParentIndices = parentIndices;
@@ -32,9 +55,17 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_LocalSpacePose = new QTTransform[numTransforms];
         }
 
+        /// <summary>
+        /// Return the transform of the i'th object.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         protected abstract QTTransform GetTransformAt(int index);
 
-        public  void UpdateModelSpaceTransforms()
+        /// <summary>
+        /// Update the internal model space transform storage based on the underlying system.
+        /// </summary>
+        public void UpdateModelSpaceTransforms()
         {
             var worldTransform = GetTransformAt(0);
             var worldToModel = worldTransform.Inverse();
@@ -46,6 +77,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
+        /// <summary>
+        /// Update the internal model space transform storage based on the underlying system.
+        /// </summary>
         public void UpdateLocalSpaceTransforms()
         {
             for (var i = 0; i < m_LocalSpacePose.Length; i++)
@@ -65,6 +99,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
             }
         }
+
 
         public void DrawModelSpace(Vector3 offset)
         {

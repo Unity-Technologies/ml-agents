@@ -57,6 +57,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
 
+        /// <summary>
+        /// The number of floats needed to represent a given number of transforms.
+        /// </summary>
+        /// <param name="numTransforms"></param>
+        /// <returns></returns>
         public int TransformSize(int numTransforms)
         {
             int obsPerTransform = 0;
@@ -71,6 +76,14 @@ namespace Unity.MLAgents.Extensions.Sensors
 
     internal static class ObservationWriterPhysicsExtensions
     {
+        /// <summary>
+        /// Utility method for writing a HierarchyUtil to an ObservationWriter.
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <param name="settings"></param>
+        /// <param name="hierarchyUtil"></param>
+        /// <param name="baseOffset">The offset into the ObservationWriter to start writing at.</param>
+        /// <returns>The number of observations written.</returns>
         public static int WriteHierarchy(this ObservationWriter writer, PhysicsSensorSettings settings, HierarchyUtil hierarchyUtil, int baseOffset = 0)
         {
             var offset = baseOffset;

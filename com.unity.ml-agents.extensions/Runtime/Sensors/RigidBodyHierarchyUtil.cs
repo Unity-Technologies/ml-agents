@@ -4,11 +4,15 @@ using UnityEngine;
 namespace Unity.MLAgents.Extensions.Sensors
 {
 
+    /// <summary>
+    /// Utility class to track a hierarchy of RigidBodies. These are assumed to have a root node,
+    /// and child nodes are connect to their parents via Joints.
+    /// </summary>
     public class RigidBodyHierarchyUtil : HierarchyUtil
     {
         Rigidbody[] m_Bodies;
 
-        public void InitTree(Rigidbody rootBody)
+        public RigidBodyHierarchyUtil(Rigidbody rootBody)
         {
             // TODO pass root body, walk constraint chain for each body until reach root or parented body
             var rbs = rootBody.GetComponentsInChildren <Rigidbody>();

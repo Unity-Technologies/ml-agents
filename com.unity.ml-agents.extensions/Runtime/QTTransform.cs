@@ -35,6 +35,12 @@ namespace Unity.MLAgents.Extensions
             return new QTTransform { Rotation = rotation, Translation = translation };
         }
 
+        /// <summary>
+        /// Compute the inverse of a transform. For any transform Q,
+        ///   Q.Inverse() * Q
+        /// will equal the identity transform (within tolerance).
+        /// </summary>
+        /// <returns></returns>
         public QTTransform Inverse()
         {
             var rotationInverse = Quaternion.Inverse(Rotation);
@@ -42,6 +48,9 @@ namespace Unity.MLAgents.Extensions
             return new QTTransform { Rotation = rotationInverse, Translation = translationInverse };
         }
 
+        /// <summary>
+        /// Get the identity transform.
+        /// </summary>
         public static QTTransform Identity
         {
             get { return new QTTransform { Rotation = Quaternion.identity, Translation = Vector3.zero}; }
