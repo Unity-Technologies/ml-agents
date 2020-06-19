@@ -31,8 +31,8 @@ class FakeTrainer(RLTrainer):
     def _update_policy(self):
         return self.update_policy
 
-    def add_policy(self):
-        pass
+    def add_policy(self, mock_behavior_id, mock_policy):
+        self.policies[mock_behavior_id] = mock_policy
 
     def create_policy(self):
         return mock.Mock()
@@ -72,11 +72,12 @@ def test_clear_update_buffer():
         assert len(arr) == 0
 
 
-@mock.patch("mlagents.trainers.trainer.trainer.Trainer.export_model")
 @mock.patch("mlagents.trainers.trainer.trainer.Trainer.save_model")
 @mock.patch("mlagents.trainers.trainer.rl_trainer.RLTrainer._clear_update_buffer")
-def test_advance(mocked_clear_update_buffer, mocked_save_model, mocked_export_model):
+def test_advance(mocked_clear_update_buffer, mocked_save_model):
     trainer = create_rl_trainer()
+    mock_policy = mock.Mock()
+    trainer.add_policy("TestBrain", mock_policy)
     trajectory_queue = AgentManagerQueue("testbrain")
     policy_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
@@ -114,14 +115,14 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model, mocked_export_mo
     # Check that the buffer has been cleared
     assert not trainer.should_still_train
     assert mocked_clear_update_buffer.call_count > 0
-    assert mocked_save_model.call_count == mocked_export_model.call_count
+    assert mocked_save_model.call_count == 0
 
 
-@mock.patch("mlagents.trainers.trainer.trainer.Trainer.export_model")
-@mock.patch("mlagents.trainers.trainer.trainer.Trainer.save_model")
 @mock.patch("mlagents.trainers.trainer.trainer.StatsReporter.write_stats")
-def test_summary_checkpoint(mock_write_summary, mock_save_model, mock_export_model):
+def test_summary_checkpoint(mock_write_summary):
     trainer = create_rl_trainer()
+    mock_policy = mock.Mock()
+    trainer.add_policy("TestBrain", mock_policy)
     trajectory_queue = AgentManagerQueue("testbrain")
     policy_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
@@ -152,10 +153,9 @@ def test_summary_checkpoint(mock_write_summary, mock_save_model, mock_export_mod
     mock_write_summary.assert_has_calls(calls, any_order=True)
 
     calls = [
-        mock.call(trainer.brain_name)
-        for step in range(
+        mock.call()
+        for _ in range(
             checkpoint_interval, num_trajectories * time_horizon, checkpoint_interval
         )
     ]
-    mock_save_model.assert_has_calls(calls, any_order=True)
-    assert mock_save_model.call_count == mock_export_model.call_count
+    mock_policy.checkpoint.assert_has_calls(calls, any_order=True)

@@ -76,6 +76,8 @@ def export_policy_model(
     Exports latest saved model to .nn format for Unity embedding.
     """
     frozen_graph_def = _make_frozen_graph(settings, graph, sess)
+    if not os.path.exists(settings.model_path):
+        os.makedirs(settings.model_path)
     # Save frozen graph
     frozen_graph_def_path = settings.model_path + "/frozen_graph_def.pb"
     with gfile.GFile(frozen_graph_def_path, "wb") as f:

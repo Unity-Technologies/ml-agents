@@ -78,10 +78,17 @@ class SACTrainer(RLTrainer):
 
     def _checkpoint(self) -> None:
         """
-        Checkpoints the model. Overrides the default _checkpoint since we want to save
-        the replay buffer as well.
+        Overrides the default to save the replay buffer.
         """
         super()._checkpoint()
+        if self.checkpoint_replay_buffer:
+            self.save_replay_buffer()
+
+    def save_model(self) -> None:
+        """
+        Overrides the default to save the replay buffer.
+        """
+        super().save_model()
         if self.checkpoint_replay_buffer:
             self.save_replay_buffer()
 
@@ -308,7 +315,6 @@ class SACTrainer(RLTrainer):
     ) -> None:
         """
         Adds policy to trainer.
-        :param brain_parameters: specifications for policy construction
         """
         if self.policy:
             logger.warning(
@@ -320,6 +326,7 @@ class SACTrainer(RLTrainer):
         if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
+        self.policies[parsed_behavior_id.behavior_id] = policy
         self.optimizer = SACOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)

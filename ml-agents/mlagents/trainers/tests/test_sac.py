@@ -3,7 +3,7 @@ from unittest import mock
 import copy
 
 from mlagents.tf_utils import tf
-
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
@@ -107,20 +107,21 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     trainer = SACTrainer(
         mock_brain.brain_name, 1, trainer_params, True, False, 0, "testdir"
     )
-    policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
-    trainer.add_policy(mock_brain.brain_name, policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(mock_brain.brain_name)
+    policy = trainer.create_policy(behavior_id, mock_brain)
+    trainer.add_policy(behavior_id, policy)
 
     trainer.update_buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, policy.brain)
     buffer_len = trainer.update_buffer.num_experiences
-    trainer.save_model(mock_brain.brain_name)
+    trainer.save_model()
 
     # Wipe Trainer and try to load
     trainer2 = SACTrainer(
         mock_brain.brain_name, 1, trainer_params, True, True, 0, "testdir"
     )
 
-    policy = trainer2.create_policy(mock_brain.brain_name, mock_brain)
-    trainer2.add_policy(mock_brain.brain_name, policy)
+    policy = trainer2.create_policy(behavior_id, mock_brain)
+    trainer2.add_policy(behavior_id, policy)
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 
@@ -136,8 +137,9 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(brain_params.brain_name)
 
-    trainer.add_policy(brain_params.brain_name, policy)
+    trainer.add_policy(behavior_id, policy)
     assert trainer.get_policy(brain_params.brain_name) == policy
 
     # Make sure the summary steps were loaded properly
@@ -146,7 +148,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     # Test incorrect class of policy
     policy = mock.Mock()
     with pytest.raises(RuntimeError):
-        trainer.add_policy(brain_params, policy)
+        trainer.add_policy(behavior_id, policy)
 
 
 def test_advance(dummy_config):
@@ -158,7 +160,8 @@ def test_advance(dummy_config):
     dummy_config.hyperparameters.buffer_init_steps = 0
     trainer = SACTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
-    trainer.add_policy(brain_params.brain_name, policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(brain_params.brain_name)
+    trainer.add_policy(behavior_id, policy)
 
     trajectory_queue = AgentManagerQueue("testbrain")
     policy_queue = AgentManagerQueue("testbrain")
@@ -228,7 +231,7 @@ def test_advance(dummy_config):
     # This is to emulate a load from checkpoint.
     policy = trainer.create_policy(brain_params.brain_name, brain_params)
     policy.get_current_step = lambda: 200
-    trainer.add_policy(brain_params.brain_name, policy)
+    trainer.add_policy(behavior_id, policy)
     trainer.optimizer.update = mock.Mock()
     trainer.optimizer.update_reward_signals = mock.Mock()
     trainer.optimizer.update_reward_signals.return_value = {}

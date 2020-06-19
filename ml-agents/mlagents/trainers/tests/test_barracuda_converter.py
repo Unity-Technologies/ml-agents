@@ -44,7 +44,7 @@ def test_policy_conversion(tmpdir, rnn, visual, discrete):
         use_discrete=discrete,
         use_visual=visual,
     )
-    policy.checkpoint(1000)
+    policy.checkpoint()
     settings = SerializationSettings(
         policy.model_path, os.path.join(tmpdir, policy.brain.brain_name)
     )

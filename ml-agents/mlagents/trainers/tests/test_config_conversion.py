@@ -132,11 +132,11 @@ def test_convert_behaviors(trainer_type, use_recurrent):
     if trainer_type == TrainerType.PPO:
         trainer_config = PPO_CONFIG
         trainer_settings_type = PPOSettings
-    elif trainer_type == TrainerType.SAC:
+    else:
         trainer_config = SAC_CONFIG
         trainer_settings_type = SACSettings
 
-    old_config = yaml.load(trainer_config)
+    old_config = yaml.safe_load(trainer_config)
     old_config[BRAIN_NAME]["use_recurrent"] = use_recurrent
     new_config = convert_behaviors(old_config)
 
