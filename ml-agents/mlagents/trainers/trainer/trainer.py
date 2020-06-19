@@ -250,7 +250,7 @@ class Trainer(abc.ABC):
         if is_checkpoint:
             checkpoint_path = f"{self.brain_name}-{self.get_step}"
             settings = SerializationSettings(
-                policy.model_path, policy.brain.brain_name, checkpoint_path
+                policy.model_path, self.brain_name, checkpoint_path
             )
             # Store steps and file_path
             new_checkpoint = Checkpoint(
@@ -264,7 +264,7 @@ class Trainer(abc.ABC):
             )
         else:
             # Extracting brain name for consistent name_behavior_id
-            settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+            settings = SerializationSettings(policy.model_path, self.brain_name)
             # Record final model information
             CheckpointManagerClass.track_final_model_info(
                 self.brain_name,
@@ -273,6 +273,7 @@ class Trainer(abc.ABC):
                 measure_val,
             )
         export_policy_model(settings, policy.graph, policy.sess, is_checkpoint)
+
 
     @abc.abstractmethod
     def end_episode(self):

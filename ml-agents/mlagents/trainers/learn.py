@@ -210,7 +210,7 @@ def maybe_add_samplers(
         for offset, v in enumerate(sampler_config.values()):
             if v.seed == -1:
                 v.seed = run_seed + offset
-        env.reset(config=sampler_config)
+        env.set_env_parameters(config=sampler_config)
 
 
 def try_create_meta_curriculum(
