@@ -126,4 +126,3 @@ class CheckpointManager:
         GlobalTrainingStatus.update_parameter_state(
             CheckpointManager.checkpoints_saved
         )
-        return

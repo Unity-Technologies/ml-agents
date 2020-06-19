@@ -1,7 +1,11 @@
+import attr
+from mlagents.model_serialization import SerializationSettings
+from mlagents.trainers.policy.checkpoint_manager import Checkpoint
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
+from unittest import mock
 from mlagents.trainers.settings import TrainerSettings
 import numpy as np
 
@@ -70,3 +74,37 @@ def test_convert_version_string():
     # Test dev versions
     result = TFPolicy._convert_version_string("200.300.100.dev0")
     assert result == (200, 300, 100)
+
+
+@mock.patch("mlagents.trainers.policy.tf_policy.export_policy_model")
+@mock.patch(
+    "mlagents.trainers.policy.tf_policy.CheckpointManager.track_checkpoint_info"
+)
+def test_checkpoint_writes_tf_and_nn_checkpoints(
+    track_checkpoint_info_mock, export_policy_model_mock
+):
+    mock_brain = basic_mock_brain()
+    test_seed = 4  # moving up in the world
+    policy = FakePolicy(test_seed, mock_brain, TrainerSettings(), "output")
+    n_steps = 5
+    policy.get_current_step = MagicMock(return_value=n_steps)
+    policy.saver = MagicMock()
+    policy.checkpoint()
+    policy.saver.save.assert_called_once_with(
+        policy.sess, f"output/model-{n_steps}.ckpt"
+    )
+    export_policy_model_mock.assert_called_once_with(
+        SerializationSettings(
+            "output", mock_brain.brain_name, f"{mock_brain.brain_name}-{n_steps}"
+        ),
+        policy.graph,
+        policy.sess,
+        is_checkpoint=True,
+    )
+    track_checkpoint_info_mock.assert_called_once_with(
+        mock_brain.brain_name,
+        attr.asdict(
+            Checkpoint(n_steps, f"output/{mock_brain.brain_name}-{n_steps}.nn", 0.0)
+        ),
+        policy.trainer_settings.keep_checkpoints,
+    )
