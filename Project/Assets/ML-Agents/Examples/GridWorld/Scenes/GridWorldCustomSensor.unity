@@ -839,8 +839,8 @@ GameObject:
   - component: {fileID: 65073500502151127}
   - component: {fileID: 114935252643281133}
   - component: {fileID: 114650562070274873}
-  - component: {fileID: 114889701581441973}
   - component: {fileID: 7980686505587506481}
+  - component: {fileID: 1488388341751814}
   m_Layer: 8
   m_Name: CategoricalAgent
   m_TagString: agent
@@ -848,6 +848,19 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1488388341751814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1488388341751813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e1f1702afc14ebd91c98024f309e209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridArea: {fileID: 114704251863783095}
 --- !u!1 &1625007695491799
 GameObject:
   m_ObjectHideFlags: 0
@@ -1758,24 +1771,6 @@ MonoBehaviour:
   trueAgent: {fileID: 1488388341751813}
   goalPref: {fileID: 1508142483324970, guid: 1ec4e4e96e7514d45b7ebc3ba5a9a481, type: 3}
   pitPref: {fileID: 1811317785436014, guid: d13ee2db77b3a4dcc8664d2fe2a0f219, type: 3}
---- !u!114 &114889701581441973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1488388341751813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Camera: {fileID: 0}
-  m_SensorName: CameraSensor
-  m_Width: 84
-  m_Height: 64
-  m_Grayscale: 0
-  m_Compression: 1
 --- !u!114 &114935252643281133
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1794,7 +1789,7 @@ MonoBehaviour:
     VectorActionSize: 05000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: a812f1ce7763a4a0c912717f3594fe20, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridWorld
