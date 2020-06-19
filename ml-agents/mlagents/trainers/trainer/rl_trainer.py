@@ -148,13 +148,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.trainer_settings.checkpoint_interval
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
-            self.write_checkpoint_model()
-
-    def write_checkpoint_model(self):
-        logger.info(f"Checkpointing model for {self.brain_name}.")
-        self.save_model(self.brain_name)
-        logger.info(f"Exporting a checkpoint model for {self.brain_name}.")
-        self.export_model(self.brain_name, is_checkpoint=True)
+            self._checkpoint()
 
     def advance(self) -> None:
         """

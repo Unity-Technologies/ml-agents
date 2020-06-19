@@ -76,12 +76,12 @@ class SACTrainer(RLTrainer):
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
-    def save_model(self, name_behavior_id: str) -> None:
+    def _checkpoint(self) -> None:
         """
-        Saves the model. Overrides the default save_model since we want to save
+        Checkpoints the model. Overrides the default _checkpoint since we want to save
         the replay buffer as well.
         """
-        self.policy.save_model(self.get_step)
+        super()._checkpoint()
         if self.checkpoint_replay_buffer:
             self.save_replay_buffer()
 

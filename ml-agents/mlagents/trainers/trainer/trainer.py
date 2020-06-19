@@ -1,15 +1,11 @@
 # # Unity ML-Agents Toolkit
-from typing import List, Deque
-import os
-import abc
-from numpy import mean
-
-from collections import deque
 import attr
+from typing import List, Deque, Dict
+import abc
+from collections import deque
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
-from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
@@ -18,8 +14,6 @@ from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
-from mlagents.trainers.trainer import CheckpointManager
-from mlagents.trainers.trainer.track_model_output import Checkpoint
 
 
 logger = get_logger(__name__)
@@ -55,6 +49,7 @@ class Trainer(abc.ABC):
         self.step: int = 0
         self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
+        self.policies: Dict[str, TFPolicy] = {}
 
     @property
     def stats_reporter(self):
@@ -115,43 +110,29 @@ class Trainer(abc.ABC):
         return self._reward_buffer
 
     @timed
-    def save_model(self, name_behavior_id: str) -> None:
+    def _checkpoint(self) -> None:
         """
         Saves the model
         """
-        self.get_policy(name_behavior_id).save_model(self.get_step)
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        policy.checkpoint()
 
-    def export_model(self, name_behavior_id: str, is_checkpoint: bool = False) -> None:
+    def save_model(self) -> None:
         """
         Exports the model
         """
-        policy = self.get_policy(name_behavior_id)
-        measure_val = mean(self.reward_buffer)
-        if is_checkpoint:
-            checkpoint_path = f"{self.brain_name}-{self.get_step}"
-            settings = SerializationSettings(
-                policy.model_path, self.brain_name, checkpoint_path
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
             )
-            # Store steps and file_path
-            new_checkpoint = Checkpoint(
-                int(self.get_step),
-                os.path.join(settings.model_path, f"{settings.checkpoint_path}.nn"),
-                measure_val,
-            )
-            # Record checkpoint information
-            CheckpointManager.track_checkpoint_info(
-                self.brain_name, attr.asdict(new_checkpoint), policy.keep_checkpoints
-            )
-        else:
-            settings = SerializationSettings(policy.model_path, self.brain_name)
-            # Record final model information
-            CheckpointManager.track_final_model_info(
-                self.brain_name,
-                f"{settings.model_path}.nn",
-                policy.keep_checkpoints,
-                measure_val,
-            )
-        export_policy_model(settings, policy.graph, policy.sess, is_checkpoint)
+        policy = list(self.policies.values())[0]
+        policy.save()
 
     @abc.abstractmethod
     def end_episode(self):

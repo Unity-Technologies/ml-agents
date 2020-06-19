@@ -57,7 +57,7 @@ def test_load_save(tmp_path):
     policy = create_policy_mock(trainer_params, model_path=path1)
     policy.initialize_or_load()
     policy._set_step(2000)
-    policy.save_model(2000)
+    policy.checkpoint(2000)
 
     assert len(os.listdir(tmp_path)) > 0
 

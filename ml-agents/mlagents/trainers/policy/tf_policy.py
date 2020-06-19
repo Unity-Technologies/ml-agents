@@ -4,8 +4,15 @@ import os
 import numpy as np
 from distutils.version import LooseVersion
 
+import attr
+from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.policy.checkpoint_manager import (
+    Checkpoint,
+    CheckpointManager,
+)
 from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
@@ -70,6 +77,9 @@ class TFPolicy(Policy):
         self.sequence_length = 1
         self.seed = seed
         self.brain = brain
+        self.behavior_id = BehaviorIdentifiers.from_name_behavior_id(
+            self.brain.brain_name
+        )
 
         self.act_size = brain.vector_action_space_size
         self.vec_obs_size = brain.vector_observation_space_size
@@ -392,18 +402,48 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def save_model(self, steps):
+    def checkpoint(self) -> None:
         """
-        Saves the model
-        :param steps: The number of steps the model was trained for
-        :return:
+        Checkpoints the model
         """
+        current_step = self.get_current_step()
         with self.graph.as_default():
-            last_checkpoint = os.path.join(self.model_path, f"model-{steps}.ckpt")
-            self.saver.save(self.sess, last_checkpoint)
+            last_checkpoint = os.path.join(
+                self.model_path, f"model-{current_step}.ckpt"
+            )
+            if self.saver:
+                self.saver.save(self.sess, last_checkpoint)
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
+        brain_name = self.behavior_id.brain_name
+        checkpoint_path = f"{brain_name}-{current_step}"
+        settings = SerializationSettings(self.model_path, brain_name, checkpoint_path)
+        export_policy_model(settings, self.graph, self.sess, is_checkpoint=True)
+        # Store steps and file_path
+        new_checkpoint = Checkpoint(
+            int(current_step),
+            os.path.join(self.model_path, f"{settings.checkpoint_path}.nn"),
+            0.0,  # TODO: track rewards in policy?
+        )
+        # Record checkpoint information
+        CheckpointManager.track_checkpoint_info(
+            brain_name, attr.asdict(new_checkpoint), self.keep_checkpoints
+        )
+
+    def save(self):
+        """
+        Saves the model
+        """
+        brain_name = self.behavior_id.brain_name
+        settings = SerializationSettings(self.model_path, brain_name)
+        CheckpointManager.track_final_model_info(
+            brain_name,
+            f"{settings.model_path}.nn",
+            self.keep_checkpoints,
+            0.0,  # TODO: track rewards in policy?
+        )
+        export_policy_model(settings, self.graph, self.sess)
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
