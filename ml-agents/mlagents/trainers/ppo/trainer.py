@@ -8,9 +8,9 @@ from typing import cast
 import numpy as np
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
@@ -191,16 +191,16 @@ class PPOTrainer(RLTrainer):
         return True
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.
-        :param brain_parameters: specifications for policy construction
+        :param behavior_spec: specifications for policy construction
         :return policy
         """
         policy = NNPolicy(
             self.seed,
-            brain_parameters,
+            behavior_spec,
             self.trainer_settings,
             self.is_training,
             self.artifact_path,

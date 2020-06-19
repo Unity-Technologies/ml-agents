@@ -1,11 +1,10 @@
 from enum import Enum
-from typing import Callable, Dict, List, Tuple, NamedTuple
+from typing import Callable, Dict, List, Tuple, NamedTuple, Optional
 
 import numpy as np
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.brain import CameraResolution
 
 ActivationFunction = Callable[[tf.Tensor], tf.Tensor]
 EncoderFunction = Callable[
@@ -13,6 +12,19 @@ EncoderFunction = Callable[
 ]
 
 EPSILON = 1e-7
+
+
+class CameraResolution(NamedTuple):
+    height: int
+    width: int
+    num_channels: int
+
+    @property
+    def gray_scale(self) -> bool:
+        return self.num_channels == 1
+
+    def __str__(self):
+        return f"CameraResolution({self.height}, {self.width}, {self.num_channels})"
 
 
 class EncoderType(Enum):
@@ -109,22 +121,33 @@ class ModelUtils:
         return visual_in
 
     @staticmethod
-    def create_visual_input_placeholders(
-        camera_resolutions: List[CameraResolution]
-    ) -> List[tf.Tensor]:
+    def create_input_placeholders(
+        observation_shapes: List[Tuple], name_prefix: str = ""
+    ) -> Tuple[Optional[tf.Tensor], List[tf.Tensor]]:
         """
         Creates input placeholders for visual inputs.
-        :param camera_resolutions: A List of CameraResolutions that specify the resolutions
-        of the input visual observations.
+        :param observation_shapes: A List of tuples that specify the resolutions
+            of the input observations. Tuples for now are restricted to 1D (vector) or 3D (Tensor)
+        :param name_prefix: A name prefix to add to the placeholder names. This is used so that there
+            is no conflict when creating multiple placeholder sets.
         :returns: A List of Tensorflow placeholders where the input iamges should be fed.
         """
         visual_in: List[tf.Tensor] = []
-        for i, camera_resolution in enumerate(camera_resolutions):
-            visual_input = ModelUtils.create_visual_input(
-                camera_resolution, name="visual_observation_" + str(i)
-            )
-            visual_in.append(visual_input)
-        return visual_in
+        vector_in: tf.Tensor = None
+        for i, dimension in enumerate(observation_shapes):
+            if len(dimension) == 3:
+                _res = CameraResolution(
+                    height=dimension[0], width=dimension[1], num_channels=dimension[2]
+                )
+                visual_input = ModelUtils.create_visual_input(
+                    _res, name=name_prefix + "visual_observation_" + str(i)
+                )
+                visual_in.append(visual_input)
+            elif len(dimension) == 1:
+                vector_in = ModelUtils.create_vector_input(
+                    dimension[0], name=name_prefix + "vector_observation"
+                )
+        return vector_in, visual_in
 
     @staticmethod
     def create_vector_input(
@@ -571,7 +594,9 @@ class ModelUtils:
                     )
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
-            if vector_in.get_shape()[-1] > 0:  # Don't encode 0-shape inputs
+            if (
+                vector_in is not None and vector_in.get_shape()[-1] > 0
+            ):  # Don't encode non-existant or 0-shape inputs
                 hidden_state = ModelUtils.create_vector_observation_encoder(
                     vector_observation_input,
                     h_size,
