@@ -9,10 +9,6 @@ namespace Examples.GridWorld.Scripts
         // TODO use grid size from env parameters
         int gridSize = 5;
 
-        /// <summary>
-        /// Creates a BasicSensor.
-        /// </summary>
-        /// <returns></returns>
         public override ISensor CreateSensor()
         {
             return new GridSensor(gridArea, gridSize, pixelsPerCell);
@@ -28,7 +24,7 @@ namespace Examples.GridWorld.Scripts
     public class GridSensor : ISensor
     {
         GridArea m_GridArea;
-        int m_PixlesPerCell;
+        int m_PixelsPerCell;
         int m_GridSize;
         int[] m_Shape;
         const int k_NumChannels = 4;
@@ -37,7 +33,7 @@ namespace Examples.GridWorld.Scripts
         {
             m_GridArea = gridArea;
             m_GridSize = gridSize;
-            m_PixlesPerCell = pixelsPerCell;
+            m_PixelsPerCell = pixelsPerCell;
 
             m_Shape = new []{ gridSize * pixelsPerCell, gridSize * pixelsPerCell, k_NumChannels };
         }
@@ -48,18 +44,51 @@ namespace Examples.GridWorld.Scripts
             return m_Shape;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Writes a one-hot encoding of the area state for the observations.
+        /// As a 3x3 example, for this area state:
+        ///
+        ///  A..
+        ///  ..P
+        ///  G..
+        ///
+        /// The corresponding channels would be
+        /// channel 0 (empty)
+        ///   011
+        ///   110
+        ///   011
+        ///
+        /// channel 1 (goal)
+        ///   000
+        ///   000
+        ///   100
+        ///
+        /// channel 2 (pit)
+        ///   000
+        ///   001
+        ///   000
+        ///
+        /// channel 3 (agent)
+        ///   100
+        ///   000
+        ///   000
+        ///
+        /// </summary>
+        /// <param name="writer"></param>
+        /// <returns></returns>
         public int Write(ObservationWriter writer)
         {
+            // There is a minimum size to visual observations (see MIN_RESOLUTION_FOR_ENCODER in the python code)
+            // So repeat each cell m_PixelsPerCell times/
             var board = m_GridArea.board;
-            var height = m_GridSize * m_PixlesPerCell;
-            var width = m_GridSize * m_PixlesPerCell;
+            var height = m_GridSize * m_PixelsPerCell;
+            var width = m_GridSize * m_PixelsPerCell;
             for (var h = 0; h < height; h++)
             {
-                var i = h / m_PixlesPerCell;
+                var i = h / m_PixelsPerCell;
                 for (var w = 0; w <  width; w++)
                 {
-                    var j = w / m_PixlesPerCell;
+                    var j = w / m_PixelsPerCell;
                     var cellVal = board[i, j];
                     for (var c = 0; c < k_NumChannels; c++)
                     {

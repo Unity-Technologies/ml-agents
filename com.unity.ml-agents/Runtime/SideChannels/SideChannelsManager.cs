@@ -90,13 +90,13 @@ namespace Unity.MLAgents.SideChannels
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        internal static T GetSideChannel<T>() where T: SideChannel
+        internal static T GetSideChannel<T>() where T : SideChannel
         {
             foreach (var sc in s_RegisteredChannels.Values)
             {
                 if (sc.GetType() == typeof(T))
                 {
-                    return (T) sc;
+                    return (T)sc;
                 }
             }
             return null;
