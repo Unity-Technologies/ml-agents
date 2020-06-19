@@ -181,7 +181,7 @@ public class WalkerAgent : Agent
         AddReward(
             +0.02f * moveTowardsTargetReward
             + 0.02f * lookAtTargetReward
-            + 0.01f * headHeightOverFeetReward
+//            + 0.01f * headHeightOverFeetReward
         );
     }
 
