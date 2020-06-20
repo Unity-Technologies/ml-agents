@@ -176,8 +176,8 @@ public class WalkerAgent : Agent
         // b. Rotation alignment with goal direction.
         var lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
         // c. Encourage head height. //Should normalize to ~1
-        var headHeightOverFeetReward = 
-            ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10);
+//        var headHeightOverFeetReward = 
+//            ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10);
         AddReward(
             +0.02f * moveTowardsTargetReward
             + 0.02f * lookAtTargetReward
