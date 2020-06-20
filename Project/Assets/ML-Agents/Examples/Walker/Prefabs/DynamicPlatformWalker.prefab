@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c6b4180754ec414282babdb715e2f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxTorque: {x: 555, y: 555, z: 555}
+  maxTorque: {x: 1000, y: 1000, z: 1000}
   randomizeTorqueEveryXSec: 5
   forceMode: 0
 --- !u!1 &4712512458067701539
@@ -796,6 +796,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DynamicTarget
+      objectReference: {fileID: 0}
+    - target: {fileID: 3858402326794362026, guid: 46734abd0de454192b407379c6a4ab8d,
+        type: 3}
+      propertyPath: m_CollisionDetection
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46734abd0de454192b407379c6a4ab8d, type: 3}
