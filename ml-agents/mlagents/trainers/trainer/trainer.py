@@ -132,6 +132,7 @@ class Trainer(abc.ABC):
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         policy = list(self.policies.values())[0]
+        policy.checkpoint()
         policy.save()
 
     @abc.abstractmethod
