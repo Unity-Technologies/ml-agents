@@ -180,6 +180,7 @@ class ParameterRandomizationType(Enum):
             ParameterRandomizationType.UNIFORM: UniformSettings,
             ParameterRandomizationType.GAUSSIAN: GaussianSettings,
             ParameterRandomizationType.MULTIRANGEUNIFORM: MultiRangeUniformSettings,
+            # Constant type is handled if a float is provided instead of a config
         }
         return _mapping[self]
 
@@ -199,28 +200,33 @@ class ParameterRandomizationSettings(abc.ABC):
             raise TrainerConfigError(
                 f"Unsupported parameter randomization configuration {d}."
             )
-        d_final: Dict[str, List[float]] = {}
+        d_final: Dict[str, ParameterRandomizationSettings] = {}
         for environment_parameter, environment_parameter_config in d.items():
             if environment_parameter == "resampling-interval":
                 logger.warning(
                     "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
                 )
                 continue
-            if "sampler_type" not in environment_parameter_config:
-                raise TrainerConfigError(
-                    f"Sampler configuration for {environment_parameter} does not contain sampler_type."
+            if isinstance(environment_parameter_config, (float, int)):
+                d_final[environment_parameter] = ConstantSettings(
+                    value=float(environment_parameter_config)
                 )
-            if "sampler_parameters" not in environment_parameter_config:
-                raise TrainerConfigError(
-                    f"Sampler configuration for {environment_parameter} does not contain sampler_parameters."
+            else:
+                if "sampler_type" not in environment_parameter_config:
+                    raise TrainerConfigError(
+                        f"Sampler configuration for {environment_parameter} does not contain sampler_type."
+                    )
+                if "sampler_parameters" not in environment_parameter_config:
+                    raise TrainerConfigError(
+                        f"Sampler configuration for {environment_parameter} does not contain sampler_parameters."
+                    )
+                enum_key = ParameterRandomizationType(
+                    environment_parameter_config["sampler_type"]
                 )
-            enum_key = ParameterRandomizationType(
-                environment_parameter_config["sampler_type"]
-            )
-            t = enum_key.to_settings()
-            d_final[environment_parameter] = strict_to_cls(
-                environment_parameter_config["sampler_parameters"], t
-            )
+                t = enum_key.to_settings()
+                d_final[environment_parameter] = strict_to_cls(
+                    environment_parameter_config["sampler_parameters"], t
+                )
         return d_final
 
     @abc.abstractmethod
@@ -232,6 +238,20 @@ class ParameterRandomizationSettings(abc.ABC):
         :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
         """
         pass
+
+
+@attr.s(auto_attribs=True)
+class ConstantSettings(ParameterRandomizationSettings):
+    value: float = 0.0
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the constant sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_float_parameter(key, self.value)
 
 
 @attr.s(auto_attribs=True)
