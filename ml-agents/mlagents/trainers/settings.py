@@ -119,6 +119,7 @@ class SACSettings(HyperparamSettings):
         return self.steps_per_update
 
 
+# INTRINSIC REWARD SIGNALS #############################################################
 class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
     GAIL: str = "gail"
@@ -170,6 +171,7 @@ class CuriositySettings(RewardSignalSettings):
     learning_rate: float = 3e-4
 
 
+# SAMPLERS #############################################################################
 class ParameterRandomizationType(Enum):
     UNIFORM: str = "uniform"
     GAUSSIAN: str = "gaussian"
@@ -188,46 +190,6 @@ class ParameterRandomizationType(Enum):
 @attr.s(auto_attribs=True)
 class ParameterRandomizationSettings(abc.ABC):
     seed: int = parser.get_default("seed")
-
-    @staticmethod
-    def structure(d: Mapping, t: type) -> Any:
-        """
-        Helper method to structure a Dict of ParameterRandomizationSettings class. Meant to be registered with
-        cattr.register_structure_hook() and called with cattr.structure(). This is needed to handle
-        the special Enum selection of ParameterRandomizationSettings classes.
-        """
-        if not isinstance(d, Mapping):
-            raise TrainerConfigError(
-                f"Unsupported parameter randomization configuration {d}."
-            )
-        d_final: Dict[str, ParameterRandomizationSettings] = {}
-        for environment_parameter, environment_parameter_config in d.items():
-            if environment_parameter == "resampling-interval":
-                logger.warning(
-                    "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
-                )
-                continue
-            if isinstance(environment_parameter_config, (float, int)):
-                d_final[environment_parameter] = ConstantSettings(
-                    value=float(environment_parameter_config)
-                )
-            else:
-                if "sampler_type" not in environment_parameter_config:
-                    raise TrainerConfigError(
-                        f"Sampler configuration for {environment_parameter} does not contain sampler_type."
-                    )
-                if "sampler_parameters" not in environment_parameter_config:
-                    raise TrainerConfigError(
-                        f"Sampler configuration for {environment_parameter} does not contain sampler_parameters."
-                    )
-                enum_key = ParameterRandomizationType(
-                    environment_parameter_config["sampler_type"]
-                )
-                t = enum_key.to_settings()
-                d_final[environment_parameter] = strict_to_cls(
-                    environment_parameter_config["sampler_parameters"], t
-                )
-        return d_final
 
     @abc.abstractmethod
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
@@ -332,6 +294,127 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
         )
 
 
+# ENVIRONMENT PARAMETERS ###############################################################
+@attr.s(auto_attribs=True)
+class NextLessonTriggerSettings:
+    class MeasureType(Enum):
+        PROGRESS: str = "progress"
+        REWARD: str = "reward"
+
+    measure: MeasureType = attr.ib(default=MeasureType.REWARD)
+    behavior: str = attr.ib(default="")
+    min_lesson_length: int = 0
+    signal_smoothing: bool = True
+    threshold: float = attr.ib(default=0.0)
+
+    @threshold.validator
+    def _check_threshold_value(self, attribute, value):
+        if self.threshold > 1.0:
+            raise TrainerConfigError(
+                "Threshold for next lesson cannot be greater than 1."
+            )
+        if self.threshold < 0.0:
+            raise TrainerConfigError(
+                "Threshold for next lesson cannot be greater negative."
+            )
+
+
+@attr.s(auto_attribs=True)
+class Lesson:
+    next_lesson_trigger: Optional[NextLessonTriggerSettings]
+    sampler: ParameterRandomizationSettings
+    name: str
+
+
+@attr.s(auto_attribs=True)
+class EnvironmentParameterSettings:
+    lessons: List[Lesson]
+
+    @staticmethod
+    def _sampler_from_config(
+        environment_parameter_config: Mapping
+    ) -> Optional[ParameterRandomizationSettings]:
+        if isinstance(environment_parameter_config, (float, int)):
+            sampler = ConstantSettings(value=float(environment_parameter_config))
+            return sampler
+        elif "sampler_type" in environment_parameter_config:
+            # This is the non-constant sampler case
+            enum_key = ParameterRandomizationType(
+                environment_parameter_config["sampler_type"]
+            )
+            t = enum_key.to_settings()
+            sampler = strict_to_cls(
+                environment_parameter_config["sampler_parameters"], t
+            )
+            return sampler
+        return None
+
+    @staticmethod
+    def structure(d: Mapping, t: type) -> Any:
+        """
+        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure().
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported parameter environment parameter settings {d}."
+            )
+        d_final: Dict[str, EnvironmentParameterSettings] = {}
+        for environment_parameter, environment_parameter_config in d.items():
+            maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
+                environment_parameter_config
+            )
+            if maybe_sampler is not None:
+                d_final[environment_parameter] = EnvironmentParameterSettings(
+                    lessons=[
+                        Lesson(
+                            next_lesson_trigger=None,
+                            sampler=maybe_sampler,
+                            name=environment_parameter,
+                        )
+                    ]
+                )
+            elif "curriculum" in environment_parameter_config:
+                # This is the curriculum case
+                lessons: List[Lesson] = []
+                for lesson_dict in environment_parameter_config["curriculum"]:
+                    # a lesson_dict contains a single lesson with the name of the lesson as key
+                    next_lesson_trigger = None
+                    maybe_sampler = None
+                    lesson_name = list(lesson_dict.keys())[0]
+                    lesson_config = list(lesson_dict.values())[0]
+                    if "next_lesson_trigger" in lesson_config:
+                        next_lesson_trigger = strict_to_cls(
+                            lesson_config["next_lesson_trigger"],
+                            NextLessonTriggerSettings,
+                        )
+                    if "value" in lesson_config:
+                        maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
+                            lesson_config["value"]
+                        )
+                        print(lesson_config["value"], maybe_sampler)
+                    if "value" not in lesson_config or maybe_sampler is None:
+                        raise TrainerConfigError(
+                            f"Parameter {environment_parameter} in lesson {lesson_name} does not contain a valid value."
+                        )
+                    lessons.append(
+                        Lesson(
+                            next_lesson_trigger=next_lesson_trigger,
+                            sampler=maybe_sampler,
+                            name=lesson_name,
+                        )
+                    )
+                d_final[environment_parameter] = EnvironmentParameterSettings(
+                    lessons=lessons
+                )
+            else:
+                raise TrainerConfigError(
+                    f"The parameter {environment_parameter} does not contain a valid value."
+                )
+        return d_final
+
+
+# TRAINERS #############################################################################
 @attr.s(auto_attribs=True)
 class SelfPlaySettings:
     save_steps: int = 20000
@@ -433,19 +516,7 @@ class TrainerSettings(ExportableSettings):
         return t(**d_copy)
 
 
-@attr.s(auto_attribs=True)
-class CurriculumSettings:
-    class MeasureType:
-        PROGRESS: str = "progress"
-        REWARD: str = "reward"
-
-    measure: str = attr.ib(default=MeasureType.REWARD)
-    thresholds: List[float] = attr.ib(factory=list)
-    min_lesson_length: int = 0
-    signal_smoothing: bool = True
-    parameters: Dict[str, List[float]] = attr.ib(kw_only=True)
-
-
+# COMMAND LINE #########################################################################
 @attr.s(auto_attribs=True)
 class CheckpointSettings:
     run_id: str = parser.get_default("run_id")
@@ -484,8 +555,7 @@ class RunOptions(ExportableSettings):
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
-    parameter_randomization: Optional[Dict[str, ParameterRandomizationSettings]] = None
-    curriculum: Optional[Dict[str, CurriculumSettings]] = None
+    environment_parameters: Optional[Dict[str, EnvironmentParameterSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
@@ -496,10 +566,8 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(
-        Dict[str, ParameterRandomizationSettings],
-        ParameterRandomizationSettings.structure,
+        Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
     )
-    cattr.register_structure_hook(CurriculumSettings, strict_to_cls)
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
         DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
