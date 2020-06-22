@@ -45,8 +45,8 @@ namespace Unity.MLAgents.Tests
             intSender.SendInt(5);
             intSender.SendInt(6);
 
-            byte[] fakeData = SideChannelsManager.GetSideChannelMessage(dictSender);
-            SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
+            byte[] fakeData = SideChannelManager.GetSideChannelMessage(dictSender);
+            SideChannelManager.ProcessSideChannelData(dictReceiver, fakeData);
 
             Assert.AreEqual(intReceiver.messagesReceived[0], 4);
             Assert.AreEqual(intReceiver.messagesReceived[1], 5);
@@ -67,8 +67,8 @@ namespace Unity.MLAgents.Tests
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str1));
             strSender.SendRawBytes(Encoding.ASCII.GetBytes(str2));
 
-            byte[] fakeData = SideChannelsManager.GetSideChannelMessage(dictSender);
-            SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
+            byte[] fakeData = SideChannelManager.GetSideChannelMessage(dictSender);
+            SideChannelManager.ProcessSideChannelData(dictReceiver, fakeData);
 
             var messages = strReceiver.GetAndClearReceivedMessages();
 
@@ -96,8 +96,8 @@ namespace Unity.MLAgents.Tests
             tmp = propB.GetWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 1.0f);
 
-            byte[] fakeData = SideChannelsManager.GetSideChannelMessage(dictSender);
-            SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
+            byte[] fakeData = SideChannelManager.GetSideChannelMessage(dictSender);
+            SideChannelManager.ProcessSideChannelData(dictReceiver, fakeData);
 
             tmp = propA.GetWithDefault(k2, 3.0f);
             Assert.AreEqual(tmp, 1.0f);
@@ -105,8 +105,8 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(wasCalled, 0);
             propB.Set(k1, 1.0f);
             Assert.AreEqual(wasCalled, 0);
-            fakeData = SideChannelsManager.GetSideChannelMessage(dictSender);
-            SideChannelsManager.ProcessSideChannelData(dictReceiver, fakeData);
+            fakeData = SideChannelManager.GetSideChannelMessage(dictSender);
+            SideChannelManager.ProcessSideChannelData(dictReceiver, fakeData);
             Assert.AreEqual(wasCalled, 1);
 
             var keysA = propA.Keys();

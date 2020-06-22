@@ -15,12 +15,12 @@ namespace Unity.MLAgents.Tests
     
         public SamplerTests()
         {
-            m_Channel = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
+            m_Channel = SideChannelManager.GetSideChannel<EnvironmentParametersChannel>();
             // if running test on its own
             if (m_Channel == null)
             {
                 m_Channel = new EnvironmentParametersChannel();
-                SideChannelsManager.RegisterSideChannel(m_Channel);
+                SideChannelManager.RegisterSideChannel(m_Channel);
             }
         }
         [Test]
@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Tests
                 outgoingMsg.WriteFloat32(min_value);
                 outgoingMsg.WriteFloat32(max_value);
                 byte[] message = GetByteMessage(m_Channel, outgoingMsg);
-                SideChannelsManager.ProcessSideChannelData(message);
+                SideChannelManager.ProcessSideChannelData(message);
             }
             Assert.AreEqual(1.208888f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
             Assert.AreEqual(1.118017f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
@@ -61,7 +61,7 @@ namespace Unity.MLAgents.Tests
                 outgoingMsg.WriteFloat32(mean);
                 outgoingMsg.WriteFloat32(stddev);
                 byte[] message = GetByteMessage(m_Channel, outgoingMsg);
-                SideChannelsManager.ProcessSideChannelData(message);
+                SideChannelManager.ProcessSideChannelData(message);
             }
             Assert.AreEqual(2.936162f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
             Assert.AreEqual(2.951348f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
@@ -85,7 +85,7 @@ namespace Unity.MLAgents.Tests
                 outgoingMsg.WriteInt32((int)SamplerType.MultiRangeUniform);
                 outgoingMsg.WriteFloatList(intervals);
                 byte[] message = GetByteMessage(m_Channel, outgoingMsg);
-                SideChannelsManager.ProcessSideChannelData(message);
+                SideChannelManager.ProcessSideChannelData(message);
             }
             Assert.AreEqual(3.387999f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
             Assert.AreEqual(1.294413f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
