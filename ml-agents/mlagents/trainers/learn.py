@@ -34,7 +34,7 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
-from mlagents.trainers.trainer import CheckpointManagerClass
+from mlagents.trainers.trainer import CheckpointManager
 
 logger = logging_util.get_logger(__name__)
 
@@ -89,7 +89,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
-            CheckpointManagerClass.checkpoints_saved = (
+            CheckpointManager.checkpoints_saved = (
                 GlobalTrainingStatus.saved_state.copy()
             )
 
