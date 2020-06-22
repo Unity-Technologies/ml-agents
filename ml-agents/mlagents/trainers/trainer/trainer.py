@@ -140,10 +140,9 @@ class Trainer(abc.ABC):
             )
             # Record checkpoint information
             CheckpointManager.track_checkpoint_info(
-                name_behavior_id, attr.asdict(new_checkpoint), policy.keep_checkpoints
+                self.brain_name, attr.asdict(new_checkpoint), policy.keep_checkpoints
             )
         else:
-            # Extracting brain name for consistent name_behavior_id
             settings = SerializationSettings(policy.model_path, self.brain_name)
             # Record final model information
             CheckpointManager.track_final_model_info(
