@@ -348,7 +348,7 @@ class PPOOptimizer(TFOptimizer):
             if self.policy.use_recurrent:
                 feed_dict[self.policy.prev_action] = mini_batch["prev_action"]
             feed_dict[self.policy.action_masks] = mini_batch["action_mask"]
-        if "vector_obs" in mini_batch and self.policy.vector_in:
+        if "vector_obs" in mini_batch:
             feed_dict[self.policy.vector_in] = mini_batch["vector_obs"]
         if self.policy.vis_obs_size > 0:
             for i, _ in enumerate(self.policy.visual_in):

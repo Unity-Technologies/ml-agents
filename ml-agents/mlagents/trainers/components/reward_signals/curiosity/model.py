@@ -71,7 +71,7 @@ class CuriosityModel(object):
             encoded_state_list.append(hidden_visual)
             encoded_next_state_list.append(hidden_next_visual)
 
-        if self.next_vector_in:
+        if self.policy.vec_obs_size > 0:
             encoded_vector_obs = ModelUtils.create_vector_observation_encoder(
                 self.policy.vector_in,
                 self.encoding_size,

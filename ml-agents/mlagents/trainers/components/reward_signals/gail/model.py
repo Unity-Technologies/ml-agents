@@ -98,7 +98,7 @@ class GAILModel(object):
             self.policy.behavior_spec.observation_shapes, "gail_"
         )
 
-        if self.obs_in_expert:
+        if self.policy.vec_obs_size > 0:
             if self.policy.normalize:
                 encoded_expert_list.append(
                     ModelUtils.normalize_vector_obs(

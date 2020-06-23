@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Callable, Dict, List, Tuple, NamedTuple, Optional
+from typing import Callable, Dict, List, Tuple, NamedTuple
 
 import numpy as np
 from mlagents.tf_utils import tf
@@ -123,7 +123,7 @@ class ModelUtils:
     @staticmethod
     def create_input_placeholders(
         observation_shapes: List[Tuple], name_prefix: str = ""
-    ) -> Tuple[Optional[tf.Tensor], List[tf.Tensor]]:
+    ) -> Tuple[tf.Tensor, List[tf.Tensor]]:
         """
         Creates input placeholders for visual inputs.
         :param observation_shapes: A List of tuples that specify the resolutions
@@ -147,6 +147,13 @@ class ModelUtils:
                 vector_in = ModelUtils.create_vector_input(
                     dimension[0], name=name_prefix + "vector_observation"
                 )
+        # If None, create a 0-size vector input to maintain previous behavior
+        if vector_in is None:
+            vector_in = tf.placeholder(
+                shape=[None, 0],
+                dtype=tf.float32,
+                name=name_prefix + "vector_observation",
+            )
         return vector_in, visual_in
 
     @staticmethod
@@ -595,7 +602,7 @@ class ModelUtils:
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
             if (
-                vector_in is not None and vector_in.get_shape()[-1] > 0
+                vector_in.get_shape()[-1] > 0
             ):  # Don't encode non-existant or 0-shape inputs
                 hidden_state = ModelUtils.create_vector_observation_encoder(
                     vector_observation_input,
