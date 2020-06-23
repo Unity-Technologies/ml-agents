@@ -120,7 +120,6 @@ class SACTrainer(RLTrainer):
         """
         Takes a trajectory and processes it, putting it into the replay buffer.
         """
-        # super()._process_trajectory(trajectory)
         self._maybe_write_summary(self.get_step + int(self.steps_per_update))
         self._maybe_save_model(self.get_step + int(self.steps_per_update))
         self._increment_step(self.hyperparameters.buffer_size, self.brain_name)
