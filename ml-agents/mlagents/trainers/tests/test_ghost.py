@@ -92,8 +92,7 @@ def test_process_trajectory(dummy_config):
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
+        observation_shapes=[(1,)],
         action_space=[2],
     )
     trajectory_queue0.put(trajectory)

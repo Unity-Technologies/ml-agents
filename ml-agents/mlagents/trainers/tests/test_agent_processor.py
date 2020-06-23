@@ -55,9 +55,8 @@ def test_agentprocessor(num_vis_obs):
     }
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=2,
-        num_vector_observations=8,
-        action_shape=[2],
-        num_vis_observations=num_vis_obs,
+        observation_shapes=[(8,)] + num_vis_obs * [(84, 84, 3)],
+        action_shape=2,
     )
     fake_action_info = ActionInfo(
         action=[0.1, 0.1],
@@ -88,9 +87,8 @@ def test_agentprocessor(num_vis_obs):
     # Test empty steps
     mock_decision_steps, mock_terminal_steps = mb.create_mock_steps(
         num_agents=0,
-        num_vector_observations=8,
-        action_shape=[2],
-        num_vis_observations=num_vis_obs,
+        observation_shapes=[(8,)] + num_vis_obs * [(84, 84, 3)],
+        action_shape=2,
     )
     processor.add_experiences(
         mock_decision_steps, mock_terminal_steps, 0, ActionInfo([], [], {}, [])
@@ -118,17 +116,10 @@ def test_agent_deletion():
         "log_probs": [0.1],
     }
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
-        num_agents=1,
-        num_vector_observations=8,
-        action_shape=[2],
-        num_vis_observations=0,
+        num_agents=1, observation_shapes=[(8,)], action_shape=2
     )
     mock_done_decision_step, mock_done_terminal_step = mb.create_mock_steps(
-        num_agents=1,
-        num_vector_observations=8,
-        action_shape=[2],
-        num_vis_observations=0,
-        done=True,
+        num_agents=1, observation_shapes=[(8,)], action_shape=2, done=True
     )
     fake_action_info = ActionInfo(
         action=[0.1],
@@ -197,10 +188,7 @@ def test_end_episode():
         "log_probs": [0.1],
     }
     mock_decision_step, mock_terminal_step = mb.create_mock_steps(
-        num_agents=1,
-        num_vector_observations=8,
-        action_shape=[2],
-        num_vis_observations=0,
+        num_agents=1, observation_shapes=[(8,)], action_shape=2
     )
     fake_action_info = ActionInfo(
         action=[0.1],

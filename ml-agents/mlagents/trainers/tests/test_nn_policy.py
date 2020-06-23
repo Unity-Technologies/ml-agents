@@ -138,8 +138,7 @@ def test_normalization():
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
+        observation_shapes=[(1,)],
         action_space=[2],
     )
     # Change half of the obs to 0
@@ -173,8 +172,7 @@ def test_normalization():
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
+        observation_shapes=[(1,)],
         action_space=[2],
     )
     trajectory_buffer = trajectory.to_agentbuffer()
