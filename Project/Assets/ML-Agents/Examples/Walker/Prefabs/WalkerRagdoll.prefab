@@ -267,7 +267,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 895268871377934275}
-  m_LocalRotation: {x: -0, y: 0.7071068, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 3.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -295,7 +295,7 @@ MonoBehaviour:
     VectorActionSize: 27000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: b0c510a5ce7f1453fa3a3607a94c1fbb, type: 3}
+  m_Model: {fileID: 11400000, guid: 3c6170922a9ad4d9f85261699ca00f5d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: WalkerDynamic
@@ -337,11 +337,6 @@ MonoBehaviour:
   forearmR: {fileID: 7933235353195701980}
   handR: {fileID: 7933235354616748502}
   orientationCube: {fileID: 7559180363928843817}
-  hipsInvTranDirRelToOCube: {x: 0, y: 0, z: 0}
-  facingExpVal: 0
-  targetInvTransformPoint: {x: 0, y: 0, z: 0}
-  headFacingDot: 0
-  hipsFacingDot: 0
 --- !u!114 &895268871377934303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1973,6 +1968,7 @@ GameObject:
   - component: {fileID: 6359877977706987617}
   - component: {fileID: 6359877977706987551}
   - component: {fileID: 6359877977706987550}
+  - component: {fileID: 693499830}
   m_Layer: 0
   m_Name: DirectionIndicator
   m_TagString: Untagged
@@ -2041,6 +2037,21 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &693499830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6359877977706987616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1513f8a85fedd47efba089213b7c5bde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  transformToFollow: {fileID: 895268871264836332}
+  targetToLookAt: {fileID: 0}
+  heightOffset: 0
 --- !u!1 &7051518369535447352
 GameObject:
   m_ObjectHideFlags: 0
