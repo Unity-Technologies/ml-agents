@@ -12,6 +12,8 @@ and this project adheres to
 - Fixed an issue where RayPerceptionSensor would raise an exception when the
 list of tags was empty, or a tag in the list was invalid (unknown, null, or
 empty string). (#4155)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed issue with FoodCollector, Soccer, and WallJump when playing with keyboard. (#4147, #4174)
 
 ## [1.0.2] - 2020-06-04
 ### Minor Changes
