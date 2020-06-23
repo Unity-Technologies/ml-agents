@@ -102,9 +102,8 @@ def create_steps_from_behavior_spec(
 
 def make_fake_trajectory(
     length: int,
+    observation_shapes: List[Tuple],
     max_step_complete: bool = False,
-    vec_obs_size: int = 1,
-    num_vis_obs: int = 1,
     action_space: Union[int, Tuple[int]] = 2,
     memory_size: int = 10,
     is_discrete: bool = True,
@@ -116,9 +115,8 @@ def make_fake_trajectory(
     steps_list = []
     for _i in range(length - 1):
         obs = []
-        for _j in range(num_vis_obs):
-            obs.append(np.ones((84, 84, 3), dtype=np.float32))
-        obs.append(np.ones(vec_obs_size, dtype=np.float32))
+        for _shape in observation_shapes:
+            obs.append(np.ones(_shape, dtype=np.float32))
         reward = 1.0
         done = False
         if is_discrete:

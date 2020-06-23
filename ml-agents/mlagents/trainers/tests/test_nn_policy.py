@@ -8,9 +8,8 @@ from mlagents.tf_utils import tf
 
 
 from mlagents.trainers.policy.nn_policy import NNPolicy
-from mlagents.trainers.models import EncoderType, ModelUtils
+from mlagents.trainers.models import EncoderType, ModelUtils, CameraResolution
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.brain import BrainParameters, CameraResolution
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -33,12 +32,12 @@ def create_policy_mock(
     load: bool = False,
     seed: int = 0,
 ) -> NNPolicy:
-    mock_brain = mb.setup_mock_behavior_specs(
+    mock_spec = mb.setup_mock_behavior_specs(
         use_discrete,
         use_visual,
-        vector_action_space=VECTOR_ACTION_SPACE
+        vector_action_space=DISCRETE_ACTION_SPACE
         if use_discrete
-        else DISCRETE_ACTION_SPACE,
+        else VECTOR_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
     )
 
@@ -47,7 +46,7 @@ def create_policy_mock(
     trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
-    policy = NNPolicy(seed, mock_brain, trainer_settings, False, model_path, load)
+    policy = NNPolicy(seed, mock_spec, trainer_settings, False, model_path, load)
     return policy
 
 
@@ -101,7 +100,9 @@ def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
     """
-    decision_step, _ = mb.create_steps_from_brainparams(policy1.brain, num_agents=1)
+    decision_step, _ = mb.create_steps_from_behavior_spec(
+        policy1.behavior_spec, num_agents=1
+    )
     run_out1 = policy1.evaluate(decision_step, list(decision_step.agent_id))
     run_out2 = policy2.evaluate(decision_step, list(decision_step.agent_id))
 
@@ -117,25 +118,20 @@ def test_policy_evaluate(rnn, visual, discrete):
     policy = create_policy_mock(
         TrainerSettings(), use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
-    decision_step, terminal_step = mb.create_steps_from_brainparams(
-        policy.brain, num_agents=NUM_AGENTS
+    decision_step, terminal_step = mb.create_steps_from_behavior_spec(
+        policy.behavior_spec, num_agents=NUM_AGENTS
     )
 
     run_out = policy.evaluate(decision_step, list(decision_step.agent_id))
     if discrete:
         run_out["action"].shape == (NUM_AGENTS, len(DISCRETE_ACTION_SPACE))
     else:
-        assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE[0])
+        assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE)
 
 
 def test_normalization():
-    brain_params = BrainParameters(
-        brain_name="test_brain",
-        vector_observation_space_size=1,
-        camera_resolutions=[],
-        vector_action_space_size=[2],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
+    behavior_spec = mb.setup_mock_behavior_specs(
+        use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
     )
 
     time_horizon = 6
@@ -151,7 +147,7 @@ def test_normalization():
         trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
     policy = NNPolicy(
         0,
-        brain_params,
+        behavior_spec,
         TrainerSettings(network_settings=NetworkSettings(normalize=True)),
         False,
         "testdir",
