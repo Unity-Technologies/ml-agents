@@ -45,9 +45,7 @@ def test_policy_conversion(tmpdir, rnn, visual, discrete):
         use_visual=visual,
     )
     policy.save_model(1000)
-    settings = SerializationSettings(
-        policy.model_path, os.path.join(tmpdir, policy.brain.brain_name)
-    )
+    settings = SerializationSettings(policy.model_path, os.path.join(tmpdir, "test"))
     export_policy_model(settings, policy.graph, policy.sess)
 
     # These checks taken from test_barracuda_converter

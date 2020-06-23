@@ -17,7 +17,7 @@ from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers import __version__
 
 
-VECTOR_ACTION_SPACE = [2]
+VECTOR_ACTION_SPACE = 2
 VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 32
@@ -33,12 +33,13 @@ def create_policy_mock(
     load: bool = False,
     seed: int = 0,
 ) -> NNPolicy:
-    mock_brain = mb.setup_mock_brain(
+    mock_brain = mb.setup_mock_behavior_specs(
         use_discrete,
         use_visual,
-        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_action_space=VECTOR_ACTION_SPACE
+        if use_discrete
+        else DISCRETE_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
-        discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
     trainer_settings = dummy_config
