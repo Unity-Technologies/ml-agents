@@ -7,16 +7,6 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings
 
 
-def create_mock_brain():
-    mock_brain = mb.create_mock_brainparams(
-        vector_action_space_type="continuous",
-        vector_action_space_size=[2],
-        vector_observation_space_size=8,
-        number_visual_observations=1,
-    )
-    return mock_brain
-
-
 # Add concrete implementations of abstract methods
 class FakeTrainer(RLTrainer):
     def set_is_policy_updating(self, is_updating):
@@ -42,9 +32,8 @@ class FakeTrainer(RLTrainer):
 
 
 def create_rl_trainer():
-    mock_brainparams = create_mock_brain()
     trainer = FakeTrainer(
-        mock_brainparams,
+        "test_trainer",
         TrainerSettings(max_steps=100, checkpoint_interval=10, summary_freq=20),
         True,
         0,
@@ -82,9 +71,8 @@ def test_advance(mocked_clear_update_buffer):
     time_horizon = 10
     trajectory = mb.make_fake_trajectory(
         length=time_horizon,
+        observation_shapes=[(1,)],
         max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
         action_space=[2],
     )
     trajectory_queue.put(trajectory)
@@ -127,9 +115,8 @@ def test_summary_checkpoint(mock_write_summary, mock_save_model):
     checkpoint_interval = trainer.trainer_settings.checkpoint_interval
     trajectory = mb.make_fake_trajectory(
         length=time_horizon,
+        observation_shapes=[(1,)],
         max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
         action_space=[2],
     )
     # Check that we can turn off the trainer and that the buffer is cleared

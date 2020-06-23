@@ -46,7 +46,9 @@ def test_trajectory_to_agentbuffer():
     ]
     wanted_keys = set(wanted_keys)
     trajectory = make_fake_trajectory(
-        length=length, vec_obs_size=VEC_OBS_SIZE, action_space=[ACTION_SIZE]
+        length=length,
+        observation_shapes=[(VEC_OBS_SIZE,), (84, 84, 3)],
+        action_space=[ACTION_SIZE],
     )
     agentbuffer = trajectory.to_agentbuffer()
     seen_keys = set()
