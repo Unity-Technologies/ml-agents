@@ -100,7 +100,7 @@ class ConsoleWriter(StatsWriter):
             stats_summary = values["Environment/Cumulative Reward"]
             rank = hvd.rank()
             logger.info(
-                "Horovod Rank: {}."
+                "Horovod Rank: {}. "
                 "{}: Step: {}. "
                 "Time Elapsed: {:0.3f} s "
                 "Mean "
