@@ -179,7 +179,8 @@ public class WalkerAgent : Agent
 //        var headHeightOverFeetReward = 
 //            ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10);
         AddReward(
-            +0.02f * moveTowardsTargetReward
+            +0.02f * Mathf.Clamp(moveTowardsTargetReward, 0, maximumWalkingSpeed)
+//            +0.02f * moveTowardsTargetReward
             + 0.02f * lookAtTargetReward
 //            + 0.01f * headHeightOverFeetReward
         );

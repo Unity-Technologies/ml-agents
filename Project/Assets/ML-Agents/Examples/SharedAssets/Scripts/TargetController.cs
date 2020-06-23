@@ -12,12 +12,19 @@ namespace Unity.MLAgentsExamples
     /// </summary>
     public class TargetController : MonoBehaviour
     {
-        public string tagToDetect;
+        
+        [Header("Collider Tag To Detect")]
+        public string tagToDetect = "agent"; //collider tag to detect 
+        
+        [Header("Target Placement")]
+        public float spawnRadius; //The radius in which a target can be randomly spawned.
+        public bool respawnIfTouched; //Should the target respawn to a different position when touched
+        
+        [Header("Target Fell Protection")]
+        public bool respawnIfFallsOffPlatform = true; //If the target falls off the platform, reset the position.
+        public float fallDistance = 5; //distance below the starting height that will trigger a respawn 
 
-        [Header("Target Placement")] [Space(10)]
-        public bool moveTargetToRandomPosIfTouched; //Should the target respawn to a different position when touched
 
-        public float targetSpawnRadius; //The radius in which a target can be randomly spawned.
         private Vector3 m_startingPos; //the starting position of the target
         private Agent m_agentTouching; //the agent currently touching the target
 
@@ -45,9 +52,21 @@ namespace Unity.MLAgentsExamples
         void OnEnable()
         {
             m_startingPos = transform.position;
-            if (moveTargetToRandomPosIfTouched)
+            if (respawnIfTouched)
             {
                 MoveTargetToRandomPosition();
+            }
+        }
+
+        void Update()
+        {
+            if (respawnIfFallsOffPlatform)
+            {
+                if (transform.position.y < m_startingPos.y - fallDistance)
+                {
+                    Debug.LogError($"{transform.name} Fell Off Platform");
+                    MoveTargetToRandomPosition();
+                }
             }
         }
 
@@ -56,9 +75,11 @@ namespace Unity.MLAgentsExamples
         /// </summary>
         public void MoveTargetToRandomPosition()
         {
-            var newTargetPos = m_startingPos + (Random.insideUnitSphere * targetSpawnRadius);
+            var newTargetPos = m_startingPos + (Random.insideUnitSphere * spawnRadius);
             newTargetPos.y = 5;
             transform.position = newTargetPos;
+            triggerIsTouching = false;
+            colliderIsTouching = false;
         }
 
         private void OnCollisionEnter(Collision col)
@@ -67,7 +88,7 @@ namespace Unity.MLAgentsExamples
             {
                 colliderIsTouching = true;
                 onCollisionEnterEvent.Invoke(col);
-                if (moveTargetToRandomPosIfTouched)
+                if (respawnIfTouched)
                 {
                     MoveTargetToRandomPosition();
                 }
