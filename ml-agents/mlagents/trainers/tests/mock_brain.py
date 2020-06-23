@@ -3,7 +3,7 @@ from typing import List, Tuple, Union
 from collections.abc import Iterable
 import numpy as np
 
-from mlagents.trainers.brain import TensorDimensions3D, BrainParameters
+from mlagents.trainers.brain import Tensor3DShape, BrainParameters
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
@@ -32,7 +32,7 @@ def create_mock_brainparams(
     mock_brain.return_value.vector_observation_space_size = (
         vector_observation_space_size
     )
-    camrez = TensorDimensions3D(height=84, width=84, num_channels=3)
+    camrez = Tensor3DShape(height=84, width=84, num_channels=3)
     mock_brain.return_value.camera_resolutions = [camrez] * number_visual_observations
     mock_brain.return_value.vector_action_space_size = vector_action_space_size
     mock_brain.return_value.brain_name = "MockBrain"
@@ -229,8 +229,7 @@ def make_brain_parameters(
     vec_obs_size: int = 6,
 ) -> BrainParameters:
     resolutions = [
-        TensorDimensions3D(width=30, height=40, num_channels=3)
-        for _ in range(visual_inputs)
+        Tensor3DShape(width=30, height=40, num_channels=3) for _ in range(visual_inputs)
     ]
 
     return BrainParameters(

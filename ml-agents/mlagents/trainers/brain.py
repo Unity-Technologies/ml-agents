@@ -3,7 +3,7 @@ from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParamet
 from typing import List, NamedTuple
 
 
-class TensorDimensions3D(NamedTuple):
+class Tensor3DShape(NamedTuple):
     height: int
     width: int
     num_channels: int
@@ -13,7 +13,7 @@ class TensorDimensions3D(NamedTuple):
         return self.num_channels == 1
 
     def __str__(self):
-        return f"TensorDimensions3D({self.height}, {self.width}, {self.num_channels})"
+        return f"Tensor3DShape({self.height}, {self.width}, {self.num_channels})"
 
 
 class BrainParameters:
@@ -21,7 +21,7 @@ class BrainParameters:
         self,
         brain_name: str,
         vector_observation_space_size: int,
-        camera_resolutions: List[TensorDimensions3D],
+        camera_resolutions: List[Tensor3DShape],
         vector_action_space_size: List[int],
         vector_action_descriptions: List[str],
         vector_action_space_type: int,
@@ -66,7 +66,7 @@ class BrainParameters:
         :return: BrainParameter object.
         """
         resolutions = [
-            TensorDimensions3D(obs.shape[0], obs.shape[1], obs.shape[2])
+            Tensor3DShape(obs.shape[0], obs.shape[1], obs.shape[2])
             for obs in agent_info.observations
             if len(obs.shape) >= 3
         ]

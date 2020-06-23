@@ -14,7 +14,7 @@ EncoderFunction = Callable[
 EPSILON = 1e-7
 
 
-class TensorDimensions3D(NamedTuple):
+class Tensor3DShape(NamedTuple):
     height: int
     width: int
     num_channels: int
@@ -24,7 +24,7 @@ class TensorDimensions3D(NamedTuple):
         return self.num_channels == 1
 
     def __str__(self):
-        return f"TensorDimensions3D({self.height}, {self.width}, {self.num_channels})"
+        return f"Tensor3DShape({self.height}, {self.width}, {self.num_channels})"
 
 
 class EncoderType(Enum):
@@ -102,9 +102,7 @@ class ModelUtils:
         return tf.multiply(input_activation, tf.nn.sigmoid(input_activation))
 
     @staticmethod
-    def create_visual_input(
-        camera_parameters: TensorDimensions3D, name: str
-    ) -> tf.Tensor:
+    def create_visual_input(camera_parameters: Tensor3DShape, name: str) -> tf.Tensor:
         """
         Creates image input op.
         :param camera_parameters: Parameters for visual observation.
@@ -136,7 +134,7 @@ class ModelUtils:
         vector_in: tf.Tensor = None
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
-                _res = TensorDimensions3D(
+                _res = Tensor3DShape(
                     height=dimension[0], width=dimension[1], num_channels=dimension[2]
                 )
                 visual_input = ModelUtils.create_visual_input(

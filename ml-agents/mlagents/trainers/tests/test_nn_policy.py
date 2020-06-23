@@ -8,7 +8,7 @@ from mlagents.tf_utils import tf
 
 
 from mlagents.trainers.policy.nn_policy import NNPolicy
-from mlagents.trainers.models import EncoderType, ModelUtils, TensorDimensions3D
+from mlagents.trainers.models import EncoderType, ModelUtils, Tensor3DShape
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
@@ -197,9 +197,7 @@ def test_min_visual_size():
     for encoder_type in EncoderType:
         with tf.Graph().as_default():
             good_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
-            good_res = TensorDimensions3D(
-                width=good_size, height=good_size, num_channels=3
-            )
+            good_res = Tensor3DShape(width=good_size, height=good_size, num_channels=3)
             vis_input = ModelUtils.create_visual_input(good_res, "test_min_visual_size")
             ModelUtils._check_resolution_for_encoder(vis_input, encoder_type)
             enc_func = ModelUtils.get_encoder_for_type(encoder_type)
@@ -209,9 +207,7 @@ def test_min_visual_size():
         with pytest.raises(Exception):
             with tf.Graph().as_default():
                 bad_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
-                bad_res = TensorDimensions3D(
-                    width=bad_size, height=bad_size, num_channels=3
-                )
+                bad_res = Tensor3DShape(width=bad_size, height=bad_size, num_channels=3)
                 vis_input = ModelUtils.create_visual_input(
                     bad_res, "test_min_visual_size"
                 )
