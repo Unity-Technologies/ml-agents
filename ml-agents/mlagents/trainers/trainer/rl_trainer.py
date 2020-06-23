@@ -80,7 +80,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         return False
 
-    @abc.abstractmethod
     def _update_policy(self) -> bool:
         """
         Uses demonstration_buffer to update model.
@@ -122,9 +121,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         Takes a trajectory and processes it, putting it into the update buffer.
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
-        self._maybe_write_summary(self.get_step + len(trajectory.steps))
-        self._maybe_save_model(self.get_step + len(trajectory.steps))
-        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
+        pass
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
         """
@@ -134,7 +131,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         if self._next_summary_step == 0:  # Don't write out the first one
             self._next_summary_step = self._get_next_interval_step(self.summary_freq)
-        if step_after_process >= self._next_summary_step and self.get_step != 0:
+        if step_after_process >= self._next_summary_step:
             self._write_summary(self._next_summary_step)
 
     def _maybe_save_model(self, step_after_process: int) -> None:

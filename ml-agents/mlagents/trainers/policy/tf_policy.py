@@ -17,6 +17,7 @@ from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers import __version__
+import horovod.tensorflow as hvd
 
 
 logger = get_logger(__name__)
@@ -207,6 +208,7 @@ class TFPolicy(Policy):
             self._load_graph(self.model_path, reset_global_steps=reset_steps)
         else:
             self._initialize_graph()
+        self.sess.run(hvd.broadcast_global_variables(0))
 
     def get_weights(self):
         with self.graph.as_default():
@@ -414,6 +416,8 @@ class TFPolicy(Policy):
         :param steps: The number of steps the model was trained for
         :return:
         """
+        if hvd.rank() != 0:
+            return
         with self.graph.as_default():
             last_checkpoint = os.path.join(self.model_path, f"model-{steps}.ckpt")
             self.saver.save(self.sess, last_checkpoint)
