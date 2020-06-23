@@ -145,6 +145,10 @@ class ModelUtils:
                 vector_in = ModelUtils.create_vector_input(
                     dimension[0], name=name_prefix + "vector_observation"
                 )
+            else:
+                raise UnityTrainerException(
+                    f"Unsupported shape of {dimension} for observation {i}"
+                )
         # If None, create a 0-size vector input to maintain previous behavior
         if vector_in is None:
             vector_in = tf.placeholder(
