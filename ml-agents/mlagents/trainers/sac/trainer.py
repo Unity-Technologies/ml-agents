@@ -11,12 +11,12 @@ import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 
@@ -185,11 +185,11 @@ class SACTrainer(RLTrainer):
         return policy_was_updated
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         policy = NNPolicy(
             self.seed,
-            brain_parameters,
+            behavior_spec,
             self.trainer_settings,
             self.is_training,
             self.artifact_path,
