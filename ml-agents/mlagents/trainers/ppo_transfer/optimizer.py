@@ -4,68 +4,88 @@ from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import ModelUtils, EncoderType
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-
+import tf_slim as slim
 
 class PPOTransferOptimizer(TFOptimizer):
-    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
+    def __init__(self, policy: TransferPolicy, trainer_params: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value esåtimator and a loss function.
         :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the properties of the trainer.
         """
+        
+        self.separate_value_train = False
+        self.ppo_update_dict: Dict[str, tf.Tensor] = {}
+        self.model_update_dict: Dict[str, tf.Tensor] = {}
+        self.use_alter = False
+        self.in_batch_alter = False
+        self.num_updates = 0
+        self.alter_every = 400
+
+        # Transfer
+        self.use_transfer = True
+        self.smart_transfer = False
+        self.conv_thres = 1e-6
+        self.old_loss = np.inf
+        self.update_mode = "model"
+        self.transfer_path = "results/BallSingle_nosep/3DBall"
+        self.transfer_type = "observation"
+
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
         policy.create_tf_graph()
 
         with policy.graph.as_default():
-            with tf.variable_scope("optimizer/"):
-                super().__init__(policy, trainer_params)
-                hyperparameters: PPOSettings = cast(
-                    PPOSettings, trainer_params.hyperparameters
+            super().__init__(policy, trainer_params)
+            hyperparameters: PPOSettings = cast(
+                PPOSettings, trainer_params.hyperparameters
+            )
+            lr = float(hyperparameters.learning_rate)
+            self._schedule = hyperparameters.learning_rate_schedule
+            epsilon = float(hyperparameters.epsilon)
+            beta = float(hyperparameters.beta)
+            max_step = float(trainer_params.max_steps)
+            policy_network_settings = policy.network_settings
+            h_size = int(policy_network_settings.hidden_units)
+            num_layers = policy_network_settings.num_layers
+            vis_encode_type = policy_network_settings.vis_encode_type
+            self.burn_in_ratio = 0.0
+
+            self.stream_names = list(self.reward_signals.keys())
+
+            self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
+            self.grads = None
+            self.update_batch: Optional[tf.Operation] = None
+
+            self.stats_name_to_update_name = {
+                "Losses/Value Loss": "value_loss",
+                "Losses/Policy Loss": "policy_loss",
+                "Losses/Model Loss": "model_loss",
+                "Policy/Learning Rate": "learning_rate",
+                "Policy/Epsilon": "decay_epsilon",
+                "Policy/Beta": "decay_beta",
+            }
+            if self.policy.use_recurrent:
+                self.m_size = self.policy.m_size
+                self.memory_in = tf.placeholder(
+                    shape=[None, self.m_size],
+                    dtype=tf.float32,
+                    name="recurrent_value_in",
                 )
-                lr = float(hyperparameters.learning_rate)
-                self._schedule = hyperparameters.learning_rate_schedule
-                epsilon = float(hyperparameters.epsilon)
-                beta = float(hyperparameters.beta)
-                max_step = float(trainer_params.max_steps)
+            if num_layers < 1:
+                num_layers = 1
 
-                policy_network_settings = policy.network_settings
-                h_size = int(policy_network_settings.hidden_units)
-                num_layers = policy_network_settings.num_layers
-                vis_encode_type = policy_network_settings.vis_encode_type
-                self.burn_in_ratio = 0.0
-
-                self.stream_names = list(self.reward_signals.keys())
-
-                self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
-                self.grads = None
-                self.update_batch: Optional[tf.Operation] = None
-
-                self.stats_name_to_update_name = {
-                    "Losses/Value Loss": "value_loss",
-                    "Losses/Policy Loss": "policy_loss",
-                    "Policy/Learning Rate": "learning_rate",
-                    "Policy/Epsilon": "decay_epsilon",
-                    "Policy/Beta": "decay_beta",
-                }
-                if self.policy.use_recurrent:
-                    self.m_size = self.policy.m_size
-                    self.memory_in = tf.placeholder(
-                        shape=[None, self.m_size],
-                        dtype=tf.float32,
-                        name="recurrent_value_in",
-                    )
-
-                if num_layers < 1:
-                    num_layers = 1
+            with tf.variable_scope("value"):
                 if policy.use_continuous_act:
                     self._create_cc_critic(h_size, num_layers, vis_encode_type)
                 else:
                     self._create_dc_critic(h_size, num_layers, vis_encode_type)
-
+            
+            with tf.variable_scope("optimizer/"):
                 self.learning_rate = ModelUtils.create_schedule(
                     self._schedule,
                     lr,
@@ -78,6 +98,8 @@ class PPOTransferOptimizer(TFOptimizer):
                     self.old_log_probs,
                     self.value_heads,
                     self.policy.entropy,
+                    self.policy.targ_encoder,
+                    self.policy.predict,
                     beta,
                     epsilon,
                     lr,
@@ -85,19 +107,33 @@ class PPOTransferOptimizer(TFOptimizer):
                 )
                 self._create_ppo_optimizer_ops()
 
-            self.update_dict.update(
-                {
-                    "value_loss": self.value_loss,
-                    "policy_loss": self.abs_policy_loss,
-                    "update_batch": self.update_batch,
-                    "learning_rate": self.learning_rate,
-                    "decay_epsilon": self.decay_epsilon,
-                    "decay_beta": self.decay_beta,
-                }
-            )
+                self.update_dict.update(
+                    {
+                        "value_loss": self.value_loss,
+                        "policy_loss": self.abs_policy_loss,
+                        "model_loss": self.model_loss,
+                        "update_batch": self.update_batch,
+                        "learning_rate": self.learning_rate,
+                        "decay_epsilon": self.decay_epsilon,
+                        "decay_beta": self.decay_beta,
+                    }
+                )
 
+                if self.use_alter or self.smart_transfer or self.in_batch_alter:
+                    self._init_alter_update()
+            
             self.policy.initialize_or_load()
+            if self.use_transfer:
+                self.policy.load_graph_partial(self.transfer_path, self.transfer_type)
 
+            slim.model_analyzer.analyze_vars(tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES), print_info=True)
+            
+            print("All variables in the graph:")
+            for variable in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
+                print(variable.name)
+            # tf.summary.FileWriter(self.policy.model_path, self.sess.graph)
+
+    
     def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
@@ -107,26 +143,18 @@ class PPOTransferOptimizer(TFOptimizer):
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
         """
-        hidden_stream = ModelUtils.create_observation_streams(
-            self.policy.visual_in,
-            self.policy.processed_vector_in,
-            1,
-            h_size,
-            num_layers,
-            vis_encode_type,
-        )[0]
-
-        if self.policy.use_recurrent:
-            hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
-                hidden_stream,
-                self.memory_in,
-                self.policy.sequence_length_ph,
-                name="lstm_value",
-            )
-            self.memory_out = memory_value_out
+        if self.separate_value_train:
+            input_state = tf.stop_gradient(self.policy.encoder)
         else:
-            hidden_value = hidden_stream
-
+            input_state = self.policy.encoder
+        hidden_value = ModelUtils.create_vector_observation_encoder(
+            input_state,
+            h_size,
+            ModelUtils.swish,
+            num_layers,
+            scope=f"main_graph",
+            reuse=False
+        )
         self.value_heads, self.value = ModelUtils.create_value_heads(
             self.stream_names, hidden_value
         )
@@ -149,26 +177,18 @@ class PPOTransferOptimizer(TFOptimizer):
         :param num_layers: Number of hidden linear layers.
         :param vis_encode_type: The type of visual encoder to use.
         """
-        hidden_stream = ModelUtils.create_observation_streams(
-            self.policy.visual_in,
-            self.policy.processed_vector_in,
-            1,
-            h_size,
-            num_layers,
-            vis_encode_type,
-        )[0]
-
-        if self.policy.use_recurrent:
-            hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
-                hidden_stream,
-                self.memory_in,
-                self.policy.sequence_length_ph,
-                name="lstm_value",
-            )
-            self.memory_out = memory_value_out
+        if self.separate_value_train:
+            input_state = tf.stop_gradient(self.policy.encoder)
         else:
-            hidden_value = hidden_stream
-
+            input_state = self.policy.encoder
+        hidden_value = ModelUtils.create_vector_observation_encoder(
+            input_state,
+            h_size,
+            ModelUtils.swish,
+            num_layers,
+            scope=f"main_graph",
+            reuse=False
+        )
         self.value_heads, self.value = ModelUtils.create_value_heads(
             self.stream_names, hidden_value
         )
@@ -212,7 +232,7 @@ class PPOTransferOptimizer(TFOptimizer):
         )
 
     def _create_losses(
-        self, probs, old_probs, value_heads, entropy, beta, epsilon, lr, max_step
+        self, probs, old_probs, value_heads, entropy, targ_encoder, predict, beta, epsilon, lr, max_step
     ):
         """
         Creates training-specific Tensorflow ops for PPO models.
@@ -283,7 +303,22 @@ class PPOTransferOptimizer(TFOptimizer):
         # For cleaner stats reporting
         self.abs_policy_loss = tf.abs(self.policy_loss)
 
+        # encoder and predict loss
+        self.dis_returns = tf.placeholder(
+            shape=[None], dtype=tf.float32, name="dis_returns"
+        )
+        target = tf.concat([targ_encoder, tf.expand_dims(self.dis_returns, -1)], axis=1)
+        self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder))
+
         self.loss = (
+            self.policy_loss
+            + self.model_loss
+            + 0.5 * self.value_loss
+            - self.decay_beta
+            * tf.reduce_mean(tf.dynamic_partition(entropy, self.policy.mask, 2)[1])
+        )
+
+        self.ppo_loss = (
             self.policy_loss
             + 0.5 * self.value_loss
             - self.decay_beta
@@ -291,9 +326,63 @@ class PPOTransferOptimizer(TFOptimizer):
         )
 
     def _create_ppo_optimizer_ops(self):
+        if self.use_transfer:
+            if self.transfer_type == "dynamics":
+                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+                # train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/mu")
+                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/log_std")
+                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value/extrinsic_value")
+            elif self.transfer_type == "observation":
+                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
+                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
+                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+        else:
+            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
-        self.grads = self.tf_optimizer.compute_gradients(self.loss)
-        self.update_batch = self.tf_optimizer.minimize(self.loss)
+        self.grads = self.tf_optimizer.compute_gradients(self.loss, var_list=train_vars)
+        self.update_batch = self.tf_optimizer.minimize(self.loss, var_list=train_vars)
+        
+        
+    def _init_alter_update(self):
+        train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
+        model_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+
+        self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
+        self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
+        self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
+
+        self.model_optimizer = self.create_optimizer_op(self.learning_rate)
+        self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=model_train_vars)
+        self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=model_train_vars)
+
+        self.ppo_update_dict.update(
+            {
+                "value_loss": self.value_loss,
+                "policy_loss": self.abs_policy_loss,
+                "model_loss": self.model_loss,
+                "update_batch": self.ppo_update_batch,
+                "learning_rate": self.learning_rate,
+                "decay_epsilon": self.decay_epsilon,
+                "decay_beta": self.decay_beta,
+            }
+        )
+
+        self.model_update_dict.update(
+            {
+                "value_loss": self.value_loss,
+                "policy_loss": self.abs_policy_loss,
+                "model_loss": self.model_loss,
+                "update_batch": self.model_update_batch,
+                "learning_rate": self.learning_rate,
+                "decay_epsilon": self.decay_epsilon,
+                "decay_beta": self.decay_beta,
+            }
+        )
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -312,8 +401,42 @@ class PPOTransferOptimizer(TFOptimizer):
                 reward_signal.prepare_update(self.policy, batch, num_sequences)
             )
             stats_needed.update(reward_signal.stats_name_to_update_name)
+        
+        if self.use_alter:
+            if self.num_updates / self.alter_every == 0:
+                update_vals = self._execute_model(feed_dict, self.update_dict)
+                if self.num_updates % self.alter_every == 0:
+                    print("start update all", self.num_updates)
+            elif (self.num_updates / self.alter_every) % 2 == 1:
+                update_vals = self._execute_model(feed_dict, self.model_update_dict)
+                if self.num_updates % self.alter_every == 0:
+                    print("start update model", self.num_updates)
+            else: # (self.num_updates / self.alter_every) % 2 == 0:
+                update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
+                if self.num_updates % self.alter_every == 0:
+                    print("start update policy", self.num_updates)
+            self.num_updates += 1
+        elif self.in_batch_alter:
+            update_vals = self._execute_model(feed_dict, self.model_update_dict)
+            update_vals.update(self._execute_model(feed_dict, self.ppo_update_dict))
+        elif self.use_transfer and self.smart_transfer:
+            if self.update_mode == "model":
+                update_vals = self._execute_model(feed_dict, self.update_dict)
+                cur_loss = update_vals["model_loss"]
+                print("model loss:", cur_loss)
+                if abs(cur_loss - self.old_loss) < self.conv_thres:
+                    self.update_mode = "policy"
+                    print("start to train policy")
+                else:
+                    self.old_loss = cur_loss
+            if self.update_mode == "policy":
+                update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
+        else:
+            update_vals = self._execute_model(feed_dict, self.update_dict)
 
-        update_vals = self._execute_model(feed_dict, self.update_dict)
+        # update target encoder
+        self.policy.hard_copy_encoder()
+
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
         return update_stats
@@ -332,6 +455,9 @@ class PPOTransferOptimizer(TFOptimizer):
             self.policy.mask_input: mini_batch["masks"] * burn_in_mask,
             self.advantage: mini_batch["advantages"],
             self.all_old_log_probs: mini_batch["action_probs"],
+            self.policy.processed_vector_next: mini_batch["next_vector_in"],
+            self.policy.current_action: mini_batch["actions"],
+            self.dis_returns: mini_batch["discounted_returns"]
         }
         for name in self.reward_signals:
             feed_dict[self.returns_holders[name]] = mini_batch[
@@ -364,3 +490,116 @@ class PPOTransferOptimizer(TFOptimizer):
                 self.m_size, mini_batch.num_experiences
             )
         return feed_dict
+
+    def _create_cc_critic_old(
+        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
+    ) -> None:
+        """
+        Creates Continuous control critic (value) network.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: The type of visual encoder to use.
+        """
+        hidden_stream = ModelUtils.create_observation_streams(
+            self.policy.visual_in,
+            self.policy.processed_vector_in,
+            1,
+            h_size,
+            num_layers,
+            vis_encode_type,
+        )[0]
+
+        if self.policy.use_recurrent:
+            hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
+                hidden_stream,
+                self.memory_in,
+                self.policy.sequence_length_ph,
+                name="lstm_value",
+            )
+            self.memory_out = memory_value_out
+        else:
+            hidden_value = hidden_stream
+
+        self.value_heads, self.value = ModelUtils.create_value_heads(
+            self.stream_names, hidden_value
+        )
+        self.all_old_log_probs = tf.placeholder(
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="old_probabilities",
+        )
+
+        self.old_log_probs = tf.reduce_sum(
+            (tf.identity(self.all_old_log_probs)), axis=1, keepdims=True
+        )
+
+    def _create_dc_critic_old(
+        self, h_size: int, num_layers: int, vis_encode_type: EncoderType
+    ) -> None:
+        """
+        Creates Discrete control critic (value) network.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: The type of visual encoder to use.
+        """
+        hidden_stream = ModelUtils.create_observation_streams(
+            self.policy.visual_in,
+            self.policy.processed_vector_in,
+            1,
+            h_size,
+            num_layers,
+            vis_encode_type,
+        )[0]
+
+        if self.policy.use_recurrent:
+            hidden_value, memory_value_out = ModelUtils.create_recurrent_encoder(
+                hidden_stream,
+                self.memory_in,
+                self.policy.sequence_length_ph,
+                name="lstm_value",
+            )
+            self.memory_out = memory_value_out
+        else:
+            hidden_value = hidden_stream
+
+        self.value_heads, self.value = ModelUtils.create_value_heads(
+            self.stream_names, hidden_value
+        )
+
+        self.all_old_log_probs = tf.placeholder(
+            shape=[None, sum(self.policy.act_size)],
+            dtype=tf.float32,
+            name="old_probabilities",
+        )
+
+        # Break old log probs into separate branches
+        old_log_prob_branches = ModelUtils.break_into_branches(
+            self.all_old_log_probs, self.policy.act_size
+        )
+
+        _, _, old_normalized_logits = ModelUtils.create_discrete_action_masking_layer(
+            old_log_prob_branches, self.policy.action_masks, self.policy.act_size
+        )
+
+        action_idx = [0] + list(np.cumsum(self.policy.act_size))
+
+        self.old_log_probs = tf.reduce_sum(
+            (
+                tf.stack(
+                    [
+                        -tf.nn.softmax_cross_entropy_with_logits_v2(
+                            labels=self.policy.selected_actions[
+                                :, action_idx[i] : action_idx[i + 1]
+                            ],
+                            logits=old_normalized_logits[
+                                :, action_idx[i] : action_idx[i + 1]
+                            ],
+                        )
+                        for i in range(len(self.policy.act_size))
+                    ],
+                    axis=1,
+                )
+            ),
+            axis=1,
+            keepdims=True,
+        )

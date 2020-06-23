@@ -9,6 +9,7 @@ import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -52,7 +53,7 @@ class PPOTransferTrainer(RLTrainer):
         )
         self.load = load
         self.seed = seed
-        self.policy: NNPolicy = None  # type: ignore
+        self.policy: TransferPolicy = None  # type: ignore
         print("The current algorithm is PPO Transfer")
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
@@ -126,6 +127,7 @@ class PPOTransferTrainer(RLTrainer):
         global_returns = list(np.mean(np.array(tmp_returns, dtype=np.float32), axis=0))
         agent_buffer_trajectory["advantages"].set(global_advantages)
         agent_buffer_trajectory["discounted_returns"].set(global_returns)
+
         # Append to update buffer
         agent_buffer_trajectory.resequence_and_append(
             self.update_buffer, training_length=self.policy.sequence_length
@@ -150,7 +152,7 @@ class PPOTransferTrainer(RLTrainer):
         """
         buffer_length = self.update_buffer.num_experiences
         self.cumulative_returns_since_policy_update.clear()
-
+# tf.stop_gradient
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
         batch_size = (
@@ -199,7 +201,7 @@ class PPOTransferTrainer(RLTrainer):
         :param brain_parameters: specifications for policy construction
         :return policy
         """
-        policy = NNPolicy(
+        policy = TransferPolicy(
             self.seed,
             brain_parameters,
             self.trainer_settings,
@@ -227,7 +229,7 @@ class PPOTransferTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, NNPolicy):
+        if not isinstance(policy, TransferPolicy):
             raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
         self.optimizer = PPOTransferOptimizer(self.policy, self.trainer_settings)
