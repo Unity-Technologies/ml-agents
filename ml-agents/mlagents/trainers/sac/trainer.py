@@ -120,9 +120,9 @@ class SACTrainer(RLTrainer):
         """
         Takes a trajectory and processes it, putting it into the replay buffer.
         """
-        self._maybe_write_summary(self.get_step + int(self.steps_per_update))
-        self._maybe_save_model(self.get_step + int(self.steps_per_update))
-        self._increment_step(self.hyperparameters.buffer_size, self.brain_name)
+        self._maybe_write_summary(self.get_step + len(trajectory.steps))
+        self._maybe_save_model(self.get_step + len(trajectory.steps))
+        self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
         last_step = trajectory.steps[-1]
         agent_id = trajectory.agent_id  # All the agents should have the same ID
