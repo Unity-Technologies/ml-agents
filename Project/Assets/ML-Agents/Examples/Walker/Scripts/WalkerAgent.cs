@@ -33,7 +33,7 @@ public class WalkerAgent : Agent
 
     [Header("Orientation")] [Space(10)]
     //This will be used as a stabilized model space reference point for observations
-    //Because ragdolls can move erratically during training, using a standalone reference point improves learning
+    //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     public OrientationCubeController orientationCube;
 
     JointDriveController m_JdController;
