@@ -71,7 +71,7 @@ class EnvManager(ABC):
     def set_env_parameters(self, config: Dict = None) -> None:
         """
         Sends environment parameter settings to C# via the
-        EnvironmentParametersSidehannel.
+        EnvironmentParametersSideChannel.
         :param config: Dict of environment parameter keys and values
         """
         pass

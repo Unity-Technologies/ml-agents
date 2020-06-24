@@ -296,7 +296,12 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
 
 # ENVIRONMENT PARAMETERS ###############################################################
 @attr.s(auto_attribs=True)
-class NextLessonTriggerSettings:
+class CompletionCriteriaSettings:
+    """
+    CompletionCriteriaSettings contains the information needed to figure out if the next
+    lesson must start.
+    """
+
     class MeasureType(Enum):
         PROGRESS: str = "progress"
         REWARD: str = "reward"
@@ -306,34 +311,65 @@ class NextLessonTriggerSettings:
     min_lesson_length: int = 0
     signal_smoothing: bool = True
     threshold: float = attr.ib(default=0.0)
+    require_reset: bool = False
 
     @threshold.validator
     def _check_threshold_value(self, attribute, value):
-        if self.threshold > 1.0:
-            raise TrainerConfigError(
-                "Threshold for next lesson cannot be greater than 1."
-            )
-        if self.threshold < 0.0:
-            raise TrainerConfigError(
-                "Threshold for next lesson cannot be greater negative."
-            )
+        """
+        Verify that the threshold has a value between 0 and 1 when the measure is
+        PROGRESS
+        """
+        if self.measure == self.MeasureType.PROGRESS:
+            if self.threshold > 1.0:
+                raise TrainerConfigError(
+                    "Threshold for next lesson cannot be greater than 1 when the measure is progress."
+                )
+            if self.threshold < 0.0:
+                raise TrainerConfigError(
+                    "Threshold for next lesson cannot be greater negative when the measure is progress."
+                )
 
 
 @attr.s(auto_attribs=True)
 class Lesson:
-    next_lesson_trigger: Optional[NextLessonTriggerSettings]
+    """
+    Gathers the data of one lesson for one environment parameter including its name,
+    the condition that must be fullfiled for the lesson to be completed and a sampler
+    for the environment parameter. If the completion_criteria is None, then this is
+    the last lesson in the curriculum.
+    """
+
+    completion_criteria: Optional[CompletionCriteriaSettings]
     sampler: ParameterRandomizationSettings
     name: str
 
 
 @attr.s(auto_attribs=True)
 class EnvironmentParameterSettings:
+    """
+    EnvironmentParameterSettings is an ordered list of lessons for one environment
+    parameter.
+    """
+
     lessons: List[Lesson]
+
+    @staticmethod
+    def _check_lesson_chain(lessons, parameter_name):
+        num_lessons = len(lessons)
+        for index, lesson in enumerate(lessons):
+            if index < num_lessons - 1 and lesson.completion_criteria is None:
+                raise TrainerConfigError(
+                    f"A non-terminal lesson does not have a completion_criteria for {parameter_name}."
+                )
 
     @staticmethod
     def _sampler_from_config(
         environment_parameter_config: Mapping
     ) -> Optional[ParameterRandomizationSettings]:
+        """
+        Returns a ParameterRandomizationSettings when the environment_parameter_config
+        argument corresponds to a sampler and None otherwise.
+        """
         if isinstance(environment_parameter_config, (float, int)):
             sampler = ConstantSettings(value=float(environment_parameter_config))
             return sampler
@@ -350,10 +386,11 @@ class EnvironmentParameterSettings:
         return None
 
     @staticmethod
-    def structure(d: Mapping, t: type) -> Any:
+    def structure(d: Mapping, t: type) -> Dict[str, "EnvironmentParameterSettings"]:
         """
-        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant to be registered with
-        cattr.register_structure_hook() and called with cattr.structure().
+        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant
+        to be registered with cattr.register_structure_hook() and called with
+        cattr.structure().
         """
         if not isinstance(d, Mapping):
             raise TrainerConfigError(
@@ -368,7 +405,7 @@ class EnvironmentParameterSettings:
                 d_final[environment_parameter] = EnvironmentParameterSettings(
                     lessons=[
                         Lesson(
-                            next_lesson_trigger=None,
+                            completion_criteria=None,
                             sampler=maybe_sampler,
                             name=environment_parameter,
                         )
@@ -379,14 +416,14 @@ class EnvironmentParameterSettings:
                 lessons: List[Lesson] = []
                 for lesson_dict in environment_parameter_config["curriculum"]:
                     # a lesson_dict contains a single lesson with the name of the lesson as key
-                    next_lesson_trigger = None
+                    completion_criteria = None
                     maybe_sampler = None
                     lesson_name = list(lesson_dict.keys())[0]
                     lesson_config = list(lesson_dict.values())[0]
-                    if "next_lesson_trigger" in lesson_config:
-                        next_lesson_trigger = strict_to_cls(
-                            lesson_config["next_lesson_trigger"],
-                            NextLessonTriggerSettings,
+                    if "completion_criteria" in lesson_config:
+                        completion_criteria = strict_to_cls(
+                            lesson_config["completion_criteria"],
+                            CompletionCriteriaSettings,
                         )
                     if "value" in lesson_config:
                         maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
@@ -399,11 +436,14 @@ class EnvironmentParameterSettings:
                         )
                     lessons.append(
                         Lesson(
-                            next_lesson_trigger=next_lesson_trigger,
+                            completion_criteria=completion_criteria,
                             sampler=maybe_sampler,
                             name=lesson_name,
                         )
                     )
+                EnvironmentParameterSettings._check_lesson_chain(
+                    lessons, environment_parameter
+                )
                 d_final[environment_parameter] = EnvironmentParameterSettings(
                     lessons=lessons
                 )

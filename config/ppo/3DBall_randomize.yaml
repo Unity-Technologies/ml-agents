@@ -25,14 +25,26 @@ behaviors:
     summary_freq: 12000
     threaded: true
 
-parameter_randomization:
+environment_parameters:
   mass:
     sampler_type: uniform
     sampler_parameters:
       min_value: 0.5
       max_value: 10
-  scale:
-    sampler_type: uniform
-    sampler_parameters:
-      min_value: 0.75
-      max_value: 3
+  scale: 
+    curriculum:
+     - FirstLessonForScale:
+         completion_criteria:
+           measure: reward
+           behavior: 3DBall
+           threshold: 30
+           min_lesson_length: 100
+           require_reset: true
+         value: 1
+     - SecondLessonForScale:
+         value:
+           sampler_type: uniform
+           sampler_parameters:
+             min_value: 0.75
+             max_value: 3
+

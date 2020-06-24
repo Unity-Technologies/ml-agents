@@ -11,7 +11,7 @@ import mlagents.trainers
 import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
@@ -22,7 +22,8 @@ from mlagents.trainers.stats import (
 )
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.settings import RunOptions, EnvironmentParameterSettings
+
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
@@ -128,10 +129,10 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager = SubprocessEnvManager(
             env_factory, engine_config, env_settings.num_envs
         )
-        maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum, env_manager, restore=checkpoint_settings.resume
+        maybe_parameter_manager = try_create_param_manager(
+            options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
-        maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
+
         trainer_factory = TrainerFactory(
             options.behaviors,
             write_path,
@@ -139,7 +140,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             checkpoint_settings.resume,
             run_seed,
             maybe_init_path,
-            maybe_meta_curriculum,
+            maybe_parameter_manager,
             False,
         )
         # Create controller and begin training.
@@ -147,7 +148,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             trainer_factory,
             write_path,
             checkpoint_settings.run_id,
-            maybe_meta_curriculum,
+            maybe_parameter_manager,
             not checkpoint_settings.inference,
             run_seed,
         )
@@ -191,33 +192,15 @@ def write_timing_tree(output_dir: str) -> None:
         )
 
 
-def maybe_add_samplers(
-    sampler_config: Optional[Dict], env: SubprocessEnvManager, run_seed: int
-) -> None:
-    """
-    Adds samplers to env if sampler config provided and sets seed if not configured.
-    :param sampler_config: validated dict of sampler configs. None if not included.
-    :param env: env manager to pass samplers via reset
-    :param run_seed: Random seed used for training.
-    """
-    if sampler_config is not None:
-        # If the seed is not specified in yaml, this will grab the run seed
-        for offset, v in enumerate(sampler_config.values()):
-            if v.seed == -1:
-                v.seed = run_seed + offset
-        env.set_env_parameters(config=sampler_config)
-
-
-def try_create_meta_curriculum(
-    curriculum_config: Optional[Dict], env: SubprocessEnvManager, restore: bool = False
-) -> Optional[MetaCurriculum]:
-    if curriculum_config is None or len(curriculum_config) <= 0:
+def try_create_param_manager(
+    config: Optional[Dict[str, EnvironmentParameterSettings]],
+    run_seed: int,
+    restore: bool = False,
+) -> Optional[EnvironmentParameterManager]:
+    if config is None:
         return None
     else:
-        meta_curriculum = MetaCurriculum(curriculum_config)
-        if restore:
-            meta_curriculum.try_restore_all_curriculum()
-        return meta_curriculum
+        return EnvironmentParameterManager(config, run_seed, restore)
 
 
 def create_environment_factory(

@@ -176,9 +176,7 @@ def worker(
                 _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
             elif req.cmd == EnvironmentCommand.ENVIRONMENT_PARAMETERS:
                 for k, v in req.payload.items():
-                    if isinstance(v, float):
-                        env_parameters.set_float_parameter(k, v)
-                    elif isinstance(v, ParameterRandomizationSettings):
+                    if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()
