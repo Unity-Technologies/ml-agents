@@ -108,6 +108,7 @@ class SACTrainer(RLTrainer):
             )
         )
 
+    @property
     def should_still_train(self) -> bool:
         """
         Returns whether or not the trainer should train. A Trainer could
@@ -115,7 +116,7 @@ class SACTrainer(RLTrainer):
         is reached.
         """
         return self.is_training and self.steps_per_update * self.update_steps <= \
-               self.trainer_settings.max_steps
+               self.get_max_steps
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """

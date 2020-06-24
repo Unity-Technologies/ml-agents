@@ -54,14 +54,6 @@ class PPOTrainer(RLTrainer):
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
 
-    def should_still_train(self) -> bool:
-        """
-        Returns whether or not the trainer should train. A Trainer could
-        stop training if it wasn't training to begin with, or if max_steps
-        is reached.
-        """
-        return self.is_training and self.get_step <= self.trainer_settings.max_steps
-
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.
