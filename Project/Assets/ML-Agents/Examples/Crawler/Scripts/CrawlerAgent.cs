@@ -95,7 +95,6 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
-        //This is the same as doing an unscaled InverseTransformPoint
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
 
         if (bp.rb.transform != body)
