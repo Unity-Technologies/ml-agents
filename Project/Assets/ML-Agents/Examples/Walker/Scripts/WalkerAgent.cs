@@ -101,7 +101,6 @@ public class WalkerAgent : Agent
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
-        //This is the same as doing an unscaled InverseTransformPoint
         sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
@@ -179,7 +178,6 @@ public class WalkerAgent : Agent
         var headHeightOverFeetReward = 
             ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10);
         AddReward(
-//            +0.02f * Mathf.Clamp(moveTowardsTargetReward, 0, maximumWalkingSpeed)
             +0.02f * moveTowardsTargetReward
             + 0.02f * lookAtTargetReward
             + 0.005f * headHeightOverFeetReward
