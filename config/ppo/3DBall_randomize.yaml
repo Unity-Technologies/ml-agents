@@ -24,27 +24,16 @@ behaviors:
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
-
 environment_parameters:
   mass:
-    sampler_type: uniform
-    sampler_parameters:
-      min_value: 0.5
-      max_value: 10
-  scale: 
-    curriculum:
-     - FirstLessonForScale:
-         completion_criteria:
-           measure: reward
-           behavior: 3DBall
-           threshold: 30
-           min_lesson_length: 100
-           require_reset: true
-         value: 1
-     - SecondLessonForScale:
-         value:
-           sampler_type: uniform
-           sampler_parameters:
-             min_value: 0.75
-             max_value: 3
-
+    sampler-type: uniform
+    min_value: 0.5
+    max_value: 10
+  gravity:
+    sampler-type: uniform
+    min_value: 7
+    max_value: 12
+  scale:
+    sampler-type: uniform
+    min_value: 0.75
+    max_value: 3
