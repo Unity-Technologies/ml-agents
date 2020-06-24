@@ -475,7 +475,11 @@ namespace Unity.MLAgents.Sensors
                     var tagsEqual = false;
                     try
                     {
-                        tagsEqual = hitObject.CompareTag(input.DetectableTags[i]);
+                        var tag = input.DetectableTags[i];
+                        if (!string.IsNullOrEmpty(tag))
+                        {
+                            tagsEqual = hitObject.CompareTag(tag);
+                        }
                     }
                     catch (UnityException e)
                     {

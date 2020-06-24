@@ -363,9 +363,9 @@ namespace Unity.MLAgents.Tests
                 perception.SphereCastRadius = castRadius;
                 var castInput = perception.GetRayPerceptionInput();
 
+                // There's no clean way that I can find to check for a defined tag without
+                // logging an error.
                 LogAssert.Expect(LogType.Error, "Tag: Bad tag is not defined.");
-                LogAssert.Expect(LogType.Error, "Tag: tag name is null or empty.");
-                LogAssert.Expect(LogType.Error, "Tag: tag name is null or empty.");
                 var castOutput = RayPerceptionSensor.Perceive(castInput);
 
                 Assert.AreEqual(1, castOutput.RayOutputs.Length);
