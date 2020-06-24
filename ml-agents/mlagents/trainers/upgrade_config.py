@@ -102,8 +102,20 @@ def convert_samplers(old_sampler_config: Dict[str, Any]) -> Dict[str, Any]:
 def convert_samplers_and_curriculum(
     parameter_dict: Dict[str, Any], curriculum: Dict[str, Any]
 ) -> Dict[str, Any]:
-    if "resampling-interval" in parameter_dict:
-        parameter_dict.pop("resampling-interval")
+    for key, sampler in parameter_dict.items():
+        if "sampler_parameters" not in sampler:
+            parameter_dict[key]["sampler_parameters"] = {}
+        for argument in [
+            "seed",
+            "min_value",
+            "max_value",
+            "mean",
+            "st_dev",
+            "intervals",
+        ]:
+            if argument in sampler:
+                parameter_dict[key]["sampler_parameters"][argument] = sampler[argument]
+                parameter_dict[key].pop(argument)
     param_set = set(parameter_dict.keys())
     for behavior_name, behavior_dict in curriculum.items():
         measure = behavior_dict["measure"]
@@ -196,8 +208,19 @@ def convert(
         print("Config file format version :  0.16.X < version <= 0.18.X")
         full_config = {"behaviors": config["behaviors"]}
 
+        param_randomization = config.get("parameter_randomization", {})
+        if "resampling-interval" in param_randomization:
+            param_randomization.pop("resampling-interval")
+        if len(param_randomization) > 0:
+            # check if we use the old format sampler-type vs sampler_type
+            if (
+                "sampler-type"
+                in param_randomization[list(param_randomization.keys())[0]]
+            ):
+                param_randomization = convert_samplers(param_randomization)
+
         full_config["environment_parameters"] = convert_samplers_and_curriculum(
-            config.get("parameter_randomization", {}), config.get("curriculum", {})
+            param_randomization, config.get("curriculum", {})
         )
 
         # Convert config to dict

@@ -90,24 +90,26 @@ class EnvironmentParameterManager:
                 and len(settings.lessons) > lesson_num
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
-                must_increment, new_smoothing = self._need_increment(
-                    lesson.completion_criteria,
-                    float(trainer_steps[behavior_to_consider])
-                    / float(trainer_max_steps[behavior_to_consider]),
-                    trainer_reward_buffer[behavior_to_consider],
-                    self._smoothing_values[param_name],
-                )
-                self._smoothing_values[param_name] = new_smoothing
-                if must_increment:
-                    GlobalTrainingStatus.set_parameter_state(
-                        param_name, StatusType.LESSON_NUM, lesson_num + 1
+                if behavior_to_consider in trainer_steps:
+                    must_increment, new_smoothing = self._need_increment(
+                        lesson.completion_criteria,
+                        float(trainer_steps[behavior_to_consider])
+                        / float(trainer_max_steps[behavior_to_consider]),
+                        trainer_reward_buffer[behavior_to_consider],
+                        self._smoothing_values[param_name],
                     )
-                    logger.info(
-                        f"Parameter '{param_name}' has changed. Now in lesson '{settings.lessons[lesson_num+1].name}'"
-                    )
-                    updated = True
-                    if lesson.completion_criteria.require_reset:
-                        must_reset = True
+                    self._smoothing_values[param_name] = new_smoothing
+                    if must_increment:
+                        GlobalTrainingStatus.set_parameter_state(
+                            param_name, StatusType.LESSON_NUM, lesson_num + 1
+                        )
+                        new_lesson_name = settings.lessons[lesson_num + 1].name
+                        logger.info(
+                            f"Parameter '{param_name}' has changed. Now in lesson '{new_lesson_name}'"
+                        )
+                        updated = True
+                        if lesson.completion_criteria.require_reset:
+                            must_reset = True
         return updated, must_reset
 
     @staticmethod
