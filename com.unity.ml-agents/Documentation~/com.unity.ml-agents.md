@@ -108,7 +108,7 @@ ML-Agents with a neural network behavior.
 ## Helpful links
 
 If you are new to the Unity ML-Agents package, or have a question after reading
-the documentation, you can checkout our [GitHUb Repository], which also includes
+the documentation, you can checkout our [GitHub Repository], which also includes
 a number of ways to [connect with us] including our [ML-Agents Forum].
 
 [unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
