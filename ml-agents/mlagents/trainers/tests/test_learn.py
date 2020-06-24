@@ -7,7 +7,6 @@ from mlagents.trainers.learn import parse_command_line
 from mlagents.trainers.cli_utils import DetectDefault
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.settings import UniformSettings
 
 
 def basic_options(extra_args=None):
@@ -42,22 +41,6 @@ MOCK_PARAMETER_YAML = """
         run_id: uselessrun
         initialize_from: notuselessrun
     debug: false
-    """
-
-MOCK_SAMPLER_CURRICULUM_YAML = """
-    parameter_randomization:
-        sampler1:
-            sampler_type: uniform
-            sampler_parameters:
-                min_value: 0.2
-
-    curriculum:
-        behavior1:
-            parameters:
-                foo: [0.2, 0.5]
-        behavior2:
-            parameters:
-                foo: [0.2, 0.5]
     """
 
 
@@ -121,7 +104,6 @@ def test_commandline_args(mock_file):
     opt = parse_command_line(["mytrainerpath"])
     assert opt.behaviors == {}
     assert opt.env_settings.env_path is None
-    assert opt.parameter_randomization is None
     assert opt.checkpoint_settings.resume is False
     assert opt.checkpoint_settings.inference is False
     assert opt.checkpoint_settings.run_id == "ppo"
@@ -151,7 +133,6 @@ def test_commandline_args(mock_file):
     opt = parse_command_line(full_args)
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
-    assert opt.parameter_randomization is None
     assert opt.checkpoint_settings.run_id == "myawesomerun"
     assert opt.checkpoint_settings.initialize_from == "testdir"
     assert opt.env_settings.seed == 7890
@@ -170,7 +151,6 @@ def test_yaml_args(mock_file):
     opt = parse_command_line(["mytrainerpath"])
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./oldenvfile"
-    assert opt.parameter_randomization is None
     assert opt.checkpoint_settings.run_id == "uselessrun"
     assert opt.checkpoint_settings.initialize_from == "notuselessrun"
     assert opt.env_settings.seed == 9870
@@ -197,7 +177,6 @@ def test_yaml_args(mock_file):
     opt = parse_command_line(full_args)
     assert opt.behaviors == {}
     assert opt.env_settings.env_path == "./myenvfile"
-    assert opt.parameter_randomization is None
     assert opt.checkpoint_settings.run_id == "myawesomerun"
     assert opt.env_settings.seed == 7890
     assert opt.env_settings.base_port == 4004
@@ -206,13 +185,6 @@ def test_yaml_args(mock_file):
     assert opt.debug is True
     assert opt.checkpoint_settings.inference is True
     assert opt.checkpoint_settings.resume is True
-
-
-@patch("builtins.open", new_callable=mock_open, read_data=MOCK_SAMPLER_CURRICULUM_YAML)
-def test_sampler_configs(mock_file):
-    opt = parse_command_line(["mytrainerpath"])
-    assert isinstance(opt.parameter_randomization["sampler1"], UniformSettings)
-    assert len(opt.curriculum.keys()) == 2
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_YAML)

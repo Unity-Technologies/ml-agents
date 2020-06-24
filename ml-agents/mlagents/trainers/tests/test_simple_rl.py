@@ -107,7 +107,7 @@ def _check_environment_trains(
     env,
     trainer_config,
     reward_processor=default_reward_processor,
-    meta_curriculum=None,
+    env_parameter_manager=None,
     success_threshold=0.9,
     env_manager=None,
 ):
@@ -126,7 +126,7 @@ def _check_environment_trains(
             train_model=True,
             load_model=False,
             seed=seed,
-            meta_curriculum=meta_curriculum,
+            param_manager=env_parameter_manager,
             multi_gpu=False,
         )
 
@@ -134,7 +134,7 @@ def _check_environment_trains(
             trainer_factory=trainer_factory,
             output_path=dir,
             run_id=run_id,
-            meta_curriculum=meta_curriculum,
+            param_manager=env_parameter_manager,
             train=True,
             training_seed=seed,
         )

@@ -14,7 +14,7 @@ def basic_trainer_controller():
         trainer_factory=trainer_factory_mock,
         output_path="test_model_path",
         run_id="test_run_id",
-        meta_curriculum=None,
+        param_manager=None,
         train=True,
         training_seed=99,
     )
@@ -30,7 +30,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         trainer_factory=trainer_factory_mock,
         output_path="",
         run_id="1",
-        meta_curriculum=None,
+        param_manager=None,
         train=True,
         training_seed=seed,
     )

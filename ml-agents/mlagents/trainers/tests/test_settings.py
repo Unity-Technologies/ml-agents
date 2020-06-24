@@ -12,7 +12,8 @@ from mlagents.trainers.settings import (
     RewardSignalType,
     RewardSignalSettings,
     CuriositySettings,
-    ParameterRandomizationSettings,
+    EnvironmentParameterSettings,
+    ConstantSettings,
     UniformSettings,
     GaussianSettings,
     MultiRangeUniformSettings,
@@ -164,11 +165,11 @@ def test_memory_settings_validation():
         NetworkSettings.MemorySettings(sequence_length=128, memory_size=0)
 
 
-def test_parameter_randomization_structure():
+def test_env_parameter_structure():
     """
-    Tests the ParameterRandomizationSettings structure method and all validators.
+    Tests the EnvironmentParameterSettings structure method and all validators.
     """
-    parameter_randomization_dict = {
+    env_params_dict = {
         "mass": {
             "sampler_type": "uniform",
             "sampler_parameters": {"min_value": 1.0, "max_value": 2.0},
@@ -181,14 +182,36 @@ def test_parameter_randomization_structure():
             "sampler_type": "multirangeuniform",
             "sampler_parameters": {"intervals": [[1.0, 2.0], [3.0, 4.0]]},
         },
+        "gravity": 1,
+        "wall_height": {
+            "curriculum": [
+                {
+                    "Lesson1": {
+                        "completion_criteria": {
+                            "measure": "reward",
+                            "behavior": "fake_behavior",
+                            "threshold": 10,
+                        },
+                        "value": 1,
+                    }
+                },
+                {"Lesson2": {"value": 4}},
+            ]
+        },
     }
-    parameter_randomization_distributions = ParameterRandomizationSettings.structure(
-        parameter_randomization_dict, Dict[str, ParameterRandomizationSettings]
+    env_param_settings = EnvironmentParameterSettings.structure(
+        env_params_dict, Dict[str, EnvironmentParameterSettings]
     )
-    assert isinstance(parameter_randomization_distributions["mass"], UniformSettings)
-    assert isinstance(parameter_randomization_distributions["scale"], GaussianSettings)
+    assert isinstance(env_param_settings["mass"].lessons[0].sampler, UniformSettings)
+    assert isinstance(env_param_settings["scale"].lessons[0].sampler, GaussianSettings)
     assert isinstance(
-        parameter_randomization_distributions["length"], MultiRangeUniformSettings
+        env_param_settings["length"].lessons[0].sampler, MultiRangeUniformSettings
+    )
+    assert isinstance(
+        env_param_settings["wall_height"].lessons[0].sampler, ConstantSettings
+    )
+    assert isinstance(
+        env_param_settings["wall_height"].lessons[1].sampler, ConstantSettings
     )
 
     # Check invalid distribution type
@@ -199,8 +222,8 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(ValueError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check min less than max in uniform
@@ -211,8 +234,8 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check min less than max in multirange
@@ -223,8 +246,8 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check multirange has valid intervals
@@ -235,12 +258,34 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check non-Dict input
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            "notadict", Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            "notadict", Dict[str, EnvironmentParameterSettings]
+        )
+
+    invalid_curriculum_dict = {
+        "wall_height": {
+            "curriculum": [
+                {
+                    "Lesson1": {
+                        "completion_criteria": {
+                            "measure": "progress",
+                            "behavior": "fake_behavior",
+                            "threshold": 10,
+                        },  # > 1 is too large
+                        "value": 1,
+                    },
+                    "Lesson2": {"value": 4},
+                }
+            ]
+        }
+    }
+    with pytest.raises(TrainerConfigError):
+        EnvironmentParameterSettings.structure(
+            invalid_curriculum_dict, Dict[str, EnvironmentParameterSettings]
         )
