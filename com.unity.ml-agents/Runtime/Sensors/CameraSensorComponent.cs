@@ -75,6 +75,22 @@ namespace Unity.MLAgents.Sensors
             set { m_Grayscale = value; }
         }
 
+        [HideInInspector, SerializeField]
+        CameraSensorSettings m_CameraSensorSettings = new CameraSensorSettings();
+
+        /// <summary>
+        /// Whether to render the main camera.
+        /// </summary>
+        public CameraSensorSettings CameraSensorSettings
+        {
+            get { return m_CameraSensorSettings; }
+            set { m_CameraSensorSettings = value; }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
         SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
@@ -93,7 +109,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor CreateSensor()
         {
-            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression);
+            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_CameraSensorSettings);
             return m_Sensor;
         }
 
@@ -103,7 +119,11 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The observation shape of the associated <see cref="CameraSensor"/> object.</returns>
         public override int[] GetObservationShape()
         {
-            return CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
+            if (m_Sensor == null)
+            {
+                CreateSensor();
+            }
+            return m_Sensor.GenerateShape();
         }
 
         /// <summary>

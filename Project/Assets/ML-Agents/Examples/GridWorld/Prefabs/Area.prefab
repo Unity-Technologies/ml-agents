@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 33152597024021804}
   - component: {fileID: 65829039252076494}
   - component: {fileID: 23027717151182946}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 114650561397225712}
   - component: {fileID: 114889700908650620}
   - component: {fileID: 7980686505185502968}
-  m_Layer: 8
+  m_Layer: 11
   m_Name: Agent
   m_TagString: agent
   m_Icon: {fileID: 0}
@@ -364,17 +364,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 05000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 1
+    VectorActionSize: 05000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: a812f1ce7763a4a0c912717f3594fe20, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: GridWorld
   TeamId: 0
   m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114650561397225712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,7 +391,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 100
+  MaxStep: 100
   area: {fileID: 114704252266302846}
   timeBetweenDecisionsAtInference: 0.15
   renderCamera: {fileID: 0}
@@ -425,6 +426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &1625008366184734
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +581,7 @@ GameObject:
   - component: {fileID: 33813191588135886}
   - component: {fileID: 65922560747716658}
   - component: {fileID: 23740566138369150}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -670,7 +672,7 @@ GameObject:
   - component: {fileID: 33825707296015202}
   - component: {fileID: 65020466233620882}
   - component: {fileID: 23205928308810388}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -761,7 +763,7 @@ GameObject:
   - component: {fileID: 33172111281575160}
   - component: {fileID: 65321351298141546}
   - component: {fileID: 23200653194041678}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -39,14 +39,14 @@ TagManager:
   - 
   - 
   - invisible
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - pit
+  - goal
+  - agent
+  - badFood
+  - food
+  - floor
+  - walls
+  - laser
   - 
   - 
   - 
