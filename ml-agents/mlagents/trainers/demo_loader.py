@@ -2,7 +2,6 @@ import os
 from typing import List, Tuple
 import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.brain import BrainParameters
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
@@ -159,7 +158,7 @@ def get_demo_files(path: str) -> List[str]:
 @timed
 def load_demonstration(
     file_path: str,
-) -> Tuple[BrainParameters, List[AgentInfoActionPairProto], int]:
+) -> Tuple[BehaviorSpec, List[AgentInfoActionPairProto], int]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).

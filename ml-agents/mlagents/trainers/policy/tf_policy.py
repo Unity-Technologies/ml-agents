@@ -12,7 +12,7 @@ from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.brain_conversion_utils import get_global_agent_id
+from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
@@ -76,11 +76,11 @@ class TFPolicy(Policy):
             if behavior_spec.is_action_discrete()
             else [behavior_spec.action_size]
         )
-        self.vec_obs_size = np.sum(
-            [shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1]
+        self.vec_obs_size = sum(
+            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
         )
-        self.vis_obs_size = np.sum(
-            [1 for shape in behavior_spec.observation_shapes if len(shape) == 3]
+        self.vis_obs_size = sum(
+            1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
 
         self.use_recurrent = self.network_settings.memory is not None

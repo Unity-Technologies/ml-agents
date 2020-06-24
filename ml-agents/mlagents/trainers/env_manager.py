@@ -8,7 +8,6 @@ from mlagents_envs.base_env import (
 )
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
@@ -78,7 +77,7 @@ class EnvManager(ABC):
 
     @property
     @abstractmethod
-    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
+    def external_brains(self) -> Dict[BehaviorName, BehaviorSpec]:
         pass
 
     @abstractmethod

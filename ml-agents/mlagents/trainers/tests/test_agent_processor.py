@@ -10,7 +10,7 @@ from mlagents.trainers.agent_processor import (
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsReporter, StatsSummary
-from mlagents.trainers.brain_conversion_utils import get_global_agent_id
+from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
 

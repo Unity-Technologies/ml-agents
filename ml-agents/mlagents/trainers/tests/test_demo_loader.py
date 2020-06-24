@@ -8,7 +8,6 @@ import tempfile
 from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
     DemonstrationMetaProto,
 )
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.tests.mock_brain import (
     create_mock_3dball_behavior_specs,
     setup_mock_behavior_specs,
@@ -18,15 +17,6 @@ from mlagents.trainers.demo_loader import (
     demo_to_buffer,
     get_demo_files,
     write_delimited,
-)
-
-BRAIN_PARAMS = BrainParameters(
-    brain_name="test_brain",
-    vector_observation_space_size=8,
-    camera_resolutions=[],
-    vector_action_space_size=[2],
-    vector_action_descriptions=[],
-    vector_action_space_type=1,
 )
 
 

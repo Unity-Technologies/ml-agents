@@ -3,7 +3,7 @@ from typing import List, Tuple, Union
 from collections.abc import Iterable
 import numpy as np
 
-from mlagents.trainers.brain import Tensor3DShape, BrainParameters
+from mlagents.trainers.models import Tensor3DShape
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
@@ -219,24 +219,4 @@ def create_mock_pushblock_behavior_specs():
 def create_mock_banana_behavior_specs():
     return setup_mock_behavior_specs(
         True, True, vector_action_space=[3, 3, 3, 2], vector_obs_space=0
-    )
-
-
-def make_brain_parameters(
-    discrete_action: bool = False,
-    visual_inputs: int = 0,
-    brain_name: str = "RealFakeBrain",
-    vec_obs_size: int = 6,
-) -> BrainParameters:
-    resolutions = [
-        Tensor3DShape(width=30, height=40, num_channels=3) for _ in range(visual_inputs)
-    ]
-
-    return BrainParameters(
-        vector_observation_space_size=vec_obs_size,
-        camera_resolutions=resolutions,
-        vector_action_space_size=[2],
-        vector_action_descriptions=["", ""],
-        vector_action_space_type=int(not discrete_action),
-        brain_name=brain_name,
     )

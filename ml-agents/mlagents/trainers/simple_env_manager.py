@@ -1,10 +1,9 @@
 from typing import Dict, List
 
-from mlagents_envs.base_env import BaseEnv, BehaviorName
+from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -62,7 +61,7 @@ class SimpleEnvManager(EnvManager):
                     v.apply(k, self.env_params)
 
     @property
-    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
+    def external_brains(self) -> Dict[BehaviorName, BehaviorSpec]:
         return self.env.behavior_specs
 
     def close(self):
