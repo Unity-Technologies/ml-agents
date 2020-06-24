@@ -370,6 +370,8 @@ class EnvironmentParameterSettings:
         Returns a ParameterRandomizationSettings when the environment_parameter_config
         argument corresponds to a sampler and None otherwise.
         """
+        if environment_parameter_config is None:
+            return None
         if isinstance(environment_parameter_config, (float, int)):
             sampler = ConstantSettings(value=float(environment_parameter_config))
             return sampler
@@ -429,7 +431,6 @@ class EnvironmentParameterSettings:
                         maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
                             lesson_config["value"]
                         )
-                        print(lesson_config["value"], maybe_sampler)
                     if "value" not in lesson_config or maybe_sampler is None:
                         raise TrainerConfigError(
                             f"Parameter {environment_parameter} in lesson {lesson_name} does not contain a valid value."
