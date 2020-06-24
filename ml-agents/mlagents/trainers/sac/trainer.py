@@ -114,7 +114,8 @@ class SACTrainer(RLTrainer):
         stop training if it wasn't training to begin with, or if max_steps
         is reached.
         """
-        return self.is_training and self.steps_per_update * self.update_steps <= self.get_max_steps
+        return self.is_training and self.steps_per_update * self.update_steps <= \
+               self.trainer_settings.max_steps
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """

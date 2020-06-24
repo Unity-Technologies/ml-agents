@@ -112,7 +112,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         Saves training statistics to Tensorboard.
         """
-        self.stats_reporter.add_stat("Is Training", float(self.should_still_train))
+        self.stats_reporter.add_stat("Is Training", float(self.should_still_train()))
         self.stats_reporter.write_stats(int(step))
 
     @abc.abstractmethod
