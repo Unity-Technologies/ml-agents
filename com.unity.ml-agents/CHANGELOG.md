@@ -25,6 +25,10 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Fixed an issue where RayPerceptionSensor would raise an exception when the
+list of tags was empty, or a tag in the list was invalid (unknown, null, or
+empty string). (#4155)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [1.1.0-preview] - 2020-06-10
