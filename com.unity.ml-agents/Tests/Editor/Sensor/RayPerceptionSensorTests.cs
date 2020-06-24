@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
@@ -336,6 +337,69 @@ namespace Unity.MLAgents.Tests
 
                 // Expected to hit the cube
                 Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
+                Assert.AreEqual(0, castOutput.RayOutputs[0].HitTagIndex);
+            }
+        }
+
+        [Test]
+        public void TestStaticPerceiveInvalidTags()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.RaysPerDirection = 0; // single ray
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add("Bad tag");
+            perception.DetectableTags.Add(null);
+            perception.DetectableTags.Add("");
+            perception.DetectableTags.Add(k_CubeTag);
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.SphereCastRadius = castRadius;
+                var castInput = perception.GetRayPerceptionInput();
+
+                // There's no clean way that I can find to check for a defined tag without
+                // logging an error.
+                LogAssert.Expect(LogType.Error, "Tag: Bad tag is not defined.");
+                var castOutput = RayPerceptionSensor.Perceive(castInput);
+
+                Assert.AreEqual(1, castOutput.RayOutputs.Length);
+
+                // Expected to hit the cube
+                Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
+                Assert.AreEqual(3, castOutput.RayOutputs[0].HitTagIndex);
+            }
+        }
+
+        [Test]
+        public void TestStaticPerceiveNoTags()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.RaysPerDirection = 0; // single ray
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = null;
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.SphereCastRadius = castRadius;
+                var castInput = perception.GetRayPerceptionInput();
+                var castOutput = RayPerceptionSensor.Perceive(castInput);
+
+                Assert.AreEqual(1, castOutput.RayOutputs.Length);
+
+                // Expected to hit the cube
+                Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
+                Assert.AreEqual(-1, castOutput.RayOutputs[0].HitTagIndex);
             }
         }
     }
