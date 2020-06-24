@@ -33,7 +33,7 @@ class Trainer(abc.ABC):
     ):
         """
         Responsible for collecting experiences and training a neural network model.
-        :BrainParameters brain: Brain to be trained.
+        :param brain_name: Brain name of brain to be trained.
         :param trainer_settings: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param artifact_path: The directory within which to store artifacts from this trainer
