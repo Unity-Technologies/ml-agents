@@ -18,10 +18,10 @@ namespace Tests
         [Observable]
         public float ObservableFloat;
 
-        public override void Heuristic(float[] actionsOut)
+        public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
         {
             numHeuristicCalls++;
-            base.Heuristic(actionsOut);
+            base.Heuristic(continuousActionsOut, discreteActionsOut);
         }
     }
 
@@ -120,7 +120,7 @@ namespace Tests
 
             Academy.Instance.EnvironmentStep();
 
-            var actions = agent.GetAction();
+            var actions = agent.GetStoredDiscreteActions();
             // default Heuristic implementation should return zero actions.
             Assert.AreEqual(new[] {0.0f, 0.0f}, actions);
             Assert.AreEqual(1, agent.numHeuristicCalls);

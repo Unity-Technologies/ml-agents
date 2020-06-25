@@ -38,7 +38,7 @@ namespace MLAgentsExamples.Tests.Performance
             {
             }
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(float[] actionsOut, int[] discreteActions)
             {
             }
         }
@@ -54,7 +54,7 @@ namespace MLAgentsExamples.Tests.Performance
                 sensor.AddObservation(new Quaternion(1, 2, 3, 4));
             }
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(float[] actionsOut, int[] discreteActions)
             {
             }
         }
@@ -70,7 +70,7 @@ namespace MLAgentsExamples.Tests.Performance
             [Observable]
             public Quaternion QuaternionField = new Quaternion(1, 2, 3, 4);
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(float[] actionsOut, int[] discreteActions)
             {
             }
         }
@@ -96,7 +96,7 @@ namespace MLAgentsExamples.Tests.Performance
                 get { return m_QuaternionField; }
             }
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(float[] actionsOut, int[] discreteActions)
             {
             }
         }

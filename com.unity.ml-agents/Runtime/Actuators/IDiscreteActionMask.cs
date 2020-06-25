@@ -34,5 +34,10 @@ namespace Unity.MLAgents.Actuators
         /// Resets the current mask for an agent.
         /// </summary>
         void ResetMask();
+
+        /// <summary>
+        ///
+        /// </summary>
+        int CurrentBranchOffset { get; set; }
     }
 }

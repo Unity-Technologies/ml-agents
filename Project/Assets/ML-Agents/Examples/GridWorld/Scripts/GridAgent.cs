@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Linq;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using UnityEngine.Serialization;
 
 public class GridAgent : Agent
@@ -34,7 +35,9 @@ public class GridAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
+#pragma warning disable 672
     public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
+#pragma warning restore 672
     {
         // Mask the necessary actions if selected by the user.
         if (maskActions)
@@ -67,10 +70,11 @@ public class GridAgent : Agent
     }
 
     // to be implemented by the developer
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
     {
         AddReward(-0.01f);
-        var action = Mathf.FloorToInt(vectorAction[0]);
+        var action = actionBuffers.DiscreteActions[0];
 
         var targetPos = transform.position;
         switch (action)
@@ -113,24 +117,24 @@ public class GridAgent : Agent
         }
     }
 
-    public override void Heuristic(float[] actionsOut)
+    public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
     {
-        actionsOut[0] = k_NoAction;
+        discreteActionsOut[0] = k_NoAction;
         if (Input.GetKey(KeyCode.D))
         {
-            actionsOut[0] = k_Right;
+            discreteActionsOut[0] = k_Right;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            actionsOut[0] = k_Up;
+            discreteActionsOut[0] = k_Up;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            actionsOut[0] = k_Left;
+            discreteActionsOut[0] = k_Left;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            actionsOut[0] = k_Down;
+            discreteActionsOut[0] = k_Down;
         }
     }
 
