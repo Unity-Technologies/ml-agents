@@ -93,9 +93,7 @@ There may be a number of possible causes:
   to a server). _Solution_: Pass `--no-graphics` to `mlagents-learn`, or
   `no_graphics=True` to `RemoteRegistryEntry.make()` or the `UnityEnvironment`
   initializer. If you need graphics for visual observations, you will need to
-  set up xvfb; see the "Rendering Dependencies" section of the
-  [colab notebook](https://colab.research.google.com/drive/1nkOztXzU91MHEbuQ1T9GnynYdL_LRsHG#forceEdit=true&sandboxMode=true&scrollTo=htb-p1hSNX7D)
-  as an example.
+  set up `xvfb` (or equivalent).
 
 ## Communication port {} still in use
 
