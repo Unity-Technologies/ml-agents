@@ -2,15 +2,23 @@ import os
 
 
 def main():
-    asset_paths = ["Project/Assets", "com.unity.ml-agents", "DevProject/Assets"]
+    asset_paths = [
+        "Project/Assets",
+        "DevProject/Assets",
+        "com.unity.ml-agents",
+        "com.unity.ml-agents.extensions",
+    ]
     meta_suffix = ".meta"
     python_suffix = ".py"
-    whitelist = frozenset(
+    allow_list = frozenset(
         [
             "com.unity.ml-agents/.editorconfig",
             "com.unity.ml-agents/.gitignore",
             "com.unity.ml-agents/.npmignore",
             "com.unity.ml-agents/Tests/.tests.json",
+            "com.unity.ml-agents.extensions/.gitignore",
+            "com.unity.ml-agents.extensions/.npmignore",
+            "com.unity.ml-agents.extensions/Tests/.tests.json",
         ]
     )
     ignored_dirs = {"Documentation~"}
@@ -39,7 +47,7 @@ def main():
                     continue
 
                 full_path = os.path.join(root, f)
-                if full_path in whitelist:
+                if full_path in allow_list:
                     continue
 
                 # We expect each non-.meta file to have a .meta file, and each .meta file to have a non-.meta file

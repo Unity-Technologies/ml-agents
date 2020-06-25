@@ -19,7 +19,6 @@ behaviors:
       extrinsic:
         gamma: 0.99
         strength: 1.0
-    output_path: default
     keep_checkpoints: 5
     max_steps: 4000000
     time_horizon: 64

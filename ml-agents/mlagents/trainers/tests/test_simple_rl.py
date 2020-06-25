@@ -13,7 +13,6 @@ from mlagents.trainers.tests.simple_test_envs import (
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
-from mlagents.trainers.sampler_class import SamplerManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents.trainers.settings import (
@@ -115,7 +114,6 @@ def _check_environment_trains(
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
-        save_freq = 99999
         seed = 1337
         StatsReporter.writers.clear()  # Clear StatsReporters so we don't write to file
         debug_writer = DebugWriter()
@@ -124,7 +122,6 @@ def _check_environment_trains(
             env_manager = SimpleEnvManager(env, EnvironmentParametersChannel())
         trainer_factory = TrainerFactory(
             trainer_config=trainer_config,
-            run_id=run_id,
             output_path=dir,
             train_model=True,
             load_model=False,
@@ -140,9 +137,6 @@ def _check_environment_trains(
             meta_curriculum=meta_curriculum,
             train=True,
             training_seed=seed,
-            sampler_manager=SamplerManager(None),
-            resampling_interval=None,
-            save_freq=save_freq,
         )
 
         # Begin training

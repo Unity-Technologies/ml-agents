@@ -1,0 +1,14 @@
+{
+    "name": "Unity.ML-Agents.Extensions.EditorTests",
+    "references": [
+        "Unity.ML-Agents.Extensions.Editor",
+        "Unity.ML-Agents.Extensions"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": []
+}

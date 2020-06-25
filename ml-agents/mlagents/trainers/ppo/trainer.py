@@ -32,7 +32,7 @@ class PPOTrainer(RLTrainer):
         training: bool,
         load: bool,
         seed: int,
-        run_id: str,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -42,31 +42,11 @@ class PPOTrainer(RLTrainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
+        :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super(PPOTrainer, self).__init__(
-            brain_name, trainer_settings, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
-        self.param_keys = [
-            "batch_size",
-            "beta",
-            "buffer_size",
-            "epsilon",
-            "hidden_units",
-            "lambd",
-            "learning_rate",
-            "max_steps",
-            "normalize",
-            "num_epoch",
-            "num_layers",
-            "time_horizon",
-            "sequence_length",
-            "summary_freq",
-            "use_recurrent",
-            "memory_size",
-            "output_path",
-            "reward_signals",
-        ]
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, self.trainer_settings.hyperparameters
         )
@@ -223,6 +203,7 @@ class PPOTrainer(RLTrainer):
             brain_parameters,
             self.trainer_settings,
             self.is_training,
+            self.artifact_path,
             self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
@@ -253,7 +234,6 @@ class PPOTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

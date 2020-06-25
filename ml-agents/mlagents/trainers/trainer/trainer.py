@@ -5,6 +5,7 @@ import abc
 from collections import deque
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.timers import timed
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
@@ -27,20 +28,18 @@ class Trainer(abc.ABC):
         brain_name: str,
         trainer_settings: TrainerSettings,
         training: bool,
-        run_id: str,
+        artifact_path: str,
         reward_buff_cap: int = 1,
     ):
         """
         Responsible for collecting experiences and training a neural network model.
         :BrainParameters brain: Brain to be trained.
-        :dict trainer_settings: The parameters for the trainer (dictionary).
-        :bool training: Whether the trainer is set for training.
-        :str run_id: The identifier of the current run
-        :int reward_buff_cap:
+        :param trainer_settings: The parameters for the trainer (dictionary).
+        :param training: Whether the trainer is set for training.
+        :param artifact_path: The directory within which to store artifacts from this trainer
+        :param reward_buff_cap:
         """
-        self.param_keys: List[str] = []
         self.brain_name = brain_name
-        self.run_id = run_id
         self.trainer_settings = trainer_settings
         self._threaded = trainer_settings.threaded
         self._stats_reporter = StatsReporter(brain_name)
@@ -49,8 +48,8 @@ class Trainer(abc.ABC):
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.step: int = 0
+        self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
-        self.next_summary_step = self.summary_freq
 
     @property
     def stats_reporter(self):
@@ -110,6 +109,7 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
+    @timed
     def save_model(self, name_behavior_id: str) -> None:
         """
         Saves the model
@@ -121,7 +121,7 @@ class Trainer(abc.ABC):
         Exports the model
         """
         policy = self.get_policy(name_behavior_id)
-        settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+        settings = SerializationSettings(policy.model_path, self.brain_name)
         export_policy_model(settings, policy.graph, policy.sess)
 
     @abc.abstractmethod

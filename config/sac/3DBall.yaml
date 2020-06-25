@@ -5,7 +5,7 @@ behaviors:
       learning_rate: 0.0003
       learning_rate_schedule: constant
       batch_size: 64
-      buffer_size: 12000
+      buffer_size: 200000
       buffer_init_steps: 0
       tau: 0.005
       steps_per_update: 10.0
@@ -21,9 +21,8 @@ behaviors:
       extrinsic:
         gamma: 0.99
         strength: 1.0
-    output_path: default
     keep_checkpoints: 5
-    max_steps: 500000
+    max_steps: 200000
     time_horizon: 1000
     summary_freq: 12000
     threaded: true

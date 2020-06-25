@@ -29,7 +29,6 @@ behaviors:
         use_actions: true
         use_vail: false
         demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-    output_path: default
     keep_checkpoints: 5
     max_steps: 10000000
     time_horizon: 128

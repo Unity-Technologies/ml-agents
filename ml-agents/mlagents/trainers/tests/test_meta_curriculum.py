@@ -1,5 +1,7 @@
 import pytest
 from unittest.mock import patch, Mock, call
+import yaml
+import cattr
 
 from mlagents.trainers.meta_curriculum import MetaCurriculum
 
@@ -22,6 +24,27 @@ def measure_vals():
 @pytest.fixture
 def reward_buff_sizes():
     return {"Brain1": 7, "Brain2": 8}
+
+
+def test_convert_from_dict():
+    config = yaml.safe_load(
+        """
+        measure: progress
+        thresholds: [0.1, 0.3, 0.5]
+        min_lesson_length: 100
+        signal_smoothing: true
+        parameters:
+            param1: [0.0, 4.0, 6.0, 8.0]
+        """
+    )
+    should_be_config = CurriculumSettings(
+        thresholds=[0.1, 0.3, 0.5],
+        min_lesson_length=100,
+        signal_smoothing=True,
+        measure=CurriculumSettings.MeasureType.PROGRESS,
+        parameters={"param1": [0.0, 4.0, 6.0, 8.0]},
+    )
+    assert cattr.structure(config, CurriculumSettings) == should_be_config
 
 
 def test_curriculum_config(param_name="test_param1", min_lesson_length=100):

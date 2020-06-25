@@ -40,7 +40,7 @@ class SACTrainer(RLTrainer):
         training: bool,
         load: bool,
         seed: int,
-        run_id: str,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training SAC model.
@@ -50,10 +50,10 @@ class SACTrainer(RLTrainer):
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The identifier of the current run
+        :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 
         self.load = load
@@ -89,9 +89,7 @@ class SACTrainer(RLTrainer):
         """
         Save the training buffer's update buffer to a pickle file.
         """
-        filename = os.path.join(
-            self.trainer_settings.output_path, "last_replay_buffer.hdf5"
-        )
+        filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
         logger.info("Saving Experience Replay Buffer to {}".format(filename))
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
@@ -100,9 +98,7 @@ class SACTrainer(RLTrainer):
         """
         Loads the last saved replay buffer from a file.
         """
-        filename = os.path.join(
-            self.trainer_settings.output_path, "last_replay_buffer.hdf5"
-        )
+        filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
         logger.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
@@ -196,6 +192,7 @@ class SACTrainer(RLTrainer):
             brain_parameters,
             self.trainer_settings,
             self.is_training,
+            self.artifact_path,
             self.load,
             tanh_squash=True,
             reparameterize=True,
@@ -333,7 +330,6 @@ class SACTrainer(RLTrainer):
         self.reward_signal_update_steps = int(
             max(1, self.step / self.reward_signal_steps_per_update)
         )
-        self.next_summary_step = self._get_next_summary_step()
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

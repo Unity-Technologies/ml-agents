@@ -116,4 +116,9 @@ repos:
         language: script
         entry: utils/validate_inits.py
         types: [python]
+    -   id: validate-release-links-py
+        name: validate release links
+        language: script
+        entry: utils/validate_release_links.py
+
 

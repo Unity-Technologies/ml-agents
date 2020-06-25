@@ -209,6 +209,9 @@ public class FoodCollectorAgent : Agent
 
     public override void Heuristic(float[] actionsOut)
     {
+        actionsOut[0] = 0f;
+        actionsOut[1] = 0f;
+        actionsOut[2] = 0f;
         if (Input.GetKey(KeyCode.D))
         {
             actionsOut[2] = 2f;

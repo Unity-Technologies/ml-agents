@@ -67,6 +67,15 @@ class EnvManager(ABC):
         self.first_step_infos = self._reset_env(config)
         return len(self.first_step_infos)
 
+    @abstractmethod
+    def set_env_parameters(self, config: Dict = None) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        EnvironmentParametersSidehannel.
+        :param config: Dict of environment parameter keys and values
+        """
+        pass
+
     @property
     @abstractmethod
     def external_brains(self) -> Dict[BehaviorName, BrainParameters]:

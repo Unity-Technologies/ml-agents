@@ -34,6 +34,12 @@
 - [Creating Custom Side Channels](Custom-SideChannels.md)
 - [Creating Custom Samplers for Environment Parameter Randomization](Training-ML-Agents.md#defining-a-new-sampler-type)
 
+## Python Tutorial with Google Colab
+
+- [Using a UnityEnvironment](https://colab.research.google.com/drive/1Qg6E5kmf9n4G8rc5lXHIM_cQzMUFGH-g#forceEdit=true&sandboxMode=true)
+- [Q-Learning with a UnityEnvironment](https://colab.research.google.com/drive/1nkOztXzU91MHEbuQ1T9GnynYdL_LRsHG#forceEdit=true&sandboxMode=true)
+- [Using Side Channels on a UnityEnvironment](https://colab.research.google.com/drive/1-g7CwEpk9nJ7SgWXfoCUf8pSLUW1b48i#scrollTo=pbVXrmEsLXDt&forceEdit=true&sandboxMode=true)
+
 ## Help
 
 - [Migrating from earlier versions of ML-Agents](Migrating.md)

@@ -45,7 +45,7 @@ class GhostTrainer(Trainer):
         reward_buff_cap,
         trainer_settings,
         training,
-        run_id,
+        artifact_path,
     ):
         """
         Creates a GhostTrainer.
@@ -55,11 +55,11 @@ class GhostTrainer(Trainer):
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
-        :param run_id: The identifier of the current run
+        :param artifact_path: Path to store artifacts from this trainer.
         """
 
         super(GhostTrainer, self).__init__(
-            brain_name, trainer_settings, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 
         self.trainer = trainer
@@ -240,7 +240,7 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        self.next_summary_step = self.trainer.next_summary_step
+        self._next_summary_step = self.trainer._next_summary_step
         self.trainer.advance()
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.change_training_team(self.get_step)

@@ -46,6 +46,7 @@ class TFPolicy(Policy):
         seed: int,
         brain: BrainParameters,
         trainer_settings: TrainerSettings,
+        model_path: str,
         load: bool = False,
     ):
         """
@@ -53,6 +54,8 @@ class TFPolicy(Policy):
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
         :param trainer_settings: The trainer parameters.
+        :param model_path: Where to load/save the model.
+        :param load: If True, load model from model_path. Otherwise, create new model.
         """
 
         self.m_size = 0
@@ -80,7 +83,7 @@ class TFPolicy(Policy):
         self.use_continuous_act = brain.vector_action_space_type == "continuous"
         if self.use_continuous_act:
             self.num_branches = self.brain.vector_action_space_size[0]
-        self.model_path = self.trainer_settings.output_path
+        self.model_path = model_path
         self.initialize_path = self.trainer_settings.init_path
         self.keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.graph = tf.Graph()
@@ -92,18 +95,6 @@ class TFPolicy(Policy):
         if self.network_settings.memory is not None:
             self.m_size = self.network_settings.memory.memory_size
             self.sequence_length = self.network_settings.memory.sequence_length
-            if self.m_size == 0:
-                raise UnityPolicyException(
-                    "The memory size for brain {0} is 0 even "
-                    "though the trainer uses recurrent.".format(brain.brain_name)
-                )
-            elif self.m_size % 2 != 0:
-                raise UnityPolicyException(
-                    "The memory size for brain {0} is {1} "
-                    "but it must be divisible by 2.".format(
-                        brain.brain_name, self.m_size
-                    )
-                )
         self._initialize_tensorflow_references()
         self.load = load
 
@@ -157,11 +148,7 @@ class TFPolicy(Policy):
     def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
         with self.graph.as_default():
             self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            logger.info(
-                "Loading model for brain {} from {}.".format(
-                    self.brain.brain_name, model_path
-                )
-            )
+            logger.info(f"Loading model from {model_path}.")
             ckpt = tf.train.get_checkpoint_state(model_path)
             if ckpt is None:
                 raise UnityPolicyException(
