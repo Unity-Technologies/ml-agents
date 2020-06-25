@@ -89,6 +89,11 @@ There may be a number of possible causes:
   Unity Environment to figure what error happened.
 - _Cause_: You have assigned `HTTP_PROXY` and `HTTPS_PROXY` values in your
   environment variables. _Solution_: Remove these values and try again.
+- _Cause_: You are running in a headless environment (e.g. remotely connected
+  to a server). _Solution_: Pass `--no-graphics` to `mlagents-learn`, or
+  `no_graphics=True` to `RemoteRegistryEntry.make()` or the `UnityEnvironment`
+  initializer. If you need graphics for visual observations, you will need to
+  set up `xvfb` (or equivalent).
 
 ## Communication port {} still in use
 
