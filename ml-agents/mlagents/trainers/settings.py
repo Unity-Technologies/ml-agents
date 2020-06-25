@@ -403,6 +403,25 @@ class EnvironmentParameterSettings:
             maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
                 environment_parameter_config
             )
+            if isinstance(environment_parameter_config, dict):
+                if (
+                    (
+                        maybe_sampler is not None
+                        and "curriculum" in environment_parameter_config
+                    )
+                    or (
+                        maybe_sampler is not None
+                        and "value" in environment_parameter_config
+                    )
+                    or (
+                        "value" in environment_parameter_config
+                        and "curriculum" in environment_parameter_config
+                    )
+                ):
+                    raise TrainerConfigError(
+                        f"Parameter {environment_parameter} can either be curriculum, "
+                        "a constant value or a sampler. Not a combination of these."
+                    )
             if maybe_sampler is not None:
                 d_final[environment_parameter] = EnvironmentParameterSettings(
                     lessons=[
