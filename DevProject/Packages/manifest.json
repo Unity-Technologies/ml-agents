@@ -15,6 +15,7 @@
     "com.unity.package-validation-suite": "0.11.0-preview",
     "com.unity.purchasing": "2.0.6",
     "com.unity.test-framework": "1.1.13",
+    "com.unity.test-framework.performance": "2.2.0-preview",
     "com.unity.testtools.codecoverage": "0.2.2-preview",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.2.12",

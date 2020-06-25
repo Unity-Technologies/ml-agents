@@ -926,7 +926,10 @@ namespace Unity.MLAgents
             m_Info.maxStepReached = false;
             m_Info.episodeId = m_EpisodeId;
 
-            m_Brain.RequestDecision(m_Info, sensors);
+            using (TimerStack.Instance.Scoped("RequestDecision"))
+            {
+                m_Brain.RequestDecision(m_Info, sensors);
+            }
 
             // If we have any DemonstrationWriters, write the AgentInfo and sensors to them.
             foreach (var demoWriter in DemonstrationWriters)
