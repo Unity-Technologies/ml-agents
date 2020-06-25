@@ -113,7 +113,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         model_path = os.path.abspath(os.path.dirname(nn_file_expected))
         # Onnx loading for overrides not currently supported, but this is
         # where to add it in when it is.
-        for extension in [".nn"]:
+        for extension in ["nn"]:
             inference_ok = run_inference(env_path, model_path, extension)
             if not inference_ok:
                 return False
@@ -129,7 +129,7 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         print(f"Can't determine the player executable in {env_path}. Found {exes}.")
         return False
 
-    log_output_path = f"{get_base_output_path()}/inference{model_extension}.txt"
+    log_output_path = f"{get_base_output_path()}/inference.{model_extension}.txt"
 
     exe_path = exes[0]
     args = [

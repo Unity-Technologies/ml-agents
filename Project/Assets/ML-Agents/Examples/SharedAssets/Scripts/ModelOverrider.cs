@@ -23,6 +23,7 @@ namespace Unity.MLAgentsExamples
     /// </summary>
     public class ModelOverrider : MonoBehaviour
     {
+        HashSet<string> k_SupportedExtensions = new HashSet<string>{"nn", "onnx"};
         const string k_CommandLineModelOverrideFlag = "--mlagents-override-model";
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
@@ -37,7 +38,7 @@ namespace Unity.MLAgentsExamples
 
         string m_BehaviorNameOverrideDirectory;
 
-        string m_OverrideExtension = ".nn";
+        string m_OverrideExtension = "nn";
 
         // Cached loaded NNModels, with the behavior name as the key.
         Dictionary<string, NNModel> m_CachedModels = new Dictionary<string, NNModel>();
@@ -110,11 +111,13 @@ namespace Unity.MLAgentsExamples
                 }
                 else if (args[i] == k_CommandLineModelOverrideExtensionFlag && i < args.Length-1)
                 {
-                    m_OverrideExtension = args[i + 1].Trim();
-                    if (m_OverrideExtension.Equals(".onnx", StringComparison.OrdinalIgnoreCase))
+                    m_OverrideExtension = args[i + 1].Trim().ToLower();
+                    var isKnownExtension = k_SupportedExtensions.Contains(m_OverrideExtension);
+                    // Not supported yet - need to update the model loading code to support
+                    var isOnnx = m_OverrideExtension.Equals("onnx");
+                    if (!isKnownExtension || isOnnx)
                     {
-                        // Not supported yet - need to update the model loading code to support
-                        Debug.LogError("ONNX loading not supported yet.");
+                        Debug.LogError($"loading unsupported format: {m_OverrideExtension}");
                         Application.Quit(1);
 #if UNITY_EDITOR
                         EditorApplication.isPlaying = false;
@@ -197,7 +200,7 @@ namespace Unity.MLAgentsExamples
             }
             else if(!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
             {
-                assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}{m_OverrideExtension}");
+                assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.{m_OverrideExtension}");
             }
 
             if (string.IsNullOrEmpty(assetPath))
