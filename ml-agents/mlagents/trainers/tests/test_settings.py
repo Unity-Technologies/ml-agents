@@ -202,16 +202,16 @@ def test_env_parameter_structure():
     env_param_settings = EnvironmentParameterSettings.structure(
         env_params_dict, Dict[str, EnvironmentParameterSettings]
     )
-    assert isinstance(env_param_settings["mass"].lessons[0].sampler, UniformSettings)
-    assert isinstance(env_param_settings["scale"].lessons[0].sampler, GaussianSettings)
+    assert isinstance(env_param_settings["mass"].curriculum[0].value, UniformSettings)
+    assert isinstance(env_param_settings["scale"].curriculum[0].value, GaussianSettings)
     assert isinstance(
-        env_param_settings["length"].lessons[0].sampler, MultiRangeUniformSettings
+        env_param_settings["length"].curriculum[0].value, MultiRangeUniformSettings
     )
     assert isinstance(
-        env_param_settings["wall_height"].lessons[0].sampler, ConstantSettings
+        env_param_settings["wall_height"].curriculum[0].value, ConstantSettings
     )
     assert isinstance(
-        env_param_settings["wall_height"].lessons[1].sampler, ConstantSettings
+        env_param_settings["wall_height"].curriculum[1].value, ConstantSettings
     )
 
     # Check invalid distribution type

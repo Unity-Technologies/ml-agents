@@ -27,12 +27,12 @@ def test_sampler_conversion():
     run_options = RunOptions.from_dict(yaml.safe_load(test_sampler_config_yaml))
     assert run_options.environment_parameters is not None
     assert "param_1" in run_options.environment_parameters
-    lessons = run_options.environment_parameters["param_1"].lessons
+    lessons = run_options.environment_parameters["param_1"].curriculum
     assert len(lessons) == 1
     assert lessons[0].completion_criteria is None
-    assert isinstance(lessons[0].sampler, UniformSettings)
-    assert lessons[0].sampler.min_value == 0.5
-    assert lessons[0].sampler.max_value == 10
+    assert isinstance(lessons[0].value, UniformSettings)
+    assert lessons[0].value.min_value == 0.5
+    assert lessons[0].value.max_value == 10
 
 
 test_sampler_and_constant_config_yaml = """
@@ -52,15 +52,15 @@ def test_sampler_and_constant_conversion():
     )
     assert "param_1" in run_options.environment_parameters
     assert "param_2" in run_options.environment_parameters
-    lessons_1 = run_options.environment_parameters["param_1"].lessons
-    lessons_2 = run_options.environment_parameters["param_2"].lessons
+    lessons_1 = run_options.environment_parameters["param_1"].curriculum
+    lessons_2 = run_options.environment_parameters["param_2"].curriculum
     # gaussian
-    assert isinstance(lessons_1[0].sampler, GaussianSettings)
-    assert lessons_1[0].sampler.mean == 4
-    assert lessons_1[0].sampler.st_dev == 5
+    assert isinstance(lessons_1[0].value, GaussianSettings)
+    assert lessons_1[0].value.mean == 4
+    assert lessons_1[0].value.st_dev == 5
     # constant
-    assert isinstance(lessons_2[0].sampler, ConstantSettings)
-    assert lessons_2[0].sampler.value == 20
+    assert isinstance(lessons_2[0].value, ConstantSettings)
+    assert lessons_2[0].value.value == 20
 
 
 test_curriculum_config_yaml = """
@@ -95,7 +95,7 @@ environment_parameters:
 def test_curriculum_conversion():
     run_options = RunOptions.from_dict(yaml.safe_load(test_curriculum_config_yaml))
     assert "param_1" in run_options.environment_parameters
-    lessons = run_options.environment_parameters["param_1"].lessons
+    lessons = run_options.environment_parameters["param_1"].curriculum
     assert len(lessons) == 3
     # First lesson
     lesson = lessons[0]
@@ -108,8 +108,8 @@ def test_curriculum_conversion():
     assert lesson.completion_criteria.threshold == 30.0
     assert lesson.completion_criteria.min_lesson_length == 100
     assert lesson.completion_criteria.require_reset
-    assert isinstance(lesson.sampler, ConstantSettings)
-    assert lesson.sampler.value == 1
+    assert isinstance(lesson.value, ConstantSettings)
+    assert lesson.value.value == 1
     # Second lesson
     lesson = lessons[1]
     assert lesson.completion_criteria is not None
@@ -121,14 +121,14 @@ def test_curriculum_conversion():
     assert lesson.completion_criteria.threshold == 60.0
     assert lesson.completion_criteria.min_lesson_length == 100
     assert not lesson.completion_criteria.require_reset
-    assert isinstance(lesson.sampler, ConstantSettings)
-    assert lesson.sampler.value == 2
+    assert isinstance(lesson.value, ConstantSettings)
+    assert lesson.value.value == 2
     # Last lesson
     lesson = lessons[2]
     assert lesson.completion_criteria is None
-    assert isinstance(lesson.sampler, UniformSettings)
-    assert lesson.sampler.min_value == 1
-    assert lesson.sampler.max_value == 3
+    assert isinstance(lesson.value, UniformSettings)
+    assert lesson.value.min_value == 1
+    assert lesson.value.max_value == 3
 
 
 test_bad_curriculum_no_competion_criteria_config_yaml = """

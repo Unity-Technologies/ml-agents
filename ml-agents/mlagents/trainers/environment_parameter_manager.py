@@ -37,15 +37,15 @@ class EnvironmentParameterManager:
     def _set_sampler_seeds(self, seed):
         offset = 0
         for settings in self._dict_settings.values():
-            for lesson in settings.lessons:
-                if lesson.sampler.seed == -1:
-                    lesson.sampler.seed = seed + offset
+            for lesson in settings.curriculum:
+                if lesson.value.seed == -1:
+                    lesson.value.seed = seed + offset
                     offset += 1
 
     def get_minimum_reward_buffer_size(self, behavior_name: str) -> int:
         result = 1
         for settings in self._dict_settings.values():
-            for lesson in settings.lessons:
+            for lesson in settings.curriculum:
                 if lesson.completion_criteria is not None:
                     if lesson.completion_criteria.behavior == behavior_name:
                         result = max(
@@ -59,8 +59,8 @@ class EnvironmentParameterManager:
             lesson_num = GlobalTrainingStatus.get_parameter_state(
                 param_name, StatusType.LESSON_NUM
             )
-            lesson = settings.lessons[lesson_num]
-            samplers[param_name] = lesson.sampler
+            lesson = settings.curriculum[lesson_num]
+            samplers[param_name] = lesson.value
         return samplers
 
     def get_current_lesson_number(self) -> Dict[str, int]:
@@ -83,10 +83,10 @@ class EnvironmentParameterManager:
             lesson_num = GlobalTrainingStatus.get_parameter_state(
                 param_name, StatusType.LESSON_NUM
             )
-            lesson = settings.lessons[lesson_num]
+            lesson = settings.curriculum[lesson_num]
             if (
                 lesson.completion_criteria is not None
-                and len(settings.lessons) > lesson_num
+                and len(settings.curriculum) > lesson_num
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
                 if behavior_to_consider in trainer_steps:
@@ -102,7 +102,7 @@ class EnvironmentParameterManager:
                         GlobalTrainingStatus.set_parameter_state(
                             param_name, StatusType.LESSON_NUM, lesson_num + 1
                         )
-                        new_lesson_name = settings.lessons[lesson_num + 1].name
+                        new_lesson_name = settings.curriculum[lesson_num + 1].name
                         logger.info(
                             f"Parameter '{param_name}' has changed. Now in lesson '{new_lesson_name}'"
                         )

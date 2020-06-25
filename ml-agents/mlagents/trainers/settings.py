@@ -1,6 +1,6 @@
 import attr
 import cattr
-from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple
+from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple, Union
 from enum import Enum
 import collections
 import argparse
@@ -178,12 +178,14 @@ class ParameterRandomizationType(Enum):
     UNIFORM: str = "uniform"
     GAUSSIAN: str = "gaussian"
     MULTIRANGEUNIFORM: str = "multirangeuniform"
+    CONSTANT: str = "constant"
 
     def to_settings(self) -> type:
         _mapping = {
             ParameterRandomizationType.UNIFORM: UniformSettings,
             ParameterRandomizationType.GAUSSIAN: GaussianSettings,
             ParameterRandomizationType.MULTIRANGEUNIFORM: MultiRangeUniformSettings,
+            ParameterRandomizationType.CONSTANT: ConstantSettings
             # Constant type is handled if a float is provided instead of a config
         }
         return _mapping[self]
@@ -192,6 +194,33 @@ class ParameterRandomizationType(Enum):
 @attr.s(auto_attribs=True)
 class ParameterRandomizationSettings(abc.ABC):
     seed: int = parser.get_default("seed")
+
+    @staticmethod
+    def structure(
+        d: Union[Mapping, float], t: type
+    ) -> "ParameterRandomizationSettings":
+        """
+        Helper method to a ParameterRandomizationSettings class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure(). This is needed to handle
+        the special Enum selection of ParameterRandomizationSettings classes.
+        """
+        if isinstance(d, (float, int)):
+            return ConstantSettings(value=d)
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported parameter randomization configuration {d}."
+            )
+        if "sampler_type" not in d:
+            raise TrainerConfigError(
+                "Sampler configuration does not contain sampler_type."
+            )
+        if "sampler_parameters" not in d:
+            raise TrainerConfigError(
+                "Sampler configuration does not contain sampler_parameters."
+            )
+        enum_key = ParameterRandomizationType(d["sampler_type"])
+        t = enum_key.to_settings()
+        return strict_to_cls(d["sampler_parameters"], t)
 
     @abc.abstractmethod
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
@@ -338,6 +367,10 @@ class CompletionCriteriaSettings:
         reward_buffer: List[float],
         smoothing: float,
     ) -> Tuple[bool, float]:
+        """
+        Given measures, this method returns a boolean indicating if the lesson
+        needs to change now, and a float corresponding to the new smoothed value.
+        """
         # Is the min number of episodes reached
         if len(reward_buffer) < increment_condition.min_lesson_length:
             return False, smoothing
@@ -371,33 +404,27 @@ class Lesson:
     """
 
     completion_criteria: Optional[CompletionCriteriaSettings]
-    sampler: ParameterRandomizationSettings
+    value: ParameterRandomizationSettings
     name: str
 
     @staticmethod
-    def from_dict(d: Mapping) -> "Lesson":
-        # a lesson_dict contains a single lesson with the name of the lesson as key
-        completion_criteria = None
-        maybe_sampler = None
-        lesson_name = list(d.keys())[0]
-        lesson_config = list(d.values())[0]
-        if "completion_criteria" in lesson_config:
-            completion_criteria = strict_to_cls(
-                lesson_config["completion_criteria"], CompletionCriteriaSettings
+    def structure(d: Mapping, t: type) -> "Lesson":
+        if "value" not in d:
+            key = list(d.keys())[0]
+            if "value" not in d[key]:
+                raise TrainerConfigError(
+                    f"The lesson {key} does not have a value field"
+                )
+            return strict_to_cls(
+                {
+                    "completion_criteria": d[key].get("completion_criteria", None),
+                    "value": d[key]["value"],
+                    "name": key,
+                },
+                Lesson,
             )
-        if "value" in lesson_config:
-            maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
-                lesson_config["value"]
-            )
-        if "value" not in lesson_config or maybe_sampler is None:
-            raise TrainerConfigError(
-                f"The parameter in lesson {lesson_name} does not contain a valid value."
-            )
-        return Lesson(
-            completion_criteria=completion_criteria,
-            sampler=maybe_sampler,
-            name=lesson_name,
-        )
+        else:
+            return strict_to_cls(d, Lesson)
 
 
 @attr.s(auto_attribs=True)
@@ -407,7 +434,7 @@ class EnvironmentParameterSettings:
     parameter.
     """
 
-    lessons: List[Lesson]
+    curriculum: List[Lesson]
 
     @staticmethod
     def _check_lesson_chain(lessons, parameter_name):
@@ -417,31 +444,6 @@ class EnvironmentParameterSettings:
                 raise TrainerConfigError(
                     f"A non-terminal lesson does not have a completion_criteria for {parameter_name}."
                 )
-
-    @staticmethod
-    def _sampler_from_config(
-        environment_parameter_config: Mapping
-    ) -> Optional[ParameterRandomizationSettings]:
-        """
-        Returns a ParameterRandomizationSettings when the environment_parameter_config
-        argument corresponds to a sampler and None otherwise.
-        """
-        if environment_parameter_config is None:
-            return None
-        if isinstance(environment_parameter_config, (float, int)):
-            sampler = ConstantSettings(value=float(environment_parameter_config))
-            return sampler
-        elif "sampler_type" in environment_parameter_config:
-            # This is the non-constant sampler case
-            enum_key = ParameterRandomizationType(
-                environment_parameter_config["sampler_type"]
-            )
-            t = enum_key.to_settings()
-            sampler = strict_to_cls(
-                environment_parameter_config["sampler_parameters"], t
-            )
-            return sampler
-        return None
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Dict[str, "EnvironmentParameterSettings"]:
@@ -456,53 +458,28 @@ class EnvironmentParameterSettings:
             )
         d_final: Dict[str, EnvironmentParameterSettings] = {}
         for environment_parameter, environment_parameter_config in d.items():
-            maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
-                environment_parameter_config
-            )
-            if isinstance(environment_parameter_config, dict):
-                if (
-                    (
-                        maybe_sampler is not None
-                        and "curriculum" in environment_parameter_config
-                    )
-                    or (
-                        maybe_sampler is not None
-                        and "value" in environment_parameter_config
-                    )
-                    or (
-                        "value" in environment_parameter_config
-                        and "curriculum" in environment_parameter_config
-                    )
-                ):
-                    raise TrainerConfigError(
-                        f"Parameter {environment_parameter} can either be curriculum, "
-                        "a constant value or a sampler. Not a combination of these."
-                    )
-            if maybe_sampler is not None:
+            if (
+                isinstance(environment_parameter_config, Mapping)
+                and "curriculum" in environment_parameter_config
+            ):
+                d_final[environment_parameter] = strict_to_cls(
+                    environment_parameter_config, EnvironmentParameterSettings
+                )
+                EnvironmentParameterSettings._check_lesson_chain(
+                    d_final[environment_parameter].curriculum, environment_parameter
+                )
+            else:
+                sampler = ParameterRandomizationSettings.structure(
+                    environment_parameter_config, ParameterRandomizationSettings
+                )
                 d_final[environment_parameter] = EnvironmentParameterSettings(
-                    lessons=[
+                    curriculum=[
                         Lesson(
                             completion_criteria=None,
-                            sampler=maybe_sampler,
+                            value=sampler,
                             name=environment_parameter,
                         )
                     ]
-                )
-            elif "curriculum" in environment_parameter_config:
-                # This is the curriculum case
-                lessons: List[Lesson] = []
-                for lesson_dict in environment_parameter_config["curriculum"]:
-                    lesson = Lesson.from_dict(lesson_dict)
-                    lessons.append(lesson)
-                EnvironmentParameterSettings._check_lesson_chain(
-                    lessons, environment_parameter
-                )
-                d_final[environment_parameter] = EnvironmentParameterSettings(
-                    lessons=lessons
-                )
-            else:
-                raise TrainerConfigError(
-                    f"The parameter {environment_parameter} does not contain a valid value."
                 )
         return d_final
 
@@ -660,6 +637,10 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(
         Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
+    )
+    cattr.register_structure_hook(Lesson, Lesson.structure)
+    cattr.register_structure_hook(
+        ParameterRandomizationSettings, ParameterRandomizationSettings.structure
     )
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
