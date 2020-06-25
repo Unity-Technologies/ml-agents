@@ -5,6 +5,8 @@ from enum import Enum
 import collections
 import argparse
 import abc
+import numpy as np
+import math
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
@@ -329,6 +331,35 @@ class CompletionCriteriaSettings:
                     "Threshold for next lesson cannot be greater negative when the measure is progress."
                 )
 
+    @staticmethod
+    def need_increment(
+        increment_condition: "CompletionCriteriaSettings",
+        progress: float,
+        reward_buffer: List[float],
+        smoothing: float,
+    ) -> Tuple[bool, float]:
+        # Is the min number of episodes reached
+        if len(reward_buffer) < increment_condition.min_lesson_length:
+            return False, smoothing
+        if (
+            increment_condition.measure
+            == CompletionCriteriaSettings.MeasureType.PROGRESS
+        ):
+            if progress > increment_condition.threshold:
+                return True, smoothing
+        if increment_condition.measure == CompletionCriteriaSettings.MeasureType.REWARD:
+            if len(reward_buffer) < 1:
+                return False, smoothing
+            measure = np.mean(reward_buffer)
+            if math.isnan(measure):
+                return False, smoothing
+            if increment_condition.signal_smoothing:
+                measure = 0.25 * smoothing + 0.75 * measure
+                smoothing = measure
+            if measure > increment_condition.threshold:
+                return True, smoothing
+        return False, smoothing
+
 
 @attr.s(auto_attribs=True)
 class Lesson:
@@ -342,6 +373,31 @@ class Lesson:
     completion_criteria: Optional[CompletionCriteriaSettings]
     sampler: ParameterRandomizationSettings
     name: str
+
+    @staticmethod
+    def from_dict(d: Mapping) -> "Lesson":
+        # a lesson_dict contains a single lesson with the name of the lesson as key
+        completion_criteria = None
+        maybe_sampler = None
+        lesson_name = list(d.keys())[0]
+        lesson_config = list(d.values())[0]
+        if "completion_criteria" in lesson_config:
+            completion_criteria = strict_to_cls(
+                lesson_config["completion_criteria"], CompletionCriteriaSettings
+            )
+        if "value" in lesson_config:
+            maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
+                lesson_config["value"]
+            )
+        if "value" not in lesson_config or maybe_sampler is None:
+            raise TrainerConfigError(
+                f"The parameter in lesson {lesson_name} does not contain a valid value."
+            )
+        return Lesson(
+            completion_criteria=completion_criteria,
+            sampler=maybe_sampler,
+            name=lesson_name,
+        )
 
 
 @attr.s(auto_attribs=True)
@@ -436,31 +492,8 @@ class EnvironmentParameterSettings:
                 # This is the curriculum case
                 lessons: List[Lesson] = []
                 for lesson_dict in environment_parameter_config["curriculum"]:
-                    # a lesson_dict contains a single lesson with the name of the lesson as key
-                    completion_criteria = None
-                    maybe_sampler = None
-                    lesson_name = list(lesson_dict.keys())[0]
-                    lesson_config = list(lesson_dict.values())[0]
-                    if "completion_criteria" in lesson_config:
-                        completion_criteria = strict_to_cls(
-                            lesson_config["completion_criteria"],
-                            CompletionCriteriaSettings,
-                        )
-                    if "value" in lesson_config:
-                        maybe_sampler = EnvironmentParameterSettings._sampler_from_config(
-                            lesson_config["value"]
-                        )
-                    if "value" not in lesson_config or maybe_sampler is None:
-                        raise TrainerConfigError(
-                            f"Parameter {environment_parameter} in lesson {lesson_name} does not contain a valid value."
-                        )
-                    lessons.append(
-                        Lesson(
-                            completion_criteria=completion_criteria,
-                            sampler=maybe_sampler,
-                            name=lesson_name,
-                        )
-                    )
+                    lesson = Lesson.from_dict(lesson_dict)
+                    lessons.append(lesson)
                 EnvironmentParameterSettings._check_lesson_chain(
                     lessons, environment_parameter
                 )

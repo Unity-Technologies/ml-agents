@@ -1,11 +1,10 @@
 from typing import Dict, List, Tuple
-import numpy as np
-import math
 from mlagents.trainers.settings import (
     EnvironmentParameterSettings,
     CompletionCriteriaSettings,
     ParameterRandomizationSettings,
 )
+from collections import defaultdict
 from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 from mlagents_envs.logging_util import get_logger
@@ -29,9 +28,9 @@ class EnvironmentParameterManager:
                 GlobalTrainingStatus.set_parameter_state(
                     parameter_name, StatusType.LESSON_NUM, 0
                 )
-        self._smoothing_values: Dict[str, float] = {}
+        self._smoothed_values: Dict[str, float] = defaultdict(float)
         for key in self._dict_settings.keys():
-            self._smoothing_values[key] = 0.0
+            self._smoothed_values[key] = 0.0
         # Update the seeds of the samplers
         self._set_sampler_seeds(run_seed)
 
@@ -91,14 +90,14 @@ class EnvironmentParameterManager:
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
                 if behavior_to_consider in trainer_steps:
-                    must_increment, new_smoothing = self._need_increment(
+                    must_increment, new_smoothing = CompletionCriteriaSettings.need_increment(
                         lesson.completion_criteria,
                         float(trainer_steps[behavior_to_consider])
                         / float(trainer_max_steps[behavior_to_consider]),
                         trainer_reward_buffer[behavior_to_consider],
-                        self._smoothing_values[param_name],
+                        self._smoothed_values[param_name],
                     )
-                    self._smoothing_values[param_name] = new_smoothing
+                    self._smoothed_values[param_name] = new_smoothing
                     if must_increment:
                         GlobalTrainingStatus.set_parameter_state(
                             param_name, StatusType.LESSON_NUM, lesson_num + 1
@@ -111,32 +110,3 @@ class EnvironmentParameterManager:
                         if lesson.completion_criteria.require_reset:
                             must_reset = True
         return updated, must_reset
-
-    @staticmethod
-    def _need_increment(
-        increment_condition: CompletionCriteriaSettings,
-        progress: float,
-        reward_buffer: List[float],
-        smoothing: float,
-    ) -> Tuple[bool, float]:
-        # Is the min number of episodes reached
-        if len(reward_buffer) < increment_condition.min_lesson_length:
-            return False, smoothing
-        if (
-            increment_condition.measure
-            == CompletionCriteriaSettings.MeasureType.PROGRESS
-        ):
-            if progress > increment_condition.threshold:
-                return True, smoothing
-        if increment_condition.measure == CompletionCriteriaSettings.MeasureType.REWARD:
-            if len(reward_buffer) < 1:
-                return False, smoothing
-            measure = np.mean(reward_buffer)
-            if math.isnan(measure):
-                return False, smoothing
-            if increment_condition.signal_smoothing:
-                measure = 0.25 * smoothing + 0.75 * measure
-                smoothing = measure
-            if measure > increment_condition.threshold:
-                return True, smoothing
-        return False, smoothing
