@@ -40,7 +40,7 @@ def check_dict_is_at_least(
     Check if everything present in the 1st dict is the same in the second dict.
     Excludes things that the second dict has but is not present in the heirarchy of the
     1st dict. Used to compare an underspecified config dict structure (e.g. as
-    would be provded by a user) with a complete one (e.g. as exported by RunOptions).
+    would be provided by a user) with a complete one (e.g. as exported by RunOptions).
     """
     for key, val in testdict1.items():
         if exceptions is not None and key in exceptions:
