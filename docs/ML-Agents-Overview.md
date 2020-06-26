@@ -569,7 +569,7 @@ for later lessons. The same principle can be applied to machine learning, where
 training on easier tasks can provide a scaffolding for harder tasks in the
 future.
 
-Imagine training the medic to to scale a wall to arrive at a wounded team
+Imagine training the medic to scale a wall to arrive at a wounded team
 member. The starting point when training a medic to accomplish this task will be
 a random policy. That starting policy will have the medic running in circles,
 and will likely never, or very rarely scale the wall properly to revive their

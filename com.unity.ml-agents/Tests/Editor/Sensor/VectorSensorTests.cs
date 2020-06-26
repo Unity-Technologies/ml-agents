@@ -24,10 +24,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(fill, output[0]);
 
             sensor.Write(writer);
-            for (var i = 0; i < numExpected; i++)
-            {
-                Assert.AreEqual(expected[i], output[i]);
-            }
+            Assert.AreEqual(expected, output);
         }
     }
 

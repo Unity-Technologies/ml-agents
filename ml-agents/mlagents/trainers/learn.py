@@ -1,24 +1,18 @@
 # # Unity ML-Agents Toolkit
-import argparse
 import yaml
 
 import os
 import numpy as np
 import json
 
-from typing import Callable, Optional, List, NamedTuple, Dict
+from typing import Callable, Optional, List, Dict
 
 import mlagents.trainers
 import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.meta_curriculum import MetaCurriculum
-from mlagents.trainers.trainer_util import (
-    load_config,
-    TrainerFactory,
-    handle_existing_directories,
-    assemble_curriculum_config,
-)
+from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
     CSVWriter,
@@ -26,14 +20,10 @@ from mlagents.trainers.stats import (
     GaugeWriter,
     ConsoleWriter,
 )
-from mlagents.trainers.cli_utils import (
-    StoreConfigFile,
-    DetectDefault,
-    DetectDefaultStoreTrue,
-)
+from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.sampler_class import SamplerManager
-from mlagents.trainers.exception import SamplerException, TrainerConfigError
+from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
@@ -47,285 +37,7 @@ from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
 
-
-def _create_parser():
-    argparser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    argparser.add_argument("trainer_config_path", action=StoreConfigFile)
-    argparser.add_argument(
-        "--env",
-        default=None,
-        dest="env_path",
-        help="Path to the Unity executable to train",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--lesson",
-        default=0,
-        type=int,
-        help="The lesson to start with when performing curriculum training",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--keep-checkpoints",
-        default=5,
-        type=int,
-        help="The maximum number of model checkpoints to keep. Checkpoints are saved after the"
-        "number of steps specified by the save-freq option. Once the maximum number of checkpoints"
-        "has been reached, the oldest checkpoint is deleted when saving a new checkpoint.",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--load",
-        default=False,
-        dest="load_model",
-        action=DetectDefaultStoreTrue,
-        help=argparse.SUPPRESS,  # Deprecated but still usable for now.
-    )
-    argparser.add_argument(
-        "--resume",
-        default=False,
-        dest="resume",
-        action=DetectDefaultStoreTrue,
-        help="Whether to resume training from a checkpoint. Specify a --run-id to use this option. "
-        "If set, the training code loads an already trained model to initialize the neural network "
-        "before resuming training. This option is only valid when the models exist, and have the same "
-        "behavior names as the current agents in your scene.",
-    )
-    argparser.add_argument(
-        "--force",
-        default=False,
-        dest="force",
-        action=DetectDefaultStoreTrue,
-        help="Whether to force-overwrite this run-id's existing summary and model data. (Without "
-        "this flag, attempting to train a model with a run-id that has been used before will throw "
-        "an error.",
-    )
-    argparser.add_argument(
-        "--run-id",
-        default="ppo",
-        help="The identifier for the training run. This identifier is used to name the "
-        "subdirectories in which the trained model and summary statistics are saved as well "
-        "as the saved model itself. If you use TensorBoard to view the training statistics, "
-        "always set a unique run-id for each training run. (The statistics for all runs with the "
-        "same id are combined as if they were produced by a the same session.)",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--initialize-from",
-        metavar="RUN_ID",
-        default=None,
-        help="Specify a previously saved run ID from which to initialize the model from. "
-        "This can be used, for instance, to fine-tune an existing model on a new environment. "
-        "Note that the previously saved models must have the same behavior parameters as your "
-        "current environment.",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--save-freq",
-        default=50000,
-        type=int,
-        help="How often (in steps) to save the model during training",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--seed",
-        default=-1,
-        type=int,
-        help="A number to use as a seed for the random number generator used by the training code",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--train",
-        default=False,
-        dest="train_model",
-        action=DetectDefaultStoreTrue,
-        help=argparse.SUPPRESS,
-    )
-    argparser.add_argument(
-        "--inference",
-        default=False,
-        dest="inference",
-        action=DetectDefaultStoreTrue,
-        help="Whether to run in Python inference mode (i.e. no training). Use with --resume to load "
-        "a model trained with an existing run ID.",
-    )
-    argparser.add_argument(
-        "--base-port",
-        default=UnityEnvironment.BASE_ENVIRONMENT_PORT,
-        type=int,
-        help="The starting port for environment communication. Each concurrent Unity environment "
-        "instance will get assigned a port sequentially, starting from the base-port. Each instance "
-        "will use the port (base_port + worker_id), where the worker_id is sequential IDs given to "
-        "each instance from 0 to (num_envs - 1). Note that when training using the Editor rather "
-        "than an executable, the base port will be ignored.",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--num-envs",
-        default=1,
-        type=int,
-        help="The number of concurrent Unity environment instances to collect experiences "
-        "from when training",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--no-graphics",
-        default=False,
-        action=DetectDefaultStoreTrue,
-        help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
-        "the graphics driver. Use this only if your agents don't use visual observations.",
-    )
-    argparser.add_argument(
-        "--debug",
-        default=False,
-        action=DetectDefaultStoreTrue,
-        help="Whether to enable debug-level logging for some parts of the code",
-    )
-    argparser.add_argument(
-        "--env-args",
-        default=None,
-        nargs=argparse.REMAINDER,
-        help="Arguments passed to the Unity executable. Be aware that the standalone build will also "
-        "process these as Unity Command Line Arguments. You should choose different argument names if "
-        "you want to create environment-specific arguments. All arguments after this flag will be "
-        "passed to the executable.",
-        action=DetectDefault,
-    )
-    argparser.add_argument(
-        "--cpu",
-        default=False,
-        action=DetectDefaultStoreTrue,
-        help="Forces training using CPU only",
-    )
-
-    argparser.add_argument("--version", action="version", version="")
-
-    eng_conf = argparser.add_argument_group(title="Engine Configuration")
-    eng_conf.add_argument(
-        "--width",
-        default=None,
-        type=int,
-        help="The width of the executable window of the environment(s) in pixels "
-        "(ignored for editor training).",
-        action=DetectDefault,
-    )
-    eng_conf.add_argument(
-        "--height",
-        default=None,
-        type=int,
-        help="The height of the executable window of the environment(s) in pixels "
-        "(ignored for editor training)",
-        action=DetectDefault,
-    )
-    eng_conf.add_argument(
-        "--quality-level",
-        default=5,
-        type=int,
-        help="The quality level of the environment(s). Equivalent to calling "
-        "QualitySettings.SetQualityLevel in Unity.",
-        action=DetectDefault,
-    )
-    eng_conf.add_argument(
-        "--time-scale",
-        default=20,
-        type=float,
-        help="The time scale of the Unity environment(s). Equivalent to setting "
-        "Time.timeScale in Unity.",
-        action=DetectDefault,
-    )
-    eng_conf.add_argument(
-        "--target-frame-rate",
-        default=-1,
-        type=int,
-        help="The target frame rate of the Unity environment(s). Equivalent to setting "
-        "Application.targetFrameRate in Unity.",
-        action=DetectDefault,
-    )
-    eng_conf.add_argument(
-        "--capture-frame-rate",
-        default=60,
-        type=int,
-        help="The capture frame rate of the Unity environment(s). Equivalent to setting "
-        "Time.captureFramerate in Unity.",
-        action=DetectDefault,
-    )
-    return argparser
-
-
-parser = _create_parser()
-
-
-class RunOptions(NamedTuple):
-    behaviors: Dict
-    debug: bool = parser.get_default("debug")
-    seed: int = parser.get_default("seed")
-    env_path: Optional[str] = parser.get_default("env_path")
-    run_id: str = parser.get_default("run_id")
-    initialize_from: str = parser.get_default("initialize_from")
-    load_model: bool = parser.get_default("load_model")
-    resume: bool = parser.get_default("resume")
-    force: bool = parser.get_default("force")
-    train_model: bool = parser.get_default("train_model")
-    inference: bool = parser.get_default("inference")
-    save_freq: int = parser.get_default("save_freq")
-    keep_checkpoints: int = parser.get_default("keep_checkpoints")
-    base_port: int = parser.get_default("base_port")
-    num_envs: int = parser.get_default("num_envs")
-    curriculum_config: Optional[Dict] = None
-    lesson: int = parser.get_default("lesson")
-    no_graphics: bool = parser.get_default("no_graphics")
-    multi_gpu: bool = parser.get_default("multi_gpu")
-    parameter_randomization: Optional[Dict] = None
-    env_args: Optional[List[str]] = parser.get_default("env_args")
-    cpu: bool = parser.get_default("cpu")
-    width: int = parser.get_default("width")
-    height: int = parser.get_default("height")
-    quality_level: int = parser.get_default("quality_level")
-    time_scale: float = parser.get_default("time_scale")
-    target_frame_rate: int = parser.get_default("target_frame_rate")
-    capture_frame_rate: int = parser.get_default("capture_frame_rate")
-
-    @staticmethod
-    def from_argparse(args: argparse.Namespace) -> "RunOptions":
-        """
-        Takes an argparse.Namespace as specified in `parse_command_line`, loads input configuration files
-        from file paths, and converts to a CommandLineOptions instance.
-        :param args: collection of command-line parameters passed to mlagents-learn
-        :return: CommandLineOptions representing the passed in arguments, with trainer config, curriculum and sampler
-          configs loaded from files.
-        """
-        argparse_args = vars(args)
-        run_options_dict = {}
-        run_options_dict.update(argparse_args)
-        config_path = StoreConfigFile.trainer_config_path
-
-        # Load YAML
-        yaml_config = load_config(config_path)
-        # This is the only option that is not optional and has no defaults.
-        if "behaviors" not in yaml_config:
-            raise TrainerConfigError(
-                "Trainer configurations not found. Make sure your YAML file has a section for behaviors."
-            )
-        # Use the YAML file values for all values not specified in the CLI.
-        for key, val in yaml_config.items():
-            # Detect bad config options
-            if not hasattr(RunOptions, key):
-                raise TrainerConfigError(
-                    "The option {} was specified in your YAML file, but is invalid.".format(
-                        key
-                    )
-                )
-            if key not in DetectDefault.non_default_args:
-                run_options_dict[key] = val
-
-        # Keep deprecated --load working, TODO: remove
-        run_options_dict["resume"] = (
-            run_options_dict["resume"] or run_options_dict["load_model"]
-        )
-
-        return RunOptions(**run_options_dict)
+TRAINING_STATUS_FILE_NAME = "training_status.json"
 
 
 def get_version_string() -> str:
@@ -350,19 +62,32 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_options: Command line arguments for training.
     """
     with hierarchical_timer("run_training.setup"):
+        checkpoint_settings = options.checkpoint_settings
+        env_settings = options.env_settings
+        engine_settings = options.engine_settings
         base_path = "results"
-        write_path = os.path.join(base_path, options.run_id)
+        write_path = os.path.join(base_path, checkpoint_settings.run_id)
         maybe_init_path = (
-            os.path.join(base_path, options.run_id) if options.initialize_from else None
+            os.path.join(base_path, checkpoint_settings.initialize_from)
+            if checkpoint_settings.initialize_from
+            else None
         )
         run_logs_dir = os.path.join(write_path, "run_logs")
-        port: Optional[int] = options.base_port
+        port: Optional[int] = env_settings.base_port
         # Check if directory exists
         handle_existing_directories(
-            write_path, options.resume, options.force, maybe_init_path
+            write_path,
+            checkpoint_settings.resume,
+            checkpoint_settings.force,
+            maybe_init_path,
         )
         # Make run logs directory
         os.makedirs(run_logs_dir, exist_ok=True)
+        # Load any needed states
+        if checkpoint_settings.resume:
+            GlobalTrainingStatus.load_state(
+                os.path.join(run_logs_dir, "training_status.json")
+            )
         # Configure CSV, Tensorboard Writers and StatsReporter
         # We assume reward and episode length are needed in the CSV.
         csv_writer = CSVWriter(
@@ -372,7 +97,9 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 "Environment/Episode Length",
             ],
         )
-        tb_writer = TensorboardWriter(write_path, clear_past_data=not options.resume)
+        tb_writer = TensorboardWriter(
+            write_path, clear_past_data=not checkpoint_settings.resume
+        )
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
@@ -380,55 +107,49 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         StatsReporter.add_writer(gauge_write)
         StatsReporter.add_writer(console_writer)
 
-        if options.env_path is None:
+        if env_settings.env_path is None:
             port = None
         env_factory = create_environment_factory(
-            options.env_path,
-            options.no_graphics,
+            env_settings.env_path,
+            engine_settings.no_graphics,
             run_seed,
             port,
-            options.env_args,
+            env_settings.env_args,
             os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
         )
         engine_config = EngineConfig(
-            width=options.width,
-            height=options.height,
-            quality_level=options.quality_level,
-            time_scale=options.time_scale,
-            target_frame_rate=options.target_frame_rate,
-            capture_frame_rate=options.capture_frame_rate,
+            width=engine_settings.width,
+            height=engine_settings.height,
+            quality_level=engine_settings.quality_level,
+            time_scale=engine_settings.time_scale,
+            target_frame_rate=engine_settings.target_frame_rate,
+            capture_frame_rate=engine_settings.capture_frame_rate,
         )
-        env_manager = SubprocessEnvManager(env_factory, engine_config, options.num_envs)
-        curriculum_config = assemble_curriculum_config(options.behaviors)
+        env_manager = SubprocessEnvManager(
+            env_factory, engine_config, env_settings.num_envs
+        )
         maybe_meta_curriculum = try_create_meta_curriculum(
-            curriculum_config, env_manager, options.lesson
+            options.curriculum, env_manager, restore=checkpoint_settings.resume
         )
-        sampler_manager, resampling_interval = create_sampler_manager(
-            options.parameter_randomization, run_seed
-        )
+        maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
         trainer_factory = TrainerFactory(
             options.behaviors,
-            options.run_id,
             write_path,
-            options.keep_checkpoints,
-            not options.inference,
-            options.resume,
+            not checkpoint_settings.inference,
+            checkpoint_settings.resume,
             run_seed,
             maybe_init_path,
             maybe_meta_curriculum,
-            options.multi_gpu,
+            False,
         )
         # Create controller and begin training.
         tc = TrainerController(
             trainer_factory,
             write_path,
-            options.run_id,
-            options.save_freq,
+            checkpoint_settings.run_id,
             maybe_meta_curriculum,
-            not options.inference,
+            not checkpoint_settings.inference,
             run_seed,
-            sampler_manager,
-            resampling_interval,
         )
 
     # Begin training
@@ -438,6 +159,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager.close()
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
+        write_training_status(run_logs_dir)
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
@@ -445,13 +167,17 @@ def write_run_options(output_dir: str, run_options: RunOptions) -> None:
     try:
         with open(run_options_path, "w") as f:
             try:
-                yaml.dump(dict(run_options._asdict()), f, sort_keys=False)
+                yaml.dump(run_options.as_dict(), f, sort_keys=False)
             except TypeError:  # Older versions of pyyaml don't support sort_keys
-                yaml.dump(dict(run_options._asdict()), f)
+                yaml.dump(run_options.as_dict(), f)
     except FileNotFoundError:
         logger.warning(
             f"Unable to save configuration to {run_options_path}. Make sure the directory exists"
         )
+
+
+def write_training_status(output_dir: str) -> None:
+    GlobalTrainingStatus.save_state(os.path.join(output_dir, TRAINING_STATUS_FILE_NAME))
 
 
 def write_timing_tree(output_dir: str) -> None:
@@ -465,38 +191,32 @@ def write_timing_tree(output_dir: str) -> None:
         )
 
 
-def create_sampler_manager(sampler_config, run_seed=None):
-    resample_interval = None
+def maybe_add_samplers(
+    sampler_config: Optional[Dict], env: SubprocessEnvManager, run_seed: int
+) -> None:
+    """
+    Adds samplers to env if sampler config provided and sets seed if not configured.
+    :param sampler_config: validated dict of sampler configs. None if not included.
+    :param env: env manager to pass samplers via reset
+    :param run_seed: Random seed used for training.
+    """
     if sampler_config is not None:
-        if "resampling-interval" in sampler_config:
-            # Filter arguments that do not exist in the environment
-            resample_interval = sampler_config.pop("resampling-interval")
-            if (resample_interval <= 0) or (not isinstance(resample_interval, int)):
-                raise SamplerException(
-                    "Specified resampling-interval is not valid. Please provide"
-                    " a positive integer value for resampling-interval"
-                )
-
-        else:
-            raise SamplerException(
-                "Resampling interval was not specified in the sampler file."
-                " Please specify it with the 'resampling-interval' key in the sampler config file."
-            )
-
-    sampler_manager = SamplerManager(sampler_config, run_seed)
-    return sampler_manager, resample_interval
+        # If the seed is not specified in yaml, this will grab the run seed
+        for offset, v in enumerate(sampler_config.values()):
+            if v.seed == -1:
+                v.seed = run_seed + offset
+        env.set_env_parameters(config=sampler_config)
 
 
 def try_create_meta_curriculum(
-    curriculum_config: Optional[Dict], env: SubprocessEnvManager, lesson: int
+    curriculum_config: Optional[Dict], env: SubprocessEnvManager, restore: bool = False
 ) -> Optional[MetaCurriculum]:
     if curriculum_config is None or len(curriculum_config) <= 0:
         return None
     else:
         meta_curriculum = MetaCurriculum(curriculum_config)
-        # TODO: Should be able to start learning at different lesson numbers
-        # for each curriculum.
-        meta_curriculum.set_all_curricula_to_lesson_num(lesson)
+        if restore:
+            meta_curriculum.try_restore_all_curriculum()
         return meta_curriculum
 
 
@@ -561,22 +281,20 @@ def run_cli(options: RunOptions) -> None:
     logging_util.set_log_level(log_level)
 
     logger.debug("Configuration for this run:")
-    logger.debug(json.dumps(options._asdict(), indent=4))
+    logger.debug(json.dumps(options.as_dict(), indent=4))
 
     # Options deprecation warnings
-    if options.load_model:
+    if options.checkpoint_settings.load_model:
         logger.warning(
             "The --load option has been deprecated. Please use the --resume option instead."
         )
-    if options.train_model:
+    if options.checkpoint_settings.train_model:
         logger.warning(
             "The --train option has been deprecated. Train mode is now the default. Use "
             "--inference to run in inference mode."
         )
 
-    run_seed = options.seed
-    if options.cpu:
-        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+    run_seed = options.env_settings.seed
 
     # Add some timer metadata
     add_timer_metadata("mlagents_version", mlagents.trainers.__version__)
@@ -584,7 +302,7 @@ def run_cli(options: RunOptions) -> None:
     add_timer_metadata("communication_protocol_version", UnityEnvironment.API_VERSION)
     add_timer_metadata("tensorflow_version", tf_utils.tf.__version__)
 
-    if options.seed == -1:
+    if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
     run_training(run_seed, options)
 

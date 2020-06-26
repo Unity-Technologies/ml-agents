@@ -9,7 +9,12 @@ from typing import NamedTuple
 
 def table_line(display_name, name, date, bold=False):
     bold_str = "**" if bold else ""
-    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
+    # For release_X branches, docs are on a separate tag.
+    if name.startswith("release"):
+        docs_name = name + "_docs"
+    else:
+        docs_name = name
+    return f"| **{display_name}** | {bold_str}{date}{bold_str} | {bold_str}[source](https://github.com/Unity-Technologies/ml-agents/tree/{name}){bold_str} | {bold_str}[docs](https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md){bold_str} | {bold_str}[download](https://github.com/Unity-Technologies/ml-agents/archive/{name}.zip){bold_str} |"  # noqa
 
 
 class ReleaseInfo(NamedTuple):
@@ -62,6 +67,8 @@ versions = [
     ReleaseInfo.from_simple_tag("0.15.0", "March 18, 2020"),
     ReleaseInfo.from_simple_tag("0.15.1", "March 30, 2020"),
     ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
+    ReleaseInfo("release_2", "1.0.2", "0.16.1", "May 20, 2020"),
+    ReleaseInfo("release_3", "1.1.0", "0.17.0", "June 10, 2020"),
 ]
 
 MAX_DAYS = 150  # do not print releases older than this many days

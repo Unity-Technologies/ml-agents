@@ -8,7 +8,7 @@
     - [Stopping and Resuming Training](#stopping-and-resuming-training)
     - [Loading an Existing Model](#loading-an-existing-model)
 - [Training Configurations](#training-configurations)
-  - [Trainer Config File](#trainer-config-file)
+  - [Behavior Configurations](#behavior-configurations)
   - [Curriculum Learning](#curriculum-learning)
     - [Specifying Curricula](#specifying-curricula)
     - [Training with a Curriculum](#training-with-a-curriculum)
@@ -179,6 +179,11 @@ use during training, and the answers to the above questions will dictate its con
 The rest of this guide breaks down the different sub-sections of the trainer config file
 and explains the possible settings for each.
 
+**NOTE:** The configuration file format has been changed from 0.17.0 and onwards. To convert
+an old set of configuration files (trainer config, curriculum, and sampler files) to the new
+format, a script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` in your
+console to see the script's usage.
+
 ### Behavior Configurations
 
 The primary section of the trainer config file is a
@@ -194,31 +199,41 @@ configuration, but their settings live in different sections that we'll cover su
 ```yaml
 behaviors:
   BehaviorPPO:
-    trainer: ppo
+    trainer_type: ppo
 
-    # Trainer configs common to PPO/SAC (excluding reward signals)
-    batch_size: 1024
-    buffer_size: 10240
-    hidden_units: 128
-    learning_rate: 3.0e-4
-    learning_rate_schedule: linear
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      batch_size: 1024
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      learning_rate_schedule: linear
+
+      # PPO-specific hyperparameters
+      # Replaces the "PPO-specific hyperparameters" section above
+      beta: 5.0e-3
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      vis_encoder_type: simple
+      normalize: false
+      hidden_units: 128
+      num_layers: 2
+      # memory
+      memory:
+        sequence_length: 64
+        memory_size: 256
+
+    # Trainer configurations common to all trainers
     max_steps: 5.0e5
-    normalize: false
-    num_layers: 2
     time_horizon: 64
-    vis_encoder_type: simple
-
-    # PPO-specific configs
-    beta: 5.0e-3
-    epsilon: 0.2
-    lambd: 0.95
-    num_epoch: 3
+    summary_freq: 10000
+    keep_checkpoints: 5
+    checkpoint_interval: 50000
     threaded: true
-
-    # memory
-    use_recurrent: true
-    sequence_length: 64
-    memory_size: 256
+    init_path: null
 
     # behavior cloning
     behavioral_cloning:
@@ -228,10 +243,9 @@ behaviors:
       batch_size: 512
       num_epoch: 3
       samples_per_update: 0
-      init_path:
 
     reward_signals:
-      # environment reward
+      # environment reward (default)
       extrinsic:
         strength: 1.0
         gamma: 0.99
@@ -241,7 +255,7 @@ behaviors:
         strength: 0.02
         gamma: 0.99
         encoding_size: 256
-        learning_rate: 3e-4
+        learning_rate: 3.0e-4
 
       # GAIL
       gail:
@@ -249,7 +263,7 @@ behaviors:
         gamma: 0.99
         encoding_size: 128
         demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
-        learning_rate: 3e-4
+        learning_rate: 3.0e-4
         use_actions: false
         use_vail: false
 
@@ -258,7 +272,7 @@ behaviors:
       window: 10
       play_against_latest_model_ratio: 0.5
       save_steps: 50000
-      swap_steps: 50000
+      swap_steps: 2000
       team_change: 100000
 ```
 
@@ -269,29 +283,37 @@ curiosity and self-play) remain unchanged.
 ```yaml
 behaviors:
   BehaviorSAC:
-    trainer: sac
+    trainer_type: sac
 
     # Trainer configs common to PPO/SAC (excluding reward signals)
     # same as PPO config
 
-    # SAC-specific configs (replaces the "PPO-specific configs" section above)
-    buffer_init_steps: 0
-    tau: 0.005
-    steps_per_update: 1
-    train_interval: 1
-    init_entcoef: 1.0
-    save_replay_buffer: false
+    # SAC-specific configs (replaces the hyperparameters section above)
+    hyperparameters:
+      # Hyperparameters common to PPO and SAC
+      # Same as PPO config
 
-    # memory
-    # same as PPO config
+      # SAC-specific hyperparameters
+      # Replaces the "PPO-specific hyperparameters" section above
+      buffer_init_steps: 0
+      tau: 0.005
+      steps_per_update: 10.0
+      save_replay_buffer: false
+      init_entcoef: 0.5
+      reward_signal_steps_per_update: 10.0
+
+    # Configuration of the neural network (common to PPO/SAC)
+    network_settings:
+      # Same as PPO config
+
+    # Trainer configurations common to all trainers
+      # <Same as PPO config>
 
     # pre-training using behavior cloning
     behavioral_cloning:
       # same as PPO config
 
     reward_signals:
-      reward_signal_num_update: 1 # only applies to SAC
-
       # environment reward
       extrinsic:
         # same as PPO config
@@ -312,27 +334,29 @@ behaviors:
 We now break apart the components of the configuration file and describe what
 each of these parameters mean and provide guidelines on how to set them. See
 [Training Configuration File](Training-Configuration-File.md) for a detailed
-description of all the configurations listed above.
+description of all the configurations listed above, along with their defaults.
+Unless otherwise specified, omitting a configuration will revert it to its default.
 
 ### Curriculum Learning
 
-To enable curriculum learning, you need to add a sub-section to the corresponding
-`behaivors` entry in the trainer config YAML file that defines the curriculum for that
-behavior. Here is one example:
+To enable curriculum learning, you need to add a `curriculum ` sub-section to the trainer
+configuration YAML file. Within this sub-section, add an entry for each behavior that defines
+the curriculum for thatbehavior. Here is one example:
 
 ```yml
 behaviors:
   BehaviorY:
     # < Same as above >
 
-    # Add this section
-    curriculum:
-      measure: progress
-      thresholds: [0.1, 0.3, 0.5]
-      min_lesson_length: 100
-      signal_smoothing: true
-      parameters:
-        wall_height: [1.5, 2.0, 2.5, 4.0]
+# Add this section
+curriculum:
+  BehaviorY:
+    measure: progress
+    thresholds: [0.1, 0.3, 0.5]
+    min_lesson_length: 100
+    signal_smoothing: true
+    parameters:
+      wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
 Each group of Agents under the same `Behavior Name` in an environment can have a
@@ -355,8 +379,11 @@ example config for the curricula for the Wall Jump environment.
 behaviors:
   BigWallJump:
     # < Trainer parameters for BigWallJump >
-    # Curriculum configuration
-    curriculum:
+  SmallWallJump:
+    # < Trainer parameters for SmallWallJump >
+
+curriculum:
+  BigWallJump:
       measure: progress
       thresholds: [0.1, 0.3, 0.5]
       min_lesson_length: 100
@@ -364,17 +391,13 @@ behaviors:
       parameters:
         big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
         big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
-
   SmallWallJump:
-    # < Trainer parameters for BigWallJump >
-    # Curriculum configuration
-    curriculum:
-      measure: progress
-      thresholds: [0.1, 0.3, 0.5]
-      min_lesson_length: 100
-      signal_smoothing: true
-      parameters:
-        small_wall_height: [1.5, 2.0, 2.5, 4.0]
+    measure: progress
+    thresholds: [0.1, 0.3, 0.5]
+    min_lesson_length: 100
+    signal_smoothing: true
+    parameters:
+      small_wall_height: [1.5, 2.0, 2.5, 4.0]
 ```
 
 The curriculum for each Behavior has the following parameters:
@@ -390,7 +413,7 @@ The curriculum for each Behavior has the following parameters:
 #### Training with a Curriculum
 
 Once we have specified our metacurriculum and curricula, we can launch
-`mlagents-learn` using the config file for
+`mlagents-learn` to point to the config file containing
 our curricula and PPO will train using Curriculum Learning. For example, to
 train agents in the Wall Jump environment with curriculum learning, we can run:
 
@@ -398,11 +421,9 @@ train agents in the Wall Jump environment with curriculum learning, we can run:
 mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
 ```
 
-We can then keep track of the current lessons and progresses via TensorBoard.
-
-**Note**: If you are resuming a training session that uses curriculum, please
-pass the number of the last-reached lesson using the `--lesson` flag when
-running `mlagents-learn`.
+We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
+the run, you can resume it using `--resume` and lesson progress will start off where it
+ended.
 
 ### Environment Parameter Randomization
 
@@ -414,97 +435,57 @@ behaviors:
   # < Same as above>
 
 parameter_randomization:
-  resampling-interval: 5000
 
   mass:
-    sampler-type: "uniform"
-    min_value: 0.5
-    max_value: 10
+    sampler_type: uniform
+    sampler_parameters:
+        min_value: 0.5
+        max_value: 10
 
-  gravity:
-    sampler-type: "multirange_uniform"
-    intervals: [[7, 10], [15, 20]]
+  length:
+    sampler_type: multirangeuniform
+    sampler_parameters:
+        intervals: [[7, 10], [15, 20]]
 
   scale:
-    sampler-type: "uniform"
-    min_value: 0.75
-    max_value: 3
+    sampler_type: gaussian
+    sampler_parameters:
+        mean: 2
+        st_dev: .3
 ```
 
-Note that `mass`, `gravity` and `scale` are the names of the environment
-parameters that will be sampled. If a parameter specified in the file doesn't
-exist in the environment, then this parameter will be ignored.
+Note that `mass`, `length` and `scale` are the names of the environment
+parameters that will be sampled. These are used as keys by the `EnvironmentParameter`
+class to sample new parameters via the function `GetWithDefault`.
 
 | **Setting**                  | **Description**                                                                                                                                                                                                                                                                                                                         |
 | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `resampling-interval`        | Number of steps for the agent to train under a particular environment configuration before resetting the environment with a new sample of `Environment Parameters`.                                                                                                                                                                     |
-| `sampler-type`               | Type of sampler use for this `Environment Parameter`. This is a string that should exist in the `Sampler Factory` (explained below).                                                                                                                                                                                                    |
-| `sampler-type-sub-arguments` | Specify the sub-arguments depending on the `sampler-type`. In the example above, this would correspond to the `intervals` under the `sampler-type` `multirange_uniform` for the `Environment Parameter` called `gravity`. The key name should match the name of the corresponding argument in the sampler definition (explained) below) |
+| `sampler_type`               | A string identifier for the type of sampler to use for this `Environment Parameter`.                                                                                                                                                                                                    |
+| `sampler_parameters` | The parameters for a given `sampler_type`. Samplers of different types can have different `sampler_parameters` |
 
-#### Included Sampler Types
+#### Supported Sampler Types
 
-Below is a list of included `sampler-type` as part of the toolkit.
+Below is a list of the `sampler_type` values supported by the toolkit.
 
 - `uniform` - Uniform sampler
-  - Uniformly samples a single float value between defined endpoints. The
-    sub-arguments for this sampler to specify the interval endpoints are as
-    below. The sampling is done in the range of [`min_value`, `max_value`).
-  - **sub-arguments** - `min_value`, `max_value`
+  - Uniformly samples a single float value from a range with a given minimum
+    and maximum value (inclusive).
+  - **parameters** - `min_value`, `max_value`
 - `gaussian` - Gaussian sampler
-  - Samples a single float value from the distribution characterized by the mean
-    and standard deviation. The sub-arguments to specify the Gaussian
-    distribution to use are as below.
-  - **sub-arguments** - `mean`, `st_dev`
+  - Samples a single float value from a normal distribution with a given mean
+    and standard deviation.
+  - **parameters** - `mean`, `st_dev`
 - `multirange_uniform` - Multirange uniform sampler
-  - Uniformly samples a single float value between the specified intervals.
-    Samples by first performing a weight pick of an interval from the list of
-    intervals (weighted based on interval width) and samples uniformly from the
-    selected interval (half-closed interval, same as the uniform sampler). This
-    sampler can take an arbitrary number of intervals in a list in the following
-    format: [[`interval_1_min`, `interval_1_max`], [`interval_2_min`,
+  - First, samples an interval from a set of intervals in proportion to relative
+    length of the intervals. Then, uniformly samples a single float value from the
+    sampled interval (inclusive). This sampler can take an arbitrary number of
+    intervals in a list in the following format:
+    [[`interval_1_min`, `interval_1_max`], [`interval_2_min`,
     `interval_2_max`], ...]
-  - **sub-arguments** - `intervals`
+  - **parameters** - `intervals`
 
 The implementation of the samplers can be found in the
-[sampler_class.py file](../ml-agents/mlagents/trainers/sampler_class.py).
-
-#### Defining a New Sampler Type
-
-If you want to define your own sampler type, you must first inherit the
-_Sampler_ base class (included in the `sampler_class` file) and preserve the
-interface. Once the class for the required method is specified, it must be
-registered in the Sampler Factory.
-
-This can be done by subscribing to the _register_sampler_ method of the
-`SamplerFactory`. The command is as follows:
-
-`SamplerFactory.register_sampler(*custom_sampler_string_key*, *custom_sampler_object*)`
-
-Once the Sampler Factory reflects the new register, the new sampler type can be
-used for sample any `Environment Parameter`. For example, lets say a new sampler
-type was implemented as below and we register the `CustomSampler` class with the
-string `custom-sampler` in the Sampler Factory.
-
-```python
-class CustomSampler(Sampler):
-
-    def __init__(self, argA, argB, argC):
-        self.possible_vals = [argA, argB, argC]
-
-    def sample_all(self):
-        return np.random.choice(self.possible_vals)
-```
-
-Now we need to specify the new sampler type in the sampler YAML file. For
-example, we use this new sampler type for the `Environment Parameter` _mass_.
-
-```yaml
-mass:
-  sampler-type: "custom-sampler"
-  argB: 1
-  argA: 2
-  argC: 3
-```
+[Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
 
 #### Training with Environment Parameter Randomization
 

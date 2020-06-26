@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict
 import numpy as np
 from mlagents.tf_utils import tf
 
@@ -6,29 +6,22 @@ from mlagents.trainers.components.reward_signals import RewardSignal, RewardSign
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.settings import CuriositySettings
 
 
 class CuriosityRewardSignal(RewardSignal):
-    def __init__(
-        self,
-        policy: TFPolicy,
-        strength: float,
-        gamma: float,
-        encoding_size: int = 128,
-        learning_rate: float = 3e-4,
-    ):
+    def __init__(self, policy: TFPolicy, settings: CuriositySettings):
         """
         Creates the Curiosity reward generator
         :param policy: The Learning Policy
-        :param strength: The scaling parameter for the reward. The scaled reward will be the unscaled
-        reward multiplied by the strength parameter
-        :param gamma: The time discounting factor used for this reward.
-        :param encoding_size: The size of the hidden encoding layer for the ICM
-        :param learning_rate: The learning rate for the ICM.
+        :param settings: CuriositySettings object that contains the parameters
+            (including encoding size and learning rate) for this CuriosityRewardSignal.
         """
-        super().__init__(policy, strength, gamma)
+        super().__init__(policy, settings)
         self.model = CuriosityModel(
-            policy, encoding_size=encoding_size, learning_rate=learning_rate
+            policy,
+            encoding_size=settings.encoding_size,
+            learning_rate=settings.learning_rate,
         )
         self.use_terminal_states = False
         self.update_dict = {
@@ -68,17 +61,6 @@ class CuriosityRewardSignal(RewardSignal):
             unscaled_reward * float(self.has_updated) * self.strength, 0, 1
         )
         return RewardSignalResult(scaled_reward, unscaled_reward)
-
-    @classmethod
-    def check_config(
-        cls, config_dict: Dict[str, Any], param_keys: List[str] = None
-    ) -> None:
-        """
-        Checks the config and throw an exception if a hyperparameter is missing. Curiosity requires strength,
-        gamma, and encoding size at minimum.
-        """
-        param_keys = ["strength", "gamma", "encoding_size"]
-        super().check_config(config_dict, param_keys)
 
     def prepare_update(
         self, policy: TFPolicy, mini_batch: AgentBuffer, num_sequences: int

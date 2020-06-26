@@ -4,7 +4,6 @@ import pytest
 from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.ghost.controller import GhostController
-from mlagents.trainers.sampler_class import SamplerManager
 
 
 @pytest.fixture
@@ -15,12 +14,9 @@ def basic_trainer_controller():
         trainer_factory=trainer_factory_mock,
         output_path="test_model_path",
         run_id="test_run_id",
-        save_freq=100,
         meta_curriculum=None,
         train=True,
         training_seed=99,
-        sampler_manager=SamplerManager({}),
-        resampling_interval=None,
     )
 
 
@@ -34,12 +30,9 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         trainer_factory=trainer_factory_mock,
         output_path="",
         run_id="1",
-        save_freq=1,
         meta_curriculum=None,
         train=True,
         training_seed=seed,
-        sampler_manager=SamplerManager({}),
-        resampling_interval=None,
     )
     numpy_random_seed.assert_called_with(seed)
     tensorflow_set_seed.assert_called_with(seed)

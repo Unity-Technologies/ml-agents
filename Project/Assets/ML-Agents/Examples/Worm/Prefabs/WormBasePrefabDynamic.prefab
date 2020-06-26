@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 6060305997115980407}
   - component: {fileID: 6060305997115980404}
   - component: {fileID: 6060305997115980405}
+  - component: {fileID: 4650187559849570701}
   m_Layer: 0
   m_Name: WormBasePrefabDynamic
   m_TagString: Untagged
@@ -207,17 +208,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 57
-    numStackedVectorObservations: 1
-    vectorActionSize: 09000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 1
+    VectorObservationSize: 57
+    NumStackedVectorObservations: 1
+    VectorActionSize: 09000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 1
   m_Model: {fileID: 11400000, guid: 3fa7b06c456814f86b5227de4dc88800, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: WormDynamic
   TeamId: 0
   m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &6060305997115980407
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,7 +235,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  maxStep: 5000
+  MaxStep: 5000
   target: {fileID: 0}
   ground: {fileID: 0}
   detectTargets: 1
@@ -277,7 +279,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 0
-  offsetStep: 0
+--- !u!114 &4650187559849570701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6060305997115980403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
 --- !u!1 &6060305997219920621
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,7 +3,7 @@
 # and implemented in https://github.com/hill-a/stable-baselines
 
 from collections import defaultdict
-from typing import Dict
+from typing import Dict, cast
 import os
 
 import numpy as np
@@ -17,14 +17,13 @@ from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.settings import TrainerSettings, SACSettings
 
 
 logger = get_logger(__name__)
 
 BUFFER_TRUNCATE_PERCENT = 0.8
-DEFAULT_STEPS_PER_UPDATE = 1
 
 
 class SACTrainer(RLTrainer):
@@ -37,89 +36,45 @@ class SACTrainer(RLTrainer):
         self,
         brain_name: str,
         reward_buff_cap: int,
-        trainer_parameters: dict,
+        trainer_settings: TrainerSettings,
         training: bool,
         load: bool,
         seed: int,
-        run_id: str,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training SAC model.
         :param brain_name: The name of the brain associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
         :param load: Whether the model should be loaded.
         :param seed: The seed the model will be initialized with
-        :param run_id: The The identifier of the current run
+        :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
-        self.param_keys = [
-            "batch_size",
-            "buffer_size",
-            "buffer_init_steps",
-            "hidden_units",
-            "learning_rate",
-            "init_entcoef",
-            "max_steps",
-            "normalize",
-            "num_layers",
-            "time_horizon",
-            "steps_per_update",
-            "sequence_length",
-            "summary_freq",
-            "tau",
-            "use_recurrent",
-            "memory_size",
-            "output_path",
-            "reward_signals",
-        ]
 
-        self._check_param_keys()
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
-
+        self.hyperparameters: SACSettings = cast(
+            SACSettings, trainer_settings.hyperparameters
+        )
         self.step = 0
 
-        # Don't count buffer_init_steps in steps_per_update ratio, but also don't divide-by-0
-        self.update_steps = max(1, self.trainer_parameters["buffer_init_steps"])
-        self.reward_signal_update_steps = max(
-            1, self.trainer_parameters["buffer_init_steps"]
-        )
+        # Don't divide by zero
+        self.update_steps = 1
+        self.reward_signal_update_steps = 1
 
-        self.steps_per_update = (
-            trainer_parameters["steps_per_update"]
-            if "steps_per_update" in trainer_parameters
-            else DEFAULT_STEPS_PER_UPDATE
-        )
+        self.steps_per_update = self.hyperparameters.steps_per_update
         self.reward_signal_steps_per_update = (
-            trainer_parameters["reward_signals"]["reward_signal_steps_per_update"]
-            if "reward_signal_steps_per_update" in trainer_parameters["reward_signals"]
-            else self.steps_per_update
+            self.hyperparameters.reward_signal_steps_per_update
         )
 
-        self.checkpoint_replay_buffer = (
-            trainer_parameters["save_replay_buffer"]
-            if "save_replay_buffer" in trainer_parameters
-            else False
-        )
-
-    def _check_param_keys(self):
-        super()._check_param_keys()
-        # Check that batch size is greater than sequence length. Else, throw
-        # an exception.
-        if (
-            self.trainer_parameters["sequence_length"]
-            > self.trainer_parameters["batch_size"]
-            and self.trainer_parameters["use_recurrent"]
-        ):
-            raise UnityTrainerException(
-                "batch_size must be greater than or equal to sequence_length when use_recurrent is True."
-            )
+        self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
     def save_model(self, name_behavior_id: str) -> None:
         """
@@ -134,9 +89,7 @@ class SACTrainer(RLTrainer):
         """
         Save the training buffer's update buffer to a pickle file.
         """
-        filename = os.path.join(
-            self.trainer_parameters["output_path"], "last_replay_buffer.hdf5"
-        )
+        filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
         logger.info("Saving Experience Replay Buffer to {}".format(filename))
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
@@ -145,9 +98,7 @@ class SACTrainer(RLTrainer):
         """
         Loads the last saved replay buffer from a file.
         """
-        filename = os.path.join(
-            self.trainer_parameters["output_path"], "last_replay_buffer.hdf5"
-        )
+        filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
         logger.info("Loading Experience Replay Buffer from {}".format(filename))
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
@@ -217,8 +168,8 @@ class SACTrainer(RLTrainer):
         :return: A boolean corresponding to whether or not _update_policy() can be run
         """
         return (
-            self.update_buffer.num_experiences >= self.trainer_parameters["batch_size"]
-            and self.step >= self.trainer_parameters["buffer_init_steps"]
+            self.update_buffer.num_experiences >= self.hyperparameters.batch_size
+            and self.step >= self.hyperparameters.buffer_init_steps
         )
 
     @timed
@@ -239,8 +190,9 @@ class SACTrainer(RLTrainer):
         policy = NNPolicy(
             self.seed,
             brain_parameters,
-            self.trainer_parameters,
+            self.trainer_settings,
             self.is_training,
+            self.artifact_path,
             self.load,
             tanh_squash=True,
             reparameterize=True,
@@ -270,19 +222,18 @@ class SACTrainer(RLTrainer):
         has_updated = False
         self.cumulative_returns_since_policy_update.clear()
         n_sequences = max(
-            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
+            int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
 
         batch_update_stats: Dict[str, list] = defaultdict(list)
-        while self.step / self.update_steps > self.steps_per_update:
+        while (
+            self.step - self.hyperparameters.buffer_init_steps
+        ) / self.update_steps > self.steps_per_update:
             logger.debug("Updating SAC policy at step {}".format(self.step))
             buffer = self.update_buffer
-            if (
-                self.update_buffer.num_experiences
-                >= self.trainer_parameters["batch_size"]
-            ):
+            if self.update_buffer.num_experiences >= self.hyperparameters.batch_size:
                 sampled_minibatch = buffer.sample_mini_batch(
-                    self.trainer_parameters["batch_size"],
+                    self.hyperparameters.batch_size,
                     sequence_length=self.policy.sequence_length,
                 )
                 # Get rewards for each reward
@@ -308,9 +259,9 @@ class SACTrainer(RLTrainer):
 
         # Truncate update buffer if neccessary. Truncate more than we need to to avoid truncating
         # a large buffer at each update.
-        if self.update_buffer.num_experiences > self.trainer_parameters["buffer_size"]:
+        if self.update_buffer.num_experiences > self.hyperparameters.buffer_size:
             self.update_buffer.truncate(
-                int(self.trainer_parameters["buffer_size"] * BUFFER_TRUNCATE_PERCENT)
+                int(self.hyperparameters.buffer_size * BUFFER_TRUNCATE_PERCENT)
             )
         return has_updated
 
@@ -326,13 +277,12 @@ class SACTrainer(RLTrainer):
         """
         buffer = self.update_buffer
         n_sequences = max(
-            int(self.trainer_parameters["batch_size"] / self.policy.sequence_length), 1
+            int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
         )
         batch_update_stats: Dict[str, list] = defaultdict(list)
         while (
-            self.step / self.reward_signal_update_steps
-            > self.reward_signal_steps_per_update
-        ):
+            self.step - self.hyperparameters.buffer_init_steps
+        ) / self.reward_signal_update_steps > self.reward_signal_steps_per_update:
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
             for name, signal in self.optimizer.reward_signals.items():
@@ -340,7 +290,7 @@ class SACTrainer(RLTrainer):
                 # Some signals don't need a minibatch to be sampled - so we don't!
                 if signal.update_dict:
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(
-                        self.trainer_parameters["batch_size"],
+                        self.hyperparameters.batch_size,
                         sequence_length=self.policy.sequence_length,
                     )
             update_stats = self.optimizer.update_reward_signals(
@@ -370,12 +320,16 @@ class SACTrainer(RLTrainer):
         if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
-        self.optimizer = SACOptimizer(self.policy, self.trainer_parameters)
+        self.optimizer = SACOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
-        self.next_summary_step = self._get_next_summary_step()
+        # Assume steps were updated at the correct ratio before
+        self.update_steps = int(max(1, self.step / self.steps_per_update))
+        self.reward_signal_update_steps = int(
+            max(1, self.step / self.reward_signal_steps_per_update)
+        )
 
     def get_policy(self, name_behavior_id: str) -> TFPolicy:
         """

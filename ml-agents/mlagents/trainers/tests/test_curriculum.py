@@ -1,45 +1,33 @@
-import io
-import json
 import pytest
-from unittest.mock import patch, mock_open
 
-from mlagents.trainers.exception import CurriculumConfigError, CurriculumLoadingError
+from mlagents.trainers.exception import CurriculumConfigError
 from mlagents.trainers.curriculum import Curriculum
-
-dummy_curriculum_json_str = """
-    {
-        "measure" : "reward",
-        "thresholds" : [10, 20, 50],
-        "min_lesson_length" : 3,
-        "signal_smoothing" : true,
-        "parameters" :
-        {
-            "param1" : [0.7, 0.5, 0.3, 0.1],
-            "param2" : [100, 50, 20, 15],
-            "param3" : [0.2, 0.3, 0.7, 0.9]
-        }
-    }
-    """
-
-dummy_curriculum_config = json.loads(dummy_curriculum_json_str)
-
-bad_curriculum_json_str = """
-    {
-        "measure" : "reward",
-        "thresholds" : [10, 20, 50],
-        "min_lesson_length" : 3,
-        "signal_smoothing" : false,
-        "parameters" :
-        {
-            "param1" : [0.7, 0.5, 0.3, 0.1],
-            "param2" : [100, 50, 20],
-            "param3" : [0.2, 0.3, 0.7, 0.9]
-        }
-    }
-    """
+from mlagents.trainers.settings import CurriculumSettings
 
 
-dummy_curriculum_config_path = "TestBrain.json"
+dummy_curriculum_config = CurriculumSettings(
+    measure="reward",
+    thresholds=[10, 20, 50],
+    min_lesson_length=3,
+    signal_smoothing=True,
+    parameters={
+        "param1": [0.7, 0.5, 0.3, 0.1],
+        "param2": [100, 50, 20, 15],
+        "param3": [0.2, 0.3, 0.7, 0.9],
+    },
+)
+
+bad_curriculum_config = CurriculumSettings(
+    measure="reward",
+    thresholds=[10, 20, 50],
+    min_lesson_length=3,
+    signal_smoothing=False,
+    parameters={
+        "param1": [0.7, 0.5, 0.3, 0.1],
+        "param2": [100, 50, 20],
+        "param3": [0.2, 0.3, 0.7, 0.9],
+    },
+)
 
 
 @pytest.fixture
@@ -53,14 +41,6 @@ def test_init_curriculum_happy_path():
     assert curriculum.brain_name == "TestBrain"
     assert curriculum.lesson_num == 0
     assert curriculum.measure == "reward"
-
-
-@patch("builtins.open", new_callable=mock_open, read_data=bad_curriculum_json_str)
-def test_load_bad_curriculum_file_raises_error(mock_file):
-    with pytest.raises(CurriculumConfigError):
-        Curriculum(
-            "TestBrain", Curriculum.load_curriculum_file(dummy_curriculum_config_path)
-        )
 
 
 def test_increment_lesson():
@@ -92,26 +72,6 @@ def test_get_parameters():
     assert curriculum.get_config(0) == {"param1": 0.7, "param2": 100, "param3": 0.2}
 
 
-# Test json loading and error handling. These examples don't need to valid config files.
-def test_curriculum_load_good():
-    expected = {"x": 1}
-    value = json.dumps(expected)
-    fp = io.StringIO(value)
-    assert expected == Curriculum._load_curriculum(fp)
-
-
-def test_curriculum_load_missing_file():
-    with pytest.raises(CurriculumLoadingError):
-        Curriculum.load_curriculum_file("notAValidFile.json")
-
-
-def test_curriculum_load_invalid_json():
-    # This isn't valid json because of the trailing comma
-    contents = """
-{
-  "x": [1, 2, 3,]
-}
-"""
-    fp = io.StringIO(contents)
-    with pytest.raises(CurriculumLoadingError):
-        Curriculum._load_curriculum(fp)
+def test_load_bad_curriculum_file_raises_error():
+    with pytest.raises(CurriculumConfigError):
+        Curriculum("TestBrain", bad_curriculum_config)

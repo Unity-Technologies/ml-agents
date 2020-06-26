@@ -1,16 +1,16 @@
-import json
 import math
-from typing import Dict, Any, TextIO
+from typing import Dict, Any
 
-from .exception import CurriculumConfigError, CurriculumLoadingError
+from mlagents.trainers.exception import CurriculumConfigError
 
 from mlagents_envs.logging_util import get_logger
+from mlagents.trainers.settings import CurriculumSettings
 
 logger = get_logger(__name__)
 
 
 class Curriculum:
-    def __init__(self, brain_name: str, config: Dict):
+    def __init__(self, brain_name: str, settings: CurriculumSettings):
         """
         Initializes a Curriculum object.
         :param brain_name: Name of the brain this Curriculum is associated with
@@ -20,26 +20,14 @@ class Curriculum:
         self.measure = None
         self._lesson_num = 0
         self.brain_name = brain_name
-        self.config = config
+        self.settings = settings
 
         self.smoothing_value = 0.0
-        for key in [
-            "parameters",
-            "measure",
-            "thresholds",
-            "min_lesson_length",
-            "signal_smoothing",
-        ]:
-            if key not in self.config:
-                raise CurriculumConfigError(
-                    f"{brain_name} curriculum config does not contain a {key} field."
-                )
-        self.smoothing_value = 0
-        self.measure = self.config["measure"]
-        self.min_lesson_length = self.config["min_lesson_length"]
-        self.max_lesson_num = len(self.config["thresholds"])
+        self.measure = self.settings.measure
+        self.min_lesson_length = self.settings.min_lesson_length
+        self.max_lesson_num = len(self.settings.thresholds)
 
-        parameters = self.config["parameters"]
+        parameters = self.settings.parameters
         for key in parameters:
             if len(parameters[key]) != self.max_lesson_num + 1:
                 raise CurriculumConfigError(
@@ -62,16 +50,16 @@ class Curriculum:
                steps completed).
         :return Whether the lesson was incremented.
         """
-        if not self.config or not measure_val or math.isnan(measure_val):
+        if not self.settings or not measure_val or math.isnan(measure_val):
             return False
-        if self.config["signal_smoothing"]:
+        if self.settings.signal_smoothing:
             measure_val = self.smoothing_value * 0.25 + 0.75 * measure_val
             self.smoothing_value = measure_val
         if self.lesson_num < self.max_lesson_num:
-            if measure_val > self.config["thresholds"][self.lesson_num]:
+            if measure_val > self.settings.thresholds[self.lesson_num]:
                 self.lesson_num += 1
                 config = {}
-                parameters = self.config["parameters"]
+                parameters = self.settings.parameters
                 for key in parameters:
                     config[key] = parameters[key][self.lesson_num]
                 logger.info(
@@ -91,37 +79,13 @@ class Curriculum:
                current lesson is returned.
         :return: The configuration of the reset parameters.
         """
-        if not self.config:
+        if not self.settings:
             return {}
         if lesson is None:
             lesson = self.lesson_num
         lesson = max(0, min(lesson, self.max_lesson_num))
         config = {}
-        parameters = self.config["parameters"]
+        parameters = self.settings.parameters
         for key in parameters:
             config[key] = parameters[key][lesson]
         return config
-
-    @staticmethod
-    def load_curriculum_file(config_path: str) -> Dict:
-        try:
-            with open(config_path) as data_file:
-                return Curriculum._load_curriculum(data_file)
-        except IOError:
-            raise CurriculumLoadingError(
-                "The file {0} could not be found.".format(config_path)
-            )
-        except UnicodeDecodeError:
-            raise CurriculumLoadingError(
-                "There was an error decoding {}".format(config_path)
-            )
-
-    @staticmethod
-    def _load_curriculum(fp: TextIO) -> Dict:
-        try:
-            return json.load(fp)
-        except json.decoder.JSONDecodeError as e:
-            raise CurriculumLoadingError(
-                "Error parsing JSON file. Please check for formatting errors. "
-                "A tool such as https://jsonlint.com/ can be helpful with this."
-            ) from e

@@ -2,6 +2,7 @@ using Unity.Barracuda;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Policies
 {
@@ -28,6 +29,36 @@ namespace Unity.MLAgents.Policies
         /// neural network model.
         /// </summary>
         InferenceOnly
+    }
+
+    /// <summary>
+    /// Options for controlling how the Agent class is searched for <see cref="ObservableAttribute"/>s.
+    /// </summary>
+    public enum ObservableAttributeOptions
+    {
+        /// <summary>
+        /// All ObservableAttributes on the Agent will be ignored. This is the
+        /// default behavior. If there are no  ObservableAttributes on the
+        /// Agent, this will result in the fastest initialization time.
+        /// </summary>
+        Ignore,
+
+        /// <summary>
+        /// Only members on the declared class will be examined; members that are
+        /// inherited are ignored. This is a reasonable tradeoff between
+        /// performance and flexibility.
+        /// </summary>
+        /// <remarks>This corresponds to setting the
+        /// [BindingFlags.DeclaredOnly](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.bindingflags?view=netcore-3.1)
+        /// when examining the fields and properties of the Agent class instance.
+        /// </remarks>
+        ExcludeInherited,
+
+        /// <summary>
+        /// All members on the class will be examined. This can lead to slower
+        /// startup times.
+        /// </summary>
+        ExamineAll
     }
 
     /// <summary>
@@ -127,6 +158,18 @@ namespace Unity.MLAgents.Policies
         {
             get { return m_UseChildSensors; }
             set { m_UseChildSensors = value; }
+        }
+
+        [HideInInspector, SerializeField]
+        ObservableAttributeOptions m_ObservableAttributeHandling = ObservableAttributeOptions.Ignore;
+
+        /// <summary>
+        /// Determines how the Agent class is searched for <see cref="ObservableAttribute"/>s.
+        /// </summary>
+        public ObservableAttributeOptions ObservableAttributeHandling
+        {
+            get { return m_ObservableAttributeHandling; }
+            set { m_ObservableAttributeHandling = value; }
         }
 
         /// <summary>
