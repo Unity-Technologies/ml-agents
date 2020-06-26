@@ -19,6 +19,18 @@ class EnvironmentParameterManager:
         run_seed: int,
         restore: bool,
     ):
+        """
+        EnvironmentParameterManager manages all the environment parameters of a training
+        session. It determines when parameters should change and gives access to the
+        current sampler of each parameter.
+        :param settings: A dictionary from environment parameter to
+        EnvironmentParameterSettings.
+        :param run_seed: When the seed is not provided for an environment parameter,
+        this seed will be used instead.
+        :param restore: If true, the EnvironmentParameterManager will use the
+        GlobalTrainingStatus to try and reload the lesson status of each environment
+        parameter.
+        """
         self._dict_settings = settings
         for parameter_name in self._dict_settings.keys():
             initial_lesson = GlobalTrainingStatus.get_parameter_state(
@@ -35,6 +47,10 @@ class EnvironmentParameterManager:
         self._set_sampler_seeds(run_seed)
 
     def _set_sampler_seeds(self, seed):
+        """
+        Sets the seeds for the samplers (if no seed was already present). Note that
+        using the provided seed.
+        """
         offset = 0
         for settings in self._dict_settings.values():
             for lesson in settings.curriculum:
@@ -43,6 +59,12 @@ class EnvironmentParameterManager:
                     offset += 1
 
     def get_minimum_reward_buffer_size(self, behavior_name: str) -> int:
+        """
+        Calculates the minimum size of the reward buffer a behavior must use. This
+        method uses the 'min_lesson_length' sampler_parameter to determine this value.
+        :param behavior_name: The name of the behavior the minimum reward buffer
+        size corresponds to.
+        """
         result = 1
         for settings in self._dict_settings.values():
             for lesson in settings.curriculum:
@@ -54,6 +76,11 @@ class EnvironmentParameterManager:
         return result
 
     def get_current_samplers(self) -> Dict[str, ParameterRandomizationSettings]:
+        """
+        Creates a dictionary from environment parameter name to their corresponding
+        ParameterRandomizationSettings. If curriculum is used, the
+        ParameterRandomizationSettings corresponds to the sampler of the current lesson.
+        """
         samplers: Dict[str, ParameterRandomizationSettings] = {}
         for param_name, settings in self._dict_settings.items():
             lesson_num = GlobalTrainingStatus.get_parameter_state(
@@ -64,6 +91,10 @@ class EnvironmentParameterManager:
         return samplers
 
     def get_current_lesson_number(self) -> Dict[str, int]:
+        """
+        Creates a dictionary from environment parameter to the current lesson number.
+        If not using curriculum, this number is always 0 for that environment parameter.
+        """
         result: Dict[str, int] = {}
         for parameter_name in self._dict_settings.keys():
             result[parameter_name] = GlobalTrainingStatus.get_parameter_state(
@@ -77,6 +108,19 @@ class EnvironmentParameterManager:
         trainer_max_steps: Dict[str, int],
         trainer_reward_buffer: Dict[str, List[float]],
     ) -> Tuple[bool, bool]:
+        """
+        Given progress metrics, calculates if at least one environment parameter is
+        in a new lesson and if at least one environment parameter requires the env
+        to reset.
+        :param trainer_steps: A dictionary from behavior_name to the number of training
+        steps this behavior's trainer has performed.
+        :param trainer_max_steps: A dictionary from behavior_name to the maximum number
+        of training steps this behavior's trainer has performed.
+        :param trainer_reward_buffer: A dictionary from behavior_name to the list of
+        the most recent episode returns for this behavior's trainer.
+        :returns: A tuple of two booleans : (True if any lesson has changed, True if
+        environment needs to reset)
+        """
         must_reset = False
         updated = False
         for param_name, settings in self._dict_settings.items():

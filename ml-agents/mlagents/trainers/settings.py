@@ -224,6 +224,10 @@ class ParameterRandomizationSettings(abc.ABC):
 
     @staticmethod
     def unstructure(d: "ParameterRandomizationSettings") -> Mapping:
+        """
+        Helper method to a ParameterRandomizationSettings class. Meant to be registered with
+        cattr.register_unstructure_hook() and called with cattr.unstructure().
+        """
         _reversed_mapping = {
             UniformSettings: ParameterRandomizationType.UNIFORM,
             GaussianSettings: ParameterRandomizationType.GAUSSIAN,
@@ -424,6 +428,10 @@ class Lesson:
 
     @staticmethod
     def structure(d: Mapping, t: type) -> "Lesson":
+        """
+        Helper method to a Lesson class. Meant to be registered with
+        cattr.register_structure_hook() and called with cattr.structure().
+        """
         if "value" not in d:
             key = list(d.keys())[0]
             if "value" not in d[key]:
@@ -453,6 +461,10 @@ class EnvironmentParameterSettings:
 
     @staticmethod
     def _check_lesson_chain(lessons, parameter_name):
+        """
+        Ensures that when using curriculum, all non-terminal lessons have a valid
+        CompletionCriteria
+        """
         num_lessons = len(lessons)
         for index, lesson in enumerate(lessons):
             if index < num_lessons - 1 and lesson.completion_criteria is None:
