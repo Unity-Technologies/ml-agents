@@ -212,15 +212,30 @@ class ParameterRandomizationSettings(abc.ABC):
             )
         if "sampler_type" not in d:
             raise TrainerConfigError(
-                "Sampler configuration does not contain sampler_type."
+                f"Sampler configuration does not contain sampler_type : {d}."
             )
         if "sampler_parameters" not in d:
             raise TrainerConfigError(
-                "Sampler configuration does not contain sampler_parameters."
+                f"Sampler configuration does not contain sampler_parameters : {d}."
             )
         enum_key = ParameterRandomizationType(d["sampler_type"])
         t = enum_key.to_settings()
         return strict_to_cls(d["sampler_parameters"], t)
+
+    @staticmethod
+    def unstructure(d: "ParameterRandomizationSettings") -> Mapping:
+        _reversed_mapping = {
+            UniformSettings: ParameterRandomizationType.UNIFORM,
+            GaussianSettings: ParameterRandomizationType.GAUSSIAN,
+            MultiRangeUniformSettings: ParameterRandomizationType.MULTIRANGEUNIFORM,
+            ConstantSettings: ParameterRandomizationType.CONSTANT,
+        }
+        sampler_type: Optional[ParameterRandomizationType] = None
+        for t, name in _reversed_mapping.items():
+            if isinstance(d, t):
+                sampler_type = name
+        sampler_parameters = attr.asdict(d)
+        return {"sampler_type": sampler_type, "sampler_parameters": sampler_parameters}
 
     @abc.abstractmethod
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
@@ -641,6 +656,9 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(Lesson, Lesson.structure)
     cattr.register_structure_hook(
         ParameterRandomizationSettings, ParameterRandomizationSettings.structure
+    )
+    cattr.register_unstructure_hook(
+        ParameterRandomizationSettings, ParameterRandomizationSettings.unstructure
     )
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
