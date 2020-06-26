@@ -15,7 +15,7 @@ class GaussianDistInstance(nn.Module):
     def sample(self):
         return self.mean + torch.randn_like(self.mean) * self.std
 
-    def pdf(self, value):
+    def log_prob(self, value):
         var = self.std ** 2
         log_scale = self.std.log()
         return (
@@ -24,8 +24,9 @@ class GaussianDistInstance(nn.Module):
             - math.log(math.sqrt(2 * math.pi))
         )
 
-    def log_prob(self, value):
-        return torch.log(self.pdf(value))
+    def pdf(self, value):
+        log_prob = self.log_prob(value)
+        return torch.exp(log_prob)
 
     def entropy(self):
         return torch.log(2 * math.pi * math.e * self.std)

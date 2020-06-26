@@ -4,7 +4,11 @@ from typing import Callable, NamedTuple
 import torch
 from torch import nn
 
-from mlagents.trainers.distributions_torch import GaussianDistribution, CategoricalDistInstance
+from mlagents.trainers.distributions_torch import (
+    GaussianDistribution,
+    MultiCategoricalDistribution,
+)
+from mlagents.trainers.exception import UnityTrainerException
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -109,6 +113,7 @@ class NetworkBody(nn.Module):
             hidden = encoder(vis_input)
             vis_embeds.append(hidden)
 
+        #embedding = vec_embeds[0]
         if len(vec_embeds) > 0:
             vec_embeds = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
         if len(vis_embeds) > 0:
@@ -150,6 +155,10 @@ class ActorCritic(nn.Module):
         super(ActorCritic, self).__init__()
         self.act_type = ActionType.from_str(act_type)
         self.act_size = act_size
+        self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
+        self.memory_size = torch.nn.Parameter(torch.Tensor([0]))
+        self.is_continuous_int = torch.nn.Parameter(torch.Tensor([1]))
+        self.act_size_vector = torch.nn.Parameter(torch.Tensor(act_size))
         self.separate_critic = separate_critic
         self.network_body = NetworkBody(
             vector_sizes,
@@ -244,7 +253,7 @@ class ActorCritic(nn.Module):
             vec_inputs, vis_inputs, masks, memories, sequence_length
         )
         sampled_actions = self.sample_action(dists)
-        return sampled_actions, dists[0].pdf(sampled_actions)
+        return sampled_actions, dists[0].pdf(sampled_actions), self.version_number, self.memory_size, self.is_continuous_int, self.act_size_vector
 
 
 class Critic(nn.Module):
