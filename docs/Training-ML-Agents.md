@@ -13,7 +13,7 @@
     - [Environment Parameter Randomization](#environment-parameter-randomization)
       - [Supported Sampler Types](#supported-sampler-types)
       - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
-    - [Curriculum Learning](#curriculum-learning)
+    - [Curriculum Learning](#curriculum)
       - [Training with a Curriculum](#training-with-a-curriculum)
   - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
 
