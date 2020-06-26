@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public SensorType GetSensorType()
+        public virtual SensorType GetSensorType()
         {
             return SensorType.Observation;
         }
