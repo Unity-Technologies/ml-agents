@@ -11,7 +11,7 @@ from google.protobuf.internal.containers import (
 )
 
 from google.protobuf.internal.enum_type_wrapper import (
-    EnumTypeWrapper as google___protobuf___internal___enum_type_wrapper____EnumTypeWrapper,
+    _EnumTypeWrapper as google___protobuf___internal___enum_type_wrapper____EnumTypeWrapper,
 )
 
 from google.protobuf.message import (
