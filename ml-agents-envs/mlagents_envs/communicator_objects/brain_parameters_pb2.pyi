@@ -2,7 +2,6 @@
 import sys
 from google.protobuf.descriptor import (
     Descriptor as google___protobuf___descriptor___Descriptor,
-    FileDescriptor as google___protobuf___descriptor___FileDescriptor,
 )
 
 from google.protobuf.internal.containers import (
@@ -14,7 +13,7 @@ from google.protobuf.message import (
 )
 
 from mlagents_envs.communicator_objects.space_type_pb2 import (
-    SpaceTypeProtoValue as mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProtoValue,
+    SpaceTypeProto as mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto,
 )
 
 from typing import (
@@ -34,23 +33,27 @@ builtin___float = float
 builtin___int = int
 
 
-DESCRIPTOR: google___protobuf___descriptor___FileDescriptor = ...
-
 class BrainParametersProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    vector_action_size: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int] = ...
-    vector_action_descriptions: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text] = ...
-    vector_action_space_type: mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProtoValue = ...
-    brain_name: typing___Text = ...
-    is_training: builtin___bool = ...
+    vector_action_size = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
+    vector_action_descriptions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
+    vector_action_space_type = ... # type: mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto
+    brain_name = ... # type: typing___Text
+    is_training = ... # type: builtin___bool
 
     def __init__(self,
         *,
         vector_action_size : typing___Optional[typing___Iterable[builtin___int]] = None,
         vector_action_descriptions : typing___Optional[typing___Iterable[typing___Text]] = None,
-        vector_action_space_type : typing___Optional[mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProtoValue] = None,
+        vector_action_space_type : typing___Optional[mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
         brain_name : typing___Optional[typing___Text] = None,
         is_training : typing___Optional[builtin___bool] = None,
         ) -> None: ...
-    def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",b"brain_name",u"is_training",b"is_training",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type"]) -> None: ...
-type___BrainParametersProto = BrainParametersProto
+    @classmethod
+    def FromString(cls, s: builtin___bytes) -> BrainParametersProto: ...
+    def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
+    def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
+    if sys.version_info >= (3,):
+        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",u"is_training",u"vector_action_descriptions",u"vector_action_size",u"vector_action_space_type"]) -> None: ...
+    else:
+        def ClearField(self, field_name: typing_extensions___Literal[u"brain_name",b"brain_name",u"is_training",b"is_training",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type"]) -> None: ...
