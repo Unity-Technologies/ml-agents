@@ -2,6 +2,11 @@
 import sys
 from google.protobuf.descriptor import (
     EnumDescriptor as google___protobuf___descriptor___EnumDescriptor,
+    FileDescriptor as google___protobuf___descriptor___FileDescriptor,
+)
+
+from google.protobuf.internal.enum_type_wrapper import (
+    _EnumTypeWrapper as google___protobuf___internal___enum_type_wrapper____EnumTypeWrapper,
 )
 
 from google.protobuf.message import (
@@ -9,29 +14,23 @@ from google.protobuf.message import (
 )
 
 from typing import (
-    List as typing___List,
-    Tuple as typing___Tuple,
+    NewType as typing___NewType,
     cast as typing___cast,
 )
 
 
 builtin___int = int
-builtin___str = str
 
 
-class SpaceTypeProto(builtin___int):
+DESCRIPTOR: google___protobuf___descriptor___FileDescriptor = ...
+
+SpaceTypeProtoValue = typing___NewType('SpaceTypeProtoValue', builtin___int)
+type___SpaceTypeProtoValue = SpaceTypeProtoValue
+SpaceTypeProto: _SpaceTypeProto
+class _SpaceTypeProto(google___protobuf___internal___enum_type_wrapper____EnumTypeWrapper[SpaceTypeProtoValue]):
     DESCRIPTOR: google___protobuf___descriptor___EnumDescriptor = ...
-    @classmethod
-    def Name(cls, number: builtin___int) -> builtin___str: ...
-    @classmethod
-    def Value(cls, name: builtin___str) -> 'SpaceTypeProto': ...
-    @classmethod
-    def keys(cls) -> typing___List[builtin___str]: ...
-    @classmethod
-    def values(cls) -> typing___List['SpaceTypeProto']: ...
-    @classmethod
-    def items(cls) -> typing___List[typing___Tuple[builtin___str, 'SpaceTypeProto']]: ...
-    discrete = typing___cast('SpaceTypeProto', 0)
-    continuous = typing___cast('SpaceTypeProto', 1)
-discrete = typing___cast('SpaceTypeProto', 0)
-continuous = typing___cast('SpaceTypeProto', 1)
+    discrete = typing___cast(SpaceTypeProtoValue, 0)
+    continuous = typing___cast(SpaceTypeProtoValue, 1)
+discrete = typing___cast(SpaceTypeProtoValue, 0)
+continuous = typing___cast(SpaceTypeProtoValue, 1)
+type___SpaceTypeProto = SpaceTypeProto

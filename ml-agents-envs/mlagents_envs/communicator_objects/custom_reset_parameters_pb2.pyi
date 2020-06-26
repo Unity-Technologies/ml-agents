@@ -2,6 +2,7 @@
 import sys
 from google.protobuf.descriptor import (
     Descriptor as google___protobuf___descriptor___Descriptor,
+    FileDescriptor as google___protobuf___descriptor___FileDescriptor,
 )
 
 from google.protobuf.message import (
@@ -9,15 +10,11 @@ from google.protobuf.message import (
 )
 
 
-builtin___bytes = bytes
-
+DESCRIPTOR: google___protobuf___descriptor___FileDescriptor = ...
 
 class CustomResetParametersProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
 
     def __init__(self,
         ) -> None: ...
-    @classmethod
-    def FromString(cls, s: builtin___bytes) -> CustomResetParametersProto: ...
-    def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
-    def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
+type___CustomResetParametersProto = CustomResetParametersProto

@@ -2,6 +2,11 @@
 import sys
 from google.protobuf.descriptor import (
     EnumDescriptor as google___protobuf___descriptor___EnumDescriptor,
+    FileDescriptor as google___protobuf___descriptor___FileDescriptor,
+)
+
+from google.protobuf.internal.enum_type_wrapper import (
+    _EnumTypeWrapper as google___protobuf___internal___enum_type_wrapper____EnumTypeWrapper,
 )
 
 from google.protobuf.message import (
@@ -9,31 +14,25 @@ from google.protobuf.message import (
 )
 
 from typing import (
-    List as typing___List,
-    Tuple as typing___Tuple,
+    NewType as typing___NewType,
     cast as typing___cast,
 )
 
 
 builtin___int = int
-builtin___str = str
 
 
-class CommandProto(builtin___int):
+DESCRIPTOR: google___protobuf___descriptor___FileDescriptor = ...
+
+CommandProtoValue = typing___NewType('CommandProtoValue', builtin___int)
+type___CommandProtoValue = CommandProtoValue
+CommandProto: _CommandProto
+class _CommandProto(google___protobuf___internal___enum_type_wrapper____EnumTypeWrapper[CommandProtoValue]):
     DESCRIPTOR: google___protobuf___descriptor___EnumDescriptor = ...
-    @classmethod
-    def Name(cls, number: builtin___int) -> builtin___str: ...
-    @classmethod
-    def Value(cls, name: builtin___str) -> 'CommandProto': ...
-    @classmethod
-    def keys(cls) -> typing___List[builtin___str]: ...
-    @classmethod
-    def values(cls) -> typing___List['CommandProto']: ...
-    @classmethod
-    def items(cls) -> typing___List[typing___Tuple[builtin___str, 'CommandProto']]: ...
-    STEP = typing___cast('CommandProto', 0)
-    RESET = typing___cast('CommandProto', 1)
-    QUIT = typing___cast('CommandProto', 2)
-STEP = typing___cast('CommandProto', 0)
-RESET = typing___cast('CommandProto', 1)
-QUIT = typing___cast('CommandProto', 2)
+    STEP = typing___cast(CommandProtoValue, 0)
+    RESET = typing___cast(CommandProtoValue, 1)
+    QUIT = typing___cast(CommandProtoValue, 2)
+STEP = typing___cast(CommandProtoValue, 0)
+RESET = typing___cast(CommandProtoValue, 1)
+QUIT = typing___cast(CommandProtoValue, 2)
+type___CommandProto = CommandProto

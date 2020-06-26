@@ -25,19 +25,22 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjRtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0",
-            "aW9uLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyL5AQoQT2JzZXJ2YXRp",
+            "aW9uLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyK1AgoQT2JzZXJ2YXRp",
             "b25Qcm90bxINCgVzaGFwZRgBIAMoBRJEChBjb21wcmVzc2lvbl90eXBlGAIg",
             "ASgOMiouY29tbXVuaWNhdG9yX29iamVjdHMuQ29tcHJlc3Npb25UeXBlUHJv",
             "dG8SGQoPY29tcHJlc3NlZF9kYXRhGAMgASgMSAASRgoKZmxvYXRfZGF0YRgE",
             "IAEoCzIwLmNvbW11bmljYXRvcl9vYmplY3RzLk9ic2VydmF0aW9uUHJvdG8u",
-            "RmxvYXREYXRhSAAaGQoJRmxvYXREYXRhEgwKBGRhdGEYASADKAJCEgoQb2Jz",
-            "ZXJ2YXRpb25fZGF0YSopChRDb21wcmVzc2lvblR5cGVQcm90bxIICgROT05F",
-            "EAASBwoDUE5HEAFCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9i",
-            "amVjdHNiBnByb3RvMw=="));
+            "RmxvYXREYXRhSAASOgoLc2Vuc29yX3R5cGUYBSABKA4yJS5jb21tdW5pY2F0",
+            "b3Jfb2JqZWN0cy5TZW5zb3JUeXBlUHJvdG8aGQoJRmxvYXREYXRhEgwKBGRh",
+            "dGEYASADKAJCEgoQb2JzZXJ2YXRpb25fZGF0YSopChRDb21wcmVzc2lvblR5",
+            "cGVQcm90bxIICgROT05FEAASBwoDUE5HEAEqRAoPU2Vuc29yVHlwZVByb3Rv",
+            "Eg8KC09CU0VSVkFUSU9OEAASFAoQUEFSQU1FVEVSSVpBVElPThABEgoKBlJF",
+            "V0FSRBACQiWqAiJVbml0eS5NTEFnZW50cy5Db21tdW5pY2F0b3JPYmplY3Rz",
+            "YgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
-          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
+          new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto), typeof(global::Unity.MLAgents.CommunicatorObjects.SensorTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData", "SensorType" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
           }));
     }
     #endregion
@@ -47,6 +50,12 @@ namespace Unity.MLAgents.CommunicatorObjects {
   internal enum CompressionTypeProto {
     [pbr::OriginalName("NONE")] None = 0,
     [pbr::OriginalName("PNG")] Png = 1,
+  }
+
+  internal enum SensorTypeProto {
+    [pbr::OriginalName("OBSERVATION")] Observation = 0,
+    [pbr::OriginalName("PARAMETERIZATION")] Parameterization = 1,
+    [pbr::OriginalName("REWARD")] Reward = 2,
   }
 
   #endregion
@@ -79,6 +88,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public ObservationProto(ObservationProto other) : this() {
       shape_ = other.shape_.Clone();
       compressionType_ = other.compressionType_;
+      sensorType_ = other.sensorType_;
       switch (other.ObservationDataCase) {
         case ObservationDataOneofCase.CompressedData:
           CompressedData = other.CompressedData;
@@ -139,6 +149,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "sensor_type" field.</summary>
+    public const int SensorTypeFieldNumber = 5;
+    private global::Unity.MLAgents.CommunicatorObjects.SensorTypeProto sensorType_ = 0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Unity.MLAgents.CommunicatorObjects.SensorTypeProto SensorType {
+      get { return sensorType_; }
+      set {
+        sensorType_ = value;
+      }
+    }
+
     private object observationData_;
     /// <summary>Enum of possible cases for the "observation_data" oneof.</summary>
     public enum ObservationDataOneofCase {
@@ -175,6 +196,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (CompressionType != other.CompressionType) return false;
       if (CompressedData != other.CompressedData) return false;
       if (!object.Equals(FloatData, other.FloatData)) return false;
+      if (SensorType != other.SensorType) return false;
       if (ObservationDataCase != other.ObservationDataCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -186,6 +208,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (CompressionType != 0) hash ^= CompressionType.GetHashCode();
       if (observationDataCase_ == ObservationDataOneofCase.CompressedData) hash ^= CompressedData.GetHashCode();
       if (observationDataCase_ == ObservationDataOneofCase.FloatData) hash ^= FloatData.GetHashCode();
+      if (SensorType != 0) hash ^= SensorType.GetHashCode();
       hash ^= (int) observationDataCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -213,6 +236,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(34);
         output.WriteMessage(FloatData);
       }
+      if (SensorType != 0) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) SensorType);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -231,6 +258,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (observationDataCase_ == ObservationDataOneofCase.FloatData) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(FloatData);
       }
+      if (SensorType != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) SensorType);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -245,6 +275,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       shape_.Add(other.shape_);
       if (other.CompressionType != 0) {
         CompressionType = other.CompressionType;
+      }
+      if (other.SensorType != 0) {
+        SensorType = other.SensorType;
       }
       switch (other.ObservationDataCase) {
         case ObservationDataOneofCase.CompressedData:
@@ -289,6 +322,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
             }
             input.ReadMessage(subBuilder);
             FloatData = subBuilder;
+            break;
+          }
+          case 40: {
+            sensorType_ = (global::Unity.MLAgents.CommunicatorObjects.SensorTypeProto) input.ReadEnum();
             break;
           }
         }
