@@ -523,9 +523,7 @@ def test_sac_gym_training(gym_name, target_return, pytestconfig):
         )
     env = GymToUnityWrapper(gym.make(gym_name), BRAIN_NAME)
     hyperparams = attr.evolve(
-        SAC_CONFIG.hyperparameters,
-        learning_rate=3e-4,
-        buffer_size=1000,  # , num_layers=1, normalize=True, time_horizon=256, hidden_units=64
+        SAC_CONFIG.hyperparameters, learning_rate=3e-4, buffer_size=1000
     )
     config = attr.evolve(SAC_CONFIG, hyperparameters=hyperparams, max_steps=50000)
 
