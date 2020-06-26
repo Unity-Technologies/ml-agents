@@ -386,22 +386,64 @@ def test_exportable_settings():
         force: true
         train_model: false
         inference: false
-    debug: true
+    environment_parameters:
+        big_wall_height:
+            curriculum:
+            - Lesson0:
+                completion_criteria:
+                    measure: progress
+                    behavior: BigWallJump
+                    signal_smoothing: true
+                    min_lesson_length: 100
+                    threshold: 0.1
+                value:
+                    sampler_type: uniform
+                    sampler_parameters:
+                        min_value: 0.0
+                        max_value: 4.0
+            - Lesson1:
+                completion_criteria:
+                    measure: reward
+                    behavior: BigWallJump
+                    signal_smoothing: true
+                    min_lesson_length: 100
+                    threshold: 0.2
+                value:
+                    sampler_type: gaussian
+                    sampler_parameters:
+                        mean: 4.0
+                        st_dev: 7.0
+            - Lesson2:
+                completion_criteria:
+                    measure: progress
+                    behavior: BigWallJump
+                    signal_smoothing: true
+                    min_lesson_length: 20
+                    threshold: 0.3
+                value:
+                    sampler_type: multirangeuniform
+                    sampler_parameters:
+                        intervals: [[1.0, 2.0],[4.0, 5.0]]
+            - Lesson3:
+                value: 8.0
+        small_wall_height: 42.0
+        other_wall_height:
+            sampler_type: multirangeuniform
+            sampler_parameters:
+                intervals: [[1.0, 2.0],[4.0, 5.0]]
     """
     loaded_yaml = yaml.safe_load(test_yaml)
     run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
     dict_export = run_options.as_dict()
-    check_dict_is_at_least(loaded_yaml, dict_export)
+    check_dict_is_at_least(
+        loaded_yaml, dict_export, exceptions=["environment_parameters"]
+    )
 
     # Re-import and verify has same elements
     run_options2 = RunOptions.from_dict(dict_export)
     second_export = run_options2.as_dict()
 
-    check_dict_is_at_least(
-        dict_export, second_export, exceptions=["environment_parameters"]
-    )
+    check_dict_is_at_least(dict_export, second_export)
     # Should be able to use equality instead of back-and-forth once environment_parameters
     # is working
-    check_dict_is_at_least(
-        second_export, dict_export, exceptions=["environment_parameters"]
-    )
+    check_dict_is_at_least(second_export, dict_export)
