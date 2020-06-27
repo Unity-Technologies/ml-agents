@@ -10,7 +10,7 @@ from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.tests.mock_brain import setup_mock_behavior_specs
+from mlagents.trainers.tests.mock_brain import setup_test_behavior_specs
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.tests.test_simple_rl import SAC_CONFIG
 from mlagents.trainers.settings import NetworkSettings
@@ -32,7 +32,7 @@ NUM_AGENTS = 12
 
 
 def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
-    mock_brain = mb.setup_mock_behavior_specs(
+    mock_brain = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
         vector_action_space=DISCRETE_ACTION_SPACE
@@ -100,7 +100,7 @@ def test_sac_update_reward_signals(
 
 
 def test_sac_save_load_buffer(tmpdir, dummy_config):
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         False,
         False,
         vector_action_space=VECTOR_ACTION_SPACE,
@@ -149,7 +149,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
 
 
 def test_advance(dummy_config):
-    specs = setup_mock_behavior_specs(
+    specs = setup_test_behavior_specs(
         use_discrete=False, use_visual=False, vector_action_space=2
     )
     dummy_config.hyperparameters.steps_per_update = 20

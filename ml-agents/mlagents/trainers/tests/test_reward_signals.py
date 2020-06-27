@@ -54,7 +54,7 @@ NUM_AGENTS = 12
 def create_optimizer_mock(
     trainer_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
         vector_action_space=DISCRETE_ACTION_SPACE

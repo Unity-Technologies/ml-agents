@@ -33,7 +33,7 @@ NUM_AGENTS = 12
 
 
 def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visual):
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
         vector_action_space=DISCRETE_ACTION_SPACE
@@ -219,7 +219,7 @@ def test_trainer_increment_step(ppo_optimizer):
 def test_trainer_update_policy(
     dummy_config, curiosity_dummy_config, use_discrete  # noqa: F811
 ):
-    mock_brain = mb.setup_mock_behavior_specs(
+    mock_brain = mb.setup_test_behavior_specs(
         use_discrete,
         False,
         vector_action_space=DISCRETE_ACTION_SPACE
@@ -254,7 +254,7 @@ def test_trainer_update_policy(
 
 
 def test_process_trajectory(dummy_config):
-    behavior_spec = mb.setup_mock_behavior_specs(
+    behavior_spec = mb.setup_test_behavior_specs(
         True,
         False,
         vector_action_space=DISCRETE_ACTION_SPACE,

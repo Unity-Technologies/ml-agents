@@ -26,7 +26,7 @@ NUM_AGENTS = 12
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_load_and_set(dummy_config, use_discrete):
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         False,
         vector_action_space=DISCRETE_ACTION_SPACE
@@ -61,7 +61,7 @@ def test_load_and_set(dummy_config, use_discrete):
 
 
 def test_process_trajectory(dummy_config):
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         True, False, vector_action_space=[2], vector_obs_space=1
     )
     behavior_id_team0 = "test_brain?team=0"
@@ -111,7 +111,7 @@ def test_process_trajectory(dummy_config):
 
 
 def test_publish_queue(dummy_config):
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         True, False, vector_action_space=[1], vector_obs_space=8
     )
 
@@ -149,7 +149,7 @@ def test_publish_queue(dummy_config):
     # clear
     policy_queue1.get_nowait()
 
-    mock_specs = mb.setup_mock_behavior_specs(
+    mock_specs = mb.setup_test_behavior_specs(
         False,
         False,
         vector_action_space=VECTOR_ACTION_SPACE,

@@ -1,9 +1,7 @@
-from unittest import mock
 from typing import List, Tuple, Union
 from collections.abc import Iterable
 import numpy as np
 
-from mlagents.trainers.models import Tensor3DShape
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents_envs.base_env import (
@@ -12,31 +10,6 @@ from mlagents_envs.base_env import (
     BehaviorSpec,
     ActionType,
 )
-
-
-def create_mock_brainparams(
-    number_visual_observations=0,
-    vector_action_space_type="continuous",
-    vector_observation_space_size=3,
-    vector_action_space_size=None,
-):
-    """
-    Creates a mock BrainParameters object with parameters.
-    """
-    # Avoid using mutable object as default param
-    if vector_action_space_size is None:
-        vector_action_space_size = [2]
-    mock_brain = mock.Mock()
-    mock_brain.return_value.number_visual_observations = number_visual_observations
-    mock_brain.return_value.vector_action_space_type = vector_action_space_type
-    mock_brain.return_value.vector_observation_space_size = (
-        vector_observation_space_size
-    )
-    camrez = Tensor3DShape(height=84, width=84, num_channels=3)
-    mock_brain.return_value.camera_resolutions = [camrez] * number_visual_observations
-    mock_brain.return_value.vector_action_space_size = vector_action_space_size
-    mock_brain.return_value.brain_name = "MockBrain"
-    return mock_brain()
 
 
 def create_mock_steps(
@@ -193,7 +166,7 @@ def simulate_rollout(
     return buffer
 
 
-def setup_mock_behavior_specs(
+def setup_test_behavior_specs(
     use_discrete=True, use_visual=False, vector_action_space=2, vector_obs_space=8
 ):
     behavior_spec = BehaviorSpec(
@@ -205,18 +178,18 @@ def setup_mock_behavior_specs(
 
 
 def create_mock_3dball_behavior_specs():
-    return setup_mock_behavior_specs(
+    return setup_test_behavior_specs(
         False, False, vector_action_space=2, vector_obs_space=8
     )
 
 
 def create_mock_pushblock_behavior_specs():
-    return setup_mock_behavior_specs(
+    return setup_test_behavior_specs(
         True, False, vector_action_space=7, vector_obs_space=70
     )
 
 
 def create_mock_banana_behavior_specs():
-    return setup_mock_behavior_specs(
+    return setup_test_behavior_specs(
         True, True, vector_action_space=[3, 3, 3, 2], vector_obs_space=0
     )

@@ -32,7 +32,7 @@ def create_policy_mock(
     load: bool = False,
     seed: int = 0,
 ) -> NNPolicy:
-    mock_spec = mb.setup_mock_behavior_specs(
+    mock_spec = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
         vector_action_space=DISCRETE_ACTION_SPACE
@@ -130,7 +130,7 @@ def test_policy_evaluate(rnn, visual, discrete):
 
 
 def test_normalization():
-    behavior_spec = mb.setup_mock_behavior_specs(
+    behavior_spec = mb.setup_test_behavior_specs(
         use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
     )
 

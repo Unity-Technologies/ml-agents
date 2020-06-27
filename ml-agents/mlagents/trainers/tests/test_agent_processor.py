@@ -14,16 +14,6 @@ from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
 
-def create_mock_brain():
-    mock_brain = mb.create_mock_brainparams(
-        vector_action_space_type="continuous",
-        vector_action_space_size=[2],
-        vector_observation_space_size=8,
-        number_visual_observations=1,
-    )
-    return mock_brain
-
-
 def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
