@@ -19,7 +19,7 @@ def dummy_config():
 @patch("mlagents_envs.base_env.BehaviorSpec")
 def test_initialize_ppo_trainer(BehaviorSpecMock, dummy_config):
     brain_name = "testbrain"
-    external_brains = {"testbrain": BehaviorSpecMock()}
+    external_behaviors = {"testbrain": BehaviorSpecMock()}
     output_path = "results_dir"
     train_model = True
     load_model = False
@@ -56,7 +56,7 @@ def test_initialize_ppo_trainer(BehaviorSpecMock, dummy_config):
             seed=seed,
         )
         trainers = {}
-        for brain_name in external_brains.keys():
+        for brain_name in external_behaviors.keys():
             trainers[brain_name] = trainer_factory.generate(brain_name)
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], PPOTrainer)

@@ -77,7 +77,7 @@ class EnvManager(ABC):
 
     @property
     @abstractmethod
-    def external_brains(self) -> Dict[BehaviorName, BehaviorSpec]:
+    def external_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
         pass
 
     @abstractmethod
@@ -92,7 +92,7 @@ class EnvManager(ABC):
             self._process_step_infos(self.first_step_infos)
             self.first_step_infos = None
         # Get new policies if found. Always get the latest policy.
-        for brain_name in self.external_brains:
+        for brain_name in self.external_behaviors:
             _policy = None
             try:
                 # We make sure to empty the policy queue before continuing to produce steps.
