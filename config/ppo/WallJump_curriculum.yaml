@@ -50,7 +50,7 @@ behaviors:
     summary_freq: 20000
     threaded: true
 environment_parameters:
-  big_wall_min_height:
+  big_wall_height:
     curriculum:
     - Lesson0:
         completion_criteria:
@@ -59,7 +59,11 @@ environment_parameters:
           signal_smoothing: true
           min_lesson_length: 100
           threshold: 0.1
-        value: 0.0
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 0.0
+            max_value: 4.0
     - Lesson1:
         completion_criteria:
           measure: progress
@@ -67,7 +71,11 @@ environment_parameters:
           signal_smoothing: true
           min_lesson_length: 100
           threshold: 0.3
-        value: 4.0
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 4.0
+            max_value: 7.0
     - Lesson2:
         completion_criteria:
           measure: progress
@@ -75,35 +83,11 @@ environment_parameters:
           signal_smoothing: true
           min_lesson_length: 100
           threshold: 0.5
-        value: 6.0
-    - Lesson3:
-        value: 8.0
-  big_wall_max_height:
-    curriculum:
-    - Lesson0:
-        completion_criteria:
-          measure: progress
-          behavior: BigWallJump
-          signal_smoothing: true
-          min_lesson_length: 100
-          threshold: 0.1
-        value: 4.0
-    - Lesson1:
-        completion_criteria:
-          measure: progress
-          behavior: BigWallJump
-          signal_smoothing: true
-          min_lesson_length: 100
-          threshold: 0.3
-        value: 7.0
-    - Lesson2:
-        completion_criteria:
-          measure: progress
-          behavior: BigWallJump
-          signal_smoothing: true
-          min_lesson_length: 100
-          threshold: 0.5
-        value: 8.0
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 6.0
+            max_value: 8.0
     - Lesson3:
         value: 8.0
   small_wall_height:

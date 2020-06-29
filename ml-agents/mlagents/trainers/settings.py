@@ -234,10 +234,10 @@ class ParameterRandomizationSettings(abc.ABC):
             MultiRangeUniformSettings: ParameterRandomizationType.MULTIRANGEUNIFORM,
             ConstantSettings: ParameterRandomizationType.CONSTANT,
         }
-        sampler_type: Optional[ParameterRandomizationType] = None
+        sampler_type: Optional[str] = None
         for t, name in _reversed_mapping.items():
             if isinstance(d, t):
-                sampler_type = name
+                sampler_type = name.value
         sampler_parameters = attr.asdict(d)
         return {"sampler_type": sampler_type, "sampler_parameters": sampler_parameters}
 
