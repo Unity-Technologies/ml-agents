@@ -1,10 +1,11 @@
 # # Unity ML-Agents Toolkit
-from typing import Dict, List
+from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
 import time
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
@@ -79,6 +80,41 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :return: A boolean corresponding to wether or not update_model() can be run
         """
         return False
+
+    def _policy_mean_reward(self) -> Optional[float]:
+        """ Returns the mean episode reward for the current policy. """
+        rewards = self.cumulative_returns_since_policy_update
+        if len(rewards) == 0:
+            return None
+        else:
+            return sum(rewards) / len(rewards)
+
+    @timed
+    def _checkpoint(self) -> None:
+        """
+        Saves the model
+        """
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        policy.checkpoint(self._policy_mean_reward())
+
+    def save_model(self) -> None:
+        """
+        Exports the model
+        """
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        policy_mean_reward = self._policy_mean_reward()
+        policy.checkpoint(policy_mean_reward)
+        policy.save(policy_mean_reward)
 
     @abc.abstractmethod
     def _update_policy(self) -> bool:

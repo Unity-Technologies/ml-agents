@@ -1,11 +1,9 @@
 # # Unity ML-Agents Toolkit
-import attr
 from typing import List, Deque, Dict
 import abc
 from collections import deque
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.timers import timed
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
@@ -109,31 +107,12 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
-    @timed
-    def _checkpoint(self) -> None:
-        """
-        Saves the model
-        """
-        n_policies = len(self.policies.keys())
-        if n_policies > 1:
-            logger.warning(
-                "Trainer has multiple policies, but default behavior only saves the first."
-            )
-        policy = list(self.policies.values())[0]
-        policy.checkpoint()
-
+    @abc.abstractmethod
     def save_model(self) -> None:
         """
-        Exports the model
+        Saves model file(s) for the policy or policies associated with this trainer.
         """
-        n_policies = len(self.policies.keys())
-        if n_policies > 1:
-            logger.warning(
-                "Trainer has multiple policies, but default behavior only saves the first."
-            )
-        policy = list(self.policies.values())[0]
-        policy.checkpoint()
-        policy.save()
+        pass
 
     @abc.abstractmethod
     def end_episode(self):

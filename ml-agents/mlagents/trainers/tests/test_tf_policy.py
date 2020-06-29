@@ -89,7 +89,8 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
     n_steps = 5
     policy.get_current_step = MagicMock(return_value=n_steps)
     policy.saver = MagicMock()
-    policy.checkpoint()
+    mock_reward_val = 1.35
+    policy.checkpoint(mock_reward_val)
     policy.saver.save.assert_called_once_with(
         policy.sess, f"output/model-{n_steps}.ckpt"
     )
@@ -104,7 +105,9 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
     track_checkpoint_info_mock.assert_called_once_with(
         mock_brain.brain_name,
         attr.asdict(
-            Checkpoint(n_steps, f"output/{mock_brain.brain_name}-{n_steps}.nn", 0.0)
+            Checkpoint(
+                n_steps, f"output/{mock_brain.brain_name}-{n_steps}.nn", mock_reward_val
+            )
         ),
         policy.trainer_settings.keep_checkpoints,
     )

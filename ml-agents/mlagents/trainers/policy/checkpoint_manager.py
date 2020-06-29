@@ -1,5 +1,5 @@
 # # Unity ML-Agents Toolkit
-from typing import Union, Dict, Any
+from typing import Union, Dict, Any, Optional
 import os
 from enum import Enum
 import attr
@@ -14,7 +14,7 @@ logger = get_logger(__name__)
 class Checkpoint:
     steps: int
     file_path: str
-    reward: float
+    reward: Optional[float]
 
 
 class CheckpointType(Enum):
@@ -29,9 +29,7 @@ class CheckpointManager:
 
     @staticmethod
     def save_checkpoints():
-        GlobalTrainingStatus.saved_state.update(
-            CheckpointManager.checkpoints_saved
-        )
+        GlobalTrainingStatus.saved_state.update(CheckpointManager.checkpoints_saved)
 
     @staticmethod
     def set_parameter_state(category: str, key: CheckpointType, value: Any) -> None:
@@ -106,7 +104,10 @@ class CheckpointManager:
 
     @staticmethod
     def track_final_model_info(
-        category: str, final_model_path: str, keep_checkpoints: int, mean_reward: float
+        category: str,
+        final_model_path: str,
+        keep_checkpoints: int,
+        mean_reward: Optional[float],
     ) -> None:
         """
         Ensures number of checkpoints stored is within the max number of checkpoints
@@ -123,6 +124,4 @@ class CheckpointManager:
         CheckpointManager.set_parameter_state(
             category, CheckpointType.REWARD, mean_reward
         )
-        GlobalTrainingStatus.update_parameter_state(
-            CheckpointManager.checkpoints_saved
-        )
+        GlobalTrainingStatus.update_parameter_state(CheckpointManager.checkpoints_saved)

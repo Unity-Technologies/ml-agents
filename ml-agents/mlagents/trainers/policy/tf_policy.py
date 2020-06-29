@@ -9,10 +9,7 @@ from mlagents.model_serialization import SerializationSettings, export_policy_mo
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.policy.checkpoint_manager import (
-    Checkpoint,
-    CheckpointManager,
-)
+from mlagents.trainers.policy.checkpoint_manager import Checkpoint, CheckpointManager
 from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
@@ -402,7 +399,7 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def checkpoint(self) -> None:
+    def checkpoint(self, model_reward: Optional[float] = None) -> None:
         """
         Checkpoints the model
         """
@@ -424,24 +421,21 @@ class TFPolicy(Policy):
         new_checkpoint = Checkpoint(
             int(current_step),
             os.path.join(self.model_path, f"{settings.checkpoint_path}.nn"),
-            0.0,  # TODO: track rewards in policy?
+            model_reward,
         )
         # Record checkpoint information
         CheckpointManager.track_checkpoint_info(
             brain_name, attr.asdict(new_checkpoint), self.keep_checkpoints
         )
 
-    def save(self):
+    def save(self, model_reward: Optional[float] = None) -> None:
         """
         Saves the model
         """
         brain_name = self.behavior_id.brain_name
         settings = SerializationSettings(self.model_path, brain_name)
         CheckpointManager.track_final_model_info(
-            brain_name,
-            f"{settings.model_path}.nn",
-            self.keep_checkpoints,
-            0.0,  # TODO: track rewards in policy?
+            brain_name, f"{settings.model_path}.nn", self.keep_checkpoints, model_reward
         )
         export_policy_model(settings, self.graph, self.sess)
 
