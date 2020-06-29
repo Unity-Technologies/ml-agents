@@ -16,7 +16,6 @@ public class Task3DAgent : Agent
         m_BallRb = ball.GetComponent<Rigidbody>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
-        Debug.Log(m_TaskSensor);
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -88,5 +87,7 @@ public class Task3DAgent : Agent
     public void SetResetParameters()
     {
         SetBall();
+        // Get agent parameters
+        Debug.Log(GetParameterWithDefault("test_param", 0));
     }
 }

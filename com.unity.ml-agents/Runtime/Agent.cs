@@ -1202,5 +1202,10 @@ namespace Unity.MLAgents
                 Array.Copy(action, m_Action.vectorActions, action.Length);
             }
         }
+
+        public float GetParameterWithDefault(string key, float defaultValue)
+        {
+            return Academy.Instance.AgentParameters.GetWithDefault(m_EpisodeId, key, defaultValue);
+        }
     }
 }
