@@ -13,12 +13,13 @@ from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.ppo_transfer.optimizer import PPOTransferOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
-
+BUFFER_TRUNCATE_PERCENT = 0.6
 logger = get_logger(__name__)
 
 
@@ -54,6 +55,8 @@ class PPOTransferTrainer(RLTrainer):
         self.load = load
         self.seed = seed
         self.policy: TransferPolicy = None  # type: ignore
+        self.off_policy_buffer: AgentBuffer = AgentBuffer()
+        self.use_iealter = False
         print("The current algorithm is PPO Transfer")
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
@@ -132,6 +135,11 @@ class PPOTransferTrainer(RLTrainer):
         agent_buffer_trajectory.resequence_and_append(
             self.update_buffer, training_length=self.policy.sequence_length
         )
+        # the off-policy buffer
+        if self.use_iealter:
+            agent_buffer_trajectory.resequence_and_append(
+                self.off_policy_buffer, training_length=self.policy.sequence_length
+            )
 
         # If this was a terminal trajectory, append stats and reset reward collection
         if trajectory.done_reached:
@@ -142,17 +150,26 @@ class PPOTransferTrainer(RLTrainer):
         Returns whether or not the trainer has enough elements to run update model
         :return: A boolean corresponding to whether or not update_model() can be run
         """
-        size_of_buffer = self.update_buffer.num_experiences
-        return size_of_buffer > self.hyperparameters.buffer_size
+        if self.use_iealter:
+            size_of_buffer = self.off_policy_buffer.num_experiences
+            return size_of_buffer > self.hyperparameters.buffer_size
+        else:
+            size_of_buffer = self.update_buffer.num_experiences
+            return size_of_buffer > self.hyperparameters.buffer_size
 
     def _update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
+        if self.use_iealter:
+            self._update_model()
+            if self.update_buffer.num_experiences < self.hyperparameters.buffer_size:
+                return True
+            
         buffer_length = self.update_buffer.num_experiences
         self.cumulative_returns_since_policy_update.clear()
-# tf.stop_gradient
+
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
         batch_size = (
@@ -191,6 +208,60 @@ class PPOTransferTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
+        
+        return True
+    
+    def _update_model(self):
+        """
+        Uses demonstration_buffer to update the policy.
+        The reward signal generators must be updated in this method at their own pace.
+        """
+        buffer_length = self.off_policy_buffer.num_experiences
+        self.cumulative_returns_since_policy_update.clear()
+
+        # Make sure batch_size is a multiple of sequence length. During training, we
+        # will need to reshape the data into a batch_size x sequence_length tensor.
+        batch_size = (
+            self.hyperparameters.batch_size
+            - self.hyperparameters.batch_size % self.policy.sequence_length
+        )
+        # Make sure there is at least one sequence
+        batch_size = max(batch_size, self.policy.sequence_length)
+
+        n_sequences = max(
+            int(self.hyperparameters.batch_size / self.policy.sequence_length), 1
+        )
+
+        advantages = self.off_policy_buffer["advantages"].get_batch()
+        self.off_policy_buffer["advantages"].set(
+            (advantages - advantages.mean()) / (advantages.std() + 1e-10)
+        )
+        num_epoch = self.hyperparameters.num_epoch
+        batch_update_stats = defaultdict(list)
+        for _ in range(num_epoch):
+            self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
+            buffer = self.off_policy_buffer
+            max_num_batch = buffer_length // batch_size
+            for i in range(0, max_num_batch * batch_size, batch_size):
+                update_stats = self.optimizer.update_part(
+                    buffer.make_mini_batch(i, i + batch_size), n_sequences, "model"
+                )
+                for stat_name, value in update_stats.items():
+                    batch_update_stats[stat_name].append(value)
+        for stat, stat_list in batch_update_stats.items():
+            self._stats_reporter.add_stat(stat, np.mean(stat_list))
+
+        if self.optimizer.bc_module:
+            update_stats = self.optimizer.bc_module.update()
+            for stat, val in update_stats.items():
+                self._stats_reporter.add_stat(stat, val)
+        
+        # self.off_policy_buffer.reset_agent()
+        if self.off_policy_buffer.num_experiences > self.hyperparameters.buffer_size:
+            self.off_policy_buffer.truncate(
+                int(self.hyperparameters.buffer_size * BUFFER_TRUNCATE_PERCENT)
+            )
+        
         return True
 
     def create_policy(
