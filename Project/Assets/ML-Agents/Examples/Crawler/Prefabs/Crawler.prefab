@@ -2784,10 +2784,10 @@ MonoBehaviour:
     VectorActionSize: 14000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 9049db2514a454914be8f5e5d3508ffe, type: 3}
+  m_Model: {fileID: 11400000, guid: c6509001ba679447fba27f894761c3ba, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: CrawlerDynamic
+  m_BehaviorName: CrawlerStatic
   TeamId: 0
   m_UseChildSensors: 1
   m_ObservableAttributeHandling: 0
@@ -2960,11 +2960,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4845971001715176651}
     m_Modifications:
-    - target: {fileID: 2591864625898824423, guid: 72f745913c5a34df5aaadd5c1f0024cb,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2591864627249999504, guid: 72f745913c5a34df5aaadd5c1f0024cb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3056,11 +3051,6 @@ PrefabInstance:
       propertyPath: transformToFollow
       value: 
       objectReference: {fileID: 4845971001588102148}
-    - target: {fileID: 6026464216722085689, guid: e568400ebedb3474fac505995f12ed4a,
-        type: 3}
-      propertyPath: targetToLookAt
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 6084207059270429360, guid: e568400ebedb3474fac505995f12ed4a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3069,7 +3059,7 @@ PrefabInstance:
     - target: {fileID: 6084207059270429360, guid: e568400ebedb3474fac505995f12ed4a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.5078
+      value: -1.996
       objectReference: {fileID: 0}
     - target: {fileID: 6084207059270429360, guid: e568400ebedb3474fac505995f12ed4a,
         type: 3}

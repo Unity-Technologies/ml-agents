@@ -1710,7 +1710,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4313455366547514}
   - component: {fileID: 114060650647145362}
-  - component: {fileID: 114590693924030052}
   - component: {fileID: 114423363226357902}
   - component: {fileID: 8520694362683208207}
   - component: {fileID: 1267665179144855710}
@@ -1770,48 +1769,6 @@ MonoBehaviour:
   TeamId: 0
   m_UseChildSensors: 1
   m_ObservableAttributeHandling: 0
---- !u!114 &114590693924030052
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1515093357607024}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f37c30a5e8d04117947188818902ef3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
-  maximumWalkingSpeed: 999
-  target: {fileID: 4490950947783742}
-  targetSpawnRadius: 40
-  detectTargets: 1
-  respawnTargetWhenTouched: 1
-  ground: {fileID: 4684408634944056}
-  body: {fileID: 4331762859142564}
-  leg0Upper: {fileID: 4517589631116000}
-  leg0Lower: {fileID: 4141542975685024}
-  leg1Upper: {fileID: 4855831703483442}
-  leg1Lower: {fileID: 4759019695916354}
-  leg2Upper: {fileID: 4112232008985352}
-  leg2Lower: {fileID: 4336060300592886}
-  leg3Upper: {fileID: 4646126234503692}
-  leg3Lower: {fileID: 4121297914202578}
-  orientationCube: {fileID: 0}
-  rewardMovingTowardsTarget: 1
-  rewardFacingTarget: 1
-  rewardUseTimePenalty: 0
-  useFootGroundedVisualization: 0
-  foot0: {fileID: 23054940495829994}
-  foot1: {fileID: 23599433284144240}
-  foot2: {fileID: 23590272472866992}
-  foot3: {fileID: 23716501535309860}
-  groundedMaterial: {fileID: 0}
-  unGroundedMaterial: {fileID: 0}
 --- !u!114 &114423363226357902
 MonoBehaviour:
   m_ObjectHideFlags: 0
