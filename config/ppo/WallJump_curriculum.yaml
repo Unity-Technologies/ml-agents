@@ -52,7 +52,7 @@ behaviors:
 environment_parameters:
   big_wall_height:
     curriculum:
-    - Lesson0:
+      - name: Lesson0 # The '-' is important as this is a list
         completion_criteria:
           measure: progress
           behavior: BigWallJump
@@ -64,7 +64,7 @@ environment_parameters:
           sampler_parameters:
             min_value: 0.0
             max_value: 4.0
-    - Lesson1:
+      - name: Lesson1 # This is the start of the second lesson
         completion_criteria:
           measure: progress
           behavior: BigWallJump
@@ -76,7 +76,7 @@ environment_parameters:
           sampler_parameters:
             min_value: 4.0
             max_value: 7.0
-    - Lesson2:
+      - name: Lesson2
         completion_criteria:
           measure: progress
           behavior: BigWallJump
@@ -88,11 +88,11 @@ environment_parameters:
           sampler_parameters:
             min_value: 6.0
             max_value: 8.0
-    - Lesson3:
+      - name: Lesson3
         value: 8.0
   small_wall_height:
     curriculum:
-    - Lesson0:
+      - name: Lesson0
         completion_criteria:
           measure: progress
           behavior: SmallWallJump
@@ -100,7 +100,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.1
         value: 1.5
-    - Lesson1:
+      - name: Lesson1
         completion_criteria:
           measure: progress
           behavior: SmallWallJump
@@ -108,7 +108,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.3
         value: 2.0
-    - Lesson2:
+      - name: Lesson2
         completion_criteria:
           measure: progress
           behavior: SmallWallJump
@@ -116,5 +116,5 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.5
         value: 2.5
-    - Lesson3:
+      - name: Lesson3
         value: 4.0

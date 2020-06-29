@@ -449,7 +449,7 @@ behaviors:
 environment_parameters:
   my_environment_parameter:
     curriculum:
-    - MyFirstLesson: # The '-' is important as this is a list
+      - name: MyFirstLesson # The '-' is important as this is a list
         completion_criteria:
           measure: progress
           behavior: my_behavior
@@ -457,7 +457,7 @@ environment_parameters:
           min_lesson_length: 100
           threshold: 0.2
         value: 0.0
-    - MySecondLesson:
+      - name: MySecondLesson # This is the start of the second lesson
         completion_criteria:
           measure: progress
           behavior: my_behavior
@@ -470,15 +470,17 @@ environment_parameters:
           sampler_parameters:
             min_value: 4.0
             max_value: 7.0
-    - MyLastLesson:
+      - name: MyLastLesson
         value: 8.0
 ```
 
 Note that this curriculum __only__ applies to `my_environment_parameter`. The `curriculum` section
 contains a list of `Lessons`. In the example, the lessons are named `MyFirstLesson`, `MySecondLesson`
 and `MyLastLesson`.
-Each `Lesson` has two types of fields :
+Each `Lesson` has 3 fields :
 
+ - `name` which is a user defined name for the lesson (The name of the lesson will be displayed in
+ the console when the lesson changes)
  - `completion_criteria` which determines what needs to happen in the simulation before the lesson
  can be considered complete. When that condition is met, the curriculum moves on to the next
  `Lesson`. Note that you do not need to specify a `completion_criteria` for the last `Lesson`

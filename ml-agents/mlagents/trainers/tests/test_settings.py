@@ -213,16 +213,15 @@ def test_env_parameter_structure():
         "wall_height": {
             "curriculum": [
                 {
-                    "Lesson1": {
-                        "completion_criteria": {
-                            "measure": "reward",
-                            "behavior": "fake_behavior",
-                            "threshold": 10,
-                        },
-                        "value": 1,
-                    }
+                    "name": "Lesson1",
+                    "completion_criteria": {
+                        "measure": "reward",
+                        "behavior": "fake_behavior",
+                        "threshold": 10,
+                    },
+                    "value": 1,
                 },
-                {"Lesson2": {"value": 4}},
+                {"value": 4, "name": "Lesson2"},
             ]
         },
     }
@@ -299,16 +298,15 @@ def test_env_parameter_structure():
         "wall_height": {
             "curriculum": [
                 {
-                    "Lesson1": {
-                        "completion_criteria": {
-                            "measure": "progress",
-                            "behavior": "fake_behavior",
-                            "threshold": 10,
-                        },  # > 1 is too large
-                        "value": 1,
-                    },
-                    "Lesson2": {"value": 4},
-                }
+                    "name": "Lesson1",
+                    "completion_criteria": {
+                        "measure": "progress",
+                        "behavior": "fake_behavior",
+                        "threshold": 10,
+                    },  # > 1 is too large
+                    "value": 1,
+                },
+                {"value": 4, "name": "Lesson2"},
             ]
         }
     }
@@ -389,7 +387,7 @@ def test_exportable_settings():
     environment_parameters:
         big_wall_height:
             curriculum:
-            - Lesson0:
+              - name: Lesson0
                 completion_criteria:
                     measure: progress
                     behavior: BigWallJump
@@ -401,7 +399,7 @@ def test_exportable_settings():
                     sampler_parameters:
                         min_value: 0.0
                         max_value: 4.0
-            - Lesson1:
+              - name: Lesson1
                 completion_criteria:
                     measure: reward
                     behavior: BigWallJump
@@ -413,7 +411,7 @@ def test_exportable_settings():
                     sampler_parameters:
                         mean: 4.0
                         st_dev: 7.0
-            - Lesson2:
+              - name: Lesson2
                 completion_criteria:
                     measure: progress
                     behavior: BigWallJump
@@ -424,7 +422,7 @@ def test_exportable_settings():
                     sampler_type: multirangeuniform
                     sampler_parameters:
                         intervals: [[1.0, 2.0],[4.0, 5.0]]
-            - Lesson3:
+              - name: Lesson3
                 value: 8.0
         small_wall_height: 42.0
         other_wall_height:

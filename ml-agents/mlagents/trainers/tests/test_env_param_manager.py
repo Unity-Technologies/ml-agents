@@ -67,7 +67,7 @@ test_curriculum_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
-        - FirstLesson:
+          - name: Lesson1
             completion_criteria:
                 measure: reward
                 behavior: fake_behavior
@@ -75,7 +75,7 @@ environment_parameters:
                 min_lesson_length: 100
                 require_reset: true
             value: 1
-        - SecondLesson:
+          - name: Lesson2
             completion_criteria:
                 measure: reward
                 behavior: fake_behavior
@@ -83,7 +83,7 @@ environment_parameters:
                 min_lesson_length: 100
                 require_reset: false
             value: 2
-        - LastLesson:
+          - name: Lesson3
             value:
                 sampler_type: uniform
                 sampler_parameters:
@@ -135,7 +135,7 @@ test_bad_curriculum_no_competion_criteria_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
-        - FirstLesson:
+          - name: Lesson1
             completion_criteria:
                 measure: reward
                 behavior: fake_behavior
@@ -143,9 +143,9 @@ environment_parameters:
                 min_lesson_length: 100
                 require_reset: true
             value: 1
-        - SecondLesson:
+          - name: Lesson2
             value: 2
-        - LastLesson:
+          - name: Lesson3
             value:
                 sampler_type: uniform
                 sampler_parameters:
@@ -165,7 +165,7 @@ test_everything_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
-        - FirstLesson:
+          - name: Lesson1
             completion_criteria:
                 measure: reward
                 behavior: fake_behavior
@@ -173,7 +173,7 @@ environment_parameters:
                 min_lesson_length: 100
                 require_reset: true
             value: 1
-        - SecondLesson:
+          - name: Lesson2
             completion_criteria:
                 measure: progress
                 behavior: fake_behavior
@@ -181,7 +181,7 @@ environment_parameters:
                 min_lesson_length: 100
                 require_reset: false
             value: 2
-        - LastLesson:
+          - name: Lesson3
             value:
                 sampler_type: uniform
                 sampler_parameters:

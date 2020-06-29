@@ -422,32 +422,9 @@ class Lesson:
     the last lesson in the curriculum.
     """
 
-    completion_criteria: Optional[CompletionCriteriaSettings]
     value: ParameterRandomizationSettings
     name: str
-
-    @staticmethod
-    def structure(d: Mapping, t: type) -> "Lesson":
-        """
-        Helper method to a Lesson class. Meant to be registered with
-        cattr.register_structure_hook() and called with cattr.structure().
-        """
-        if "value" not in d:
-            key = list(d.keys())[0]
-            if "value" not in d[key]:
-                raise TrainerConfigError(
-                    f"The lesson {key} does not have a value field"
-                )
-            return strict_to_cls(
-                {
-                    "completion_criteria": d[key].get("completion_criteria", None),
-                    "value": d[key]["value"],
-                    "name": key,
-                },
-                Lesson,
-            )
-        else:
-            return strict_to_cls(d, Lesson)
+    completion_criteria: Optional[CompletionCriteriaSettings] = attr.ib(default=None)
 
 
 @attr.s(auto_attribs=True)
@@ -665,7 +642,7 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(
         Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
     )
-    cattr.register_structure_hook(Lesson, Lesson.structure)
+    cattr.register_structure_hook(Lesson, strict_to_cls)
     cattr.register_structure_hook(
         ParameterRandomizationSettings, ParameterRandomizationSettings.structure
     )
