@@ -30,6 +30,8 @@ list of tags was empty, or a tag in the list was invalid (unknown, null, or
 empty string). (#4155)
 
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an error when setting `initialize_from` in the trainer confiiguration YAML to
+`null`. (#4175)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes

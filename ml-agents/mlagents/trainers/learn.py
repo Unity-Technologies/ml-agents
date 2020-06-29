@@ -69,7 +69,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_path = os.path.join(base_path, checkpoint_settings.run_id)
         maybe_init_path = (
             os.path.join(base_path, checkpoint_settings.initialize_from)
-            if checkpoint_settings.initialize_from
+            if checkpoint_settings.initialize_from is not None
             else None
         )
         run_logs_dir = os.path.join(write_path, "run_logs")
