@@ -209,6 +209,9 @@ public class FoodCollectorAgent : Agent
 
     public override void Heuristic(float[] actionsOut)
     {
+        actionsOut[0] = 0f;
+        actionsOut[1] = 0f;
+        actionsOut[2] = 0f;
         if (Input.GetKey(KeyCode.D))
         {
             actionsOut[2] = 2f;
@@ -258,6 +261,7 @@ public class FoodCollectorAgent : Agent
         }
         if (collision.gameObject.CompareTag("badFood"))
         {
+            //Debug.Log("Colliding with bad food!");
             Poison();
             collision.gameObject.GetComponent<FoodLogic>().OnEaten();
 

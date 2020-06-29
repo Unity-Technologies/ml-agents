@@ -79,5 +79,7 @@ namespace Unity.MLAgents.Sensors
 
 		    return color;
 	    }
+
+
     }
 }

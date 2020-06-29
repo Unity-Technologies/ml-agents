@@ -12,7 +12,8 @@ namespace Unity.MLAgents.Sensors
     {
         RGB,
         Depth,
-        Segmentation
+        Segmentation,
+        AutoSegmentation
     }
 
     struct CameraSensorPass
@@ -24,27 +25,6 @@ namespace Unity.MLAgents.Sensors
         {
             PassType = passType;
             Camera = camera;
-        }
-    }
-
-    internal enum CameraChannelType
-    {
-        RGB,
-        Grayscale,
-        Depth,
-        OpticalFlow,
-        LayerMask
-    }
-
-    internal struct CameraSensorChannel
-    {
-        public CameraChannelType ChannelType;
-        public int? LayerNumber;
-
-        public CameraSensorChannel(CameraChannelType channelType, int? layerNumber = null)
-        {
-            ChannelType = channelType;
-            LayerNumber = layerNumber;
         }
     }
 
@@ -65,7 +45,6 @@ namespace Unity.MLAgents.Sensors
         static readonly int _categoryColor = Shader.PropertyToID("_CategoryColor");
         static readonly int _layerNumber = Shader.PropertyToID("_LayerNumber");
         CameraSensorSettings m_Settings;
-        CommandBuffer m_AddedBuffer;
         List<CameraSensorPass> m_Passes;
 
         /// <summary>
@@ -94,6 +73,11 @@ namespace Unity.MLAgents.Sensors
             {
                 passes.Add(new CameraSensorPass(CameraSensorPassType.Segmentation, CreateHiddenCamera("segmentationCam")));
             }
+
+            if (m_Settings.EnableAutoSegment)
+            {
+                passes.Add(new CameraSensorPass(CameraSensorPassType.AutoSegmentation, CreateHiddenCamera("autoSegmentationCam")));
+            }
             return passes;
         }
 
@@ -114,39 +98,6 @@ namespace Unity.MLAgents.Sensors
         {
             get { return m_CompressionType;  }
             set { m_CompressionType = value; }
-        }
-
-        internal List<CameraSensorChannel> Channels()
-        {
-            var channels = new List<CameraSensorChannel>();
-            if (!m_Settings.DisableCamera)
-            {
-                if (m_Grayscale)
-                {
-                    channels.Add(new CameraSensorChannel(CameraChannelType.Grayscale));
-                }
-                else
-                {
-                    channels.Add(new CameraSensorChannel(CameraChannelType.RGB));
-                }
-            }
-
-            if (m_Settings.EnableDepth)
-            {
-                channels.Add(new CameraSensorChannel(CameraChannelType.Depth));
-            }
-
-            if (m_Settings.LayerMasks.Length > 0)
-            {
-                foreach (var layerToMask in m_Settings.LayerMasks)
-                {
-                    channels.Add(
-                        new CameraSensorChannel(CameraChannelType.LayerMask, layerToMask)
-                    );
-                }
-            }
-
-            return channels;
         }
 
         /// <summary>
@@ -198,7 +149,7 @@ namespace Unity.MLAgents.Sensors
         public void OnSceneChange()
         {
             var segPasses = m_Passes.Where(
-                p => p.PassType == CameraSensorPassType.Segmentation
+                p => p.PassType == CameraSensorPassType.Segmentation || p.PassType == CameraSensorPassType.AutoSegmentation
             );
             // NOTE: This avoids the expensive search for all renderers if we don't need segmentation.
             if (!segPasses.Any()) return;
@@ -233,7 +184,7 @@ namespace Unity.MLAgents.Sensors
                 var height = texture.height;
 
                 var texturePixels = texture.GetPixels();
-                if (pass.PassType == CameraSensorPassType.RGB)
+                if (pass.PassType == CameraSensorPassType.RGB || pass.PassType == CameraSensorPassType.AutoSegmentation)
                 {
                     var r = new float[texture.width, texture.height];
                     var g = new float[texture.width, texture.height];
@@ -282,7 +233,6 @@ namespace Unity.MLAgents.Sensors
                 }
                 else if (pass.PassType == CameraSensorPassType.Segmentation)
                 {
-                    var loggedInThisPass = false;
                     var layerChannels = new List<float[,]>();
                     foreach (var layer in m_Settings.LayerMasks)
                     {
@@ -307,6 +257,27 @@ namespace Unity.MLAgents.Sensors
                     }
                     foreach (var layerChannel in layerChannels) channels.Add(layerChannel);
                 }
+                // else if (pass.PassType == CameraSensorPassType.AutoSegmentation)
+                // {
+                //     var r = new float[texture.width, texture.height];
+                //     var g = new float[texture.width, texture.height];
+                //     var b = new float[texture.width, texture.height];
+                //     for (var h = height - 1; h >= 0; h--)
+                //     {
+                //         for (var w = 0; w < width; w++)
+                //         {
+                //             var currentPixel = texturePixels[(height - h - 1) * width + w];
+                //             // For Color32, the r, g and b values are between 0 and 1.
+                //             r[h, w] = currentPixel.r;
+                //             g[h, w] = currentPixel.g;
+                //             b[h, w] = currentPixel.b;
+                //         }
+                //     }
+                //
+                //     channels.Add(r);
+                //     channels.Add(g);
+                //     channels.Add(b);
+                // }
 
                 DestroyTexture(texture);
             }
@@ -364,6 +335,7 @@ namespace Unity.MLAgents.Sensors
                         channelVals[i] = texturePixels[i].grayscale;
                     }
                     singleChannels.Add(channelVals);
+                    DestroyTexture(texture);
                 }
                 else if (pass.PassType == CameraSensorPassType.Segmentation)
                 {
@@ -387,6 +359,27 @@ namespace Unity.MLAgents.Sensors
                         }
                     }
                     foreach (var layerChannel in layerChannels) singleChannels.Add(layerChannel);
+                    // Since we captured these layers as a float array, we need to destroy the texture
+                    DestroyTexture(texture);
+                }
+                else if (pass.PassType == CameraSensorPassType.AutoSegmentation)
+                {
+                    if (m_Grayscale)
+                    {
+                        // turn to grayscale
+                        for (var i = 0; i < texturePixels.Length; ++i)
+                        {
+                            var grayVal = texturePixels[i].grayscale;
+                            texturePixels[i] = new Color(grayVal, grayVal, grayVal, texturePixels[i].a);
+                        }
+                        texture.SetPixels(texturePixels);
+                        texture.Apply();
+                        textures.Add(texture);
+                    }
+                    else
+                    {
+                        textures.Add(texture);
+                    }
                 }
             }
             // Single channels need to be converted to colors and assigned to new textures.
@@ -429,6 +422,7 @@ namespace Unity.MLAgents.Sensors
 
                 // cleanup capturing camera
                 pass.Camera.RemoveAllCommandBuffers();
+                pass.Camera.ResetReplacementShader();
 
                 // copy all "main" camera parameters into capturing camera
                 pass.Camera.CopyFrom(m_Camera);
@@ -457,6 +451,10 @@ namespace Unity.MLAgents.Sensors
             {
                 //Debug.Log("Setting shader mode to 3");
                 mode = 3;
+            }
+            else if (passType == CameraSensorPassType.AutoSegmentation)
+            {
+                mode = 1;
             }
 
             if (mode < 0)
@@ -520,9 +518,6 @@ namespace Unity.MLAgents.Sensors
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
-                //var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                //var numWritten = Utilities.TextureToTensorProxy(texture, writer, m_Grayscale);
-                //DestroyTexture(texture);
                 var numWritten = 0;
                 var channels = GetObservationChannels();
                 for (var channelInd = 0; channelInd < channels.Count; ++channelInd)
@@ -619,6 +614,12 @@ namespace Unity.MLAgents.Sensors
                 if (pass.PassType == CameraSensorPassType.Segmentation)
                 {
                     channels += m_Settings.LayerMasks.Length;
+                }
+
+                if (pass.PassType == CameraSensorPassType.AutoSegmentation)
+                {
+                    if (m_Grayscale) channels += 1;
+                    else channels += 3;
                 }
             }
             return new[] { m_Height, m_Width, channels };
