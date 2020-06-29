@@ -218,7 +218,8 @@ class ActorCritic(nn.Module):
         entropies = []
         for idx, action_dist in enumerate(dists):
             action = actions[..., idx]
-            log_probs.append(action_dist.log_prob(action))
+            log_prob = action_dist.log_prob(action)
+            log_probs.append(log_prob)
             entropies.append(action_dist.entropy())
         log_probs = torch.stack(log_probs, dim=-1)
         entropies = torch.stack(entropies, dim=-1)
@@ -372,6 +373,12 @@ def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1):
     return h, w
 
 
+def pool_out_shape(h_w, kernel_size):
+    height = (h_w[0] - kernel_size) // 2 + 1
+    width = (h_w[1] - kernel_size) // 2 + 1
+    return height, width
+
+
 class SimpleVisualEncoder(nn.Module):
     def __init__(self, height, width, initial_channels, output_size):
         super(SimpleVisualEncoder, self).__init__()
@@ -387,7 +394,7 @@ class SimpleVisualEncoder(nn.Module):
     def forward(self, visual_obs):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
-        hidden = self.dense(conv_2.view([-1, self.final_flat]))
+        hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
         return hidden
 
 
@@ -409,7 +416,7 @@ class NatureVisualEncoder(nn.Module):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
         conv_3 = torch.relu(self.conv3(conv_2))
-        hidden = self.dense(conv_3.view([-1, self.final_flat]))
+        hidden = torch.relu(self.dense(conv_3.view([-1, self.final_flat])))
         return hidden
 
 
@@ -435,20 +442,24 @@ class ResNetVisualEncoder(nn.Module):
         n_channels = [16, 32, 32]  # channel for each stack
         n_blocks = 2  # number of residual blocks
         self.layers = []
+        last_channel = initial_channels
         for _, channel in enumerate(n_channels):
-            self.layers.append(nn.Conv2d(initial_channels, channel, [3, 3], [1, 1]))
+            self.layers.append(nn.Conv2d(last_channel, channel, [3, 3], [1, 1], padding=1))
             self.layers.append(nn.MaxPool2d([3, 3], [2, 2]))
+            height, width = pool_out_shape((height, width), 3)
             for _ in range(n_blocks):
                 self.layers.append(self.make_block(channel))
+            last_channel = channel
         self.layers.append(nn.ReLU())
+        self.dense = nn.Linear(n_channels[-1] * height * width, final_hidden)
 
     @staticmethod
     def make_block(channel):
         block_layers = [
             nn.ReLU(),
-            nn.Conv2d(channel, channel, [3, 3], [1, 1]),
+            nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
             nn.ReLU(),
-            nn.Conv2d(channel, channel, [3, 3], [1, 1]),
+            nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
         ]
         return block_layers
 
@@ -460,13 +471,15 @@ class ResNetVisualEncoder(nn.Module):
         return hidden + input_hidden
 
     def forward(self, visual_obs):
+        batch_size = visual_obs.shape[0]
         hidden = visual_obs
-        for layer in self.layers:
-            if layer is nn.Module:
+        for idx, layer in enumerate(self.layers):
+            if isinstance(layer, nn.Module):
                 hidden = layer(hidden)
-            elif layer is list:
+            elif isinstance(layer, list):
                 hidden = self.forward_block(hidden, layer)
-        return hidden.flatten()
+        before_out = hidden.view(batch_size, -1)
+        return torch.relu(self.dense(before_out))
 
 
 class ModelUtils:
