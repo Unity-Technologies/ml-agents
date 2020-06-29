@@ -349,11 +349,13 @@ def test_exportable_settings(use_defaults):
     else:
         run_options = RunOptions()
     dict_export = run_options.as_dict()
-    check_dict_is_at_least(loaded_yaml, dict_export)
+
+    if not use_defaults:  # Don't need to check if no yaml
+        check_dict_is_at_least(loaded_yaml, dict_export)
 
     # Re-import and verify has same elements
     run_options2 = RunOptions.from_dict(dict_export)
     second_export = run_options2.as_dict()
 
     # Check that the two exports are the same
-    dict_export == second_export
+    assert dict_export == second_export
