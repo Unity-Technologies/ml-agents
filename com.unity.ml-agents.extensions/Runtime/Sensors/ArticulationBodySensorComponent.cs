@@ -30,9 +30,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             // TODO static method in ArticulationBodySensor?
-            // TODO only update hierarchy util when body changes?
-            var hierarchyUtil = new ArticulationHierarchyUtil(RootBody);
-            var numTransformObservations = Settings.TransformSize(hierarchyUtil.NumTransforms);
+            // TODO only update PoseExtractor when body changes?
+            var poseExtractor = new ArticulationBodyPoseExtractor(RootBody);
+            var numTransformObservations = Settings.TransformSize(poseExtractor.NumTransforms);
             return new[] { numTransformObservations };
         }
     }

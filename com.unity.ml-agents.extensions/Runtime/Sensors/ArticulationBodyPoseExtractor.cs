@@ -6,11 +6,11 @@ using UnityEngine;
 namespace Unity.MLAgents.Extensions.Sensors
 {
 
-    public class ArticulationHierarchyUtil : HierarchyUtil
+    public class ArticulationBodyPoseExtractor : PoseExtractor
     {
         ArticulationBody[] m_Bodies;
 
-        public ArticulationHierarchyUtil(ArticulationBody rootBody)
+        public ArticulationBodyPoseExtractor(ArticulationBody rootBody)
         {
             if (!rootBody.isRoot)
             {

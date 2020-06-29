@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// Transforms are either considered in model space, which is relative to a root body,
     /// or in local space, which is relative to their parent.
     /// </summary>
-    public abstract class HierarchyUtil
+    public abstract class PoseExtractor
     {
         int[] m_ParentIndices;
         Pose[] m_ModelSpacePoses;

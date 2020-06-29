@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// Utility class to track a hierarchy of RigidBodies. These are assumed to have a root node,
     /// and child nodes are connect to their parents via Joints.
     /// </summary>
-    public class RigidBodyHierarchyUtil : HierarchyUtil
+    public class RigidBodyPoseExtractor : PoseExtractor
     {
         Rigidbody[] m_Bodies;
 
@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Initialize given a root RigidBody.
         /// </summary>
         /// <param name="rootBody"></param>
-        public RigidBodyHierarchyUtil(Rigidbody rootBody)
+        public RigidBodyPoseExtractor(Rigidbody rootBody)
         {
             if (rootBody == null)
             {

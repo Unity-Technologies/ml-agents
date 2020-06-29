@@ -77,19 +77,19 @@ namespace Unity.MLAgents.Extensions.Sensors
     internal static class ObservationWriterPhysicsExtensions
     {
         /// <summary>
-        /// Utility method for writing a HierarchyUtil to an ObservationWriter.
+        /// Utility method for writing a PoseExtractor to an ObservationWriter.
         /// </summary>
         /// <param name="writer"></param>
         /// <param name="settings"></param>
-        /// <param name="hierarchyUtil"></param>
+        /// <param name="poseExtractor"></param>
         /// <param name="baseOffset">The offset into the ObservationWriter to start writing at.</param>
         /// <returns>The number of observations written.</returns>
-        public static int WriteHierarchy(this ObservationWriter writer, PhysicsSensorSettings settings, HierarchyUtil hierarchyUtil, int baseOffset = 0)
+        public static int WritePoses(this ObservationWriter writer, PhysicsSensorSettings settings, PoseExtractor poseExtractor, int baseOffset = 0)
         {
             var offset = baseOffset;
             if (settings.UseModelSpace)
             {
-                foreach (var pose in hierarchyUtil.ModelSpacePose)
+                foreach (var pose in poseExtractor.ModelSpacePose)
                 {
                     if(settings.UseModelSpaceTranslations)
                     {
@@ -106,7 +106,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (settings.UseLocalSpace)
             {
-                foreach (var pose in hierarchyUtil.LocalSpacePose)
+                foreach (var pose in poseExtractor.LocalSpacePose)
                 {
                     if(settings.UseLocalSpaceTranslations)
                     {

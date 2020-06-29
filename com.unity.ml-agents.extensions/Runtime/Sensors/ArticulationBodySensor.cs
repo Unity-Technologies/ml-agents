@@ -9,16 +9,16 @@ namespace Unity.MLAgents.Extensions.Sensors
         int[] m_Shape;
         string m_SensorName;
 
-        HierarchyUtil m_HierarchyUtil;
+        PoseExtractor m_PoseExtractor;
         PhysicsSensorSettings m_Settings;
 
         public ArticulationBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
-            m_HierarchyUtil = new ArticulationHierarchyUtil(rootBody);
+            m_PoseExtractor = new ArticulationBodyPoseExtractor(rootBody);
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody.name}" : sensorName;
             m_Settings = settings;
 
-            var numTransformObservations = settings.TransformSize(m_HierarchyUtil.NumTransforms);
+            var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumTransforms);
             m_Shape = new[] { numTransformObservations };
         }
 
@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            var numWritten = writer.WriteHierarchy(m_Settings, m_HierarchyUtil);
+            var numWritten = writer.WritePoses(m_Settings, m_PoseExtractor);
             return numWritten;
         }
 
@@ -46,12 +46,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_Settings.UseModelSpace)
             {
-                m_HierarchyUtil.UpdateModelSpaceTransforms();
+                m_PoseExtractor.UpdateModelSpaceTransforms();
             }
 
             if (m_Settings.UseLocalSpace)
             {
-                m_HierarchyUtil.UpdateLocalSpaceTransforms();
+                m_PoseExtractor.UpdateLocalSpaceTransforms();
             }
         }
 
