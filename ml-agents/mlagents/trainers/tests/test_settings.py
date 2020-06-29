@@ -273,14 +273,14 @@ def test_parameter_randomization_structure():
         )
 
 
-def test_exportable_settings():
+@pytest.mark.parametrize("use_defaults", [True, False])
+def test_exportable_settings(use_defaults):
     """
     Test that structuring and unstructuring a RunOptions object results in the same
     configuration representation.
     """
     # Try to enable as many features as possible in this test YAML to hit all the
     # edge cases. Set as much as possible as non-default values to ensure no flukes.
-    # TODO: Add back in environment_parameters
     test_yaml = """
     behaviors:
         3DBall:
@@ -343,8 +343,11 @@ def test_exportable_settings():
         inference: false
     debug: true
     """
-    loaded_yaml = yaml.safe_load(test_yaml)
-    run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
+    if not use_defaults:
+        loaded_yaml = yaml.safe_load(test_yaml)
+        run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
+    else:
+        run_options = RunOptions()
     dict_export = run_options.as_dict()
     check_dict_is_at_least(loaded_yaml, dict_export)
 
@@ -352,11 +355,5 @@ def test_exportable_settings():
     run_options2 = RunOptions.from_dict(dict_export)
     second_export = run_options2.as_dict()
 
-    check_dict_is_at_least(
-        dict_export, second_export, exceptions=["environment_parameters"]
-    )
-    # Should be able to use equality instead of back-and-forth once environment_parameters
-    # is working
-    check_dict_is_at_least(
-        second_export, dict_export, exceptions=["environment_parameters"]
-    )
+    # Check that the two exports are the same
+    dict_export == second_export
