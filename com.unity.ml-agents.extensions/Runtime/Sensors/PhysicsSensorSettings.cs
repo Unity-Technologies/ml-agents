@@ -89,7 +89,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var offset = baseOffset;
             if (settings.UseModelSpace)
             {
-                foreach (var pose in poseExtractor.ModelSpacePose)
+                foreach (var pose in poseExtractor.ModelSpacePoses)
                 {
                     if(settings.UseModelSpaceTranslations)
                     {
@@ -106,7 +106,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (settings.UseLocalSpace)
             {
-                foreach (var pose in poseExtractor.LocalSpacePose)
+                foreach (var pose in poseExtractor.LocalSpacePoses)
                 {
                     if(settings.UseLocalSpaceTranslations)
                     {

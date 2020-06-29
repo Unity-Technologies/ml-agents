@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             // TODO static method in ArticulationBodySensor?
             // TODO only update PoseExtractor when body changes?
             var poseExtractor = new ArticulationBodyPoseExtractor(RootBody);
-            var numTransformObservations = Settings.TransformSize(poseExtractor.NumTransforms);
+            var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);
             return new[] { numTransformObservations };
         }
     }

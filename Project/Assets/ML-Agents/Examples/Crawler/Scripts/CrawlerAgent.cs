@@ -31,7 +31,7 @@ public class CrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
-    RigidBodyHierarchyUtil hierarchyUtil;
+    RigidBodyPoseExtractor poseExtractor;
 
 
     [Header("Orientation")] [Space(10)]
@@ -74,7 +74,7 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
 
-        hierarchyUtil = new RigidBodyHierarchyUtil(body.GetComponent<Rigidbody>());
+        poseExtractor = new RigidBodyPoseExtractor(body.GetComponent<Rigidbody>());
     }
 
     /// <summary>
@@ -187,7 +187,7 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
-        hierarchyUtil.DrawModelSpace(orientationCube.transform.position + 2.0f * Vector3.up);
+        poseExtractor.DrawModelSpace(orientationCube.transform.position + 2.0f * Vector3.up);
 
         if (detectTargets)
         {

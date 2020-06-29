@@ -20,12 +20,12 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [Test]
         public void TestNullRoot()
         {
-            var hierarchyUtil = new RigidBodyHierarchyUtil(null);
+            var hierarchyUtil = new RigidBodyPoseExtractor(null);
             // These should be no-ops
-            hierarchyUtil.UpdateLocalSpaceTransforms();
-            hierarchyUtil.UpdateModelSpaceTransforms();
+            hierarchyUtil.UpdateLocalSpacePoses();
+            hierarchyUtil.UpdateModelSpacePoses();
 
-            Assert.AreEqual(0, hierarchyUtil.NumTransforms);
+            Assert.AreEqual(0, hierarchyUtil.NumPoses);
         }
 
         [Test]
@@ -33,8 +33,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             var go = new GameObject();
             var rootRb = go.AddComponent<Rigidbody>();
-            var hierarchyUtil = new RigidBodyHierarchyUtil(rootRb);
-            Assert.AreEqual(1, hierarchyUtil.NumTransforms);
+            var hierarchyUtil = new RigidBodyPoseExtractor(rootRb);
+            Assert.AreEqual(1, hierarchyUtil.NumPoses);
         }
 
         [Test]
@@ -55,8 +55,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var joint = go2.AddComponent<ConfigurableJoint>();
             joint.connectedBody = rb1;
 
-            var hierarchyUtil = new RigidBodyHierarchyUtil(rb1);
-            Assert.AreEqual(2, hierarchyUtil.NumTransforms);
+            var hierarchyUtil = new RigidBodyPoseExtractor(rb1);
+            Assert.AreEqual(2, hierarchyUtil.NumPoses);
         }
     }
 }

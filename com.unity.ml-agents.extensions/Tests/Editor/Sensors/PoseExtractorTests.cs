@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
     public class HierarchyUtilTests
     {
-        class UselessHierarchyUtil : HierarchyUtil
+        class UselessPoseExtractor : PoseExtractor
         {
             protected override Pose GetPoseAt(int index)
             {
@@ -22,22 +22,22 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [Test]
         public void TestEmptyUtil()
         {
-            var hierarchyUtil = new UselessHierarchyUtil();
+            var hierarchyUtil = new UselessPoseExtractor();
 
             // These should be no-ops
-            hierarchyUtil.UpdateLocalSpaceTransforms();
-            hierarchyUtil.UpdateModelSpaceTransforms();
+            hierarchyUtil.UpdateLocalSpacePoses();
+            hierarchyUtil.UpdateModelSpacePoses();
 
-            Assert.AreEqual(0, hierarchyUtil.NumTransforms);
+            Assert.AreEqual(0, hierarchyUtil.NumPoses);
         }
 
         [Test]
         public void TestSimpleUtil()
         {
-            var hierarchyUtil = new UselessHierarchyUtil();
+            var hierarchyUtil = new UselessPoseExtractor();
             var parentIndices = new[] { -1, 0 };
             hierarchyUtil.Init(parentIndices);
-            Assert.AreEqual(2, hierarchyUtil.NumTransforms);
+            Assert.AreEqual(2, hierarchyUtil.NumPoses);
         }
 
 
@@ -45,10 +45,10 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         /// A simple "chain" hierarchy, where each object is parented to the one before it.
         ///   0 <- 1 <- 2 <- ...
         /// </summary>
-        class ChainHierarchyUtil : HierarchyUtil
+        class ChainPoseExtractor : PoseExtractor
         {
             public Vector3 offset;
-            public ChainHierarchyUtil(int size)
+            public ChainPoseExtractor(int size)
             {
                 var parents = new int[size];
                 for (var i = 0; i < size; i++)
@@ -74,24 +74,24 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         public void TestChain()
         {
             var size = 4;
-            var chain = new ChainHierarchyUtil(size);
+            var chain = new ChainPoseExtractor(size);
             chain.offset = new Vector3(.5f, .75f, .333f);
 
-            chain.UpdateModelSpaceTransforms();
-            chain.UpdateLocalSpaceTransforms();
+            chain.UpdateModelSpacePoses();
+            chain.UpdateLocalSpacePoses();
 
             // Root transforms are currently always the identity.
-            Assert.IsTrue(chain.ModelSpacePose[0] == Pose.identity);
-            Assert.IsTrue(chain.LocalSpacePose[0] == Pose.identity);
+            Assert.IsTrue(chain.ModelSpacePoses[0] == Pose.identity);
+            Assert.IsTrue(chain.LocalSpacePoses[0] == Pose.identity);
 
             // Check the non-root transforms
             for (var i = 1; i < size; i++)
             {
-                var modelSpace = chain.ModelSpacePose[i];
+                var modelSpace = chain.ModelSpacePoses[i];
                 var expectedModelTranslation = new Vector3(i, i, i);
                 Assert.IsTrue(expectedModelTranslation == modelSpace.position);
 
-                var localSpace = chain.LocalSpacePose[i];
+                var localSpace = chain.LocalSpacePoses[i];
                 var expectedLocalTranslation = new Vector3(1, 1, 1);
                 Assert.IsTrue(expectedLocalTranslation == localSpace.position);
             }

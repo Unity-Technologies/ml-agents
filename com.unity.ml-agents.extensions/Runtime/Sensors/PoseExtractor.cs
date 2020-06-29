@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// not a requirement; for example, the objects could be rigid bodies whose hierarchy
     /// is defined by Joint configurations.
     ///
-    /// Transforms are either considered in model space, which is relative to a root body,
+    /// Poses are either considered in model space, which is relative to a root body,
     /// or in local space, which is relative to their parent.
     /// </summary>
     public abstract class PoseExtractor
@@ -21,7 +21,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Read access to the model space transforms.
         /// </summary>
-        public IList<Pose> ModelSpacePose
+        public IList<Pose> ModelSpacePoses
         {
             get { return m_ModelSpacePoses;  }
         }
@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Read access to the local space transforms.
         /// </summary>
-        public IList<Pose> LocalSpacePose
+        public IList<Pose> LocalSpacePoses
         {
             get { return m_LocalSpacePoses;  }
         }
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Number of transforms in the hierarchy (read-only).
         /// </summary>
-        public int NumTransforms
+        public int NumPoses
         {
             get { return m_ModelSpacePoses?.Length ?? 0;  }
         }
@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Return the world space transform of the i'th object.
+        /// Return the world space Pose of the i'th object.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
@@ -65,7 +65,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Update the internal model space transform storage based on the underlying system.
         /// </summary>
-        public void UpdateModelSpaceTransforms()
+        public void UpdateModelSpacePoses()
         {
             if (m_ModelSpacePoses == null)
             {
@@ -85,7 +85,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Update the internal model space transform storage based on the underlying system.
         /// </summary>
-        public void UpdateLocalSpaceTransforms()
+        public void UpdateLocalSpacePoses()
         {
             if (m_LocalSpacePoses == null)
             {
@@ -113,8 +113,8 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         public void DrawModelSpace(Vector3 offset)
         {
-            UpdateLocalSpaceTransforms();
-            UpdateModelSpaceTransforms();
+            UpdateLocalSpacePoses();
+            UpdateModelSpacePoses();
 
             var pose = m_ModelSpacePoses;
             var localPose = m_LocalSpacePoses;
@@ -141,9 +141,9 @@ namespace Unity.MLAgents.Extensions.Sensors
     public static class PoseExtensions
     {
         /// <summary>
-        /// Compute the inverse of a Pose. For any transform Q,
-        ///   Q.Inverse() * Q
-        /// will equal the identity transform (within tolerance).
+        /// Compute the inverse of a Pose. For any Pose P,
+        ///   P.Inverse() * P
+        /// will equal the identity pose (within tolerance).
         /// </summary>
         /// <param name="pose"></param>
         /// <returns></returns>

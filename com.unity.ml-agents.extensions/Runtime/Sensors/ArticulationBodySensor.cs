@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody.name}" : sensorName;
             m_Settings = settings;
 
-            var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumTransforms);
+            var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
             m_Shape = new[] { numTransformObservations };
         }
 
@@ -46,12 +46,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_Settings.UseModelSpace)
             {
-                m_PoseExtractor.UpdateModelSpaceTransforms();
+                m_PoseExtractor.UpdateModelSpacePoses();
             }
 
             if (m_Settings.UseLocalSpace)
             {
-                m_PoseExtractor.UpdateLocalSpaceTransforms();
+                m_PoseExtractor.UpdateLocalSpacePoses();
             }
         }
 
