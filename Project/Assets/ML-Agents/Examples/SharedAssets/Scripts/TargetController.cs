@@ -33,7 +33,7 @@ namespace Unity.MLAgentsExamples
         {
         }
 
-        [Header("Trigger Callbacks")] public bool triggerIsTouching;
+        [Header("Trigger Callbacks")]
         public TriggerEvent onTriggerEnterEvent = new TriggerEvent();
         public TriggerEvent onTriggerStayEvent = new TriggerEvent();
         public TriggerEvent onTriggerExitEvent = new TriggerEvent();
@@ -43,7 +43,7 @@ namespace Unity.MLAgentsExamples
         {
         }
 
-        [Header("Collision Callbacks")] public bool colliderIsTouching;
+        [Header("Collision Callbacks")]
         public CollisionEvent onCollisionEnterEvent = new CollisionEvent();
         public CollisionEvent onCollisionStayEvent = new CollisionEvent();
         public CollisionEvent onCollisionExitEvent = new CollisionEvent();
@@ -78,15 +78,12 @@ namespace Unity.MLAgentsExamples
             var newTargetPos = m_startingPos + (Random.insideUnitSphere * spawnRadius);
             newTargetPos.y = 5;
             transform.position = newTargetPos;
-            triggerIsTouching = false;
-            colliderIsTouching = false;
         }
 
         private void OnCollisionEnter(Collision col)
         {
             if (col.transform.CompareTag(tagToDetect))
             {
-                colliderIsTouching = true;
                 onCollisionEnterEvent.Invoke(col);
                 if (respawnIfTouched)
                 {
@@ -99,7 +96,6 @@ namespace Unity.MLAgentsExamples
         {
             if (col.transform.CompareTag(tagToDetect))
             {
-                colliderIsTouching = true;
                 onCollisionStayEvent.Invoke(col);
             }
         }
@@ -108,7 +104,6 @@ namespace Unity.MLAgentsExamples
         {
             if (col.transform.CompareTag(tagToDetect))
             {
-                colliderIsTouching = false;
                 onCollisionExitEvent.Invoke(col);
             }
         }
@@ -117,7 +112,6 @@ namespace Unity.MLAgentsExamples
         {
             if (col.CompareTag(tagToDetect))
             {
-                triggerIsTouching = true;
                 onTriggerEnterEvent.Invoke(col);
             }
         }
@@ -126,7 +120,6 @@ namespace Unity.MLAgentsExamples
         {
             if (col.CompareTag(tagToDetect))
             {
-                triggerIsTouching = true;
                 onTriggerStayEvent.Invoke(col);
             }
         }
@@ -135,7 +128,6 @@ namespace Unity.MLAgentsExamples
         {
             if (col.CompareTag(tagToDetect))
             {
-                triggerIsTouching = false;
                 onTriggerExitEvent.Invoke(col);
             }
         }
