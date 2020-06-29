@@ -46,8 +46,8 @@ public class FoodCollectorAgent : Agent
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             sensor.AddObservation(localVelocity.x);
             sensor.AddObservation(localVelocity.z);
-            sensor.AddObservation(System.Convert.ToInt32(m_Frozen));
-            sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
+            sensor.AddObservation(m_Frozen);
+            sensor.AddObservation(m_Shoot);
         }
     }
 
