@@ -46,12 +46,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             SetParentIndices(parentIndices);
         }
 
-        protected override QTTransform GetTransformAt(int index)
+        protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];
             var go = body.gameObject;
             var t = go.transform;
-            return new QTTransform { Rotation = t.rotation, Translation = t.position };
+            return new Pose { rotation = t.rotation, position = t.position };
         }
 
 

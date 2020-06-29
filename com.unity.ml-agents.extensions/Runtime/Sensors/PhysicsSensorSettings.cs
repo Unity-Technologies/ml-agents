@@ -89,16 +89,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             var offset = baseOffset;
             if (settings.UseModelSpace)
             {
-                foreach (var qtt in hierarchyUtil.ModelSpacePose)
+                foreach (var pose in hierarchyUtil.ModelSpacePose)
                 {
                     if(settings.UseModelSpaceTranslations)
                     {
-                        writer.Add(qtt.Translation, offset);
+                        writer.Add(pose.position, offset);
                         offset += 3;
                     }
                     if (settings.UseModelSpaceRotations)
                     {
-                        writer.Add(qtt.Rotation, offset);
+                        writer.Add(pose.rotation, offset);
                         offset += 4;
                     }
                 }
@@ -106,16 +106,16 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (settings.UseLocalSpace)
             {
-                foreach (var qtt in hierarchyUtil.LocalSpacePose)
+                foreach (var pose in hierarchyUtil.LocalSpacePose)
                 {
                     if(settings.UseLocalSpaceTranslations)
                     {
-                        writer.Add(qtt.Translation, offset);
+                        writer.Add(pose.position, offset);
                         offset += 3;
                     }
                     if (settings.UseLocalSpaceRotations)
                     {
-                        writer.Add(qtt.Rotation, offset);
+                        writer.Add(pose.rotation, offset);
                         offset += 4;
                     }
                 }

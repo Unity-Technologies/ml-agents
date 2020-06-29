@@ -55,14 +55,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Get the transform of the i'th RigidBody.
+        /// Get the pose of the i'th RigidBody.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected override QTTransform GetTransformAt(int index)
+        protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];
-            return new QTTransform { Rotation = body.rotation, Translation = body.position };
+            return new Pose { rotation = body.rotation, position = body.position };
         }
 
 

@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions
 {
+
+
+
     /// <summary>
     /// Simple linear transform representation consisting of a rotation and translation.
     /// When deriving the math, it can be helpful to think of the transform as a 4x4 block matrix:

@@ -15,23 +15,23 @@ namespace Unity.MLAgents.Extensions.Sensors
     public abstract class HierarchyUtil
     {
         int[] m_ParentIndices;
-        QTTransform[] m_ModelSpacePose;
-        QTTransform[] m_LocalSpacePose;
+        Pose[] m_ModelSpacePoses;
+        Pose[] m_LocalSpacePoses;
 
         /// <summary>
         /// Read access to the model space transforms.
         /// </summary>
-        public IList<QTTransform> ModelSpacePose
+        public IList<Pose> ModelSpacePose
         {
-            get { return m_ModelSpacePose;  }
+            get { return m_ModelSpacePoses;  }
         }
 
         /// <summary>
         /// Read access to the local space transforms.
         /// </summary>
-        public IList<QTTransform> LocalSpacePose
+        public IList<Pose> LocalSpacePose
         {
-            get { return m_LocalSpacePose;  }
+            get { return m_LocalSpacePoses;  }
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public int NumTransforms
         {
-            get { return m_ModelSpacePose?.Length ?? 0;  }
+            get { return m_ModelSpacePoses?.Length ?? 0;  }
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             m_ParentIndices = parentIndices;
             var numTransforms = parentIndices.Length;
-            m_ModelSpacePose = new QTTransform[numTransforms];
-            m_LocalSpacePose = new QTTransform[numTransforms];
+            m_ModelSpacePoses = new Pose[numTransforms];
+            m_LocalSpacePoses = new Pose[numTransforms];
         }
 
         /// <summary>
@@ -60,25 +60,25 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected abstract QTTransform GetTransformAt(int index);
+        protected abstract Pose GetPoseAt(int index);
 
         /// <summary>
         /// Update the internal model space transform storage based on the underlying system.
         /// </summary>
         public void UpdateModelSpaceTransforms()
         {
-            if (m_ModelSpacePose == null)
+            if (m_ModelSpacePoses == null)
             {
                 return;
             }
 
-            var worldTransform = GetTransformAt(0);
+            var worldTransform = GetPoseAt(0);
             var worldToModel = worldTransform.Inverse();
 
-            for (var i = 0; i < m_ModelSpacePose.Length; i++)
+            for (var i = 0; i < m_ModelSpacePoses.Length; i++)
             {
-                var currentTransform = GetTransformAt(i);
-                m_ModelSpacePose[i] = worldToModel * currentTransform;
+                var currentTransform = GetPoseAt(i);
+                m_ModelSpacePoses[i] = worldToModel.Multiply(currentTransform);
             }
         }
 
@@ -87,25 +87,25 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public void UpdateLocalSpaceTransforms()
         {
-            if (m_LocalSpacePose == null)
+            if (m_LocalSpacePoses == null)
             {
                 return;
             }
 
-            for (var i = 0; i < m_LocalSpacePose.Length; i++)
+            for (var i = 0; i < m_LocalSpacePoses.Length; i++)
             {
                 if (m_ParentIndices[i] != -1)
                 {
-                    var parentTransform = GetTransformAt(m_ParentIndices[i]);
+                    var parentTransform = GetPoseAt(m_ParentIndices[i]);
                     // This is slightly inefficient, since for a body with multiple children, we'll end up inverting
                     // the transform multiple times. Might be able to trade space for perf here.
                     var invParent = parentTransform.Inverse();
-                    var currentTransform = GetTransformAt(i);
-                    m_LocalSpacePose[i] = invParent * currentTransform;
+                    var currentTransform = GetPoseAt(i);
+                    m_LocalSpacePoses[i] = invParent.Multiply(currentTransform);
                 }
                 else
                 {
-                    m_LocalSpacePose[i] = QTTransform.Identity;
+                    m_LocalSpacePoses[i] = Pose.identity;
                 }
             }
         }
@@ -116,8 +116,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             UpdateLocalSpaceTransforms();
             UpdateModelSpaceTransforms();
 
-            var pose = m_ModelSpacePose;
-            var localPose = m_LocalSpacePose;
+            var pose = m_ModelSpacePoses;
+            var localPose = m_LocalSpacePoses;
             for (var i = 0; i < pose.Length; i++)
             {
                 var current = pose[i];
@@ -127,15 +127,44 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
 
                 var parent = pose[m_ParentIndices[i]];
-                Debug.DrawLine(current.Translation+offset, parent.Translation+offset, Color.cyan);
-                var localUp = localPose[i].Rotation * Vector3.up;
-                var localFwd = localPose[i].Rotation * Vector3.forward;
-                var localRight = localPose[i].Rotation * Vector3.right;
-                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localUp, Color.red);
-                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localFwd, Color.green);
-                Debug.DrawLine(current.Translation+offset, current.Translation+offset+.1f*localRight, Color.blue);
+                Debug.DrawLine(current.position + offset, parent.position + offset, Color.cyan);
+                var localUp = localPose[i].rotation * Vector3.up;
+                var localFwd = localPose[i].rotation * Vector3.forward;
+                var localRight = localPose[i].rotation * Vector3.right;
+                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localUp, Color.red);
+                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localFwd, Color.green);
+                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localRight, Color.blue);
             }
         }
     }
 
+    public static class PoseExtensions
+    {
+        /// <summary>
+        /// Compute the inverse of a Pose. For any transform Q,
+        ///   Q.Inverse() * Q
+        /// will equal the identity transform (within tolerance).
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <returns></returns>
+        public static Pose Inverse(this Pose pose)
+        {
+            var rotationInverse = Quaternion.Inverse(pose.rotation);
+            var translationInverse = -(rotationInverse * pose.position);
+            return new Pose { rotation = rotationInverse, position = translationInverse };
+        }
+
+        /// <summary>
+        /// This is equivalent to Pose.GetTransformedBy(), but keeps the order more intuitive.
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
+        public static Pose Multiply(this Pose pose, Pose rhs)
+        {
+            return rhs.GetTransformedBy(pose);
+        }
+
+        // TODO optimize inv(A)*B?
+    }
 }
