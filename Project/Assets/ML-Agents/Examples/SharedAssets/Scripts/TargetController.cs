@@ -64,7 +64,7 @@ namespace Unity.MLAgentsExamples
             {
                 if (transform.position.y < m_startingPos.y - fallDistance)
                 {
-                    Debug.LogError($"{transform.name} Fell Off Platform");
+                    Debug.Log($"{transform.name} Fell Off Platform");
                     MoveTargetToRandomPosition();
                 }
             }
