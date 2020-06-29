@@ -128,7 +128,7 @@ CURRICULUM = """
   BigWallJump:
     measure: progress
     thresholds: [0.1, 0.3, 0.5]
-    min_lesson_length: 100
+    min_lesson_length: 200
     signal_smoothing: true
     parameters:
       big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
@@ -192,7 +192,24 @@ def test_convert():
     config = convert(old_behaviors, old_curriculum, old_sampler)
     assert BRAIN_NAME in config["behaviors"]
     assert "big_wall_min_height" in config["environment_parameters"]
+
+    curriculum = config["environment_parameters"]["big_wall_min_height"]["curriculum"]
+    assert len(curriculum) == 4
+    for i, expected_value in enumerate([0.0, 4.0, 6.0, 8.0]):
+        assert curriculum[i][f"Lesson{i}"]["value"] == expected_value
+    for i, threshold in enumerate([0.1, 0.3, 0.5]):
+        criteria = curriculum[i][f"Lesson{i}"]["completion_criteria"]
+        assert criteria["threshold"] == threshold
+        assert criteria["behavior"] == "BigWallJump"
+        assert criteria["signal_smoothing"]
+        assert criteria["min_lesson_length"] == 200
+        assert criteria["measure"] == "progress"
+
     assert "gravity" in config["environment_parameters"]
+    gravity = config["environment_parameters"]["gravity"]
+    assert gravity["sampler_type"] == "uniform"
+    assert gravity["sampler_parameters"]["min_value"] == 7
+    assert gravity["sampler_parameters"]["max_value"] == 12
 
 
 def test_remove_nones():
