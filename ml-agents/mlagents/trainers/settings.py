@@ -429,7 +429,7 @@ class CurriculumSettings:
 @attr.s(auto_attribs=True)
 class CheckpointSettings:
     run_id: str = parser.get_default("run_id")
-    initialize_from: str = parser.get_default("initialize_from")
+    initialize_from: Optional[str] = parser.get_default("initialize_from")
     load_model: bool = parser.get_default("load_model")
     resume: bool = parser.get_default("resume")
     force: bool = parser.get_default("force")
