@@ -261,6 +261,7 @@ public class WallJumpAgent : Agent
 
     public override void Heuristic(float[] actionsOut)
     {
+        System.Array.Clear(actionsOut, 0, actionsOut.Length);
         if (Input.GetKey(KeyCode.D))
         {
             actionsOut[1] = 2f;

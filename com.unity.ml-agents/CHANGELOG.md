@@ -20,14 +20,22 @@ behavior. More information
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- `SideChannelsManager` was renamed to `SideChannelManager`. The old name is still supported, but deprecated. (#4137)
 - `RayPerceptionSensor.Perceive()` now additionally store the GameObject that was hit by the ray. (#4111)
 - The Barracuda dependency was upgraded to 1.0.0 (#4118)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added new Google Colab notebooks to show how to use `UnityEnvironment'. (#4117)
+- Fixed issue with FoodCollector when playing with keyboard. (#4147)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- Fixed an issue where RayPerceptionSensor would raise an exception when the
+list of tags was empty, or a tag in the list was invalid (unknown, null, or
+empty string). (#4155)
+
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an error when setting `initialize_from` in the trainer confiiguration YAML to
+`null`. (#4175)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes

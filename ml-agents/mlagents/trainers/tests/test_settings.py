@@ -316,14 +316,14 @@ def test_env_parameter_structure():
         )
 
 
-def test_exportable_settings():
+@pytest.mark.parametrize("use_defaults", [True, False])
+def test_exportable_settings(use_defaults):
     """
     Test that structuring and unstructuring a RunOptions object results in the same
     configuration representation.
     """
     # Try to enable as many features as possible in this test YAML to hit all the
     # edge cases. Set as much as possible as non-default values to ensure no flukes.
-    # TODO: Add back in environment_parameters
     test_yaml = """
     behaviors:
         3DBall:
@@ -384,6 +384,7 @@ def test_exportable_settings():
         force: true
         train_model: false
         inference: false
+    debug: true
     environment_parameters:
         big_wall_height:
             curriculum:
@@ -430,13 +431,17 @@ def test_exportable_settings():
             sampler_parameters:
                 intervals: [[1.0, 2.0],[4.0, 5.0]]
     """
-    loaded_yaml = yaml.safe_load(test_yaml)
-    run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
+    if not use_defaults:
+        loaded_yaml = yaml.safe_load(test_yaml)
+        run_options = RunOptions.from_dict(yaml.safe_load(test_yaml))
+    else:
+        run_options = RunOptions()
     dict_export = run_options.as_dict()
-    check_dict_is_at_least(
-        loaded_yaml, dict_export, exceptions=["environment_parameters"]
-    )
 
+    if not use_defaults:  # Don't need to check if no yaml
+        check_dict_is_at_least(
+            loaded_yaml, dict_export, exceptions=["environment_parameters"]
+        )
     # Re-import and verify has same elements
     run_options2 = RunOptions.from_dict(dict_export)
     second_export = run_options2.as_dict()
@@ -445,3 +450,5 @@ def test_exportable_settings():
     # Should be able to use equality instead of back-and-forth once environment_parameters
     # is working
     check_dict_is_at_least(second_export, dict_export)
+    # Check that the two exports are the same
+    assert dict_export == second_export
