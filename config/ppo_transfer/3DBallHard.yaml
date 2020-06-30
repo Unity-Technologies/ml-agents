@@ -10,6 +10,7 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
+      conv_thres: 1e-3
     network_settings:
       normalize: true
       hidden_units: 128

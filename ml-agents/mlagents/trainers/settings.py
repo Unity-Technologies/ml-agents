@@ -21,6 +21,7 @@ logger = logging_util.get_logger(__name__)
 
 def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     attr_fields_dict = attr.fields_dict(class_type)
+    print(attr_fields_dict)
     if key not in attr_fields_dict:
         raise TrainerConfigError(
             f"The option {key} was specified in your YAML file for {class_type.__name__}, but is invalid."
@@ -90,6 +91,41 @@ class PPOSettings(HyperparamSettings):
     lambd: float = 0.95
     num_epoch: int = 3
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+
+@attr.s(auto_attribs=True)
+class PPOTransferSettings(HyperparamSettings):
+    beta: float = 5.0e-3
+    epsilon: float = 0.2
+    lambd: float = 0.95
+    num_epoch: int = 3
+    learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+
+    separate_value_train: bool = False
+    separate_policy_train: bool = False
+    use_var_encoder: bool = False
+    use_var_predict: bool = False
+    with_prior: bool = False
+    use_inverse_model: bool = False
+    predict_return: bool = False
+    reuse_encoder: bool = False
+    use_alter: bool = False
+    in_batch_alter: bool = False
+    in_epoch_alter: bool = False
+    use_op_buffer: bool = False
+    train_type: str = "all"
+        
+    # Transfer
+    use_transfer: bool = False
+    smart_transfer: bool = False
+    conv_thres: float = 1e-3
+    transfer_path: str = ""
+    transfer_type: str = "dynamics"
+
+    # Network
+    encoder_layers: int = 1
+    policy_layers: int = 1
+    forward_layers: int = 1
+    inverse_layers: int = 1
 
 
 @attr.s(auto_attribs=True)
@@ -324,7 +360,7 @@ class TrainerType(Enum):
 
     def to_settings(self) -> type:
         _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings, 
-        TrainerType.PPO_Transfer: PPOSettings}
+        TrainerType.PPO_Transfer: PPOTransferSettings}
         return _mapping[self]
 
 

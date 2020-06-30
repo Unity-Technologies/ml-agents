@@ -9,7 +9,7 @@ from mlagents.trainers.components.reward_signals.curiosity.model import Curiosit
 from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.settings import TrainerSettings, PPOSettings, PPOTransferSettings
 import tf_slim as slim
 
 class PPOTransferOptimizer(TFOptimizer):
@@ -20,45 +20,42 @@ class PPOTransferOptimizer(TFOptimizer):
         :param policy: A TFPolicy object that will be updated by this PPO Optimizer.
         :param trainer_params: Trainer parameters dictionary that specifies the properties of the trainer.
         """
-        
-        self.separate_value_train = False
-        self.separate_policy_train = False
-        self.use_var_encoder = False
-        self.use_var_predict = False
-        self.with_prior = False
-        self.use_inverse_model = True
-        self.predict_return = False
+        hyperparameters: PPOTransferSettings = cast(
+            PPOTransferSettings, trainer_params.hyperparameters
+        )
 
-        self.use_alter = False
-        self.in_batch_alter = False
-        self.in_epoch_alter = False
+        self.separate_value_train = hyperparameters.separate_value_train
+        self.separate_policy_train = hyperparameters.separate_policy_train
+        self.use_var_encoder = hyperparameters.use_var_encoder
+        self.use_var_predict = hyperparameters.use_var_predict
+        self.with_prior = hyperparameters.with_prior
+        self.use_inverse_model = hyperparameters.use_inverse_model
+        self.predict_return = hyperparameters.predict_return
+        self.reuse_encoder = hyperparameters.reuse_encoder
+
+        self.use_alter = hyperparameters.use_alter
+        self.in_batch_alter = hyperparameters.in_batch_alter
+        self.in_epoch_alter = hyperparameters.in_epoch_alter
         
-        self.num_updates = 0
-        self.alter_every = 400
-        self.copy_every = 1
-        self.train_type = "all"
+        self.train_type = hyperparameters.train_type
         
         # Transfer
-        self.use_transfer = False
-        self.smart_transfer = False
-        self.conv_thres = 1e-6
-        self.old_loss = np.inf
-        self.update_mode = "model"
-        self.transfer_path = "results/BallSingle_nosep_cmodel_small/3DBall"
-        self.transfer_type = "dynamics"
+        self.use_transfer = hyperparameters.use_transfer
+        self.transfer_path = hyperparameters.transfer_path #"results/BallSingle_nosep_cmodel_small/3DBall"
+        self.smart_transfer = hyperparameters.smart_transfer
+        self.conv_thres = hyperparameters.conv_thres
+        self.transfer_type = hyperparameters.transfer_type
 
         self.ppo_update_dict: Dict[str, tf.Tensor] = {}
         self.model_update_dict: Dict[str, tf.Tensor] = {}
 
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
-        policy.create_tf_graph(1, 1, 128, self.use_transfer, self.separate_policy_train, 
-            self.use_var_encoder, self.use_var_predict, self.predict_return, self.use_inverse_model)
+        policy.create_tf_graph(hyperparameters.encoder_layers, hyperparameters.policy_layers, 
+            self.use_transfer, self.separate_policy_train, self.use_var_encoder, self.use_var_predict, 
+            self.predict_return, self.use_inverse_model, self.reuse_encoder)
         
         with policy.graph.as_default():
             super().__init__(policy, trainer_params)
-            hyperparameters: PPOSettings = cast(
-                PPOSettings, trainer_params.hyperparameters
-            )
 
             lr = float(hyperparameters.learning_rate)
             self._schedule = hyperparameters.learning_rate_schedule
@@ -70,6 +67,12 @@ class PPOTransferOptimizer(TFOptimizer):
             num_layers = policy_network_settings.num_layers
             vis_encode_type = policy_network_settings.vis_encode_type
             self.burn_in_ratio = 0.0
+            
+            self.num_updates = 0
+            self.alter_every = 400
+            self.copy_every = 10
+            self.old_loss = np.inf
+            self.update_mode = "model"
 
             self.stream_names = list(self.reward_signals.keys())
 
@@ -143,6 +146,7 @@ class PPOTransferOptimizer(TFOptimizer):
             if self.use_transfer:
                 self.policy.load_graph_partial(self.transfer_path, self.transfer_type)
             self.policy.get_encoder_weights()
+            self.policy.get_policy_weights()
             # saver = tf.train.Saver()
             # model_checkpoint = os.path.join(self.transfer_path, f"model-4000544.ckpt")
             # saver.restore(self.sess, model_checkpoint)
@@ -330,20 +334,20 @@ class PPOTransferOptimizer(TFOptimizer):
         self.dis_returns = tf.placeholder(
             shape=[None], dtype=tf.float32, name="dis_returns"
         )
-        # target = tf.concat([targ_encoder, tf.expand_dims(self.dis_returns, -1)], axis=1)
-        # if self.predict_return:
-        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, target)) 
-        # else:
-        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder)) 
-        # if self.with_prior:
-        #     if self.use_var_encoder:
-        #         self.model_loss += encoder_distribution.kl_standard()
-        #     if self.use_var_predict:
-        #         self.model_loss += self.policy.predict_distribution.kl_standard()
+        target = tf.concat([targ_encoder, tf.expand_dims(self.dis_returns, -1)], axis=1)
+        if self.predict_return:
+            self.model_loss = tf.reduce_mean(tf.squared_difference(predict, target)) 
+        else:
+            self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder)) 
+        if self.with_prior:
+            if self.use_var_encoder:
+                self.model_loss += encoder_distribution.kl_standard()
+            if self.use_var_predict:
+                self.model_loss += self.policy.predict_distribution.kl_standard()
 
-        # if self.use_inverse_model:
-        #     self.model_loss += self.policy.inverse_loss
-        self.model_loss = 0.2 * self.policy.forward_loss + 0.8 * self.policy.inverse_loss
+        if self.use_inverse_model:
+            self.model_loss += self.policy.inverse_loss
+        # self.model_loss = 0.2 * self.policy.forward_loss + 0.8 * self.policy.inverse_loss
         self.loss = (
             self.policy_loss
             + self.model_loss
@@ -366,9 +370,6 @@ class PPOTransferOptimizer(TFOptimizer):
                     train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
                 elif self.train_type == "encoding":
                     train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-                    train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "target_enc")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
-                # train_vars += self.policy.get_trainable_variables
                 print("trainable", train_vars)
                 # train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
                 # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
@@ -377,14 +378,16 @@ class PPOTransferOptimizer(TFOptimizer):
                 # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/log_std")
                 # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value/extrinsic_value")
             elif self.transfer_type == "observation":
-                # train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
-                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
-                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") \
-                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
+                if self.train_type == "all":
+                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+                elif self.train_type == "policy":
+                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
+                        + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
+                        + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse") \
+                        + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") 
+                        # + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
         else:
-            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
-            train_vars += self.policy.get_trainable_variables()
+            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
             print("trainable", train_vars)
 
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
@@ -393,22 +396,36 @@ class PPOTransferOptimizer(TFOptimizer):
         
         
     def _init_alter_update(self):
-        if self.train_type == "all":
-            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-        elif self.train_type == "encoding":
-            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "target_enc")
         
-        policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
-        model_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        if self.use_alter:
+            policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+            policy_train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+            model_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+            self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
+            self.ppo_grads = self.ppo_optimizer.compute_gradients(self.loss, var_list=policy_train_vars)
+            self.ppo_update_batch = self.ppo_optimizer.minimize(self.loss, var_list=policy_train_vars)
 
-        self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
-        self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
-        self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
+            self.model_optimizer = self.create_optimizer_op(self.learning_rate)
+            self.model_grads = self.model_optimizer.compute_gradients(self.loss, var_list=model_train_vars)
+            self.model_update_batch = self.model_optimizer.minimize(self.loss, var_list=model_train_vars)
+        else:
+            if self.train_type == "all":
+                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+            elif self.train_type == "encoding":
+                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "target_enc")
+            elif self.train_type == "policy":
+                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
+                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
+                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse") \
+                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") 
+            self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
+            self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
+            self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
 
-        self.model_optimizer = self.create_optimizer_op(self.learning_rate)
-        self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
-        self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
+            self.model_optimizer = self.create_optimizer_op(self.learning_rate)
+            self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
+            self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
 
         self.ppo_update_dict.update(
             {
@@ -450,15 +467,28 @@ class PPOTransferOptimizer(TFOptimizer):
             stats_needed.update(reward_signal.stats_name_to_update_name)
         
         if self.use_alter:
-            if self.num_updates / self.alter_every == 0:
-                update_vals = self._execute_model(feed_dict, self.update_dict)
-                if self.num_updates % self.alter_every == 0:
-                    print("start update all", self.num_updates)
-            elif (self.num_updates / self.alter_every) % 2 == 1:
+            # if self.num_updates / self.alter_every == 0:
+            #     update_vals = self._execute_model(feed_dict, self.update_dict)
+            #     if self.num_updates % self.alter_every == 0:
+            #         print("start update all", self.num_updates)
+            if (self.num_updates / self.alter_every) % 2 == 0:
+                stats_needed = {
+                    "Losses/Model Loss": "model_loss",
+                    "Policy/Learning Rate": "learning_rate",
+                    "Policy/Epsilon": "decay_epsilon",
+                    "Policy/Beta": "decay_beta",
+                }
                 update_vals = self._execute_model(feed_dict, self.model_update_dict)
                 if self.num_updates % self.alter_every == 0:
                     print("start update model", self.num_updates)
             else: # (self.num_updates / self.alter_every) % 2 == 0:
+                stats_needed = {
+                    "Losses/Value Loss": "value_loss",
+                    "Losses/Policy Loss": "policy_loss",
+                    "Policy/Learning Rate": "learning_rate",
+                    "Policy/Epsilon": "decay_epsilon",
+                    "Policy/Beta": "decay_beta",
+                }
                 update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
                 if self.num_updates % self.alter_every == 0:
                     print("start update policy", self.num_updates)
@@ -482,8 +512,8 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.update_dict)
 
         # update target encoder
-        # if self.num_updates % self.copy_every == 0:
-        #     self.policy.run_hard_copy()
+        if not self.reuse_encoder and self.num_updates % self.copy_every == 0:
+            self.policy.run_hard_copy()
             # print("copy")
             # self.policy.get_encoder_weights()
 
@@ -530,10 +560,13 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
 
         # update target encoder
-        # self.policy.run_hard_copy()
+        if not self.reuse_encoder and self.num_updates % self.copy_every == 0:
+            self.policy.run_hard_copy()
 
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
+
+        self.num_updates += 1
         return update_stats
 
     def _construct_feed_dict(
@@ -550,8 +583,8 @@ class PPOTransferOptimizer(TFOptimizer):
             self.policy.mask_input: mini_batch["masks"] * burn_in_mask,
             self.advantage: mini_batch["advantages"],
             self.all_old_log_probs: mini_batch["action_probs"],
-            # self.policy.processed_vector_next: mini_batch["next_vector_in"],
-            self.policy.next_vector_in: mini_batch["next_vector_in"],
+            self.policy.processed_vector_next: mini_batch["next_vector_in"],
+            # self.policy.next_vector_in: mini_batch["next_vector_in"],
             self.policy.current_action: mini_batch["actions"],
             self.dis_returns: mini_batch["discounted_returns"]
         }

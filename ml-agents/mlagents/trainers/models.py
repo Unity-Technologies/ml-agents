@@ -537,6 +537,7 @@ class ModelUtils:
         num_layers: int,
         vis_encode_type: EncoderType = EncoderType.SIMPLE,
         stream_scopes: List[str] = None,
+        reuse: bool = False
     ) -> List[tf.Tensor]:
         """
         Creates encoding stream for observations.
@@ -567,7 +568,7 @@ class ModelUtils:
                         activation_fn,
                         num_layers,
                         f"{_scope_add}main_graph_{i}_encoder{j}",  # scope
-                        False,  # reuse
+                        reuse=reuse,  # reuse
                     )
                     visual_encoders.append(encoded_visual)
                 hidden_visual = tf.concat(visual_encoders, axis=1)
@@ -578,7 +579,7 @@ class ModelUtils:
                     activation_fn,
                     num_layers,
                     scope=f"{_scope_add}main_graph_{i}",
-                    reuse=False,
+                    reuse=reuse,
                 )
             if hidden_state is not None and hidden_visual is not None:
                 final_hidden = tf.concat([hidden_visual, hidden_state], axis=1)
