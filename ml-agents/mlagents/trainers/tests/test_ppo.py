@@ -5,6 +5,7 @@ import numpy as np
 from mlagents.tf_utils import tf
 import copy
 import attr
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
@@ -232,9 +233,10 @@ def test_trainer_increment_step(ppo_optimizer):
         5  # 10 hacked because this function is no longer called through trainer
     )
     policy_mock.increment_step = mock.Mock(return_value=step_count)
-    trainer.add_policy("testbehavior", policy_mock)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(brain_params.brain_name)
+    trainer.add_policy(behavior_id, policy_mock)
 
-    trainer._increment_step(5, "testbehavior")
+    trainer._increment_step(5, brain_params.brain_name)
     policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == step_count
 
@@ -259,8 +261,9 @@ def test_trainer_update_policy(
     # Test curiosity reward signal
     trainer_params.reward_signals = curiosity_dummy_config
     trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
-    policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
-    trainer.add_policy(mock_brain.brain_name, policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(mock_brain.brain_name)
+    policy = trainer.create_policy(behavior_id, mock_brain)
+    trainer.add_policy(behavior_id, policy)
     # Test update with sequence length smaller than batch size
     buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_brain)
     # Mock out reward signal eval
@@ -286,8 +289,9 @@ def test_process_trajectory(dummy_config):
         vector_action_space_type=0,
     )
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
-    policy = trainer.create_policy(brain_params.brain_name, brain_params)
-    trainer.add_policy(brain_params.brain_name, policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(brain_params.brain_name)
+    policy = trainer.create_policy(behavior_id, brain_params)
+    trainer.add_policy(behavior_id, policy)
     trajectory_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15
@@ -345,8 +349,8 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     trainer = PPOTrainer(brain_params, 0, dummy_config, True, False, 0, "0")
     policy = mock.Mock(spec=NNPolicy)
     policy.get_current_step.return_value = 2000
-
-    trainer.add_policy(brain_params.brain_name, policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(brain_params.brain_name)
+    trainer.add_policy(behavior_id, policy)
     assert trainer.get_policy(brain_params.brain_name) == policy
 
     # Make sure the summary steps were loaded properly

@@ -117,7 +117,6 @@ class GhostTrainer(Trainer):
         self.current_policy_snapshot: Dict[str, List[float]] = {}
 
         self.snapshot_counter: int = 0
-        self.policies: Dict[str, TFPolicy] = {}
 
         # wrapped_training_team and learning team need to be separate
         # in the situation where new agents are created destroyed
@@ -298,21 +297,11 @@ class GhostTrainer(Trainer):
         """
         self.trainer.end_episode()
 
-    def save_model(self, name_behavior_id: str) -> None:
+    def save_model(self) -> None:
         """
-        Forwarding call to wrapped trainers save_model
+        Forwarding call to wrapped trainers save_model.
         """
-        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
-        brain_name = parsed_behavior_id.brain_name
-        self.trainer.save_model(brain_name)
-
-    def export_model(self, name_behavior_id: str, is_checkpoint: bool = False) -> None:
-        """
-        Forwarding call to wrapped trainers export_model.
-        """
-        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
-        brain_name = parsed_behavior_id.brain_name
-        self.trainer.export_model(brain_name, is_checkpoint)
+        self.trainer.save_model()
 
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters

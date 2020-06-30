@@ -2,14 +2,15 @@ import os
 import unittest
 import json
 from enum import Enum
-
 from mlagents.trainers.training_status import (
     StatusType,
     StatusMetaData,
     GlobalTrainingStatus,
 )
-from mlagents.trainers.trainer import CheckpointManager
-from mlagents.trainers.trainer.track_model_output import CheckpointType
+from mlagents.trainers.policy.checkpoint_manager import (
+    CheckpointManager,
+    CheckpointType,
+)
 
 
 def test_globaltrainingstatus(tmpdir):
