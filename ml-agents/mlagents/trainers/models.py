@@ -19,13 +19,6 @@ class Tensor3DShape(NamedTuple):
     width: int
     num_channels: int
 
-    @property
-    def gray_scale(self) -> bool:
-        return self.num_channels == 1
-
-    def __str__(self):
-        return f"Tensor3DShape({self.height}, {self.width}, {self.num_channels})"
-
 
 class EncoderType(Enum):
     SIMPLE = "simple"
