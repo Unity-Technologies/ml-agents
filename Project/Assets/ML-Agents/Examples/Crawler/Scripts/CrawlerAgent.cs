@@ -2,8 +2,6 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Extensions.Sensors;
-
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
@@ -30,8 +28,6 @@ public class CrawlerAgent : Agent
     public Transform leg2Lower;
     public Transform leg3Upper;
     public Transform leg3Lower;
-
-    RigidBodyPoseExtractor poseExtractor;
 
 
     [Header("Orientation")] [Space(10)]
@@ -73,8 +69,6 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
-
-        poseExtractor = new RigidBodyPoseExtractor(body.GetComponent<Rigidbody>());
     }
 
     /// <summary>
@@ -187,8 +181,6 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
-        poseExtractor.DrawModelSpace(orientationCube.transform.position + 2.0f * Vector3.up);
-
         if (detectTargets)
         {
             foreach (var bodyPart in m_JdController.bodyPartsList)
