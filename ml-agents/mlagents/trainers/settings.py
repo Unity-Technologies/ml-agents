@@ -376,7 +376,7 @@ class CompletionCriteriaSettings:
                 )
             if self.threshold < 0.0:
                 raise TrainerConfigError(
-                    "Threshold for next lesson cannot be greater negative when the measure is progress."
+                    "Threshold for next lesson cannot be negative when the measure is progress."
                 )
 
     @staticmethod
