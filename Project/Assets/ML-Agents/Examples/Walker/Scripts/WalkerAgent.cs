@@ -9,7 +9,7 @@ public class WalkerAgent : Agent
 {
     public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
     Vector3 m_WalkDir; //Direction to the target
-    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
+//    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
     [Header("Target To Walk Towards")] [Space(10)]
     public TargetController target; //Target the agent will walk towards.
@@ -115,9 +115,11 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(hips.rotation);
-        sensor.AddObservation(head.rotation);
-        sensor.AddObservation(orientationCube.transform.rotation);
+        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
+        sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
+//        sensor.AddObservation(hips.rotation);
+//        sensor.AddObservation(head.rotation);
+//        sensor.AddObservation(orientationCube.transform.rotation);
 
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 
