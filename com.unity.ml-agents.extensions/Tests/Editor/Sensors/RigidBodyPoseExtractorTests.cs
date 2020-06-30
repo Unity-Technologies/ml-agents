@@ -5,7 +5,7 @@ using Unity.MLAgents.Extensions.Sensors;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
-    public class RigidBodyHierarchyUtilTests
+    public class RigidBodyPoseExtractorTests
     {
         [TearDown]
         public void RemoveGameObjects()
@@ -20,12 +20,12 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [Test]
         public void TestNullRoot()
         {
-            var hierarchyUtil = new RigidBodyPoseExtractor(null);
+            var poseExtractor = new RigidBodyPoseExtractor(null);
             // These should be no-ops
-            hierarchyUtil.UpdateLocalSpacePoses();
-            hierarchyUtil.UpdateModelSpacePoses();
+            poseExtractor.UpdateLocalSpacePoses();
+            poseExtractor.UpdateModelSpacePoses();
 
-            Assert.AreEqual(0, hierarchyUtil.NumPoses);
+            Assert.AreEqual(0, poseExtractor.NumPoses);
         }
 
         [Test]
@@ -33,8 +33,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             var go = new GameObject();
             var rootRb = go.AddComponent<Rigidbody>();
-            var hierarchyUtil = new RigidBodyPoseExtractor(rootRb);
-            Assert.AreEqual(1, hierarchyUtil.NumPoses);
+            var poseExtractor = new RigidBodyPoseExtractor(rootRb);
+            Assert.AreEqual(1, poseExtractor.NumPoses);
         }
 
         [Test]
@@ -55,8 +55,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var joint = go2.AddComponent<ConfigurableJoint>();
             joint.connectedBody = rb1;
 
-            var hierarchyUtil = new RigidBodyPoseExtractor(rb1);
-            Assert.AreEqual(2, hierarchyUtil.NumPoses);
+            var poseExtractor = new RigidBodyPoseExtractor(rb1);
+            Assert.AreEqual(2, poseExtractor.NumPoses);
         }
     }
 }

@@ -4,7 +4,7 @@ using Unity.MLAgents.Extensions.Sensors;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
-    public class HierarchyUtilTests
+    public class PoseExtractorTests
     {
         class UselessPoseExtractor : PoseExtractor
         {
@@ -20,24 +20,24 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         }
 
         [Test]
-        public void TestEmptyUtil()
+        public void TestEmptyExtractor()
         {
-            var hierarchyUtil = new UselessPoseExtractor();
+            var poseExtractor = new UselessPoseExtractor();
 
             // These should be no-ops
-            hierarchyUtil.UpdateLocalSpacePoses();
-            hierarchyUtil.UpdateModelSpacePoses();
+            poseExtractor.UpdateLocalSpacePoses();
+            poseExtractor.UpdateModelSpacePoses();
 
-            Assert.AreEqual(0, hierarchyUtil.NumPoses);
+            Assert.AreEqual(0, poseExtractor.NumPoses);
         }
 
         [Test]
-        public void TestSimpleUtil()
+        public void TestSimpleExtractor()
         {
-            var hierarchyUtil = new UselessPoseExtractor();
+            var poseExtractor = new UselessPoseExtractor();
             var parentIndices = new[] { -1, 0 };
-            hierarchyUtil.Init(parentIndices);
-            Assert.AreEqual(2, hierarchyUtil.NumPoses);
+            poseExtractor.Init(parentIndices);
+            Assert.AreEqual(2, poseExtractor.NumPoses);
         }
 
 
