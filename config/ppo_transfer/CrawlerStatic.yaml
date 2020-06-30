@@ -12,6 +12,7 @@ behaviors:
       learning_rate_schedule: linear
       encoder_layers: 2
       policy_layers: 1
+      feature_size: 64
     network_settings:
       normalize: true
       hidden_units: 512

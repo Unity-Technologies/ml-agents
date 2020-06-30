@@ -12,7 +12,7 @@ from mlagents.trainers.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-import tf_slim as slim
+# import tf_slim as slim
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 class GaussianEncoderDistribution:
@@ -100,8 +100,6 @@ class TransferPolicy(TFPolicy):
         self.encoder_distribution = None
         self.targ_encoder = None
 
-        # Model-based learning
-        self.feature_size = 16  # dimension of latent feature size
         
         # Non-exposed parameters; these aren't exposed because they don't have a
         # good explanation and usually shouldn't be touched.
@@ -120,6 +118,7 @@ class TransferPolicy(TFPolicy):
     def create_tf_graph(self, 
         encoder_layers = 1,
         policy_layers = 1,
+        feature_size = 16,
         transfer=False, 
         separate_train=False, 
         var_encoder=False,
@@ -132,7 +131,8 @@ class TransferPolicy(TFPolicy):
         Builds the tensorflow graph needed for this policy.
         """
         self.inverse_model = inverse_model
-        self.reuse_encoder = transfer
+        self.reuse_encoder = reuse_encoder
+        self.feature_size = feature_size
 
         with self.graph.as_default():
             tf.set_random_seed(self.seed)

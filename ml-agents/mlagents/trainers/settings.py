@@ -21,7 +21,6 @@ logger = logging_util.get_logger(__name__)
 
 def check_and_structure(key: str, value: Any, class_type: type) -> Any:
     attr_fields_dict = attr.fields_dict(class_type)
-    print(attr_fields_dict)
     if key not in attr_fields_dict:
         raise TrainerConfigError(
             f"The option {key} was specified in your YAML file for {class_type.__name__}, but is invalid."
@@ -113,6 +112,7 @@ class PPOTransferSettings(HyperparamSettings):
     in_epoch_alter: bool = False
     use_op_buffer: bool = False
     train_type: str = "all"
+    feature_size: int = 16
         
     # Transfer
     use_transfer: bool = False
