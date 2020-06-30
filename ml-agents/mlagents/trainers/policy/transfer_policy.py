@@ -363,7 +363,7 @@ class TransferPolicy(TFPolicy):
                     else:
                         predict_distribution = GaussianEncoderDistribution(
                                 hidden_stream,
-                                feature_sizex
+                                feature_size
                             )
 
                     predict = predict_distribution.sample()
