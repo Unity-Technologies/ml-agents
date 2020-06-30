@@ -24,3 +24,4 @@ behaviors:
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
+    transfer: true

@@ -305,7 +305,8 @@ def run_cli(options: RunOptions) -> None:
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
     run_training(run_seed, options)
-    os.system('mlagents-learn config/ppo/3DBallHard.yaml --run=test --env=envs/3dballhard --force')
+    if options.behaviors.transfer:
+        os.system('mlagents-learn config/ppo_transfer/3DBallHard.yaml --env=envs/3dballhard --num-envs=4 --force')
 
 
 def main():
