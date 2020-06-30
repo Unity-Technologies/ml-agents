@@ -178,7 +178,7 @@ use during training, and the answers to the above questions will dictate its con
 The rest of this guide breaks down the different sub-sections of the trainer config file
 and explains the possible settings for each.
 
-**NOTE:** The configuration file format has been changed between 0.17.0 and onwards and
+**NOTE:** The configuration file format has been changed between 0.17.0 and 0.18.0 and
 between 0.18.0 and onwards. To convert
 an old set of configuration files (trainer config, curriculum, and sampler files) to the new
 format, a script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` in your
