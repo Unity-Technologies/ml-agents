@@ -153,9 +153,10 @@ def test_summary_checkpoint(mock_write_summary):
     mock_write_summary.assert_has_calls(calls, any_order=True)
 
     calls = [
-        mock.call()
+        mock.call(mock.ANY)
         for _ in range(
             checkpoint_interval, num_trajectories * time_horizon, checkpoint_interval
         )
     ]
+    print(mock_policy.checkpoint.mock_calls)
     mock_policy.checkpoint.assert_has_calls(calls, any_order=True)
