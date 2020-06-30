@@ -761,6 +761,8 @@ namespace Unity.MLAgents
         ///
         /// Your heuristic implementation can use any decision making logic you specify. Assign decision
         /// values to the float[] array, <paramref name="actionsOut"/>, passed to your function as a parameter.
+        /// The same array will be reused between steps. It is up to the user to initialize
+        /// the values on each call, for example by calling `Array.Clear(actionsOut, 0, actionsOut.Length);`.
         /// Add values to the array at the same indexes as they are used in your
         /// <seealso cref="OnActionReceived(float[])"/> function, which receives this array and
         /// implements the corresponding agent behavior. See [Actions] for more information
