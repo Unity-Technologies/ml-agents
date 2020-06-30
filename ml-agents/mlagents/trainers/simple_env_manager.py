@@ -61,7 +61,7 @@ class SimpleEnvManager(EnvManager):
                     v.apply(k, self.env_params)
 
     @property
-    def external_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
+    def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
         return self.env.behavior_specs
 
     def close(self):

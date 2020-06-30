@@ -302,7 +302,7 @@ class SubprocessEnvManager(EnvManager):
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
 
     @property
-    def external_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
+    def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
         self.env_workers[0].send(EnvironmentCommand.BEHAVIOR_SPECS)
         return self.env_workers[0].recv().payload
 
