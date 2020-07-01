@@ -124,7 +124,7 @@ class ModelUtils:
         :returns: A List of Tensorflow placeholders where the input iamges should be fed.
         """
         visual_in: List[tf.Tensor] = []
-        vector_in: tf.Tensor = None
+        vector_in_size = 0
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
                 _res = Tensor3DShape(
@@ -135,20 +135,16 @@ class ModelUtils:
                 )
                 visual_in.append(visual_input)
             elif len(dimension) == 1:
-                vector_in = ModelUtils.create_vector_input(
-                    dimension[0], name=name_prefix + "vector_observation"
-                )
+                vector_in_size += dimension[0]
             else:
                 raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
-        # If None, create a 0-size vector input to maintain previous behavior
-        if vector_in is None:
-            vector_in = tf.placeholder(
-                shape=[None, 0],
-                dtype=tf.float32,
-                name=name_prefix + "vector_observation",
-            )
+        vector_in = tf.placeholder(
+            shape=[None, vector_in_size],
+            dtype=tf.float32,
+            name=name_prefix + "vector_observation",
+        )
         return vector_in, visual_in
 
     @staticmethod
