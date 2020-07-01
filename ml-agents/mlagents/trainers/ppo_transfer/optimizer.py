@@ -36,6 +36,7 @@ class PPOTransferOptimizer(TFOptimizer):
         self.use_alter = hyperparameters.use_alter
         self.in_batch_alter = hyperparameters.in_batch_alter
         self.in_epoch_alter = hyperparameters.in_epoch_alter
+        self.op_buffer = hyperparameters.use_op_buffer
         
         self.train_type = hyperparameters.train_type
         
@@ -140,7 +141,7 @@ class PPOTransferOptimizer(TFOptimizer):
                     }
                 )
 
-                if self.use_alter or self.smart_transfer or self.in_batch_alter or self.in_epoch_alter:
+                if self.use_alter or self.smart_transfer or self.in_batch_alter or self.in_epoch_alter or self.op_buffer:
                     self._init_alter_update()
             
             self.policy.initialize_or_load()
