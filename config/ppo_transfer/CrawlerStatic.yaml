@@ -13,7 +13,8 @@ behaviors:
       encoder_layers: 2
       policy_layers: 1
       value_layers: 1
-      feature_size: 256
+      feature_size: 128
+      reuse_encoder: true
     network_settings:
       normalize: true
       hidden_units: 512

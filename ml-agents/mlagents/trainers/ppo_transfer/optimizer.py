@@ -50,7 +50,8 @@ class PPOTransferOptimizer(TFOptimizer):
         self.model_update_dict: Dict[str, tf.Tensor] = {}
 
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
-        policy.create_tf_graph(hyperparameters.encoder_layers, hyperparameters.policy_layers, hyperparameters.feature_size,
+        policy.create_tf_graph(hyperparameters.encoder_layers, hyperparameters.policy_layers, 
+            hyperparameters.forward_layers, hyperparameters.inverse_layers, hyperparameters.feature_size,
             self.use_transfer, self.separate_policy_train, self.use_var_encoder, self.use_var_predict, 
             self.predict_return, self.use_inverse_model, self.reuse_encoder)
         

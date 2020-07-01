@@ -118,6 +118,8 @@ class TransferPolicy(TFPolicy):
     def create_tf_graph(self, 
         encoder_layers = 1,
         policy_layers = 1,
+        forward_layers = 1,
+        inverse_layers = 1,
         feature_size = 16,
         transfer=False, 
         separate_train=False, 
@@ -196,11 +198,13 @@ class TransferPolicy(TFPolicy):
             if not reuse_encoder:
                 self.targ_encoder = tf.stop_gradient(self.targ_encoder)
                 self._create_hard_copy()
+            
+            if self.inverse_model:
+                with tf.variable_scope("inverse"):
+                    self.create_inverse_model(self.encoder, self.targ_encoder, inverse_layers)
 
-            with tf.variable_scope("inverse"):
-                self.create_inverse_model(self.encoder, self.targ_encoder)
             with tf.variable_scope("predict"):
-                self.create_forward_model(self.encoder, self.targ_encoder)
+                self.create_forward_model(self.encoder, self.targ_encoder, forward_layers)
 
             # if var_predict:
             #     self.predict_distribution, self.predict = self._create_var_world_model(
@@ -924,7 +928,7 @@ class TransferPolicy(TFPolicy):
             return encoded_state, encoded_next_state
 
     def create_inverse_model(
-        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, inverse_layers: int
     ) -> None:
         """
         Creates inverse model TensorFlow ops for Curiosity module.
@@ -934,9 +938,19 @@ class TransferPolicy(TFPolicy):
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         # hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
+        hidden = combined_input
+        for i in range(inverse_layers-1):
+            hidden = tf.layers.dense(
+                hidden,
+                self.h_size,
+                activation=ModelUtils.swish,
+                name="hidden_{}".format(i),
+                kernel_initializer=tf.initializers.variance_scaling(1.0),
+            )
+
         if self.brain.vector_action_space_type == "continuous":
             pred_action = tf.layers.dense(
-                combined_input, self.act_size[0], activation=None
+                hidden, self.act_size[0], activation=None, name="pred_action"
             )
             squared_difference = tf.reduce_sum(
                 tf.squared_difference(pred_action, self.current_action), axis=1
@@ -948,7 +962,7 @@ class TransferPolicy(TFPolicy):
             pred_action = tf.concat(
                 [
                     tf.layers.dense(
-                        combined_input, self.act_size[i], activation=tf.nn.softmax
+                        hidden, self.act_size[i], activation=tf.nn.softmax, name="pred_action"
                     )
                     for i in range(len(self.act_size))
                 ],
@@ -962,7 +976,7 @@ class TransferPolicy(TFPolicy):
             )
 
     def create_forward_model(
-        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, forward_layers: int
     ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
@@ -973,15 +987,24 @@ class TransferPolicy(TFPolicy):
         combined_input = tf.concat(
             [encoded_state, self.current_action], axis=1
         )
+        hidden = combined_input
+        for i in range(forward_layers):
+            hidden = tf.layers.dense(
+                hidden,
+                self.h_size
+                * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+                activation=None,
+                name="hidden_{}".format(i)
+            )
         # hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
-        predict = tf.layers.dense(
-            combined_input,
-            self.h_size
-            * (self.vis_obs_size + int(self.vec_obs_size > 0)),
-            activation=None,
-        )
+        # predict = tf.layers.dense(
+        #     combined_input,
+        #     self.h_size
+        #     * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+        #     activation=None,
+        # )
         self.predict = tf.layers.dense(
-            predict,
+            hidden,
             self.feature_size,
             name="latent"
         )
