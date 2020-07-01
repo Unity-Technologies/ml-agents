@@ -270,6 +270,8 @@ def run_cli(options: RunOptions) -> None:
     except Exception:
         print("\n\n\tUnity Technologies\n")
     print(get_version_string())
+    print(options)
+    print("transfer:", options.behaviors["3DBall"].transfer)
 
     if options.debug:
         log_level = logging_util.DEBUG
@@ -305,7 +307,7 @@ def run_cli(options: RunOptions) -> None:
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
     run_training(run_seed, options)
-    if options.behaviors.transfer:
+    if options.behaviors["3DBall"].transfer:
         os.system('mlagents-learn config/ppo_transfer/3DBallHard.yaml --run-id=hardball-transfer --env=/unity-volume/3dballhard --num-envs=4 --force')
 
 

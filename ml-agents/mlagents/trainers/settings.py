@@ -387,6 +387,7 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
+    transfer: bool = False
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
