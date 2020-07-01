@@ -32,7 +32,7 @@ class Policy(object):
             self.num_branches = len(self.brain.vector_action_space_size)
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
-        self.normalize = trainer_settings
+        self.normalize = trainer_settings.network_settings.normalize
         self.use_recurrent = trainer_settings.network_settings.memory is not None
         self.model_path = trainer_settings.init_path
 

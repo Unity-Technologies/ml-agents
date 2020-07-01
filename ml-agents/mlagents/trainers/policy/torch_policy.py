@@ -150,8 +150,7 @@ class TorchPolicy(Policy):
 
         actions = self.actor_critic.sample_action(dists)
         log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
-        if self.act_type == "continuous":
-            actions.squeeze_(-1)
+        actions = torch.squeeze(actions)
 
         return actions, log_probs, entropies, value_heads, memories
 
@@ -250,7 +249,7 @@ class TorchPolicy(Policy):
         fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
         fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
         fake_masks = torch.ones([1] + self.actor_critic.act_size)
-        fake_memories = torch.zeros([1] + [self.m_size])
+        # fake_memories = torch.zeros([1] + [self.m_size])
         export_path = "./model-" + str(step) + ".onnx"
         output_names = ["action", "action_probs"]
         input_names = ["vector_observation", "action_mask"]
