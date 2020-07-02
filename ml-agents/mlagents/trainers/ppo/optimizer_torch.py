@@ -99,7 +99,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if self.policy.use_continuous_act:
             actions = torch.as_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = torch.as_tensor(batch["actions"])
+            actions = torch.as_tensor(batch["actions"], dtype=torch.long)
 
         memories = [
             torch.as_tensor(batch["memory"][i])
