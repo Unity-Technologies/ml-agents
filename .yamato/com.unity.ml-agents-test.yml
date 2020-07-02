@@ -117,9 +117,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    {% for dep_package in packages %}
-    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ dep_package.name }}
-    {% endfor %}
+    - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
     {% endfor %}
