@@ -11,9 +11,11 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       encoder_layers: 2
-      policy_layers: 1
-      value_layers: 1
-      feature_size: 128
+      policy_layers: 3
+      value_layers: 2
+      forward_layers: 1
+      inverse_layers: 1
+      feature_size: 32
       reuse_encoder: true
       use_op_buffer: true
       in_batch_alter: true

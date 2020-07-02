@@ -148,6 +148,9 @@ class TransferPolicy(TFPolicy):
             self.current_action = tf.placeholder(
                     shape=[None, sum(self.act_size)], dtype=tf.float32, name="current_action"
                 )
+            self.current_reward = tf.placeholder(
+                shape=[None], dtype=tf.float32, name="current_reward"
+            )
 
             self.next_visual_in: List[tf.Tensor] = []
             
@@ -204,7 +207,8 @@ class TransferPolicy(TFPolicy):
                     self.create_inverse_model(self.encoder, self.targ_encoder, inverse_layers)
 
             with tf.variable_scope("predict"):
-                self.create_forward_model(self.encoder, self.targ_encoder, forward_layers)
+                self.create_forward_model(self.encoder, self.targ_encoder, forward_layers,
+                predict_reward=predict_return)
 
             # if var_predict:
             #     self.predict_distribution, self.predict = self._create_var_world_model(
@@ -976,7 +980,8 @@ class TransferPolicy(TFPolicy):
             )
 
     def create_forward_model(
-        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, forward_layers: int
+        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, forward_layers: int,
+        predict_reward: bool=False, var_predict: bool=False
     ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
@@ -996,22 +1001,36 @@ class TransferPolicy(TFPolicy):
                 activation=None,
                 name="hidden_{}".format(i)
             )
-        # hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
-        # predict = tf.layers.dense(
-        #     combined_input,
-        #     self.h_size
-        #     * (self.vis_obs_size + int(self.vec_obs_size > 0)),
-        #     activation=None,
-        # )
-        self.predict = tf.layers.dense(
-            hidden,
-            self.feature_size,
-            name="latent"
-        )
+
+        if var_predict:
+            predict_distribution = GaussianEncoderDistribution(
+                hidden,
+                self.feature_size
+            )
+            self.predict = predict_distribution.sample()
+        else:
+            self.predict = tf.layers.dense(
+                hidden,
+                self.feature_size,
+                name="latent"
+            )
+
         squared_difference = 0.5 * tf.reduce_sum(
             tf.squared_difference(self.predict, encoded_next_state), axis=1
         )
-        # self.intrinsic_reward = squared_difference
+        
         self.forward_loss = tf.reduce_mean(
             tf.dynamic_partition(squared_difference, self.mask, 2)[1]
         )
+
+        if predict_reward:
+            self.pred_reward = tf.layers.dense(
+                hidden,
+                1,
+                name="reward"
+            )
+            self.forward_loss += tf.reduce_mean(
+                tf.dynamic_partition(
+                    0.5 * tf.reduce_sum(tf.squared_difference(self.pred_reward, self.current_reward), axis=1)   
+                , self.mask, 2)[1]
+            )

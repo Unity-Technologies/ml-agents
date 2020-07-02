@@ -1,5 +1,5 @@
 behaviors:
-  OldCrawlerStatic:
+  CrawlerStatic:
     trainer_type: ppo_transfer
     hyperparameters:
       batch_size: 2024
@@ -11,11 +11,12 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       encoder_layers: 2
-      policy_layers: 1
-      value_layers: 1
-      feature_size: 64
+      policy_layers: 2
+      value_layers: 2
+      feature_size: 32
       reuse_encoder: true
-      in_epoch_alter: true
+      in_batch_alter: true
+      use_var_encoder: true
       use_inverse_model: true
     network_settings:
       normalize: true

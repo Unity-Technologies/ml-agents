@@ -333,19 +333,21 @@ class PPOTransferOptimizer(TFOptimizer):
         self.abs_policy_loss = tf.abs(self.policy_loss)
 
         # encoder and predict loss
-        self.dis_returns = tf.placeholder(
-            shape=[None], dtype=tf.float32, name="dis_returns"
-        )
-        target = tf.concat([targ_encoder, tf.expand_dims(self.dis_returns, -1)], axis=1)
-        if self.predict_return:
-            self.model_loss = tf.reduce_mean(tf.squared_difference(predict, target)) 
-        else:
-            self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder)) 
-        if self.with_prior:
-            if self.use_var_encoder:
-                self.model_loss += encoder_distribution.kl_standard()
-            if self.use_var_predict:
-                self.model_loss += self.policy.predict_distribution.kl_standard()
+        # self.dis_returns = tf.placeholder(
+        #     shape=[None], dtype=tf.float32, name="dis_returns"
+        # )
+        # target = tf.concat([targ_encoder, tf.expand_dims(self.dis_returns, -1)], axis=1)
+        # if self.predict_return:
+        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, target)) 
+        # else:
+        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder)) 
+        # if self.with_prior:
+        #     if self.use_var_encoder:
+        #         self.model_loss += encoder_distribution.kl_standard()
+        #     if self.use_var_predict:
+        #         self.model_loss += self.policy.predict_distribution.kl_standard()
+
+        self.model_loss = self.policy.forward_loss
 
         if self.use_inverse_model:
             self.model_loss += self.policy.inverse_loss
@@ -588,7 +590,8 @@ class PPOTransferOptimizer(TFOptimizer):
             self.policy.processed_vector_next: mini_batch["next_vector_in"],
             # self.policy.next_vector_in: mini_batch["next_vector_in"],
             self.policy.current_action: mini_batch["actions"],
-            self.dis_returns: mini_batch["discounted_returns"]
+            self.policy.current_reward: mini_batch["extrinsic_rewards"],
+            # self.dis_returns: mini_batch["discounted_returns"]
         }
         for name in self.reward_signals:
             feed_dict[self.returns_holders[name]] = mini_batch[
