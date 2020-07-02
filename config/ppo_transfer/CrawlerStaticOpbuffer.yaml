@@ -11,7 +11,7 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       encoder_layers: 2
-      policy_layers: 3
+      policy_layers: 2
       value_layers: 2
       forward_layers: 1
       inverse_layers: 1
@@ -19,6 +19,7 @@ behaviors:
       reuse_encoder: true
       use_op_buffer: true
       in_batch_alter: true
+      use_var_predict: true
     network_settings:
       normalize: true
       hidden_units: 512

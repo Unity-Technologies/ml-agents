@@ -515,12 +515,14 @@ class TransferPolicy(TFPolicy):
                 h_size,
                 num_layers,
                 vis_encode_type,
+                reuse=reuse_encoder
             )[0]
 
             with tf.variable_scope("latent"):
                 latent_targ_distribution = GaussianEncoderDistribution(
                     hidden_stream_targ,
-                    feature_size
+                    feature_size,
+                    reuse=reuse_encoder
                 )
 
                 latent_targ = latent_targ_distribution.sample()

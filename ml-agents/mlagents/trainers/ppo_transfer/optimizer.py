@@ -121,7 +121,6 @@ class PPOTransferOptimizer(TFOptimizer):
                     self.policy.entropy,
                     self.policy.targ_encoder,
                     self.policy.predict,
-                    self.policy.encoder_distribution,
                     beta,
                     epsilon,
                     lr,
@@ -149,16 +148,12 @@ class PPOTransferOptimizer(TFOptimizer):
                 self.policy.load_graph_partial(self.transfer_path, self.transfer_type)
             self.policy.get_encoder_weights()
             self.policy.get_policy_weights()
-            # saver = tf.train.Saver()
-            # model_checkpoint = os.path.join(self.transfer_path, f"model-4000544.ckpt")
-            # saver.restore(self.sess, model_checkpoint)
-            # self.policy._set_step(0)
 
             # slim.model_analyzer.analyze_vars(tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES), print_info=True)
             
             print("All variables in the graph:")
-            for variable in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES):
-                print(variable.name)
+            for variable in tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES):
+                print(variable)
             # tf.summary.FileWriter(self.policy.model_path, self.sess.graph)
 
     
@@ -260,7 +255,7 @@ class PPOTransferOptimizer(TFOptimizer):
         )
 
     def _create_losses(
-        self, probs, old_probs, value_heads, entropy, targ_encoder, predict, encoder_distribution,
+        self, probs, old_probs, value_heads, entropy, targ_encoder, predict, 
          beta, epsilon, lr, max_step
     ):
         """
@@ -348,9 +343,14 @@ class PPOTransferOptimizer(TFOptimizer):
         #         self.model_loss += self.policy.predict_distribution.kl_standard()
 
         self.model_loss = self.policy.forward_loss
+        if self.with_prior:
+            if self.use_var_encoder:
+                self.model_loss += 0.2 * self.policy.encoder_distribution.kl_standard()
+            if self.use_var_predict:
+                self.model_loss += 0.2 * self.policy.predict_distribution.kl_standard()
 
         if self.use_inverse_model:
-            self.model_loss += self.policy.inverse_loss
+            self.model_loss += 0.5 * self.policy.inverse_loss
         # self.model_loss = 0.2 * self.policy.forward_loss + 0.8 * self.policy.inverse_loss
         self.loss = (
             self.policy_loss

@@ -263,7 +263,7 @@ class PPOTransferTrainer(RLTrainer):
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
-            self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
+            # self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.off_policy_buffer
             max_num_batch = buffer_length // batch_size
             for i in range(0, max_num_batch * batch_size, batch_size):
