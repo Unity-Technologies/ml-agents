@@ -109,8 +109,8 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(body.rotation);
-        sensor.AddObservation(orientationCube.transform.rotation);
+        //Add body rotation delta relative to orientation cube
+        sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
         
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
