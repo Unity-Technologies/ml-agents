@@ -17,6 +17,8 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models_torch import ActorCritic
 
+from mlagents.trainers.ppo.trainer import TestingConfiguration
+
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
@@ -116,6 +118,10 @@ class TorchPolicy(Policy):
             stream_names=reward_signal_names,
             separate_critic=self.use_continuous_act,
         )
+
+        if TestingConfiguration.use_gpu:
+            #move to gpu
+            self.actor_critic.to(torch.device("cuda:0"))
 
     def split_decision_step(self, decision_requests):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
