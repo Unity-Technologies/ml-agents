@@ -117,9 +117,6 @@ public class WalkerAgent : Agent
     {
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
-//        sensor.AddObservation(hips.rotation);
-//        sensor.AddObservation(head.rotation);
-//        sensor.AddObservation(orientationCube.transform.rotation);
 
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 
