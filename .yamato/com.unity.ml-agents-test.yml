@@ -65,7 +65,8 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} --warnings-as-errors {{ editor.coverageOptions }}
+    - upm-ci project test -u {{ editor.version }} --project-path DevProject --type package-tests --package-filter {{ package.name }} --warnings-as-errors {{ editor.coverageOptions }}
+
     {% if package.name == "com.unity.ml-agents" %}
     # TODO get coverage tests running for extensions too
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
