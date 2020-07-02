@@ -236,17 +236,26 @@ def create_environment_factory(
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
-        return default_registry[TestingConfiguration.env_name].make(
-            # return UnityEnvironment(
-            #     file_name=env_path,
-            #     worker_id=worker_id,
-            seed=env_seed,
-            no_graphics=no_graphics,
-            base_port=start_port,
-            additional_args=env_args,
-            side_channels=side_channels,
-            log_folder=log_folder,
-        )
+        if TestingConfiguration.env_name == "":
+            return UnityEnvironment(
+                file_name=env_path,
+                worker_id=worker_id,
+                seed=env_seed,
+                no_graphics=no_graphics,
+                base_port=start_port,
+                additional_args=env_args,
+                side_channels=side_channels,
+                log_folder=log_folder,
+            )
+        else:
+            return default_registry[TestingConfiguration.env_name].make(
+                seed=env_seed,
+                no_graphics=no_graphics,
+                base_port=start_port,
+                additional_args=env_args,
+                side_channels=side_channels,
+                log_folder=log_folder,
+            )
 
     return create_unity_environment
 

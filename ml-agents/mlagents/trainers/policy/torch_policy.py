@@ -249,24 +249,28 @@ class TorchPolicy(Policy):
         self.actor_critic.load_state_dict(torch.load(load_path))
 
     def export_model(self, step=0):
-        fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
-        fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
-        fake_masks = torch.ones([1] + self.actor_critic.act_size)
-        # fake_memories = torch.zeros([1] + [self.m_size])
-        export_path = "./model-" + str(step) + ".onnx"
-        output_names = ["action", "action_probs"]
-        input_names = ["vector_observation", "action_mask"]
-        dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
-        onnx.export(
-            self.actor_critic,
-            (fake_vec_obs, fake_vis_obs, fake_masks),
-            export_path,
-            verbose=True,
-            opset_version=12,
-            input_names=input_names,
-            output_names=output_names,
-            dynamic_axes=dynamic_axes,
-        )
+        try:
+            fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
+            fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
+            fake_masks = torch.ones([1] + self.actor_critic.act_size)
+            # fake_memories = torch.zeros([1] + [self.m_size])
+            export_path = "./model-" + str(step) + ".onnx"
+            output_names = ["action", "action_probs"]
+            input_names = ["vector_observation", "action_mask"]
+            dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
+            onnx.export(
+                self.actor_critic,
+                (fake_vec_obs, fake_vis_obs, fake_masks),
+                export_path,
+                verbose=True,
+                opset_version=12,
+                input_names=input_names,
+                output_names=output_names,
+                dynamic_axes=dynamic_axes,
+            )
+        except:
+            print("Could not export torch model")
+            return
 
     @property
     def vis_obs_size(self):

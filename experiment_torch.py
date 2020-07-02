@@ -39,9 +39,11 @@ def run_experiment(name:str, steps:int, torch:bool):
 
 results["3DBall Torch"] = run_experiment("3DBall", 20000, True)
 results["3DBall TF"] = run_experiment("3DBall", 20000, False)
-results["GridWorld Torch"] = run_experiment("GridWorld", 20000, True)
-results["GridWorld TF"] = run_experiment("GridWorld", 20000, False)
-print("experiment\t", "total\t", "update\t", "evaluate")
+results["GridWorld Torch"] = run_experiment("GridWorld", 2000, True)
+results["GridWorld TF"] = run_experiment("GridWorld", 2000, False)
+results["PushBlock Torch"] = run_experiment("PushBlock", 20000, True)
+results["PushBlock TF"] = run_experiment("PushBlock", 20000, False)
+print("experiment\t", "total\t\t\t\t", "update\t\t\t\t", "evaluate")
 for key, value in results.items():
 	print(key + "\t", str(value[0])+ "\t", str(value[1])+ "\t", str(value[2])+ "\t")
 
