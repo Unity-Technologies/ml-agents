@@ -22,6 +22,12 @@ from mlagents.trainers.settings import TrainerSettings, PPOSettings
 logger = get_logger(__name__)
 
 
+class TestingConfiguration:
+    use_torch = False
+    max_steps = 0
+    env_name = ""
+
+
 class PPOTrainer(RLTrainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
@@ -53,7 +59,8 @@ class PPOTrainer(RLTrainer):
         )
         self.load = load
         self.seed = seed
-        self.framework = "torch"
+        self.framework = "torch" if TestingConfiguration.use_torch else "tf"
+        self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self.policy: Policy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:

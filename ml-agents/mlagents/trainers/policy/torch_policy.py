@@ -94,7 +94,7 @@ class TorchPolicy(Policy):
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
         # TF defaults to 32-bit, so we use the same here.
-        torch.set_default_tensor_type(torch.DoubleTensor)
+        torch.set_default_tensor_type(torch.FloatTensor)
 
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]

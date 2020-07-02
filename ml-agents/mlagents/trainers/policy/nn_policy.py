@@ -21,7 +21,6 @@ class NNPolicy(TFPolicy):
         seed: int,
         brain: BrainParameters,
         trainer_settings: TrainerSettings,
-        is_training: bool,
         model_path: str,
         load: bool,
         tanh_squash: bool = False,
