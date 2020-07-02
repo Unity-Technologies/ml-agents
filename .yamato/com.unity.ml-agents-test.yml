@@ -76,7 +76,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
+    - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
