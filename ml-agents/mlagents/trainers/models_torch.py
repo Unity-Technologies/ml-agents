@@ -507,7 +507,6 @@ class ModelUtils:
             EncoderType.NATURE_CNN: NatureVisualEncoder,
             EncoderType.RESNET: ResNetVisualEncoder,
         }
-        print(encoder_type, ENCODER_FUNCTION_BY_TYPE.get(encoder_type))
         return ENCODER_FUNCTION_BY_TYPE.get(encoder_type)
 
     @staticmethod
