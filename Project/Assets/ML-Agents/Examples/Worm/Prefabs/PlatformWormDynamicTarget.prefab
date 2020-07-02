@@ -846,8 +846,8 @@ ConfigurableJoint:
     maximumForce: 3.4028233e+38
   m_SlerpDrive:
     serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
+    positionSpring: 1
+    positionDamper: 1
     maximumForce: 3.4028233e+38
   m_ProjectionMode: 1
   m_ProjectionDistance: 0.1
@@ -857,7 +857,7 @@ ConfigurableJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &2249835933235649685
@@ -1352,9 +1352,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b29724baddfa457da6eeab446fa49ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxJointSpring: 0
-  jointDampen: 0
-  maxJointForceLimit: 0
+  maxJointSpring: 5000
+  jointDampen: 50
+  maxJointForceLimit: 20000
   bodyPartsList: []
 --- !u!114 &4743960591246354694
 MonoBehaviour:
@@ -1397,12 +1397,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rewardsList:
   - rewardKey: velReward
-    rewardScalar: 0
+    rewardScalar: 0.01
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
   - rewardKey: facingReward
-    rewardScalar: 0
+    rewardScalar: 0.01
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
@@ -4734,8 +4734,8 @@ ConfigurableJoint:
     maximumForce: 3.4028233e+38
   m_SlerpDrive:
     serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
+    positionSpring: 1
+    positionDamper: 1
     maximumForce: 3.4028233e+38
   m_ProjectionMode: 1
   m_ProjectionDistance: 0.1
@@ -4745,7 +4745,7 @@ ConfigurableJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &6779174269410662007
@@ -5502,8 +5502,8 @@ ConfigurableJoint:
     maximumForce: 3.4028233e+38
   m_SlerpDrive:
     serializedVersion: 3
-    positionSpring: 0
-    positionDamper: 0
+    positionSpring: 1
+    positionDamper: 1
     maximumForce: 3.4028233e+38
   m_ProjectionMode: 1
   m_ProjectionDistance: 0.1
@@ -5513,7 +5513,7 @@ ConfigurableJoint:
   m_BreakForce: Infinity
   m_BreakTorque: Infinity
   m_EnableCollision: 0
-  m_EnablePreprocessing: 0
+  m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
 --- !u!1 &9004485697579233044

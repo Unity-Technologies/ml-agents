@@ -12,12 +12,14 @@ public class RewardManager : MonoBehaviour
         public string rewardKey;
 //        [Range(.01f, .05f)]
         public float rewardScalar = .01f;
+//        public float rewardScalar;
         public float rewardThisStep;
         public float cumulativeThisEpisode;
         public float cumulativeThisSession;
 //        public Reward(string k)
+//        public Reward()
 //        {
-//            rewardKey = k;
+////            rewardKey = k;
 //            rewardScalar = .01f;
 //        }
     }
@@ -33,8 +35,8 @@ public class RewardManager : MonoBehaviour
     public List<Reward> rewardsList = new List<Reward>();
     public Dictionary<string, Reward> rewardsDict = new Dictionary<string, Reward>();
 
-//    private void OnEnable()
-    private void Awake()
+    private void OnEnable()
+//    private void Awake()
     {
         m_thisAgent = GetComponent<Agent>();
         foreach (var item in rewardsList)
