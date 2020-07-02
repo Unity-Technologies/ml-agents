@@ -1,8 +1,9 @@
 from enum import Enum
-from typing import Callable, NamedTuple
+from typing import Callable, NamedTuple, List, Optional
 
 import torch
 from torch import nn
+import numpy as np
 
 from mlagents.trainers.distributions_torch import (
     GaussianDistribution,
@@ -17,6 +18,16 @@ EncoderFunction = Callable[
 ]
 
 EPSILON = 1e-7
+
+
+def list_to_tensor(
+    ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = None
+) -> torch.Tensor:
+    """
+    Converts a list of numpy arrays into a tensor. MUCH faster than
+    calling as_tensor on the list directly.
+    """
+    return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
 
 
 class ActionType(Enum):
