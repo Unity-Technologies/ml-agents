@@ -481,7 +481,7 @@ namespace Unity.MLAgents.Sensors
                             tagsEqual = hitObject.CompareTag(tag);
                         }
                     }
-                    catch (UnityException)
+                    catch (UnityException e)
                     {
                         // If the tag is null, empty, or not a valid tag, just ignore it.
                     }
