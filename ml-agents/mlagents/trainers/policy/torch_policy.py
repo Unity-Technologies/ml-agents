@@ -150,7 +150,10 @@ class TorchPolicy(Policy):
 
         actions = self.actor_critic.sample_action(dists)
         log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
-        actions = torch.squeeze(actions)
+        if self.use_continuous_act:
+            actions = actions[:, :, 0]
+        else:
+            actions = actions[:, 0, :]
 
         return actions, log_probs, entropies, value_heads, memories
 
