@@ -15,6 +15,7 @@ class Checkpoint:
     steps: int
     file_path: str
     reward: Optional[float]
+    creation_time: str
 
 
 class CheckpointType(Enum):
@@ -22,6 +23,7 @@ class CheckpointType(Enum):
     STEPS = "steps"
     FINAL_PATH = "final_model_path"
     REWARD = "reward"
+    CREATION_TIME = "creation_time"
 
 
 class CheckpointManager:
@@ -108,6 +110,7 @@ class CheckpointManager:
         final_model_path: str,
         keep_checkpoints: int,
         mean_reward: Optional[float],
+        creation_time: str,
     ) -> None:
         """
         Ensures number of checkpoints stored is within the max number of checkpoints
@@ -123,5 +126,8 @@ class CheckpointManager:
         )
         CheckpointManager.set_parameter_state(
             category, CheckpointType.REWARD, mean_reward
+        )
+        CheckpointManager.set_parameter_state(
+            category, CheckpointType.CREATION_TIME, creation_time
         )
         GlobalTrainingStatus.update_parameter_state(CheckpointManager.checkpoints_saved)

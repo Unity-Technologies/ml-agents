@@ -1,4 +1,5 @@
 import attr
+import time
 from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.policy.checkpoint_manager import Checkpoint
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -90,6 +91,7 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
     policy.get_current_step = MagicMock(return_value=n_steps)
     policy.saver = MagicMock()
     mock_reward_val = 1.35
+    checkpoint_time = time.strftime("%Y-%m-%d %H:%M:%S")
     policy.checkpoint(mock_reward_val)
     policy.saver.save.assert_called_once_with(
         policy.sess, f"output/model-{n_steps}.ckpt"
@@ -106,7 +108,10 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
         mock_brain.brain_name,
         attr.asdict(
             Checkpoint(
-                n_steps, f"output/{mock_brain.brain_name}-{n_steps}.nn", mock_reward_val
+                n_steps,
+                f"output/{mock_brain.brain_name}-{n_steps}.nn",
+                mock_reward_val,
+                checkpoint_time,
             )
         ),
         policy.trainer_settings.keep_checkpoints,

@@ -2,6 +2,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import abc
 import os
 import numpy as np
+import time
 from distutils.version import LooseVersion
 
 import attr
@@ -422,6 +423,7 @@ class TFPolicy(Policy):
             int(current_step),
             os.path.join(self.model_path, f"{settings.checkpoint_path}.nn"),
             model_reward,
+            time.strftime("%Y-%m-%d %H:%M:%S"),
         )
         # Record checkpoint information
         CheckpointManager.track_checkpoint_info(
@@ -435,7 +437,11 @@ class TFPolicy(Policy):
         brain_name = self.behavior_id.brain_name
         settings = SerializationSettings(self.model_path, brain_name)
         CheckpointManager.track_final_model_info(
-            brain_name, f"{settings.model_path}.nn", self.keep_checkpoints, model_reward
+            brain_name,
+            f"{settings.model_path}.nn",
+            self.keep_checkpoints,
+            model_reward,
+            time.strftime("%Y-%m-%d %H:%M:%S"),
         )
         export_policy_model(settings, self.graph, self.sess)
 

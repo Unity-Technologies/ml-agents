@@ -2,6 +2,7 @@ import os
 import unittest
 import json
 from enum import Enum
+from time import strftime
 from mlagents.trainers.training_status import (
     StatusType,
     StatusMetaData,
@@ -58,16 +59,19 @@ def test_model_management(tmpdir):
             "steps": 1,
             "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn"),
             "reward": 1.312,
+            "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
         },
         {
             "steps": 2,
             "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn"),
             "reward": 1.912,
+            "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
         },
         {
             "steps": 3,
             "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn"),
             "reward": 2.312,
+            "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
         },
     ]
     CheckpointManager.set_parameter_state(
@@ -78,6 +82,7 @@ def test_model_management(tmpdir):
         "steps": 4,
         "file_path": os.path.join(final_model_path, f"{brain_name}-4.nn"),
         "rewards": 2.678,
+        "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
     }
     CheckpointManager.track_checkpoint_info(brain_name, new_checkpoint_4, 4)
     assert (
@@ -93,6 +98,7 @@ def test_model_management(tmpdir):
         "steps": 5,
         "file_path": os.path.join(final_model_path, f"{brain_name}-5.nn"),
         "rewards": 3.122,
+        "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
     }
     CheckpointManager.track_checkpoint_info(brain_name, new_checkpoint_5, 4)
     assert (
@@ -105,7 +111,10 @@ def test_model_management(tmpdir):
     )
 
     final_model_path = f"{final_model_path}.nn"
-    CheckpointManager.track_final_model_info(brain_name, final_model_path, 4, 3.294)
+    final_model_time = strftime("%Y-%m-%d %H:%M:%S")
+    CheckpointManager.track_final_model_info(
+        brain_name, final_model_path, 4, 3.294, final_model_time
+    )
     assert (
         len(
             CheckpointManager.checkpoints_saved[brain_name][
