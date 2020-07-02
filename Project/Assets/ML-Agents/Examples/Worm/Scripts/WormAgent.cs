@@ -6,44 +6,44 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
-    [Header("Target To Walk Towards")]
-    [Space(10)]
-    public Transform target;
-
-    public Transform ground;
-    public bool detectTargets;
-    public bool targetIsStatic;
-    public bool respawnTargetWhenTouched;
-    public float targetSpawnRadius;
-
+    [Header("Target To Walk Towards")] [Space(10)]
+    public TargetController target; //Target the agent will walk towards.
+    
     [Header("Body Parts")] [Space(10)]
     public Transform bodySegment0;
     public Transform bodySegment1;
     public Transform bodySegment2;
     public Transform bodySegment3;
 
-    [Header("Joint Settings")] [Space(10)]
+    [Header("Orientation")] [Space(10)]
+    //This will be used as a stabilized model space reference point for observations
+    //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
+    public OrientationCubeController orientationCube;
+
     JointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
     float m_FacingDot;
-
+    Vector3 m_startingPos;
+    
     [Header("Reward Functions To Use")]
     [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
-
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
     Quaternion m_LookRotation; //LookRotation from m_TargetDirMatrix to Target
-    Matrix4x4 m_TargetDirMatrix; //Matrix used by agent as orientation reference
+//    Matrix4x4 m_TargetDirMatrix; //Matrix used by agent as orientation reference
 
     public override void Initialize()
     {
+        m_startingPos = bodySegment0.position;
+        orientationCube.UpdateOrientation(bodySegment0, target.transform);
+
         m_JdController = GetComponent<JointDriveController>();
-        m_DirToTarget = target.position - bodySegment0.position;
-        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
-        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
+//        m_DirToTarget = target.position - bodySegment0.position;
+//        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
+//        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
 
         //Setup each body part
         m_JdController.SetupBodyPart(bodySegment0);
@@ -59,46 +59,47 @@ public class WormAgent : Agent
         DestroyImmediate(bodySegment3.GetComponent<TargetContact>());
     }
 
-
-    //Get Joint Rotation Relative to the Connected Rigidbody
-    //We want to collect this info because it is the actual rotation, not the "target rotation"
-    public Quaternion GetJointRotation(ConfigurableJoint joint)
+    /// <summary>
+    /// Loop over body parts and reset them to initial conditions.
+    /// </summary>
+    public override void OnEpisodeBegin()
     {
-        return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
+        foreach (var bodyPart in m_JdController.bodyPartsList)
+        {
+            bodyPart.Reset(bodyPart);
+        }
+        //Random start rotation to help generalize
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        
+        orientationCube.UpdateOrientation(bodySegment0, target.transform);
+        rewardManager.ResetEpisodeRewards();
     }
-
+    
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
     public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
     {
-        var rb = bp.rb;
+        //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
 
-        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
-        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
+        //Get velocities in the context of our orientation cube's space
+        //Note: You can get these velocities in world space as well but it may not train as well.
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
-        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
-        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
 
         if (bp.rb.transform != bodySegment0)
         {
-            var localPosRelToBody = bodySegment0.InverseTransformPoint(rb.position);
-            sensor.AddObservation(localPosRelToBody);
-            sensor.AddObservation(GetJointRotation(bp.joint));
+            //Get position relative to hips in the context of our orientation cube's space
+            sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
+            sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_JdController.GetCurrentJointForces();
-
-        // Update pos to target
-        m_DirToTarget = target.position - bodySegment0.position;
-        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
-        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
-
         RaycastHit hit;
         float maxDist = 10;
         if (Physics.Raycast(bodySegment0.position, Vector3.down, out hit, maxDist))
@@ -108,14 +109,18 @@ public class WormAgent : Agent
         else
             sensor.AddObservation(1);
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+//        sensor.AddObservation(bodySegment0.rotation);
+//        sensor.AddObservation(orientationCube.transform.rotation);
+        sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, orientationCube.transform.forward));
+        
+        //Add pos of target relative to orientation cube
+        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
+        
+        foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
 
-        //Rotation delta between the matrix and the head
-        Quaternion headRotationDeltaFromMatrixRot = Quaternion.Inverse(m_TargetDirMatrix.rotation) * bodySegment0.rotation;
-        sensor.AddObservation(headRotationDeltaFromMatrixRot);
     }
 
     /// <summary>
@@ -124,22 +129,8 @@ public class WormAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        if (respawnTargetWhenTouched)
-        {
-            GetRandomTargetPos();
-        }
     }
-
-    /// <summary>
-    /// Moves target to a random position within specified radius.
-    /// </summary>
-    public void GetRandomTargetPos()
-    {
-        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
-        target.position = newTargetPos + ground.position;
-    }
-
+    
     public override void OnActionReceived(float[] vectorAction)
     {
         // The dictionary with all the body parts in it are in the jdController
@@ -156,7 +147,8 @@ public class WormAgent : Agent
         bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
 
-        if (bodySegment0.position.y < ground.position.y -2)
+        //Reset if Worm fell through floor;
+        if (bodySegment0.position.y < m_startingPos.y -2)
         {
             EndEpisode();
         }
@@ -164,16 +156,7 @@ public class WormAgent : Agent
 
     void FixedUpdate()
     {
-        if (detectTargets)
-        {
-            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-            {
-                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
-                {
-                    TouchedTarget();
-                }
-            }
-        }
+        orientationCube.UpdateOrientation(bodySegment0, target.transform);
 
         // Set reward for this step according to mixture of the following elements.
         if (rewardMovingTowardsTarget)
@@ -192,22 +175,37 @@ public class WormAgent : Agent
         }
     }
 
+    public RewardManager rewardManager;
+    public float velReward;
     /// <summary>
     /// Reward moving towards target & Penalize moving away from target.
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, m_DirToTarget.normalized);
-        AddReward(0.01f * m_MovingTowardsDot);
+        velReward = Vector3.Dot(orientationCube.transform.forward,
+            m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
+        rewardManager.UpdateReward("velReward", velReward);
+        
+        
+//        m_MovingTowardsDot = Vector3.Dot(orientationCube.transform.forward, m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
+//        AddReward(0.01f * m_MovingTowardsDot);
     }
 
+    public float facingReward;
     /// <summary>
     /// Reward facing target & Penalize facing away from target
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        float bodyRotRelativeToMatrixDot = Quaternion.Dot(m_TargetDirMatrix.rotation, bodySegment0.rotation);
-        AddReward(0.01f * bodyRotRelativeToMatrixDot);
+//        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
+//        rewardManager.UpdateReward("facingReward", facingReward);
+
+//        float bodyRotRelativeToMatrixDot = Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
+//        AddReward(0.01f * bodyRotRelativeToMatrixDot);
+
+        facingReward =  Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward);
+        rewardManager.UpdateReward("facingReward", facingReward);
+//        AddReward(0.01f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward));
     }
 
     /// <summary>
@@ -217,25 +215,5 @@ public class WormAgent : Agent
     {
         AddReward(-0.001f);
     }
-
-    /// <summary>
-    /// Loop over body parts and reset them to initial conditions.
-    /// </summary>
-    public override void OnEpisodeBegin()
-    {
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            bodyPart.Reset(bodyPart);
-        }
-        if (m_DirToTarget != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
-        }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
-
-        if (!targetIsStatic)
-        {
-            GetRandomTargetPos();
-        }
-    }
+    
 }
