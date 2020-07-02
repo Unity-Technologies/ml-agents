@@ -6,12 +6,12 @@ from collections import deque
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.model_serialization import export_policy_model, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
@@ -33,7 +33,7 @@ class Trainer(abc.ABC):
     ):
         """
         Responsible for collecting experiences and training a neural network model.
-        :BrainParameters brain: Brain to be trained.
+        :param brain_name: Brain name of brain to be trained.
         :param trainer_settings: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param artifact_path: The directory within which to store artifacts from this trainer
@@ -134,7 +134,7 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         """
         Creates policy

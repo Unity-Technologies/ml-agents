@@ -7,7 +7,6 @@ from mlagents.trainers import trainer_util
 from mlagents.trainers.cli_utils import load_config, _load_config
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
 
@@ -17,11 +16,10 @@ def dummy_config():
     return RunOptions(behaviors={"testbrain": PPO_CONFIG})
 
 
-@patch("mlagents.trainers.brain.BrainParameters")
-def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
-    brain_params_mock = BrainParametersMock()
-    BrainParametersMock.return_value.brain_name = "testbrain"
-    external_brains = {"testbrain": BrainParametersMock()}
+@patch("mlagents_envs.base_env.BehaviorSpec")
+def test_initialize_ppo_trainer(BehaviorSpecMock, dummy_config):
+    brain_name = "testbrain"
+    training_behaviors = {"testbrain": BehaviorSpecMock()}
     output_path = "results_dir"
     train_model = True
     load_model = False
@@ -41,7 +39,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
         seed,
         artifact_path,
     ):
-        assert brain == brain_params_mock.brain_name
+        assert brain == brain_name
         assert trainer_settings == expected_config
         assert reward_buff_cap == expected_reward_buff_cap
         assert training == train_model
@@ -58,27 +56,18 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
             seed=seed,
         )
         trainers = {}
-        for brain_name, brain_parameters in external_brains.items():
-            trainers[brain_name] = trainer_factory.generate(brain_parameters.brain_name)
+        for brain_name in training_behaviors.keys():
+            trainers[brain_name] = trainer_factory.generate(brain_name)
         assert "testbrain" in trainers
         assert isinstance(trainers["testbrain"], PPOTrainer)
 
 
-@patch("mlagents.trainers.brain.BrainParameters")
-def test_handles_no_config_provided(BrainParametersMock):
+def test_handles_no_config_provided():
     """
     Make sure the trainer setup handles no configs provided at all.
     """
     brain_name = "testbrain"
     no_default_config = RunOptions().behaviors
-    brain_parameters = BrainParameters(
-        brain_name=brain_name,
-        vector_observation_space_size=1,
-        camera_resolutions=[],
-        vector_action_space_size=[2],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
-    )
 
     trainer_factory = trainer_util.TrainerFactory(
         trainer_config=no_default_config,
@@ -87,7 +76,7 @@ def test_handles_no_config_provided(BrainParametersMock):
         load_model=False,
         seed=42,
     )
-    trainer_factory.generate(brain_parameters.brain_name)
+    trainer_factory.generate(brain_name)
 
 
 def test_load_config_missing_file():

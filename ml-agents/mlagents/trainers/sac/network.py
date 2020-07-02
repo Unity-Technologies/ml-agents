@@ -299,10 +299,9 @@ class SACTargetNetwork(SACNetwork):
             vis_encode_type,
         )
         with tf.variable_scope(TARGET_SCOPE):
-            self.visual_in = ModelUtils.create_visual_input_placeholders(
-                policy.brain.camera_resolutions
+            self.vector_in, self.visual_in = ModelUtils.create_input_placeholders(
+                self.policy.behavior_spec.observation_shapes
             )
-            self.vector_in = ModelUtils.create_vector_input(policy.vec_obs_size)
             if self.policy.normalize:
                 normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op

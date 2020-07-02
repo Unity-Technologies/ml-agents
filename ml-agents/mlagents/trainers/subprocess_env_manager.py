@@ -12,7 +12,7 @@ from mlagents_envs.exception import (
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents_envs.base_env import BaseEnv, BehaviorName
+from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
@@ -22,7 +22,6 @@ from mlagents_envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -37,7 +36,6 @@ from mlagents_envs.side_channel.stats_side_channel import (
     StatsAggregationMethod,
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
-from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
 logger = logging_util.get_logger(__name__)
@@ -45,7 +43,7 @@ logger = logging_util.get_logger(__name__)
 
 class EnvironmentCommand(enum.Enum):
     STEP = 1
-    EXTERNAL_BRAINS = 2
+    BEHAVIOR_SPECS = 2
     ENVIRONMENT_PARAMETERS = 3
     RESET = 4
     CLOSE = 5
@@ -136,14 +134,6 @@ def worker(
             all_step_result[brain_name] = env.get_steps(brain_name)
         return all_step_result
 
-    def external_brains():
-        result = {}
-        for behavior_name, behavior_specs in env.behavior_specs.items():
-            result[behavior_name] = behavior_spec_to_brain_parameters(
-                behavior_name, behavior_specs
-            )
-        return result
-
     try:
         env = env_factory(
             worker_id, [env_parameters, engine_configuration_channel, stats_channel]
@@ -172,8 +162,8 @@ def worker(
                     )
                 )
                 reset_timers()
-            elif req.cmd == EnvironmentCommand.EXTERNAL_BRAINS:
-                _send_response(EnvironmentCommand.EXTERNAL_BRAINS, external_brains())
+            elif req.cmd == EnvironmentCommand.BEHAVIOR_SPECS:
+                _send_response(EnvironmentCommand.BEHAVIOR_SPECS, env.behavior_specs)
             elif req.cmd == EnvironmentCommand.ENVIRONMENT_PARAMETERS:
                 for k, v in req.payload.items():
                     if isinstance(v, float):
@@ -312,8 +302,8 @@ class SubprocessEnvManager(EnvManager):
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
 
     @property
-    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
-        self.env_workers[0].send(EnvironmentCommand.EXTERNAL_BRAINS)
+    def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
+        self.env_workers[0].send(EnvironmentCommand.BEHAVIOR_SPECS)
         return self.env_workers[0].recv().payload
 
     def close(self) -> None:
