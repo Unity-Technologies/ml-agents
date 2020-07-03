@@ -407,7 +407,8 @@ class SimpleVisualEncoder(nn.Module):
     def forward(self, visual_obs):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
-        hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
+        # hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
+        hidden = torch.relu(self.dense(torch.reshape(conv_2,(-1, self.final_flat))))
         return hidden
 
 
