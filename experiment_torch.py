@@ -55,28 +55,33 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 
 
 
+steps = 100000
 
 
-results.append(run_experiment("3DBall", 20000, True, 4, True))
-results.append(run_experiment("3DBall", 20000, True, 4, False))
-# results.append(run_experiment("3DBall", 20000, True, 1, False))
-# results.append(run_experiment("3DBall", 20000, False, None, False))
+results.append(run_experiment("3DBall", steps, True, 4, False))
+results.append(run_experiment("3DBall", steps, True, 1, False))
+results.append(run_experiment("3DBall", steps, True, 1, True))
+results.append(run_experiment("3DBall", steps, False, None, False))
 
-# results.append(run_experiment("GridWorld", 2000, True, 4, False))
-# results.append(run_experiment("GridWorld", 2000, True, 1, False))
-# results.append(run_experiment("GridWorld", 2000, False, None, False))
+results.append(run_experiment("GridWorld", steps, True, 4, False))
+results.append(run_experiment("GridWorld", steps, True, 1, False))
+results.append(run_experiment("GridWorld", steps, True, 1, True))
+results.append(run_experiment("GridWorld", steps, False, None, False))
 
-# results.append(run_experiment("PushBlock", 20000, True, 4, False))
-# results.append(run_experiment("PushBlock", 20000, True, 1, False))
-# results.append(run_experiment("PushBlock", 20000, False, None, False))
+results.append(run_experiment("PushBlock", steps, True, 4, False))
+results.append(run_experiment("PushBlock", steps, True, 1, False))
+results.append(run_experiment("PushBlock", steps, True, 1, True))
+results.append(run_experiment("PushBlock", steps, False, None, False))
 
-# results.append(run_experiment("Hallway", 20000, True, 4, False))
-# results.append(run_experiment("Hallway", 20000, True, 1, False))
-# results.append(run_experiment("Hallway", 20000, False, None, False))
+results.append(run_experiment("Hallway", steps, True, 4, False))
+results.append(run_experiment("Hallway", steps, True, 1, False))
+results.append(run_experiment("Hallway", steps, True, 1, True))
+results.append(run_experiment("Hallway", steps, False, None, False))
 
-# results.append(run_experiment("CrawlerStaticTarget", 50000, True, 4, False, "CrawlerStatic"))
-# results.append(run_experiment("CrawlerStaticTarget", 50000, True, 1, False, "CrawlerStatic"))
-# results.append(run_experiment("CrawlerStaticTarget", 50000, False, None, False, "CrawlerStatic"))
+results.append(run_experiment("CrawlerStaticTarget", steps, True, 4, False, "CrawlerStatic"))
+results.append(run_experiment("CrawlerStaticTarget", steps, True, 1, False, "CrawlerStatic"))
+results.append(run_experiment("CrawlerStaticTarget", steps, True, 1, True, "CrawlerStatic"))
+results.append(run_experiment("CrawlerStaticTarget", steps, False, None, False, "CrawlerStatic"))
 
 
 for r in results:
