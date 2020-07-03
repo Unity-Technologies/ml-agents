@@ -1339,6 +1339,7 @@ MonoBehaviour:
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 956508939}
   velReward: 0
+  maximumWalkingSpeed: 5
   facingReward: 0
 --- !u!114 &6354129450058742791
 MonoBehaviour:
@@ -2535,6 +2536,7 @@ MonoBehaviour:
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 0}
   velReward: 0
+  maximumWalkingSpeed: 10
   facingReward: 0
 --- !u!114 &3668351471617480446
 MonoBehaviour:
@@ -3773,6 +3775,7 @@ MonoBehaviour:
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 0}
   velReward: 0
+  maximumWalkingSpeed: 10
   facingReward: 0
 --- !u!114 &4184493652045809722
 MonoBehaviour:

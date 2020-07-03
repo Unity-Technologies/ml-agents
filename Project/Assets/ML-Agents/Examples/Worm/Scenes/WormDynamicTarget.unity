@@ -1206,53 +1206,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[2].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[3].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[4].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[5].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[6].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[7].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[8].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[0].rewardKey
-      value: velReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[1].rewardKey
-      value: facingReward
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[0].rewardScalar
-      value: 0.01
-      objectReference: {fileID: 0}
-    - target: {fileID: 956508939, guid: 75720cc09f5b24833af829458ac467fa, type: 3}
-      propertyPath: rewardsList.Array.data[1].rewardScalar
-      value: 0.01
+    - target: {fileID: 6108094741297379326, guid: 75720cc09f5b24833af829458ac467fa,
+        type: 3}
+      propertyPath: maximumWalkingSpeed
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7516351800607109742, guid: 75720cc09f5b24833af829458ac467fa,
         type: 3}
