@@ -54,60 +54,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             SetParentIndices(parentIndices);
         }
 
-
-
-
-//        public override void UpdateModelSpacePoses()
-//        {
-//            base.UpdateModelSpacePoses();
-//            var numBodies = m_Bodies?.Length ?? 0;
-//            if (numBodies == 0)
-//            {
-//                return;
-//            }
-//
-//            var worldPose = GetPoseAt(0);
-//            var worldToModel = worldPose.Inverse();
-//            var rootBody = m_Bodies[0];
-//
-//            for (var i = 0; i < numBodies; i++)
-//            {
-//                var body = GetBodyAt(i);
-//                var relativeVelocity = body.velocity - rootBody.velocity;
-//                m_ModelSpaceLinearVelocities[i] = worldToModel.Multiply(relativeVelocity);
-//            }
-//        }
-//
-//        public override void UpdateLocalSpacePoses()
-//        {
-//            base.UpdateLocalSpacePoses();
-//
-//            var numBodies = m_Bodies?.Length ?? 0;
-//            if (numBodies == 0)
-//            {
-//                return;
-//            }
-//
-//            for (var i = 0; i < numBodies; i++)
-//            {
-//                var parentIndex = GetParentIndex(i);
-//                if (i != -1)
-//                {
-//                    var parentTransform = GetPoseAt(parentIndex);
-//                    var parentBody = GetBodyAt(parentIndex);
-//                    var currentBody = GetBodyAt(i);
-//                    // This is slightly inefficient, since for a body with multiple children, we'll end up inverting
-//                    // the transform multiple times. Might be able to trade space for perf here.
-//                    var invParent = parentTransform.Inverse();
-//                    m_LocalSpaceLinearVelocities[i] = invParent.Multiply(currentBody.velocity - parentBody.velocity);
-//                }
-//                else
-//                {
-//                    m_LocalSpaceLinearVelocities[i] = Vector3.zero;
-//                }
-//            }
-//        }
-
         protected Rigidbody GetBodyAt(int index)
         {
             return m_Bodies[index];

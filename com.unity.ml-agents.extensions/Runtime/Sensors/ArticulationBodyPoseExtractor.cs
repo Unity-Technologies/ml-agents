@@ -46,6 +46,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             SetParentIndices(parentIndices);
         }
 
+        protected ArticulationBody GetBodyAt(int index)
+        {
+            return m_Bodies[index];
+        }
+
+        protected override Vector3 GetLinearVelocityAt(int index)
+        {
+            return GetBodyAt(index).velocity;
+        }
+
         protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];
@@ -53,8 +63,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             var t = go.transform;
             return new Pose { rotation = t.rotation, position = t.position };
         }
-
-
     }
 }
 #endif // UNITY_2020_1_OR_NEWER

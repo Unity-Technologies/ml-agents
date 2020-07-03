@@ -2,7 +2,9 @@
     "name": "Unity.ML-Agents.Extensions.EditorTests",
     "references": [
         "Unity.ML-Agents.Extensions.Editor",
-        "Unity.ML-Agents.Extensions"
+        "Unity.ML-Agents.Extensions",
+        "Unity.ML-Agents",
+        "Unity.ML-Agents.Editor.Tests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -4,7 +4,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
 {
-    public class SensorTestHelper
+    public static class SensorTestHelper
     {
         public static void CompareObservation(ISensor sensor, float[] expected)
         {
@@ -15,13 +15,20 @@ namespace Unity.MLAgents.Tests
             {
                 output[i] = fill;
             }
-            Assert.AreEqual(fill, output[0]);
+
+            if(numExpected > 0)
+            {
+                Assert.AreEqual(fill, output[0]);
+            }
 
             ObservationWriter writer = new ObservationWriter();
             writer.SetTarget(output, sensor.GetObservationShape(), 0);
 
             // Make sure ObservationWriter didn't touch anything
-            Assert.AreEqual(fill, output[0]);
+            if(numExpected > 0)
+            {
+                Assert.AreEqual(fill, output[0]);
+            }
 
             sensor.Write(writer);
             Assert.AreEqual(expected, output);

@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         public bool UseModelSpaceTranslations;
 
         /// <summary>
-        /// Whether to use model space (relative to the root body) rotatoins as observations.
+        /// Whether to use model space (relative to the root body) rotations as observations.
         /// </summary>
         public bool UseModelSpaceRotations;
 
@@ -27,7 +27,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public bool UseLocalSpaceRotations;
 
+        /// <summary>
+        /// Whether to use model space (relative to the root body) linear velocities as observations.
+        /// </summary>
         public bool UseModelSpaceLinearVelocity;
+
+        /// <summary>
+        /// Whether to use local space (relative to the parent body) linear velocities as observations.
+        /// </summary>
         public bool UseLocalSpaceLinearVelocity;
 
         /// <summary>
@@ -98,7 +105,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var poses = poseExtractor.ModelSpacePoses;
                 var vels = poseExtractor.ModelSpaceVelocities;
 
-                for(var i=0; i<poses.Count; i++)
+                for(var i=0; i<poseExtractor.NumPoses; i++)
                 {
                     var pose = poses[i];
                     if(settings.UseModelSpaceTranslations)
@@ -124,7 +131,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var poses = poseExtractor.LocalSpacePoses;
                 var vels = poseExtractor.LocalSpaceVelocities;
 
-                for(var i=0; i<poses.Count; i++)
+                for(var i=0; i<poseExtractor.NumPoses; i++)
                 {
                     var pose = poses[i];
                     if(settings.UseLocalSpaceTranslations)

@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         public RigidBodySensor(Rigidbody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
             m_PoseExtractor = new RigidBodyPoseExtractor(rootBody);
-            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"RigidBodySensor:{rootBody.name}" : sensorName;
+            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"RigidBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;
 
             var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
