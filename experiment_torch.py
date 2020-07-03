@@ -56,8 +56,9 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 
 
 
-results.append(run_experiment("3DBall", 20000, True, 4, False))
+
 results.append(run_experiment("3DBall", 20000, True, 4, True))
+results.append(run_experiment("3DBall", 20000, True, 4, False))
 # results.append(run_experiment("3DBall", 20000, True, 1, False))
 # results.append(run_experiment("3DBall", 20000, False, None, False))
 
