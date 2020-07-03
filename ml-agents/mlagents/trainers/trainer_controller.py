@@ -166,7 +166,7 @@ class TrainerController(object):
                 self.trainer_threads.append(trainerthread)
 
         policy = trainer.create_policy(
-            parsed_behavior_id, env_manager.external_brains[name_behavior_id]
+            parsed_behavior_id, env_manager.training_behaviors[name_behavior_id]
         )
         trainer.add_policy(parsed_behavior_id, policy)
 
@@ -203,7 +203,7 @@ class TrainerController(object):
             # Initial reset
             self._reset_env(env_manager)
             while self._not_done_training():
-                external_brain_behavior_ids = set(env_manager.external_brains.keys())
+                external_brain_behavior_ids = set(env_manager.training_behaviors.keys())
                 new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
                 self._create_trainers_and_managers(env_manager, new_behavior_ids)
                 last_brain_behavior_ids = external_brain_behavior_ids

@@ -43,7 +43,7 @@ def extrinsic_dummy_config():
     return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
 
 
-VECTOR_ACTION_SPACE = [2]
+VECTOR_ACTION_SPACE = 2
 VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 20
@@ -54,12 +54,13 @@ NUM_AGENTS = 12
 def create_optimizer_mock(
     trainer_config, reward_signal_config, use_rnn, use_discrete, use_visual
 ):
-    mock_brain = mb.setup_mock_brain(
+    mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
-        vector_action_space=VECTOR_ACTION_SPACE,
-        vector_obs_space=VECTOR_OBS_SPACE,
-        discrete_action_space=DISCRETE_ACTION_SPACE,
+        vector_action_space=DISCRETE_ACTION_SPACE
+        if use_discrete
+        else VECTOR_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE if not use_visual else 0,
     )
     trainer_settings = trainer_config
     trainer_settings.reward_signals = reward_signal_config
@@ -69,7 +70,7 @@ def create_optimizer_mock(
         else None
     )
     policy = NNPolicy(
-        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
+        0, mock_specs, trainer_settings, False, "test", False, create_tf_graph=False
     )
     if trainer_settings.trainer_type == TrainerType.SAC:
         optimizer = SACOptimizer(policy, trainer_settings)
@@ -79,7 +80,7 @@ def create_optimizer_mock(
 
 
 def reward_signal_eval(optimizer, reward_signal_name):
-    buffer = mb.simulate_rollout(BATCH_SIZE, optimizer.policy.brain)
+    buffer = mb.simulate_rollout(BATCH_SIZE, optimizer.policy.behavior_spec)
     # Test evaluate
     rsig_result = optimizer.reward_signals[reward_signal_name].evaluate_batch(buffer)
     assert rsig_result.scaled_reward.shape == (BATCH_SIZE,)
@@ -87,7 +88,7 @@ def reward_signal_eval(optimizer, reward_signal_name):
 
 
 def reward_signal_update(optimizer, reward_signal_name):
-    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.brain)
+    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec)
     feed_dict = optimizer.reward_signals[reward_signal_name].prepare_update(
         optimizer.policy, buffer.make_mini_batch(0, 10), 2
     )

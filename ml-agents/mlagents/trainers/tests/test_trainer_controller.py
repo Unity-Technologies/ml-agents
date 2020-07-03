@@ -83,7 +83,7 @@ def test_start_learning_trains_forever_if_no_train_model(
     env_mock = MagicMock()
     env_mock.close = MagicMock()
     env_mock.reset = MagicMock()
-    env_mock.external_brains = MagicMock()
+    env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
     tf_reset_graph.assert_called_once()
@@ -104,7 +104,7 @@ def test_start_learning_trains_until_max_steps_then_saves(
     env_mock = MagicMock()
     env_mock.close = MagicMock()
     env_mock.reset = MagicMock(return_value=brain_info_mock)
-    env_mock.external_brains = MagicMock()
+    env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
     tf_reset_graph.assert_called_once()

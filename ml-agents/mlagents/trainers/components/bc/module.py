@@ -34,7 +34,7 @@ class BCModule:
         self.current_lr = policy_learning_rate * settings.strength
         self.model = BCModel(policy, self.current_lr, settings.steps)
         _, self.demonstration_buffer = demo_to_buffer(
-            settings.demo_path, policy.sequence_length, policy.brain
+            settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
 
         self.batch_size = (
@@ -107,15 +107,15 @@ class BCModule:
             self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
-        if not self.policy.use_continuous_act:
+        if self.policy.behavior_spec.is_action_discrete():
             feed_dict[self.policy.action_masks] = np.ones(
                 (
                     self.n_sequences * self.policy.sequence_length,
-                    sum(self.policy.brain.vector_action_space_size),
+                    sum(self.policy.behavior_spec.discrete_action_branches),
                 ),
                 dtype=np.float32,
             )
-        if self.policy.brain.vector_observation_space_size > 0:
+        if self.policy.vec_obs_size > 0:
             feed_dict[self.policy.vector_in] = mini_batch_demo["vector_obs"]
         for i, _ in enumerate(self.policy.visual_in):
             feed_dict[self.policy.visual_in[i]] = mini_batch_demo["visual_obs%d" % i]

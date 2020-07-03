@@ -6,7 +6,7 @@ from typing import Deque, Dict, List, cast
 import numpy as np
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
@@ -315,7 +315,7 @@ class GhostTrainer(Trainer):
         self.trainer.export_model(brain_name)
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         """
         Creates policy with the wrapped trainer's create_policy function
@@ -324,7 +324,7 @@ class GhostTrainer(Trainer):
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
         """
-        policy = self.trainer.create_policy(parsed_behavior_id, brain_parameters)
+        policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
         policy.create_tf_graph()
         policy.initialize_or_load()
         policy.init_load_weights()
@@ -334,7 +334,7 @@ class GhostTrainer(Trainer):
         # First policy or a new agent on the same team encountered
         if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
             internal_trainer_policy = self.trainer.create_policy(
-                parsed_behavior_id, brain_parameters
+                parsed_behavior_id, behavior_spec
             )
             self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
             internal_trainer_policy.init_load_weights()
