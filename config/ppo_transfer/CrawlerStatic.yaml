@@ -15,9 +15,10 @@ behaviors:
       value_layers: 2
       feature_size: 32
       reuse_encoder: true
-      use_var_encoder: true
+      use_var_predict: true
+      in_epoch_alter: true
       in_batch_alter: true
-      use_inverse_model: true
+      use_op_buffer: true
     network_settings:
       normalize: true
       hidden_units: 512

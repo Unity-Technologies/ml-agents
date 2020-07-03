@@ -3,7 +3,7 @@ import numpy as np
 import os
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType
+from mlagents.trainers.models import ModelUtils, EncoderType, ScheduleType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals.curiosity.model import CuriosityModel
 from mlagents.trainers.policy.transfer_policy import TransferPolicy
@@ -87,6 +87,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 "Losses/Policy Loss": "policy_loss",
                 "Losses/Model Loss": "model_loss",
                 "Policy/Learning Rate": "learning_rate",
+                "Policy/Model Learning Rate": "model_learning_rate",
                 "Policy/Epsilon": "decay_epsilon",
                 "Policy/Beta": "decay_beta",
             }
@@ -109,6 +110,13 @@ class PPOTransferOptimizer(TFOptimizer):
             with tf.variable_scope("optimizer/"):
                 self.learning_rate = ModelUtils.create_schedule(
                     self._schedule,
+                    lr,
+                    self.policy.global_step,
+                    int(max_step),
+                    min_value=1e-10,
+                )
+                self.model_learning_rate = ModelUtils.create_schedule(
+                    ScheduleType.LINEAR,
                     lr,
                     self.policy.global_step,
                     int(max_step),
@@ -137,6 +145,7 @@ class PPOTransferOptimizer(TFOptimizer):
                         "learning_rate": self.learning_rate,
                         "decay_epsilon": self.decay_epsilon,
                         "decay_beta": self.decay_beta,
+                        "model_learning_rate": self.model_learning_rate
                     }
                 )
 
@@ -423,11 +432,12 @@ class PPOTransferOptimizer(TFOptimizer):
                     + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
                     + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse") \
                     + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") 
+
             self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
             self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
             self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
 
-            self.model_optimizer = self.create_optimizer_op(self.learning_rate)
+            self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
             self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
             self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
 
@@ -446,7 +456,7 @@ class PPOTransferOptimizer(TFOptimizer):
             {
                 "model_loss": self.model_loss,
                 "update_batch": self.model_update_batch,
-                "learning_rate": self.learning_rate,
+                "model_learning_rate": self.model_learning_rate,
                 "decay_epsilon": self.decay_epsilon,
                 "decay_beta": self.decay_beta,
             }
@@ -538,7 +548,7 @@ class PPOTransferOptimizer(TFOptimizer):
         if update_type == "model":
             stats_needed = {
                 "Losses/Model Loss": "model_loss",
-                "Policy/Learning Rate": "learning_rate",
+                "Policy/Learning Rate": "model_learning_rate",
                 "Policy/Epsilon": "decay_epsilon",
                 "Policy/Beta": "decay_beta",
             }
@@ -590,7 +600,7 @@ class PPOTransferOptimizer(TFOptimizer):
             self.policy.processed_vector_next: mini_batch["next_vector_in"],
             # self.policy.next_vector_in: mini_batch["next_vector_in"],
             self.policy.current_action: mini_batch["actions"],
-            self.policy.current_reward: mini_batch["extrinsic_rewards"],
+            self.policy.current_reward: mini_batch["discounted_returns"],
             # self.dis_returns: mini_batch["discounted_returns"]
         }
         for name in self.reward_signals:

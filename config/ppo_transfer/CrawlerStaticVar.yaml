@@ -1,5 +1,5 @@
 behaviors:
-  OldCrawlerStatic:
+  CrawlerStatic:
     trainer_type: ppo_transfer
     hyperparameters:
       batch_size: 2024
