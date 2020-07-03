@@ -194,14 +194,6 @@ class PPOTrainer(RLTrainer):
         self._clear_update_buffer()
         return True
 
-    def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> Policy:
-        if self.framework == "torch":
-            return self.create_torch_policy(parsed_behavior_id, brain_parameters)
-        else:
-            return self.create_tf_policy(parsed_behavior_id, brain_parameters)
-
     def create_tf_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
     ) -> NNPolicy:

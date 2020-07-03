@@ -10,6 +10,9 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
+from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.policy.policy import Policy
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsPropertyType
@@ -37,6 +40,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
+        self.framework = "torch"
         self._next_save_step = 0
         self._next_summary_step = 0
 
@@ -79,6 +83,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :return: A boolean corresponding to wether or not update_model() can be run
         """
         return False
+
+    def create_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> Policy:
+        if self.framework == "torch":
+            return self.create_torch_policy(parsed_behavior_id, brain_parameters)
+        else:
+            return self.create_tf_policy(parsed_behavior_id, brain_parameters)
 
     @abc.abstractmethod
     def _update_policy(self) -> bool:

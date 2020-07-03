@@ -54,6 +54,7 @@ class TorchPolicy(Policy):
         self.global_step = 0
         self.m_size = 0
         self.model_path = model_path
+        self.network_settings = trainer_settings.network_settings
 
         self.act_size = brain.vector_action_space_size
         self.act_type = brain.vector_action_space_type
@@ -115,6 +116,7 @@ class TorchPolicy(Policy):
             vis_encode_type=trainer_settings.network_settings.vis_encode_type,
             stream_names=reward_signal_names,
             separate_critic=self.use_continuous_act,
+            conditional_sigma=self.condition_sigma_on_obs,
         )
 
     def split_decision_step(self, decision_requests):

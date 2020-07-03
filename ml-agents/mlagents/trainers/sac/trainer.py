@@ -18,6 +18,8 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 
 
@@ -187,17 +189,7 @@ class SACTrainer(RLTrainer):
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
     ) -> Policy:
-        policy = NNPolicy(
-            self.seed,
-            brain_parameters,
-            self.trainer_settings,
-            self.is_training,
-            self.artifact_path,
-            self.load,
-            tanh_squash=True,
-            reparameterize=True,
-            create_tf_graph=False,
-        )
+        policy = super().create_policy(parsed_behavior_id, brain_parameters)
         # Load the replay buffer if load
         if self.load and self.checkpoint_replay_buffer:
             try:
@@ -212,6 +204,41 @@ class SACTrainer(RLTrainer):
                 )
             )
 
+        return policy
+
+    def create_tf_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> NNPolicy:
+        policy = NNPolicy(
+            self.seed,
+            brain_parameters,
+            self.trainer_settings,
+            self.is_training,
+            self.artifact_path,
+            self.load,
+            tanh_squash=True,
+            reparameterize=True,
+            create_tf_graph=False,
+        )
+        return policy
+
+    def create_torch_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+    ) -> TorchPolicy:
+        """
+        Creates a PPO policy to trainers list of policies.
+        :param parsed_behavior_id:
+        :param brain_parameters: specifications for policy construction
+        :return policy
+        """
+        policy = TorchPolicy(
+            self.seed,
+            brain_parameters,
+            self.trainer_settings,
+            self.artifact_path,
+            self.load,
+            condition_sigma_on_obs=True,  # Faster training for PPO
+        )
         return policy
 
     def _update_sac_policy(self) -> bool:
@@ -317,10 +344,17 @@ class SACTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, NNPolicy):
-            raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
-        self.optimizer = SACOptimizer(self.policy, self.trainer_settings)
+        if self.framework == "torch":
+            self.optimizer = TorchSACOptimizer(  # type: ignore
+                self.policy, self.trainer_settings  # type: ignore
+            )  # type: ignore
+        else:
+            if not isinstance(policy, NNPolicy):
+                raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
+            self.optimizer = SACOptimizer(  # type: ignore
+                self.policy, self.trainer_settings  # type: ignore
+            )  # type: ignore
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly

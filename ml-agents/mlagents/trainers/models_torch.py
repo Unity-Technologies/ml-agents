@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Callable, NamedTuple
+from typing import Callable, NamedTuple, List
 
 import torch
 from torch import nn
@@ -10,6 +10,8 @@ from mlagents.trainers.distributions_torch import (
 )
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.models import EncoderType
+from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.brain import CameraResolution
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -131,6 +133,65 @@ class NetworkBody(nn.Module):
         return embedding, memories
 
 
+class QNetwork(nn.Module):
+    def __init__(
+        self,
+        stream_names: List[str],
+        vector_sizes: List[int],
+        visual_sizes: List[CameraResolution],
+        network_settings: NetworkSettings,
+        act_type: ActionType,
+        act_size: List[int],
+    ):
+        super(QNetwork, self).__init__()
+        self.network_body = NetworkBody(
+            vector_sizes,
+            visual_sizes,
+            network_settings.hidden_units,
+            network_settings.normalize,
+            network_settings.num_layers,
+            network_settings.memory.memory_size
+            if network_settings.memory is not None
+            else 0,
+            network_settings.vis_encode_type,
+            network_settings.memory is not None,
+        )
+        self.stream_names = stream_names
+
+
+class ContinuousQNetwork(QNetwork):
+    def __init__(
+        self,
+        stream_names: List[str],
+        vector_sizes: List[int],
+        visual_sizes: List[CameraResolution],
+        network_settings: NetworkSettings,
+        act_type: ActionType,
+        act_size: List[int],
+    ):
+        super(ContinuousQNetwork, self).__init__(
+            stream_names,
+            vector_sizes,
+            visual_sizes,
+            network_settings,
+            act_type,
+            act_size,
+        )
+        self.q_heads = ValueHeads(
+            self.stream_names, network_settings.hidden_units + sum(act_size)
+        )
+
+    def forward(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        actions: torch.Tensor,
+    ):
+        embedding, _ = self.network_body(vec_inputs, vis_inputs)
+        concat_embed = torch.cat([embedding, actions], axis=-1)
+        return self.q_heads(concat_embed)
+
+
 class ActorCritic(nn.Module):
     def __init__(
         self,
@@ -146,6 +207,7 @@ class ActorCritic(nn.Module):
         use_lstm,
         stream_names,
         separate_critic,
+        conditional_sigma=False,
     ):
         super(ActorCritic, self).__init__()
         self.act_type = ActionType.from_str(act_type)
@@ -170,7 +232,9 @@ class ActorCritic(nn.Module):
         else:
             embedding_size = h_size
         if self.act_type == ActionType.CONTINUOUS:
-            self.distribution = GaussianDistribution(embedding_size, act_size[0])
+            self.distribution = GaussianDistribution(
+                embedding_size, act_size[0], conditional_sigma=conditional_sigma
+            )
         else:
             self.distribution = MultiCategoricalDistribution(embedding_size, act_size)
         if separate_critic:
