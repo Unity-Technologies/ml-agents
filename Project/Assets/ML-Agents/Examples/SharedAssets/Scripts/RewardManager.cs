@@ -16,6 +16,8 @@ public class RewardManager : MonoBehaviour
         public float rewardThisStep;
         public float cumulativeThisEpisode;
         public float cumulativeThisSession;
+
+        public float maxRewardThisSession;
 //        public Reward(string k)
 //        public Reward()
 //        {
@@ -34,11 +36,12 @@ public class RewardManager : MonoBehaviour
 
     public List<Reward> rewardsList = new List<Reward>();
     public Dictionary<string, Reward> rewardsDict = new Dictionary<string, Reward>();
-
+    public float maxSteps;
     private void OnEnable()
 //    private void Awake()
     {
         m_thisAgent = GetComponent<Agent>();
+        maxSteps = m_thisAgent.MaxStep;
         foreach (var item in rewardsList)
         {
             if (rewardsDict.ContainsKey(item.rewardKey)) return; //don't need to add
@@ -64,6 +67,7 @@ public class RewardManager : MonoBehaviour
     public void UpdateReward(string key, float rawVal)
     {
         float val = rawVal * rewardsDict[key].rewardScalar;
+        rewardsDict[key].maxRewardThisSession =1/maxSteps;
         rewardsDict[key].rewardThisStep = val;
         rewardsDict[key].cumulativeThisEpisode += val;
         rewardsDict[key].cumulativeThisSession += val;

@@ -1334,8 +1334,8 @@ MonoBehaviour:
   bodySegment2: {fileID: 8492982986954425225}
   bodySegment3: {fileID: 4471267154670411807}
   orientationCube: {fileID: 1615945673559713923}
-  rewardMovingTowardsTarget: 1
-  rewardFacingTarget: 1
+  rewardMovingTowardsTarget: 0
+  rewardFacingTarget: 0
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 956508939}
   velReward: 0
@@ -1398,15 +1398,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rewardsList:
   - rewardKey: velReward
-    rewardScalar: 0.01
+    rewardScalar: 1
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
+    maxRewardThisSession: 0
   - rewardKey: facingReward
-    rewardScalar: 0.01
+    rewardScalar: 0.1
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
+    maxRewardThisSession: 0
+  maxSteps: 0
 --- !u!1 &3394278494711874192
 GameObject:
   m_ObjectHideFlags: 0
@@ -5953,6 +5956,11 @@ PrefabInstance:
         type: 3}
       propertyPath: onTriggerEnterEvent.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3631016866778687563, guid: 46734abd0de454192b407379c6a4ab8d,
+        type: 3}
+      propertyPath: spawnRadius
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
         type: 3}

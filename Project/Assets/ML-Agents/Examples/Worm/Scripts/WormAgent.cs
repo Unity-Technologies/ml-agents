@@ -202,13 +202,13 @@ public class WormAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-//        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
+        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
 //        rewardManager.UpdateReward("facingReward", facingReward);
 
 //        float bodyRotRelativeToMatrixDot = Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
 //        AddReward(0.01f * bodyRotRelativeToMatrixDot);
 
-        facingReward =  Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward);
+//        facingReward =  Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward);
 //        rewardManager.UpdateReward("facingReward", facingReward);
         rewardManager.UpdateReward("facingReward", facingReward/MaxStep);
 //        AddReward(0.01f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward));
