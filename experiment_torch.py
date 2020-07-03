@@ -15,9 +15,9 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 	TestingConfiguration.env_name = name
 	TestingConfiguration.max_steps = steps
 	TestingConfiguration.use_torch = use_torch
-	TestingConfiguration.use_gpu = use_gpu
+	TestingConfiguration.device = "cuda:0" if use_gpu else "cpu"
 	if (not torch.cuda.is_available() and use_gpu) or (not use_torch and use_gpu):
-		return ("na", )*12
+		return name, steps, use_torch, num_torch_threads, use_gpu, "na","na","na","na","na","na","na"
 	if config_name is None:
 		config_name = name
 	run_options = parse_command_line([f"config/ppo/{config_name}.yaml"])
@@ -57,24 +57,25 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 
 
 results.append(run_experiment("3DBall", 20000, True, 4, False))
-results.append(run_experiment("3DBall", 20000, True, 1, False))
-results.append(run_experiment("3DBall", 20000, False, None, False))
+results.append(run_experiment("3DBall", 20000, True, 4, True))
+# results.append(run_experiment("3DBall", 20000, True, 1, False))
+# results.append(run_experiment("3DBall", 20000, False, None, False))
 
-results.append(run_experiment("GridWorld", 2000, True, 4, False))
-results.append(run_experiment("GridWorld", 2000, True, 1, False))
-results.append(run_experiment("GridWorld", 2000, False, None, False))
+# results.append(run_experiment("GridWorld", 2000, True, 4, False))
+# results.append(run_experiment("GridWorld", 2000, True, 1, False))
+# results.append(run_experiment("GridWorld", 2000, False, None, False))
 
-results.append(run_experiment("PushBlock", 20000, True, 4, False))
-results.append(run_experiment("PushBlock", 20000, True, 1, False))
-results.append(run_experiment("PushBlock", 20000, False, None, False))
+# results.append(run_experiment("PushBlock", 20000, True, 4, False))
+# results.append(run_experiment("PushBlock", 20000, True, 1, False))
+# results.append(run_experiment("PushBlock", 20000, False, None, False))
 
-results.append(run_experiment("Hallway", 20000, True, 4, False))
-results.append(run_experiment("Hallway", 20000, True, 1, False))
-results.append(run_experiment("Hallway", 20000, False, None, False))
+# results.append(run_experiment("Hallway", 20000, True, 4, False))
+# results.append(run_experiment("Hallway", 20000, True, 1, False))
+# results.append(run_experiment("Hallway", 20000, False, None, False))
 
-results.append(run_experiment("CrawlerStaticTarget", 50000, True, 4, False, "CrawlerStatic"))
-results.append(run_experiment("CrawlerStaticTarget", 50000, True, 1, False, "CrawlerStatic"))
-results.append(run_experiment("CrawlerStaticTarget", 50000, False, None, False, "CrawlerStatic"))
+# results.append(run_experiment("CrawlerStaticTarget", 50000, True, 4, False, "CrawlerStatic"))
+# results.append(run_experiment("CrawlerStaticTarget", 50000, True, 1, False, "CrawlerStatic"))
+# results.append(run_experiment("CrawlerStaticTarget", 50000, False, None, False, "CrawlerStatic"))
 
 
 for r in results:

@@ -6,7 +6,7 @@ class TestingConfiguration:
     use_torch = False
     max_steps = 0
     env_name = ""
-    use_gpu = False
+    device = "cpu"
 
 
 

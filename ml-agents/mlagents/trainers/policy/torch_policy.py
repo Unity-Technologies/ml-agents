@@ -93,6 +93,9 @@ class TorchPolicy(Policy):
         self.log_std_min = -20
         self.log_std_max = 2
 
+        if TestingConfiguration.device != "cpu":
+            torch.set_default_tensor_type(torch.cuda.FloatTensor)
+
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
 
@@ -119,9 +122,7 @@ class TorchPolicy(Policy):
             separate_critic=self.use_continuous_act,
         )
 
-        if TestingConfiguration.use_gpu:
-            #move to gpu
-            self.actor_critic.to(torch.device("cuda:0"))
+        self.actor_critic.to(TestingConfiguration.device)
 
     def split_decision_step(self, decision_requests):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
@@ -196,18 +197,18 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = action.detach().numpy()
-        run_out["pre_action"] = action.detach().numpy()
+        run_out["action"] = action.detach().to(TestingConfiguration.device).numpy()
+        run_out["pre_action"] = action.detach().to(TestingConfiguration.device).numpy()
         # Todo - make pre_action difference
-        run_out["log_probs"] = log_probs.detach().numpy()
-        run_out["entropy"] = entropy.detach().numpy()
+        run_out["log_probs"] = log_probs.detach().to(TestingConfiguration.device).numpy()
+        run_out["entropy"] = entropy.detach().to(TestingConfiguration.device).numpy()
         run_out["value_heads"] = {
-            name: t.detach().numpy() for name, t in value_heads.items()
+            name: t.detach().to(TestingConfiguration.device).numpy() for name, t in value_heads.items()
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
-            run_out["memories"] = memories.detach().numpy()
+            run_out["memories"] = memories.detach().to(TestingConfiguration.device).numpy()
         self.actor_critic.update_normalization(vec_obs)
         return run_out
 
