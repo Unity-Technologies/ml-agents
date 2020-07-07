@@ -379,36 +379,29 @@ class CompletionCriteriaSettings:
                     "Threshold for next lesson cannot be negative when the measure is progress."
                 )
 
-    @staticmethod
     def need_increment(
-        increment_condition: "CompletionCriteriaSettings",
-        progress: float,
-        reward_buffer: List[float],
-        smoothing: float,
+        self, progress: float, reward_buffer: List[float], smoothing: float
     ) -> Tuple[bool, float]:
         """
         Given measures, this method returns a boolean indicating if the lesson
         needs to change now, and a float corresponding to the new smoothed value.
         """
         # Is the min number of episodes reached
-        if len(reward_buffer) < increment_condition.min_lesson_length:
+        if len(reward_buffer) < self.min_lesson_length:
             return False, smoothing
-        if (
-            increment_condition.measure
-            == CompletionCriteriaSettings.MeasureType.PROGRESS
-        ):
-            if progress > increment_condition.threshold:
+        if self.measure == CompletionCriteriaSettings.MeasureType.PROGRESS:
+            if progress > self.threshold:
                 return True, smoothing
-        if increment_condition.measure == CompletionCriteriaSettings.MeasureType.REWARD:
+        if self.measure == CompletionCriteriaSettings.MeasureType.REWARD:
             if len(reward_buffer) < 1:
                 return False, smoothing
             measure = np.mean(reward_buffer)
             if math.isnan(measure):
                 return False, smoothing
-            if increment_condition.signal_smoothing:
+            if self.signal_smoothing:
                 measure = 0.25 * smoothing + 0.75 * measure
                 smoothing = measure
-            if measure > increment_condition.threshold:
+            if measure > self.threshold:
                 return True, smoothing
         return False, smoothing
 

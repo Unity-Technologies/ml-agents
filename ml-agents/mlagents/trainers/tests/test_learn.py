@@ -7,6 +7,7 @@ from mlagents.trainers.learn import parse_command_line
 from mlagents.trainers.cli_utils import DetectDefault
 from mlagents_envs.exception import UnityEnvironmentException
 from mlagents.trainers.stats import StatsReporter
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 
 
 def basic_options(extra_args=None):
@@ -65,20 +66,26 @@ def test_run_training(
     mock_env.academy_name = "TestAcademyName"
     create_environment_factory.return_value = mock_env
     load_config.return_value = yaml.safe_load(MOCK_INITIALIZE_YAML)
-
+    mock_param_manager = MagicMock(return_value="mock_param_manager")
     mock_init = MagicMock(return_value=None)
-    with patch.object(TrainerController, "__init__", mock_init):
-        with patch.object(TrainerController, "start_learning", MagicMock()):
-            options = basic_options()
-            learn.run_training(0, options)
-            mock_init.assert_called_once_with(
-                trainer_factory_mock.return_value, "results/ppo", "ppo", None, True, 0
-            )
-            handle_dir_mock.assert_called_once_with(
-                "results/ppo", False, False, "results/notuselessrun"
-            )
-            write_timing_tree_mock.assert_called_once_with("results/ppo/run_logs")
-            write_run_options_mock.assert_called_once_with("results/ppo", options)
+    with patch.object(EnvironmentParameterManager, "__new__", mock_param_manager):
+        with patch.object(TrainerController, "__init__", mock_init):
+            with patch.object(TrainerController, "start_learning", MagicMock()):
+                options = basic_options()
+                learn.run_training(0, options)
+                mock_init.assert_called_once_with(
+                    trainer_factory_mock.return_value,
+                    "results/ppo",
+                    "ppo",
+                    "mock_param_manager",
+                    True,
+                    0,
+                )
+                handle_dir_mock.assert_called_once_with(
+                    "results/ppo", False, False, "results/notuselessrun"
+                )
+                write_timing_tree_mock.assert_called_once_with("results/ppo/run_logs")
+                write_run_options_mock.assert_called_once_with("results/ppo", options)
     StatsReporter.writers.clear()  # make sure there aren't any writers as added by learn.py
 
 

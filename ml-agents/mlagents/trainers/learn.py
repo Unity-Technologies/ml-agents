@@ -5,7 +5,7 @@ import os
 import numpy as np
 import json
 
-from typing import Callable, Optional, List, Dict
+from typing import Callable, Optional, List
 
 import mlagents.trainers
 import mlagents_envs
@@ -22,7 +22,7 @@ from mlagents.trainers.stats import (
 )
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.settings import RunOptions, EnvironmentParameterSettings
+from mlagents.trainers.settings import RunOptions
 
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
@@ -129,7 +129,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager = SubprocessEnvManager(
             env_factory, engine_config, env_settings.num_envs
         )
-        maybe_parameter_manager = try_create_param_manager(
+        env_parameter_manager = EnvironmentParameterManager(
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
 
@@ -139,8 +139,8 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             not checkpoint_settings.inference,
             checkpoint_settings.resume,
             run_seed,
+            env_parameter_manager,
             maybe_init_path,
-            maybe_parameter_manager,
             False,
         )
         # Create controller and begin training.
@@ -148,7 +148,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             trainer_factory,
             write_path,
             checkpoint_settings.run_id,
-            maybe_parameter_manager,
+            env_parameter_manager,
             not checkpoint_settings.inference,
             run_seed,
         )
@@ -190,17 +190,6 @@ def write_timing_tree(output_dir: str) -> None:
         logger.warning(
             f"Unable to save to {timing_path}. Make sure the directory exists"
         )
-
-
-def try_create_param_manager(
-    config: Optional[Dict[str, EnvironmentParameterSettings]],
-    run_seed: int,
-    restore: bool = False,
-) -> Optional[EnvironmentParameterManager]:
-    if config is None:
-        return None
-    else:
-        return EnvironmentParameterManager(config, run_seed, restore)
 
 
 def create_environment_factory(

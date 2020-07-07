@@ -1,7 +1,6 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from mlagents.trainers.settings import (
     EnvironmentParameterSettings,
-    CompletionCriteriaSettings,
     ParameterRandomizationSettings,
 )
 from collections import defaultdict
@@ -15,9 +14,9 @@ logger = get_logger(__name__)
 class EnvironmentParameterManager:
     def __init__(
         self,
-        settings: Dict[str, EnvironmentParameterSettings],
-        run_seed: int,
-        restore: bool,
+        settings: Optional[Dict[str, EnvironmentParameterSettings]] = None,
+        run_seed: int = -1,
+        restore: bool = False,
     ):
         """
         EnvironmentParameterManager manages all the environment parameters of a training
@@ -31,6 +30,8 @@ class EnvironmentParameterManager:
         GlobalTrainingStatus to try and reload the lesson status of each environment
         parameter.
         """
+        if settings is None:
+            settings = {}
         self._dict_settings = settings
         for parameter_name in self._dict_settings.keys():
             initial_lesson = GlobalTrainingStatus.get_parameter_state(
@@ -134,8 +135,7 @@ class EnvironmentParameterManager:
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
                 if behavior_to_consider in trainer_steps:
-                    must_increment, new_smoothing = CompletionCriteriaSettings.need_increment(
-                        lesson.completion_criteria,
+                    must_increment, new_smoothing = lesson.completion_criteria.need_increment(
                         float(trainer_steps[behavior_to_consider])
                         / float(trainer_max_steps[behavior_to_consider]),
                         trainer_reward_buffer[behavior_to_consider],

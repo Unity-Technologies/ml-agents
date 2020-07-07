@@ -10,6 +10,7 @@ from mlagents.trainers.exception import TrainerConfigError, UnityTrainerExceptio
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 
 
 @pytest.fixture
@@ -56,6 +57,7 @@ def test_initialize_ppo_trainer(BrainParametersMock, dummy_config):
             train_model=train_model,
             load_model=load_model,
             seed=seed,
+            param_manager=EnvironmentParameterManager(),
         )
         trainers = {}
         for brain_name, brain_parameters in external_brains.items():
@@ -86,6 +88,7 @@ def test_handles_no_config_provided(BrainParametersMock):
         train_model=True,
         load_model=False,
         seed=42,
+        param_manager=EnvironmentParameterManager(),
     )
     trainer_factory.generate(brain_parameters.brain_name)
 

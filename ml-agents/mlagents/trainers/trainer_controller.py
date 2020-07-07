@@ -4,7 +4,7 @@
 
 import os
 import threading
-from typing import Dict, Optional, Set, List
+from typing import Dict, Set, List
 from collections import defaultdict
 
 import numpy as np
@@ -36,7 +36,7 @@ class TrainerController(object):
         trainer_factory: TrainerFactory,
         output_path: str,
         run_id: str,
-        param_manager: Optional[EnvironmentParameterManager],
+        param_manager: EnvironmentParameterManager,
         train: bool,
         training_seed: int,
     ):
@@ -110,9 +110,7 @@ class TrainerController(object):
             A Data structure corresponding to the initial reset state of the
             environment.
         """
-        new_config = (
-            self.param_manager.get_current_samplers() if self.param_manager else {}
-        )
+        new_config = self.param_manager.get_current_samplers()
         env.reset(config=new_config)
 
     def _not_done_training(self) -> bool:
@@ -217,18 +215,15 @@ class TrainerController(object):
             trainer.end_episode()
 
     def reset_env_if_ready(self, env: EnvManager) -> None:
-        if self.param_manager:
-            # Get the sizes of the reward buffers.
-            reward_buff = {k: list(t.reward_buffer) for (k, t) in self.trainers.items()}
-            curr_step = {k: int(t.step) for (k, t) in self.trainers.items()}
-            max_step = {k: int(t.get_max_steps) for (k, t) in self.trainers.items()}
-            # Attempt to increment the lessons of the brains who
-            # were ready.
-            updated, param_must_reset = self.param_manager.update_lessons(
-                curr_step, max_step, reward_buff
-            )
-        else:
-            updated, param_must_reset = False, False
+        # Get the sizes of the reward buffers.
+        reward_buff = {k: list(t.reward_buffer) for (k, t) in self.trainers.items()}
+        curr_step = {k: int(t.step) for (k, t) in self.trainers.items()}
+        max_step = {k: int(t.get_max_steps) for (k, t) in self.trainers.items()}
+        # Attempt to increment the lessons of the brains who
+        # were ready.
+        updated, param_must_reset = self.param_manager.update_lessons(
+            curr_step, max_step, reward_buff
+        )
         if updated:
             for trainer in self.trainers.values():
                 trainer.reward_buffer.clear()
@@ -237,7 +232,7 @@ class TrainerController(object):
         if param_must_reset or ghost_controller_reset:
             self._reset_env(env)  # This reset also sends the new config to env
             self.end_trainer_episodes()
-        elif updated and self.param_manager:
+        elif updated:
             env.set_env_parameters(self.param_manager.get_current_samplers())
 
     @timed
@@ -247,15 +242,14 @@ class TrainerController(object):
             num_steps = env.advance()
 
         # Report current lesson for each environment parameter
-        if self.param_manager:
-            for (
-                param_name,
-                lesson_number,
-            ) in self.param_manager.get_current_lesson_number().items():
-                for trainer in self.trainers.values():
-                    trainer.stats_reporter.set_stat(
-                        f"Environment/Lesson/{param_name}", lesson_number
-                    )
+        for (
+            param_name,
+            lesson_number,
+        ) in self.param_manager.get_current_lesson_number().items():
+            for trainer in self.trainers.values():
+                trainer.stats_reporter.set_stat(
+                    f"Environment/Lesson/{param_name}", lesson_number
+                )
 
         for trainer in self.trainers.values():
             if not trainer.threaded:

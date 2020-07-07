@@ -26,6 +26,7 @@ from mlagents.trainers.settings import (
     TrainerType,
     RewardSignalType,
 )
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.models import EncoderType, ScheduleType
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -111,6 +112,8 @@ def _check_environment_trains(
     success_threshold=0.9,
     env_manager=None,
 ):
+    if env_parameter_manager is None:
+        env_parameter_manager = EnvironmentParameterManager()
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"

@@ -3,6 +3,7 @@ import pytest
 
 from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.ghost.controller import GhostController
 
 
@@ -14,7 +15,7 @@ def basic_trainer_controller():
         trainer_factory=trainer_factory_mock,
         output_path="test_model_path",
         run_id="test_run_id",
-        param_manager=None,
+        param_manager=EnvironmentParameterManager(),
         train=True,
         training_seed=99,
     )
