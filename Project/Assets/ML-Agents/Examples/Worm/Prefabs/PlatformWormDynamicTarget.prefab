@@ -1305,7 +1305,7 @@ MonoBehaviour:
     VectorActionSize: 09000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 9e78ecfd26cf1416c8ca35b51d8d6b22, type: 3}
+  m_Model: {fileID: 11400000, guid: 55a977cadcfcf42eaa51ef636ce205a0, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: WormDynamic
@@ -1353,9 +1353,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b29724baddfa457da6eeab446fa49ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxJointSpring: 5000
-  jointDampen: 50
-  maxJointForceLimit: 20000
+  maxJointSpring: 3000
+  jointDampen: 30
+  maxJointForceLimit: 10000
   bodyPartsList: []
 --- !u!114 &4743960591246354694
 MonoBehaviour:
