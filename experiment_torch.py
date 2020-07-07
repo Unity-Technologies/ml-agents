@@ -67,7 +67,7 @@ def main():
     parser.add_argument("--num-envs", default=1, type=int, help="The number of envs")  
     args = parser.parse_args()
 
-    envs_config_tuples = [("3DBall", "3DBall"), ("GridWorld", "GridWorld"), ("PushBlock", "PushBlock"), ("Hallway", "Hallway"), ("CrawlerStaticTarget", "CrawlerStatic"), ("VisualHallway", "Hallway")]
+    envs_config_tuples = [("3DBall", "3DBall")]#, ("GridWorld", "GridWorld"), ("PushBlock", "PushBlock"), ("Hallway", "Hallway"), ("CrawlerStaticTarget", "CrawlerStatic"), ("VisualHallway", "Hallway")]
     
 
 
@@ -81,20 +81,20 @@ def main():
     for env_config in envs_config_tuples:
         data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=1, use_gpu=False, num_envs = args.num_envs, config_name=env_config[1])
         results.append(data)
-        f.write(" ".join(data))
+        f.write(" ".join(data) + "\n")
 
         data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=8, use_gpu=False, num_envs = args.num_envs, config_name=env_config[1])
         results.append(data)
-        f.write(" ".join(data))
+        f.write(" ".join(data)+ "\n")
 
 
         data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=1, use_gpu=True, num_envs = args.num_envs, config_name=env_config[1])
         results.append(data)
-        f.write(" ".join(data))
+        f.write(" ".join(data)+ "\n")
 
         data = run_experiment(name = env_config[0], steps=args.steps, use_torch=False, num_torch_threads=1, use_gpu=False, num_envs = args.num_envs, config_name=env_config[1])
         results.append(data)
-        f.write(" ".join(data))
+        f.write(" ".join(data)+ "\n")
     for r in results:
         print(*r)
     f.close()
