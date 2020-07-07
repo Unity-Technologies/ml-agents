@@ -21,7 +21,6 @@ and this project adheres to
 - The Barracuda dependency was upgraded to 1.0.0 (#4118)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added new Google Colab notebooks to show how to use `UnityEnvironment'. (#4117)
-- Fixed issue with FoodCollector when playing with keyboard. (#4147)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -32,6 +31,7 @@ empty string). (#4155)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an error when setting `initialize_from` in the trainer confiiguration YAML to
 `null`. (#4175)
+- Fixed issue with FoodCollector, Soccer, and WallJump when playing with keyboard. (#4147, #4174)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes
