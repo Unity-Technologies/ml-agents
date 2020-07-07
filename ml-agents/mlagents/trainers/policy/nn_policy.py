@@ -12,6 +12,8 @@ from mlagents.trainers.distributions import (
     MultiCategoricalDistribution,
 )
 
+from mlagents.trainers.ppo.trainer import TestingConfiguration
+
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 
@@ -42,6 +44,12 @@ class NNPolicy(TFPolicy):
         :param reparameterize: Whether we are using the resampling trick to update the policy in continuous output.
         """
         super().__init__(seed, brain, trainer_settings, model_path, load)
+        if TestingConfiguration.device == "cuda:0":
+            tf.device("/gpu:0")
+            print("using GPU")
+        else:
+            tf.device("/cpu:0")
+            print("using CPU")
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = self.network_settings.num_layers
