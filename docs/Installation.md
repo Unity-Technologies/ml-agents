@@ -39,7 +39,7 @@ enable you to manage multiple Unity versions.
 ### Install **Python 3.6.1** or Higher
 
 We recommend [installing](https://www.python.org/downloads/) Python 3.6 or 3.7.
-Be aware that under Windows the TensorFlow package needs **Python x86-64**, so do not install the 32 bit version, but the x86-64 one.
+If you are using Windows, please install the x86-64 version and not x86.
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
