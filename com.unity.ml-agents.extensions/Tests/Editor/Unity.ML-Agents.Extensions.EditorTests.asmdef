@@ -12,5 +12,8 @@
     "includePlatforms": [
         "Editor"
     ],
-    "excludePlatforms": []
+    "excludePlatforms": [],
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ]
 }
