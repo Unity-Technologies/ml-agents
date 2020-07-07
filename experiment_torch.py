@@ -2,6 +2,7 @@
 import json
 import os
 import torch
+import tensorflow as tf
 from mlagents.trainers.learn import run_cli, parse_command_line
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.stats import StatsReporter
@@ -16,8 +17,10 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 	TestingConfiguration.max_steps = steps
 	TestingConfiguration.use_torch = use_torch
 	TestingConfiguration.device = "cuda:0" if use_gpu else "cpu"
-	os.environ["CUDA_VISIBLE_DEVICES"] = "0,1" if use_gpu else "-1"
-	import tensorflow as tf
+	if use_gpu:
+		tf.device("/GPU:0")
+	else:
+		tf.device("/device:CPU:0")
 	if (not torch.cuda.is_available() and use_gpu and use_torch):
 		return name, steps, use_torch, num_torch_threads, use_gpu, "na","na","na","na","na","na","na"
 	if config_name is None:
@@ -57,7 +60,7 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 	return name, steps, use_torch, num_torch_threads, use_gpu, total, tc_advance_total, tc_advance_count, update_total, update_count, evaluate_total, evaluate_count
 
 
-
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 n_steps = 100000
 
 envs_config_tuple = [("3DBall","3DBall"), ("GridWorld","GridWorld"), ("PushBlock","PushBlock"),("Hallway","Hallway"), ("CrawlerStaticTarget","CrawlerStatic")]
