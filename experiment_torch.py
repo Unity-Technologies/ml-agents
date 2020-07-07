@@ -67,7 +67,7 @@ def main():
     parser.add_argument("--num-envs", default=1, type=int, help="The number of envs")  
     args = parser.parse_args()
 
-    envs_config_tuples = [("3DBall", "3DBall")]#, ("GridWorld", "GridWorld"), ("PushBlock", "PushBlock"), ("Hallway", "Hallway"), ("CrawlerStaticTarget", "CrawlerStatic"), ("VisualHallway", "Hallway")]
+    envs_config_tuples = [("3DBall", "3DBall"), ("GridWorld", "GridWorld"), ("PushBlock", "PushBlock"), ("Hallway", "Hallway"), ("CrawlerStaticTarget", "CrawlerStatic"), ("VisualHallway", "Hallway")]
     
 
 
