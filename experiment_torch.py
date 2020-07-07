@@ -16,6 +16,7 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 	TestingConfiguration.max_steps = steps
 	TestingConfiguration.use_torch = use_torch
 	TestingConfiguration.device = "cuda:0" if use_gpu else "cpu"
+	os.environ["CUDA_VISIBLE_DEVICES"] = "2" if use_gpu else "0"
 	if (not torch.cuda.is_available() and use_gpu and use_torch):
 		return name, steps, use_torch, num_torch_threads, use_gpu, "na","na","na","na","na","na","na"
 	if config_name is None:
