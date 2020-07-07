@@ -1,0 +1,34 @@
+behaviors:
+  Pyramids:
+    trainer_type: ppo
+    time_horizon: 128
+    max_steps: 1.0e7
+    hyperparameters:
+      batch_size: 128
+      beta: 0.01
+      buffer_size: 2048
+      epsilon: 0.2
+      lambd: 0.95
+      learning_rate: 0.0003
+      num_epoch: 3
+    network_settings:
+      num_layers: 2
+      normalize: false
+      hidden_units: 512
+    reward_signals:
+      extrinsic:
+        strength: 1.0
+        gamma: 0.99
+      curiosity:
+        strength: 0.02
+        gamma: 0.99
+        encoding_size: 256
+      gail:
+        strength: 0.01
+        gamma: 0.99
+        encoding_size: 128
+        demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+    behavioral_cloning:
+      demo_path: Project/Assets/ML-Agents/Examples/Pyramids/Demos/ExpertPyramid.demo
+      strength: 0.5
+      steps: 150000

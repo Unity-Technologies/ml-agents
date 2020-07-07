@@ -1,0 +1,471 @@
+Found path: /unity-volume/executable.x86_64
+Mono path[0] = '/unity-volume/executable_Data/Managed'
+Mono config path = '/unity-volume/executable_Data/MonoBleedingEdge/etc'
+PlayerConnection initialized from /unity-volume/executable_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55057
+Multi-casting "[IP] 10.48.3.27 [Port] 55057 [Flags] 3 [Guid] 1151616168 [EditorId] 876706736 [Version] 1048832 [Id] LinuxPlayer(10.48.3.27) [Debug] 1 [PackageName] LinuxPlayer" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55057]...
+Remaining time:3s
+Remaining time:2s
+Remaining time:1s
+Remaining time:0s
+Timed out. Continuing without host connection.
+Started listening to [0.0.0.0:55057]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=0.0.0.0:56168
+Preloaded 'libgrpc_csharp_ext.x64.so'
+Unable to preload the following plugins:
+	lib_burst_generated.so
+	ScreenSelector.so
+PlayerConnection already initialized - listening to [0.0.0.0:55057]
+Initialize engine version: 2018.4.23f1 (c9cf1a90e812)
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=1
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+FMOD failed to initialize any audio devices, running on emulated software output with no sound. Please check your audio drivers and/or hardware for malfunction.
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.075 seconds
+UnloadTime: 0.752000 ms
+Command line arguments passed: /unity-volume/executable.x86_64 -nographics -logfile - --mlagents-override-model-directory results/wst-ppo/ --mlagents-quit-on-load-failure --mlagents-quit-after-episodes 2
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+WARNING: Shader Unsupported: 'Autodesk Interactive' - All passes removed
+UnloadTime: 0.381000 ms
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+setting m_MaxEpisodes to 2
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:GetAssetPathFromCommandLine() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:122)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:134)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 122)
+
+Overriding behavior WalkerStatic for agent with model Override - WalkerStatic.nn
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:OverrideModel() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:238)
+Unity.MLAgentsExamples.ModelOverrider:OnEnable() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:137)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 238)
+
+System memory in use before: 41.4 MB.
+System memory in use after: 41.5 MB.
+
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 3117.
+Total: 2.689000 ms (FindLiveObjects: 0.483000 ms CreateObjectMapping: 0.060000 ms MarkObjects: 2.030000 ms  DeleteObjects: 0.115000 ms)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 4 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10001 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 4 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+ModelOverride reached 2 episodes and 10002 steps. Exiting.
+UnityEngine.DebugLogHandler:Internal_Log(LogType, String, Object)
+UnityEngine.DebugLogHandler:LogFormat(LogType, Object, String, Object[])
+UnityEngine.Logger:Log(LogType, Object)
+UnityEngine.Debug:Log(Object)
+Unity.MLAgentsExamples.ModelOverrider:FixedUpdate() (at /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs:160)
+ 
+(Filename: /opt/workspace/workspace/ml-agents.ml-agents.test-develop-linux-hunter/Project/Assets/ML-Agents/Examples/SharedAssets/Scripts/ModelOverrider.cs Line: 160)
+
+Setting up 48 worker threads for Enlighten.
+  Thread -> id: 7f1e6d7fe700 -> priority: 1 
+  Thread -> id: 7f1e6cffd700 -> priority: 1 
+  Thread -> id: 7f1e67fff700 -> priority: 1 
+  Thread -> id: 7f1e677fe700 -> priority: 1 
+  Thread -> id: 7f1e66ffd700 -> priority: 1 
+  Thread -> id: 7f1e667fc700 -> priority: 1 
+  Thread -> id: 7f1e65ffb700 -> priority: 1 
+  Thread -> id: 7f1e657fa700 -> priority: 1 
+  Thread -> id: 7f1e64ff9700 -> priority: 1 
+  Thread -> id: 7f1e43fff700 -> priority: 1 
+  Thread -> id: 7f1e437fe700 -> priority: 1 
+  Thread -> id: 7f1e42ffd700 -> priority: 1 
+  Thread -> id: 7f1e427fc700 -> priority: 1 
+  Thread -> id: 7f1e41ffb700 -> priority: 1 
+  Thread -> id: 7f1e417fa700 -> priority: 1 
+  Thread -> id: 7f1e40ff9700 -> priority: 1 
+  Thread -> id: 7f1e23fff700 -> priority: 1 
+  Thread -> id: 7f1e237fe700 -> priority: 1 
+  Thread -> id: 7f1e22ffd700 -> priority: 1 
+  Thread -> id: 7f1e227fc700 -> priority: 1 
+  Thread -> id: 7f1e21ffb700 -> priority: 1 
+  Thread -> id: 7f1e217fa700 -> priority: 1 
+  Thread -> id: 7f1e20ff9700 -> priority: 1 
+  Thread -> id: 7f1e03fff700 -> priority: 1 
+  Thread -> id: 7f1e037fe700 -> priority: 1 
+  Thread -> id: 7f1e02ffd700 -> priority: 1 
+  Thread -> id: 7f1e027fc700 -> priority: 1 
+  Thread -> id: 7f1e01ffb700 -> priority: 1 
+  Thread -> id: 7f1e017fa700 -> priority: 1 
+  Thread -> id: 7f1e00ff9700 -> priority: 1 
+  Thread -> id: 7f1de3fff700 -> priority: 1 
+  Thread -> id: 7f1de37fe700 -> priority: 1 
+  Thread -> id: 7f1de2ffd700 -> priority: 1 
+  Thread -> id: 7f1de27fc700 -> priority: 1 
+  Thread -> id: 7f1de1ffb700 -> priority: 1 
+  Thread -> id: 7f1de17fa700 -> priority: 1 
+  Thread -> id: 7f1de0ff9700 -> priority: 1 
+  Thread -> id: 7f1dc3fff700 -> priority: 1 
+  Thread -> id: 7f1dc37fe700 -> priority: 1 
+  Thread -> id: 7f1dc2ffd700 -> priority: 1 
+  Thread -> id: 7f1dc27fc700 -> priority: 1 
+  Thread -> id: 7f1dc1ffb700 -> priority: 1 
+  Thread -> id: 7f1dc17fa700 -> priority: 1 
+  Thread -> id: 7f1dc0ff9700 -> priority: 1 
+  Thread -> id: 7f1da3fff700 -> priority: 1 
+  Thread -> id: 7f1da37fe700 -> priority: 1 
+  Thread -> id: 7f1da2ffd700 -> priority: 1 
+  Thread -> id: 7f1da27fc700 -> priority: 1 
+debugger-agent: Unable to listen on 6
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1593563990315,"processId":5662,"allocatedMemory":13087,"memoryLabels":[{"Default":1560},{"NewDelete":241},{"Thread":40},{"Manager":256},{"GfxDevice":8036},{"Physics":48},{"Serialization":40},{"Terrain":88},{"String":1422},{"DynamicArray":76},{"PoolAlloc":-88},{"VR":536},{"SceneManager":560},{"SceneLoad":-280},{"NativeArray":552}]}

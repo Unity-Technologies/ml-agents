@@ -1,0 +1,7 @@
+{
+    "metadata": {
+        "stats_format_version": "0.1.0",
+        "mlagents_version": "0.18.0.dev0",
+        "tensorflow_version": "2.2.0"
+    }
+}

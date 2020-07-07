@@ -1,0 +1,105 @@
+Found path: /unity-volume/executable.x86_64
+Mono path[0] = '/unity-volume/executable_Data/Managed'
+Mono config path = '/unity-volume/executable_Data/MonoBleedingEdge/etc'
+PlayerConnection initialized from /unity-volume/executable_Data (debug = 0)
+PlayerConnection initialized network socket : 0.0.0.0 55458
+Multi-casting "[IP] 10.48.3.25 [Port] 55458 [Flags] 3 [Guid] 111694451 [EditorId] 579057823 [Version] 1048832 [Id] LinuxPlayer(10.48.3.25) [Debug] 1 [PackageName] LinuxPlayer" to [225.0.0.222:54997]...
+Waiting for connection from host on [0.0.0.0:55458]...
+Remaining time:3s
+Remaining time:2s
+Remaining time:1s
+Remaining time:0s
+Timed out. Continuing without host connection.
+Started listening to [0.0.0.0:55458]
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=0.0.0.0:56451
+Preloaded 'libgrpc_csharp_ext.x64.so'
+Unable to preload the following plugins:
+	lib_burst_generated.so
+	ScreenSelector.so
+PlayerConnection already initialized - listening to [0.0.0.0:55458]
+PlayerPrefs - Creating folder: /root/.config/unity3d/Unity Technologies
+PlayerPrefs - Creating folder: /root/.config/unity3d/Unity Technologies/UnityEnvironment
+Initialize engine version: 2018.4.23f1 (c9cf1a90e812)
+Forcing GfxDevice: Null
+GfxDevice: creating device client; threaded=0
+NullGfxDevice:
+    Version:  NULL 1.0 [1.0]
+    Renderer: Null Device
+    Vendor:   Unity Technologies
+FMOD initialized on nosound output
+Begin MonoManager ReloadAssembly
+- Completed reload, in  0.171 seconds
+UnloadTime: 1.025000 ms
+Command line arguments passed: /unity-volume/executable.x86_64 -nographics -batchmode --mlagents-port 5006 -logFile /results/results/wst-ppo/run_logs/Player-1.log
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+WARNING: Shader Unsupported: 'Autodesk Interactive' - All passes removed
+UnloadTime: 0.349000 ms
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libcoreclr.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libcoreclr.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libcoreclr.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libSystem.dylib
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libSystem.dylib.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libSystem.dylib
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libcoreclr.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libcoreclr.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libcoreclr.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libSystem.dylib
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libSystem.dylib.so
+Fallback handler could not load library /unity-volume/executable_Data/Mono/libSystem.dylib
+System memory in use before: 33.4 MB.
+System memory in use after: 33.4 MB.
+
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 3090.
+Total: 3.799000 ms (FindLiveObjects: 0.471000 ms CreateObjectMapping: 0.056000 ms MarkObjects: 3.121000 ms  DeleteObjects: 0.150000 ms)
+
+requesting resize 84 x 84
+Setting up 48 worker threads for Enlighten.
+  Thread -> id: 7fd0362f9700 -> priority: 1 
+  Thread -> id: 7fd035af8700 -> priority: 1 
+  Thread -> id: 7fd0352f7700 -> priority: 1 
+  Thread -> id: 7fd034af6700 -> priority: 1 
+  Thread -> id: 7fd00bfff700 -> priority: 1 
+  Thread -> id: 7fd00b7fe700 -> priority: 1 
+  Thread -> id: 7fd00affd700 -> priority: 1 
+  Thread -> id: 7fd00a7fc700 -> priority: 1 
+  Thread -> id: 7fd009ffb700 -> priority: 1 
+  Thread -> id: 7fd0097fa700 -> priority: 1 
+  Thread -> id: 7fd008ff9700 -> priority: 1 
+  Thread -> id: 7fcfe7fff700 -> priority: 1 
+  Thread -> id: 7fcfe77fe700 -> priority: 1 
+  Thread -> id: 7fcfe6ffd700 -> priority: 1 
+  Thread -> id: 7fcfe67fc700 -> priority: 1 
+  Thread -> id: 7fcfe5ffb700 -> priority: 1 
+  Thread -> id: 7fcfe57fa700 -> priority: 1 
+  Thread -> id: 7fcfe4ff9700 -> priority: 1 
+  Thread -> id: 7fcfc7fff700 -> priority: 1 
+  Thread -> id: 7fcfc77fe700 -> priority: 1 
+  Thread -> id: 7fcfc6ffd700 -> priority: 1 
+  Thread -> id: 7fcfc67fc700 -> priority: 1 
+  Thread -> id: 7fcfc5ffb700 -> priority: 1 
+  Thread -> id: 7fcfc57fa700 -> priority: 1 
+  Thread -> id: 7fcfc4ff9700 -> priority: 1 
+  Thread -> id: 7fcfa7fff700 -> priority: 1 
+  Thread -> id: 7fcfa77fe700 -> priority: 1 
+  Thread -> id: 7fcfa6ffd700 -> priority: 1 
+  Thread -> id: 7fcfa67fc700 -> priority: 1 
+  Thread -> id: 7fcfa5ffb700 -> priority: 1 
+  Thread -> id: 7fcfa57fa700 -> priority: 1 
+  Thread -> id: 7fcfa4ff9700 -> priority: 1 
+  Thread -> id: 7fcf87fff700 -> priority: 1 
+  Thread -> id: 7fcf877fe700 -> priority: 1 
+  Thread -> id: 7fcf86ffd700 -> priority: 1 
+  Thread -> id: 7fcf867fc700 -> priority: 1 
+  Thread -> id: 7fcf85ffb700 -> priority: 1 
+  Thread -> id: 7fcf857fa700 -> priority: 1 
+  Thread -> id: 7fcf84ff9700 -> priority: 1 
+  Thread -> id: 7fcf67fff700 -> priority: 1 
+  Thread -> id: 7fcf677fe700 -> priority: 1 
+  Thread -> id: 7fcf66ffd700 -> priority: 1 
+  Thread -> id: 7fcf667fc700 -> priority: 1 
+  Thread -> id: 7fcf65ffb700 -> priority: 1 
+  Thread -> id: 7fcf657fa700 -> priority: 1 
+  Thread -> id: 7fcf64ff9700 -> priority: 1 
+  Thread -> id: 7fcf47fff700 -> priority: 1 
+  Thread -> id: 7fcf477fe700 -> priority: 1 
+##utp:{"type":"MemoryLeaks","version":2,"phase":"Immediate","time":1592960252136,"processId":159,"allocatedMemory":12527,"memoryLabels":[{"Default":1560},{"NewDelete":241},{"Thread":40},{"Manager":256},{"GfxDevice":8036},{"Physics":48},{"Serialization":40},{"Terrain":88},{"String":1422},{"DynamicArray":68},{"PoolAlloc":-88},{"VR":536},{"SceneManager":560},{"SceneLoad":-280}]}

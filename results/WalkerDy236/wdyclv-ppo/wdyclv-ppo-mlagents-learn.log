@@ -1,0 +1,816 @@
+WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow/python/compat/v2_compat.py:96: disable_resource_variables (from tensorflow.python.ops.variable_scope) is deprecated and will be removed in a future version.
+Instructions for updating:
+non-resource variables are not supported in the long term
+
+
+	Unity Technologies
+
+ Version information:
+  ml-agents: 0.18.0.dev0,
+  ml-agents-envs: 0.18.0.dev0,
+  Communicator API: 1.0.0,
+  TensorFlow: 2.2.0
+2020-06-30 18:52:04 WARNING [learn.py:293] The --train option has been deprecated. Train mode is now the default. Use --inference to run in inference mode.
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:108] Connected to Unity environment with package version 1.1.0-preview and communication version 1.0.0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10 INFO [environment.py:265] Connected new brain:
+WalkerDynamic?team=0
+2020-06-30 18:52:10.310406: I tensorflow/core/platform/cpu_feature_guard.cc:143] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 AVX512F FMA
+2020-06-30 18:52:10.351274: I tensorflow/core/platform/profile_utils/cpu_utils.cc:102] CPU Frequency: 2000185000 Hz
+2020-06-30 18:52:10.367915: I tensorflow/compiler/xla/service/service.cc:168] XLA service 0x7f57c4000b20 initialized for platform Host (this does not guarantee that XLA will be used). Devices:
+2020-06-30 18:52:10.367972: I tensorflow/compiler/xla/service/service.cc:176]   StreamExecutor device (0): Host, Default Version
+2020-06-30 18:52:10.372255: W tensorflow/stream_executor/platform/default/dso_loader.cc:55] Could not load dynamic library 'libcuda.so.1'; dlerror: libcuda.so.1: cannot open shared object file: No such file or directory
+2020-06-30 18:52:10.372299: E tensorflow/stream_executor/cuda/cuda_driver.cc:313] failed call to cuInit: UNKNOWN ERROR (303)
+2020-06-30 18:52:10.372462: I tensorflow/stream_executor/cuda/cuda_diagnostics.cc:156] kernel driver does not appear to be running on this host (job-brandonh-woldobsv-wdyclv-ppo-ptbxd): /proc/driver/nvidia/version does not exist
+2020-06-30 18:52:10 INFO [stats.py:130] Hyperparameters for behavior name WalkerDynamic: 
+	trainer_type:	ppo
+	hyperparameters:	
+	  batch_size:	2048
+	  buffer_size:	20480
+	  learning_rate:	0.0003
+	  beta:	0.005
+	  epsilon:	0.2
+	  lambd:	0.95
+	  num_epoch:	3
+	  learning_rate_schedule:	linear
+	network_settings:	
+	  normalize:	True
+	  hidden_units:	512
+	  num_layers:	3
+	  vis_encode_type:	simple
+	  memory:	None
+	reward_signals:	
+	  extrinsic:	
+	    gamma:	0.995
+	    strength:	1.0
+	init_path:	None
+	keep_checkpoints:	5
+	checkpoint_interval:	500000
+	max_steps:	20000000
+	time_horizon:	1000
+	summary_freq:	30000
+	threaded:	True
+	self_play:	None
+	behavioral_cloning:	None
+2020-06-30 18:52:42 INFO [stats.py:111] WalkerDynamic: Step: 30000. Time Elapsed: 38.329 s Mean Reward: 2.077. Std of Reward: 2.379. Training.
+2020-06-30 18:53:12 INFO [stats.py:111] WalkerDynamic: Step: 60000. Time Elapsed: 68.703 s Mean Reward: 2.129. Std of Reward: 2.320. Training.
+2020-06-30 18:53:45 INFO [stats.py:111] WalkerDynamic: Step: 90000. Time Elapsed: 101.677 s Mean Reward: 2.265. Std of Reward: 2.255. Training.
+2020-06-30 18:54:15 INFO [stats.py:111] WalkerDynamic: Step: 120000. Time Elapsed: 131.298 s Mean Reward: 2.572. Std of Reward: 2.267. Training.
+2020-06-30 18:54:48 INFO [stats.py:111] WalkerDynamic: Step: 150000. Time Elapsed: 164.532 s Mean Reward: 2.868. Std of Reward: 2.107. Training.
+2020-06-30 18:55:17 INFO [stats.py:111] WalkerDynamic: Step: 180000. Time Elapsed: 193.517 s Mean Reward: 3.167. Std of Reward: 2.212. Training.
+2020-06-30 18:55:50 INFO [stats.py:111] WalkerDynamic: Step: 210000. Time Elapsed: 226.816 s Mean Reward: 3.376. Std of Reward: 2.111. Training.
+2020-06-30 18:56:19 INFO [stats.py:111] WalkerDynamic: Step: 240000. Time Elapsed: 255.801 s Mean Reward: 3.366. Std of Reward: 2.124. Training.
+2020-06-30 18:56:53 INFO [stats.py:111] WalkerDynamic: Step: 270000. Time Elapsed: 289.440 s Mean Reward: 3.653. Std of Reward: 2.027. Training.
+2020-06-30 18:57:22 INFO [stats.py:111] WalkerDynamic: Step: 300000. Time Elapsed: 318.358 s Mean Reward: 3.871. Std of Reward: 2.069. Training.
+2020-06-30 18:57:55 INFO [stats.py:111] WalkerDynamic: Step: 330000. Time Elapsed: 351.621 s Mean Reward: 3.885. Std of Reward: 2.029. Training.
+2020-06-30 18:58:24 INFO [stats.py:111] WalkerDynamic: Step: 360000. Time Elapsed: 380.312 s Mean Reward: 4.058. Std of Reward: 1.921. Training.
+2020-06-30 18:58:58 INFO [stats.py:111] WalkerDynamic: Step: 390000. Time Elapsed: 414.006 s Mean Reward: 4.194. Std of Reward: 1.934. Training.
+2020-06-30 18:59:27 INFO [stats.py:111] WalkerDynamic: Step: 420000. Time Elapsed: 443.709 s Mean Reward: 4.428. Std of Reward: 1.930. Training.
+2020-06-30 18:59:56 INFO [stats.py:111] WalkerDynamic: Step: 450000. Time Elapsed: 472.720 s Mean Reward: 4.543. Std of Reward: 1.986. Training.
+2020-06-30 19:00:30 INFO [stats.py:111] WalkerDynamic: Step: 480000. Time Elapsed: 506.248 s Mean Reward: 4.706. Std of Reward: 1.997. Training.
+2020-06-30 19:00:51 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:00:59 INFO [stats.py:111] WalkerDynamic: Step: 510000. Time Elapsed: 535.292 s Mean Reward: 4.883. Std of Reward: 2.066. Training.
+2020-06-30 19:01:32 INFO [stats.py:111] WalkerDynamic: Step: 540000. Time Elapsed: 568.401 s Mean Reward: 4.930. Std of Reward: 2.098. Training.
+2020-06-30 19:02:01 INFO [stats.py:111] WalkerDynamic: Step: 570000. Time Elapsed: 597.229 s Mean Reward: 5.039. Std of Reward: 2.076. Training.
+2020-06-30 19:02:34 INFO [stats.py:111] WalkerDynamic: Step: 600000. Time Elapsed: 630.224 s Mean Reward: 5.281. Std of Reward: 2.181. Training.
+2020-06-30 19:03:03 INFO [stats.py:111] WalkerDynamic: Step: 630000. Time Elapsed: 659.200 s Mean Reward: 5.498. Std of Reward: 2.189. Training.
+2020-06-30 19:03:36 INFO [stats.py:111] WalkerDynamic: Step: 660000. Time Elapsed: 692.404 s Mean Reward: 5.633. Std of Reward: 2.269. Training.
+2020-06-30 19:04:05 INFO [stats.py:111] WalkerDynamic: Step: 690000. Time Elapsed: 721.288 s Mean Reward: 5.793. Std of Reward: 2.352. Training.
+2020-06-30 19:04:39 INFO [stats.py:111] WalkerDynamic: Step: 720000. Time Elapsed: 755.360 s Mean Reward: 5.899. Std of Reward: 2.459. Training.
+2020-06-30 19:05:08 INFO [stats.py:111] WalkerDynamic: Step: 750000. Time Elapsed: 784.332 s Mean Reward: 6.192. Std of Reward: 2.655. Training.
+2020-06-30 19:05:41 INFO [stats.py:111] WalkerDynamic: Step: 780000. Time Elapsed: 817.473 s Mean Reward: 6.507. Std of Reward: 2.766. Training.
+2020-06-30 19:06:10 INFO [stats.py:111] WalkerDynamic: Step: 810000. Time Elapsed: 846.155 s Mean Reward: 7.036. Std of Reward: 2.887. Training.
+2020-06-30 19:06:38 INFO [stats.py:111] WalkerDynamic: Step: 840000. Time Elapsed: 874.706 s Mean Reward: 7.156. Std of Reward: 3.186. Training.
+2020-06-30 19:07:12 INFO [stats.py:111] WalkerDynamic: Step: 870000. Time Elapsed: 908.295 s Mean Reward: 7.651. Std of Reward: 3.386. Training.
+2020-06-30 19:07:41 INFO [stats.py:111] WalkerDynamic: Step: 900000. Time Elapsed: 937.187 s Mean Reward: 7.967. Std of Reward: 3.660. Training.
+2020-06-30 19:08:14 INFO [stats.py:111] WalkerDynamic: Step: 930000. Time Elapsed: 970.526 s Mean Reward: 8.610. Std of Reward: 4.296. Training.
+2020-06-30 19:08:43 INFO [stats.py:111] WalkerDynamic: Step: 960000. Time Elapsed: 999.347 s Mean Reward: 8.982. Std of Reward: 4.308. Training.
+2020-06-30 19:09:16 INFO [stats.py:111] WalkerDynamic: Step: 990000. Time Elapsed: 1032.209 s Mean Reward: 9.589. Std of Reward: 4.998. Training.
+2020-06-30 19:09:25 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:09:46 INFO [stats.py:111] WalkerDynamic: Step: 1020000. Time Elapsed: 1061.949 s Mean Reward: 10.361. Std of Reward: 5.315. Training.
+2020-06-30 19:10:19 INFO [stats.py:111] WalkerDynamic: Step: 1050000. Time Elapsed: 1095.057 s Mean Reward: 10.626. Std of Reward: 5.612. Training.
+2020-06-30 19:10:47 INFO [stats.py:111] WalkerDynamic: Step: 1080000. Time Elapsed: 1123.701 s Mean Reward: 11.158. Std of Reward: 6.241. Training.
+2020-06-30 19:11:21 INFO [stats.py:111] WalkerDynamic: Step: 1110000. Time Elapsed: 1157.309 s Mean Reward: 11.860. Std of Reward: 6.535. Training.
+2020-06-30 19:11:50 INFO [stats.py:111] WalkerDynamic: Step: 1140000. Time Elapsed: 1186.353 s Mean Reward: 13.057. Std of Reward: 7.360. Training.
+2020-06-30 19:12:24 INFO [stats.py:111] WalkerDynamic: Step: 1170000. Time Elapsed: 1220.033 s Mean Reward: 13.593. Std of Reward: 8.427. Training.
+2020-06-30 19:12:52 INFO [stats.py:111] WalkerDynamic: Step: 1200000. Time Elapsed: 1248.096 s Mean Reward: 13.611. Std of Reward: 8.359. Training.
+2020-06-30 19:13:21 INFO [stats.py:111] WalkerDynamic: Step: 1230000. Time Elapsed: 1277.139 s Mean Reward: 14.717. Std of Reward: 9.118. Training.
+2020-06-30 19:13:53 INFO [stats.py:111] WalkerDynamic: Step: 1260000. Time Elapsed: 1309.747 s Mean Reward: 15.520. Std of Reward: 9.879. Training.
+2020-06-30 19:14:22 INFO [stats.py:111] WalkerDynamic: Step: 1290000. Time Elapsed: 1338.419 s Mean Reward: 15.753. Std of Reward: 9.531. Training.
+2020-06-30 19:14:56 INFO [stats.py:111] WalkerDynamic: Step: 1320000. Time Elapsed: 1372.202 s Mean Reward: 17.319. Std of Reward: 10.968. Training.
+2020-06-30 19:15:24 INFO [stats.py:111] WalkerDynamic: Step: 1350000. Time Elapsed: 1400.099 s Mean Reward: 18.021. Std of Reward: 11.526. Training.
+2020-06-30 19:15:57 INFO [stats.py:111] WalkerDynamic: Step: 1380000. Time Elapsed: 1433.200 s Mean Reward: 19.745. Std of Reward: 13.803. Training.
+2020-06-30 19:16:25 INFO [stats.py:111] WalkerDynamic: Step: 1410000. Time Elapsed: 1461.729 s Mean Reward: 21.282. Std of Reward: 13.581. Training.
+2020-06-30 19:16:59 INFO [stats.py:111] WalkerDynamic: Step: 1440000. Time Elapsed: 1494.987 s Mean Reward: 22.024. Std of Reward: 14.265. Training.
+2020-06-30 19:17:27 INFO [stats.py:111] WalkerDynamic: Step: 1470000. Time Elapsed: 1523.682 s Mean Reward: 23.833. Std of Reward: 15.941. Training.
+2020-06-30 19:18:00 INFO [stats.py:111] WalkerDynamic: Step: 1500000. Time Elapsed: 1556.373 s Mean Reward: 25.440. Std of Reward: 16.494. Training.
+2020-06-30 19:18:00 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:18:29 INFO [stats.py:111] WalkerDynamic: Step: 1530000. Time Elapsed: 1585.332 s Mean Reward: 26.274. Std of Reward: 18.290. Training.
+2020-06-30 19:19:02 INFO [stats.py:111] WalkerDynamic: Step: 1560000. Time Elapsed: 1618.679 s Mean Reward: 26.666. Std of Reward: 18.031. Training.
+2020-06-30 19:19:31 INFO [stats.py:111] WalkerDynamic: Step: 1590000. Time Elapsed: 1646.881 s Mean Reward: 27.434. Std of Reward: 18.371. Training.
+2020-06-30 19:19:59 INFO [stats.py:111] WalkerDynamic: Step: 1620000. Time Elapsed: 1675.491 s Mean Reward: 31.834. Std of Reward: 20.371. Training.
+2020-06-30 19:20:32 INFO [stats.py:111] WalkerDynamic: Step: 1650000. Time Elapsed: 1708.136 s Mean Reward: 29.096. Std of Reward: 18.845. Training.
+2020-06-30 19:21:00 INFO [stats.py:111] WalkerDynamic: Step: 1680000. Time Elapsed: 1736.778 s Mean Reward: 32.191. Std of Reward: 20.239. Training.
+2020-06-30 19:21:33 INFO [stats.py:111] WalkerDynamic: Step: 1710000. Time Elapsed: 1769.638 s Mean Reward: 31.622. Std of Reward: 20.087. Training.
+2020-06-30 19:22:01 INFO [stats.py:111] WalkerDynamic: Step: 1740000. Time Elapsed: 1797.096 s Mean Reward: 35.423. Std of Reward: 21.930. Training.
+2020-06-30 19:22:34 INFO [stats.py:111] WalkerDynamic: Step: 1770000. Time Elapsed: 1830.401 s Mean Reward: 33.341. Std of Reward: 21.099. Training.
+2020-06-30 19:23:02 INFO [stats.py:111] WalkerDynamic: Step: 1800000. Time Elapsed: 1858.817 s Mean Reward: 36.023. Std of Reward: 21.112. Training.
+2020-06-30 19:23:35 INFO [stats.py:111] WalkerDynamic: Step: 1830000. Time Elapsed: 1891.237 s Mean Reward: 35.797. Std of Reward: 22.596. Training.
+2020-06-30 19:24:03 INFO [stats.py:111] WalkerDynamic: Step: 1860000. Time Elapsed: 1919.747 s Mean Reward: 38.529. Std of Reward: 22.501. Training.
+2020-06-30 19:24:36 INFO [stats.py:111] WalkerDynamic: Step: 1890000. Time Elapsed: 1952.592 s Mean Reward: 37.634. Std of Reward: 22.225. Training.
+2020-06-30 19:25:05 INFO [stats.py:111] WalkerDynamic: Step: 1920000. Time Elapsed: 1981.074 s Mean Reward: 35.428. Std of Reward: 21.622. Training.
+2020-06-30 19:25:38 INFO [stats.py:111] WalkerDynamic: Step: 1950000. Time Elapsed: 2014.205 s Mean Reward: 38.873. Std of Reward: 22.943. Training.
+2020-06-30 19:26:06 INFO [stats.py:111] WalkerDynamic: Step: 1980000. Time Elapsed: 2042.090 s Mean Reward: 37.834. Std of Reward: 21.203. Training.
+2020-06-30 19:26:26 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:26:34 INFO [stats.py:111] WalkerDynamic: Step: 2010000. Time Elapsed: 2070.792 s Mean Reward: 38.574. Std of Reward: 21.488. Training.
+2020-06-30 19:27:06 INFO [stats.py:111] WalkerDynamic: Step: 2040000. Time Elapsed: 2102.839 s Mean Reward: 41.224. Std of Reward: 23.108. Training.
+2020-06-30 19:27:35 INFO [stats.py:111] WalkerDynamic: Step: 2070000. Time Elapsed: 2131.573 s Mean Reward: 40.444. Std of Reward: 22.588. Training.
+2020-06-30 19:28:07 INFO [stats.py:111] WalkerDynamic: Step: 2100000. Time Elapsed: 2163.415 s Mean Reward: 41.992. Std of Reward: 22.423. Training.
+2020-06-30 19:28:35 INFO [stats.py:111] WalkerDynamic: Step: 2130000. Time Elapsed: 2191.493 s Mean Reward: 44.133. Std of Reward: 23.244. Training.
+2020-06-30 19:29:07 INFO [stats.py:111] WalkerDynamic: Step: 2160000. Time Elapsed: 2223.075 s Mean Reward: 43.694. Std of Reward: 23.241. Training.
+2020-06-30 19:29:35 INFO [stats.py:111] WalkerDynamic: Step: 2190000. Time Elapsed: 2251.036 s Mean Reward: 44.175. Std of Reward: 21.297. Training.
+2020-06-30 19:30:07 INFO [stats.py:111] WalkerDynamic: Step: 2220000. Time Elapsed: 2283.427 s Mean Reward: 44.481. Std of Reward: 25.010. Training.
+2020-06-30 19:30:36 INFO [stats.py:111] WalkerDynamic: Step: 2250000. Time Elapsed: 2311.884 s Mean Reward: 44.646. Std of Reward: 24.815. Training.
+2020-06-30 19:31:07 INFO [stats.py:111] WalkerDynamic: Step: 2280000. Time Elapsed: 2343.590 s Mean Reward: 45.893. Std of Reward: 24.537. Training.
+2020-06-30 19:31:35 INFO [stats.py:111] WalkerDynamic: Step: 2310000. Time Elapsed: 2371.693 s Mean Reward: 47.251. Std of Reward: 27.904. Training.
+2020-06-30 19:32:08 INFO [stats.py:111] WalkerDynamic: Step: 2340000. Time Elapsed: 2404.645 s Mean Reward: 46.025. Std of Reward: 23.531. Training.
+2020-06-30 19:32:36 INFO [stats.py:111] WalkerDynamic: Step: 2370000. Time Elapsed: 2432.076 s Mean Reward: 48.140. Std of Reward: 28.325. Training.
+2020-06-30 19:33:04 INFO [stats.py:111] WalkerDynamic: Step: 2400000. Time Elapsed: 2460.171 s Mean Reward: 45.717. Std of Reward: 23.405. Training.
+2020-06-30 19:33:36 INFO [stats.py:111] WalkerDynamic: Step: 2430000. Time Elapsed: 2492.324 s Mean Reward: 47.687. Std of Reward: 23.156. Training.
+2020-06-30 19:34:04 INFO [stats.py:111] WalkerDynamic: Step: 2460000. Time Elapsed: 2520.394 s Mean Reward: 49.687. Std of Reward: 29.364. Training.
+2020-06-30 19:34:36 INFO [stats.py:111] WalkerDynamic: Step: 2490000. Time Elapsed: 2552.225 s Mean Reward: 51.392. Std of Reward: 25.295. Training.
+2020-06-30 19:34:44 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:35:04 INFO [stats.py:111] WalkerDynamic: Step: 2520000. Time Elapsed: 2580.311 s Mean Reward: 50.962. Std of Reward: 28.015. Training.
+2020-06-30 19:35:36 INFO [stats.py:111] WalkerDynamic: Step: 2550000. Time Elapsed: 2612.475 s Mean Reward: 50.208. Std of Reward: 26.119. Training.
+2020-06-30 19:36:04 INFO [stats.py:111] WalkerDynamic: Step: 2580000. Time Elapsed: 2640.635 s Mean Reward: 47.209. Std of Reward: 27.888. Training.
+2020-06-30 19:36:35 INFO [stats.py:111] WalkerDynamic: Step: 2610000. Time Elapsed: 2671.149 s Mean Reward: 50.650. Std of Reward: 29.594. Training.
+2020-06-30 19:37:04 INFO [stats.py:111] WalkerDynamic: Step: 2640000. Time Elapsed: 2700.158 s Mean Reward: 54.389. Std of Reward: 30.045. Training.
+2020-06-30 19:37:35 INFO [stats.py:111] WalkerDynamic: Step: 2670000. Time Elapsed: 2731.711 s Mean Reward: 56.226. Std of Reward: 30.163. Training.
+2020-06-30 19:38:03 INFO [stats.py:111] WalkerDynamic: Step: 2700000. Time Elapsed: 2759.106 s Mean Reward: 56.354. Std of Reward: 33.090. Training.
+2020-06-30 19:38:35 INFO [stats.py:111] WalkerDynamic: Step: 2730000. Time Elapsed: 2791.488 s Mean Reward: 56.920. Std of Reward: 40.195. Training.
+2020-06-30 19:39:02 INFO [stats.py:111] WalkerDynamic: Step: 2760000. Time Elapsed: 2818.668 s Mean Reward: 55.961. Std of Reward: 32.672. Training.
+2020-06-30 19:39:29 INFO [stats.py:111] WalkerDynamic: Step: 2790000. Time Elapsed: 2845.473 s Mean Reward: 56.775. Std of Reward: 36.717. Training.
+2020-06-30 19:40:01 INFO [stats.py:111] WalkerDynamic: Step: 2820000. Time Elapsed: 2877.448 s Mean Reward: 57.579. Std of Reward: 40.330. Training.
+2020-06-30 19:40:29 INFO [stats.py:111] WalkerDynamic: Step: 2850000. Time Elapsed: 2905.341 s Mean Reward: 67.869. Std of Reward: 42.350. Training.
+2020-06-30 19:41:01 INFO [stats.py:111] WalkerDynamic: Step: 2880000. Time Elapsed: 2937.386 s Mean Reward: 58.461. Std of Reward: 39.479. Training.
+2020-06-30 19:41:28 INFO [stats.py:111] WalkerDynamic: Step: 2910000. Time Elapsed: 2964.251 s Mean Reward: 61.293. Std of Reward: 51.125. Training.
+2020-06-30 19:41:59 INFO [stats.py:111] WalkerDynamic: Step: 2940000. Time Elapsed: 2995.820 s Mean Reward: 65.409. Std of Reward: 46.655. Training.
+2020-06-30 19:42:28 INFO [stats.py:111] WalkerDynamic: Step: 2970000. Time Elapsed: 3023.928 s Mean Reward: 67.003. Std of Reward: 44.721. Training.
+2020-06-30 19:42:58 INFO [stats.py:111] WalkerDynamic: Step: 3000000. Time Elapsed: 3054.435 s Mean Reward: 63.846. Std of Reward: 42.087. Training.
+2020-06-30 19:42:58 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:43:26 INFO [stats.py:111] WalkerDynamic: Step: 3030000. Time Elapsed: 3082.643 s Mean Reward: 64.531. Std of Reward: 47.000. Training.
+2020-06-30 19:43:58 INFO [stats.py:111] WalkerDynamic: Step: 3060000. Time Elapsed: 3113.981 s Mean Reward: 69.082. Std of Reward: 45.408. Training.
+2020-06-30 19:44:23 INFO [stats.py:111] WalkerDynamic: Step: 3090000. Time Elapsed: 3139.637 s Mean Reward: 66.576. Std of Reward: 47.874. Training.
+2020-06-30 19:44:59 INFO [stats.py:111] WalkerDynamic: Step: 3120000. Time Elapsed: 3174.922 s Mean Reward: 65.992. Std of Reward: 51.807. Training.
+2020-06-30 19:45:24 INFO [stats.py:111] WalkerDynamic: Step: 3150000. Time Elapsed: 3200.400 s Mean Reward: 75.821. Std of Reward: 63.208. Training.
+2020-06-30 19:45:51 INFO [stats.py:111] WalkerDynamic: Step: 3180000. Time Elapsed: 3227.150 s Mean Reward: 81.309. Std of Reward: 58.877. Training.
+2020-06-30 19:46:22 INFO [stats.py:111] WalkerDynamic: Step: 3210000. Time Elapsed: 3258.539 s Mean Reward: 72.644. Std of Reward: 49.661. Training.
+2020-06-30 19:46:50 INFO [stats.py:111] WalkerDynamic: Step: 3240000. Time Elapsed: 3286.301 s Mean Reward: 76.240. Std of Reward: 60.555. Training.
+2020-06-30 19:47:22 INFO [stats.py:111] WalkerDynamic: Step: 3270000. Time Elapsed: 3318.824 s Mean Reward: 80.322. Std of Reward: 56.374. Training.
+2020-06-30 19:47:50 INFO [stats.py:111] WalkerDynamic: Step: 3300000. Time Elapsed: 3345.926 s Mean Reward: 77.073. Std of Reward: 57.740. Training.
+2020-06-30 19:48:19 INFO [stats.py:111] WalkerDynamic: Step: 3330000. Time Elapsed: 3375.700 s Mean Reward: 73.357. Std of Reward: 64.715. Training.
+2020-06-30 19:48:47 INFO [stats.py:111] WalkerDynamic: Step: 3360000. Time Elapsed: 3402.985 s Mean Reward: 70.932. Std of Reward: 47.447. Training.
+2020-06-30 19:49:20 INFO [stats.py:111] WalkerDynamic: Step: 3390000. Time Elapsed: 3436.129 s Mean Reward: 77.617. Std of Reward: 56.729. Training.
+2020-06-30 19:49:45 INFO [stats.py:111] WalkerDynamic: Step: 3420000. Time Elapsed: 3461.486 s Mean Reward: 81.197. Std of Reward: 69.176. Training.
+2020-06-30 19:50:19 INFO [stats.py:111] WalkerDynamic: Step: 3450000. Time Elapsed: 3495.444 s Mean Reward: 74.680. Std of Reward: 58.355. Training.
+2020-06-30 19:50:45 INFO [stats.py:111] WalkerDynamic: Step: 3480000. Time Elapsed: 3521.540 s Mean Reward: 82.210. Std of Reward: 71.769. Training.
+2020-06-30 19:51:03 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:51:12 INFO [stats.py:111] WalkerDynamic: Step: 3510000. Time Elapsed: 3547.972 s Mean Reward: 81.320. Std of Reward: 66.744. Training.
+2020-06-30 19:51:44 INFO [stats.py:111] WalkerDynamic: Step: 3540000. Time Elapsed: 3580.299 s Mean Reward: 77.935. Std of Reward: 65.164. Training.
+2020-06-30 19:52:14 INFO [stats.py:111] WalkerDynamic: Step: 3570000. Time Elapsed: 3609.891 s Mean Reward: 86.589. Std of Reward: 71.988. Training.
+2020-06-30 19:52:43 INFO [stats.py:111] WalkerDynamic: Step: 3600000. Time Elapsed: 3639.671 s Mean Reward: 91.826. Std of Reward: 91.101. Training.
+2020-06-30 19:53:11 INFO [stats.py:111] WalkerDynamic: Step: 3630000. Time Elapsed: 3667.013 s Mean Reward: 93.800. Std of Reward: 76.703. Training.
+2020-06-30 19:53:43 INFO [stats.py:111] WalkerDynamic: Step: 3660000. Time Elapsed: 3699.239 s Mean Reward: 98.262. Std of Reward: 76.505. Training.
+2020-06-30 19:54:08 INFO [stats.py:111] WalkerDynamic: Step: 3690000. Time Elapsed: 3724.728 s Mean Reward: 97.945. Std of Reward: 89.271. Training.
+2020-06-30 19:54:42 INFO [stats.py:111] WalkerDynamic: Step: 3720000. Time Elapsed: 3758.221 s Mean Reward: 84.233. Std of Reward: 66.313. Training.
+2020-06-30 19:55:08 INFO [stats.py:111] WalkerDynamic: Step: 3750000. Time Elapsed: 3784.787 s Mean Reward: 101.830. Std of Reward: 91.859. Training.
+2020-06-30 19:55:35 INFO [stats.py:111] WalkerDynamic: Step: 3780000. Time Elapsed: 3811.255 s Mean Reward: 100.018. Std of Reward: 76.115. Training.
+2020-06-30 19:56:04 INFO [stats.py:111] WalkerDynamic: Step: 3810000. Time Elapsed: 3840.629 s Mean Reward: 112.023. Std of Reward: 92.737. Training.
+2020-06-30 19:56:32 INFO [stats.py:111] WalkerDynamic: Step: 3840000. Time Elapsed: 3868.090 s Mean Reward: 89.212. Std of Reward: 77.543. Training.
+2020-06-30 19:57:02 INFO [stats.py:111] WalkerDynamic: Step: 3870000. Time Elapsed: 3898.445 s Mean Reward: 94.273. Std of Reward: 73.601. Training.
+2020-06-30 19:57:33 INFO [stats.py:111] WalkerDynamic: Step: 3900000. Time Elapsed: 3929.443 s Mean Reward: 93.291. Std of Reward: 78.350. Training.
+2020-06-30 19:58:03 INFO [stats.py:111] WalkerDynamic: Step: 3930000. Time Elapsed: 3959.069 s Mean Reward: 111.741. Std of Reward: 92.468. Training.
+2020-06-30 19:58:29 INFO [stats.py:111] WalkerDynamic: Step: 3960000. Time Elapsed: 3985.810 s Mean Reward: 111.195. Std of Reward: 101.599. Training.
+2020-06-30 19:59:00 INFO [stats.py:111] WalkerDynamic: Step: 3990000. Time Elapsed: 4016.645 s Mean Reward: 107.788. Std of Reward: 89.557. Training.
+2020-06-30 19:59:06 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 19:59:27 INFO [stats.py:111] WalkerDynamic: Step: 4020000. Time Elapsed: 4043.141 s Mean Reward: 102.849. Std of Reward: 85.031. Training.
+2020-06-30 19:59:59 INFO [stats.py:111] WalkerDynamic: Step: 4050000. Time Elapsed: 4075.431 s Mean Reward: 111.509. Std of Reward: 96.586. Training.
+2020-06-30 20:00:23 INFO [stats.py:111] WalkerDynamic: Step: 4080000. Time Elapsed: 4099.345 s Mean Reward: 112.555. Std of Reward: 100.901. Training.
+2020-06-30 20:00:53 INFO [stats.py:111] WalkerDynamic: Step: 4110000. Time Elapsed: 4129.798 s Mean Reward: 99.583. Std of Reward: 83.380. Training.
+2020-06-30 20:01:26 INFO [stats.py:111] WalkerDynamic: Step: 4140000. Time Elapsed: 4162.086 s Mean Reward: 118.399. Std of Reward: 105.988. Training.
+2020-06-30 20:01:51 INFO [stats.py:111] WalkerDynamic: Step: 4170000. Time Elapsed: 4187.702 s Mean Reward: 133.775. Std of Reward: 112.845. Training.
+2020-06-30 20:02:21 INFO [stats.py:111] WalkerDynamic: Step: 4200000. Time Elapsed: 4217.400 s Mean Reward: 126.613. Std of Reward: 107.825. Training.
+2020-06-30 20:02:49 INFO [stats.py:111] WalkerDynamic: Step: 4230000. Time Elapsed: 4245.116 s Mean Reward: 133.730. Std of Reward: 112.682. Training.
+2020-06-30 20:03:20 INFO [stats.py:111] WalkerDynamic: Step: 4260000. Time Elapsed: 4276.597 s Mean Reward: 123.098. Std of Reward: 107.515. Training.
+2020-06-30 20:03:45 INFO [stats.py:111] WalkerDynamic: Step: 4290000. Time Elapsed: 4301.802 s Mean Reward: 111.577. Std of Reward: 107.017. Training.
+2020-06-30 20:04:15 INFO [stats.py:111] WalkerDynamic: Step: 4320000. Time Elapsed: 4331.332 s Mean Reward: 118.880. Std of Reward: 117.697. Training.
+2020-06-30 20:04:43 INFO [stats.py:111] WalkerDynamic: Step: 4350000. Time Elapsed: 4359.239 s Mean Reward: 119.149. Std of Reward: 99.885. Training.
+2020-06-30 20:05:16 INFO [stats.py:111] WalkerDynamic: Step: 4380000. Time Elapsed: 4392.635 s Mean Reward: 120.661. Std of Reward: 104.688. Training.
+2020-06-30 20:05:40 INFO [stats.py:111] WalkerDynamic: Step: 4410000. Time Elapsed: 4416.296 s Mean Reward: 136.135. Std of Reward: 132.488. Training.
+2020-06-30 20:06:08 INFO [stats.py:111] WalkerDynamic: Step: 4440000. Time Elapsed: 4444.212 s Mean Reward: 136.159. Std of Reward: 109.187. Training.
+2020-06-30 20:06:39 INFO [stats.py:111] WalkerDynamic: Step: 4470000. Time Elapsed: 4474.983 s Mean Reward: 121.008. Std of Reward: 122.066. Training.
+2020-06-30 20:07:05 INFO [stats.py:111] WalkerDynamic: Step: 4500000. Time Elapsed: 4501.006 s Mean Reward: 143.840. Std of Reward: 129.410. Training.
+2020-06-30 20:07:05 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:07:37 INFO [stats.py:111] WalkerDynamic: Step: 4530000. Time Elapsed: 4533.747 s Mean Reward: 124.917. Std of Reward: 116.638. Training.
+2020-06-30 20:08:05 INFO [stats.py:111] WalkerDynamic: Step: 4560000. Time Elapsed: 4561.591 s Mean Reward: 149.685. Std of Reward: 129.549. Training.
+2020-06-30 20:08:35 INFO [stats.py:111] WalkerDynamic: Step: 4590000. Time Elapsed: 4591.432 s Mean Reward: 129.980. Std of Reward: 115.244. Training.
+2020-06-30 20:09:05 INFO [stats.py:111] WalkerDynamic: Step: 4620000. Time Elapsed: 4620.988 s Mean Reward: 153.084. Std of Reward: 130.149. Training.
+2020-06-30 20:09:31 INFO [stats.py:111] WalkerDynamic: Step: 4650000. Time Elapsed: 4647.607 s Mean Reward: 136.347. Std of Reward: 139.093. Training.
+2020-06-30 20:09:57 INFO [stats.py:111] WalkerDynamic: Step: 4680000. Time Elapsed: 4672.944 s Mean Reward: 151.314. Std of Reward: 140.321. Training.
+2020-06-30 20:10:26 INFO [stats.py:111] WalkerDynamic: Step: 4710000. Time Elapsed: 4702.285 s Mean Reward: 114.830. Std of Reward: 96.019. Training.
+2020-06-30 20:10:58 INFO [stats.py:111] WalkerDynamic: Step: 4740000. Time Elapsed: 4733.900 s Mean Reward: 145.719. Std of Reward: 124.671. Training.
+2020-06-30 20:11:25 INFO [stats.py:111] WalkerDynamic: Step: 4770000. Time Elapsed: 4760.987 s Mean Reward: 139.718. Std of Reward: 118.425. Training.
+2020-06-30 20:11:54 INFO [stats.py:111] WalkerDynamic: Step: 4800000. Time Elapsed: 4789.929 s Mean Reward: 136.267. Std of Reward: 135.456. Training.
+2020-06-30 20:12:20 INFO [stats.py:111] WalkerDynamic: Step: 4830000. Time Elapsed: 4816.096 s Mean Reward: 142.494. Std of Reward: 124.070. Training.
+2020-06-30 20:12:53 INFO [stats.py:111] WalkerDynamic: Step: 4860000. Time Elapsed: 4848.884 s Mean Reward: 127.386. Std of Reward: 98.012. Training.
+2020-06-30 20:13:20 INFO [stats.py:111] WalkerDynamic: Step: 4890000. Time Elapsed: 4876.585 s Mean Reward: 149.647. Std of Reward: 140.313. Training.
+2020-06-30 20:13:51 INFO [stats.py:111] WalkerDynamic: Step: 4920000. Time Elapsed: 4907.207 s Mean Reward: 165.683. Std of Reward: 152.899. Training.
+2020-06-30 20:14:20 INFO [stats.py:111] WalkerDynamic: Step: 4950000. Time Elapsed: 4935.891 s Mean Reward: 136.096. Std of Reward: 118.615. Training.
+2020-06-30 20:14:45 INFO [stats.py:111] WalkerDynamic: Step: 4980000. Time Elapsed: 4961.583 s Mean Reward: 176.030. Std of Reward: 150.358. Training.
+2020-06-30 20:15:05 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:15:17 INFO [stats.py:111] WalkerDynamic: Step: 5010000. Time Elapsed: 4992.886 s Mean Reward: 167.489. Std of Reward: 143.930. Training.
+2020-06-30 20:15:43 INFO [stats.py:111] WalkerDynamic: Step: 5040000. Time Elapsed: 5019.412 s Mean Reward: 177.163. Std of Reward: 138.732. Training.
+2020-06-30 20:16:11 INFO [stats.py:111] WalkerDynamic: Step: 5070000. Time Elapsed: 5047.835 s Mean Reward: 153.293. Std of Reward: 137.900. Training.
+2020-06-30 20:16:38 INFO [stats.py:111] WalkerDynamic: Step: 5100000. Time Elapsed: 5074.749 s Mean Reward: 143.535. Std of Reward: 131.184. Training.
+2020-06-30 20:17:12 INFO [stats.py:111] WalkerDynamic: Step: 5130000. Time Elapsed: 5108.717 s Mean Reward: 161.136. Std of Reward: 127.212. Training.
+2020-06-30 20:17:39 INFO [stats.py:111] WalkerDynamic: Step: 5160000. Time Elapsed: 5134.888 s Mean Reward: 175.827. Std of Reward: 142.996. Training.
+2020-06-30 20:18:08 INFO [stats.py:111] WalkerDynamic: Step: 5190000. Time Elapsed: 5164.494 s Mean Reward: 154.670. Std of Reward: 146.320. Training.
+2020-06-30 20:18:35 INFO [stats.py:111] WalkerDynamic: Step: 5220000. Time Elapsed: 5191.436 s Mean Reward: 196.867. Std of Reward: 156.060. Training.
+2020-06-30 20:19:04 INFO [stats.py:111] WalkerDynamic: Step: 5250000. Time Elapsed: 5219.921 s Mean Reward: 157.159. Std of Reward: 136.698. Training.
+2020-06-30 20:19:34 INFO [stats.py:111] WalkerDynamic: Step: 5280000. Time Elapsed: 5250.699 s Mean Reward: 138.540. Std of Reward: 142.598. Training.
+2020-06-30 20:20:02 INFO [stats.py:111] WalkerDynamic: Step: 5310000. Time Elapsed: 5278.535 s Mean Reward: 171.436. Std of Reward: 155.769. Training.
+2020-06-30 20:20:32 INFO [stats.py:111] WalkerDynamic: Step: 5340000. Time Elapsed: 5308.307 s Mean Reward: 185.571. Std of Reward: 151.882. Training.
+2020-06-30 20:20:56 INFO [stats.py:111] WalkerDynamic: Step: 5370000. Time Elapsed: 5332.768 s Mean Reward: 203.814. Std of Reward: 166.004. Training.
+2020-06-30 20:21:30 INFO [stats.py:111] WalkerDynamic: Step: 5400000. Time Elapsed: 5366.631 s Mean Reward: 187.491. Std of Reward: 137.397. Training.
+2020-06-30 20:21:54 INFO [stats.py:111] WalkerDynamic: Step: 5430000. Time Elapsed: 5390.741 s Mean Reward: 198.816. Std of Reward: 159.102. Training.
+2020-06-30 20:22:20 INFO [stats.py:111] WalkerDynamic: Step: 5460000. Time Elapsed: 5416.849 s Mean Reward: 155.096. Std of Reward: 138.170. Training.
+2020-06-30 20:22:48 INFO [stats.py:111] WalkerDynamic: Step: 5490000. Time Elapsed: 5444.173 s Mean Reward: 175.322. Std of Reward: 159.617. Training.
+2020-06-30 20:22:58 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:23:19 INFO [stats.py:111] WalkerDynamic: Step: 5520000. Time Elapsed: 5475.505 s Mean Reward: 154.691. Std of Reward: 119.838. Training.
+2020-06-30 20:23:48 INFO [stats.py:111] WalkerDynamic: Step: 5550000. Time Elapsed: 5504.715 s Mean Reward: 207.142. Std of Reward: 182.500. Training.
+2020-06-30 20:24:12 INFO [stats.py:111] WalkerDynamic: Step: 5580000. Time Elapsed: 5528.589 s Mean Reward: 178.409. Std of Reward: 157.725. Training.
+2020-06-30 20:24:47 INFO [stats.py:111] WalkerDynamic: Step: 5610000. Time Elapsed: 5562.952 s Mean Reward: 157.528. Std of Reward: 146.463. Training.
+2020-06-30 20:25:11 INFO [stats.py:111] WalkerDynamic: Step: 5640000. Time Elapsed: 5587.751 s Mean Reward: 200.052. Std of Reward: 173.887. Training.
+2020-06-30 20:25:42 INFO [stats.py:111] WalkerDynamic: Step: 5670000. Time Elapsed: 5618.370 s Mean Reward: 209.349. Std of Reward: 179.222. Training.
+2020-06-30 20:26:08 INFO [stats.py:111] WalkerDynamic: Step: 5700000. Time Elapsed: 5644.140 s Mean Reward: 158.546. Std of Reward: 148.487. Training.
+2020-06-30 20:26:41 INFO [stats.py:111] WalkerDynamic: Step: 5730000. Time Elapsed: 5677.207 s Mean Reward: 172.561. Std of Reward: 151.643. Training.
+2020-06-30 20:27:04 INFO [stats.py:111] WalkerDynamic: Step: 5760000. Time Elapsed: 5700.274 s Mean Reward: 180.713. Std of Reward: 169.980. Training.
+2020-06-30 20:27:30 INFO [stats.py:111] WalkerDynamic: Step: 5790000. Time Elapsed: 5726.257 s Mean Reward: 185.498. Std of Reward: 153.494. Training.
+2020-06-30 20:28:03 INFO [stats.py:111] WalkerDynamic: Step: 5820000. Time Elapsed: 5759.022 s Mean Reward: 175.182. Std of Reward: 148.178. Training.
+2020-06-30 20:28:27 INFO [stats.py:111] WalkerDynamic: Step: 5850000. Time Elapsed: 5783.727 s Mean Reward: 191.110. Std of Reward: 159.794. Training.
+2020-06-30 20:28:56 INFO [stats.py:111] WalkerDynamic: Step: 5880000. Time Elapsed: 5812.630 s Mean Reward: 177.101. Std of Reward: 153.414. Training.
+2020-06-30 20:29:26 INFO [stats.py:111] WalkerDynamic: Step: 5910000. Time Elapsed: 5841.931 s Mean Reward: 199.186. Std of Reward: 158.549. Training.
+2020-06-30 20:29:56 INFO [stats.py:111] WalkerDynamic: Step: 5940000. Time Elapsed: 5872.736 s Mean Reward: 171.594. Std of Reward: 149.056. Training.
+2020-06-30 20:30:21 INFO [stats.py:111] WalkerDynamic: Step: 5970000. Time Elapsed: 5897.208 s Mean Reward: 199.019. Std of Reward: 157.953. Training.
+2020-06-30 20:30:56 INFO [stats.py:111] WalkerDynamic: Step: 6000000. Time Elapsed: 5931.890 s Mean Reward: 173.894. Std of Reward: 156.977. Training.
+2020-06-30 20:30:56 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:31:16 INFO [stats.py:111] WalkerDynamic: Step: 6030000. Time Elapsed: 5952.331 s Mean Reward: 210.603. Std of Reward: 175.976. Training.
+2020-06-30 20:31:48 INFO [stats.py:111] WalkerDynamic: Step: 6060000. Time Elapsed: 5984.572 s Mean Reward: 188.875. Std of Reward: 141.265. Training.
+2020-06-30 20:32:16 INFO [stats.py:111] WalkerDynamic: Step: 6090000. Time Elapsed: 6012.144 s Mean Reward: 208.550. Std of Reward: 159.392. Training.
+2020-06-30 20:32:42 INFO [stats.py:111] WalkerDynamic: Step: 6120000. Time Elapsed: 6038.799 s Mean Reward: 208.815. Std of Reward: 179.828. Training.
+2020-06-30 20:33:14 INFO [stats.py:111] WalkerDynamic: Step: 6150000. Time Elapsed: 6070.039 s Mean Reward: 186.803. Std of Reward: 154.322. Training.
+2020-06-30 20:33:40 INFO [stats.py:111] WalkerDynamic: Step: 6180000. Time Elapsed: 6096.074 s Mean Reward: 214.060. Std of Reward: 158.344. Training.
+2020-06-30 20:34:13 INFO [stats.py:111] WalkerDynamic: Step: 6210000. Time Elapsed: 6129.533 s Mean Reward: 205.522. Std of Reward: 166.195. Training.
+2020-06-30 20:34:40 INFO [stats.py:111] WalkerDynamic: Step: 6240000. Time Elapsed: 6156.823 s Mean Reward: 199.336. Std of Reward: 177.864. Training.
+2020-06-30 20:35:11 INFO [stats.py:111] WalkerDynamic: Step: 6270000. Time Elapsed: 6187.755 s Mean Reward: 201.173. Std of Reward: 176.037. Training.
+2020-06-30 20:35:34 INFO [stats.py:111] WalkerDynamic: Step: 6300000. Time Elapsed: 6210.520 s Mean Reward: 239.908. Std of Reward: 182.673. Training.
+2020-06-30 20:36:04 INFO [stats.py:111] WalkerDynamic: Step: 6330000. Time Elapsed: 6240.672 s Mean Reward: 184.387. Std of Reward: 144.100. Training.
+2020-06-30 20:36:32 INFO [stats.py:111] WalkerDynamic: Step: 6360000. Time Elapsed: 6268.400 s Mean Reward: 250.030. Std of Reward: 178.893. Training.
+2020-06-30 20:36:59 INFO [stats.py:111] WalkerDynamic: Step: 6390000. Time Elapsed: 6295.281 s Mean Reward: 228.866. Std of Reward: 172.012. Training.
+2020-06-30 20:37:28 INFO [stats.py:111] WalkerDynamic: Step: 6420000. Time Elapsed: 6324.400 s Mean Reward: 195.972. Std of Reward: 167.677. Training.
+2020-06-30 20:38:00 INFO [stats.py:111] WalkerDynamic: Step: 6450000. Time Elapsed: 6356.283 s Mean Reward: 201.176. Std of Reward: 157.188. Training.
+2020-06-30 20:38:31 INFO [stats.py:111] WalkerDynamic: Step: 6480000. Time Elapsed: 6387.080 s Mean Reward: 221.738. Std of Reward: 189.219. Training.
+2020-06-30 20:38:49 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:39:00 INFO [stats.py:111] WalkerDynamic: Step: 6510000. Time Elapsed: 6416.302 s Mean Reward: 196.333. Std of Reward: 185.823. Training.
+2020-06-30 20:39:24 INFO [stats.py:111] WalkerDynamic: Step: 6540000. Time Elapsed: 6439.980 s Mean Reward: 240.309. Std of Reward: 207.161. Training.
+2020-06-30 20:39:55 INFO [stats.py:111] WalkerDynamic: Step: 6570000. Time Elapsed: 6471.230 s Mean Reward: 245.635. Std of Reward: 174.105. Training.
+2020-06-30 20:40:23 INFO [stats.py:111] WalkerDynamic: Step: 6600000. Time Elapsed: 6499.312 s Mean Reward: 234.658. Std of Reward: 199.476. Training.
+2020-06-30 20:40:52 INFO [stats.py:111] WalkerDynamic: Step: 6630000. Time Elapsed: 6528.717 s Mean Reward: 231.906. Std of Reward: 191.460. Training.
+2020-06-30 20:41:17 INFO [stats.py:111] WalkerDynamic: Step: 6660000. Time Elapsed: 6553.606 s Mean Reward: 262.107. Std of Reward: 189.065. Training.
+2020-06-30 20:41:50 INFO [stats.py:111] WalkerDynamic: Step: 6690000. Time Elapsed: 6586.698 s Mean Reward: 224.103. Std of Reward: 175.800. Training.
+2020-06-30 20:42:15 INFO [stats.py:111] WalkerDynamic: Step: 6720000. Time Elapsed: 6610.901 s Mean Reward: 248.174. Std of Reward: 197.800. Training.
+2020-06-30 20:42:52 INFO [stats.py:111] WalkerDynamic: Step: 6750000. Time Elapsed: 6648.576 s Mean Reward: 217.438. Std of Reward: 185.164. Training.
+2020-06-30 20:43:17 INFO [stats.py:111] WalkerDynamic: Step: 6780000. Time Elapsed: 6673.331 s Mean Reward: 274.081. Std of Reward: 205.005. Training.
+2020-06-30 20:43:41 INFO [stats.py:111] WalkerDynamic: Step: 6810000. Time Elapsed: 6697.374 s Mean Reward: 283.952. Std of Reward: 216.518. Training.
+2020-06-30 20:44:12 INFO [stats.py:111] WalkerDynamic: Step: 6840000. Time Elapsed: 6728.602 s Mean Reward: 244.481. Std of Reward: 184.060. Training.
+2020-06-30 20:44:42 INFO [stats.py:111] WalkerDynamic: Step: 6870000. Time Elapsed: 6758.494 s Mean Reward: 237.767. Std of Reward: 190.379. Training.
+2020-06-30 20:45:10 INFO [stats.py:111] WalkerDynamic: Step: 6900000. Time Elapsed: 6785.876 s Mean Reward: 249.772. Std of Reward: 202.058. Training.
+2020-06-30 20:45:36 INFO [stats.py:111] WalkerDynamic: Step: 6930000. Time Elapsed: 6812.607 s Mean Reward: 252.157. Std of Reward: 208.519. Training.
+2020-06-30 20:46:09 INFO [stats.py:111] WalkerDynamic: Step: 6960000. Time Elapsed: 6845.408 s Mean Reward: 241.588. Std of Reward: 200.907. Training.
+2020-06-30 20:46:33 INFO [stats.py:111] WalkerDynamic: Step: 6990000. Time Elapsed: 6869.822 s Mean Reward: 257.501. Std of Reward: 204.936. Training.
+2020-06-30 20:46:43 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:47:00 INFO [stats.py:111] WalkerDynamic: Step: 7020000. Time Elapsed: 6896.227 s Mean Reward: 303.981. Std of Reward: 209.996. Training.
+2020-06-30 20:47:30 INFO [stats.py:111] WalkerDynamic: Step: 7050000. Time Elapsed: 6926.790 s Mean Reward: 278.701. Std of Reward: 193.204. Training.
+2020-06-30 20:47:58 INFO [stats.py:111] WalkerDynamic: Step: 7080000. Time Elapsed: 6954.789 s Mean Reward: 269.839. Std of Reward: 196.339. Training.
+2020-06-30 20:48:28 INFO [stats.py:111] WalkerDynamic: Step: 7110000. Time Elapsed: 6984.581 s Mean Reward: 259.745. Std of Reward: 189.707. Training.
+2020-06-30 20:49:00 INFO [stats.py:111] WalkerDynamic: Step: 7140000. Time Elapsed: 7016.090 s Mean Reward: 235.767. Std of Reward: 186.083. Training.
+2020-06-30 20:49:29 INFO [stats.py:111] WalkerDynamic: Step: 7170000. Time Elapsed: 7045.412 s Mean Reward: 271.008. Std of Reward: 215.770. Training.
+2020-06-30 20:49:52 INFO [stats.py:111] WalkerDynamic: Step: 7200000. Time Elapsed: 7068.604 s Mean Reward: 268.987. Std of Reward: 190.985. Training.
+2020-06-30 20:50:26 INFO [stats.py:111] WalkerDynamic: Step: 7230000. Time Elapsed: 7102.783 s Mean Reward: 254.874. Std of Reward: 184.976. Training.
+2020-06-30 20:50:51 INFO [stats.py:111] WalkerDynamic: Step: 7260000. Time Elapsed: 7127.449 s Mean Reward: 302.631. Std of Reward: 199.809. Training.
+2020-06-30 20:51:20 INFO [stats.py:111] WalkerDynamic: Step: 7290000. Time Elapsed: 7155.940 s Mean Reward: 256.859. Std of Reward: 181.850. Training.
+2020-06-30 20:51:50 INFO [stats.py:111] WalkerDynamic: Step: 7320000. Time Elapsed: 7186.421 s Mean Reward: 268.036. Std of Reward: 195.941. Training.
+2020-06-30 20:52:15 INFO [stats.py:111] WalkerDynamic: Step: 7350000. Time Elapsed: 7211.243 s Mean Reward: 276.971. Std of Reward: 194.644. Training.
+2020-06-30 20:52:48 INFO [stats.py:111] WalkerDynamic: Step: 7380000. Time Elapsed: 7243.901 s Mean Reward: 242.976. Std of Reward: 173.354. Training.
+2020-06-30 20:53:17 INFO [stats.py:111] WalkerDynamic: Step: 7410000. Time Elapsed: 7273.192 s Mean Reward: 256.264. Std of Reward: 202.848. Training.
+2020-06-30 20:53:45 INFO [stats.py:111] WalkerDynamic: Step: 7440000. Time Elapsed: 7301.104 s Mean Reward: 310.926. Std of Reward: 233.998. Training.
+2020-06-30 20:54:16 INFO [stats.py:111] WalkerDynamic: Step: 7470000. Time Elapsed: 7332.418 s Mean Reward: 252.119. Std of Reward: 185.201. Training.
+2020-06-30 20:54:44 INFO [stats.py:111] WalkerDynamic: Step: 7500000. Time Elapsed: 7359.940 s Mean Reward: 339.489. Std of Reward: 240.726. Training.
+2020-06-30 20:54:44 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 20:55:12 INFO [stats.py:111] WalkerDynamic: Step: 7530000. Time Elapsed: 7388.801 s Mean Reward: 334.175. Std of Reward: 214.787. Training.
+2020-06-30 20:55:37 INFO [stats.py:111] WalkerDynamic: Step: 7560000. Time Elapsed: 7413.412 s Mean Reward: 322.446. Std of Reward: 207.846. Training.
+2020-06-30 20:56:11 INFO [stats.py:111] WalkerDynamic: Step: 7590000. Time Elapsed: 7447.178 s Mean Reward: 256.561. Std of Reward: 210.304. Training.
+2020-06-30 20:56:40 INFO [stats.py:111] WalkerDynamic: Step: 7620000. Time Elapsed: 7476.408 s Mean Reward: 305.296. Std of Reward: 203.292. Training.
+2020-06-30 20:57:08 INFO [stats.py:111] WalkerDynamic: Step: 7650000. Time Elapsed: 7504.480 s Mean Reward: 329.873. Std of Reward: 231.820. Training.
+2020-06-30 20:57:36 INFO [stats.py:111] WalkerDynamic: Step: 7680000. Time Elapsed: 7532.485 s Mean Reward: 304.266. Std of Reward: 211.975. Training.
+2020-06-30 20:58:07 INFO [stats.py:111] WalkerDynamic: Step: 7710000. Time Elapsed: 7563.663 s Mean Reward: 296.203. Std of Reward: 212.179. Training.
+2020-06-30 20:58:32 INFO [stats.py:111] WalkerDynamic: Step: 7740000. Time Elapsed: 7588.739 s Mean Reward: 310.998. Std of Reward: 210.474. Training.
+2020-06-30 20:59:01 INFO [stats.py:111] WalkerDynamic: Step: 7770000. Time Elapsed: 7617.229 s Mean Reward: 307.034. Std of Reward: 221.599. Training.
+2020-06-30 20:59:30 INFO [stats.py:111] WalkerDynamic: Step: 7800000. Time Elapsed: 7646.278 s Mean Reward: 317.930. Std of Reward: 200.045. Training.
+2020-06-30 20:59:55 INFO [stats.py:111] WalkerDynamic: Step: 7830000. Time Elapsed: 7671.395 s Mean Reward: 343.146. Std of Reward: 194.279. Training.
+2020-06-30 21:00:28 INFO [stats.py:111] WalkerDynamic: Step: 7860000. Time Elapsed: 7704.830 s Mean Reward: 293.228. Std of Reward: 216.863. Training.
+2020-06-30 21:00:55 INFO [stats.py:111] WalkerDynamic: Step: 7890000. Time Elapsed: 7731.740 s Mean Reward: 307.501. Std of Reward: 219.305. Training.
+2020-06-30 21:01:25 INFO [stats.py:111] WalkerDynamic: Step: 7920000. Time Elapsed: 7761.796 s Mean Reward: 338.713. Std of Reward: 207.149. Training.
+2020-06-30 21:02:00 INFO [stats.py:111] WalkerDynamic: Step: 7950000. Time Elapsed: 7795.987 s Mean Reward: 265.794. Std of Reward: 215.976. Training.
+2020-06-30 21:02:18 INFO [stats.py:111] WalkerDynamic: Step: 7980000. Time Elapsed: 7814.618 s Mean Reward: 401.715. Std of Reward: 233.206. Training.
+2020-06-30 21:02:36 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:02:48 INFO [stats.py:111] WalkerDynamic: Step: 8010000. Time Elapsed: 7844.478 s Mean Reward: 300.334. Std of Reward: 232.311. Training.
+2020-06-30 21:03:21 INFO [stats.py:111] WalkerDynamic: Step: 8040000. Time Elapsed: 7876.921 s Mean Reward: 304.773. Std of Reward: 205.843. Training.
+2020-06-30 21:03:52 INFO [stats.py:111] WalkerDynamic: Step: 8070000. Time Elapsed: 7908.468 s Mean Reward: 389.097. Std of Reward: 217.630. Training.
+2020-06-30 21:04:19 INFO [stats.py:111] WalkerDynamic: Step: 8100000. Time Elapsed: 7935.780 s Mean Reward: 311.825. Std of Reward: 202.910. Training.
+2020-06-30 21:04:50 INFO [stats.py:111] WalkerDynamic: Step: 8130000. Time Elapsed: 7966.038 s Mean Reward: 304.954. Std of Reward: 229.336. Training.
+2020-06-30 21:05:16 INFO [stats.py:111] WalkerDynamic: Step: 8160000. Time Elapsed: 7992.531 s Mean Reward: 310.486. Std of Reward: 228.342. Training.
+2020-06-30 21:05:41 INFO [stats.py:111] WalkerDynamic: Step: 8190000. Time Elapsed: 8017.323 s Mean Reward: 300.615. Std of Reward: 228.469. Training.
+2020-06-30 21:06:12 INFO [stats.py:111] WalkerDynamic: Step: 8220000. Time Elapsed: 8048.673 s Mean Reward: 376.190. Std of Reward: 236.802. Training.
+2020-06-30 21:06:37 INFO [stats.py:111] WalkerDynamic: Step: 8250000. Time Elapsed: 8073.272 s Mean Reward: 312.797. Std of Reward: 212.205. Training.
+2020-06-30 21:07:13 INFO [stats.py:111] WalkerDynamic: Step: 8280000. Time Elapsed: 8108.897 s Mean Reward: 320.679. Std of Reward: 236.764. Training.
+2020-06-30 21:07:38 INFO [stats.py:111] WalkerDynamic: Step: 8310000. Time Elapsed: 8134.504 s Mean Reward: 340.602. Std of Reward: 218.198. Training.
+2020-06-30 21:08:09 INFO [stats.py:111] WalkerDynamic: Step: 8340000. Time Elapsed: 8165.173 s Mean Reward: 376.015. Std of Reward: 216.690. Training.
+2020-06-30 21:08:40 INFO [stats.py:111] WalkerDynamic: Step: 8370000. Time Elapsed: 8196.014 s Mean Reward: 360.200. Std of Reward: 222.916. Training.
+2020-06-30 21:09:02 INFO [stats.py:111] WalkerDynamic: Step: 8400000. Time Elapsed: 8217.875 s Mean Reward: 376.502. Std of Reward: 228.567. Training.
+2020-06-30 21:09:36 INFO [stats.py:111] WalkerDynamic: Step: 8430000. Time Elapsed: 8252.833 s Mean Reward: 333.044. Std of Reward: 229.287. Training.
+2020-06-30 21:10:05 INFO [stats.py:111] WalkerDynamic: Step: 8460000. Time Elapsed: 8281.012 s Mean Reward: 368.862. Std of Reward: 223.705. Training.
+2020-06-30 21:10:31 INFO [stats.py:111] WalkerDynamic: Step: 8490000. Time Elapsed: 8307.745 s Mean Reward: 392.511. Std of Reward: 226.460. Training.
+2020-06-30 21:10:39 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:11:00 INFO [stats.py:111] WalkerDynamic: Step: 8520000. Time Elapsed: 8336.513 s Mean Reward: 365.369. Std of Reward: 220.697. Training.
+2020-06-30 21:11:31 INFO [stats.py:111] WalkerDynamic: Step: 8550000. Time Elapsed: 8367.082 s Mean Reward: 322.084. Std of Reward: 218.748. Training.
+2020-06-30 21:11:58 INFO [stats.py:111] WalkerDynamic: Step: 8580000. Time Elapsed: 8394.070 s Mean Reward: 335.916. Std of Reward: 243.579. Training.
+2020-06-30 21:12:31 INFO [stats.py:111] WalkerDynamic: Step: 8610000. Time Elapsed: 8427.010 s Mean Reward: 343.093. Std of Reward: 229.279. Training.
+2020-06-30 21:12:57 INFO [stats.py:111] WalkerDynamic: Step: 8640000. Time Elapsed: 8453.028 s Mean Reward: 337.229. Std of Reward: 218.955. Training.
+2020-06-30 21:13:25 INFO [stats.py:111] WalkerDynamic: Step: 8670000. Time Elapsed: 8480.971 s Mean Reward: 344.331. Std of Reward: 226.843. Training.
+2020-06-30 21:13:53 INFO [stats.py:111] WalkerDynamic: Step: 8700000. Time Elapsed: 8509.525 s Mean Reward: 365.627. Std of Reward: 248.391. Training.
+2020-06-30 21:14:25 INFO [stats.py:111] WalkerDynamic: Step: 8730000. Time Elapsed: 8541.843 s Mean Reward: 335.689. Std of Reward: 237.536. Training.
+2020-06-30 21:14:55 INFO [stats.py:111] WalkerDynamic: Step: 8760000. Time Elapsed: 8570.947 s Mean Reward: 394.096. Std of Reward: 245.508. Training.
+2020-06-30 21:15:22 INFO [stats.py:111] WalkerDynamic: Step: 8790000. Time Elapsed: 8598.574 s Mean Reward: 354.030. Std of Reward: 213.636. Training.
+2020-06-30 21:15:52 INFO [stats.py:111] WalkerDynamic: Step: 8820000. Time Elapsed: 8628.794 s Mean Reward: 351.577. Std of Reward: 235.329. Training.
+2020-06-30 21:16:18 INFO [stats.py:111] WalkerDynamic: Step: 8850000. Time Elapsed: 8654.580 s Mean Reward: 329.463. Std of Reward: 235.036. Training.
+2020-06-30 21:16:52 INFO [stats.py:111] WalkerDynamic: Step: 8880000. Time Elapsed: 8688.492 s Mean Reward: 332.647. Std of Reward: 221.576. Training.
+2020-06-30 21:17:20 INFO [stats.py:111] WalkerDynamic: Step: 8910000. Time Elapsed: 8715.993 s Mean Reward: 383.166. Std of Reward: 256.198. Training.
+2020-06-30 21:17:46 INFO [stats.py:111] WalkerDynamic: Step: 8940000. Time Elapsed: 8742.695 s Mean Reward: 392.834. Std of Reward: 218.777. Training.
+2020-06-30 21:18:14 INFO [stats.py:111] WalkerDynamic: Step: 8970000. Time Elapsed: 8770.105 s Mean Reward: 387.356. Std of Reward: 241.980. Training.
+2020-06-30 21:18:43 INFO [stats.py:111] WalkerDynamic: Step: 9000000. Time Elapsed: 8799.473 s Mean Reward: 371.956. Std of Reward: 224.824. Training.
+2020-06-30 21:18:43 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:19:17 INFO [stats.py:111] WalkerDynamic: Step: 9030000. Time Elapsed: 8833.449 s Mean Reward: 394.680. Std of Reward: 242.860. Training.
+2020-06-30 21:19:41 INFO [stats.py:111] WalkerDynamic: Step: 9060000. Time Elapsed: 8857.809 s Mean Reward: 454.302. Std of Reward: 216.914. Training.
+2020-06-30 21:20:14 INFO [stats.py:111] WalkerDynamic: Step: 9090000. Time Elapsed: 8890.429 s Mean Reward: 386.955. Std of Reward: 241.492. Training.
+2020-06-30 21:20:38 INFO [stats.py:111] WalkerDynamic: Step: 9120000. Time Elapsed: 8914.327 s Mean Reward: 403.778. Std of Reward: 227.692. Training.
+2020-06-30 21:21:12 INFO [stats.py:111] WalkerDynamic: Step: 9150000. Time Elapsed: 8948.581 s Mean Reward: 375.552. Std of Reward: 226.439. Training.
+2020-06-30 21:21:42 INFO [stats.py:111] WalkerDynamic: Step: 9180000. Time Elapsed: 8978.093 s Mean Reward: 439.423. Std of Reward: 228.297. Training.
+2020-06-30 21:22:08 INFO [stats.py:111] WalkerDynamic: Step: 9210000. Time Elapsed: 9004.672 s Mean Reward: 401.277. Std of Reward: 221.791. Training.
+2020-06-30 21:22:33 INFO [stats.py:111] WalkerDynamic: Step: 9240000. Time Elapsed: 9029.213 s Mean Reward: 458.119. Std of Reward: 215.786. Training.
+2020-06-30 21:23:05 INFO [stats.py:111] WalkerDynamic: Step: 9270000. Time Elapsed: 9061.706 s Mean Reward: 331.887. Std of Reward: 234.992. Training.
+2020-06-30 21:23:36 INFO [stats.py:111] WalkerDynamic: Step: 9300000. Time Elapsed: 9092.429 s Mean Reward: 412.357. Std of Reward: 227.211. Training.
+2020-06-30 21:24:03 INFO [stats.py:111] WalkerDynamic: Step: 9330000. Time Elapsed: 9119.277 s Mean Reward: 445.296. Std of Reward: 230.550. Training.
+2020-06-30 21:24:33 INFO [stats.py:111] WalkerDynamic: Step: 9360000. Time Elapsed: 9149.127 s Mean Reward: 366.595. Std of Reward: 238.985. Training.
+2020-06-30 21:24:58 INFO [stats.py:111] WalkerDynamic: Step: 9390000. Time Elapsed: 9174.192 s Mean Reward: 390.650. Std of Reward: 258.776. Training.
+2020-06-30 21:25:28 INFO [stats.py:111] WalkerDynamic: Step: 9420000. Time Elapsed: 9204.247 s Mean Reward: 372.679. Std of Reward: 218.791. Training.
+2020-06-30 21:25:59 INFO [stats.py:111] WalkerDynamic: Step: 9450000. Time Elapsed: 9235.168 s Mean Reward: 440.364. Std of Reward: 240.009. Training.
+2020-06-30 21:26:21 INFO [stats.py:111] WalkerDynamic: Step: 9480000. Time Elapsed: 9257.332 s Mean Reward: 423.797. Std of Reward: 238.601. Training.
+2020-06-30 21:26:37 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:26:55 INFO [stats.py:111] WalkerDynamic: Step: 9510000. Time Elapsed: 9290.869 s Mean Reward: 389.041. Std of Reward: 230.087. Training.
+2020-06-30 21:27:20 INFO [stats.py:111] WalkerDynamic: Step: 9540000. Time Elapsed: 9316.157 s Mean Reward: 392.764. Std of Reward: 232.043. Training.
+2020-06-30 21:27:48 INFO [stats.py:111] WalkerDynamic: Step: 9570000. Time Elapsed: 9344.718 s Mean Reward: 432.216. Std of Reward: 251.132. Training.
+2020-06-30 21:28:23 INFO [stats.py:111] WalkerDynamic: Step: 9600000. Time Elapsed: 9379.128 s Mean Reward: 342.139. Std of Reward: 244.462. Training.
+2020-06-30 21:28:51 INFO [stats.py:111] WalkerDynamic: Step: 9630000. Time Elapsed: 9407.177 s Mean Reward: 427.687. Std of Reward: 258.062. Training.
+2020-06-30 21:29:12 INFO [stats.py:111] WalkerDynamic: Step: 9660000. Time Elapsed: 9428.216 s Mean Reward: 412.466. Std of Reward: 256.831. Training.
+2020-06-30 21:29:46 INFO [stats.py:111] WalkerDynamic: Step: 9690000. Time Elapsed: 9462.319 s Mean Reward: 382.041. Std of Reward: 247.057. Training.
+2020-06-30 21:30:11 INFO [stats.py:111] WalkerDynamic: Step: 9720000. Time Elapsed: 9487.343 s Mean Reward: 463.262. Std of Reward: 226.939. Training.
+2020-06-30 21:30:41 INFO [stats.py:111] WalkerDynamic: Step: 9750000. Time Elapsed: 9517.410 s Mean Reward: 433.244. Std of Reward: 248.675. Training.
+2020-06-30 21:31:10 INFO [stats.py:111] WalkerDynamic: Step: 9780000. Time Elapsed: 9546.776 s Mean Reward: 423.469. Std of Reward: 235.648. Training.
+2020-06-30 21:31:37 INFO [stats.py:111] WalkerDynamic: Step: 9810000. Time Elapsed: 9573.125 s Mean Reward: 448.055. Std of Reward: 249.988. Training.
+2020-06-30 21:32:11 INFO [stats.py:111] WalkerDynamic: Step: 9840000. Time Elapsed: 9607.263 s Mean Reward: 448.114. Std of Reward: 242.830. Training.
+2020-06-30 21:32:33 INFO [stats.py:111] WalkerDynamic: Step: 9870000. Time Elapsed: 9629.607 s Mean Reward: 416.076. Std of Reward: 259.477. Training.
+2020-06-30 21:33:00 INFO [stats.py:111] WalkerDynamic: Step: 9900000. Time Elapsed: 9656.181 s Mean Reward: 399.376. Std of Reward: 266.488. Training.
+2020-06-30 21:33:30 INFO [stats.py:111] WalkerDynamic: Step: 9930000. Time Elapsed: 9685.920 s Mean Reward: 412.600. Std of Reward: 255.922. Training.
+2020-06-30 21:34:02 INFO [stats.py:111] WalkerDynamic: Step: 9960000. Time Elapsed: 9717.861 s Mean Reward: 409.236. Std of Reward: 216.229. Training.
+2020-06-30 21:34:27 INFO [stats.py:111] WalkerDynamic: Step: 9990000. Time Elapsed: 9743.726 s Mean Reward: 440.126. Std of Reward: 287.264. Training.
+2020-06-30 21:34:34 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:34:54 INFO [stats.py:111] WalkerDynamic: Step: 10020000. Time Elapsed: 9769.982 s Mean Reward: 407.659. Std of Reward: 262.524. Training.
+2020-06-30 21:35:28 INFO [stats.py:111] WalkerDynamic: Step: 10050000. Time Elapsed: 9804.360 s Mean Reward: 401.328. Std of Reward: 253.112. Training.
+2020-06-30 21:35:49 INFO [stats.py:111] WalkerDynamic: Step: 10080000. Time Elapsed: 9825.193 s Mean Reward: 447.100. Std of Reward: 248.259. Training.
+2020-06-30 21:36:27 INFO [stats.py:111] WalkerDynamic: Step: 10110000. Time Elapsed: 9863.086 s Mean Reward: 372.153. Std of Reward: 244.408. Training.
+2020-06-30 21:36:47 INFO [stats.py:111] WalkerDynamic: Step: 10140000. Time Elapsed: 9883.675 s Mean Reward: 439.047. Std of Reward: 229.612. Training.
+2020-06-30 21:37:16 INFO [stats.py:111] WalkerDynamic: Step: 10170000. Time Elapsed: 9911.979 s Mean Reward: 450.362. Std of Reward: 262.159. Training.
+2020-06-30 21:37:42 INFO [stats.py:111] WalkerDynamic: Step: 10200000. Time Elapsed: 9938.681 s Mean Reward: 424.147. Std of Reward: 204.662. Training.
+2020-06-30 21:38:10 INFO [stats.py:111] WalkerDynamic: Step: 10230000. Time Elapsed: 9966.314 s Mean Reward: 371.421. Std of Reward: 239.561. Training.
+2020-06-30 21:38:42 INFO [stats.py:111] WalkerDynamic: Step: 10260000. Time Elapsed: 9997.915 s Mean Reward: 381.503. Std of Reward: 247.728. Training.
+2020-06-30 21:39:13 INFO [stats.py:111] WalkerDynamic: Step: 10290000. Time Elapsed: 10029.716 s Mean Reward: 408.440. Std of Reward: 268.125. Training.
+2020-06-30 21:39:43 INFO [stats.py:111] WalkerDynamic: Step: 10320000. Time Elapsed: 10059.431 s Mean Reward: 502.848. Std of Reward: 257.246. Training.
+2020-06-30 21:40:06 INFO [stats.py:111] WalkerDynamic: Step: 10350000. Time Elapsed: 10082.832 s Mean Reward: 454.340. Std of Reward: 249.956. Training.
+2020-06-30 21:40:39 INFO [stats.py:111] WalkerDynamic: Step: 10380000. Time Elapsed: 10115.252 s Mean Reward: 433.090. Std of Reward: 255.699. Training.
+2020-06-30 21:41:08 INFO [stats.py:111] WalkerDynamic: Step: 10410000. Time Elapsed: 10143.900 s Mean Reward: 451.998. Std of Reward: 235.809. Training.
+2020-06-30 21:41:31 INFO [stats.py:111] WalkerDynamic: Step: 10440000. Time Elapsed: 10166.895 s Mean Reward: 443.904. Std of Reward: 257.189. Training.
+2020-06-30 21:42:01 INFO [stats.py:111] WalkerDynamic: Step: 10470000. Time Elapsed: 10197.818 s Mean Reward: 390.259. Std of Reward: 252.806. Training.
+2020-06-30 21:42:30 INFO [stats.py:111] WalkerDynamic: Step: 10500000. Time Elapsed: 10226.052 s Mean Reward: 424.586. Std of Reward: 226.385. Training.
+2020-06-30 21:42:30 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:43:01 INFO [stats.py:111] WalkerDynamic: Step: 10530000. Time Elapsed: 10257.598 s Mean Reward: 432.194. Std of Reward: 280.610. Training.
+2020-06-30 21:43:25 INFO [stats.py:111] WalkerDynamic: Step: 10560000. Time Elapsed: 10281.490 s Mean Reward: 498.199. Std of Reward: 242.100. Training.
+2020-06-30 21:43:56 INFO [stats.py:111] WalkerDynamic: Step: 10590000. Time Elapsed: 10312.656 s Mean Reward: 476.555. Std of Reward: 255.104. Training.
+2020-06-30 21:44:27 INFO [stats.py:111] WalkerDynamic: Step: 10620000. Time Elapsed: 10343.612 s Mean Reward: 419.312. Std of Reward: 283.177. Training.
+2020-06-30 21:44:51 INFO [stats.py:111] WalkerDynamic: Step: 10650000. Time Elapsed: 10367.391 s Mean Reward: 521.378. Std of Reward: 232.724. Training.
+2020-06-30 21:45:21 INFO [stats.py:111] WalkerDynamic: Step: 10680000. Time Elapsed: 10397.316 s Mean Reward: 416.987. Std of Reward: 233.535. Training.
+2020-06-30 21:45:49 INFO [stats.py:111] WalkerDynamic: Step: 10710000. Time Elapsed: 10425.813 s Mean Reward: 435.374. Std of Reward: 230.404. Training.
+2020-06-30 21:46:15 INFO [stats.py:111] WalkerDynamic: Step: 10740000. Time Elapsed: 10451.564 s Mean Reward: 402.846. Std of Reward: 248.061. Training.
+2020-06-30 21:46:46 INFO [stats.py:111] WalkerDynamic: Step: 10770000. Time Elapsed: 10482.780 s Mean Reward: 396.305. Std of Reward: 264.948. Training.
+2020-06-30 21:47:18 INFO [stats.py:111] WalkerDynamic: Step: 10800000. Time Elapsed: 10514.502 s Mean Reward: 483.785. Std of Reward: 250.758. Training.
+2020-06-30 21:47:41 INFO [stats.py:111] WalkerDynamic: Step: 10830000. Time Elapsed: 10537.371 s Mean Reward: 452.589. Std of Reward: 256.064. Training.
+2020-06-30 21:48:09 INFO [stats.py:111] WalkerDynamic: Step: 10860000. Time Elapsed: 10565.695 s Mean Reward: 434.018. Std of Reward: 262.385. Training.
+2020-06-30 21:48:41 INFO [stats.py:111] WalkerDynamic: Step: 10890000. Time Elapsed: 10597.497 s Mean Reward: 410.066. Std of Reward: 264.017. Training.
+2020-06-30 21:49:05 INFO [stats.py:111] WalkerDynamic: Step: 10920000. Time Elapsed: 10621.523 s Mean Reward: 455.792. Std of Reward: 250.087. Training.
+2020-06-30 21:49:36 INFO [stats.py:111] WalkerDynamic: Step: 10950000. Time Elapsed: 10652.590 s Mean Reward: 428.150. Std of Reward: 255.706. Training.
+2020-06-30 21:50:05 INFO [stats.py:111] WalkerDynamic: Step: 10980000. Time Elapsed: 10681.657 s Mean Reward: 419.162. Std of Reward: 256.387. Training.
+2020-06-30 21:50:24 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:50:35 INFO [stats.py:111] WalkerDynamic: Step: 11010000. Time Elapsed: 10711.741 s Mean Reward: 457.391. Std of Reward: 266.693. Training.
+2020-06-30 21:51:02 INFO [stats.py:111] WalkerDynamic: Step: 11040000. Time Elapsed: 10738.502 s Mean Reward: 419.832. Std of Reward: 255.235. Training.
+2020-06-30 21:51:30 INFO [stats.py:111] WalkerDynamic: Step: 11070000. Time Elapsed: 10765.883 s Mean Reward: 483.666. Std of Reward: 261.955. Training.
+2020-06-30 21:51:59 INFO [stats.py:111] WalkerDynamic: Step: 11100000. Time Elapsed: 10795.068 s Mean Reward: 444.154. Std of Reward: 241.939. Training.
+2020-06-30 21:52:23 INFO [stats.py:111] WalkerDynamic: Step: 11130000. Time Elapsed: 10819.077 s Mean Reward: 418.979. Std of Reward: 241.632. Training.
+2020-06-30 21:53:00 INFO [stats.py:111] WalkerDynamic: Step: 11160000. Time Elapsed: 10856.305 s Mean Reward: 422.895. Std of Reward: 229.126. Training.
+2020-06-30 21:53:25 INFO [stats.py:111] WalkerDynamic: Step: 11190000. Time Elapsed: 10880.881 s Mean Reward: 528.820. Std of Reward: 244.744. Training.
+2020-06-30 21:53:55 INFO [stats.py:111] WalkerDynamic: Step: 11220000. Time Elapsed: 10911.126 s Mean Reward: 427.077. Std of Reward: 283.333. Training.
+2020-06-30 21:54:21 INFO [stats.py:111] WalkerDynamic: Step: 11250000. Time Elapsed: 10937.577 s Mean Reward: 406.733. Std of Reward: 266.806. Training.
+2020-06-30 21:54:53 INFO [stats.py:111] WalkerDynamic: Step: 11280000. Time Elapsed: 10969.381 s Mean Reward: 414.859. Std of Reward: 280.440. Training.
+2020-06-30 21:55:15 INFO [stats.py:111] WalkerDynamic: Step: 11310000. Time Elapsed: 10991.421 s Mean Reward: 481.485. Std of Reward: 242.730. Training.
+2020-06-30 21:55:47 INFO [stats.py:111] WalkerDynamic: Step: 11340000. Time Elapsed: 11023.067 s Mean Reward: 365.243. Std of Reward: 241.057. Training.
+2020-06-30 21:56:17 INFO [stats.py:111] WalkerDynamic: Step: 11370000. Time Elapsed: 11053.572 s Mean Reward: 494.722. Std of Reward: 250.467. Training.
+2020-06-30 21:56:43 INFO [stats.py:111] WalkerDynamic: Step: 11400000. Time Elapsed: 11079.757 s Mean Reward: 467.294. Std of Reward: 255.471. Training.
+2020-06-30 21:57:16 INFO [stats.py:111] WalkerDynamic: Step: 11430000. Time Elapsed: 11112.621 s Mean Reward: 436.340. Std of Reward: 244.750. Training.
+2020-06-30 21:57:45 INFO [stats.py:111] WalkerDynamic: Step: 11460000. Time Elapsed: 11140.920 s Mean Reward: 536.660. Std of Reward: 237.284. Training.
+2020-06-30 21:58:11 INFO [stats.py:111] WalkerDynamic: Step: 11490000. Time Elapsed: 11167.633 s Mean Reward: 500.471. Std of Reward: 249.117. Training.
+2020-06-30 21:58:17 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 21:58:39 INFO [stats.py:111] WalkerDynamic: Step: 11520000. Time Elapsed: 11195.815 s Mean Reward: 439.909. Std of Reward: 265.278. Training.
+2020-06-30 21:59:07 INFO [stats.py:111] WalkerDynamic: Step: 11550000. Time Elapsed: 11223.132 s Mean Reward: 474.931. Std of Reward: 257.635. Training.
+2020-06-30 21:59:38 INFO [stats.py:111] WalkerDynamic: Step: 11580000. Time Elapsed: 11254.528 s Mean Reward: 502.698. Std of Reward: 262.940. Training.
+2020-06-30 22:00:04 INFO [stats.py:111] WalkerDynamic: Step: 11610000. Time Elapsed: 11280.598 s Mean Reward: 514.274. Std of Reward: 246.216. Training.
+2020-06-30 22:00:30 INFO [stats.py:111] WalkerDynamic: Step: 11640000. Time Elapsed: 11306.818 s Mean Reward: 416.533. Std of Reward: 275.517. Training.
+2020-06-30 22:00:58 INFO [stats.py:111] WalkerDynamic: Step: 11670000. Time Elapsed: 11333.902 s Mean Reward: 511.656. Std of Reward: 241.235. Training.
+2020-06-30 22:01:37 INFO [stats.py:111] WalkerDynamic: Step: 11700000. Time Elapsed: 11373.027 s Mean Reward: 523.123. Std of Reward: 223.376. Training.
+2020-06-30 22:01:54 INFO [stats.py:111] WalkerDynamic: Step: 11730000. Time Elapsed: 11390.493 s Mean Reward: 512.645. Std of Reward: 252.668. Training.
+2020-06-30 22:02:21 INFO [stats.py:111] WalkerDynamic: Step: 11760000. Time Elapsed: 11417.026 s Mean Reward: 446.647. Std of Reward: 271.849. Training.
+2020-06-30 22:02:55 INFO [stats.py:111] WalkerDynamic: Step: 11790000. Time Elapsed: 11451.341 s Mean Reward: 437.711. Std of Reward: 267.296. Training.
+2020-06-30 22:03:20 INFO [stats.py:111] WalkerDynamic: Step: 11820000. Time Elapsed: 11475.972 s Mean Reward: 503.919. Std of Reward: 267.341. Training.
+2020-06-30 22:03:51 INFO [stats.py:111] WalkerDynamic: Step: 11850000. Time Elapsed: 11507.270 s Mean Reward: 453.406. Std of Reward: 266.213. Training.
+2020-06-30 22:04:18 INFO [stats.py:111] WalkerDynamic: Step: 11880000. Time Elapsed: 11534.708 s Mean Reward: 485.579. Std of Reward: 245.784. Training.
+2020-06-30 22:04:47 INFO [stats.py:111] WalkerDynamic: Step: 11910000. Time Elapsed: 11563.180 s Mean Reward: 467.003. Std of Reward: 234.078. Training.
+2020-06-30 22:05:17 INFO [stats.py:111] WalkerDynamic: Step: 11940000. Time Elapsed: 11593.791 s Mean Reward: 460.288. Std of Reward: 265.565. Training.
+2020-06-30 22:05:43 INFO [stats.py:111] WalkerDynamic: Step: 11970000. Time Elapsed: 11618.860 s Mean Reward: 523.032. Std of Reward: 252.533. Training.
+2020-06-30 22:06:14 INFO [stats.py:111] WalkerDynamic: Step: 12000000. Time Elapsed: 11650.525 s Mean Reward: 480.817. Std of Reward: 266.651. Training.
+2020-06-30 22:06:14 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:06:40 INFO [stats.py:111] WalkerDynamic: Step: 12030000. Time Elapsed: 11676.185 s Mean Reward: 592.621. Std of Reward: 211.750. Training.
+2020-06-30 22:07:10 INFO [stats.py:111] WalkerDynamic: Step: 12060000. Time Elapsed: 11706.130 s Mean Reward: 495.948. Std of Reward: 262.057. Training.
+2020-06-30 22:07:38 INFO [stats.py:111] WalkerDynamic: Step: 12090000. Time Elapsed: 11734.322 s Mean Reward: 436.708. Std of Reward: 278.269. Training.
+2020-06-30 22:08:09 INFO [stats.py:111] WalkerDynamic: Step: 12120000. Time Elapsed: 11765.335 s Mean Reward: 452.711. Std of Reward: 290.744. Training.
+2020-06-30 22:08:37 INFO [stats.py:111] WalkerDynamic: Step: 12150000. Time Elapsed: 11793.656 s Mean Reward: 510.294. Std of Reward: 233.176. Training.
+2020-06-30 22:09:09 INFO [stats.py:111] WalkerDynamic: Step: 12180000. Time Elapsed: 11825.789 s Mean Reward: 544.125. Std of Reward: 263.888. Training.
+2020-06-30 22:09:31 INFO [stats.py:111] WalkerDynamic: Step: 12210000. Time Elapsed: 11847.780 s Mean Reward: 517.066. Std of Reward: 272.368. Training.
+2020-06-30 22:09:58 INFO [stats.py:111] WalkerDynamic: Step: 12240000. Time Elapsed: 11874.138 s Mean Reward: 532.554. Std of Reward: 224.395. Training.
+2020-06-30 22:10:31 INFO [stats.py:111] WalkerDynamic: Step: 12270000. Time Elapsed: 11907.538 s Mean Reward: 475.101. Std of Reward: 258.643. Training.
+2020-06-30 22:10:56 INFO [stats.py:111] WalkerDynamic: Step: 12300000. Time Elapsed: 11932.688 s Mean Reward: 580.102. Std of Reward: 223.925. Training.
+2020-06-30 22:11:29 INFO [stats.py:111] WalkerDynamic: Step: 12330000. Time Elapsed: 11965.080 s Mean Reward: 592.737. Std of Reward: 220.996. Training.
+2020-06-30 22:11:52 INFO [stats.py:111] WalkerDynamic: Step: 12360000. Time Elapsed: 11988.647 s Mean Reward: 522.131. Std of Reward: 264.927. Training.
+2020-06-30 22:12:26 INFO [stats.py:111] WalkerDynamic: Step: 12390000. Time Elapsed: 12022.035 s Mean Reward: 524.745. Std of Reward: 252.572. Training.
+2020-06-30 22:12:52 INFO [stats.py:111] WalkerDynamic: Step: 12420000. Time Elapsed: 12048.782 s Mean Reward: 506.350. Std of Reward: 281.518. Training.
+2020-06-30 22:13:14 INFO [stats.py:111] WalkerDynamic: Step: 12450000. Time Elapsed: 12070.160 s Mean Reward: 539.103. Std of Reward: 247.792. Training.
+2020-06-30 22:13:43 INFO [stats.py:111] WalkerDynamic: Step: 12480000. Time Elapsed: 12099.347 s Mean Reward: 343.033. Std of Reward: 249.639. Training.
+2020-06-30 22:14:00 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:14:11 INFO [stats.py:111] WalkerDynamic: Step: 12510000. Time Elapsed: 12127.196 s Mean Reward: 380.797. Std of Reward: 234.572. Training.
+2020-06-30 22:14:41 INFO [stats.py:111] WalkerDynamic: Step: 12540000. Time Elapsed: 12157.122 s Mean Reward: 384.819. Std of Reward: 262.600. Training.
+2020-06-30 22:15:09 INFO [stats.py:111] WalkerDynamic: Step: 12570000. Time Elapsed: 12185.597 s Mean Reward: 389.940. Std of Reward: 248.656. Training.
+2020-06-30 22:15:39 INFO [stats.py:111] WalkerDynamic: Step: 12600000. Time Elapsed: 12215.074 s Mean Reward: 431.040. Std of Reward: 245.480. Training.
+2020-06-30 22:16:10 INFO [stats.py:111] WalkerDynamic: Step: 12630000. Time Elapsed: 12246.598 s Mean Reward: 384.340. Std of Reward: 283.761. Training.
+2020-06-30 22:16:42 INFO [stats.py:111] WalkerDynamic: Step: 12660000. Time Elapsed: 12278.793 s Mean Reward: 445.762. Std of Reward: 271.542. Training.
+2020-06-30 22:17:05 INFO [stats.py:111] WalkerDynamic: Step: 12690000. Time Elapsed: 12301.601 s Mean Reward: 478.579. Std of Reward: 279.822. Training.
+2020-06-30 22:17:32 INFO [stats.py:111] WalkerDynamic: Step: 12720000. Time Elapsed: 12328.287 s Mean Reward: 468.124. Std of Reward: 254.549. Training.
+2020-06-30 22:18:01 INFO [stats.py:111] WalkerDynamic: Step: 12750000. Time Elapsed: 12357.518 s Mean Reward: 506.665. Std of Reward: 249.096. Training.
+2020-06-30 22:18:32 INFO [stats.py:111] WalkerDynamic: Step: 12780000. Time Elapsed: 12388.240 s Mean Reward: 457.755. Std of Reward: 265.577. Training.
+2020-06-30 22:19:02 INFO [stats.py:111] WalkerDynamic: Step: 12810000. Time Elapsed: 12418.647 s Mean Reward: 506.420. Std of Reward: 269.227. Training.
+2020-06-30 22:19:26 INFO [stats.py:111] WalkerDynamic: Step: 12840000. Time Elapsed: 12441.893 s Mean Reward: 486.126. Std of Reward: 268.211. Training.
+2020-06-30 22:20:02 INFO [stats.py:111] WalkerDynamic: Step: 12870000. Time Elapsed: 12478.278 s Mean Reward: 568.057. Std of Reward: 227.565. Training.
+2020-06-30 22:20:25 INFO [stats.py:111] WalkerDynamic: Step: 12900000. Time Elapsed: 12500.974 s Mean Reward: 589.349. Std of Reward: 217.087. Training.
+2020-06-30 22:20:57 INFO [stats.py:111] WalkerDynamic: Step: 12930000. Time Elapsed: 12533.110 s Mean Reward: 477.219. Std of Reward: 242.597. Training.
+2020-06-30 22:21:24 INFO [stats.py:111] WalkerDynamic: Step: 12960000. Time Elapsed: 12560.543 s Mean Reward: 582.666. Std of Reward: 221.986. Training.
+2020-06-30 22:21:52 INFO [stats.py:111] WalkerDynamic: Step: 12990000. Time Elapsed: 12587.944 s Mean Reward: 484.869. Std of Reward: 272.728. Training.
+2020-06-30 22:22:03 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:22:23 INFO [stats.py:111] WalkerDynamic: Step: 13020000. Time Elapsed: 12618.966 s Mean Reward: 544.928. Std of Reward: 259.363. Training.
+2020-06-30 22:22:49 INFO [stats.py:111] WalkerDynamic: Step: 13050000. Time Elapsed: 12644.950 s Mean Reward: 559.577. Std of Reward: 264.736. Training.
+2020-06-30 22:23:23 INFO [stats.py:111] WalkerDynamic: Step: 13080000. Time Elapsed: 12679.653 s Mean Reward: 598.858. Std of Reward: 223.099. Training.
+2020-06-30 22:23:45 INFO [stats.py:111] WalkerDynamic: Step: 13110000. Time Elapsed: 12701.532 s Mean Reward: 570.803. Std of Reward: 243.464. Training.
+2020-06-30 22:24:14 INFO [stats.py:111] WalkerDynamic: Step: 13140000. Time Elapsed: 12729.979 s Mean Reward: 537.009. Std of Reward: 277.138. Training.
+2020-06-30 22:24:45 INFO [stats.py:111] WalkerDynamic: Step: 13170000. Time Elapsed: 12761.134 s Mean Reward: 480.981. Std of Reward: 280.091. Training.
+2020-06-30 22:25:07 INFO [stats.py:111] WalkerDynamic: Step: 13200000. Time Elapsed: 12783.787 s Mean Reward: 559.724. Std of Reward: 252.417. Training.
+2020-06-30 22:25:42 INFO [stats.py:111] WalkerDynamic: Step: 13230000. Time Elapsed: 12818.748 s Mean Reward: 516.953. Std of Reward: 260.219. Training.
+2020-06-30 22:26:10 INFO [stats.py:111] WalkerDynamic: Step: 13260000. Time Elapsed: 12846.792 s Mean Reward: 618.073. Std of Reward: 216.399. Training.
+2020-06-30 22:26:42 INFO [stats.py:111] WalkerDynamic: Step: 13290000. Time Elapsed: 12878.583 s Mean Reward: 595.322. Std of Reward: 256.626. Training.
+2020-06-30 22:27:06 INFO [stats.py:111] WalkerDynamic: Step: 13320000. Time Elapsed: 12902.570 s Mean Reward: 547.941. Std of Reward: 260.066. Training.
+2020-06-30 22:27:33 INFO [stats.py:111] WalkerDynamic: Step: 13350000. Time Elapsed: 12929.457 s Mean Reward: 545.196. Std of Reward: 239.402. Training.
+2020-06-30 22:28:04 INFO [stats.py:111] WalkerDynamic: Step: 13380000. Time Elapsed: 12960.777 s Mean Reward: 559.957. Std of Reward: 266.203. Training.
+2020-06-30 22:28:33 INFO [stats.py:111] WalkerDynamic: Step: 13410000. Time Elapsed: 12989.073 s Mean Reward: 562.319. Std of Reward: 252.617. Training.
+2020-06-30 22:29:04 INFO [stats.py:111] WalkerDynamic: Step: 13440000. Time Elapsed: 13019.996 s Mean Reward: 571.600. Std of Reward: 243.137. Training.
+2020-06-30 22:29:30 INFO [stats.py:111] WalkerDynamic: Step: 13470000. Time Elapsed: 13045.994 s Mean Reward: 536.672. Std of Reward: 255.309. Training.
+2020-06-30 22:29:59 INFO [stats.py:111] WalkerDynamic: Step: 13500000. Time Elapsed: 13075.519 s Mean Reward: 658.403. Std of Reward: 207.284. Training.
+2020-06-30 22:29:59 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:30:25 INFO [stats.py:111] WalkerDynamic: Step: 13530000. Time Elapsed: 13101.810 s Mean Reward: 485.440. Std of Reward: 270.812. Training.
+2020-06-30 22:30:52 INFO [stats.py:111] WalkerDynamic: Step: 13560000. Time Elapsed: 13128.017 s Mean Reward: 546.698. Std of Reward: 239.753. Training.
+2020-06-30 22:31:23 INFO [stats.py:111] WalkerDynamic: Step: 13590000. Time Elapsed: 13159.645 s Mean Reward: 601.593. Std of Reward: 230.236. Training.
+2020-06-30 22:31:52 INFO [stats.py:111] WalkerDynamic: Step: 13620000. Time Elapsed: 13188.276 s Mean Reward: 600.932. Std of Reward: 227.785. Training.
+2020-06-30 22:32:20 INFO [stats.py:111] WalkerDynamic: Step: 13650000. Time Elapsed: 13216.017 s Mean Reward: 506.236. Std of Reward: 264.839. Training.
+2020-06-30 22:32:51 INFO [stats.py:111] WalkerDynamic: Step: 13680000. Time Elapsed: 13247.317 s Mean Reward: 574.171. Std of Reward: 236.270. Training.
+2020-06-30 22:33:19 INFO [stats.py:111] WalkerDynamic: Step: 13710000. Time Elapsed: 13275.843 s Mean Reward: 589.584. Std of Reward: 222.849. Training.
+2020-06-30 22:33:44 INFO [stats.py:111] WalkerDynamic: Step: 13740000. Time Elapsed: 13300.211 s Mean Reward: 650.616. Std of Reward: 180.378. Training.
+2020-06-30 22:34:10 INFO [stats.py:111] WalkerDynamic: Step: 13770000. Time Elapsed: 13326.612 s Mean Reward: 572.189. Std of Reward: 235.647. Training.
+2020-06-30 22:34:40 INFO [stats.py:111] WalkerDynamic: Step: 13800000. Time Elapsed: 13356.227 s Mean Reward: 596.738. Std of Reward: 239.787. Training.
+2020-06-30 22:35:08 INFO [stats.py:111] WalkerDynamic: Step: 13830000. Time Elapsed: 13384.004 s Mean Reward: 607.673. Std of Reward: 237.309. Training.
+2020-06-30 22:35:34 INFO [stats.py:111] WalkerDynamic: Step: 13860000. Time Elapsed: 13410.068 s Mean Reward: 592.376. Std of Reward: 220.130. Training.
+2020-06-30 22:36:00 INFO [stats.py:111] WalkerDynamic: Step: 13890000. Time Elapsed: 13436.521 s Mean Reward: 529.760. Std of Reward: 262.908. Training.
+2020-06-30 22:36:37 INFO [stats.py:111] WalkerDynamic: Step: 13920000. Time Elapsed: 13473.175 s Mean Reward: 535.679. Std of Reward: 244.528. Training.
+2020-06-30 22:37:05 INFO [stats.py:111] WalkerDynamic: Step: 13950000. Time Elapsed: 13501.435 s Mean Reward: 532.041. Std of Reward: 260.331. Training.
+2020-06-30 22:37:34 INFO [stats.py:111] WalkerDynamic: Step: 13980000. Time Elapsed: 13530.679 s Mean Reward: 559.728. Std of Reward: 280.341. Training.
+2020-06-30 22:37:52 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:38:02 INFO [stats.py:111] WalkerDynamic: Step: 14010000. Time Elapsed: 13558.524 s Mean Reward: 516.599. Std of Reward: 265.744. Training.
+2020-06-30 22:38:33 INFO [stats.py:111] WalkerDynamic: Step: 14040000. Time Elapsed: 13589.267 s Mean Reward: 556.025. Std of Reward: 283.234. Training.
+2020-06-30 22:38:57 INFO [stats.py:111] WalkerDynamic: Step: 14070000. Time Elapsed: 13613.171 s Mean Reward: 545.538. Std of Reward: 292.873. Training.
+2020-06-30 22:39:31 INFO [stats.py:111] WalkerDynamic: Step: 14100000. Time Elapsed: 13647.742 s Mean Reward: 512.012. Std of Reward: 264.680. Training.
+2020-06-30 22:39:59 INFO [stats.py:111] WalkerDynamic: Step: 14130000. Time Elapsed: 13674.954 s Mean Reward: 614.028. Std of Reward: 229.724. Training.
+2020-06-30 22:40:29 INFO [stats.py:111] WalkerDynamic: Step: 14160000. Time Elapsed: 13704.877 s Mean Reward: 557.706. Std of Reward: 261.067. Training.
+2020-06-30 22:40:56 INFO [stats.py:111] WalkerDynamic: Step: 14190000. Time Elapsed: 13731.913 s Mean Reward: 578.743. Std of Reward: 270.745. Training.
+2020-06-30 22:41:28 INFO [stats.py:111] WalkerDynamic: Step: 14220000. Time Elapsed: 13764.735 s Mean Reward: 634.352. Std of Reward: 235.239. Training.
+2020-06-30 22:41:54 INFO [stats.py:111] WalkerDynamic: Step: 14250000. Time Elapsed: 13790.330 s Mean Reward: 627.256. Std of Reward: 242.279. Training.
+2020-06-30 22:42:28 INFO [stats.py:111] WalkerDynamic: Step: 14280000. Time Elapsed: 13824.540 s Mean Reward: 562.490. Std of Reward: 233.872. Training.
+2020-06-30 22:42:52 INFO [stats.py:111] WalkerDynamic: Step: 14310000. Time Elapsed: 13848.748 s Mean Reward: 559.900. Std of Reward: 293.064. Training.
+2020-06-30 22:43:25 INFO [stats.py:111] WalkerDynamic: Step: 14340000. Time Elapsed: 13881.184 s Mean Reward: 551.086. Std of Reward: 246.964. Training.
+2020-06-30 22:43:50 INFO [stats.py:111] WalkerDynamic: Step: 14370000. Time Elapsed: 13906.750 s Mean Reward: 657.273. Std of Reward: 215.567. Training.
+2020-06-30 22:44:20 INFO [stats.py:111] WalkerDynamic: Step: 14400000. Time Elapsed: 13936.002 s Mean Reward: 575.591. Std of Reward: 233.494. Training.
+2020-06-30 22:44:48 INFO [stats.py:111] WalkerDynamic: Step: 14430000. Time Elapsed: 13964.782 s Mean Reward: 603.348. Std of Reward: 229.275. Training.
+2020-06-30 22:45:21 INFO [stats.py:111] WalkerDynamic: Step: 14460000. Time Elapsed: 13997.290 s Mean Reward: 579.340. Std of Reward: 265.374. Training.
+2020-06-30 22:45:46 INFO [stats.py:111] WalkerDynamic: Step: 14490000. Time Elapsed: 14022.443 s Mean Reward: 588.847. Std of Reward: 254.599. Training.
+2020-06-30 22:45:56 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:46:16 INFO [stats.py:111] WalkerDynamic: Step: 14520000. Time Elapsed: 14052.390 s Mean Reward: 591.440. Std of Reward: 238.669. Training.
+2020-06-30 22:46:48 INFO [stats.py:111] WalkerDynamic: Step: 14550000. Time Elapsed: 14083.870 s Mean Reward: 586.003. Std of Reward: 223.291. Training.
+2020-06-30 22:47:15 INFO [stats.py:111] WalkerDynamic: Step: 14580000. Time Elapsed: 14111.609 s Mean Reward: 657.752. Std of Reward: 190.225. Training.
+2020-06-30 22:47:46 INFO [stats.py:111] WalkerDynamic: Step: 14610000. Time Elapsed: 14142.657 s Mean Reward: 579.446. Std of Reward: 232.880. Training.
+2020-06-30 22:48:14 INFO [stats.py:111] WalkerDynamic: Step: 14640000. Time Elapsed: 14170.754 s Mean Reward: 575.684. Std of Reward: 255.409. Training.
+2020-06-30 22:48:44 INFO [stats.py:111] WalkerDynamic: Step: 14670000. Time Elapsed: 14200.289 s Mean Reward: 637.124. Std of Reward: 211.257. Training.
+2020-06-30 22:49:14 INFO [stats.py:111] WalkerDynamic: Step: 14700000. Time Elapsed: 14230.171 s Mean Reward: 616.783. Std of Reward: 263.612. Training.
+2020-06-30 22:49:41 INFO [stats.py:111] WalkerDynamic: Step: 14730000. Time Elapsed: 14257.306 s Mean Reward: 665.077. Std of Reward: 176.476. Training.
+2020-06-30 22:50:12 INFO [stats.py:111] WalkerDynamic: Step: 14760000. Time Elapsed: 14288.414 s Mean Reward: 498.965. Std of Reward: 302.809. Training.
+2020-06-30 22:50:39 INFO [stats.py:111] WalkerDynamic: Step: 14790000. Time Elapsed: 14315.829 s Mean Reward: 570.265. Std of Reward: 290.378. Training.
+2020-06-30 22:51:11 INFO [stats.py:111] WalkerDynamic: Step: 14820000. Time Elapsed: 14346.857 s Mean Reward: 619.864. Std of Reward: 239.931. Training.
+2020-06-30 22:51:35 INFO [stats.py:111] WalkerDynamic: Step: 14850000. Time Elapsed: 14371.778 s Mean Reward: 600.102. Std of Reward: 251.504. Training.
+2020-06-30 22:52:03 INFO [stats.py:111] WalkerDynamic: Step: 14880000. Time Elapsed: 14399.186 s Mean Reward: 544.191. Std of Reward: 245.124. Training.
+2020-06-30 22:52:37 INFO [stats.py:111] WalkerDynamic: Step: 14910000. Time Elapsed: 14433.475 s Mean Reward: 562.877. Std of Reward: 259.281. Training.
+2020-06-30 22:53:03 INFO [stats.py:111] WalkerDynamic: Step: 14940000. Time Elapsed: 14459.734 s Mean Reward: 597.315. Std of Reward: 243.369. Training.
+2020-06-30 22:53:34 INFO [stats.py:111] WalkerDynamic: Step: 14970000. Time Elapsed: 14490.038 s Mean Reward: 587.268. Std of Reward: 268.590. Training.
+2020-06-30 22:54:01 INFO [stats.py:111] WalkerDynamic: Step: 15000000. Time Elapsed: 14516.860 s Mean Reward: 575.384. Std of Reward: 264.934. Training.
+2020-06-30 22:54:01 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 22:54:29 INFO [stats.py:111] WalkerDynamic: Step: 15030000. Time Elapsed: 14545.297 s Mean Reward: 586.904. Std of Reward: 255.297. Training.
+2020-06-30 22:55:00 INFO [stats.py:111] WalkerDynamic: Step: 15060000. Time Elapsed: 14576.029 s Mean Reward: 590.465. Std of Reward: 268.253. Training.
+2020-06-30 22:55:28 INFO [stats.py:111] WalkerDynamic: Step: 15090000. Time Elapsed: 14604.493 s Mean Reward: 645.475. Std of Reward: 218.635. Training.
+2020-06-30 22:55:56 INFO [stats.py:111] WalkerDynamic: Step: 15120000. Time Elapsed: 14632.612 s Mean Reward: 583.870. Std of Reward: 244.264. Training.
+2020-06-30 22:56:27 INFO [stats.py:111] WalkerDynamic: Step: 15150000. Time Elapsed: 14663.472 s Mean Reward: 613.362. Std of Reward: 229.822. Training.
+2020-06-30 22:56:58 INFO [stats.py:111] WalkerDynamic: Step: 15180000. Time Elapsed: 14694.705 s Mean Reward: 622.642. Std of Reward: 225.028. Training.
+2020-06-30 22:57:28 INFO [stats.py:111] WalkerDynamic: Step: 15210000. Time Elapsed: 14724.345 s Mean Reward: 620.493. Std of Reward: 241.489. Training.
+2020-06-30 22:57:54 INFO [stats.py:111] WalkerDynamic: Step: 15240000. Time Elapsed: 14750.843 s Mean Reward: 677.227. Std of Reward: 209.536. Training.
+2020-06-30 22:58:25 INFO [stats.py:111] WalkerDynamic: Step: 15270000. Time Elapsed: 14781.123 s Mean Reward: 588.124. Std of Reward: 259.279. Training.
+2020-06-30 22:58:49 INFO [stats.py:111] WalkerDynamic: Step: 15300000. Time Elapsed: 14805.375 s Mean Reward: 583.609. Std of Reward: 235.653. Training.
+2020-06-30 22:59:24 INFO [stats.py:111] WalkerDynamic: Step: 15330000. Time Elapsed: 14840.459 s Mean Reward: 558.827. Std of Reward: 252.866. Training.
+2020-06-30 22:59:49 INFO [stats.py:111] WalkerDynamic: Step: 15360000. Time Elapsed: 14865.725 s Mean Reward: 629.490. Std of Reward: 251.333. Training.
+2020-06-30 23:00:20 INFO [stats.py:111] WalkerDynamic: Step: 15390000. Time Elapsed: 14896.398 s Mean Reward: 574.389. Std of Reward: 280.742. Training.
+2020-06-30 23:00:49 INFO [stats.py:111] WalkerDynamic: Step: 15420000. Time Elapsed: 14925.840 s Mean Reward: 621.410. Std of Reward: 225.315. Training.
+2020-06-30 23:01:18 INFO [stats.py:111] WalkerDynamic: Step: 15450000. Time Elapsed: 14954.046 s Mean Reward: 662.481. Std of Reward: 205.532. Training.
+2020-06-30 23:01:47 INFO [stats.py:111] WalkerDynamic: Step: 15480000. Time Elapsed: 14983.772 s Mean Reward: 569.743. Std of Reward: 256.538. Training.
+2020-06-30 23:02:05 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:02:14 INFO [stats.py:111] WalkerDynamic: Step: 15510000. Time Elapsed: 15010.602 s Mean Reward: 658.944. Std of Reward: 213.493. Training.
+2020-06-30 23:02:47 INFO [stats.py:111] WalkerDynamic: Step: 15540000. Time Elapsed: 15043.311 s Mean Reward: 638.201. Std of Reward: 248.298. Training.
+2020-06-30 23:03:12 INFO [stats.py:111] WalkerDynamic: Step: 15570000. Time Elapsed: 15068.603 s Mean Reward: 667.022. Std of Reward: 225.910. Training.
+2020-06-30 23:03:43 INFO [stats.py:111] WalkerDynamic: Step: 15600000. Time Elapsed: 15099.010 s Mean Reward: 675.515. Std of Reward: 196.805. Training.
+2020-06-30 23:04:12 INFO [stats.py:111] WalkerDynamic: Step: 15630000. Time Elapsed: 15128.421 s Mean Reward: 578.506. Std of Reward: 258.183. Training.
+2020-06-30 23:04:41 INFO [stats.py:111] WalkerDynamic: Step: 15660000. Time Elapsed: 15156.917 s Mean Reward: 661.587. Std of Reward: 209.927. Training.
+2020-06-30 23:05:15 INFO [stats.py:111] WalkerDynamic: Step: 15690000. Time Elapsed: 15191.372 s Mean Reward: 591.563. Std of Reward: 268.983. Training.
+2020-06-30 23:05:36 INFO [stats.py:111] WalkerDynamic: Step: 15720000. Time Elapsed: 15212.038 s Mean Reward: 707.442. Std of Reward: 185.679. Training.
+2020-06-30 23:06:09 INFO [stats.py:111] WalkerDynamic: Step: 15750000. Time Elapsed: 15244.897 s Mean Reward: 674.159. Std of Reward: 194.521. Training.
+2020-06-30 23:06:40 INFO [stats.py:111] WalkerDynamic: Step: 15780000. Time Elapsed: 15276.214 s Mean Reward: 643.558. Std of Reward: 212.151. Training.
+2020-06-30 23:07:07 INFO [stats.py:111] WalkerDynamic: Step: 15810000. Time Elapsed: 15302.897 s Mean Reward: 641.041. Std of Reward: 234.490. Training.
+2020-06-30 23:07:35 INFO [stats.py:111] WalkerDynamic: Step: 15840000. Time Elapsed: 15331.304 s Mean Reward: 580.141. Std of Reward: 265.914. Training.
+2020-06-30 23:08:08 INFO [stats.py:111] WalkerDynamic: Step: 15870000. Time Elapsed: 15364.344 s Mean Reward: 585.694. Std of Reward: 254.804. Training.
+2020-06-30 23:08:37 INFO [stats.py:111] WalkerDynamic: Step: 15900000. Time Elapsed: 15393.397 s Mean Reward: 623.015. Std of Reward: 236.971. Training.
+2020-06-30 23:09:09 INFO [stats.py:111] WalkerDynamic: Step: 15930000. Time Elapsed: 15425.706 s Mean Reward: 594.989. Std of Reward: 263.512. Training.
+2020-06-30 23:09:32 INFO [stats.py:111] WalkerDynamic: Step: 15960000. Time Elapsed: 15448.010 s Mean Reward: 655.697. Std of Reward: 237.931. Training.
+2020-06-30 23:09:59 INFO [stats.py:111] WalkerDynamic: Step: 15990000. Time Elapsed: 15475.695 s Mean Reward: 569.907. Std of Reward: 275.612. Training.
+2020-06-30 23:10:11 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:10:30 INFO [stats.py:111] WalkerDynamic: Step: 16020000. Time Elapsed: 15505.996 s Mean Reward: 623.641. Std of Reward: 250.327. Training.
+2020-06-30 23:10:58 INFO [stats.py:111] WalkerDynamic: Step: 16050000. Time Elapsed: 15534.393 s Mean Reward: 635.122. Std of Reward: 232.484. Training.
+2020-06-30 23:11:31 INFO [stats.py:111] WalkerDynamic: Step: 16080000. Time Elapsed: 15566.908 s Mean Reward: 638.917. Std of Reward: 217.774. Training.
+2020-06-30 23:11:59 INFO [stats.py:111] WalkerDynamic: Step: 16110000. Time Elapsed: 15595.376 s Mean Reward: 563.205. Std of Reward: 286.471. Training.
+2020-06-30 23:12:26 INFO [stats.py:111] WalkerDynamic: Step: 16140000. Time Elapsed: 15622.349 s Mean Reward: 638.300. Std of Reward: 230.914. Training.
+2020-06-30 23:12:58 INFO [stats.py:111] WalkerDynamic: Step: 16170000. Time Elapsed: 15654.414 s Mean Reward: 608.199. Std of Reward: 245.175. Training.
+2020-06-30 23:13:24 INFO [stats.py:111] WalkerDynamic: Step: 16200000. Time Elapsed: 15680.078 s Mean Reward: 609.744. Std of Reward: 265.850. Training.
+2020-06-30 23:13:58 INFO [stats.py:111] WalkerDynamic: Step: 16230000. Time Elapsed: 15714.137 s Mean Reward: 659.367. Std of Reward: 232.552. Training.
+2020-06-30 23:14:26 INFO [stats.py:111] WalkerDynamic: Step: 16260000. Time Elapsed: 15741.889 s Mean Reward: 675.773. Std of Reward: 202.046. Training.
+2020-06-30 23:14:56 INFO [stats.py:111] WalkerDynamic: Step: 16290000. Time Elapsed: 15771.919 s Mean Reward: 601.713. Std of Reward: 242.719. Training.
+2020-06-30 23:15:24 INFO [stats.py:111] WalkerDynamic: Step: 16320000. Time Elapsed: 15799.896 s Mean Reward: 610.168. Std of Reward: 247.530. Training.
+2020-06-30 23:15:56 INFO [stats.py:111] WalkerDynamic: Step: 16350000. Time Elapsed: 15832.273 s Mean Reward: 658.233. Std of Reward: 233.144. Training.
+2020-06-30 23:16:22 INFO [stats.py:111] WalkerDynamic: Step: 16380000. Time Elapsed: 15858.603 s Mean Reward: 663.120. Std of Reward: 220.547. Training.
+2020-06-30 23:16:52 INFO [stats.py:111] WalkerDynamic: Step: 16410000. Time Elapsed: 15888.223 s Mean Reward: 640.525. Std of Reward: 246.046. Training.
+2020-06-30 23:17:18 INFO [stats.py:111] WalkerDynamic: Step: 16440000. Time Elapsed: 15914.300 s Mean Reward: 667.954. Std of Reward: 207.816. Training.
+2020-06-30 23:17:45 INFO [stats.py:111] WalkerDynamic: Step: 16470000. Time Elapsed: 15941.839 s Mean Reward: 606.069. Std of Reward: 245.742. Training.
+2020-06-30 23:18:20 INFO [stats.py:111] WalkerDynamic: Step: 16500000. Time Elapsed: 15976.240 s Mean Reward: 571.190. Std of Reward: 278.019. Training.
+2020-06-30 23:18:20 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:18:45 INFO [stats.py:111] WalkerDynamic: Step: 16530000. Time Elapsed: 16001.220 s Mean Reward: 642.390. Std of Reward: 259.694. Training.
+2020-06-30 23:19:14 INFO [stats.py:111] WalkerDynamic: Step: 16560000. Time Elapsed: 16029.928 s Mean Reward: 668.984. Std of Reward: 203.127. Training.
+2020-06-30 23:19:48 INFO [stats.py:111] WalkerDynamic: Step: 16590000. Time Elapsed: 16064.194 s Mean Reward: 643.377. Std of Reward: 235.430. Training.
+2020-06-30 23:20:16 INFO [stats.py:111] WalkerDynamic: Step: 16620000. Time Elapsed: 16092.847 s Mean Reward: 673.811. Std of Reward: 206.703. Training.
+2020-06-30 23:20:42 INFO [stats.py:111] WalkerDynamic: Step: 16650000. Time Elapsed: 16118.839 s Mean Reward: 609.184. Std of Reward: 249.657. Training.
+2020-06-30 23:21:11 INFO [stats.py:111] WalkerDynamic: Step: 16680000. Time Elapsed: 16147.426 s Mean Reward: 645.593. Std of Reward: 211.770. Training.
+2020-06-30 23:21:42 INFO [stats.py:111] WalkerDynamic: Step: 16710000. Time Elapsed: 16177.973 s Mean Reward: 677.524. Std of Reward: 160.196. Training.
+2020-06-30 23:22:08 INFO [stats.py:111] WalkerDynamic: Step: 16740000. Time Elapsed: 16204.593 s Mean Reward: 667.695. Std of Reward: 238.107. Training.
+2020-06-30 23:22:42 INFO [stats.py:111] WalkerDynamic: Step: 16770000. Time Elapsed: 16238.125 s Mean Reward: 668.327. Std of Reward: 213.350. Training.
+2020-06-30 23:23:09 INFO [stats.py:111] WalkerDynamic: Step: 16800000. Time Elapsed: 16265.636 s Mean Reward: 613.389. Std of Reward: 292.349. Training.
+2020-06-30 23:23:37 INFO [stats.py:111] WalkerDynamic: Step: 16830000. Time Elapsed: 16293.443 s Mean Reward: 707.667. Std of Reward: 177.241. Training.
+2020-06-30 23:24:05 INFO [stats.py:111] WalkerDynamic: Step: 16860000. Time Elapsed: 16321.380 s Mean Reward: 632.567. Std of Reward: 226.564. Training.
+2020-06-30 23:24:33 INFO [stats.py:111] WalkerDynamic: Step: 16890000. Time Elapsed: 16349.145 s Mean Reward: 622.234. Std of Reward: 254.495. Training.
+2020-06-30 23:25:02 INFO [stats.py:111] WalkerDynamic: Step: 16920000. Time Elapsed: 16378.584 s Mean Reward: 620.515. Std of Reward: 241.188. Training.
+2020-06-30 23:25:32 INFO [stats.py:111] WalkerDynamic: Step: 16950000. Time Elapsed: 16407.897 s Mean Reward: 618.075. Std of Reward: 248.340. Training.
+2020-06-30 23:26:03 INFO [stats.py:111] WalkerDynamic: Step: 16980000. Time Elapsed: 16439.399 s Mean Reward: 647.422. Std of Reward: 248.416. Training.
+2020-06-30 23:26:20 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:26:26 INFO [stats.py:111] WalkerDynamic: Step: 17010000. Time Elapsed: 16462.548 s Mean Reward: 645.521. Std of Reward: 243.926. Training.
+2020-06-30 23:27:02 INFO [stats.py:111] WalkerDynamic: Step: 17040000. Time Elapsed: 16498.677 s Mean Reward: 666.831. Std of Reward: 235.380. Training.
+2020-06-30 23:27:30 INFO [stats.py:111] WalkerDynamic: Step: 17070000. Time Elapsed: 16526.307 s Mean Reward: 690.565. Std of Reward: 181.587. Training.
+2020-06-30 23:27:55 INFO [stats.py:111] WalkerDynamic: Step: 17100000. Time Elapsed: 16551.231 s Mean Reward: 723.935. Std of Reward: 201.285. Training.
+2020-06-30 23:28:29 INFO [stats.py:111] WalkerDynamic: Step: 17130000. Time Elapsed: 16585.627 s Mean Reward: 615.887. Std of Reward: 233.653. Training.
+2020-06-30 23:28:56 INFO [stats.py:111] WalkerDynamic: Step: 17160000. Time Elapsed: 16612.031 s Mean Reward: 729.103. Std of Reward: 147.172. Training.
+2020-06-30 23:29:27 INFO [stats.py:111] WalkerDynamic: Step: 17190000. Time Elapsed: 16642.915 s Mean Reward: 704.824. Std of Reward: 181.051. Training.
+2020-06-30 23:29:55 INFO [stats.py:111] WalkerDynamic: Step: 17220000. Time Elapsed: 16671.257 s Mean Reward: 665.797. Std of Reward: 215.178. Training.
+2020-06-30 23:30:22 INFO [stats.py:111] WalkerDynamic: Step: 17250000. Time Elapsed: 16698.596 s Mean Reward: 650.853. Std of Reward: 237.564. Training.
+2020-06-30 23:30:52 INFO [stats.py:111] WalkerDynamic: Step: 17280000. Time Elapsed: 16728.481 s Mean Reward: 608.425. Std of Reward: 281.752. Training.
+2020-06-30 23:31:19 INFO [stats.py:111] WalkerDynamic: Step: 17310000. Time Elapsed: 16755.100 s Mean Reward: 664.791. Std of Reward: 219.517. Training.
+2020-06-30 23:31:49 INFO [stats.py:111] WalkerDynamic: Step: 17340000. Time Elapsed: 16785.087 s Mean Reward: 591.846. Std of Reward: 287.685. Training.
+2020-06-30 23:32:14 INFO [stats.py:111] WalkerDynamic: Step: 17370000. Time Elapsed: 16810.577 s Mean Reward: 620.045. Std of Reward: 274.913. Training.
+2020-06-30 23:32:50 INFO [stats.py:111] WalkerDynamic: Step: 17400000. Time Elapsed: 16846.312 s Mean Reward: 588.896. Std of Reward: 297.846. Training.
+2020-06-30 23:33:15 INFO [stats.py:111] WalkerDynamic: Step: 17430000. Time Elapsed: 16871.419 s Mean Reward: 716.461. Std of Reward: 174.656. Training.
+2020-06-30 23:33:47 INFO [stats.py:111] WalkerDynamic: Step: 17460000. Time Elapsed: 16903.785 s Mean Reward: 642.569. Std of Reward: 254.019. Training.
+2020-06-30 23:34:19 INFO [stats.py:111] WalkerDynamic: Step: 17490000. Time Elapsed: 16934.902 s Mean Reward: 640.615. Std of Reward: 257.669. Training.
+2020-06-30 23:34:32 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:34:42 INFO [stats.py:111] WalkerDynamic: Step: 17520000. Time Elapsed: 16958.650 s Mean Reward: 701.250. Std of Reward: 220.716. Training.
+2020-06-30 23:35:13 INFO [stats.py:111] WalkerDynamic: Step: 17550000. Time Elapsed: 16989.809 s Mean Reward: 663.931. Std of Reward: 238.088. Training.
+2020-06-30 23:35:47 INFO [stats.py:111] WalkerDynamic: Step: 17580000. Time Elapsed: 17023.684 s Mean Reward: 639.745. Std of Reward: 243.242. Training.
+2020-06-30 23:36:09 INFO [stats.py:111] WalkerDynamic: Step: 17610000. Time Elapsed: 17045.713 s Mean Reward: 690.319. Std of Reward: 226.170. Training.
+2020-06-30 23:36:43 INFO [stats.py:111] WalkerDynamic: Step: 17640000. Time Elapsed: 17079.512 s Mean Reward: 685.439. Std of Reward: 213.148. Training.
+2020-06-30 23:37:16 INFO [stats.py:111] WalkerDynamic: Step: 17670000. Time Elapsed: 17112.044 s Mean Reward: 697.145. Std of Reward: 197.332. Training.
+2020-06-30 23:37:36 INFO [stats.py:111] WalkerDynamic: Step: 17700000. Time Elapsed: 17132.736 s Mean Reward: 740.932. Std of Reward: 194.769. Training.
+2020-06-30 23:38:11 INFO [stats.py:111] WalkerDynamic: Step: 17730000. Time Elapsed: 17166.854 s Mean Reward: 668.001. Std of Reward: 244.941. Training.
+2020-06-30 23:38:37 INFO [stats.py:111] WalkerDynamic: Step: 17760000. Time Elapsed: 17193.010 s Mean Reward: 686.296. Std of Reward: 224.635. Training.
+2020-06-30 23:39:02 INFO [stats.py:111] WalkerDynamic: Step: 17790000. Time Elapsed: 17217.919 s Mean Reward: 600.503. Std of Reward: 293.818. Training.
+2020-06-30 23:39:36 INFO [stats.py:111] WalkerDynamic: Step: 17820000. Time Elapsed: 17252.785 s Mean Reward: 691.948. Std of Reward: 206.655. Training.
+2020-06-30 23:40:01 INFO [stats.py:111] WalkerDynamic: Step: 17850000. Time Elapsed: 17277.682 s Mean Reward: 673.780. Std of Reward: 209.221. Training.
+2020-06-30 23:40:31 INFO [stats.py:111] WalkerDynamic: Step: 17880000. Time Elapsed: 17307.803 s Mean Reward: 666.492. Std of Reward: 234.426. Training.
+2020-06-30 23:41:03 INFO [stats.py:111] WalkerDynamic: Step: 17910000. Time Elapsed: 17339.517 s Mean Reward: 639.480. Std of Reward: 276.887. Training.
+2020-06-30 23:41:31 INFO [stats.py:111] WalkerDynamic: Step: 17940000. Time Elapsed: 17367.587 s Mean Reward: 663.579. Std of Reward: 245.987. Training.
+2020-06-30 23:41:57 INFO [stats.py:111] WalkerDynamic: Step: 17970000. Time Elapsed: 17393.577 s Mean Reward: 657.606. Std of Reward: 242.143. Training.
+2020-06-30 23:42:26 INFO [stats.py:111] WalkerDynamic: Step: 18000000. Time Elapsed: 17422.702 s Mean Reward: 628.085. Std of Reward: 259.692. Training.
+2020-06-30 23:42:26 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:42:57 INFO [stats.py:111] WalkerDynamic: Step: 18030000. Time Elapsed: 17453.643 s Mean Reward: 693.380. Std of Reward: 193.422. Training.
+2020-06-30 23:43:26 INFO [stats.py:111] WalkerDynamic: Step: 18060000. Time Elapsed: 17482.070 s Mean Reward: 714.919. Std of Reward: 212.014. Training.
+2020-06-30 23:43:58 INFO [stats.py:111] WalkerDynamic: Step: 18090000. Time Elapsed: 17513.871 s Mean Reward: 728.233. Std of Reward: 172.630. Training.
+2020-06-30 23:44:23 INFO [stats.py:111] WalkerDynamic: Step: 18120000. Time Elapsed: 17538.928 s Mean Reward: 698.119. Std of Reward: 240.835. Training.
+2020-06-30 23:44:55 INFO [stats.py:111] WalkerDynamic: Step: 18150000. Time Elapsed: 17571.177 s Mean Reward: 679.443. Std of Reward: 221.027. Training.
+2020-06-30 23:45:26 INFO [stats.py:111] WalkerDynamic: Step: 18180000. Time Elapsed: 17601.871 s Mean Reward: 651.299. Std of Reward: 268.192. Training.
+2020-06-30 23:45:49 INFO [stats.py:111] WalkerDynamic: Step: 18210000. Time Elapsed: 17625.200 s Mean Reward: 773.799. Std of Reward: 102.040. Training.
+2020-06-30 23:46:22 INFO [stats.py:111] WalkerDynamic: Step: 18240000. Time Elapsed: 17658.490 s Mean Reward: 728.575. Std of Reward: 168.647. Training.
+2020-06-30 23:46:48 INFO [stats.py:111] WalkerDynamic: Step: 18270000. Time Elapsed: 17684.518 s Mean Reward: 670.784. Std of Reward: 241.699. Training.
+2020-06-30 23:47:16 INFO [stats.py:111] WalkerDynamic: Step: 18300000. Time Elapsed: 17712.722 s Mean Reward: 631.449. Std of Reward: 283.961. Training.
+2020-06-30 23:47:45 INFO [stats.py:111] WalkerDynamic: Step: 18330000. Time Elapsed: 17741.428 s Mean Reward: 685.418. Std of Reward: 199.181. Training.
+2020-06-30 23:48:18 INFO [stats.py:111] WalkerDynamic: Step: 18360000. Time Elapsed: 17774.235 s Mean Reward: 678.743. Std of Reward: 230.498. Training.
+2020-06-30 23:48:45 INFO [stats.py:111] WalkerDynamic: Step: 18390000. Time Elapsed: 17800.870 s Mean Reward: 768.422. Std of Reward: 132.287. Training.
+2020-06-30 23:49:14 INFO [stats.py:111] WalkerDynamic: Step: 18420000. Time Elapsed: 17830.725 s Mean Reward: 702.194. Std of Reward: 221.997. Training.
+2020-06-30 23:49:40 INFO [stats.py:111] WalkerDynamic: Step: 18450000. Time Elapsed: 17856.347 s Mean Reward: 715.040. Std of Reward: 175.132. Training.
+2020-06-30 23:50:12 INFO [stats.py:111] WalkerDynamic: Step: 18480000. Time Elapsed: 17888.603 s Mean Reward: 682.404. Std of Reward: 236.374. Training.
+2020-06-30 23:50:30 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:50:40 INFO [stats.py:111] WalkerDynamic: Step: 18510000. Time Elapsed: 17916.496 s Mean Reward: 734.637. Std of Reward: 201.932. Training.
+2020-06-30 23:51:08 INFO [stats.py:111] WalkerDynamic: Step: 18540000. Time Elapsed: 17943.933 s Mean Reward: 663.396. Std of Reward: 266.133. Training.
+2020-06-30 23:51:43 INFO [stats.py:111] WalkerDynamic: Step: 18570000. Time Elapsed: 17979.419 s Mean Reward: 691.205. Std of Reward: 245.844. Training.
+2020-06-30 23:52:08 INFO [stats.py:111] WalkerDynamic: Step: 18600000. Time Elapsed: 18004.010 s Mean Reward: 677.617. Std of Reward: 231.938. Training.
+2020-06-30 23:52:34 INFO [stats.py:111] WalkerDynamic: Step: 18630000. Time Elapsed: 18030.677 s Mean Reward: 707.841. Std of Reward: 230.436. Training.
+2020-06-30 23:53:04 INFO [stats.py:111] WalkerDynamic: Step: 18660000. Time Elapsed: 18060.702 s Mean Reward: 684.464. Std of Reward: 200.510. Training.
+2020-06-30 23:53:31 INFO [stats.py:111] WalkerDynamic: Step: 18690000. Time Elapsed: 18087.188 s Mean Reward: 720.985. Std of Reward: 189.534. Training.
+2020-06-30 23:54:05 INFO [stats.py:111] WalkerDynamic: Step: 18720000. Time Elapsed: 18121.444 s Mean Reward: 699.669. Std of Reward: 217.617. Training.
+2020-06-30 23:54:31 INFO [stats.py:111] WalkerDynamic: Step: 18750000. Time Elapsed: 18147.728 s Mean Reward: 666.181. Std of Reward: 250.879. Training.
+2020-06-30 23:54:58 INFO [stats.py:111] WalkerDynamic: Step: 18780000. Time Elapsed: 18174.683 s Mean Reward: 623.753. Std of Reward: 264.564. Training.
+2020-06-30 23:55:31 INFO [stats.py:111] WalkerDynamic: Step: 18810000. Time Elapsed: 18207.588 s Mean Reward: 639.518. Std of Reward: 255.502. Training.
+2020-06-30 23:56:03 INFO [stats.py:111] WalkerDynamic: Step: 18840000. Time Elapsed: 18239.379 s Mean Reward: 694.149. Std of Reward: 220.222. Training.
+2020-06-30 23:56:24 INFO [stats.py:111] WalkerDynamic: Step: 18870000. Time Elapsed: 18260.732 s Mean Reward: 658.089. Std of Reward: 244.185. Training.
+2020-06-30 23:56:53 INFO [stats.py:111] WalkerDynamic: Step: 18900000. Time Elapsed: 18289.431 s Mean Reward: 689.916. Std of Reward: 224.695. Training.
+2020-06-30 23:57:29 INFO [stats.py:111] WalkerDynamic: Step: 18930000. Time Elapsed: 18325.216 s Mean Reward: 692.987. Std of Reward: 201.987. Training.
+2020-06-30 23:57:51 INFO [stats.py:111] WalkerDynamic: Step: 18960000. Time Elapsed: 18347.037 s Mean Reward: 669.035. Std of Reward: 256.769. Training.
+2020-06-30 23:58:25 INFO [stats.py:111] WalkerDynamic: Step: 18990000. Time Elapsed: 18381.696 s Mean Reward: 618.749. Std of Reward: 257.367. Training.
+2020-06-30 23:58:37 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-06-30 23:58:51 INFO [stats.py:111] WalkerDynamic: Step: 19020000. Time Elapsed: 18407.133 s Mean Reward: 709.193. Std of Reward: 184.597. Training.
+2020-06-30 23:59:25 INFO [stats.py:111] WalkerDynamic: Step: 19050000. Time Elapsed: 18440.954 s Mean Reward: 678.517. Std of Reward: 239.350. Training.
+2020-06-30 23:59:54 INFO [stats.py:111] WalkerDynamic: Step: 19080000. Time Elapsed: 18470.637 s Mean Reward: 670.201. Std of Reward: 252.395. Training.
+2020-07-01 00:00:15 INFO [stats.py:111] WalkerDynamic: Step: 19110000. Time Elapsed: 18491.439 s Mean Reward: 710.315. Std of Reward: 192.215. Training.
+2020-07-01 00:00:46 INFO [stats.py:111] WalkerDynamic: Step: 19140000. Time Elapsed: 18522.641 s Mean Reward: 724.558. Std of Reward: 200.767. Training.
+2020-07-01 00:01:19 INFO [stats.py:111] WalkerDynamic: Step: 19170000. Time Elapsed: 18555.799 s Mean Reward: 666.747. Std of Reward: 238.757. Training.
+2020-07-01 00:01:45 INFO [stats.py:111] WalkerDynamic: Step: 19200000. Time Elapsed: 18581.113 s Mean Reward: 743.599. Std of Reward: 162.761. Training.
+2020-07-01 00:02:15 INFO [stats.py:111] WalkerDynamic: Step: 19230000. Time Elapsed: 18611.308 s Mean Reward: 638.158. Std of Reward: 286.477. Training.
+2020-07-01 00:02:48 INFO [stats.py:111] WalkerDynamic: Step: 19260000. Time Elapsed: 18644.091 s Mean Reward: 694.895. Std of Reward: 231.356. Training.
+2020-07-01 00:03:15 INFO [stats.py:111] WalkerDynamic: Step: 19290000. Time Elapsed: 18671.740 s Mean Reward: 668.215. Std of Reward: 232.568. Training.
+2020-07-01 00:03:42 INFO [stats.py:111] WalkerDynamic: Step: 19320000. Time Elapsed: 18698.796 s Mean Reward: 696.088. Std of Reward: 226.648. Training.
+2020-07-01 00:04:11 INFO [stats.py:111] WalkerDynamic: Step: 19350000. Time Elapsed: 18727.415 s Mean Reward: 674.861. Std of Reward: 215.013. Training.
+2020-07-01 00:04:39 INFO [stats.py:111] WalkerDynamic: Step: 19380000. Time Elapsed: 18755.405 s Mean Reward: 645.057. Std of Reward: 257.085. Training.
+2020-07-01 00:05:11 INFO [stats.py:111] WalkerDynamic: Step: 19410000. Time Elapsed: 18787.372 s Mean Reward: 712.511. Std of Reward: 199.263. Training.
+2020-07-01 00:05:40 INFO [stats.py:111] WalkerDynamic: Step: 19440000. Time Elapsed: 18816.790 s Mean Reward: 702.779. Std of Reward: 233.437. Training.
+2020-07-01 00:06:08 INFO [stats.py:111] WalkerDynamic: Step: 19470000. Time Elapsed: 18844.649 s Mean Reward: 772.519. Std of Reward: 139.532. Training.
+2020-07-01 00:06:39 INFO [stats.py:111] WalkerDynamic: Step: 19500000. Time Elapsed: 18875.407 s Mean Reward: 710.541. Std of Reward: 198.450. Training.
+2020-07-01 00:06:39 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-07-01 00:07:05 INFO [stats.py:111] WalkerDynamic: Step: 19530000. Time Elapsed: 18901.538 s Mean Reward: 716.847. Std of Reward: 203.040. Training.
+2020-07-01 00:07:34 INFO [stats.py:111] WalkerDynamic: Step: 19560000. Time Elapsed: 18930.805 s Mean Reward: 711.508. Std of Reward: 227.896. Training.
+2020-07-01 00:08:02 INFO [stats.py:111] WalkerDynamic: Step: 19590000. Time Elapsed: 18957.968 s Mean Reward: 652.737. Std of Reward: 266.480. Training.
+2020-07-01 00:08:39 INFO [stats.py:111] WalkerDynamic: Step: 19620000. Time Elapsed: 18995.292 s Mean Reward: 705.662. Std of Reward: 231.966. Training.
+2020-07-01 00:08:58 INFO [stats.py:111] WalkerDynamic: Step: 19650000. Time Elapsed: 19014.302 s Mean Reward: 666.280. Std of Reward: 257.660. Training.
+2020-07-01 00:09:30 INFO [stats.py:111] WalkerDynamic: Step: 19680000. Time Elapsed: 19046.298 s Mean Reward: 675.513. Std of Reward: 243.176. Training.
+2020-07-01 00:10:04 INFO [stats.py:111] WalkerDynamic: Step: 19710000. Time Elapsed: 19080.193 s Mean Reward: 678.208. Std of Reward: 227.683. Training.
+2020-07-01 00:10:23 INFO [stats.py:111] WalkerDynamic: Step: 19740000. Time Elapsed: 19099.504 s Mean Reward: 759.325. Std of Reward: 152.819. Training.
+2020-07-01 00:10:59 INFO [stats.py:111] WalkerDynamic: Step: 19770000. Time Elapsed: 19135.390 s Mean Reward: 687.369. Std of Reward: 249.827. Training.
+2020-07-01 00:11:29 INFO [stats.py:111] WalkerDynamic: Step: 19800000. Time Elapsed: 19165.741 s Mean Reward: 686.976. Std of Reward: 227.401. Training.
+2020-07-01 00:11:56 INFO [stats.py:111] WalkerDynamic: Step: 19830000. Time Elapsed: 19191.914 s Mean Reward: 778.897. Std of Reward: 159.932. Training.
+2020-07-01 00:12:24 INFO [stats.py:111] WalkerDynamic: Step: 19860000. Time Elapsed: 19219.900 s Mean Reward: 657.306. Std of Reward: 259.824. Training.
+2020-07-01 00:12:58 INFO [stats.py:111] WalkerDynamic: Step: 19890000. Time Elapsed: 19253.940 s Mean Reward: 694.028. Std of Reward: 234.048. Training.
+2020-07-01 00:13:19 INFO [stats.py:111] WalkerDynamic: Step: 19920000. Time Elapsed: 19275.543 s Mean Reward: 705.437. Std of Reward: 230.429. Training.
+2020-07-01 00:13:53 INFO [stats.py:111] WalkerDynamic: Step: 19950000. Time Elapsed: 19309.352 s Mean Reward: 700.347. Std of Reward: 239.880. Training.
+2020-07-01 00:14:23 INFO [stats.py:111] WalkerDynamic: Step: 19980000. Time Elapsed: 19339.170 s Mean Reward: 735.382. Std of Reward: 177.631. Training.
+2020-07-01 00:14:40 INFO [rl_trainer.py:151] Checkpointing model for WalkerDynamic.
+2020-07-01 00:14:41 INFO [trainer_controller.py:101] Saved Model
+2020-07-01 00:14:41 INFO [model_serialization.py:203] List of nodes to export for brain :WalkerDynamic
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	is_continuous_control
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	trainer_major_version
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	trainer_minor_version
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	trainer_patch_version
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	version_number
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	memory_size
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	action_output_shape
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	action
+2020-07-01 00:14:41 INFO [model_serialization.py:205] 	action_probs
+Converting results/wdyclv-ppo/WalkerDynamic/frozen_graph_def.pb to results/wdyclv-ppo/WalkerDynamic.nn
+IGNORED: Cast unknown layer
+IGNORED: Shape unknown layer
+IGNORED: StopGradient unknown layer
+GLOBALS: 'is_continuous_control', 'trainer_major_version', 'trainer_minor_version', 'trainer_patch_version', 'version_number', 'memory_size', 'action_output_shape'
+IN: 'vector_observation': [-1, 1, 1, 236] => 'sub_2'
+OUT: 'action', 'action_probs'
+DONE: wrote results/wdyclv-ppo/WalkerDynamic.nn file.
+2020-07-01 00:14:41 INFO [model_serialization.py:83] Exported results/wdyclv-ppo/WalkerDynamic.nn file
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:41 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:42 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:43 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:43 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:44 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:44 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:45 INFO [environment.py:418] Environment shut down with return code 0.
+debugger-agent: Unable to listen on 7
+2020-07-01 00:14:45 INFO [environment.py:418] Environment shut down with return code 0.

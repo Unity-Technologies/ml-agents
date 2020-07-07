@@ -1,0 +1,27 @@
+behaviors:
+  WalkerDynamic:
+    behavioral_cloning: null
+    checkpoint_interval: 500000
+    hyperparameters: {batch_size: 2048, beta: 0.005, buffer_size: 20480, epsilon: 0.2,
+      lambd: 0.95, learning_rate: 0.0003, learning_rate_schedule: linear, num_epoch: 3}
+    init_path: null
+    keep_checkpoints: 5
+    max_steps: 20000000
+    network_settings: {hidden_units: 512, memory: null, normalize: true, num_layers: 3,
+      vis_encode_type: simple}
+    reward_signals:
+      extrinsic: {gamma: 0.995, strength: 1.0}
+    self_play: null
+    summary_freq: 30000
+    threaded: true
+    time_horizon: 1000
+    trainer_type: ppo
+checkpoint_settings: {force: false, inference: false, initialize_from: null, load_model: false,
+  resume: false, run_id: wdyclv-ppo, train_model: true}
+curriculum: null
+debug: false
+engine_settings: {capture_frame_rate: 60, height: 84, no_graphics: true, quality_level: 5,
+  target_frame_rate: -1, time_scale: 20, width: 84}
+env_settings: {base_port: 5005, env_args: null, env_path: /unity-volume/executable,
+  num_envs: 8, seed: -1}
+parameter_randomization: null
