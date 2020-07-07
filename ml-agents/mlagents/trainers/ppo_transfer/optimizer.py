@@ -383,6 +383,10 @@ class PPOTransferOptimizer(TFOptimizer):
                     train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
                 elif self.train_type == "encoding":
                     train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+                elif self.train_type == "policy":
+                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+                    train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+                    train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
                 print("trainable", train_vars)
                 # train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
                 # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")

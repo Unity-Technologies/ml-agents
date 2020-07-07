@@ -101,6 +101,7 @@ class PPOTransferSettings(HyperparamSettings):
 
     separate_value_train: bool = False
     separate_policy_train: bool = False
+    seprate_value_net: bool = False
     use_var_encoder: bool = False
     use_var_predict: bool = False
     with_prior: bool = False
