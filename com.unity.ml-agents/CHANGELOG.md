@@ -13,6 +13,10 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
   `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
+- The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
+in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
+behavior. More information
+[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
