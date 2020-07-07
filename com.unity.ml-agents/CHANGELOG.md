@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.3] - 2020-07-07
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Update Barracuda to 1.0.1. (#4187)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 - Fixed an issue where RayPerceptionSensor would raise an exception when the
