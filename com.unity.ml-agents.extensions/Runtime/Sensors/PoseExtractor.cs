@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 var currentBodyLinearVel = GetLinearVelocityAt(i);
                 var relativeVelocity = currentBodyLinearVel - rootLinearVel;
-                m_ModelSpaceLinearVelocities[i] = worldToModel.Multiply(relativeVelocity);
+                m_ModelSpaceLinearVelocities[i] = worldToModel.rotation * relativeVelocity;
             }
         }
 
@@ -139,7 +139,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                     var parentLinearVel = GetLinearVelocityAt(m_ParentIndices[i]);
                     var currentLinearVel = GetLinearVelocityAt(i);
-                    m_LocalSpaceLinearVelocities[i] = invParent.Multiply(currentLinearVel - parentLinearVel);
+                    m_LocalSpaceLinearVelocities[i] = invParent.rotation * (currentLinearVel - parentLinearVel);
                 }
                 else
                 {

@@ -8,30 +8,9 @@ namespace Unity.MLAgents.Tests
     {
         public static void CompareObservation(ISensor sensor, float[] expected)
         {
-            var numExpected = expected.Length;
-            const float fill = -1337f;
-            var output = new float[numExpected];
-            for (var i = 0; i < numExpected; i++)
-            {
-                output[i] = fill;
-            }
-
-            if(numExpected > 0)
-            {
-                Assert.AreEqual(fill, output[0]);
-            }
-
-            ObservationWriter writer = new ObservationWriter();
-            writer.SetTarget(output, sensor.GetObservationShape(), 0);
-
-            // Make sure ObservationWriter didn't touch anything
-            if(numExpected > 0)
-            {
-                Assert.AreEqual(fill, output[0]);
-            }
-
-            sensor.Write(writer);
-            Assert.AreEqual(expected, output);
+            string errorMessage;
+            bool isOK = SensorHelper.CompareObservation(sensor, expected, out errorMessage);
+            Assert.IsTrue(isOK, errorMessage);
         }
     }
 
