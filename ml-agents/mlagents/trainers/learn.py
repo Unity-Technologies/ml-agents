@@ -252,6 +252,7 @@ def create_environment_factory(
                 seed=env_seed,
                 no_graphics=no_graphics,
                 base_port=start_port,
+                worker_id=worker_id,
                 additional_args=env_args,
                 side_channels=side_channels,
                 log_folder=log_folder,
