@@ -24,7 +24,7 @@ behavior. More information
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
-an upgrade script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` to see the script usage. Note that you will have had to upgrade to/install the current version of ML-Agents before running the script. For manual update :
+an upgrade script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` to see the script usage. Note that you will have had to upgrade to/install the current version of ML-Agents before running the script. To update manually:
   - If your config file used a `parameter_randomization` section, rename that section to `environment_parameters`
   - If your config file used a `curriculum` section, you will need to rewrite your curriculum with this [format](Training-ML-Agents.md#curriculum).
 
