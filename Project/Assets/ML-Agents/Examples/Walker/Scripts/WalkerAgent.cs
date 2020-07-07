@@ -7,9 +7,10 @@ using BodyPart = Unity.MLAgentsExamples.BodyPart;
 
 public class WalkerAgent : Agent
 {
-    public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
+    [Range(0, 10)]
+    public float walkingSpeed = 10; //The max walk velocity magnitude an agent will be rewarded for
+
     Vector3 m_WalkDir; //Direction to the target
-//    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
     [Header("Target To Walk Towards")] [Space(10)]
     public TargetController target; //Target the agent will walk towards.
@@ -84,6 +85,10 @@ public class WalkerAgent : Agent
 
         orientationCube.UpdateOrientation(hips, target.transform);
 
+        rewardManager.ResetEpisodeRewards();
+        
+        walkingSpeed = Random.Range(0.0f, 10.0f); //Random Walk Speed
+
         SetResetParameters();
     }
 
@@ -115,6 +120,8 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        
+        sensor.AddObservation(walkingSpeed);
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
 
@@ -165,40 +172,43 @@ public class WalkerAgent : Agent
 
     void FixedUpdate()
     {
-       UpdateRewards();
+        UpdateRewards();
     }
 
-    public float headFacingDot;
-    public float hipsFacingDot;
-    public float headHeightOverFeetReward;
+    public float lookAtTargetReward; //reward for looking at the target
+    public float matchSpeedReward; //reward for matching the desired walking speed.
+    public float headHeightOverFeetReward; //reward for standing up straight-ish
+    public float hurryUpReward = -1; //don't waste time
     public RewardManager rewardManager;
     void UpdateRewards()
     {
         var cubeForward = orientationCube.transform.forward;
         orientationCube.UpdateOrientation(hips, target.transform);
-        headFacingDot = Vector3.Dot(cubeForward, head.forward);
-        hipsFacingDot = Vector3.Dot(cubeForward, hips.forward);
         // Set reward for this step according to mixture of the following elements.
-        // a. Velocity alignment with goal direction.
-        var moveTowardsTargetReward =  Mathf.Exp(-0.1f * (orientationCube.transform.forward * maximumWalkingSpeed - m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
+        // a. Match target speed
+        //This reward will approach 1 if it matches and approach zero as it deviates
+        matchSpeedReward =
+            Mathf.Exp(-0.1f * (orientationCube.transform.forward * walkingSpeed -
+                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
 //        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
 //            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
-        var lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
+        lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
         // c. Encourage head height.
-        headHeightOverFeetReward = ((head.position.y - footL.position.y) + (head.position.y - footR.position.y)/10); //Should normalize to ~1
+        headHeightOverFeetReward =
+            ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10); //Should normalize to ~1
 //        AddReward(
 //            +0.02f * moveTowardsTargetReward
 //            + 0.01f * lookAtTargetReward
 //            + 0.01f * headHeightOverFeetReward
 //        );
-        rewardManager.UpdateReward("moveTowardsTarget", moveTowardsTargetReward);
+
+        rewardManager.UpdateReward("matchSpeed", matchSpeedReward);
         rewardManager.UpdateReward("lookAtTarget", lookAtTargetReward);
         rewardManager.UpdateReward("headHeightOverFeet", headHeightOverFeetReward);
-//        rewardManager.UpdateReward("moveTowardsTargetReward", +0.02f * moveTowardsTargetReward);
-//        rewardManager.UpdateReward("lookAtTargetReward", +0.01f * lookAtTargetReward);
-//        rewardManager.UpdateReward("headHeightOverFeetReward", +0.01f * headHeightOverFeetReward);
+        rewardManager.UpdateReward("hurryUp", hurryUpReward); 
     }
+    
 //    void FixedUpdate()
 //    {
 //        var cubeForward = orientationCube.transform.forward;
