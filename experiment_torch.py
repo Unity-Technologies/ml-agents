@@ -65,8 +65,8 @@ n_steps = 100000
 
 envs_config_tuple = [("3DBall","3DBall"), ("GridWorld","GridWorld"), ("PushBlock","PushBlock"),("Hallway","Hallway"), ("CrawlerStaticTarget","CrawlerStatic")]
 
-results.append(run_experiment(name = "3DBall", steps=n_steps, use_torch=False, num_torch_threads=1, use_gpu=False, num_envs = 1, config_name=None))
-results.append(run_experiment(name = "3DBall", steps=n_steps, use_torch=False, num_torch_threads=1, use_gpu=True, num_envs = 1, config_name=None))
+results.append(run_experiment(name = "GridWorld", steps=n_steps, use_torch=False, num_torch_threads=1, use_gpu=False, num_envs = 1, config_name=None))
+results.append(run_experiment(name = "GridWorld", steps=n_steps, use_torch=False, num_torch_threads=1, use_gpu=True, num_envs = 1, config_name=None))
 
 # results.append(run_experiment("3DBall", n_steps, True, 4, False))
 # results.append(run_experiment("3DBall", n_steps, True, 1, False))
