@@ -75,7 +75,7 @@ def main():
     
     results = []
     results.append(labels)
-    f = open("result_data.txt", "w")
+    f = open(f"result_data_steps_{args.steps}_envs_{args.num_envs}.txt", "w")
     f.write(" ".join(labels))
     
     for env_config in envs_config_tuples:
