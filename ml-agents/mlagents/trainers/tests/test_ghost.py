@@ -6,7 +6,6 @@ from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -18,7 +17,7 @@ def dummy_config():
     return TrainerSettings(self_play=SelfPlaySettings())
 
 
-VECTOR_ACTION_SPACE = [1]
+VECTOR_ACTION_SPACE = 1
 VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 513
@@ -27,21 +26,22 @@ NUM_AGENTS = 12
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_load_and_set(dummy_config, use_discrete):
-    mock_brain = mb.setup_mock_brain(
+    mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         False,
-        vector_action_space=VECTOR_ACTION_SPACE,
+        vector_action_space=DISCRETE_ACTION_SPACE
+        if use_discrete
+        else VECTOR_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
-        discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
     trainer_params = dummy_config
-    trainer = PPOTrainer(mock_brain.brain_name, 0, trainer_params, True, False, 0, "0")
+    trainer = PPOTrainer("test", 0, trainer_params, True, False, 0, "0")
     trainer.seed = 1
-    policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
+    policy = trainer.create_policy("test", mock_specs)
     policy.create_tf_graph()
     trainer.seed = 20  # otherwise graphs are the same
-    to_load_policy = trainer.create_policy(mock_brain.brain_name, mock_brain)
+    to_load_policy = trainer.create_policy("test", mock_specs)
     to_load_policy.create_tf_graph()
     to_load_policy.init_load_weights()
 
@@ -61,27 +61,13 @@ def test_load_and_set(dummy_config, use_discrete):
 
 
 def test_process_trajectory(dummy_config):
-    brain_params_team0 = BrainParameters(
-        brain_name="test_brain?team=0",
-        vector_observation_space_size=1,
-        camera_resolutions=[],
-        vector_action_space_size=[2],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
+    mock_specs = mb.setup_test_behavior_specs(
+        True, False, vector_action_space=[2], vector_obs_space=1
     )
+    behavior_id_team0 = "test_brain?team=0"
+    behavior_id_team1 = "test_brain?team=1"
+    brain_name = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0).brain_name
 
-    brain_name = BehaviorIdentifiers.from_name_behavior_id(
-        brain_params_team0.brain_name
-    ).brain_name
-
-    brain_params_team1 = BrainParameters(
-        brain_name="test_brain?team=1",
-        vector_observation_space_size=1,
-        camera_resolutions=[],
-        vector_action_space_size=[2],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
-    )
     ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     controller = GhostController(100)
     trainer = GhostTrainer(
@@ -89,29 +75,24 @@ def test_process_trajectory(dummy_config):
     )
 
     # first policy encountered becomes policy trained by wrapped PPO
-    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(
-        brain_params_team0.brain_name
-    )
-    policy = trainer.create_policy(parsed_behavior_id0, brain_params_team0)
+    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0)
+    policy = trainer.create_policy(parsed_behavior_id0, mock_specs)
     trainer.add_policy(parsed_behavior_id0, policy)
-    trajectory_queue0 = AgentManagerQueue(brain_params_team0.brain_name)
+    trajectory_queue0 = AgentManagerQueue(behavior_id_team0)
     trainer.subscribe_trajectory_queue(trajectory_queue0)
 
     # Ghost trainer should ignore this queue because off policy
-    parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(
-        brain_params_team1.brain_name
-    )
-    policy = trainer.create_policy(parsed_behavior_id1, brain_params_team1)
+    parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team1)
+    policy = trainer.create_policy(parsed_behavior_id1, mock_specs)
     trainer.add_policy(parsed_behavior_id1, policy)
-    trajectory_queue1 = AgentManagerQueue(brain_params_team1.brain_name)
+    trajectory_queue1 = AgentManagerQueue(behavior_id_team1)
     trainer.subscribe_trajectory_queue(trajectory_queue1)
 
     time_horizon = 15
     trajectory = make_fake_trajectory(
         length=time_horizon,
         max_step_complete=True,
-        vec_obs_size=1,
-        num_vis_obs=0,
+        observation_shapes=[(1,)],
         action_space=[2],
     )
     trajectory_queue0.put(trajectory)
@@ -130,29 +111,17 @@ def test_process_trajectory(dummy_config):
 
 
 def test_publish_queue(dummy_config):
-    brain_params_team0 = BrainParameters(
-        brain_name="test_brain?team=0",
-        vector_observation_space_size=8,
-        camera_resolutions=[],
-        vector_action_space_size=[1],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
+    mock_specs = mb.setup_test_behavior_specs(
+        True, False, vector_action_space=[1], vector_obs_space=8
     )
 
-    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(
-        brain_params_team0.brain_name
-    )
+    behavior_id_team0 = "test_brain?team=0"
+    behavior_id_team1 = "test_brain?team=1"
+
+    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0)
 
     brain_name = parsed_behavior_id0.brain_name
 
-    brain_params_team1 = BrainParameters(
-        brain_name="test_brain?team=1",
-        vector_observation_space_size=8,
-        camera_resolutions=[],
-        vector_action_space_size=[1],
-        vector_action_descriptions=[],
-        vector_action_space_type=0,
-    )
     ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, "0")
     controller = GhostController(100)
     trainer = GhostTrainer(
@@ -161,18 +130,16 @@ def test_publish_queue(dummy_config):
 
     # First policy encountered becomes policy trained by wrapped PPO
     # This queue should remain empty after swap snapshot
-    policy = trainer.create_policy(parsed_behavior_id0, brain_params_team0)
+    policy = trainer.create_policy(parsed_behavior_id0, mock_specs)
     trainer.add_policy(parsed_behavior_id0, policy)
-    policy_queue0 = AgentManagerQueue(brain_params_team0.brain_name)
+    policy_queue0 = AgentManagerQueue(behavior_id_team0)
     trainer.publish_policy_queue(policy_queue0)
 
     # Ghost trainer should use this queue for ghost policy swap
-    parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(
-        brain_params_team1.brain_name
-    )
-    policy = trainer.create_policy(parsed_behavior_id1, brain_params_team1)
+    parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team1)
+    policy = trainer.create_policy(parsed_behavior_id1, mock_specs)
     trainer.add_policy(parsed_behavior_id1, policy)
-    policy_queue1 = AgentManagerQueue(brain_params_team1.brain_name)
+    policy_queue1 = AgentManagerQueue(behavior_id_team1)
     trainer.publish_policy_queue(policy_queue1)
 
     # check ghost trainer swap pushes to ghost queue and not trainer
@@ -182,15 +149,14 @@ def test_publish_queue(dummy_config):
     # clear
     policy_queue1.get_nowait()
 
-    mock_brain = mb.setup_mock_brain(
+    mock_specs = mb.setup_test_behavior_specs(
         False,
         False,
         vector_action_space=VECTOR_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
-        discrete_action_space=DISCRETE_ACTION_SPACE,
     )
 
-    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_brain)
+    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_specs)
     # Mock out reward signal eval
     buffer["extrinsic_rewards"] = buffer["environment_rewards"]
     buffer["extrinsic_returns"] = buffer["environment_rewards"]

@@ -65,7 +65,8 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ editor.coverageOptions }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --type package-tests --package-filter {{ package.name }} {{ editor.coverageOptions }}
+
     {% if package.name == "com.unity.ml-agents" %}
     # TODO get coverage tests running for extensions too
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
@@ -75,7 +76,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
+    - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
@@ -84,7 +85,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
-      {% if package.name == "com.unity.ml-agents" %}
+      {% if package.name == "com.unity.ml-agents.extensions" %}
         pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       {% endif %}
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
@@ -106,7 +107,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ editor.coverageOptions }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --type package-tests --package-filter {{ package.name }} {{ editor.coverageOptions }}
     {% if package.name == "com.unity.ml-agents" %}
     # TODO get coverage tests running for extensions too
     - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
@@ -116,7 +117,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
+    - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
     {% endfor %}

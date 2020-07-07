@@ -7,15 +7,15 @@ from distutils.version import LooseVersion
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.brain_conversion_utils import get_global_agent_id
+from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers import __version__
 
 
@@ -44,7 +44,7 @@ class TFPolicy(Policy):
     def __init__(
         self,
         seed: int,
-        brain: BrainParameters,
+        behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
         model_path: str,
         load: bool = False,
@@ -69,20 +69,26 @@ class TFPolicy(Policy):
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.sequence_length = 1
         self.seed = seed
-        self.brain = brain
+        self.behavior_spec = behavior_spec
 
-        self.act_size = brain.vector_action_space_size
-        self.vec_obs_size = brain.vector_observation_space_size
-        self.vis_obs_size = brain.number_visual_observations
+        self.act_size = (
+            list(behavior_spec.discrete_action_branches)
+            if behavior_spec.is_action_discrete()
+            else [behavior_spec.action_size]
+        )
+        self.vec_obs_size = sum(
+            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
+        )
+        self.vis_obs_size = sum(
+            1 for shape in behavior_spec.observation_shapes if len(shape) == 3
+        )
 
         self.use_recurrent = self.network_settings.memory is not None
         self.memory_dict: Dict[str, np.ndarray] = {}
-        self.num_branches = len(self.brain.vector_action_space_size)
+        self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}
         self.normalize = self.network_settings.normalize
-        self.use_continuous_act = brain.vector_action_space_type == "continuous"
-        if self.use_continuous_act:
-            self.num_branches = self.brain.vector_action_space_size[0]
+        self.use_continuous_act = behavior_spec.is_action_continuous()
         self.model_path = model_path
         self.initialize_path = self.trainer_settings.init_path
         self.keep_checkpoints = self.trainer_settings.keep_checkpoints
@@ -287,7 +293,10 @@ class TFPolicy(Policy):
             feed_dict[self.vector_in] = vec_vis_obs.vector_observations
         if not self.use_continuous_act:
             mask = np.ones(
-                (len(batched_step_result), np.sum(self.brain.vector_action_space_size)),
+                (
+                    len(batched_step_result),
+                    sum(self.behavior_spec.discrete_action_branches),
+                ),
                 dtype=np.float32,
             )
             if batched_step_result.action_mask is not None:
@@ -449,10 +458,9 @@ class TFPolicy(Policy):
                 self.increment_step_op,
                 self.steps_to_increment,
             ) = ModelUtils.create_global_steps()
-            self.visual_in = ModelUtils.create_visual_input_placeholders(
-                self.brain.camera_resolutions
+            self.vector_in, self.visual_in = ModelUtils.create_input_placeholders(
+                self.behavior_spec.observation_shapes
             )
-            self.vector_in = ModelUtils.create_vector_input(self.vec_obs_size)
             if self.normalize:
                 normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
@@ -485,7 +493,7 @@ class TFPolicy(Policy):
             self.mask = tf.cast(self.mask_input, tf.int32)
 
             tf.Variable(
-                int(self.brain.vector_action_space_type == "continuous"),
+                int(self.behavior_spec.is_action_continuous()),
                 name="is_continuous_control",
                 trainable=False,
                 dtype=tf.int32,
@@ -519,7 +527,7 @@ class TFPolicy(Policy):
             tf.Variable(
                 self.m_size, name="memory_size", trainable=False, dtype=tf.int32
             )
-            if self.brain.vector_action_space_type == "continuous":
+            if self.behavior_spec.is_action_continuous():
                 tf.Variable(
                     self.act_size[0],
                     name="action_output_shape",

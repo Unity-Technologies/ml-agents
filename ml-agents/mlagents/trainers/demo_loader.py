@@ -2,8 +2,6 @@ import os
 from typing import List, Tuple
 import numpy as np
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
@@ -83,8 +81,8 @@ def make_demo_buffer(
 
 @timed
 def demo_to_buffer(
-    file_path: str, sequence_length: int, expected_brain_params: BrainParameters = None
-) -> Tuple[BrainParameters, AgentBuffer]:
+    file_path: str, sequence_length: int, expected_behavior_spec: BehaviorSpec = None
+) -> Tuple[BehaviorSpec, AgentBuffer]:
     """
     Loads demonstration file and uses it to fill training buffer.
     :param file_path: Location of demonstration file (.demo).
@@ -93,65 +91,41 @@ def demo_to_buffer(
     """
     behavior_spec, info_action_pair, _ = load_demonstration(file_path)
     demo_buffer = make_demo_buffer(info_action_pair, behavior_spec, sequence_length)
-    brain_params = behavior_spec_to_brain_parameters("DemoBrain", behavior_spec)
-    if expected_brain_params:
+    if expected_behavior_spec:
         # check action dimensions in demonstration match
-        if (
-            brain_params.vector_action_space_size
-            != expected_brain_params.vector_action_space_size
-        ):
+        if behavior_spec.action_shape != expected_behavior_spec.action_shape:
             raise RuntimeError(
                 "The action dimensions {} in demonstration do not match the policy's {}.".format(
-                    brain_params.vector_action_space_size,
-                    expected_brain_params.vector_action_space_size,
+                    behavior_spec.action_shape, expected_behavior_spec.action_shape
                 )
             )
         # check the action types in demonstration match
-        if (
-            brain_params.vector_action_space_type
-            != expected_brain_params.vector_action_space_type
-        ):
+        if behavior_spec.action_type != expected_behavior_spec.action_type:
             raise RuntimeError(
                 "The action type of {} in demonstration do not match the policy's {}.".format(
-                    brain_params.vector_action_space_type,
-                    expected_brain_params.vector_action_space_type,
+                    behavior_spec.action_type, expected_behavior_spec.action_type
                 )
             )
-        # check number of vector observations in demonstration match
-        if (
-            brain_params.vector_observation_space_size
-            != expected_brain_params.vector_observation_space_size
+        # check observations match
+        if len(behavior_spec.observation_shapes) != len(
+            expected_behavior_spec.observation_shapes
         ):
             raise RuntimeError(
-                "The vector observation dimensions of {} in demonstration do not match the policy's {}.".format(
-                    brain_params.vector_observation_space_size,
-                    expected_brain_params.vector_observation_space_size,
+                "The demonstrations do not have the same number of observations as the policy."
+            )
+        else:
+            for i, (demo_obs, policy_obs) in enumerate(
+                zip(
+                    behavior_spec.observation_shapes,
+                    expected_behavior_spec.observation_shapes,
                 )
-            )
-        # check number of visual observations/resolutions in demonstration match
-        if (
-            brain_params.number_visual_observations
-            != expected_brain_params.number_visual_observations
-        ):
-            raise RuntimeError(
-                "Number of visual observations {} in demonstrations do not match the policy's {}.".format(
-                    brain_params.number_visual_observations,
-                    expected_brain_params.number_visual_observations,
-                )
-            )
-        for i, (resolution, expected_resolution) in enumerate(
-            zip(
-                brain_params.camera_resolutions,
-                expected_brain_params.camera_resolutions,
-            )
-        ):
-            if resolution != expected_resolution:
-                raise RuntimeError(
-                    "The resolution of visual observation {} in demonstrations do not match the policy's.".format(
-                        i
+            ):
+                if demo_obs != policy_obs:
+                    raise RuntimeError(
+                        f"The shape {demo_obs} for observation {i} in demonstration \
+                        do not match the policy's {policy_obs}."
                     )
-                )
-    return brain_params, demo_buffer
+    return behavior_spec, demo_buffer
 
 
 def get_demo_files(path: str) -> List[str]:
@@ -183,8 +157,8 @@ def get_demo_files(path: str) -> List[str]:
 
 @timed
 def load_demonstration(
-    file_path: str
-) -> Tuple[BrainParameters, List[AgentInfoActionPairProto], int]:
+    file_path: str,
+) -> Tuple[BehaviorSpec, List[AgentInfoActionPairProto], int]:
     """
     Loads and parses a demonstration file.
     :param file_path: Location of demonstration file (.demo).

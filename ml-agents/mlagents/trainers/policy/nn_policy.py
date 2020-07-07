@@ -1,8 +1,7 @@
 from typing import Any, Dict, Optional, List
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents_envs.base_env import DecisionSteps
-from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -19,7 +18,7 @@ class NNPolicy(TFPolicy):
     def __init__(
         self,
         seed: int,
-        brain: BrainParameters,
+        behavior_spec: BehaviorSpec,
         trainer_params: TrainerSettings,
         is_training: bool,
         model_path: str,
@@ -42,7 +41,7 @@ class NNPolicy(TFPolicy):
         :param tanh_squash: Whether to use a tanh function on the continuous output, or a clipped output.
         :param reparameterize: Whether we are using the resampling trick to update the policy in continuous output.
         """
-        super().__init__(seed, brain, trainer_params, model_path, load)
+        super().__init__(seed, behavior_spec, trainer_params, model_path, load)
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         num_layers = self.network_settings.num_layers
