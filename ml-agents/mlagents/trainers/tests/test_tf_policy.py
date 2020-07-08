@@ -102,7 +102,6 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
         ),
         policy.graph,
         policy.sess,
-        is_checkpoint=True,
     )
     track_checkpoint_info_mock.assert_called_once_with(
         mock_brain.brain_name,

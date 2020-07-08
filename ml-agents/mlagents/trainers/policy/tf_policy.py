@@ -416,7 +416,7 @@ class TFPolicy(Policy):
         brain_name = self.behavior_id.brain_name
         checkpoint_path = f"{brain_name}-{current_step}"
         settings = SerializationSettings(self.model_path, brain_name, checkpoint_path)
-        export_policy_model(settings, self.graph, self.sess, is_checkpoint=True)
+        export_policy_model(settings, self.graph, self.sess)
         # Store steps and file_path
         new_checkpoint = Checkpoint(
             int(current_step),

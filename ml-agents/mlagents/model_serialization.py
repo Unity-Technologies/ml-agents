@@ -67,10 +67,7 @@ class SerializationSettings(NamedTuple):
 
 
 def export_policy_model(
-    settings: SerializationSettings,
-    graph: tf.Graph,
-    sess: tf.Session,
-    is_checkpoint: bool = False,
+    settings: SerializationSettings, graph: tf.Graph, sess: tf.Session
 ) -> None:
     """
     Exports latest saved model to .nn format for Unity embedding.
@@ -85,7 +82,7 @@ def export_policy_model(
 
     # Convert to barracuda
     if settings.convert_to_barracuda:
-        if is_checkpoint:
+        if settings.checkpoint_path:
             tf2bc.convert(
                 frozen_graph_def_path,
                 os.path.join(settings.model_path, f"{settings.checkpoint_path}.nn"),
