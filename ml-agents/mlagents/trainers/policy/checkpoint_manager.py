@@ -23,7 +23,10 @@ class CheckpointManager:
             behavior_name, StatusType.CHECKPOINTS
         )
         if not checkpoint_list:
-            return []
+            checkpoint_list = []
+            GlobalTrainingStatus.set_parameter_state(
+                behavior_name, StatusType.CHECKPOINTS, checkpoint_list
+            )
         return checkpoint_list
 
     @staticmethod
