@@ -6,6 +6,7 @@ import abc
 import csv
 import os
 import time
+from threading import RLock
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
@@ -290,6 +291,7 @@ class CSVWriter(StatsWriter):
 class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
+    lock = RLock()
 
     def __init__(self, category: str):
         """
@@ -302,7 +304,8 @@ class StatsReporter:
 
     @staticmethod
     def add_writer(writer: StatsWriter) -> None:
-        StatsReporter.writers.append(writer)
+        with StatsReporter.lock:
+            StatsReporter.writers.append(writer)
 
     def add_property(self, property_type: StatsPropertyType, value: Any) -> None:
         """
@@ -313,8 +316,9 @@ class StatsReporter:
         :param key: The type of property.
         :param value: The property itself.
         """
-        for writer in StatsReporter.writers:
-            writer.add_property(self.category, property_type, value)
+        with StatsReporter.lock:
+            for writer in StatsReporter.writers:
+                writer.add_property(self.category, property_type, value)
 
     def add_stat(self, key: str, value: float) -> None:
         """
@@ -322,7 +326,8 @@ class StatsReporter:
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
         """
-        StatsReporter.stats_dict[self.category][key].append(value)
+        with StatsReporter.lock:
+            StatsReporter.stats_dict[self.category][key].append(value)
 
     def set_stat(self, key: str, value: float) -> None:
         """
@@ -331,7 +336,8 @@ class StatsReporter:
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
         """
-        StatsReporter.stats_dict[self.category][key] = [value]
+        with StatsReporter.lock:
+            StatsReporter.stats_dict[self.category][key] = [value]
 
     def write_stats(self, step: int) -> None:
         """
@@ -340,14 +346,15 @@ class StatsReporter:
         and the buffer cleared.
         :param step: Training step which to write these stats as.
         """
-        values: Dict[str, StatsSummary] = {}
-        for key in StatsReporter.stats_dict[self.category]:
-            if len(StatsReporter.stats_dict[self.category][key]) > 0:
-                stat_summary = self.get_stats_summaries(key)
-                values[key] = stat_summary
-        for writer in StatsReporter.writers:
-            writer.write_stats(self.category, values, step)
-        del StatsReporter.stats_dict[self.category]
+        with StatsReporter.lock:
+            values: Dict[str, StatsSummary] = {}
+            for key in StatsReporter.stats_dict[self.category]:
+                if len(StatsReporter.stats_dict[self.category][key]) > 0:
+                    stat_summary = self.get_stats_summaries(key)
+                    values[key] = stat_summary
+            for writer in StatsReporter.writers:
+                writer.write_stats(self.category, values, step)
+            del StatsReporter.stats_dict[self.category]
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """
