@@ -72,7 +72,12 @@ def export_policy_model(
     sess: tf.Session,
 ) -> None:
     """
-    Exports latest saved model to .nn format for Unity embedding.
+    Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
+
+    :param output_filepath: file path to output the model (without file suffix)
+    :param settings: SerializationSettings describing how to export the model
+    :param graph: Tensorflow Graph for the policy
+    :param sess: Tensorflow session for the policy
     """
     frozen_graph_def = _make_frozen_graph(settings, graph, sess)
     if not os.path.exists(settings.model_path):
