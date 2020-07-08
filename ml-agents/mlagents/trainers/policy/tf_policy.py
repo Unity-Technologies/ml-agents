@@ -401,7 +401,8 @@ class TFPolicy(Policy):
 
     def checkpoint(self, model_reward: Optional[float] = None) -> None:
         """
-        Checkpoints the model
+        Writes an intermediate checkpoint model to memory
+        model_reward: Mean reward of the reward buffer at the time of saving
         """
         current_step = self.get_current_step()
         with self.graph.as_default():
@@ -431,7 +432,8 @@ class TFPolicy(Policy):
 
     def save(self, model_reward: Optional[float] = None) -> None:
         """
-        Saves the model
+        Saves the final model on completion or interruption
+        model_reward: Mean reward of the reward buffer at the time of saving
         """
         current_step = self.get_current_step()
         brain_name = self.behavior_id.brain_name

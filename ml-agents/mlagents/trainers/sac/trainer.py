@@ -78,6 +78,7 @@ class SACTrainer(RLTrainer):
 
     def _checkpoint(self) -> None:
         """
+        Writes a checkpoint model to memory
         Overrides the default to save the replay buffer.
         """
         super()._checkpoint()
@@ -86,6 +87,7 @@ class SACTrainer(RLTrainer):
 
     def save_model(self) -> None:
         """
+        Saves the final training model to memory
         Overrides the default to save the replay buffer.
         """
         super().save_model()
