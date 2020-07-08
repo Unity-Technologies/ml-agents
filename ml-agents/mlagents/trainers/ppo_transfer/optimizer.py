@@ -555,7 +555,8 @@ class PPOTransferOptimizer(TFOptimizer):
             # self.policy.get_encoder_weights()
 
         for stat_name, update_name in stats_needed.items():
-            update_stats[stat_name] = update_vals[update_name]
+            if update_name in update_vals.keys():
+                update_stats[stat_name] = update_vals[update_name]
 
         self.num_updates += 1
         return update_stats
