@@ -44,12 +44,13 @@ def test_policy_conversion(tmpdir, rnn, visual, discrete):
         use_discrete=discrete,
         use_visual=visual,
     )
-    policy.checkpoint()
+    policy.checkpoint(1)
     settings = SerializationSettings(
         policy.model_path, os.path.join(tmpdir, policy.brain.brain_name)
     )
-    export_policy_model(settings, policy.graph, policy.sess)
+    export_path = os.path.join(tmpdir, "test")
+    export_policy_model(export_path, settings, policy.graph, policy.sess)
 
     # These checks taken from test_barracuda_converter
-    assert os.path.isfile(os.path.join(tmpdir, "test.nn"))
-    assert os.path.getsize(os.path.join(tmpdir, "test.nn")) > 100
+    assert os.path.isfile(export_path + ".nn")
+    assert os.path.getsize(export_path + ".nn") > 100

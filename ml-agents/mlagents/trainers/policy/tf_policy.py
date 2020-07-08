@@ -399,52 +399,54 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def checkpoint(self, model_reward: Optional[float] = None) -> None:
+    def checkpoint(self, steps: int, model_reward: Optional[float] = None) -> None:
         """
-        Writes an intermediate checkpoint model to memory
-        model_reward: Mean reward of the reward buffer at the time of saving
+        Checkpoints the policy on disk.
+
+        :param steps: Number of steps processed so far during training
+        :param model_reward: Mean reward observed for this policy
         """
-        current_step = self.get_current_step()
+        # Save the TF checkpoint and graph definition
         with self.graph.as_default():
-            last_checkpoint = os.path.join(
-                self.model_path, f"model-{current_step}.ckpt"
-            )
+            checkpoint_path = os.path.join(self.model_path, f"model-{steps}.ckpt")
             if self.saver:
-                self.saver.save(self.sess, last_checkpoint)
+                self.saver.save(self.sess, checkpoint_path)
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
+
         brain_name = self.behavior_id.brain_name
-        checkpoint_path = f"{brain_name}-{current_step}"
-        settings = SerializationSettings(self.model_path, brain_name, checkpoint_path)
-        export_policy_model(settings, self.graph, self.sess)
-        # Store steps and file_path
+        checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{steps}")
+        settings = SerializationSettings(self.model_path, brain_name)
+        export_policy_model(checkpoint_path, settings, self.graph, self.sess)
         new_checkpoint = Checkpoint(
-            int(current_step),
-            os.path.join(self.model_path, f"{settings.checkpoint_path}.nn"),
-            model_reward,
-            time.time(),
+            steps, f"{checkpoint_path}.nn", model_reward, time.time()
         )
-        # Record checkpoint information
         CheckpointManager.track_checkpoint_info(
             brain_name, new_checkpoint, self.keep_checkpoints
         )
 
-    def save(self, model_reward: Optional[float] = None) -> None:
+    def save(self, steps: int, model_reward: Optional[float] = None) -> None:
         """
         Saves the final model on completion or interruption
-        model_reward: Mean reward of the reward buffer at the time of saving
+
+        :param steps: Number of steps processed so far during training
+        :param model_reward: Mean reward observed for this policy
         """
-        current_step = self.get_current_step()
         brain_name = self.behavior_id.brain_name
         settings = SerializationSettings(self.model_path, brain_name)
+
+        # Output filepath for the model is the same as the model_path because we want a
+        # file with the same name as the behavior output folder, e.g. for 3DBall
+        # model_path is "results/3dball-run/3DBall
+        # output file:  "results/3dball-run/3DBall.nn"
+        #      and/or:  "results/3dball-run/3DBall.onnx"
+        output_filepath = settings.model_path
+        export_policy_model(output_filepath, settings, self.graph, self.sess)
         final_model = Checkpoint(
-            int(current_step), f"{settings.model_path}.nn", model_reward, time.time()
+            steps, f"{output_filepath}.nn", model_reward, time.time()
         )
-        CheckpointManager.track_final_model_info(
-            brain_name, final_model, self.keep_checkpoints
-        )
-        export_policy_model(settings, self.graph, self.sess)
+        CheckpointManager.track_final_model_info(brain_name, final_model)
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """

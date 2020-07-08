@@ -92,7 +92,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     @timed
     def _checkpoint(self) -> None:
         """
-        Saves the model
+        Checkpoints the policy associated with this trainer.
         """
         n_policies = len(self.policies.keys())
         if n_policies > 1:
@@ -100,11 +100,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         policy = list(self.policies.values())[0]
-        policy.checkpoint(self._policy_mean_reward())
+        policy.checkpoint(int(self.step), self._policy_mean_reward())
 
     def save_model(self) -> None:
         """
-        Exports the model
+        Saves the policy associated with this trainer.
         """
         n_policies = len(self.policies.keys())
         if n_policies > 1:
@@ -113,8 +113,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             )
         policy = list(self.policies.values())[0]
         policy_mean_reward = self._policy_mean_reward()
-        policy.checkpoint(policy_mean_reward)
-        policy.save(policy_mean_reward)
+        policy.checkpoint(int(self.step), policy_mean_reward)
+        policy.save(int(self.step), policy_mean_reward)
 
     @abc.abstractmethod
     def _update_policy(self) -> bool:

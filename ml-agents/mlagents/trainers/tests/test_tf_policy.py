@@ -92,14 +92,12 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
     policy.saver = MagicMock()
     mock_reward_val = 1.35
     checkpoint_time = time.time()
-    policy.checkpoint(mock_reward_val)
+    policy.checkpoint(n_steps, mock_reward_val)
     policy.saver.save.assert_called_once_with(
         policy.sess, f"output/model-{n_steps}.ckpt"
     )
     export_policy_model_mock.assert_called_once_with(
-        SerializationSettings(
-            "output", mock_brain.brain_name, f"{mock_brain.brain_name}-{n_steps}"
-        ),
+        SerializationSettings("output", mock_brain.brain_name),
         policy.graph,
         policy.sess,
     )

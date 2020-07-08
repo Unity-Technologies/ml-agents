@@ -60,14 +60,16 @@ VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 class SerializationSettings(NamedTuple):
     model_path: str
     brain_name: str
-    checkpoint_path: str = ""
     convert_to_barracuda: bool = True
     convert_to_onnx: bool = True
     onnx_opset: int = 9
 
 
 def export_policy_model(
-    settings: SerializationSettings, graph: tf.Graph, sess: tf.Session
+    output_filepath: str,
+    settings: SerializationSettings,
+    graph: tf.Graph,
+    sess: tf.Session,
 ) -> None:
     """
     Exports latest saved model to .nn format for Unity embedding.
@@ -82,22 +84,15 @@ def export_policy_model(
 
     # Convert to barracuda
     if settings.convert_to_barracuda:
-        if settings.checkpoint_path:
-            tf2bc.convert(
-                frozen_graph_def_path,
-                os.path.join(settings.model_path, f"{settings.checkpoint_path}.nn"),
-            )
-            logger.info(f"Exported {settings.checkpoint_path}.nn file")
-        else:
-            tf2bc.convert(frozen_graph_def_path, settings.model_path + ".nn")
-            logger.info(f"Exported {settings.model_path}.nn file")
+        tf2bc.convert(frozen_graph_def_path, f"{output_filepath}.nn")
+        logger.info(f"Exported {output_filepath}.nn")
 
     # Save to onnx too (if we were able to import it)
     if ONNX_EXPORT_ENABLED:
         if settings.convert_to_onnx:
             try:
                 onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
-                onnx_output_path = settings.model_path + ".onnx"
+                onnx_output_path = f"{output_filepath}.onnx"
                 with open(onnx_output_path, "wb") as f:
                     f.write(onnx_graph.SerializeToString())
                 logger.info(f"Converting to {onnx_output_path}")

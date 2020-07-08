@@ -92,8 +92,8 @@ def test_model_management(tmpdir):
     current_step = 6
     final_model = Checkpoint(current_step, final_model_path, 3.294, final_model_time)
 
-    CheckpointManager.track_final_model_info(brain_name, final_model, 4)
-    assert len(CheckpointManager.get_checkpoints(brain_name)) == 3
+    CheckpointManager.track_final_model_info(brain_name, final_model)
+    assert len(CheckpointManager.get_checkpoints(brain_name)) == 4
 
     check_checkpoints = GlobalTrainingStatus.saved_state[brain_name][
         StatusType.CHECKPOINTS.value
