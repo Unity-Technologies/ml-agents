@@ -9,7 +9,14 @@ and this project adheres to
 ## [Unreleased]
 
 ### Major Changes
-#### com.unity.ml-agents (C#)
+
+### Minor Changes
+
+### Bug Fixes
+
+## [1.2.0-preview] - 2020-07-15
+
+### Major Changes
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
   `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
