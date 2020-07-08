@@ -97,6 +97,7 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
         policy.sess, f"output/model-{n_steps}.ckpt"
     )
     export_policy_model_mock.assert_called_once_with(
+        f"output/{mock_brain.brain_name}-{n_steps}",
         SerializationSettings("output", mock_brain.brain_name),
         policy.graph,
         policy.sess,
