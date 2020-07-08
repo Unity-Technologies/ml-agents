@@ -351,9 +351,7 @@ public class WallJumpAgent : Agent
         }
         else
         {
-            var min = m_ResetParams.GetWithDefault("big_wall_min_height", 8);
-            var max = m_ResetParams.GetWithDefault("big_wall_max_height", 8);
-            var height = min + Random.value * (max - min);
+            var height = m_ResetParams.GetWithDefault("big_wall_height", 8);
             localScale = new Vector3(
                 localScale.x,
                 height,

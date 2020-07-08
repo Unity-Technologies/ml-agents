@@ -13,15 +13,18 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
   `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
+- The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
+in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
+behavior. More information
+[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - `SideChannelsManager` was renamed to `SideChannelManager`. The old name is still supported, but deprecated. (#4137)
 - `RayPerceptionSensor.Perceive()` now additionally store the GameObject that was hit by the ray. (#4111)
-- The Barracuda dependency was upgraded to 1.0.0 (#4118)
+- The Barracuda dependency was upgraded to 1.0.1 (#4188)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Added new Google Colab notebooks to show how to use `UnityEnvironment'. (#4117)
-- Fixed issue with FoodCollector when playing with keyboard. (#4147)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -32,6 +35,7 @@ empty string). (#4155)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed an error when setting `initialize_from` in the trainer confiiguration YAML to
 `null`. (#4175)
+- Fixed issue with FoodCollector, Soccer, and WallJump when playing with keyboard. (#4147, #4174)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes
