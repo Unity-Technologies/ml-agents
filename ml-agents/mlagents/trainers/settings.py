@@ -600,8 +600,13 @@ class EnvironmentSettings:
     env_path: Optional[str] = parser.get_default("env_path")
     env_args: Optional[List[str]] = parser.get_default("env_args")
     base_port: int = parser.get_default("base_port")
-    num_envs: int = parser.get_default("num_envs")
+    num_envs: int = attr.ib(default=parser.get_default("num_envs"))
     seed: int = parser.get_default("seed")
+
+    @num_envs.validator
+    def validate_num_envs(self, attribute, value):
+        if value > 1 and self.env_path is None:
+            raise ValueError("--num-envs must be 1 if --env is not set.")
 
 
 @attr.s(auto_attribs=True)
