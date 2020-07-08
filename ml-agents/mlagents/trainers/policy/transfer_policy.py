@@ -208,7 +208,7 @@ class TransferPolicy(TFPolicy):
 
             with tf.variable_scope("predict"):
                 self.create_forward_model(self.encoder, self.targ_encoder, forward_layers,
-                predict_reward=predict_return)
+                predict_reward=predict_return, var_predict=var_predict)
 
             # if var_predict:
             #     self.predict_distribution, self.predict = self._create_var_world_model(
