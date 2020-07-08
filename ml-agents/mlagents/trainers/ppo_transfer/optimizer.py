@@ -103,7 +103,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
             with tf.variable_scope("value"):
                 if policy.use_continuous_act:
-                    self._create_cc_critic(h_size, hyperparameters.value_layers, vis_encode_type)
+                    self._create_cc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
                 else:
                     self._create_dc_critic(h_size, hyperparameters.value_layers, vis_encode_type)
             

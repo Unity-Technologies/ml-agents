@@ -306,9 +306,9 @@ def run_cli(options: RunOptions) -> None:
         run_seed = np.random.randint(0, 10000)
     run_training(run_seed, options)
     
-    if options.behaviors["CrawlerStatic"].transfer:
-        os.system('export SCENE_NAME=crawlerstatictarget')
-        os.system('mlagents-learn config/ppo_transfer/CrawlerStatic.yaml --run-id=cs-transfer --env=/unity-volume/executable --num-envs=4 --force')
+    # if options.behaviors["CrawlerStatic"].transfer:
+    #     os.system('export SCENE_NAME=crawlerstatictarget')
+    #     os.system('mlagents-learn config/ppo_transfer/CrawlerStatic.yaml --run-id=cs-transfer --env=/unity-volume/executable --num-envs=4 --force')
     #     os.system('mlagents-learn config/ppo_transfer/3DBallHard.yaml --run-id=hardball-transfer --env=/unity-volume/3dballhard --num-envs=4 --force')
 
 
