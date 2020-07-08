@@ -1,0 +1,38 @@
+behaviors:
+  CrawlerStatic:
+    trainer_type: ppo_transfer
+    hyperparameters:
+      batch_size: 2024
+      buffer_size: 20240
+      learning_rate: 0.0003
+      beta: 0.005
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+      learning_rate_schedule: linear
+      encoder_layers: 2
+      policy_layers: 2
+      value_layers: 2
+      feature_size: 32
+      reuse_encoder: true
+      in_epoch_alter: true
+      use_var_predict: true
+      with_prior: true
+      use_transfer: true
+      train_type: "policy"
+      transfer_path: "results/cs-old-varp/CrawlerStatic"
+    network_settings:
+      normalize: true
+      hidden_units: 512
+      num_layers: 3
+      vis_encode_type: simple
+    reward_signals:
+      extrinsic:
+        gamma: 0.995
+        strength: 1.0
+    keep_checkpoints: 5
+    max_steps: 10000000
+    time_horizon: 1000
+    summary_freq: 30000
+    threaded: true
+    transfer: true
