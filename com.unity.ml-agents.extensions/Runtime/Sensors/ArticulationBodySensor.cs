@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         public ArticulationBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
             m_PoseExtractor = new ArticulationBodyPoseExtractor(rootBody);
-            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody.name}" : sensorName;
+            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;
 
             var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);

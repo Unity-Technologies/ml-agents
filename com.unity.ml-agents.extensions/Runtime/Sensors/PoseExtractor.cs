@@ -62,6 +62,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             get { return m_ModelSpacePoses?.Length ?? 0;  }
         }
 
+        public int GetParentIndex(int index)
+        {
+            if (m_ParentIndices == null)
+            {
+                return -1;
+            }
+
+            return m_ParentIndices[index];
+        }
+
         /// <summary>
         /// Initialize with the mapping of parent indices.
         /// The 0th element is assumed to be -1, indicating that it's the root.
