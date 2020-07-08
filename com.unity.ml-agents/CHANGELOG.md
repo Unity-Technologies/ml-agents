@@ -36,6 +36,8 @@ empty string). (#4155)
 - Fixed an error when setting `initialize_from` in the trainer confiiguration YAML to
 `null`. (#4175)
 - Fixed issue with FoodCollector, Soccer, and WallJump when playing with keyboard. (#4147, #4174)
+- Fixed a crash in StatsReporter when using threaded trainers with very frequent summary writes
+(#4201)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes
