@@ -457,9 +457,9 @@ class PPOTransferOptimizer(TFOptimizer):
                 "learning_rate": self.learning_rate,
                 "decay_epsilon": self.decay_epsilon,
                 "decay_beta": self.decay_beta,
-                "reward_loss": self.policy.reward_loss,
             }
         )
+        
 
         self.model_update_dict.update(
             {
@@ -468,9 +468,17 @@ class PPOTransferOptimizer(TFOptimizer):
                 "model_learning_rate": self.model_learning_rate,
                 "decay_epsilon": self.decay_epsilon,
                 "decay_beta": self.decay_beta,
-                "reward_loss": self.policy.reward_loss,
             }
         )
+
+        if self.predict_return:
+            self.ppo_update_dict.update({
+                "reward_loss": self.policy.reward_loss,
+            })
+
+            self.model_update_dict.update({
+                "reward_loss": self.policy.reward_loss,
+            })
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
