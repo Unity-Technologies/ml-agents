@@ -106,14 +106,6 @@ class GlobalTrainingStatus:
         GlobalTrainingStatus.saved_state[category][key.value] = value
 
     @staticmethod
-    def update_parameter_state(new_saved_state: Dict[str, Dict[str, Any]]) -> None:
-        """
-        Updates the saved_state from an updated parameter state.
-        :param new_saved_state: Updated saved_state
-        """
-        GlobalTrainingStatus.saved_state.update(new_saved_state)
-
-    @staticmethod
     def get_parameter_state(category: str, key: StatusType) -> Any:
         """
         Loads an arbitrary-named parameter from training_status.json.
