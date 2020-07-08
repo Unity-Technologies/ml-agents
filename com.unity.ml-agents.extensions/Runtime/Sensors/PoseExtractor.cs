@@ -62,6 +62,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             get { return m_ModelSpacePoses?.Length ?? 0;  }
         }
 
+        /// <summary>
+        /// Get the parent index of the body at the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public int GetParentIndex(int index)
         {
             if (m_ParentIndices == null)
@@ -95,6 +100,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns></returns>
         protected abstract Pose GetPoseAt(int index);
 
+        /// <summary>
+        /// Return the world space linear velocity of the i'th object.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         protected virtual Vector3 GetLinearVelocityAt(int index)
         {
             return Vector3.zero;
@@ -160,7 +170,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
 
-        public void DrawModelSpace(Vector3 offset)
+        internal void DrawModelSpace(Vector3 offset)
         {
             UpdateLocalSpacePoses();
             UpdateModelSpacePoses();
@@ -187,6 +197,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
     }
 
+    /// <summary>
+    /// Extension methods for the Pose struct, in order to improve the readability of some math.
+    /// </summary>
     public static class PoseExtensions
     {
         /// <summary>
@@ -214,6 +227,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             return rhs.GetTransformedBy(pose);
         }
 
+        /// <summary>
+        /// Transform the vector by the pose.
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
         public static Vector3 Multiply(this Pose pose, Vector3 rhs)
         {
             return pose.rotation * rhs + pose.position;

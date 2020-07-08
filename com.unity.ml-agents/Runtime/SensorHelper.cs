@@ -2,11 +2,16 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
 {
+    /// <summary>
+    /// Utility methods related to <see cref="ISensor"/> implementations.
+    /// </summary>
     public static class SensorHelper
     {
         /// <summary>
         /// Generates the observations for the provided sensor, and returns true if they equal the
         /// expected values. If they are unequal, errorMessage is also set.
+        /// This should not generally be used in production code. It is only intended for
+        /// simplifying unit tests.
         /// </summary>
         /// <param name="sensor"></param>
         /// <param name="expected"></param>
@@ -22,7 +27,7 @@ namespace Unity.MLAgents.Sensors
                 output[i] = fill;
             }
 
-            if(numExpected > 0)
+            if (numExpected > 0)
             {
                 if (fill != output[0])
                 {
@@ -35,7 +40,7 @@ namespace Unity.MLAgents.Sensors
             writer.SetTarget(output, sensor.GetObservationShape(), 0);
 
             // Make sure ObservationWriter didn't touch anything
-            if(numExpected > 0)
+            if (numExpected > 0)
             {
                 if (fill != output[0])
                 {

@@ -5,7 +5,9 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-
+    /// <summary>
+    /// Utility class to track a hierarchy of ArticulationBodies.
+    /// </summary>
     public class ArticulationBodyPoseExtractor : PoseExtractor
     {
         ArticulationBody[] m_Bodies;
@@ -55,16 +57,13 @@ namespace Unity.MLAgents.Extensions.Sensors
             SetParentIndices(parentIndices);
         }
 
-        protected ArticulationBody GetBodyAt(int index)
-        {
-            return m_Bodies[index];
-        }
-
+        /// <inheritdoc/>
         protected override Vector3 GetLinearVelocityAt(int index)
         {
-            return GetBodyAt(index).velocity;
+            return m_Bodies[index].velocity;
         }
 
+        /// <inheritdoc/>
         protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];

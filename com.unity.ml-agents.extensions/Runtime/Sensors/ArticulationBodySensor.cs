@@ -4,6 +4,9 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
+    /// <summary>
+    /// ISensor implementation to generate observations for a group of ArticulationBodies.
+    /// </summary>
     public class ArticulationBodySensor : ISensor
     {
         int[] m_Shape;
@@ -12,6 +15,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         PoseExtractor m_PoseExtractor;
         PhysicsSensorSettings m_Settings;
 
+        /// <summary>
+        /// Construct a new ArticulationBodySensor.
+        /// </summary>
+        /// <param name="rootBody"></param>
+        /// <param name="settings"></param>
+        /// <param name="sensorName"></param>
         public ArticulationBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
             m_PoseExtractor = new ArticulationBodyPoseExtractor(rootBody);

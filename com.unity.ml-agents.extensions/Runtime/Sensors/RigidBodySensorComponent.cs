@@ -3,12 +3,25 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
+    /// <summary>
+    /// Editor component that creates a RigidBodySensor for the Agent.
+    /// </summary>
     public class RigidBodySensorComponent  : SensorComponent
     {
+        /// <summary>
+        /// The root Rigidbody of the system.
+        /// </summary>
         public Rigidbody RootBody;
 
+        /// <summary>
+        /// Settings defining what types of observations will be generated.
+        /// </summary>
         [SerializeField]
         public PhysicsSensorSettings Settings = PhysicsSensorSettings.Default();
+
+        /// <summary>
+        /// Optional sensor name. This must be unique for each Agent.
+        /// </summary>
         public string sensorName;
 
         /// <summary>

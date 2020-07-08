@@ -54,21 +54,13 @@ namespace Unity.MLAgents.Extensions.Sensors
             SetParentIndices(parentIndices);
         }
 
-        protected Rigidbody GetBodyAt(int index)
-        {
-            return m_Bodies[index];
-        }
-
+        /// <inheritdoc/>
         protected override Vector3 GetLinearVelocityAt(int index)
         {
-            return GetBodyAt(index).velocity;
+            return m_Bodies[index].velocity;
         }
 
-        /// <summary>
-        /// Get the pose of the i'th RigidBody.
-        /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+/// <inheritdoc/>
         protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];

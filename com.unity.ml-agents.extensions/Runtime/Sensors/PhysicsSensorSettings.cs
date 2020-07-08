@@ -4,6 +4,9 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
+    /// <summary>
+    /// Settings that define the observations generated for physics-based sensors.
+    /// </summary>
     [Serializable]
     public struct PhysicsSensorSettings
     {
