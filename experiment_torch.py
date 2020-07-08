@@ -71,7 +71,7 @@ def main():
     args = parser.parse_args()
 
     if args.gpu:
-        os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     else:
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
