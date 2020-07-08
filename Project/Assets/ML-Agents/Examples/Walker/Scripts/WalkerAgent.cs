@@ -206,7 +206,7 @@ public class WalkerAgent : Agent
         rewardManager.UpdateReward("matchSpeed", matchSpeedReward);
         rewardManager.UpdateReward("lookAtTarget", lookAtTargetReward);
         rewardManager.UpdateReward("headHeightOverFeet", headHeightOverFeetReward);
-        rewardManager.UpdateReward("hurryUp", hurryUpReward); 
+        rewardManager.UpdateReward("hurryUp", hurryUpReward/MaxStep); 
     }
     
 //    void FixedUpdate()

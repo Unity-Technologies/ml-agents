@@ -60,7 +60,7 @@ public class RewardManager : MonoBehaviour
     public void UpdateReward(string key, float rawVal)
     {
         float val = rawVal * rewardsDict[key].rewardScalar;
-        rewardsDict[key].maxRewardThisSession =1/maxSteps;
+        rewardsDict[key].maxRewardThisSession = val * maxSteps;
         rewardsDict[key].rewardThisStep = val;
         rewardsDict[key].cumulativeThisEpisode += val;
         rewardsDict[key].cumulativeThisSession += val;
