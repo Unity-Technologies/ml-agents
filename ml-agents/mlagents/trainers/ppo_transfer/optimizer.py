@@ -142,12 +142,17 @@ class PPOTransferOptimizer(TFOptimizer):
                         "value_loss": self.value_loss,
                         "policy_loss": self.abs_policy_loss,
                         "model_loss": self.model_loss,
-                        "reward_loss": self.policy.reward_loss,
                         "update_batch": self.update_batch,
                         "learning_rate": self.learning_rate,
                         "decay_epsilon": self.decay_epsilon,
                         "decay_beta": self.decay_beta,
                         "model_learning_rate": self.model_learning_rate
+                    }
+                )
+                if self.predict_return:
+                    self.update_dict.update(
+                    {
+                        "reward_loss": self.policy.reward_loss,
                     }
                 )
 
