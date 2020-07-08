@@ -1010,11 +1010,11 @@ class TransferPolicy(TFPolicy):
             )
 
         if var_predict:
-            predict_distribution = GaussianEncoderDistribution(
+            self.predict_distribution = GaussianEncoderDistribution(
                 hidden,
                 self.feature_size
             )
-            self.predict = predict_distribution.sample()
+            self.predict = self.predict_distribution.sample()
         else:
             self.predict = tf.layers.dense(
                 hidden,
