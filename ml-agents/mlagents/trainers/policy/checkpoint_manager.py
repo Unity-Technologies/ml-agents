@@ -1,10 +1,8 @@
 # # Unity ML-Agents Toolkit
-from typing import Union, Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import os
-from enum import Enum
 import attr
-from collections import defaultdict
-from mlagents.trainers.training_status import GlobalTrainingStatus
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 from mlagents_envs.logging_util import get_logger
 
 logger = get_logger(__name__)
@@ -15,37 +13,18 @@ class Checkpoint:
     steps: int
     file_path: str
     reward: Optional[float]
-    creation_time: str
-
-
-class CheckpointType(Enum):
-    CHECKPOINT = "checkpoint"
-    STEPS = "steps"
-    FINAL_PATH = "final_model_path"
-    REWARD = "reward"
-    CREATION_TIME = "creation_time"
+    creation_time: float
 
 
 class CheckpointManager:
-    checkpoints_saved: Dict[str, Dict[str, Any]] = defaultdict(lambda: {})
-
     @staticmethod
-    def save_checkpoints():
-        GlobalTrainingStatus.saved_state.update(CheckpointManager.checkpoints_saved)
-
-    @staticmethod
-    def set_parameter_state(category: str, key: CheckpointType, value: Any) -> None:
-        CheckpointManager.checkpoints_saved[category][key.value] = value
-
-    @staticmethod
-    def append_to_parameter_state(
-        category: str, key: CheckpointType, value: Any
-    ) -> None:
-        CheckpointManager.checkpoints_saved[category][key.value].append(value)
-
-    @staticmethod
-    def get_parameter_state(category: str, key: CheckpointType) -> Any:
-        return CheckpointManager.checkpoints_saved[category].get(key.value, None)
+    def get_checkpoints(behavior_name: str) -> List[Dict[str, Any]]:
+        checkpoint_list = GlobalTrainingStatus.get_parameter_state(
+            behavior_name, StatusType.CHECKPOINTS
+        )
+        if not checkpoint_list:
+            return []
+        return checkpoint_list
 
     @staticmethod
     def remove_checkpoint(checkpoint: Dict[str, Any]) -> None:
@@ -62,8 +41,10 @@ class CheckpointManager:
             logger.info(f"Checkpoint at {file_path} could not be found.")
         return
 
-    @staticmethod
-    def manage_checkpoint_list(category: str, keep_checkpoints: int) -> None:
+    @classmethod
+    def manage_checkpoint_list(
+        cls, behavior_name: str, keep_checkpoints: int
+    ) -> List[Dict[str, Any]]:
         """
         Ensures that the number of checkpoints stored are within the number
         of checkpoints the user defines. If the limit is hit, checkpoints are
@@ -71,26 +52,16 @@ class CheckpointManager:
         :param category: The category (usually behavior name) of the parameter.
         :param keep_checkpoints: Number of checkpoints to record (user-defined).
         """
-        if not CheckpointManager.get_parameter_state(
-            category, CheckpointType.CHECKPOINT
-        ):
-            CheckpointManager.set_parameter_state(
-                category, CheckpointType.CHECKPOINT, []
-            )
-        checkpoint_list = CheckpointManager.get_parameter_state(
-            category, CheckpointType.CHECKPOINT
-        )
-        num_checkpoints = len(checkpoint_list)
-        while num_checkpoints >= keep_checkpoints:
-            if keep_checkpoints <= 0:
+        checkpoints = cls.get_checkpoints(behavior_name)
+        while len(checkpoints) >= keep_checkpoints:
+            if (keep_checkpoints <= 0) or (len(checkpoints) == 0):
                 break
-            CheckpointManager.remove_checkpoint(checkpoint_list.pop(0))
-            num_checkpoints = len(checkpoint_list)
-        return
+            CheckpointManager.remove_checkpoint(checkpoints.pop(0))
+        return checkpoints
 
-    @staticmethod
+    @classmethod
     def track_checkpoint_info(
-        category: str, value: Dict[str, Union[int, str]], keep_checkpoints: int
+        cls, behavior_name: str, new_checkpoint: Checkpoint, keep_checkpoints: int
     ) -> None:
         """
         Make room for new checkpoint if needed and insert new checkpoint information.
@@ -98,19 +69,13 @@ class CheckpointManager:
         :param value: The new checkpoint to be recorded.
         :param keep_checkpoints: Number of checkpoints to record (user-defined).
         """
-        CheckpointManager.manage_checkpoint_list(category, keep_checkpoints)
-        CheckpointManager.append_to_parameter_state(
-            category, CheckpointType.CHECKPOINT, value
-        )
-        return
+        checkpoints = cls.manage_checkpoint_list(behavior_name, keep_checkpoints)
+        new_checkpoint_dict = attr.asdict(new_checkpoint)
+        checkpoints.append(new_checkpoint_dict)
 
-    @staticmethod
+    @classmethod
     def track_final_model_info(
-        category: str,
-        final_model_path: str,
-        keep_checkpoints: int,
-        mean_reward: Optional[float],
-        creation_time: str,
+        cls, behavior_name: str, final_model: Checkpoint, keep_checkpoints: int
     ) -> None:
         """
         Ensures number of checkpoints stored is within the max number of checkpoints
@@ -120,14 +85,8 @@ class CheckpointManager:
         :param final_model_path: The file path of the final model.
         :param keep_checkpoints: Number of checkpoints to record (user-defined).
         """
-        CheckpointManager.manage_checkpoint_list(category, keep_checkpoints)
-        CheckpointManager.set_parameter_state(
-            category, CheckpointType.FINAL_PATH, final_model_path
+        CheckpointManager.manage_checkpoint_list(behavior_name, keep_checkpoints)
+        final_model_dict = attr.asdict(final_model)
+        GlobalTrainingStatus.set_parameter_state(
+            behavior_name, StatusType.FINAL_MODEL, final_model_dict
         )
-        CheckpointManager.set_parameter_state(
-            category, CheckpointType.REWARD, mean_reward
-        )
-        CheckpointManager.set_parameter_state(
-            category, CheckpointType.CREATION_TIME, creation_time
-        )
-        GlobalTrainingStatus.update_parameter_state(CheckpointManager.checkpoints_saved)

@@ -34,7 +34,6 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
-from mlagents.trainers.policy.checkpoint_manager import CheckpointManager
 
 logger = logging_util.get_logger(__name__)
 
@@ -88,9 +87,6 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         if checkpoint_settings.resume:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
-            )
-            CheckpointManager.checkpoints_saved = (
-                GlobalTrainingStatus.saved_state.copy()
             )
 
         # Configure CSV, Tensorboard Writers and StatsReporter

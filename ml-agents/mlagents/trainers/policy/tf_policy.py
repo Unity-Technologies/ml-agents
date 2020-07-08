@@ -5,7 +5,6 @@ import numpy as np
 import time
 from distutils.version import LooseVersion
 
-import attr
 from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
@@ -423,25 +422,25 @@ class TFPolicy(Policy):
             int(current_step),
             os.path.join(self.model_path, f"{settings.checkpoint_path}.nn"),
             model_reward,
-            time.strftime("%Y-%m-%d %H:%M:%S"),
+            time.time(),
         )
         # Record checkpoint information
         CheckpointManager.track_checkpoint_info(
-            brain_name, attr.asdict(new_checkpoint), self.keep_checkpoints
+            brain_name, new_checkpoint, self.keep_checkpoints
         )
 
     def save(self, model_reward: Optional[float] = None) -> None:
         """
         Saves the model
         """
+        current_step = self.get_current_step()
         brain_name = self.behavior_id.brain_name
         settings = SerializationSettings(self.model_path, brain_name)
+        final_model = Checkpoint(
+            int(current_step), f"{settings.model_path}.nn", model_reward, time.time()
+        )
         CheckpointManager.track_final_model_info(
-            brain_name,
-            f"{settings.model_path}.nn",
-            self.keep_checkpoints,
-            model_reward,
-            time.strftime("%Y-%m-%d %H:%M:%S"),
+            brain_name, final_model, self.keep_checkpoints
         )
         export_policy_model(settings, self.graph, self.sess)
 

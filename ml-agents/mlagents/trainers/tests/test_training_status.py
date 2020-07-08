@@ -2,16 +2,13 @@ import os
 import unittest
 import json
 from enum import Enum
-from time import strftime
+import time
 from mlagents.trainers.training_status import (
     StatusType,
     StatusMetaData,
     GlobalTrainingStatus,
 )
-from mlagents.trainers.policy.checkpoint_manager import (
-    CheckpointManager,
-    CheckpointType,
-)
+from mlagents.trainers.policy.checkpoint_manager import CheckpointManager, Checkpoint
 
 
 def test_globaltrainingstatus(tmpdir):
@@ -59,88 +56,51 @@ def test_model_management(tmpdir):
             "steps": 1,
             "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn"),
             "reward": 1.312,
-            "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
+            "creation_time": time.time(),
         },
         {
             "steps": 2,
             "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn"),
             "reward": 1.912,
-            "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
+            "creation_time": time.time(),
         },
         {
             "steps": 3,
             "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn"),
             "reward": 2.312,
-            "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
+            "creation_time": time.time(),
         },
     ]
-    CheckpointManager.set_parameter_state(
-        brain_name, CheckpointType.CHECKPOINT, test_checkpoint_list
+    GlobalTrainingStatus.set_parameter_state(
+        brain_name, StatusType.CHECKPOINTS, test_checkpoint_list
     )
 
-    new_checkpoint_4 = {
-        "steps": 4,
-        "file_path": os.path.join(final_model_path, f"{brain_name}-4.nn"),
-        "rewards": 2.678,
-        "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
-    }
+    new_checkpoint_4 = Checkpoint(
+        4, os.path.join(final_model_path, f"{brain_name}-4.nn"), 2.678, time.time()
+    )
     CheckpointManager.track_checkpoint_info(brain_name, new_checkpoint_4, 4)
-    assert (
-        len(
-            CheckpointManager.checkpoints_saved[brain_name][
-                CheckpointType.CHECKPOINT.value
-            ]
-        )
-        == 4
-    )
+    assert len(CheckpointManager.get_checkpoints(brain_name)) == 4
 
-    new_checkpoint_5 = {
-        "steps": 5,
-        "file_path": os.path.join(final_model_path, f"{brain_name}-5.nn"),
-        "rewards": 3.122,
-        "creation_time": strftime("%Y-%m-%d %H:%M:%S"),
-    }
-    CheckpointManager.track_checkpoint_info(brain_name, new_checkpoint_5, 4)
-    assert (
-        len(
-            CheckpointManager.checkpoints_saved[brain_name][
-                CheckpointType.CHECKPOINT.value
-            ]
-        )
-        == 4
+    new_checkpoint_5 = Checkpoint(
+        5, os.path.join(final_model_path, f"{brain_name}-5.nn"), 3.122, time.time()
     )
+    CheckpointManager.track_checkpoint_info(brain_name, new_checkpoint_5, 4)
+    assert len(CheckpointManager.get_checkpoints(brain_name)) == 4
 
     final_model_path = f"{final_model_path}.nn"
-    final_model_time = strftime("%Y-%m-%d %H:%M:%S")
-    CheckpointManager.track_final_model_info(
-        brain_name, final_model_path, 4, 3.294, final_model_time
-    )
-    assert (
-        len(
-            CheckpointManager.checkpoints_saved[brain_name][
-                CheckpointType.CHECKPOINT.value
-            ]
-        )
-        == 3
-    )
+    final_model_time = time.time()
+    current_step = 6
+    final_model = Checkpoint(current_step, final_model_path, 3.294, final_model_time)
 
-    # Check GlobalTrainingStatus has updated keys
-    CheckpointManager.save_checkpoints()
-    assert (
-        len(
-            GlobalTrainingStatus.saved_state[brain_name][
-                CheckpointType.CHECKPOINT.value
-            ]
-        )
-        == 3
-    )
+    CheckpointManager.track_final_model_info(brain_name, final_model, 4)
+    assert len(CheckpointManager.get_checkpoints(brain_name)) == 3
 
     check_checkpoints = GlobalTrainingStatus.saved_state[brain_name][
-        CheckpointType.CHECKPOINT.value
+        StatusType.CHECKPOINTS.value
     ]
     assert check_checkpoints is not None
 
-    final_model = GlobalTrainingStatus.saved_state[CheckpointType.FINAL_PATH.value]
+    final_model = GlobalTrainingStatus.saved_state[StatusType.FINAL_MODEL.value]
     assert final_model is not None
 
 

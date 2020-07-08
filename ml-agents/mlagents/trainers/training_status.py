@@ -18,6 +18,8 @@ STATUS_FORMAT_VERSION = "0.1.0"
 class StatusType(Enum):
     LESSON_NUM = "lesson_num"
     STATS_METADATA = "metadata"
+    CHECKPOINTS = "checkpoints"
+    FINAL_MODEL = "final_model"
 
 
 @attr.s(auto_attribs=True)
