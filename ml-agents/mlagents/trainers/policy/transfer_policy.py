@@ -208,7 +208,11 @@ class TransferPolicy(TFPolicy):
 
             with tf.variable_scope("predict"):
                 self.create_forward_model(self.encoder, self.targ_encoder, forward_layers,
-                predict_reward=predict_return, var_predict=var_predict)
+                    var_predict=var_predict)
+            
+            if predict_return:
+                with tf.variable_scope("reward"):
+                    self.create_reward_model(self.encoder, self.targ_encoder, forward_layers)
 
             # if var_predict:
             #     self.predict_distribution, self.predict = self._create_var_world_model(
@@ -444,8 +448,8 @@ class TransferPolicy(TFPolicy):
                     feature_size,
                     name="latent",
                     reuse=reuse_encoder,
-                    # activation=ModelUtils.swish,
-                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                    activation=ModelUtils.swish,
+                    kernel_initializer=tf.initializers.variance_scaling(1.0),
                 )
         return latent_targ
         # return tf.stop_gradient(latent_targ)
@@ -480,8 +484,8 @@ class TransferPolicy(TFPolicy):
                     hidden_stream,
                     feature_size,
                     name="latent",
-                    # activation=ModelUtils.swish,
-                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                    activation=ModelUtils.swish,
+                    kernel_initializer=tf.initializers.variance_scaling(1.0),
                 )
         return latent
     
@@ -987,7 +991,7 @@ class TransferPolicy(TFPolicy):
 
     def create_forward_model(
         self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, forward_layers: int,
-        predict_reward: bool=False, var_predict: bool=False
+        var_predict: bool=False
     ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
@@ -1005,8 +1009,8 @@ class TransferPolicy(TFPolicy):
                 self.h_size
                 * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                # activation=ModelUtils.swish,
-                # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                activation=ModelUtils.swish,
+                kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
         if var_predict:
@@ -1020,8 +1024,8 @@ class TransferPolicy(TFPolicy):
                 hidden,
                 self.feature_size,
                 name="latent",
-                # activation=ModelUtils.swish,
-                # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                activation=ModelUtils.swish,
+                kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
         squared_difference = 0.5 * tf.reduce_sum(
@@ -1031,17 +1035,30 @@ class TransferPolicy(TFPolicy):
         self.forward_loss = tf.reduce_mean(
             tf.dynamic_partition(squared_difference, self.mask, 2)[1]
         )
-
-        if predict_reward:
-            self.pred_reward = tf.layers.dense(
+    
+    def create_reward_model(self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, forward_layers: int):
+        
+        combined_input = tf.concat(
+            [encoded_state, self.current_action], axis=1
+        )
+        
+        hidden = combined_input
+        for i in range(forward_layers):
+            hidden = tf.layers.dense(
                 hidden,
-                1,
-                name="reward",
+                self.h_size
+                * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+                name="hidden_{}".format(i),
                 activation=ModelUtils.swish,
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
-            self.forward_loss += tf.reduce_mean(
-                tf.dynamic_partition(
-                    0.5 * tf.reduce_sum(tf.squared_difference(self.pred_reward, self.current_reward), axis=1)   
-                , self.mask, 2)[1]
-            )
+        self.pred_reward = tf.layers.dense(
+            hidden,
+            1,
+            name="reward",
+            activation=ModelUtils.swish,
+            kernel_initializer=tf.initializers.variance_scaling(1.0),
+        )
+        self.reward_loss = tf.reduce_mean(
+            tf.squared_difference(self.pred_reward, self.current_reward)
+        )
