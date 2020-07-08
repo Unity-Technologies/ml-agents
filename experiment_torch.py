@@ -22,7 +22,7 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
         tf.device("/GPU:0")
     else:
         tf.device("/device:CPU:0")
-    if (not torch.cuda.is_available() and use_gpu and use_torch):
+    if (not torch.cuda.is_available() and use_gpu):
         return name, str(steps), str(use_torch), str(num_torch_threads), str(num_envs), str(use_gpu), "na","na","na","na","na","na","na"
     if config_name is None:
         config_name = name
@@ -64,35 +64,41 @@ def run_experiment(name:str, steps:int, use_torch:bool, num_torch_threads:int, u
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--steps", default=25000, type=int, help="The number of steps")
-    parser.add_argument("--num-envs", default=1, type=int, help="The number of envs")  
+    parser.add_argument("--num-envs", default=1, type=int, help="The number of envs")
+    parser.add_argument("--gpu", default = False, action="store_true", help="If true, will use the GPU")
+    parser.add_argument("--threads", default=False, action="store_true", help="If true, will try both 1 and 8 threads for torch")
+    parser.add_argument("--ball", default=False, action="store_true", help="If true, will only do 3dball")
     args = parser.parse_args()
 
-    envs_config_tuples = [("3DBall", "3DBall")]#, ("GridWorld", "GridWorld"), ("PushBlock", "PushBlock"), ("Hallway", "Hallway"), ("CrawlerStaticTarget", "CrawlerStatic"), ("VisualHallway", "Hallway")]
-    
+    if args.gpu:
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
+    else:
+        os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+    envs_config_tuples = [("3DBall", "3DBall"), ("GridWorld", "GridWorld"), ("PushBlock", "PushBlock"), ("Hallway", "Hallway"), ("CrawlerStaticTarget", "CrawlerStatic"), ("VisualHallway", "VisualHallway")]
+    if args.ball:
+        envs_config_tuples=[("3DBall", "3DBall")]
 
 
     labels = ("name", "steps", "use_torch", "num_torch_threads", "num_envs", "use_gpu" , "total", "tc_advance_total", "tc_advance_count", "update_total", "update_count", "evaluate_total", "evaluate_count")
     
     results = []
     results.append(labels)
-    f = open(f"result_data_steps_{args.steps}_envs_{args.num_envs}.txt", "w")
-    f.write(" ".join(labels))
+    f = open(f"result_data_steps_{args.steps}_envs_{args.num_envs}_gpu_{args.gpu}_thread_{args.threads}.txt", "w")
+    f.write(" ".join(labels)+ "\n")
     
     for env_config in envs_config_tuples:
-        data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=1, use_gpu=False, num_envs = args.num_envs, config_name=env_config[1])
+        data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=1, use_gpu=args.gpu, num_envs = args.num_envs, config_name=env_config[1])
         results.append(data)
         f.write(" ".join(data) + "\n")
 
-        data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=8, use_gpu=False, num_envs = args.num_envs, config_name=env_config[1])
-        results.append(data)
-        f.write(" ".join(data)+ "\n")
+        if args.threads:
+            data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=8, use_gpu=args.gpu, num_envs = args.num_envs, config_name=env_config[1])
+            results.append(data)
+            f.write(" ".join(data)+ "\n")
 
 
-        data = run_experiment(name = env_config[0], steps=args.steps, use_torch=True, num_torch_threads=1, use_gpu=True, num_envs = args.num_envs, config_name=env_config[1])
-        results.append(data)
-        f.write(" ".join(data)+ "\n")
-
-        data = run_experiment(name = env_config[0], steps=args.steps, use_torch=False, num_torch_threads=1, use_gpu=False, num_envs = args.num_envs, config_name=env_config[1])
+        data = run_experiment(name = env_config[0], steps=args.steps, use_torch=False, num_torch_threads=1, use_gpu=args.gpu, num_envs = args.num_envs, config_name=env_config[1])
         results.append(data)
         f.write(" ".join(data)+ "\n")
     for r in results:
