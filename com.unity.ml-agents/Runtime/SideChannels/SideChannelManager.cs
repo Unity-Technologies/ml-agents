@@ -9,7 +9,7 @@ namespace Unity.MLAgents.SideChannels
     /// Collection of static utilities for managing the registering/unregistering of
     /// <see cref="SideChannels"/> and the sending/receiving of messages for all the channels.
     /// </summary>
-    public static class SideChannelsManager
+    public static class SideChannelManager
     {
         static Dictionary<Guid, SideChannel> s_RegisteredChannels = new Dictionary<Guid, SideChannel>();
 
@@ -90,13 +90,13 @@ namespace Unity.MLAgents.SideChannels
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        internal static T GetSideChannel<T>() where T: SideChannel
+        internal static T GetSideChannel<T>() where T : SideChannel
         {
             foreach (var sc in s_RegisteredChannels.Values)
             {
                 if (sc.GetType() == typeof(T))
                 {
-                    return (T) sc;
+                    return (T)sc;
                 }
             }
             return null;
@@ -213,6 +213,31 @@ namespace Unity.MLAgents.SideChannels
                     }
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Deprecated, use <see cref="SideChannelManager"/> instead.
+    /// </summary>
+    [Obsolete("Use SideChannelManager instead.")]
+    public static class SideChannelsManager
+    {
+        /// <summary>
+        /// Deprecated, use <see cref="SideChannelManager.RegisterSideChannel"/> instead.
+        /// </summary>
+        /// <param name="sideChannel"></param>
+        public static void RegisterSideChannel(SideChannel sideChannel)
+        {
+            SideChannelManager.RegisterSideChannel(sideChannel);
+        }
+
+        /// <summary>
+        /// Deprecated, use <see cref="SideChannelManager.UnregisterSideChannel"/> instead.
+        /// </summary>
+        /// <param name="sideChannel"></param>
+        public static void UnregisterSideChannel(SideChannel sideChannel)
+        {
+            SideChannelManager.UnregisterSideChannel(sideChannel);
         }
     }
 }

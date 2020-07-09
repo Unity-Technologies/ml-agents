@@ -30,7 +30,7 @@ class GAILRewardSignal(RewardSignal):
             settings.use_vail,
         )
         _, self.demonstration_buffer = demo_to_buffer(
-            settings.demo_path, policy.sequence_length, policy.brain
+            settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
         self.has_updated = False
         self.update_dict: Dict[str, tf.Tensor] = {

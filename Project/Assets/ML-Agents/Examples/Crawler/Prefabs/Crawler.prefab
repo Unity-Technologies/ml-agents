@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 4845971000000621466}
   m_Layer: 0
   m_Name: foreleg0
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -423,7 +423,7 @@ GameObject:
   - component: {fileID: 4845971000245862062}
   m_Layer: 0
   m_Name: foreleg3
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -677,7 +677,7 @@ GameObject:
   - component: {fileID: 4845971000281612788}
   m_Layer: 0
   m_Name: foreleg2
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -932,7 +932,7 @@ GameObject:
   - component: {fileID: 4845971000566026491}
   m_Layer: 0
   m_Name: leg2
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1434,7 +1434,7 @@ GameObject:
   - component: {fileID: 4845971000943818052}
   m_Layer: 0
   m_Name: leg3
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1999,7 +1999,7 @@ GameObject:
   - component: {fileID: 4845971001325249075}
   m_Layer: 0
   m_Name: leg1
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2177,7 +2177,7 @@ GameObject:
   - component: {fileID: 4845971001327158052}
   m_Layer: 0
   m_Name: leg0
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2356,7 +2356,7 @@ GameObject:
   - component: {fileID: 4845971001588102144}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2489,7 +2489,7 @@ GameObject:
   - component: {fileID: 4845971001622533709}
   m_Layer: 0
   m_Name: foreleg1
-  m_TagString: Untagged
+  m_TagString: agent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2784,10 +2784,10 @@ MonoBehaviour:
     VectorActionSize: 14000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 9049db2514a454914be8f5e5d3508ffe, type: 3}
+  m_Model: {fileID: 11400000, guid: c6509001ba679447fba27f894761c3ba, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: CrawlerDynamic
+  m_BehaviorName: CrawlerStatic
   TeamId: 0
   m_UseChildSensors: 1
   m_ObservableAttributeHandling: 0
@@ -2809,10 +2809,6 @@ MonoBehaviour:
   MaxStep: 5000
   maximumWalkingSpeed: 999
   target: {fileID: 0}
-  targetSpawnRadius: 40
-  detectTargets: 1
-  respawnTargetWhenTouched: 1
-  ground: {fileID: 0}
   body: {fileID: 4845971001588102148}
   leg0Upper: {fileID: 4845971001327157979}
   leg0Lower: {fileID: 4845971000000621467}
@@ -2822,17 +2818,17 @@ MonoBehaviour:
   leg2Lower: {fileID: 4845971000281612789}
   leg3Upper: {fileID: 4845971000943818107}
   leg3Lower: {fileID: 4845971000245862063}
-  orientationCube: {fileID: 2270141184585723037}
+  orientationCube: {fileID: 4462656217269709630}
   rewardMovingTowardsTarget: 1
   rewardFacingTarget: 1
   rewardUseTimePenalty: 0
   useFootGroundedVisualization: 0
-  foot0: {fileID: 0}
-  foot1: {fileID: 0}
-  foot2: {fileID: 0}
-  foot3: {fileID: 0}
-  groundedMaterial: {fileID: 0}
-  unGroundedMaterial: {fileID: 0}
+  foot0: {fileID: 4845971001702882992}
+  foot1: {fileID: 4845970999844939483}
+  foot2: {fileID: 4845970999929964134}
+  foot3: {fileID: 4845971001308907666}
+  groundedMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
+  unGroundedMaterial: {fileID: 2100000, guid: eaad04b0e0dec42229c9cb00a981d7ac, type: 2}
 --- !u!114 &4845971001715176662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2960,11 +2956,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4845971001715176651}
     m_Modifications:
-    - target: {fileID: 2591864625898824423, guid: 72f745913c5a34df5aaadd5c1f0024cb,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2591864627249999504, guid: 72f745913c5a34df5aaadd5c1f0024cb,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3027,18 +3018,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72f745913c5a34df5aaadd5c1f0024cb, type: 3}
---- !u!1 &2270141184585723037 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2591864627249999519, guid: 72f745913c5a34df5aaadd5c1f0024cb,
-    type: 3}
-  m_PrefabInstance: {fileID: 4357529801223143938}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2270141184585723026 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2591864627249999504, guid: 72f745913c5a34df5aaadd5c1f0024cb,
     type: 3}
   m_PrefabInstance: {fileID: 4357529801223143938}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4462656217269709630 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114705911240010044, guid: 72f745913c5a34df5aaadd5c1f0024cb,
+    type: 3}
+  m_PrefabInstance: {fileID: 4357529801223143938}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 771e78c5e980e440e8cd19716b55075f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &8385811723256971493
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3069,7 +3066,7 @@ PrefabInstance:
     - target: {fileID: 6084207059270429360, guid: e568400ebedb3474fac505995f12ed4a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.5078
+      value: -1.996
       objectReference: {fileID: 0}
     - target: {fileID: 6084207059270429360, guid: e568400ebedb3474fac505995f12ed4a,
         type: 3}

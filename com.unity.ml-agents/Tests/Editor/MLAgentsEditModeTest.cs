@@ -215,9 +215,9 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, aca.EpisodeCount);
             Assert.AreEqual(0, aca.StepCount);
             Assert.AreEqual(0, aca.TotalStepCount);
-            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>());
-            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<EngineConfigurationChannel>());
-            Assert.AreNotEqual(null, SideChannelsManager.GetSideChannel<StatsSideChannel>());
+            Assert.AreNotEqual(null, SideChannelManager.GetSideChannel<EnvironmentParametersChannel>());
+            Assert.AreNotEqual(null, SideChannelManager.GetSideChannel<EngineConfigurationChannel>());
+            Assert.AreNotEqual(null, SideChannelManager.GetSideChannel<StatsSideChannel>());
 
             // Check that Dispose is idempotent
             aca.Dispose();
@@ -228,15 +228,15 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestAcademyDispose()
         {
-            var envParams1 = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
-            var engineParams1 = SideChannelsManager.GetSideChannel<EngineConfigurationChannel>();
-            var statsParams1 = SideChannelsManager.GetSideChannel<StatsSideChannel>();
+            var envParams1 = SideChannelManager.GetSideChannel<EnvironmentParametersChannel>();
+            var engineParams1 = SideChannelManager.GetSideChannel<EngineConfigurationChannel>();
+            var statsParams1 = SideChannelManager.GetSideChannel<StatsSideChannel>();
             Academy.Instance.Dispose();
 
             Academy.Instance.LazyInitialize();
-            var envParams2 = SideChannelsManager.GetSideChannel<EnvironmentParametersChannel>();
-            var engineParams2 = SideChannelsManager.GetSideChannel<EngineConfigurationChannel>();
-            var statsParams2 = SideChannelsManager.GetSideChannel<StatsSideChannel>();
+            var envParams2 = SideChannelManager.GetSideChannel<EnvironmentParametersChannel>();
+            var engineParams2 = SideChannelManager.GetSideChannel<EngineConfigurationChannel>();
+            var statsParams2 = SideChannelManager.GetSideChannel<StatsSideChannel>();
             Academy.Instance.Dispose();
 
             Assert.AreNotEqual(envParams1, envParams2);

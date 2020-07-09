@@ -44,8 +44,8 @@ def test_policy_conversion(tmpdir, rnn, visual, discrete):
         use_discrete=discrete,
         use_visual=visual,
     )
-    settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
-    checkpoint_path = f"{tmpdir}/{policy.brain.brain_name}-1"
+    settings = SerializationSettings(policy.model_path, "MockBrain")
+    checkpoint_path = f"{tmpdir}/MockBrain-1"
     policy.checkpoint(checkpoint_path, settings)
 
     # These checks taken from test_barracuda_converter

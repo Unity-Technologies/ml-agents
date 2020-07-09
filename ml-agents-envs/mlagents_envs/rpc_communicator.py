@@ -96,7 +96,7 @@ class RpcCommunicator(Communicator):
             raise UnityTimeOutException(
                 "The Unity environment took too long to respond. Make sure that :\n"
                 "\t The environment does not need user interaction to launch\n"
-                "\t The Agents are linked to the appropriate Brains\n"
+                '\t The Agents\' Behavior Parameters > Behavior Type is set to "Default"\n'
                 "\t The environment and the Python interface have compatible versions."
             )
 

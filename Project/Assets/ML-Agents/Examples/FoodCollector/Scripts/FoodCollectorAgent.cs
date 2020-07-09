@@ -46,8 +46,8 @@ public class FoodCollectorAgent : Agent
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             sensor.AddObservation(localVelocity.x);
             sensor.AddObservation(localVelocity.z);
-            sensor.AddObservation(System.Convert.ToInt32(m_Frozen));
-            sensor.AddObservation(System.Convert.ToInt32(m_Shoot));
+            sensor.AddObservation(m_Frozen);
+            sensor.AddObservation(m_Shoot);
         }
     }
 
@@ -209,6 +209,9 @@ public class FoodCollectorAgent : Agent
 
     public override void Heuristic(float[] actionsOut)
     {
+        actionsOut[0] = 0f;
+        actionsOut[1] = 0f;
+        actionsOut[2] = 0f;
         if (Input.GetKey(KeyCode.D))
         {
             actionsOut[2] = 2f;

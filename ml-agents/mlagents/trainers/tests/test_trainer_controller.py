@@ -3,6 +3,7 @@ import pytest
 
 from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.ghost.controller import GhostController
 
 
@@ -14,7 +15,7 @@ def basic_trainer_controller():
         trainer_factory=trainer_factory_mock,
         output_path="test_model_path",
         run_id="test_run_id",
-        meta_curriculum=None,
+        param_manager=EnvironmentParameterManager(),
         train=True,
         training_seed=99,
     )
@@ -30,7 +31,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         trainer_factory=trainer_factory_mock,
         output_path="",
         run_id="1",
-        meta_curriculum=None,
+        param_manager=None,
         train=True,
         training_seed=seed,
     )
@@ -82,7 +83,7 @@ def test_start_learning_trains_forever_if_no_train_model(
     env_mock = MagicMock()
     env_mock.close = MagicMock()
     env_mock.reset = MagicMock()
-    env_mock.external_brains = MagicMock()
+    env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
     tf_reset_graph.assert_called_once()
@@ -102,7 +103,7 @@ def test_start_learning_trains_until_max_steps_then_saves(
     env_mock = MagicMock()
     env_mock.close = MagicMock()
     env_mock.reset = MagicMock(return_value=brain_info_mock)
-    env_mock.external_brains = MagicMock()
+    env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
     tf_reset_graph.assert_called_once()
