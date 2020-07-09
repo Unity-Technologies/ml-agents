@@ -13,6 +13,7 @@ from mlagents.trainers.settings import (
     RewardSignalType,
     RewardSignalSettings,
     CuriositySettings,
+    EnvironmentSettings,
     EnvironmentParameterSettings,
     ConstantSettings,
     UniformSettings,
@@ -452,3 +453,18 @@ def test_exportable_settings(use_defaults):
     check_dict_is_at_least(second_export, dict_export)
     # Check that the two exports are the same
     assert dict_export == second_export
+
+
+def test_environment_settings():
+    # default args
+    EnvironmentSettings()
+
+    # 1 env is OK if no env_path
+    EnvironmentSettings(num_envs=1)
+
+    # multiple envs is OK if env_path is set
+    EnvironmentSettings(num_envs=42, env_path="/foo/bar.exe")
+
+    # Multiple environments with no env_path is an error
+    with pytest.raises(ValueError):
+        EnvironmentSettings(num_envs=2)
