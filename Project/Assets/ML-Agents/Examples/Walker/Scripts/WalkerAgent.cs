@@ -1,9 +1,11 @@
+using System;
 using MLAgentsExamples;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 using BodyPart = Unity.MLAgentsExamples.BodyPart;
+using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
@@ -87,7 +89,7 @@ public class WalkerAgent : Agent
 
         rewardManager.ResetEpisodeRewards();
         
-        walkingSpeed = Random.Range(0.0f, 10.0f); //Random Walk Speed
+        walkingSpeed = Random.Range(0.0f, 15f); //Random Walk Speed
 
         SetResetParameters();
     }
@@ -215,8 +217,11 @@ public class WalkerAgent : Agent
         bpVelPenaltyThisStep = 0;
         foreach (var item in m_JdController.bodyPartsList)
         {
-            bpVelPenaltyThisStep += item.rb.velocity.magnitude;
+            var velDelta = Mathf.Clamp(item.rb.velocity.magnitude - walkingSpeed, 0, 1);
+            bpVelPenaltyThisStep += velDelta;
         }
+        rewardManager.UpdateReward("bpVel", bpVelPenaltyThisStep);
+        
     }
     
 //    void FixedUpdate()

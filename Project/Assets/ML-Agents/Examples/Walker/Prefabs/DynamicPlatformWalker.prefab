@@ -542,28 +542,35 @@ MonoBehaviour:
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
-    maxRewardThisSession: 0
+    lastNaNStep: 0
   - rewardKey: lookAtTarget
     rawVal: 0
     rewardScalar: 0.01
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
-    maxRewardThisSession: 0
+    lastNaNStep: 0
   - rewardKey: headHeightOverFeet
     rawVal: 0
     rewardScalar: 0.001
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
-    maxRewardThisSession: 0
+    lastNaNStep: 0
   - rewardKey: hurryUp
     rawVal: 0
     rewardScalar: 0
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
-    maxRewardThisSession: 0
+    lastNaNStep: 0
+  - rewardKey: bpVel
+    rawVal: 0
+    rewardScalar: -0.001
+    rewardThisStep: 0
+    cumulativeThisEpisode: 0
+    cumulativeThisSession: 0
+    lastNaNStep: 0
   maxSteps: 0
 --- !u!1001 &6359877978260855390
 PrefabInstance:
@@ -585,7 +592,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 64eac2876e94e44d2b7905bd6e361343,
+      objectReference: {fileID: 11400000, guid: 9cdb96bd3846b477cbf9c5ad7ac2d87e,
         type: 3}
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
