@@ -11,6 +11,7 @@ public class RewardManager : MonoBehaviour
     {
         public string rewardKey;
 //        [Range(.01f, .05f)]
+        public float rawVal;
         public float rewardScalar = .01f;
 //        public float rewardScalar;
         public float rewardThisStep;
@@ -59,12 +60,13 @@ public class RewardManager : MonoBehaviour
     //Add new rewards
     public void UpdateReward(string key, float rawVal)
     {
-        float val = rawVal * rewardsDict[key].rewardScalar;
-        rewardsDict[key].maxRewardThisSession = val * maxSteps;
-        rewardsDict[key].rewardThisStep = val;
-        rewardsDict[key].cumulativeThisEpisode += val;
-        rewardsDict[key].cumulativeThisSession += val;
-        m_thisAgent.AddReward(val);
+        rewardsDict[key].rawVal = rawVal;
+        float scaledVal = rawVal * rewardsDict[key].rewardScalar;
+        rewardsDict[key].maxRewardThisSession = scaledVal * maxSteps;
+        rewardsDict[key].rewardThisStep = scaledVal;
+        rewardsDict[key].cumulativeThisEpisode += scaledVal;
+        rewardsDict[key].cumulativeThisSession += scaledVal;
+        m_thisAgent.AddReward(scaledVal);
     }
 
 //    //Add new rewards

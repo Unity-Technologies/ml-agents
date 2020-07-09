@@ -188,15 +188,18 @@ public class WalkerAgent : Agent
         // a. Match target speed
         //This reward will approach 1 if it matches and approach zero as it deviates
         matchSpeedReward =
-            Mathf.Exp(-0.1f * (orientationCube.transform.forward * walkingSpeed -
+            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
                                m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
 //        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
 //            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
         lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
+//        lookAtTargetReward =
+//            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+//                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
         // c. Encourage head height.
         headHeightOverFeetReward =
-            ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10); //Should normalize to ~1
+            (((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
 //        AddReward(
 //            +0.02f * moveTowardsTargetReward
 //            + 0.01f * lookAtTargetReward

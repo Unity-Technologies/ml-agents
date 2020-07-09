@@ -537,25 +537,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rewardsList:
   - rewardKey: matchSpeed
-    rewardScalar: 0.01
+    rawVal: 0
+    rewardScalar: 0.03
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
     maxRewardThisSession: 0
   - rewardKey: lookAtTarget
+    rawVal: 0
     rewardScalar: 0.01
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
     maxRewardThisSession: 0
   - rewardKey: headHeightOverFeet
-    rewardScalar: 0.005
+    rawVal: 0
+    rewardScalar: 0
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
     maxRewardThisSession: 0
   - rewardKey: hurryUp
-    rewardScalar: 1
+    rawVal: 0
+    rewardScalar: 0
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
@@ -581,7 +585,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: e785133c5b0ac461588106642550d1b3,
+      objectReference: {fileID: 11400000, guid: f2958ea7e93ca450096779f1293af0bf,
         type: 3}
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
