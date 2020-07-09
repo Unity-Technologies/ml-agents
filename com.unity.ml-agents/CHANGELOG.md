@@ -13,8 +13,6 @@ and this project adheres to
 ### Minor Changes
 
 ### Bug Fixes
-`mlagents-learn` will now raise an error immediately if `--num-envs` is greater than 1 without setting the `--env`
-argument. (#4203)
 
 ## [1.2.0-preview] - 2020-07-15
 
@@ -47,6 +45,8 @@ empty string). (#4155)
 - Fixed issue with FoodCollector, Soccer, and WallJump when playing with keyboard. (#4147, #4174)
 - Fixed a crash in StatsReporter when using threaded trainers with very frequent summary writes
 (#4201)
+- `mlagents-learn` will now raise an error immediately if `--num-envs` is greater than 1 without setting the `--env`
+argument. (#4203)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes

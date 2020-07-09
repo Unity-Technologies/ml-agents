@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Barracuda;
 using System.IO;
+using Unity.Barracuda.ONNX;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 #if UNITY_EDITOR
@@ -113,9 +114,7 @@ namespace Unity.MLAgentsExamples
                 {
                     m_OverrideExtension = args[i + 1].Trim().ToLower();
                     var isKnownExtension = k_SupportedExtensions.Contains(m_OverrideExtension);
-                    // Not supported yet - need to update the model loading code to support
-                    var isOnnx = m_OverrideExtension.Equals("onnx");
-                    if (!isKnownExtension || isOnnx)
+                    if (!isKnownExtension)
                     {
                         Debug.LogError($"loading unsupported format: {m_OverrideExtension}");
                         Application.Quit(1);
@@ -209,10 +208,10 @@ namespace Unity.MLAgentsExamples
                 return null;
             }
 
-            byte[] model = null;
+            byte[] rawModel = null;
             try
             {
-                model = File.ReadAllBytes(assetPath);
+                rawModel = File.ReadAllBytes(assetPath);
             }
             catch(IOException)
             {
@@ -222,11 +221,34 @@ namespace Unity.MLAgentsExamples
                 return null;
             }
 
-            // Note - this approach doesn't work for onnx files. Need to replace with
-            // the equivalent of ONNXModelImporter.OnImportAsset()
-            var asset = ScriptableObject.CreateInstance<NNModel>();
-            asset.modelData = ScriptableObject.CreateInstance<NNModelData>();
-            asset.modelData.Value = model;
+            NNModel asset;
+            var isOnnx = m_OverrideExtension.Equals("onnx");
+            if (isOnnx)
+            {
+                var importer = new ONNXModelImporterRuntime(true);
+                var onnxModel = importer.Import(rawModel);
+
+                NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
+                using (var memoryStream = new MemoryStream())
+                using (var writer = new BinaryWriter(memoryStream))
+                {
+                    ModelWriter.Save(writer, onnxModel);
+                    assetData.Value = memoryStream.ToArray();
+                }
+                assetData.name = "Data";
+                assetData.hideFlags = HideFlags.HideInHierarchy;
+
+                asset = ScriptableObject.CreateInstance<NNModel>();
+                asset.modelData = assetData;
+            }
+            else
+            {
+                // Note - this approach doesn't work for onnx files. Need to replace with
+                // the equivalent of ONNXModelImporter.OnImportAsset()
+                asset = ScriptableObject.CreateInstance<NNModel>();
+                asset.modelData = ScriptableObject.CreateInstance<NNModelData>();
+                asset.modelData.Value = rawModel;
+            }
 
             asset.name = "Override - " + Path.GetFileName(assetPath);
             m_CachedModels[behaviorName] = asset;

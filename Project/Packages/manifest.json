@@ -5,6 +5,7 @@
     "com.unity.collab-proxy": "1.2.15",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.ml-agents.extensions": "file:../../com.unity.ml-agents.extensions",
+    "com.unity.barracuda": "file:../../../UnityInferenceEngine/UnityProject/Assets/Barracuda",
     "com.unity.package-manager-ui": "2.0.8",
     "com.unity.purchasing": "2.0.3",
     "com.unity.textmeshpro": "1.4.1",
