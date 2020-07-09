@@ -13,12 +13,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         public string sensorName;
 
         /// <summary>
-        /// Creates a ArticulationBodySensor.
+        /// Creates a PhysicsBodySensor.
         /// </summary>
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            return new ArticulationBodySensor(RootBody, Settings, sensorName);
+            return new PhysicsBodySensor(RootBody, Settings, sensorName);
         }
 
         /// <inheritdoc/>
@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return new[] { 0 };
             }
 
-            // TODO static method in ArticulationBodySensor?
+            // TODO static method in PhysicsBodySensor?
             // TODO only update PoseExtractor when body changes?
             var poseExtractor = new ArticulationBodyPoseExtractor(RootBody);
             var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);

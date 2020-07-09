@@ -228,7 +228,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Transform the vector by the pose.
+        /// Transform the vector by the pose. Conceptually this is equivalent to treating the Pose
+        /// as a 4x4 matrix and multiplying the augmented vector.
+        /// See https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix for more details.
         /// </summary>
         /// <param name="pose"></param>
         /// <param name="rhs"></param>

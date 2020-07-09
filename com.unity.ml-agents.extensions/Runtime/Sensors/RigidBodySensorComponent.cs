@@ -4,7 +4,7 @@ using Unity.MLAgents.Sensors;
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
-    /// Editor component that creates a RigidBodySensor for the Agent.
+    /// Editor component that creates a PhysicsBodySensor for the Agent.
     /// </summary>
     public class RigidBodySensorComponent  : SensorComponent
     {
@@ -25,12 +25,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         public string sensorName;
 
         /// <summary>
-        /// Creates a RigidBodySensor.
+        /// Creates a PhysicsBodySensor.
         /// </summary>
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            return new RigidBodySensor(RootBody, Settings, sensorName);
+            return new PhysicsBodySensor(RootBody, Settings, sensorName);
         }
 
         /// <inheritdoc/>
@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return new[] { 0 };
             }
 
-            // TODO static method in RigidBodySensor?
+            // TODO static method in PhysicsBodySensor?
             // TODO only update PoseExtractor when body changes?
             var poseExtractor = new RigidBodyPoseExtractor(RootBody);
             var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);

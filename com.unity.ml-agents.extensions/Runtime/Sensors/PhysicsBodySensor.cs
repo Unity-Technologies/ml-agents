@@ -4,9 +4,9 @@ using Unity.MLAgents.Sensors;
 namespace Unity.MLAgents.Extensions.Sensors
 {
     /// <summary>
-    /// ISensor implementation that generates observations for a group of Rigidbodies and Joints.
+    /// ISensor implementation that generates observations for a group of Rigidbodies or ArticulationBodies.
     /// </summary>
-    public class RigidBodySensor : ISensor
+    public class PhysicsBodySensor : ISensor
     {
         int[] m_Shape;
         string m_SensorName;
@@ -15,15 +15,15 @@ namespace Unity.MLAgents.Extensions.Sensors
         PhysicsSensorSettings m_Settings;
 
         /// <summary>
-        ///  Construct a new RigidBodySensor
+        ///  Construct a new PhysicsBodySensor
         /// </summary>
         /// <param name="rootBody"></param>
         /// <param name="settings"></param>
         /// <param name="sensorName"></param>
-        public RigidBodySensor(Rigidbody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(Rigidbody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
             m_PoseExtractor = new RigidBodyPoseExtractor(rootBody);
-            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"RigidBodySensor:{rootBody?.name}" : sensorName;
+            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;
 
             var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
 #if UNITY_2020_1_OR_NEWER
-        public RigidBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
             m_PoseExtractor = new ArticulationBodyPoseExtractor(rootBody);
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody?.name}" : sensorName;
