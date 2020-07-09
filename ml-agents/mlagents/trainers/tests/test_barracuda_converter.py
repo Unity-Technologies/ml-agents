@@ -6,7 +6,7 @@ import mlagents.trainers.tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.tests.test_nn_policy import create_policy_mock
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.tf_utils import tf
-from mlagents.model_serialization import SerializationSettings, export_policy_model
+from mlagents.model_serialization import SerializationSettings
 
 
 def test_barracuda_converter():
@@ -44,13 +44,10 @@ def test_policy_conversion(tmpdir, rnn, visual, discrete):
         use_discrete=discrete,
         use_visual=visual,
     )
-    policy.checkpoint(1)
-    settings = SerializationSettings(
-        policy.model_path, os.path.join(tmpdir, policy.brain.brain_name)
-    )
-    export_path = os.path.join(tmpdir, "test")
-    export_policy_model(export_path, settings, policy.graph, policy.sess)
+    settings = SerializationSettings(policy.model_path, policy.brain.brain_name)
+    checkpoint_path = f"{tmpdir}/{policy.brain.brain_name}-1"
+    policy.checkpoint(checkpoint_path, settings)
 
     # These checks taken from test_barracuda_converter
-    assert os.path.isfile(export_path + ".nn")
-    assert os.path.getsize(export_path + ".nn") > 100
+    assert os.path.isfile(checkpoint_path + ".nn")
+    assert os.path.getsize(checkpoint_path + ".nn") > 100

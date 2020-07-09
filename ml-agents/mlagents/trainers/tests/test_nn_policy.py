@@ -4,6 +4,7 @@ import unittest
 import tempfile
 
 import numpy as np
+from mlagents.model_serialization import SerializationSettings
 from mlagents.tf_utils import tf
 
 
@@ -57,7 +58,11 @@ def test_load_save(tmp_path):
     policy = create_policy_mock(trainer_params, model_path=path1)
     policy.initialize_or_load()
     policy._set_step(2000)
-    policy.checkpoint(2000)
+
+    mock_brain_name = "MockBrain"
+    checkpoint_path = f"{policy.model_path}/{mock_brain_name}-2000"
+    serialization_settings = SerializationSettings(policy.model_path, mock_brain_name)
+    policy.checkpoint(checkpoint_path, serialization_settings)
 
     assert len(os.listdir(tmp_path)) > 0
 

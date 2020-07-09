@@ -1,9 +1,15 @@
 # # Unity ML-Agents Toolkit
+import os
 from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
 import time
-
+import attr
+from mlagents.model_serialization import SerializationSettings
+from mlagents.trainers.policy.checkpoint_manager import (
+    NNCheckpoint,
+    NNCheckpointManager,
+)
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
@@ -90,7 +96,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             return sum(rewards) / len(rewards)
 
     @timed
-    def _checkpoint(self) -> None:
+    def _checkpoint(self) -> NNCheckpoint:
         """
         Checkpoints the policy associated with this trainer.
         """
@@ -100,7 +106,20 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         policy = list(self.policies.values())[0]
-        policy.checkpoint(int(self.step), self._policy_mean_reward())
+        model_path = policy.model_path
+        settings = SerializationSettings(model_path, self.brain_name)
+        checkpoint_path = os.path.join(model_path, f"{self.brain_name}-{self.step}")
+        policy.checkpoint(checkpoint_path, settings)
+        new_checkpoint = NNCheckpoint(
+            int(self.step),
+            f"{checkpoint_path}.nn",
+            self._policy_mean_reward(),
+            time.time(),
+        )
+        NNCheckpointManager.add_checkpoint(
+            self.brain_name, new_checkpoint, self.trainer_settings.keep_checkpoints
+        )
+        return new_checkpoint
 
     def save_model(self) -> None:
         """
@@ -112,9 +131,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         policy = list(self.policies.values())[0]
-        policy_mean_reward = self._policy_mean_reward()
-        policy.checkpoint(int(self.step), policy_mean_reward)
-        policy.save(int(self.step), policy_mean_reward)
+        settings = SerializationSettings(policy.model_path, self.brain_name)
+        model_checkpoint = self._checkpoint()
+        final_checkpoint = attr.evolve(
+            model_checkpoint, file_path=f"{policy.model_path}.nn"
+        )
+        policy.save(policy.model_path, settings)
+        NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
     @abc.abstractmethod
     def _update_policy(self) -> bool:

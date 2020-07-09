@@ -1,18 +1,11 @@
 from typing import Any, Dict, List, Optional, Tuple
 import abc
-import os
 import numpy as np
-import time
 from distutils.version import LooseVersion
 
 from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
-from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.policy.checkpoint_manager import (
-    NNCheckpoint,
-    NNCheckpointManager,
-)
 from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
@@ -76,14 +69,11 @@ class TFPolicy(Policy):
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.sequence_length = 1
         self.seed = seed
-        self.brain = brain
-        self.behavior_id = BehaviorIdentifiers.from_name_behavior_id(
-            self.brain.brain_name
-        )
 
         self.act_size = brain.vector_action_space_size
         self.vec_obs_size = brain.vector_observation_space_size
         self.vis_obs_size = brain.number_visual_observations
+        self.brain = brain
 
         self.use_recurrent = self.network_settings.memory is not None
         self.memory_dict: Dict[str, np.ndarray] = {}
@@ -402,54 +392,35 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def checkpoint(self, steps: int, model_reward: Optional[float] = None) -> None:
+    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
         """
         Checkpoints the policy on disk.
 
-        :param steps: Number of steps processed so far during training
-        :param model_reward: Mean reward observed for this policy
+        :param checkpoint_path: filepath to write the checkpoint
+        :param settings: SerializationSettings for exporting the model.
         """
         # Save the TF checkpoint and graph definition
         with self.graph.as_default():
-            checkpoint_path = os.path.join(self.model_path, f"model-{steps}.ckpt")
             if self.saver:
-                self.saver.save(self.sess, checkpoint_path)
+                self.saver.save(self.sess, f"{checkpoint_path}.ckpt")
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
+        # also save the policy so we have optimized model files for each checkpoint
+        self.save(checkpoint_path, settings)
 
-        brain_name = self.behavior_id.brain_name
-        checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{steps}")
-        settings = SerializationSettings(self.model_path, brain_name)
-        export_policy_model(checkpoint_path, settings, self.graph, self.sess)
-        new_checkpoint = NNCheckpoint(
-            steps, f"{checkpoint_path}.nn", model_reward, time.time()
-        )
-        NNCheckpointManager.add_checkpoint(
-            brain_name, new_checkpoint, self.keep_checkpoints
-        )
-
-    def save(self, steps: int, model_reward: Optional[float] = None) -> None:
+    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
         """
-        Saves the final model on completion or interruption
+        Saves the serialized model, given a path and SerializationSettings
 
-        :param steps: Number of steps processed so far during training
-        :param model_reward: Mean reward observed for this policy
+        This method will save the policy graph to the given filepath.  The path
+        should be provided without an extension as multiple serialized model formats
+        may be generated as a result.
+
+        :param output_filepath: path (without suffix) for the model file(s)
+        :param settings: SerializationSettings for how to save the model.
         """
-        brain_name = self.behavior_id.brain_name
-        settings = SerializationSettings(self.model_path, brain_name)
-
-        # Output filepath for the model is the same as the model_path because we want a
-        # file with the same name as the behavior output folder, e.g. for 3DBall
-        # model_path is "results/3dball-run/3DBall
-        # output file:  "results/3dball-run/3DBall.nn"
-        #      and/or:  "results/3dball-run/3DBall.onnx"
-        output_filepath = settings.model_path
         export_policy_model(output_filepath, settings, self.graph, self.sess)
-        final_model = NNCheckpoint(
-            steps, f"{output_filepath}.nn", model_reward, time.time()
-        )
-        NNCheckpointManager.track_final_checkpoint(brain_name, final_model)
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
