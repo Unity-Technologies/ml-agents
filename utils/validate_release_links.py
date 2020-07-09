@@ -18,7 +18,6 @@ ALLOW_LIST = {
     "docs/Versioning.md": None,
     "com.unity.ml-agents/CHANGELOG.md": None,
     "utils/make_readme_table.py": None,
-    "utils/validate_doc_versions.py": None,
     "utils/validate_release_links.py": None,
 }
 
