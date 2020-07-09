@@ -7,8 +7,8 @@ using BodyPart = Unity.MLAgentsExamples.BodyPart;
 
 public class WalkerAgent : Agent
 {
-    [Range(0, 10)]
-    public float walkingSpeed = 10; //The max walk velocity magnitude an agent will be rewarded for
+    [Range(0, 15)]
+    public float walkingSpeed = 15; //The max walk velocity magnitude an agent will be rewarded for
 
     Vector3 m_WalkDir; //Direction to the target
 

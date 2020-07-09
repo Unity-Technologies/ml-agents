@@ -552,7 +552,7 @@ MonoBehaviour:
     maxRewardThisSession: 0
   - rewardKey: headHeightOverFeet
     rawVal: 0
-    rewardScalar: 0
+    rewardScalar: 0.001
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
@@ -585,7 +585,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: f2958ea7e93ca450096779f1293af0bf,
+      objectReference: {fileID: 11400000, guid: 64eac2876e94e44d2b7905bd6e361343,
         type: 3}
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
