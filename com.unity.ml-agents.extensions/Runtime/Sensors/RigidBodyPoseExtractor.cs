@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             return m_Bodies[index].velocity;
         }
 
-/// <inheritdoc/>
+        /// <inheritdoc/>
         protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];

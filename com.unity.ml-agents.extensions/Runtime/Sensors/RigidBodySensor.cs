@@ -30,6 +30,18 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_Shape = new[] { numTransformObservations };
         }
 
+#if UNITY_2020_1_OR_NEWER
+        public RigidBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        {
+            m_PoseExtractor = new ArticulationBodyPoseExtractor(rootBody);
+            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody?.name}" : sensorName;
+            m_Settings = settings;
+
+            var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
+            m_Shape = new[] { numTransformObservations };
+        }
+#endif
+
         /// <inheritdoc/>
         public int[] GetObservationShape()
         {
