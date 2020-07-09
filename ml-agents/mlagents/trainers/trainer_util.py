@@ -41,7 +41,8 @@ class TrainerFactory:
     def generate(self, brain_name: str) -> Trainer:
         if brain_name not in self.trainer_config.keys():
             logger.warning(
-                f"Behavior name {brain_name} does not match any behaviors specified in the trainer configuration file: {sorted(self.trainer_config.keys())}"
+                f"Behavior name {brain_name} does not match any behaviors specified in the trainer configuration file:"
+                f"{sorted(self.trainer_config.keys())}"
             )
         return initialize_trainer(
             self.trainer_config[brain_name],
