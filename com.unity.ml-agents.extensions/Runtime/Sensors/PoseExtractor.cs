@@ -105,10 +105,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected virtual Vector3 GetLinearVelocityAt(int index)
-        {
-            return Vector3.zero;
-        }
+        protected abstract Vector3 GetLinearVelocityAt(int index);
 
 
         /// <summary>

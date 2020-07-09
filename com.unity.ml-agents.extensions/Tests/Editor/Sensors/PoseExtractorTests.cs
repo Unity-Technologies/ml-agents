@@ -13,6 +13,11 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 return Pose.identity;
             }
 
+            protected override Vector3 GetLinearVelocityAt(int index)
+            {
+                return Vector3.zero;
+            }
+
             public void Init(int[] parentIndices)
             {
                 SetParentIndices(parentIndices);
@@ -68,6 +73,12 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                     position = translation
                 };
             }
+
+            protected override Vector3 GetLinearVelocityAt(int index)
+            {
+                return Vector3.zero;
+            }
+
         }
 
         [Test]
