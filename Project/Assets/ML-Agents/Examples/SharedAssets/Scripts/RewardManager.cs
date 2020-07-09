@@ -18,7 +18,9 @@ public class RewardManager : MonoBehaviour
         public float cumulativeThisEpisode;
         public float cumulativeThisSession;
 
-        public float maxRewardThisSession;
+//        public float maxRewardThisSession;
+
+        public int lastNaNStep;
 //        public Reward(string k)
 //        public Reward()
 //        {
@@ -62,10 +64,16 @@ public class RewardManager : MonoBehaviour
     {
         rewardsDict[key].rawVal = rawVal;
         float scaledVal = rawVal * rewardsDict[key].rewardScalar;
-        rewardsDict[key].maxRewardThisSession = scaledVal * maxSteps;
+
+        //if we get a NaN, set the step
+        if (float.IsNaN(scaledVal))
+            rewardsDict[key].lastNaNStep = m_thisAgent.StepCount;
+        
+//        rewardsDict[key].maxRewardThisSession = scaledVal * maxSteps;
         rewardsDict[key].rewardThisStep = scaledVal;
         rewardsDict[key].cumulativeThisEpisode += scaledVal;
         rewardsDict[key].cumulativeThisSession += scaledVal;
+        
         m_thisAgent.AddReward(scaledVal);
     }
 

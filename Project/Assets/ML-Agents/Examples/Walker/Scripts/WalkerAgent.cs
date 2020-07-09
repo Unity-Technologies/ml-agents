@@ -180,6 +180,7 @@ public class WalkerAgent : Agent
     public float headHeightOverFeetReward; //reward for standing up straight-ish
     public float hurryUpReward = -1; //don't waste time
     public RewardManager rewardManager;
+    public float bpVelPenaltyThisStep = 0;
     void UpdateRewards()
     {
         var cubeForward = orientationCube.transform.forward;
@@ -209,7 +210,13 @@ public class WalkerAgent : Agent
         rewardManager.UpdateReward("matchSpeed", matchSpeedReward);
         rewardManager.UpdateReward("lookAtTarget", lookAtTargetReward);
         rewardManager.UpdateReward("headHeightOverFeet", headHeightOverFeetReward);
-        rewardManager.UpdateReward("hurryUp", hurryUpReward/MaxStep); 
+        rewardManager.UpdateReward("hurryUp", hurryUpReward/MaxStep);
+
+        bpVelPenaltyThisStep = 0;
+        foreach (var item in m_JdController.bodyPartsList)
+        {
+            bpVelPenaltyThisStep += item.rb.velocity.magnitude;
+        }
     }
     
 //    void FixedUpdate()
