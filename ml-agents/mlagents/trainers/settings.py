@@ -606,7 +606,7 @@ class EnvironmentSettings:
     @num_envs.validator
     def validate_num_envs(self, attribute, value):
         if value > 1 and self.env_path is None:
-            raise ValueError("--num-envs must be 1 if --env is not set.")
+            raise ValueError("num_envs must be 1 if env_path is not set.")
 
 
 @attr.s(auto_attribs=True)
