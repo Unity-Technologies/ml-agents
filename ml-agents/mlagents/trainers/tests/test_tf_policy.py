@@ -1,6 +1,6 @@
 import time
 from mlagents.model_serialization import SerializationSettings
-from mlagents.trainers.policy.checkpoint_manager import Checkpoint
+from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents.trainers.action_info import ActionInfo
@@ -77,9 +77,7 @@ def test_convert_version_string():
 
 
 @mock.patch("mlagents.trainers.policy.tf_policy.export_policy_model")
-@mock.patch(
-    "mlagents.trainers.policy.tf_policy.CheckpointManager.track_checkpoint_info"
-)
+@mock.patch("mlagents.trainers.policy.tf_policy.NNCheckpointManager.add_checkpoint")
 @mock.patch("time.time", mock.MagicMock(return_value=12345))
 def test_checkpoint_writes_tf_and_nn_checkpoints(
     track_checkpoint_info_mock, export_policy_model_mock
@@ -104,7 +102,7 @@ def test_checkpoint_writes_tf_and_nn_checkpoints(
     )
     track_checkpoint_info_mock.assert_called_once_with(
         mock_brain.brain_name,
-        Checkpoint(
+        NNCheckpoint(
             n_steps,
             f"output/{mock_brain.brain_name}-{n_steps}.nn",
             mock_reward_val,

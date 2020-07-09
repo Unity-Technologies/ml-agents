@@ -19,7 +19,7 @@ class StatusType(Enum):
     LESSON_NUM = "lesson_num"
     STATS_METADATA = "metadata"
     CHECKPOINTS = "checkpoints"
-    FINAL_MODEL = "final_model"
+    FINAL_CHECKPOINT = "final_checkpoint"
 
 
 @attr.s(auto_attribs=True)

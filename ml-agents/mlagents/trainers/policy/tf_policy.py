@@ -9,7 +9,10 @@ from mlagents.model_serialization import SerializationSettings, export_policy_mo
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.policy.checkpoint_manager import Checkpoint, CheckpointManager
+from mlagents.trainers.policy.checkpoint_manager import (
+    NNCheckpoint,
+    NNCheckpointManager,
+)
 from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
@@ -419,10 +422,10 @@ class TFPolicy(Policy):
         checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{steps}")
         settings = SerializationSettings(self.model_path, brain_name)
         export_policy_model(checkpoint_path, settings, self.graph, self.sess)
-        new_checkpoint = Checkpoint(
+        new_checkpoint = NNCheckpoint(
             steps, f"{checkpoint_path}.nn", model_reward, time.time()
         )
-        CheckpointManager.track_checkpoint_info(
+        NNCheckpointManager.add_checkpoint(
             brain_name, new_checkpoint, self.keep_checkpoints
         )
 
@@ -443,10 +446,10 @@ class TFPolicy(Policy):
         #      and/or:  "results/3dball-run/3DBall.onnx"
         output_filepath = settings.model_path
         export_policy_model(output_filepath, settings, self.graph, self.sess)
-        final_model = Checkpoint(
+        final_model = NNCheckpoint(
             steps, f"{output_filepath}.nn", model_reward, time.time()
         )
-        CheckpointManager.track_final_model_info(brain_name, final_model)
+        NNCheckpointManager.track_final_checkpoint(brain_name, final_model)
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
