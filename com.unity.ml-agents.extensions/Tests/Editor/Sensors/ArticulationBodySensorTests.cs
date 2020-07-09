@@ -49,12 +49,9 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             var rootObj = new GameObject();
             var rootArticBody = rootObj.AddComponent<ArticulationBody>();
-            //  See if there's a way to set velocity directly.
-            //rootArticBody.velocity = new Vector3(1f, 0f, 0f);
 
             var middleGamObj = new GameObject();
             var middleArticBody = middleGamObj.AddComponent<ArticulationBody>();
-            //middleArticBody.velocity = new Vector3(0f, 1f, 0f);
             middleArticBody.AddForce(new Vector3(0f, 1f, 0f));
             middleGamObj.transform.SetParent(rootObj.transform);
             middleGamObj.transform.localPosition = new Vector3(13.37f, 0f, 0f);
@@ -62,7 +59,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             var leafGameObj = new GameObject();
             var leafArticBody = leafGameObj.AddComponent<ArticulationBody>();
-            //leafArticBody.velocity = new Vector3(0f, 0f, 1f);
             leafGameObj.transform.SetParent(middleGamObj.transform);
             leafGameObj.transform.localPosition = new Vector3(4.2f, 0f, 0f);
             leafArticBody.jointType = ArticulationJointType.RevoluteJoint;
@@ -84,8 +80,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 UseLocalSpaceLinearVelocity = true
 #endif
             };
-
-
 
             var sensor = sensorComponent.CreateSensor();
             sensor.Update();
