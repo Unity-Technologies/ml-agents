@@ -96,6 +96,7 @@ def set_package_version(new_version: str) -> None:
         package_json["version"] = new_version
     with open(UNITY_PACKAGE_JSON_PATH, "w") as f:
         json.dump(package_json, f, indent=2)
+        f.write("\n")
 
 
 def set_academy_version_string(new_version):
