@@ -64,7 +64,8 @@ class PPOTrainer(RLTrainer):
         self.load = load
         self.seed = seed
         self.framework = "torch" if TestingConfiguration.use_torch else "tf"
-        self.trainer_settings.max_steps = TestingConfiguration.max_steps
+        if TestingConfiguration.max_steps > 0:
+            self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self.policy: Policy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
