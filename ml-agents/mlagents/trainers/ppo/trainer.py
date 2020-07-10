@@ -2,6 +2,14 @@
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
+class TestingConfiguration:
+    use_torch = False
+    max_steps = 0
+    env_name = ""
+    device = "cpu"
+
+
+
 from collections import defaultdict
 from typing import cast
 
@@ -20,6 +28,8 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 logger = get_logger(__name__)
+
+
 
 
 class PPOTrainer(RLTrainer):
@@ -53,7 +63,9 @@ class PPOTrainer(RLTrainer):
         )
         self.load = load
         self.seed = seed
-        self.framework = "torch"
+        self.framework = "torch" if TestingConfiguration.use_torch else "tf"
+        if TestingConfiguration.max_steps > 0:
+            self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self.policy: Policy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:

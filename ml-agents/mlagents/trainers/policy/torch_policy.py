@@ -17,6 +17,8 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.models_torch import ActorCritic
 
+from mlagents.trainers.ppo.trainer import TestingConfiguration
+
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
@@ -91,6 +93,12 @@ class TorchPolicy(Policy):
         self.log_std_min = -20
         self.log_std_max = 2
 
+        if TestingConfiguration.device != "cpu":
+            torch.set_default_tensor_type(torch.cuda.FloatTensor)
+        else:
+            torch.set_default_tensor_type(torch.FloatTensor)
+        
+
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
 
@@ -116,6 +124,8 @@ class TorchPolicy(Policy):
             stream_names=reward_signal_names,
             separate_critic=self.use_continuous_act,
         )
+
+        self.actor_critic.to(TestingConfiguration.device)
 
     def split_decision_step(self, decision_requests):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
@@ -190,18 +200,18 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = action.detach().numpy()
-        run_out["pre_action"] = action.detach().numpy()
+        run_out["action"] = action.detach().cpu().numpy()
+        run_out["pre_action"] = action.detach().cpu().numpy()
         # Todo - make pre_action difference
-        run_out["log_probs"] = log_probs.detach().numpy()
-        run_out["entropy"] = entropy.detach().numpy()
+        run_out["log_probs"] = log_probs.detach().cpu().numpy()
+        run_out["entropy"] = entropy.detach().cpu().numpy()
         run_out["value_heads"] = {
-            name: t.detach().numpy() for name, t in value_heads.items()
+            name: t.detach().cpu().numpy() for name, t in value_heads.items()
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
-            run_out["memories"] = memories.detach().numpy()
+            run_out["memories"] = memories.detach().cpu().numpy()
         self.actor_critic.update_normalization(vec_obs)
         return run_out
 
@@ -249,24 +259,28 @@ class TorchPolicy(Policy):
         self.actor_critic.load_state_dict(torch.load(load_path))
 
     def export_model(self, step=0):
-        fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
-        fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
-        fake_masks = torch.ones([1] + self.actor_critic.act_size)
-        # fake_memories = torch.zeros([1] + [self.m_size])
-        export_path = "./model-" + str(step) + ".onnx"
-        output_names = ["action", "action_probs"]
-        input_names = ["vector_observation", "action_mask"]
-        dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
-        onnx.export(
-            self.actor_critic,
-            (fake_vec_obs, fake_vis_obs, fake_masks),
-            export_path,
-            verbose=True,
-            opset_version=12,
-            input_names=input_names,
-            output_names=output_names,
-            dynamic_axes=dynamic_axes,
-        )
+        try:
+            fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
+            fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
+            fake_masks = torch.ones([1] + self.actor_critic.act_size)
+            # fake_memories = torch.zeros([1] + [self.m_size])
+            export_path = "./model-" + str(step) + ".onnx"
+            output_names = ["action", "action_probs"]
+            input_names = ["vector_observation", "action_mask"]
+            dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
+            onnx.export(
+                self.actor_critic,
+                (fake_vec_obs, fake_vis_obs, fake_masks),
+                export_path,
+                verbose=True,
+                opset_version=12,
+                input_names=input_names,
+                output_names=output_names,
+                dynamic_axes=dynamic_axes,
+            )
+        except:
+            print("Could not export torch model")
+            return
 
     @property
     def vis_obs_size(self):

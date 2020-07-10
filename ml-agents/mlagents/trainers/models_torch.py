@@ -136,7 +136,7 @@ class NetworkBody(nn.Module):
         if self.use_lstm:
             embedding = embedding.view([sequence_length, -1, self.h_size])
             memories = torch.split(memories, self.m_size // 2, dim=-1)
-            embedding, memories = self.lstm(embedding, memories)
+            embedding, memories = self.lstm(embedding.contiguous(), (memories[0].contiguous(), memories[1].contiguous()))
             embedding = embedding.view([-1, self.m_size // 2])
             memories = torch.cat(memories, dim=-1)
         return embedding, memories
@@ -407,7 +407,8 @@ class SimpleVisualEncoder(nn.Module):
     def forward(self, visual_obs):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
-        hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
+        # hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
+        hidden = torch.relu(self.dense(torch.reshape(conv_2,(-1, self.final_flat))))
         return hidden
 
 

@@ -143,8 +143,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.optimizer.step()
         update_stats = {
-            "Losses/Policy Loss": abs(policy_loss.detach().numpy()),
-            "Losses/Value Loss": value_loss.detach().numpy(),
+            "Losses/Policy Loss": abs(policy_loss.detach().cpu().numpy()),
+            "Losses/Value Loss": value_loss.detach().cpu().numpy(),
         }
 
         return update_stats
