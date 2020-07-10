@@ -18,9 +18,9 @@ class GaussianDistInstance(nn.Module):
 
     def log_prob(self, value):
         var = self.std ** 2
-        log_scale = self.std.log()
+        log_scale = torch.log(self.std + EPSILON)
         return (
-            -((value - self.mean) ** 2) / (2 * var)
+            -((value - self.mean) ** 2) / (2 * var + EPSILON)
             - log_scale
             - math.log(math.sqrt(2 * math.pi))
         )
@@ -30,7 +30,7 @@ class GaussianDistInstance(nn.Module):
         return torch.exp(log_prob)
 
     def entropy(self):
-        return torch.log(2 * math.pi * math.e * self.std)
+        return torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -40,7 +40,8 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         return squashed
 
     def _inverse_tanh(self, value):
-        return 0.5 * torch.log((1 + value) / (1 - value) + EPSILON)
+        capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
 
     def log_prob(self, value):
         return super().log_prob(self._inverse_tanh(value)) - torch.log(
