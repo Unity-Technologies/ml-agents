@@ -6,14 +6,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-### Major Changes
-
-### Minor Changes
-
-### Bug Fixes
-
 ## [1.2.0-preview] - 2020-07-15
 
 ### Major Changes
@@ -56,7 +48,7 @@ argument. (#4203)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
-- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/docs/Unity-Environment-Registry.md)(#3967)
+- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/docs/Unity-Environment-Registry.md)(#3967)
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously. (#3981) Thank you @shakenes !
@@ -64,7 +56,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
   into the main training configuration file. Note that this means training
   configuration files are now environment-specific. (#3791)
 - The format for trainer configuration has changed, and the "default" behavior has been deprecated.
-  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/docs/Migrating.md) for more details. (#3936)
+  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/docs/Migrating.md) for more details. (#3936)
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
 - When using Curriculum, the current lesson will resume if training is quit and resumed. As such,
