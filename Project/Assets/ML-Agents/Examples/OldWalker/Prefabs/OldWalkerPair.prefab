@@ -158,6 +158,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: b59027ddcc7394251945138d7a13adce,
         type: 3}
+    - target: {fileID: 895268871377934297, guid: fb2bcfbf65e7747dcb70c2333e944f69,
+        type: 3}
+      propertyPath: m_BehaviorName
+      value: WalkerStatic
+      objectReference: {fileID: 0}
     - target: {fileID: 895268871377934298, guid: fb2bcfbf65e7747dcb70c2333e944f69,
         type: 3}
       propertyPath: m_LocalPosition.x
