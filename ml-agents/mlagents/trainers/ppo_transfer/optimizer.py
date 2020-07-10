@@ -37,9 +37,11 @@ class PPOTransferOptimizer(TFOptimizer):
         self.in_batch_alter = hyperparameters.in_batch_alter
         self.in_epoch_alter = hyperparameters.in_epoch_alter
         self.op_buffer = hyperparameters.use_op_buffer
-        
-        self.train_type = hyperparameters.train_type
-        
+        self.train_encoder = hyperparameters.train_encoder
+        self.train_model = hyperparameters.train_model
+        self.train_policy = hyperparameters.train_policy
+        self.train_value = hyperparameters.train_value
+
         # Transfer
         self.use_transfer = hyperparameters.use_transfer
         self.transfer_path = hyperparameters.transfer_path #"results/BallSingle_nosep_cmodel_small/3DBall"
@@ -104,9 +106,15 @@ class PPOTransferOptimizer(TFOptimizer):
 
             with tf.variable_scope("value"):
                 if policy.use_continuous_act:
-                    self._create_cc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
+                    if hyperparameters.separate_value_net:
+                        self._create_cc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
+                    else:
+                        self._create_cc_critic(h_size, hyperparameters.value_layers, vis_encode_type)
                 else:
-                    self._create_dc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
+                    if hyperparameters.separate_value_net:
+                        self._create_dc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
+                    else:
+                        self._create_dc_critic(h_size, hyperparameters.value_layers, vis_encode_type)
             
             with tf.variable_scope("optimizer/"):
                 self.learning_rate = ModelUtils.create_schedule(
@@ -161,7 +169,8 @@ class PPOTransferOptimizer(TFOptimizer):
             
             self.policy.initialize_or_load()
             if self.use_transfer:
-                self.policy.load_graph_partial(self.transfer_path, self.transfer_type)
+                self.policy.load_graph_partial(self.transfer_path, self.transfer_type, 
+                    hyperparameters.load_model, hyperparameters.load_policy, hyperparameters.load_value)
             self.policy.get_encoder_weights()
             self.policy.get_policy_weights()
 
@@ -386,35 +395,45 @@ class PPOTransferOptimizer(TFOptimizer):
         )
 
     def _create_ppo_optimizer_ops(self):
-        if self.use_transfer:
-            if self.transfer_type == "dynamics":
-                if self.train_type == "all":
-                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-                elif self.train_type == "encoding":
-                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-                elif self.train_type == "policy":
-                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-                    train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
-                    train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
-                print("trainable", train_vars)
-                # train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/mu")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/log_std")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value/extrinsic_value")
-            elif self.transfer_type == "observation":
-                if self.train_type == "all":
-                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-                elif self.train_type == "policy":
-                    train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
-                        + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
-                        + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse") \
-                        + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") 
-                        # + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
-        else:
-            train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-            print("trainable", train_vars)
+        # if self.use_transfer:
+        #     if self.transfer_type == "dynamics":
+        #         if self.train_type == "all":
+        #             train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        #         elif self.train_type == "encoding":
+        #             train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        #             # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+        #         elif self.train_type == "policy":
+        #             train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        #             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+        #             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+        #         print("trainable", train_vars)
+        #         # train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        #         # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+        #         # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+        #         # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/mu")
+        #         # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy/log_std")
+        #         # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value/extrinsic_value")
+        #     elif self.transfer_type == "observation":
+        #         if self.train_type == "all":
+        #             train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        #         elif self.train_type == "policy":
+        #             train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
+        #                 + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
+        #                 + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse") \
+        #                 + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") 
+        #                 # + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
+        # else:
+        #     train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+        train_vars = []
+        if self.train_encoder:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        if self.train_model:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
+        if self.train_policy:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+        if self.train_value:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+        print("trainable", train_vars)
 
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss, var_list=train_vars)
@@ -423,36 +442,23 @@ class PPOTransferOptimizer(TFOptimizer):
         
     def _init_alter_update(self):
         
-        if self.use_alter:
-            policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
-            policy_train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
-            model_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-            self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
-            self.ppo_grads = self.ppo_optimizer.compute_gradients(self.loss, var_list=policy_train_vars)
-            self.ppo_update_batch = self.ppo_optimizer.minimize(self.loss, var_list=policy_train_vars)
+        train_vars = []
+        if self.train_encoder:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        if self.train_model:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
+        if self.train_policy:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+        if self.train_value:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
 
-            self.model_optimizer = self.create_optimizer_op(self.learning_rate)
-            self.model_grads = self.model_optimizer.compute_gradients(self.loss, var_list=model_train_vars)
-            self.model_update_batch = self.model_optimizer.minimize(self.loss, var_list=model_train_vars)
-        else:
-            if self.train_type == "all":
-                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
-            elif self.train_type == "encoding":
-                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
-                # train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "target_enc")
-            elif self.train_type == "policy":
-                train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
-                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
-                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse") \
-                    + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value") 
+        self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
+        self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
+        self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
 
-            self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
-            self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
-            self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
-
-            self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
-            self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
-            self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
+        self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
+        self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
+        self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
 
         self.ppo_update_dict.update(
             {
@@ -465,7 +471,6 @@ class PPOTransferOptimizer(TFOptimizer):
             }
         )
         
-
         self.model_update_dict.update(
             {
                 "model_loss": self.model_loss,
@@ -557,7 +562,7 @@ class PPOTransferOptimizer(TFOptimizer):
         for stat_name, update_name in stats_needed.items():
             if update_name in update_vals.keys():
                 update_stats[stat_name] = update_vals[update_name]
-
+        
         self.num_updates += 1
         return update_stats
 
@@ -659,6 +664,7 @@ class PPOTransferOptimizer(TFOptimizer):
             feed_dict[self.memory_in] = self._make_zero_mem(
                 self.m_size, mini_batch.num_experiences
             )
+        # print(self.policy.sess.run(self.policy.encoder, feed_dict={self.policy.vector_in: mini_batch["vector_obs"]}))
         return feed_dict
 
     def _create_cc_critic_old(

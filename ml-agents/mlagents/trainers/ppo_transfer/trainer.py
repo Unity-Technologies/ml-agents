@@ -214,8 +214,8 @@ class PPOTransferTrainer(RLTrainer):
                 buffer = self.update_buffer
                 max_num_batch = buffer_length // batch_size
                 for i in range(0, max_num_batch * batch_size, batch_size):
-                    update_stats = self.optimizer.update(
-                        buffer.make_mini_batch(i, i + batch_size), n_sequences
+                    update_stats = self.optimizer.update_part(
+                        buffer.make_mini_batch(i, i + batch_size), n_sequences, "policy"
                     )
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
