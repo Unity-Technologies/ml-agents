@@ -156,7 +156,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 880f8da21512c4540b7073fc2ee88984,
+      objectReference: {fileID: 11400000, guid: b59027ddcc7394251945138d7a13adce,
         type: 3}
     - target: {fileID: 895268871377934298, guid: fb2bcfbf65e7747dcb70c2333e944f69,
         type: 3}
@@ -213,6 +213,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4480180962220459254, guid: fb2bcfbf65e7747dcb70c2333e944f69,
+        type: 3}
+      propertyPath: target
+      value: 
+      objectReference: {fileID: 4085853164035250}
     - target: {fileID: 7933235353030744139, guid: fb2bcfbf65e7747dcb70c2333e944f69,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
