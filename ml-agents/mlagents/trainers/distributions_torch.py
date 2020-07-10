@@ -13,7 +13,8 @@ class GaussianDistInstance(nn.Module):
         self.std = std
 
     def sample(self):
-        return self.mean + torch.randn_like(self.mean) * self.std
+        sample = self.mean + torch.randn_like(self.mean) * self.std
+        return sample
 
     def log_prob(self, value):
         var = self.std ** 2
@@ -30,6 +31,21 @@ class GaussianDistInstance(nn.Module):
 
     def entropy(self):
         return torch.log(2 * math.pi * math.e * self.std)
+
+
+class TanhGaussianDistInstance(GaussianDistInstance):
+    def sample(self):
+        unsquashed_sample = super().sample()
+        squashed = torch.tanh(unsquashed_sample)
+        return squashed
+
+    def _inverse_tanh(self, value):
+        return 0.5 * torch.log((1 + value) / (1 - value) + EPSILON)
+
+    def log_prob(self, value):
+        return super().log_prob(self._inverse_tanh(value)) - torch.log(
+            1 - value ** 2 + EPSILON
+        )
 
 
 class CategoricalDistInstance(nn.Module):
@@ -52,10 +68,18 @@ class CategoricalDistInstance(nn.Module):
 
 
 class GaussianDistribution(nn.Module):
-    def __init__(self, hidden_size, num_outputs, conditional_sigma=False, **kwargs):
+    def __init__(
+        self,
+        hidden_size,
+        num_outputs,
+        conditional_sigma=False,
+        tanh_squash=False,
+        **kwargs
+    ):
         super(GaussianDistribution, self).__init__(**kwargs)
         self.conditional_sigma = conditional_sigma
         self.mu = nn.Linear(hidden_size, num_outputs)
+        self.tanh_squash = tanh_squash
         nn.init.xavier_uniform_(self.mu.weight, gain=0.01)
         if conditional_sigma:
             self.log_sigma = nn.Linear(hidden_size, num_outputs)
@@ -68,10 +92,13 @@ class GaussianDistribution(nn.Module):
     def forward(self, inputs):
         mu = self.mu(inputs)
         if self.conditional_sigma:
-            log_sigma = self.log_sigma(inputs)
+            log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             log_sigma = self.log_sigma
-        return [GaussianDistInstance(mu, torch.exp(log_sigma))]
+        if self.tanh_squash:
+            return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
+        else:
+            return [GaussianDistInstance(mu, torch.exp(log_sigma))]
 
 
 class MultiCategoricalDistribution(nn.Module):

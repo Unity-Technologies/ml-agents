@@ -117,6 +117,7 @@ class TorchPolicy(Policy):
             stream_names=reward_signal_names,
             separate_critic=self.use_continuous_act,
             conditional_sigma=self.condition_sigma_on_obs,
+            tanh_squash=tanh_squash,
         )
 
     def split_decision_step(self, decision_requests):

@@ -237,7 +237,8 @@ class SACTrainer(RLTrainer):
             self.trainer_settings,
             self.artifact_path,
             self.load,
-            condition_sigma_on_obs=True,  # Faster training for PPO
+            condition_sigma_on_obs=True,
+            tanh_squash=True,
         )
         return policy
 

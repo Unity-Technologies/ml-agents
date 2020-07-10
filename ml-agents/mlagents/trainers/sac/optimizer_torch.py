@@ -126,8 +126,8 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         self.soft_update(self.policy.actor_critic.critic, self.target_network, 1.0)
 
-        self._log_ent_coef = torch.tensor(
-            np.log([self.init_entcoef] * len(self.act_size)).astype(np.float32),
+        self._log_ent_coef = torch.nn.Parameter(
+            torch.log(torch.as_tensor([self.init_entcoef] * len(self.act_size))),
             requires_grad=True,
         )
         self.target_entropy = torch.as_tensor(
@@ -139,10 +139,16 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_params = list(self.policy.actor_critic.network_body.parameters()) + list(
             self.policy.actor_critic.distribution.parameters()
         )
-        print(self.policy.actor_critic.network_body.parameters())
         value_params = list(self.value_network.parameters()) + list(
             self.policy.actor_critic.critic.parameters()
         )
+
+        logger.debug("value_vars")
+        for param in value_params:
+            logger.debug(param.shape)
+        logger.debug("policy_vars")
+        for param in policy_params:
+            logger.debug(param.shape)
 
         self.policy_optimizer = torch.optim.Adam(policy_params, lr=lr)
         self.value_optimizer = torch.optim.Adam(value_params, lr=lr)
@@ -175,13 +181,10 @@ class TorchSACOptimizer(TorchOptimizer):
             q2_stream = q2_out[name]
             with torch.no_grad():
                 q_backup = rewards[name] + (
-                    1.0
-                    - self.use_dones_in_backup[name]
-                    * dones
+                    (1.0 - self.use_dones_in_backup[name] * dones)
                     * self.gammas[i]
                     * target_values[name]
                 )
-
             _q1_loss = 0.5 * torch.mean(
                 loss_masks * torch.pow((q_backup - q1_stream), 2)
             )
@@ -193,9 +196,7 @@ class TorchSACOptimizer(TorchOptimizer):
             q2_losses.append(_q2_loss)
         q1_loss = torch.mean(torch.stack(q1_losses))
         q2_loss = torch.mean(torch.stack(q2_losses))
-        print(q1_loss)
-
-        return q1_loss + q2_loss
+        return q1_loss, q2_loss
 
     def soft_update(self, source: nn.Module, target: nn.Module, tau: float):
         for source_param, target_param in zip(source.parameters(), target.parameters()):
@@ -242,7 +243,8 @@ class TorchSACOptimizer(TorchOptimizer):
     ):
         _ent_coef = torch.exp(self._log_ent_coef)
         if not discrete:
-            mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())))
+            mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())), axis=0)
+            mean_q1.unsqueeze_(1)
             batch_policy_loss = torch.mean(_ent_coef * log_probs - mean_q1, dim=1)
             policy_loss = torch.mean(loss_masks * batch_policy_loss)
         else:
@@ -303,6 +305,18 @@ class TorchSACOptimizer(TorchOptimizer):
                 next_vis_obs.append(next_vis_ob)
         else:
             vis_obs = []
+
+        # Copy normalizers from policy
+        self.value_network.q1_network.copy_normalization(
+            self.policy.actor_critic.network_body
+        )
+        self.value_network.q2_network.copy_normalization(
+            self.policy.actor_critic.network_body
+        )
+        self.target_network.network_body.copy_normalization(
+            self.policy.actor_critic.network_body
+        )
+
         sampled_actions, log_probs, entropies, sampled_values, _ = self.policy.sample_actions(
             vec_obs,
             vis_obs,
@@ -314,7 +328,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q1_out, q2_out = self.value_network(vec_obs, vis_obs, actions.squeeze(-1))
 
         target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
-        q_loss = self.sac_q_loss(
+        q1_loss, q2_loss = self.sac_q_loss(
             q1_out,
             q2_out,
             target_values,
@@ -344,13 +358,13 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss.backward()
         self.policy_optimizer.step()
 
-        total_value_loss = q_loss + value_loss
+        total_value_loss = q1_loss + q2_loss + value_loss
         self.value_optimizer.zero_grad()
         total_value_loss.backward()
         self.value_optimizer.step()
 
         self.entropy_optimizer.zero_grad()
-        entropy_loss.backward
+        entropy_loss.backward()
         self.entropy_optimizer.step()
 
         # Update Q network
@@ -359,7 +373,8 @@ class TorchSACOptimizer(TorchOptimizer):
         update_stats = {
             "Losses/Policy Loss": abs(policy_loss.detach().numpy()),
             "Losses/Value Loss": value_loss.detach().numpy(),
-            "Losses/Q Loss": q_loss.detach().numpy(),
+            "Losses/Q1 Loss": q1_loss.detach().numpy(),
+            "Losses/Q2 Loss": q2_loss.detach().numpy(),
             "Policy/Entropy Coeff": torch.exp(self._log_ent_coef).detach().numpy(),
         }
         return update_stats

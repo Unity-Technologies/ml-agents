@@ -94,6 +94,13 @@ class NetworkBody(nn.Module):
             for idx, vec_input in enumerate(vec_inputs):
                 self.vector_normalizers[idx].update(vec_input)
 
+    def copy_normalization(self, other_network: "NetworkBody"):
+        if self.normalize:
+            for n1, n2 in zip(
+                self.vector_normalizers, other_network.vector_normalizers
+            ):
+                n1.copy_from(n2)
+
     def forward(self, vec_inputs, vis_inputs, memories=None, sequence_length=1):
         vec_embeds = []
         for idx, encoder in enumerate(self.vector_encoders):
@@ -133,7 +140,7 @@ class NetworkBody(nn.Module):
         return embedding, memories
 
 
-class QNetwork(nn.Module):
+class ContinuousQNetwork(NetworkBody):
     def __init__(
         self,
         stream_names: List[str],
@@ -143,53 +150,98 @@ class QNetwork(nn.Module):
         act_type: ActionType,
         act_size: List[int],
     ):
-        super(QNetwork, self).__init__()
-        self.network_body = NetworkBody(
-            vector_sizes,
-            visual_sizes,
-            network_settings.hidden_units,
-            network_settings.normalize,
-            network_settings.num_layers,
+        # This is not a typo, we want to call __init__ of nn.Module
+        nn.Module.__init__(self)
+        self.normalize = network_settings.normalize
+        self.visual_encoders = []
+        self.vector_encoders = []
+        self.vector_normalizers = []
+        self.use_lstm = network_settings.memory is not None
+        self.h_size = network_settings.hidden_units
+        self.m_size = (
             network_settings.memory.memory_size
             if network_settings.memory is not None
             else 0,
-            network_settings.vis_encode_type,
-            network_settings.memory is not None,
         )
-        self.stream_names = stream_names
 
+        visual_encoder = ModelUtils.get_encoder_for_type(
+            network_settings.vis_encode_type
+        )
+        for vector_size in vector_sizes:
+            if vector_size != 0:
+                self.vector_normalizers.append(Normalizer(vector_size))
+                self.vector_encoders.append(
+                    VectorEncoder(
+                        vector_size + sum(act_size),
+                        self.h_size,
+                        network_settings.num_layers,
+                    )
+                )
+        for visual_size in visual_sizes:
+            self.visual_encoders.append(
+                visual_encoder(
+                    visual_size.height,
+                    visual_size.width,
+                    visual_size.num_channels,
+                    self.h_size,
+                )
+            )
 
-class ContinuousQNetwork(QNetwork):
-    def __init__(
-        self,
-        stream_names: List[str],
-        vector_sizes: List[int],
-        visual_sizes: List[CameraResolution],
-        network_settings: NetworkSettings,
-        act_type: ActionType,
-        act_size: List[int],
-    ):
-        super(ContinuousQNetwork, self).__init__(
-            stream_names,
-            vector_sizes,
-            visual_sizes,
-            network_settings,
-            act_type,
-            act_size,
-        )
-        self.q_heads = ValueHeads(
-            self.stream_names, network_settings.hidden_units + sum(act_size)
-        )
+        self.vector_encoders = nn.ModuleList(self.vector_encoders)
+        self.visual_encoders = nn.ModuleList(self.visual_encoders)
+        if self.use_lstm:
+            self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
+        self.q_heads = ValueHeads(stream_names, network_settings.hidden_units)
 
     def forward(
         self,
-        vec_inputs: List[torch.Tensor],
-        vis_inputs: List[torch.Tensor],
-        actions: torch.Tensor,
+        vec_inputs,
+        vis_inputs,
+        memories=None,
+        sequence_length=1,
+        actions: torch.Tensor = None,
     ):
-        embedding, _ = self.network_body(vec_inputs, vis_inputs)
-        concat_embed = torch.cat([embedding, actions], axis=-1)
-        return self.q_heads(concat_embed)
+        vec_embeds = []
+        for idx, encoder in enumerate(self.vector_encoders):
+            vec_input = vec_inputs[idx]
+            if self.normalize:
+                vec_input = self.vector_normalizers[idx](vec_input)
+            if actions is not None:
+                hidden = encoder(torch.cat([vec_input, actions], axis=-1))
+            else:
+                hidden = encoder(vec_input)
+            vec_embeds.append(hidden)
+
+        vis_embeds = []
+        for idx, encoder in enumerate(self.visual_encoders):
+            vis_input = vis_inputs[idx]
+            vis_input = vis_input.permute([0, 3, 1, 2])
+            hidden = encoder(vis_input)
+            vis_embeds.append(hidden)
+
+        # embedding = vec_embeds[0]
+        if len(vec_embeds) > 0:
+            vec_embeds = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
+        if len(vis_embeds) > 0:
+            vis_embeds = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
+        if len(vec_embeds) > 0 and len(vis_embeds) > 0:
+            embedding = torch.stack([vec_embeds, vis_embeds], dim=-1).sum(dim=-1)
+        elif len(vec_embeds) > 0:
+            embedding = vec_embeds
+        elif len(vis_embeds) > 0:
+            embedding = vis_embeds
+        else:
+            raise Exception("No valid inputs to network.")
+
+        if self.use_lstm:
+            embedding = embedding.view([sequence_length, -1, self.h_size])
+            memories = torch.split(memories, self.m_size // 2, dim=-1)
+            embedding, memories = self.lstm(embedding, memories)
+            embedding = embedding.view([-1, self.m_size // 2])
+            memories = torch.cat(memories, dim=-1)
+
+        output, _ = self.q_heads(embedding)
+        return output, memories
 
 
 class ActorCritic(nn.Module):
@@ -208,6 +260,7 @@ class ActorCritic(nn.Module):
         stream_names,
         separate_critic,
         conditional_sigma=False,
+        tanh_squash=False,
     ):
         super(ActorCritic, self).__init__()
         self.act_type = ActionType.from_str(act_type)
@@ -233,7 +286,10 @@ class ActorCritic(nn.Module):
             embedding_size = h_size
         if self.act_type == ActionType.CONTINUOUS:
             self.distribution = GaussianDistribution(
-                embedding_size, act_size[0], conditional_sigma=conditional_sigma
+                embedding_size,
+                act_size[0],
+                conditional_sigma=conditional_sigma,
+                tanh_squash=tanh_squash,
             )
         else:
             self.distribution = MultiCategoricalDistribution(embedding_size, act_size)
@@ -384,6 +440,11 @@ class Normalizer(nn.Module):
         self.running_mean = new_mean
         self.running_variance = new_variance
         self.normalization_steps = total_new_steps
+
+    def copy_from(self, other_normalizer: "Normalizer"):
+        self.normalization_steps.data.copy_(other_normalizer.normalization_steps.data)
+        self.running_mean.data.copy_(other_normalizer.running_mean.data)
+        self.running_variance.copy_(other_normalizer.running_variance.data)
 
 
 class ValueHeads(nn.Module):
