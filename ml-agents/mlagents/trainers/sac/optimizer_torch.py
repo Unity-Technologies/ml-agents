@@ -8,7 +8,12 @@ from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.brain import CameraResolution
-from mlagents.trainers.models_torch import Critic, ContinuousQNetwork, ActionType
+from mlagents.trainers.models_torch import (
+    Critic,
+    ContinuousQNetwork,
+    ActionType,
+    list_to_tensor,
+)
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
 from mlagents.trainers.exception import UnityTrainerException
@@ -273,18 +278,18 @@ class TorchSACOptimizer(TorchOptimizer):
         """
         rewards = {}
         for name in self.reward_signals:
-            rewards[name] = torch.as_tensor(batch["{}_rewards".format(name)])
+            rewards[name] = list_to_tensor(batch["{}_rewards".format(name)])
 
-        vec_obs = [torch.as_tensor(batch["vector_obs"])]
-        next_vec_obs = [torch.as_tensor(batch["next_vector_in"])]
-        act_masks = torch.as_tensor(batch["action_mask"])
+        vec_obs = [list_to_tensor(batch["vector_obs"])]
+        next_vec_obs = [list_to_tensor(batch["next_vector_in"])]
+        act_masks = list_to_tensor(batch["action_mask"])
         if self.policy.use_continuous_act:
-            actions = torch.as_tensor(batch["actions"]).unsqueeze(-1)
+            actions = list_to_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = torch.as_tensor(batch["actions"], dtype=torch.long)
+            actions = list_to_tensor(batch["actions"], dtype=torch.long)
 
         memories = [
-            torch.as_tensor(batch["memory"][i])
+            list_to_tensor(batch["memory"][i])
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
         if len(memories) > 0:
@@ -297,9 +302,9 @@ class TorchSACOptimizer(TorchOptimizer):
             for idx, _ in enumerate(
                 self.policy.actor_critic.network_body.visual_encoders
             ):
-                vis_ob = torch.as_tensor(batch["visual_obs%d" % idx])
+                vis_ob = list_to_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
-                next_vis_ob = torch.as_tensor(batch["next_visual_obs%d" % idx])
+                next_vis_ob = list_to_tensor(batch["next_visual_obs%d" % idx])
                 next_vis_obs.append(next_vis_ob)
 
         # Copy normalizers from policy
@@ -324,29 +329,15 @@ class TorchSACOptimizer(TorchOptimizer):
         q1_out, q2_out = self.value_network(vec_obs, vis_obs, actions.squeeze(-1))
 
         target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
+        masks = list_to_tensor(batch["masks"], dtype=torch.int32)
+        dones = list_to_tensor(batch["done"])
         q1_loss, q2_loss = self.sac_q_loss(
-            q1_out,
-            q2_out,
-            target_values,
-            torch.as_tensor(batch["done"]),
-            rewards,
-            torch.as_tensor(batch["masks"], dtype=torch.int32),
-            False,
+            q1_out, q2_out, target_values, dones, rewards, masks, False
         )
         value_loss = self.sac_value_loss(
-            log_probs,
-            sampled_values,
-            q1p_out,
-            q2p_out,
-            torch.as_tensor(batch["masks"], dtype=torch.int32),
-            False,
+            log_probs, sampled_values, q1p_out, q2p_out, masks, False
         )
-        policy_loss = self.sac_policy_loss(
-            log_probs,
-            q1p_out,
-            torch.as_tensor(batch["masks"], dtype=torch.int32),
-            False,
-        )
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, False)
         entropy_loss = self.sac_entropy_loss(
             log_probs, torch.as_tensor(batch["masks"], dtype=torch.int32), False
         )
