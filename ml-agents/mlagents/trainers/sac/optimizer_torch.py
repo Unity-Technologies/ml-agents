@@ -59,13 +59,11 @@ class TorchSACOptimizer(TorchOptimizer):
             vec_inputs: List[torch.Tensor],
             vis_inputs: List[torch.Tensor],
             actions: torch.Tensor = None,
-        ) -> Tuple[
-            Dict[str, torch.Tensor], Dict[str, torch.Tensor], Dict[str, torch.Tensor]
-        ]:
+        ) -> Tuple[Dict[str, torch.Tensor], Dict[str, torch.Tensor]]:
             if actions is not None:
                 assert isinstance(self.q1_network, ContinuousQNetwork)
-                q1_out, _ = self.q1_network(vec_inputs, vis_inputs, actions)
-                q2_out, _ = self.q2_network(vec_inputs, vis_inputs, actions)
+                q1_out, _ = self.q1_network(vec_inputs, vis_inputs, actions=actions)
+                q2_out, _ = self.q2_network(vec_inputs, vis_inputs, actions=actions)
             return q1_out, q2_out
 
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
@@ -119,7 +117,7 @@ class TorchSACOptimizer(TorchOptimizer):
             brain.camera_resolutions,
             policy_network_settings.normalize,
             policy_network_settings.num_layers,
-            policy_network_settings.memory.memory_sze
+            policy_network_settings.memory.memory_size
             if policy_network_settings.memory is not None
             else 0,
             policy_network_settings.vis_encode_type,
@@ -163,7 +161,7 @@ class TorchSACOptimizer(TorchOptimizer):
         rewards: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
         discrete: bool = False,
-    ) -> None:
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Creates training-specific Tensorflow ops for SAC models.
         :param q1_streams: Q1 streams from policy network
@@ -198,7 +196,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q2_loss = torch.mean(torch.stack(q2_losses))
         return q1_loss, q2_loss
 
-    def soft_update(self, source: nn.Module, target: nn.Module, tau: float):
+    def soft_update(self, source: nn.Module, target: nn.Module, tau: float) -> None:
         for source_param, target_param in zip(source.parameters(), target.parameters()):
             target_param.data.copy_(
                 target_param.data * (1.0 - tau) + source_param.data * tau
@@ -212,7 +210,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q2p_out: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
         discrete: bool,
-    ):
+    ) -> torch.Tensor:
         min_policy_qs = {}
 
         for name in values.keys():
@@ -240,7 +238,7 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
         discrete: bool,
-    ):
+    ) -> torch.Tensor:
         _ent_coef = torch.exp(self._log_ent_coef)
         if not discrete:
             mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())), axis=0)
@@ -253,7 +251,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
     def sac_entropy_loss(
         self, log_probs: torch.Tensor, loss_masks: torch.Tensor, discrete: bool
-    ):
+    ) -> torch.Tensor:
         if not discrete:
             with torch.no_grad():
                 inner_term = torch.sum(log_probs + self.target_entropy, dim=1)
@@ -292,10 +290,10 @@ class TorchSACOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        next_vis_obs = []
+        vis_obs: List[torch.Tensor] = []
+        next_vis_obs: List[torch.Tensor] = []
         if self.policy.use_vis_obs:
             vis_obs = []
-            next_vis_obs = []
             for idx, _ in enumerate(
                 self.policy.actor_critic.network_body.visual_encoders
             ):
@@ -303,8 +301,6 @@ class TorchSACOptimizer(TorchOptimizer):
                 vis_obs.append(vis_ob)
                 next_vis_ob = torch.as_tensor(batch["next_visual_obs%d" % idx])
                 next_vis_obs.append(next_vis_ob)
-        else:
-            vis_obs = []
 
         # Copy normalizers from policy
         self.value_network.q1_network.copy_normalization(
