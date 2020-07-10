@@ -1,9 +1,9 @@
 from typing import Any, Dict, List, Optional, Tuple
 import abc
-import os
 import numpy as np
 from distutils.version import LooseVersion
 
+from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
@@ -401,18 +401,35 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def save_model(self, steps):
+    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
         """
-        Saves the model
-        :param steps: The number of steps the model was trained for
-        :return:
+        Checkpoints the policy on disk.
+
+        :param checkpoint_path: filepath to write the checkpoint
+        :param settings: SerializationSettings for exporting the model.
         """
+        # Save the TF checkpoint and graph definition
         with self.graph.as_default():
-            last_checkpoint = os.path.join(self.model_path, f"model-{steps}.ckpt")
-            self.saver.save(self.sess, last_checkpoint)
+            if self.saver:
+                self.saver.save(self.sess, f"{checkpoint_path}.ckpt")
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
+        # also save the policy so we have optimized model files for each checkpoint
+        self.save(checkpoint_path, settings)
+
+    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
+        """
+        Saves the serialized model, given a path and SerializationSettings
+
+        This method will save the policy graph to the given filepath.  The path
+        should be provided without an extension as multiple serialized model formats
+        may be generated as a result.
+
+        :param output_filepath: path (without suffix) for the model file(s)
+        :param settings: SerializationSettings for how to save the model.
+        """
+        export_policy_model(output_filepath, settings, self.graph, self.sess)
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """

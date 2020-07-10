@@ -66,28 +66,26 @@ class TrainerController(object):
         tf.set_random_seed(training_seed)
 
     @timed
-    def _save_model(self):
+    def _save_models(self):
         """
         Saves current model to checkpoint folder.
         """
         for brain_name in self.trainers.keys():
-            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
-                self.trainers[brain_name].save_model(name_behavior_id)
+            self.trainers[brain_name].save_model()
         self.logger.info("Saved Model")
 
     def _save_model_when_interrupted(self):
         self.logger.info(
             "Learning was interrupted. Please wait while the graph is generated."
         )
-        self._save_model()
+        self._save_models()
 
     def _export_graph(self):
         """
-        Exports latest saved models to .nn format for Unity embedding.
+        Saves models for all trainers.
         """
         for brain_name in self.trainers.keys():
-            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
-                self.trainers[brain_name].export_model(name_behavior_id)
+            self.trainers[brain_name].save_model()
 
     @staticmethod
     def _create_output_path(output_path):
@@ -205,8 +203,7 @@ class TrainerController(object):
                 raise ex
         finally:
             if self.train_model:
-                self._save_model()
-                self._export_graph()
+                self._save_models()
 
     def end_trainer_episodes(self) -> None:
         # Reward buffers reset takes place only for curriculum learning
