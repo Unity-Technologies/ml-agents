@@ -336,14 +336,12 @@ class ActorCritic(nn.Module):
         for action_dist in dists:
             action = action_dist.sample()
             actions.append(action)
-        actions = torch.stack(actions, dim=-1)
         return actions
 
-    def get_probs_and_entropy(self, actions, dists):
+    def get_probs_and_entropy(self, action_list, dists):
         log_probs = []
         entropies = []
-        for idx, action_dist in enumerate(dists):
-            action = actions[..., idx]
+        for action, action_dist in zip(action_list, dists):
             log_prob = action_dist.log_prob(action)
             log_probs.append(log_prob)
             entropies.append(action_dist.entropy())
@@ -379,7 +377,8 @@ class ActorCritic(nn.Module):
         dists, value_outputs, memories = self.get_dist_and_value(
             vec_inputs, vis_inputs, masks, memories, sequence_length
         )
-        sampled_actions = self.sample_action(dists)
+        action_list = self.sample_action(dists)
+        sampled_actions = torch.stack(action_list, dim=-1)
         return (
             sampled_actions,
             dists[0].pdf(sampled_actions),

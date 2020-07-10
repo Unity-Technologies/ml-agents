@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 import numpy as np
 import torch
+
 import os
 from torch import onnx
 from mlagents.trainers.action_info import ActionInfo
@@ -151,8 +152,11 @@ class TorchPolicy(Policy):
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
-        actions = self.actor_critic.sample_action(dists)
-        log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
+        action_list = self.actor_critic.sample_action(dists)
+        log_probs, entropies = self.actor_critic.get_probs_and_entropy(
+            action_list, dists
+        )
+        actions = torch.stack(action_list, dim=-1)
         if self.use_continuous_act:
             actions = actions[:, :, 0]
         else:
@@ -166,8 +170,10 @@ class TorchPolicy(Policy):
         dists, (value_heads, mean_value), _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-
-        log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
+        action_list = [actions[..., i] for i in range(actions.shape[2])]
+        log_probs, entropies = self.actor_critic.get_probs_and_entropy(
+            action_list, dists
+        )
 
         return log_probs, entropies, value_heads
 

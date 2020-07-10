@@ -34,9 +34,13 @@ class GaussianDistInstance(nn.Module):
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
+    def __init__(self, mean, std):
+        super().__init__(mean, std)
+        self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
+
     def sample(self):
         unsquashed_sample = super().sample()
-        squashed = torch.tanh(unsquashed_sample)
+        squashed = self.transform(unsquashed_sample)
         return squashed
 
     def _inverse_tanh(self, value):
@@ -44,8 +48,9 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
 
     def log_prob(self, value):
-        return super().log_prob(self._inverse_tanh(value)) - torch.log(
-            1 - value ** 2 + EPSILON
+        unsquashed = self.transform.inv(value)
+        return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
+            unsquashed, value
         )
 
 
