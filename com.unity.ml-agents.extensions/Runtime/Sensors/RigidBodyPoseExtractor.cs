@@ -16,13 +16,22 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Initialize given a root RigidBody.
         /// </summary>
         /// <param name="rootBody"></param>
-        public RigidBodyPoseExtractor(Rigidbody rootBody)
+        public RigidBodyPoseExtractor(Rigidbody rootBody, GameObject rootGameObject = null)
         {
             if (rootBody == null)
             {
                 return;
             }
-            var rbs = rootBody.GetComponentsInChildren <Rigidbody>();
+
+            Rigidbody[] rbs;
+            if (rootGameObject == null)
+            {
+                rbs = rootBody.GetComponentsInChildren<Rigidbody>();
+            }
+            else
+            {
+                rbs = rootGameObject.GetComponentsInChildren<Rigidbody>();
+            }
             var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
             var parentIndices = new int[rbs.Length];
 

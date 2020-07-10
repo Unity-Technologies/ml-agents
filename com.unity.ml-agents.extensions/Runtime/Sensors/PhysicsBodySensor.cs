@@ -20,9 +20,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="rootBody"></param>
         /// <param name="settings"></param>
         /// <param name="sensorName"></param>
-        public PhysicsBodySensor(Rigidbody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(Rigidbody rootBody, GameObject rootGameObject, PhysicsSensorSettings settings, string sensorName=null)
         {
-            m_PoseExtractor = new RigidBodyPoseExtractor(rootBody);
+            m_PoseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject);
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;
 

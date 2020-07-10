@@ -30,7 +30,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            return new PhysicsBodySensor(RootBody, Settings, sensorName);
+            return new PhysicsBodySensor(RootBody, gameObject, Settings, sensorName);
         }
 
         /// <inheritdoc/>
@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             // TODO static method in PhysicsBodySensor?
             // TODO only update PoseExtractor when body changes?
-            var poseExtractor = new RigidBodyPoseExtractor(RootBody);
+            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject);
             var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);
             return new[] { numTransformObservations };
         }

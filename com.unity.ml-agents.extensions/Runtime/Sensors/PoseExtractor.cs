@@ -118,14 +118,15 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return;
             }
 
-            var worldTransform = GetPoseAt(0);
-            var worldToModel = worldTransform.Inverse();
+            var rootWorldTransform = GetPoseAt(0);
+            var worldToModel = rootWorldTransform.Inverse();
             var rootLinearVel = GetLinearVelocityAt(0);
 
             for (var i = 0; i < m_ModelSpacePoses.Length; i++)
             {
-                var currentTransform = GetPoseAt(i);
-                m_ModelSpacePoses[i] = worldToModel.Multiply(currentTransform);
+                var currentWorldSpacePose = GetPoseAt(i);
+                var currentModelSpacePose = worldToModel.Multiply(currentWorldSpacePose);
+                m_ModelSpacePoses[i] = currentModelSpacePose;
 
                 var currentBodyLinearVel = GetLinearVelocityAt(i);
                 var relativeVelocity = currentBodyLinearVel - rootLinearVel;
