@@ -1,8 +1,9 @@
 from enum import Enum
-from typing import Callable, NamedTuple, List
+from typing import Callable, NamedTuple, List, Optional, Dict, Tuple
 
 import torch
 from torch import nn
+import numpy as np
 
 from mlagents.trainers.distributions_torch import (
     GaussianDistribution,
@@ -19,6 +20,16 @@ EncoderFunction = Callable[
 ]
 
 EPSILON = 1e-7
+
+
+def list_to_tensor(
+    ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = None
+) -> torch.Tensor:
+    """
+    Converts a list of numpy arrays into a tensor. MUCH faster than
+    calling as_tensor on the list directly.
+    """
+    return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
 
 
 class ActionType(Enum):
@@ -94,7 +105,7 @@ class NetworkBody(nn.Module):
             for idx, vec_input in enumerate(vec_inputs):
                 self.vector_normalizers[idx].update(vec_input)
 
-    def copy_normalization(self, other_network: "NetworkBody"):
+    def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
             for n1, n2 in zip(
                 self.vector_normalizers, other_network.vector_normalizers
@@ -141,7 +152,7 @@ class NetworkBody(nn.Module):
 
 
 class ContinuousQNetwork(NetworkBody):
-    def __init__(
+    def __init__(  # pylint: disable=W0231
         self,
         stream_names: List[str],
         vector_sizes: List[int],
@@ -161,7 +172,7 @@ class ContinuousQNetwork(NetworkBody):
         self.m_size = (
             network_settings.memory.memory_size
             if network_settings.memory is not None
-            else 0,
+            else 0
         )
 
         visual_encoder = ModelUtils.get_encoder_for_type(
@@ -193,14 +204,14 @@ class ContinuousQNetwork(NetworkBody):
             self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
         self.q_heads = ValueHeads(stream_names, network_settings.hidden_units)
 
-    def forward(
+    def forward(  # pylint: disable=W0221
         self,
-        vec_inputs,
-        vis_inputs,
-        memories=None,
-        sequence_length=1,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        memories: torch.Tensor = None,
+        sequence_length: int = 1,
         actions: torch.Tensor = None,
-    ):
+    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         vec_embeds = []
         for idx, encoder in enumerate(self.vector_encoders):
             vec_input = vec_inputs[idx]
@@ -441,7 +452,7 @@ class Normalizer(nn.Module):
         self.running_variance = new_variance
         self.normalization_steps = total_new_steps
 
-    def copy_from(self, other_normalizer: "Normalizer"):
+    def copy_from(self, other_normalizer: "Normalizer") -> None:
         self.normalization_steps.data.copy_(other_normalizer.normalization_steps.data)
         self.running_mean.data.copy_(other_normalizer.running_mean.data)
         self.running_variance.copy_(other_normalizer.running_variance.data)

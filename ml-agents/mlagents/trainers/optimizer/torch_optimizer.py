@@ -12,6 +12,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.settings import TrainerSettings, RewardSignalType
 from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.models_torch import list_to_tensor
 
 
 class TorchOptimizer(Optimizer):  # pylint: disable=W0223
@@ -79,13 +80,13 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
-        vector_obs = [torch.as_tensor(batch["vector_obs"])]
+        vector_obs = [list_to_tensor(batch["vector_obs"])]
         if self.policy.use_vis_obs:
             visual_obs = []
             for idx, _ in enumerate(
                 self.policy.actor_critic.network_body.visual_encoders
             ):
-                visual_ob = torch.as_tensor(batch["visual_obs%d" % idx])
+                visual_ob = list_to_tensor(batch["visual_obs%d" % idx])
                 visual_obs.append(visual_ob)
         else:
             visual_obs = []
@@ -93,7 +94,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         memory = torch.zeros([1, len(vector_obs[0]), self.policy.m_size])
 
         next_obs = np.concatenate(next_obs, axis=-1)
-        next_obs = [torch.as_tensor(next_obs).unsqueeze(0)]
+        next_obs = [list_to_tensor(next_obs).unsqueeze(0)]
         next_memory = torch.zeros([1, 1, self.policy.m_size])
 
         value_estimates, mean_value = self.policy.actor_critic.critic_pass(

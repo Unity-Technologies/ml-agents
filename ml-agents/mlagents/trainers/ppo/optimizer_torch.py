@@ -7,6 +7,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.models_torch import list_to_tensor
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -91,18 +92,18 @@ class TorchPPOOptimizer(TorchOptimizer):
         returns = {}
         old_values = {}
         for name in self.reward_signals:
-            old_values[name] = torch.as_tensor(batch["{}_value_estimates".format(name)])
-            returns[name] = torch.as_tensor(batch["{}_returns".format(name)])
+            old_values[name] = list_to_tensor(batch["{}_value_estimates".format(name)])
+            returns[name] = list_to_tensor(batch["{}_returns".format(name)])
 
-        vec_obs = [torch.as_tensor(batch["vector_obs"])]
-        act_masks = torch.as_tensor(batch["action_mask"])
+        vec_obs = [list_to_tensor(batch["vector_obs"])]
+        act_masks = list_to_tensor(batch["action_mask"])
         if self.policy.use_continuous_act:
-            actions = torch.as_tensor(batch["actions"]).unsqueeze(-1)
+            actions = list_to_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = torch.as_tensor(batch["actions"], dtype=torch.long)
+            actions = list_to_tensor(batch["actions"], dtype=torch.long)
 
         memories = [
-            torch.as_tensor(batch["memory"][i])
+            list_to_tensor(batch["memory"][i])
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
         if len(memories) > 0:
@@ -113,7 +114,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             for idx, _ in enumerate(
                 self.policy.actor_critic.network_body.visual_encoders
             ):
-                vis_ob = torch.as_tensor(batch["visual_obs%d" % idx])
+                vis_ob = list_to_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
         else:
             vis_obs = []
@@ -127,10 +128,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         value_loss = self.ppo_value_loss(values, old_values, returns)
         policy_loss = self.ppo_policy_loss(
-            torch.as_tensor(batch["advantages"]),
+            list_to_tensor(batch["advantages"]),
             log_probs,
-            torch.as_tensor(batch["action_probs"]),
-            torch.as_tensor(batch["masks"], dtype=torch.int32),
+            list_to_tensor(batch["action_probs"]),
+            list_to_tensor(batch["masks"], dtype=torch.int32),
         )
         loss = (
             policy_loss
