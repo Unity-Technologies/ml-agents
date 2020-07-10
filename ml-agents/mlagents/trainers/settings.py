@@ -101,7 +101,7 @@ class PPOTransferSettings(HyperparamSettings):
 
     separate_value_train: bool = False
     separate_policy_train: bool = False
-    seprate_value_net: bool = False
+    separate_value_net: bool = False
     use_var_encoder: bool = False
     use_var_predict: bool = False
     with_prior: bool = False
@@ -112,7 +112,10 @@ class PPOTransferSettings(HyperparamSettings):
     in_batch_alter: bool = False
     in_epoch_alter: bool = False
     use_op_buffer: bool = False
-    train_type: str = "all"
+    train_encoder: bool = True
+    train_model: bool = True
+    train_policy: bool = True
+    train_value: bool = True
     feature_size: int = 16
         
     # Transfer
@@ -121,6 +124,9 @@ class PPOTransferSettings(HyperparamSettings):
     conv_thres: float = 1e-3
     transfer_path: str = ""
     transfer_type: str = "dynamics"
+    load_model: bool = True
+    load_value: bool = True
+    load_policy: bool = True
 
     # Network
     encoder_layers: int = 1

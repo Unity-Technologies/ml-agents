@@ -143,7 +143,6 @@ class TransferPolicy(TFPolicy):
                 # We assume the first thing created in the graph is the Policy. If
                 # already populated, don't create more tensors.
                 return
-
             self.create_input_placeholders()
             self.current_action = tf.placeholder(
                     shape=[None, sum(self.act_size)], dtype=tf.float32, name="current_action"
@@ -282,11 +281,19 @@ class TransferPolicy(TFPolicy):
 
         # slim.model_analyzer.analyze_vars(self.trainable_variables, print_info=True)
     
-    def load_graph_partial(self, path: str, transfer_type="dynamics"):
-        load_nets = {"dynamics": ["predict"], 
+    def load_graph_partial(self, path: str, transfer_type="dynamics", load_model=True, load_policy=True,
+        load_value=True):
+        load_nets = {"dynamics": [], 
             "observation": ["encoding", "inverse"]}
+        if load_model:
+            load_nets["dynamics"].append("predict")
+        if load_policy:
+            load_nets["dynamics"].append("policy")
+        if load_value:
+            load_nets["dynamics"].append("value")
         if self.inverse_model:
             load_nets["dynamics"].append("inverse")
+            
         with self.graph.as_default():
             for net in load_nets[transfer_type]:
                 variables_to_restore = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, net)
@@ -1009,8 +1016,8 @@ class TransferPolicy(TFPolicy):
                 self.h_size
                 * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                activation=ModelUtils.swish,
-                kernel_initializer=tf.initializers.variance_scaling(1.0),
+                # activation=ModelUtils.swish,
+                # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
         if var_predict:
@@ -1024,8 +1031,8 @@ class TransferPolicy(TFPolicy):
                 hidden,
                 self.feature_size,
                 name="latent",
-                activation=ModelUtils.swish,
-                kernel_initializer=tf.initializers.variance_scaling(1.0),
+                # activation=ModelUtils.swish,
+                # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
         squared_difference = 0.5 * tf.reduce_sum(
@@ -1049,15 +1056,15 @@ class TransferPolicy(TFPolicy):
                 self.h_size
                 * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                activation=ModelUtils.swish,
-                kernel_initializer=tf.initializers.variance_scaling(1.0),
+                # activation=ModelUtils.swish,
+                # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
         self.pred_reward = tf.layers.dense(
             hidden,
             1,
             name="reward",
-            activation=ModelUtils.swish,
-            kernel_initializer=tf.initializers.variance_scaling(1.0),
+            # activation=ModelUtils.swish,
+            # kernel_initializer=tf.initializers.variance_scaling(1.0),
         )
         self.reward_loss = tf.reduce_mean(
             tf.squared_difference(self.pred_reward, self.current_reward)
