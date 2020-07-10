@@ -1,10 +1,11 @@
+#if UNITY_2020_1_OR_NEWER
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Sensors;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
-    public class RigidBodyPoseExtractorTests
+    public class ArticulationBodyPoseExtractorTests
     {
         [TearDown]
         public void RemoveGameObjects()
@@ -19,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [Test]
         public void TestNullRoot()
         {
-            var poseExtractor = new RigidBodyPoseExtractor(null);
+            var poseExtractor = new ArticulationBodyPoseExtractor(null);
             // These should be no-ops
             poseExtractor.UpdateLocalSpacePoses();
             poseExtractor.UpdateModelSpacePoses();
@@ -31,8 +32,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         public void TestSingleBody()
         {
             var go = new GameObject();
-            var rootRb = go.AddComponent<Rigidbody>();
-            var poseExtractor = new RigidBodyPoseExtractor(rootRb);
+            var rootArticBody = go.AddComponent<ArticulationBody>();
+            var poseExtractor = new ArticulationBodyPoseExtractor(rootArticBody);
             Assert.AreEqual(1, poseExtractor.NumPoses);
         }
 
@@ -40,22 +41,23 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         public void TestTwoBodies()
         {
             // * rootObj
-            //   - rb1
-            //   * go2
-            //     - rb2
-            //     - joint
+            //   - rootArticBody
+            //   * leafGameObj
+            //     - leafArticBody
             var rootObj = new GameObject();
-            var rb1 = rootObj.AddComponent<Rigidbody>();
+            var rootArticBody = rootObj.AddComponent<ArticulationBody>();
 
-            var go2 = new GameObject();
-            var rb2 = go2.AddComponent<Rigidbody>();
-            go2.transform.SetParent(rootObj.transform);
+            var leafGameObj = new GameObject();
+            var leafArticBody = leafGameObj.AddComponent<ArticulationBody>();
+            leafGameObj.transform.SetParent(rootObj.transform);
 
-            var joint = go2.AddComponent<ConfigurableJoint>();
-            joint.connectedBody = rb1;
+            leafArticBody.jointType = ArticulationJointType.RevoluteJoint;
 
-            var poseExtractor = new RigidBodyPoseExtractor(rb1);
+            var poseExtractor = new ArticulationBodyPoseExtractor(rootArticBody);
             Assert.AreEqual(2, poseExtractor.NumPoses);
+            Assert.AreEqual(-1, poseExtractor.GetParentIndex(0));
+            Assert.AreEqual(0, poseExtractor.GetParentIndex(1));
         }
     }
 }
+#endif
