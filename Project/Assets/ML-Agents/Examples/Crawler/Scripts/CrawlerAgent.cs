@@ -53,11 +53,16 @@ public class CrawlerAgent : Agent
     public Material groundedMaterial;
     public Material unGroundedMaterial;
 
+    EnvironmentParameters m_ResetParams;
+
     public override void Initialize()
     {
+        m_ResetParams = Academy.Instance.EnvironmentParameters;
+
         UpdateOrientationCube();
 
         m_JdController = GetComponent<JointDriveController>();
+        SetResetParameters();
 
         //Setup each body part
         m_JdController.SetupBodyPart(body);
@@ -261,6 +266,7 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+        SetResetParameters();
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
@@ -275,6 +281,11 @@ public class CrawlerAgent : Agent
         {
             GetRandomTargetPos();
         }
+    }
+
+    public void SetResetParameters()
+    {
+        m_JdController.jointDampen = m_ResetParams.GetWithDefault("dampen", 3000f);
     }
 
     private void OnDrawGizmosSelected()
