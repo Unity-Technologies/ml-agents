@@ -77,9 +77,15 @@ Transfer_CONFIG = TrainerSettings(
         feature_size=2,
         reuse_encoder=True,
         in_epoch_alter=True,
-        in_batch_alter=False,
+        # in_batch_alter=True,
         use_op_buffer=True,
-        policy_layers=1
+        # policy_layers=0,
+        # value_layers=0,
+        # conv_thres=1e-4,
+        # predict_return=True
+        # separate_policy_train=True,
+        # separate_value_train=True
+        # separate_value_net=True,
     ),
     network_settings=NetworkSettings(num_layers=1, hidden_units=32),
     summary_freq=500,
@@ -182,42 +188,45 @@ def _check_environment_trains(
     tc.start_learning(env_manager)
     # debug_writer.write2file(model_dir+"/reward.txt")
 
-    if (
-        success_threshold is not None
-    ):  # For tests where we are just checking setup and not reward
-        processed_rewards = [
-            reward_processor(rewards) for rewards in env.final_rewards.values()
-        ]
-        assert all(not math.isnan(reward) for reward in processed_rewards)
-        assert all(reward > success_threshold for reward in processed_rewards)
+    # if (
+    #     success_threshold is not None
+    # ):  # For tests where we are just checking setup and not reward
+    #     processed_rewards = [
+    #         reward_processor(rewards) for rewards in env.final_rewards.values()
+    #     ]
+    #     assert all(not math.isnan(reward) for reward in processed_rewards)
+    #     assert all(reward > success_threshold for reward in processed_rewards)
 
 
-def test_2d_model(config=Transfer_CONFIG, obs_spec_type="rich", run_id="modelbased_rich_5e-4", seed=1337):
+def test_2d_model(config=Transfer_CONFIG, obs_spec_type="normal", run_id="model_normal", seed=0):
     env = SimpleTransferEnvironment(
-        [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.8, num_vector=2, obs_spec_type=obs_spec_type
+        [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.1, 
+        num_vector=2, obs_spec_type=obs_spec_type, goal_type="hard"
     )
     new_hyperparams = attr.evolve(
-        config.hyperparameters, batch_size=64, buffer_size=640, learning_rate=5.0e-4,
+        config.hyperparameters, batch_size=120, buffer_size=12000, learning_rate=5.0e-3
     )
-    config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=10000)
+    config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=200000, summary_freq=5000)
     _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
 
-def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich", run_id="transfer_rich_iealter_retrain-enc_5e-4", seed=1337):
+def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich2", run_id="transfer_rich2_from-rich1", seed=1337):
     env = SimpleTransferEnvironment(
-        [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.8, num_vector=2, obs_spec_type=obs_spec_type
+        [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.1, 
+        num_vector=2, obs_spec_type=obs_spec_type, goal_type="hard"
     )
     new_hyperparams = attr.evolve(
-        config.hyperparameters, batch_size=64, buffer_size=640, use_transfer=True,
-        transfer_path="./transfer_results/modelbased_normal_opbuf_ibalter_s2/Simple",
-        use_op_buffer=True, in_epoch_alter=True, learning_rate=5.0e-4, train_policy=False,
-        train_value=False, train_model=False
+        config.hyperparameters, batch_size=120, buffer_size=12000, use_transfer=True,
+        transfer_path="./transfer_results/model_rich1_s0/Simple",
+        use_op_buffer=True, in_epoch_alter=True, in_batch_alter=False, learning_rate=5e-4, 
+        train_policy=False, train_value=False, train_model=False, feature_size=2
     )
-    config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=10000)
+    config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=200000, summary_freq=5000)
     _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
 
 
 if __name__ == "__main__":
     # test_2d_model(seed=0)
+    # test_2d_model(config=PPO_CONFIG, run_id="ppo_normal", seed=0)
     test_2d_transfer(seed=0)
     # for i in range(5):
     #     test_2d_model(seed=i)

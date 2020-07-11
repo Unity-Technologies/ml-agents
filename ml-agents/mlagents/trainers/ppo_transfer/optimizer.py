@@ -88,12 +88,15 @@ class PPOTransferOptimizer(TFOptimizer):
                 "Losses/Value Loss": "value_loss",
                 "Losses/Policy Loss": "policy_loss",
                 "Losses/Model Loss": "model_loss",
-                "Losses/Reward Loss": "reward_loss",
                 "Policy/Learning Rate": "learning_rate",
                 "Policy/Model Learning Rate": "model_learning_rate",
                 "Policy/Epsilon": "decay_epsilon",
                 "Policy/Beta": "decay_beta",
             }
+            if self.predict_return:
+                self.stats_name_to_update_name.update({
+                    "Losses/Reward Loss": "reward_loss",
+                })
             if self.policy.use_recurrent:
                 self.m_size = self.policy.m_size
                 self.memory_in = tf.placeholder(
@@ -560,8 +563,8 @@ class PPOTransferOptimizer(TFOptimizer):
             # self.policy.get_encoder_weights()
 
         for stat_name, update_name in stats_needed.items():
-            if update_name in update_vals.keys():
-                update_stats[stat_name] = update_vals[update_name]
+            # if update_name in update_vals.keys():
+            update_stats[stat_name] = update_vals[update_name]
         
         self.num_updates += 1
         return update_stats
@@ -617,6 +620,7 @@ class PPOTransferOptimizer(TFOptimizer):
     def _construct_feed_dict(
         self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:
+        # print(mini_batch.keys())
         # Do an optional burn-in for memories
         num_burn_in = int(self.burn_in_ratio * self.policy.sequence_length)
         burn_in_mask = np.ones((self.policy.sequence_length), dtype=np.float32)
@@ -654,6 +658,7 @@ class PPOTransferOptimizer(TFOptimizer):
         if self.policy.vis_obs_size > 0:
             for i, _ in enumerate(self.policy.visual_in):
                 feed_dict[self.policy.visual_in[i]] = mini_batch["visual_obs%d" % i]
+                feed_dict[self.policy.visual_next[i]] = mini_batch["next_visual_obs%d" % i]
         if self.policy.use_recurrent:
             feed_dict[self.policy.memory_in] = [
                 mini_batch["memory"][i]

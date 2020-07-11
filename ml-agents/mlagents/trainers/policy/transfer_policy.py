@@ -1013,8 +1013,8 @@ class TransferPolicy(TFPolicy):
         for i in range(forward_layers):
             hidden = tf.layers.dense(
                 hidden,
-                self.h_size
-                * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+                self.h_size,
+                # * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
                 # activation=ModelUtils.swish,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
