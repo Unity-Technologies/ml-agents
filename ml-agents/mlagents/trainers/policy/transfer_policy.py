@@ -429,20 +429,20 @@ class TransferPolicy(TFPolicy):
             self.brain.camera_resolutions
         )
         self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
-        if self.normalize:
-            self.processed_vector_next = ModelUtils.normalize_vector_obs(
-                self.vector_next,
-                self.running_mean,
-                self.running_variance,
-                self.normalization_steps,
-            )
-        else:
-            self.processed_vector_next = self.vector_next
+        # if self.normalize:
+        #     self.processed_vector_next = ModelUtils.normalize_vector_obs(
+        #         self.vector_next,
+        #         self.running_mean,
+        #         self.running_variance,
+        #         self.normalization_steps,
+        #     )
+        # else:
+        #     self.processed_vector_next = self.vector_next
 
         with tf.variable_scope(next_encoder_scope):
             hidden_stream_targ = ModelUtils.create_observation_streams(
                 self.visual_next,
-                self.processed_vector_next,
+                self.vector_next,
                 1,
                 h_size,
                 num_layers,
@@ -512,20 +512,20 @@ class TransferPolicy(TFPolicy):
             self.brain.camera_resolutions
         )
         self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
-        if self.normalize:
-            self.processed_vector_next = ModelUtils.normalize_vector_obs(
-                self.vector_next,
-                self.running_mean,
-                self.running_variance,
-                self.normalization_steps,
-            )
-        else:
-            self.processed_vector_next = self.vector_next
+        # if self.normalize:
+        #     self.processed_vector_next = ModelUtils.normalize_vector_obs(
+        #         self.vector_next,
+        #         self.running_mean,
+        #         self.running_variance,
+        #         self.normalization_steps,
+        #     )
+        # else:
+        #     self.processed_vector_next = self.vector_next
 
         with tf.variable_scope(next_encoder_scope):
             hidden_stream_targ = ModelUtils.create_observation_streams(
                 self.visual_next,
-                self.processed_vector_next,
+                self.vector_next,
                 1,
                 h_size,
                 num_layers,

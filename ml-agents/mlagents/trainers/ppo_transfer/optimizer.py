@@ -632,7 +632,7 @@ class PPOTransferOptimizer(TFOptimizer):
             self.policy.mask_input: mini_batch["masks"] * burn_in_mask,
             self.advantage: mini_batch["advantages"],
             self.all_old_log_probs: mini_batch["action_probs"],
-            self.policy.processed_vector_next: mini_batch["next_vector_in"],
+            self.policy.vector_next: mini_batch["next_vector_in"],
             # self.policy.next_vector_in: mini_batch["next_vector_in"],
             self.policy.current_action: mini_batch["actions"],
             self.policy.current_reward: mini_batch["extrinsic_rewards"],
