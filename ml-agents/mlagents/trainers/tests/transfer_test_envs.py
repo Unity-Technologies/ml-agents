@@ -217,11 +217,12 @@ class SimpleTransferEnvironment(BaseEnv):
             self.goal[name] = []
             for _ in range(self.num_vector):
                 self.goal[name].append(self.random.uniform(-1,1))
-        self.positions[name] = [0.0 for _ in range(self.action_size)]
+        self.positions[name] = [self.random.uniform(-1,1) for _ in range(self.action_size)]
         self.step_count[name] = 0
         self.rewards[name] = 0
         self.agent_id[name] = self.agent_id[name] + 1
         # print("new goal:", self.goal[name])
+        # print("new pos:", self.positions[name])
 
     def _make_batched_step(
         self, name: str, done: bool, reward: float

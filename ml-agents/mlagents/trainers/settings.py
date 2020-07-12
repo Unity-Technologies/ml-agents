@@ -117,6 +117,7 @@ class PPOTransferSettings(HyperparamSettings):
     train_policy: bool = True
     train_value: bool = True
     feature_size: int = 16
+    use_bisim: bool = False
         
     # Transfer
     use_transfer: bool = False

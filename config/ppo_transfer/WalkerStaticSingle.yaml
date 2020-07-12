@@ -4,7 +4,7 @@ behaviors:
     hyperparameters:
       batch_size: 2048
       buffer_size: 20480
-      learning_rate: 0.0001
+      learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
       lambd: 0.95
@@ -17,7 +17,7 @@ behaviors:
       inverse_layers: 1
       separate_value_net: true
       feature_size: 64
-      reuse_encoder: true
+      reuse_encoder: false
       in_epoch_alter: true
       use_op_buffer: true
     network_settings:

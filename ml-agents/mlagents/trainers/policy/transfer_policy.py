@@ -128,6 +128,7 @@ class TransferPolicy(TFPolicy):
         predict_return=False,
         inverse_model=False,
         reuse_encoder=False,
+        use_bisim=False
     ) -> None:
         """
         Builds the tensorflow graph needed for this policy.
@@ -212,6 +213,10 @@ class TransferPolicy(TFPolicy):
             if predict_return:
                 with tf.variable_scope("reward"):
                     self.create_reward_model(self.encoder, self.targ_encoder, forward_layers)
+            
+            if use_bisim:
+                self.create_bisim_model(self.h_size, self.feature_size, encoder_layers,
+                    self.vis_encode_type, forward_layers, var_predict, predict_return)
 
             # if var_predict:
             #     self.predict_distribution, self.predict = self._create_var_world_model(
@@ -1069,3 +1074,99 @@ class TransferPolicy(TFPolicy):
         self.reward_loss = tf.reduce_mean(
             tf.squared_difference(self.pred_reward, self.current_reward)
         )
+    
+    def create_bisim_model(
+        self, 
+        h_size: int,
+        feature_size: int,
+        encoder_layers: int,
+        vis_encode_type: EncoderType,
+        forward_layers: int,
+        var_predict: bool,
+        predict_return: bool
+    ) -> None:
+        with tf.variable_scope("encoding"):
+            self.visual_bisim = ModelUtils.create_visual_input_placeholders(
+                self.brain.camera_resolutions
+            )
+            self.vector_bisim = ModelUtils.create_vector_input(self.vec_obs_size)
+            if self.normalize:
+                self.processed_vector_bisim = ModelUtils.normalize_vector_obs(
+                    self.vector_bisim,
+                    self.running_mean,
+                    self.running_variance,
+                    self.normalization_steps,
+                )
+            else:
+                self.processed_vector_bisim = self.vector_bisim
+
+            hidden_stream = ModelUtils.create_observation_streams(
+                self.visual_bisim,
+                self.vector_bisim,
+                1,
+                h_size,
+                encoder_layers,
+                vis_encode_type,
+                reuse=True
+            )[0]
+
+            self.bisim_encoder = tf.layers.dense(
+                    hidden_stream,
+                    feature_size,
+                    name="latent",
+                    activation=ModelUtils.swish,
+                    kernel_initializer=tf.initializers.variance_scaling(1.0),
+                    reuse=True
+                )
+
+        combined_input = tf.concat(
+            [self.bisim_encoder, self.current_action], axis=1
+        )
+        with tf.variable_scope("predict"):
+            hidden = combined_input
+            for i in range(forward_layers):
+                hidden = tf.layers.dense(
+                    hidden,
+                    self.h_size,
+                    name="hidden_{}".format(i),
+                    reuse=True
+                    # activation=ModelUtils.swish,
+                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                )
+
+            if var_predict:
+                self.bisim_predict_distribution = GaussianEncoderDistribution(
+                    hidden,
+                    self.feature_size
+                )
+                self.bisim_predict = self.predict_distribution.sample()
+            else:
+                self.bisim_predict = tf.layers.dense(
+                    hidden,
+                    self.feature_size,
+                    name="latent",
+                    reuse=True
+                    # activation=ModelUtils.swish,
+                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                )
+        if predict_return:
+            with tf.variable_scope("reward"):
+                hidden = combined_input
+                for i in range(forward_layers):
+                    hidden = tf.layers.dense(
+                        hidden,
+                        self.h_size
+                        * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+                        name="hidden_{}".format(i),
+                        reuse=True
+                        # activation=ModelUtils.swish,
+                        # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                    )
+                self.bisim_pred_reward = tf.layers.dense(
+                    hidden,
+                    1,
+                    name="reward",
+                    reuse=True
+                    # activation=ModelUtils.swish,
+                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                )
