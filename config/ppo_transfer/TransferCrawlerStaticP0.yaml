@@ -10,19 +10,21 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
-      encoder_layers: 2
-      policy_layers: 2
-      value_layers: 3
+      encoder_layers: 3
+      policy_layers: 0
       forward_layers: 2
-      inverse_layers: 1
-      feature_size: 64
+      value_layers: 3
+      feature_size: 32
       reuse_encoder: true
+      separate_value_train: true
       in_epoch_alter: true
-      use_bisim: true
-      separate_value_net: true
+      use_op_buffer: true
       use_var_predict: true
       with_prior: true
-      predict_return: true
+      use_transfer: true
+      load_policy: false
+      load_value: false
+      transfer_path: "results/cs-p0/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
@@ -37,3 +39,4 @@ behaviors:
     time_horizon: 1000
     summary_freq: 30000
     threaded: true
+    transfer: true

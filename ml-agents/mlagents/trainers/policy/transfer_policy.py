@@ -55,6 +55,9 @@ class GaussianEncoderDistribution:
         kl = 0.5 * tf.reduce_sum(tf.square(self.mu) + tf.square(self.sigma) - 2 * self.log_sigma - 1, 1)
         return kl
 
+    def w_distance(self, another):
+        return tf.squared_difference(self.mu, another.mu) + tf.squared_difference(self.sigma, another.sigma)
+
 
 class TransferPolicy(TFPolicy):
     def __init__(
@@ -1137,7 +1140,8 @@ class TransferPolicy(TFPolicy):
             if var_predict:
                 self.bisim_predict_distribution = GaussianEncoderDistribution(
                     hidden,
-                    self.feature_size
+                    self.feature_size,
+                    reuse=True
                 )
                 self.bisim_predict = self.predict_distribution.sample()
             else:

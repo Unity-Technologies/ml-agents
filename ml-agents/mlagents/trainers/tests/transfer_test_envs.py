@@ -79,7 +79,9 @@ class SimpleTransferEnvironment(BaseEnv):
         for name in self.names:
             self.agent_id[name] = 0
             if self.goal_type == "easy":
-                self.goal[name] = self.random.choice([-1, 1])
+                self.goal[name] = []
+                for _ in range(self.num_vector):
+                    self.goal[name].append(self.random.choice([-1, 1]))
             elif self.goal_type == "hard":
                 self.goal[name] = []
                 for _ in range(self.num_vector):
@@ -212,7 +214,9 @@ class SimpleTransferEnvironment(BaseEnv):
 
     def _reset_agent(self, name):
         if self.goal_type == "easy":
-            self.goal[name] = self.random.choice([-1, 1])
+            self.goal[name] = []
+            for _ in range(self.num_vector):
+                self.goal[name].append(self.random.choice([-1, 1]))
         elif self.goal_type == "hard":
             self.goal[name] = []
             for _ in range(self.num_vector):

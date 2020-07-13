@@ -407,7 +407,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 reward_diff = tf.reduce_mean(
                     tf.squared_difference(self.policy.bisim_pred_reward, self.policy.pred_reward)
                 )
-                predict_diff = self.reward_signals["extrinsic_value"].gamma * predict_diff + reward_diff
+                predict_diff = self.reward_signals["extrinsic"].gamma * predict_diff + reward_diff
             encode_dist = tf.reduce_mean(
                 tf.squared_difference(self.policy.encoder, self.policy.bisim_encoder)
             )
@@ -434,6 +434,8 @@ class PPOTransferOptimizer(TFOptimizer):
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse")
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
         if self.train_policy:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
         if self.train_value:
@@ -464,15 +466,20 @@ class PPOTransferOptimizer(TFOptimizer):
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
         if self.train_policy:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
         if self.train_value:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
 
+        policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
+            + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
         self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
         self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
         self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
 
+        model_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
+            + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
         self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
         self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
         self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
@@ -634,22 +641,25 @@ class PPOTransferOptimizer(TFOptimizer):
         
         stats_needed = {
             "Losses/Bisim Loss": "bisim_loss",
-            "Policy/Bisim Learning Rate": "bisim learning_rate",
+            "Policy/Bisim Learning Rate": "bisim_learning_rate",
         }
         update_stats = {}
 
         feed_dict = {
-            self.policy.vector_in: mini_batch1["vector_in"],
-            self.policy.vector_bisim: mini_batch2["vector_in"],
+            self.policy.vector_in: mini_batch1["vector_obs"],
+            self.policy.vector_bisim: mini_batch2["vector_obs"],
             self.policy.current_action: mini_batch3["actions"],
         }
+        # print("batch 1", mini_batch1["vector_obs"])
+        # print("batch 2", mini_batch2["vector_obs"])
+        # print("batch 3", mini_batch3["vector_obs"])
         
         update_vals = self._execute_model(feed_dict, self.bisim_update_dict)
-
+        
         for stat_name, update_name in stats_needed.items():
             if update_name in update_vals.keys():
                 update_stats[stat_name] = update_vals[update_name]
-
+                
         return update_stats
 
     def _construct_feed_dict(

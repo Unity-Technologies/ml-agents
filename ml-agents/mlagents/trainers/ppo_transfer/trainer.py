@@ -6,6 +6,7 @@ from collections import defaultdict
 from typing import cast
 
 import numpy as np
+import copy
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy.nn_policy import NNPolicy
@@ -59,6 +60,7 @@ class PPOTransferTrainer(RLTrainer):
         self.use_iealter = self.hyperparameters.in_epoch_alter
         self.use_op_buffer = self.hyperparameters.use_op_buffer
         self.conv_thres = self.hyperparameters.conv_thres
+        self.use_bisim = self.hyperparameters.use_bisim
         self.num_check = 0
         self.train_model = True
         self.old_loss = np.inf
@@ -219,6 +221,22 @@ class PPOTransferTrainer(RLTrainer):
                     )
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
+                if self.use_bisim:
+                    self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                    buffer1 = copy.deepcopy(self.update_buffer)
+                    self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                    buffer2 = copy.deepcopy(self.update_buffer)
+                    self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                    buffer3 = copy.deepcopy(self.update_buffer)
+                    max_num_batch = buffer_length // batch_size
+                    for i in range(0, max_num_batch * batch_size, batch_size):
+                        update_stats = self.optimizer.update_encoder(
+                            buffer1.make_mini_batch(i, i + batch_size), 
+                            buffer2.make_mini_batch(i, i + batch_size), 
+                            buffer3.make_mini_batch(i, i + batch_size), 
+                        )
+                        for stat_name, value in update_stats.items():
+                            batch_update_stats[stat_name].append(value)
             else:
                 self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
                 buffer = self.update_buffer
