@@ -113,3 +113,12 @@ terminating. In order to address this, set `Max Steps` for the Agents within the
 Scene Inspector to a value greater than 0. Alternatively, it is possible to
 manually set `done` conditions for episodes from within scripts for custom
 episode-terminating events.
+
+## "File name" cannot be opened because the developer cannot be verified.
+
+If you have downloaded the repository using the github website on macOS 10.15 (Catalina)
+or later, you may see this error when attempting to play scenes in the Unity project.
+Workarounds include installing the package using the Unity Package Manager (this is
+the officially supported approach - see [here](Installation.md)), or following the
+instructions [here](https://support.apple.com/en-us/HT202491) to verify the relevant
+files on your machine on a file-by-file basis.
