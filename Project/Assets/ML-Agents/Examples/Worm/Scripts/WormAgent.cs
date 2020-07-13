@@ -189,7 +189,8 @@ public class WormAgent : Agent
 //        velReward = Vector3.Dot(orientationCube.transform.forward,
 //            m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 //        rewardManager.UpdateReward("velReward", velReward);
-        rewardManager.UpdateReward("velReward", (velReward/maximumWalkingSpeed)/MaxStep);
+//        rewardManager.UpdateReward("velReward", (velReward/maximumWalkingSpeed)/MaxStep);
+        rewardManager.UpdateReward("velReward", (velReward/maximumWalkingSpeed));
         
         
 //        m_MovingTowardsDot = Vector3.Dot(orientationCube.transform.forward, m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
@@ -202,7 +203,9 @@ public class WormAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
+//        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
+        facingReward =  Quaternion.Dot(bodySegment0.rotation, orientationCube.transform.rotation);
+//        print(Vector3.Dot(bodySegment0.forward, orientationCube.transform.forward));
 //        rewardManager.UpdateReward("facingReward", facingReward);
 
 //        float bodyRotRelativeToMatrixDot = Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
@@ -210,7 +213,8 @@ public class WormAgent : Agent
 
 //        facingReward =  Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward);
 //        rewardManager.UpdateReward("facingReward", facingReward);
-        rewardManager.UpdateReward("facingReward", facingReward/MaxStep);
+        rewardManager.UpdateReward("facingReward", facingReward);
+//        rewardManager.UpdateReward("facingReward", facingReward/MaxStep);
 //        AddReward(0.01f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward));
     }
 
