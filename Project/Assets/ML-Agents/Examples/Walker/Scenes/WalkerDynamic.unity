@@ -2741,11 +2741,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 758428434940870733, guid: f51e8260728fd4c8fa87bcda9d0e2027,
-        type: 3}
-      propertyPath: rewardsList.Array.data[4].rewardScalar
-      value: -0.001
-      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
