@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         string m_SensorName;
 
         PoseExtractor m_PoseExtractor;
-        JointExtractor[] m_JointExtractors;
+        IJointExtractor[] m_JointExtractors;
         PhysicsSensorSettings m_Settings;
 
         /// <summary>
@@ -26,10 +26,10 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_PoseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject);
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;
-            m_JointExtractors = new JointExtractor[0];
+            m_JointExtractors = new IJointExtractor[0];
 
             var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
-            // TODO Account for JointExtractor sizes
+            // TODO Account for IJointExtractor sizes
             m_Shape = new[] { numTransformObservations };
         }
 
@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numJointExtractorObservations = 0;
             var articBodies = poseExtractor.Bodies;
-            m_JointExtractors = new JointExtractor[articBodies.Length - 1]; // skip the root
+            m_JointExtractors = new IJointExtractor[articBodies.Length - 1]; // skip the root
             for (var i = 1; i < articBodies.Length; i++)
             {
                 var jointExtractor= new ArticulationBodyJointExtractor(articBodies[i]);

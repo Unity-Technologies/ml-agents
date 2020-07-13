@@ -6,7 +6,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-    public class ArticulationBodyJointExtractor : JointExtractor
+    public class ArticulationBodyJointExtractor : IJointExtractor
     {
         ArticulationBody m_Body;
 
