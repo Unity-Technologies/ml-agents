@@ -45,7 +45,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             // TODO only update PoseExtractor when body changes?
             var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject);
             var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);
-            return new[] { numTransformObservations };
+
+            var numJointObservations = 0;
+            // Start from i=1 to ignore the root
+            for (var i = 1; i < poseExtractor.Bodies.Length; i++)
+            {
+                var body = poseExtractor.Bodies[i];
+                var joint = body?.GetComponent<Joint>();
+                numJointObservations += RigidBodyJointExtractor.NumObservations(body, joint, Settings);
+            }
+            return new[] { numTransformObservations + numJointObservations };
         }
     }
 

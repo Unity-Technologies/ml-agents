@@ -42,6 +42,8 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         public bool UseJointPositions;
 
+        public bool UseJointForces;
+
         /// <summary>
         /// Creates a PhysicsSensorSettings with reasonable default values.
         /// </summary>

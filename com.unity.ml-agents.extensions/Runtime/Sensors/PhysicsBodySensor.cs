@@ -23,14 +23,23 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="sensorName"></param>
         public PhysicsBodySensor(Rigidbody rootBody, GameObject rootGameObject, PhysicsSensorSettings settings, string sensorName=null)
         {
-            m_PoseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject);
+            var poseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject);
+            m_PoseExtractor = poseExtractor;
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;
-            m_JointExtractors = new IJointExtractor[0];
+
+            var numJointExtractorObservations = 0;
+            var rigidBodies = poseExtractor.Bodies;
+            m_JointExtractors = new IJointExtractor[rigidBodies.Length - 1]; // skip the root
+            for (var i = 1; i < rigidBodies.Length; i++)
+            {
+                var jointExtractor = new RigidBodyJointExtractor(rigidBodies[i]);
+                numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                m_JointExtractors[i - 1] = jointExtractor;
+            }
 
             var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
-            // TODO Account for IJointExtractor sizes
-            m_Shape = new[] { numTransformObservations };
+            m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
         }
 
 #if UNITY_2020_1_OR_NEWER
@@ -46,7 +55,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_JointExtractors = new IJointExtractor[articBodies.Length - 1]; // skip the root
             for (var i = 1; i < articBodies.Length; i++)
             {
-                var jointExtractor= new ArticulationBodyJointExtractor(articBodies[i]);
+                var jointExtractor = new ArticulationBodyJointExtractor(articBodies[i]);
                 numJointExtractorObservations += jointExtractor.NumObservations(settings);
                 m_JointExtractors[i - 1] = jointExtractor;
             }
