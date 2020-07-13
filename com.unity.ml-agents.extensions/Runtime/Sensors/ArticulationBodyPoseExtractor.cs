@@ -71,6 +71,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             var t = go.transform;
             return new Pose { rotation = t.rotation, position = t.position };
         }
+
+        internal ArticulationBody[] Bodies => m_Bodies;
     }
 }
 #endif // UNITY_2020_1_OR_NEWER

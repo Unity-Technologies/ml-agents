@@ -40,6 +40,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public bool UseLocalSpaceLinearVelocity;
 
+        public bool UseJointPositions;
+
         /// <summary>
         /// Creates a PhysicsSensorSettings with reasonable default values.
         /// </summary>

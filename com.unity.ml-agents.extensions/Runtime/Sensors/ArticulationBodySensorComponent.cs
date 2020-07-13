@@ -33,7 +33,15 @@ namespace Unity.MLAgents.Extensions.Sensors
             // TODO only update PoseExtractor when body changes?
             var poseExtractor = new ArticulationBodyPoseExtractor(RootBody);
             var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);
-            return new[] { numTransformObservations };
+            var numJointObservations = 0;
+            // Start from i=1 to ignore the root
+            for (var i = 1; i < poseExtractor.Bodies.Length; i++)
+            {
+                numJointObservations += ArticulationBodyJointExtractor.NumObservations(
+                    poseExtractor.Bodies[i], Settings
+                );
+            }
+            return new[] { numTransformObservations + numJointObservations };
         }
     }
 
