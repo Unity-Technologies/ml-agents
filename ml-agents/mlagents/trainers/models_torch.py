@@ -384,11 +384,12 @@ class ActorCritic(nn.Module):
                 all_probs.append(action_dist.all_log_prob())
         log_probs = torch.stack(log_probs, dim=-1)
         entropies = torch.stack(entropies, dim=-1)
-        all_probs = torch.cat(all_probs, dim=-1)
         if self.act_type == ActionType.CONTINUOUS:
             log_probs = log_probs.squeeze(-1)
             entropies = entropies.squeeze(-1)
             all_probs = None
+        else:
+            all_probs = torch.cat(all_probs, dim=-1)
         return log_probs, entropies, all_probs
 
     def get_dist_and_value(

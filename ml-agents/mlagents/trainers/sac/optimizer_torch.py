@@ -410,7 +410,7 @@ class TorchSACOptimizer(TorchOptimizer):
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
-            all_log_probs=True,
+            all_log_probs=not self.policy.use_continuous_act,
         )
         squeezed_actions = actions.squeeze(-1)
 
