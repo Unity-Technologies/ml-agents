@@ -83,6 +83,12 @@ training a maze-solving agent, you would probably want to change the maze itself
 for each training episode. Otherwise, the agent would probably on learn to solve
 one, particular maze, not mazes in general.
 
+#### Academy Pitfalls
+
+In some games, it may be desirable to step the environment with the Academy manually via `Academy.Instance.EnvironmentStep()`.
+If this is the case, be sure `Academy.Instance.EnvironmentStep()` is not called directly or indirectly by the agent's
+`CollectObservations()` function as this will cause an infinite loop that prevents that main Academy update function from being called.
+
 ### Multiple Areas
 
 In many of the example environments, many copies of the training area are
