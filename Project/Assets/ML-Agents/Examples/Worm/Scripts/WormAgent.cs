@@ -6,6 +6,7 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
+    
     [Header("Target To Walk Towards")] [Space(10)]
     public TargetController target; //Target the agent will walk towards.
     
@@ -186,6 +187,9 @@ public class WormAgent : Agent
         
         velReward = Vector3.Dot(orientationCube.transform.forward,
             Vector3.ClampMagnitude(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, maximumWalkingSpeed));
+        matchSpeedReward =
+            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
 //        velReward = Vector3.Dot(orientationCube.transform.forward,
 //            m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 //        rewardManager.UpdateReward("velReward", velReward);
