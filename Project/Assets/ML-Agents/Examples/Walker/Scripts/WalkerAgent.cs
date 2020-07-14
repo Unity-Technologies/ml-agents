@@ -10,8 +10,10 @@ using Random = UnityEngine.Random;
 public class WalkerAgent : Agent
 {
     [Range(0, 15)]
-    public float walkingSpeed = 15; //The max walk velocity magnitude an agent will be rewarded for
-
+    public float walkingSpeed = 15; //The walking speed to try and achieve
+    float m_maxWalkingSpeed = 15; //The max walking speed
+    public bool randomizeWalkSpeedEachEpisode;
+    
     Vector3 m_WalkDir; //Direction to the target
 
     [Header("Target To Walk Towards")] [Space(10)]
@@ -89,7 +91,7 @@ public class WalkerAgent : Agent
 
         rewardManager.ResetEpisodeRewards();
         
-        walkingSpeed = Random.Range(0.0f, 15f); //Random Walk Speed
+        walkingSpeed = randomizeWalkSpeedEachEpisode? Random.Range(0.0f, m_maxWalkingSpeed): walkingSpeed; //Random Walk Speed
 
         SetResetParameters();
     }
