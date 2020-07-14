@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import numpy as np
 import torch
 
@@ -32,6 +32,7 @@ class TorchPolicy(Policy):
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
+        separate_critic: Optional[bool] = None,
     ):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
@@ -116,7 +117,9 @@ class TorchPolicy(Policy):
             visual_sizes=brain.camera_resolutions,
             vis_encode_type=trainer_settings.network_settings.vis_encode_type,
             stream_names=reward_signal_names,
-            separate_critic=self.use_continuous_act,
+            separate_critic=separate_critic
+            if separate_critic is not None
+            else self.use_continuous_act,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
@@ -144,7 +147,18 @@ class TorchPolicy(Policy):
             self.actor_critic.update_normalization(vector_obs)
 
     @timed
-    def sample_actions(self, vec_obs, vis_obs, masks=None, memories=None, seq_len=1):
+    def sample_actions(
+        self,
+        vec_obs,
+        vis_obs,
+        masks=None,
+        memories=None,
+        seq_len=1,
+        all_log_probs=False,
+    ):
+        """
+        :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
+        """
         dists, (
             value_heads,
             mean_value,
@@ -153,7 +167,7 @@ class TorchPolicy(Policy):
         )
 
         action_list = self.actor_critic.sample_action(dists)
-        log_probs, entropies = self.actor_critic.get_probs_and_entropy(
+        log_probs, entropies, all_logs = self.actor_critic.get_probs_and_entropy(
             action_list, dists
         )
         actions = torch.stack(action_list, dim=-1)
@@ -162,7 +176,13 @@ class TorchPolicy(Policy):
         else:
             actions = actions[:, 0, :]
 
-        return actions, log_probs, entropies, value_heads, memories
+        return (
+            actions,
+            all_logs if all_log_probs else log_probs,
+            entropies,
+            value_heads,
+            memories,
+        )
 
     def evaluate_actions(
         self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
@@ -171,7 +191,7 @@ class TorchPolicy(Policy):
             vec_obs, vis_obs, masks, memories, seq_len
         )
         action_list = [actions[..., i] for i in range(actions.shape[2])]
-        log_probs, entropies = self.actor_critic.get_probs_and_entropy(
+        log_probs, entropies, _ = self.actor_critic.get_probs_and_entropy(
             action_list, dists
         )
 

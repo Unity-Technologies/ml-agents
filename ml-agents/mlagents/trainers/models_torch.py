@@ -57,6 +57,34 @@ class NormalizerTensors(NamedTuple):
     running_variance: torch.Tensor
 
 
+def break_into_branches(
+    concatenated_logits: torch.Tensor, action_size: List[int]
+) -> List[torch.Tensor]:
+    """
+    Takes a concatenated set of logits that represent multiple discrete action branches
+    and breaks it up into one Tensor per branch.
+    :param concatenated_logits: Tensor that represents the concatenated action branches
+    :param action_size: List of ints containing the number of possible actions for each branch.
+    :return: A List of Tensors containing one tensor per branch.
+    """
+    action_idx = [0] + list(np.cumsum(action_size))
+    branched_logits = [
+        concatenated_logits[:, action_idx[i] : action_idx[i + 1]]
+        for i in range(len(action_size))
+    ]
+    return branched_logits
+
+
+def actions_to_onehot(
+    discrete_actions: torch.Tensor, action_size: List[int]
+) -> List[torch.Tensor]:
+    onehot_branches = [
+        torch.nn.functional.one_hot(_act.T, action_size[i])
+        for i, _act in enumerate(discrete_actions.T)
+    ]
+    return onehot_branches
+
+
 class NetworkBody(nn.Module):
     def __init__(
         self,
@@ -151,7 +179,7 @@ class NetworkBody(nn.Module):
         return embedding, memories
 
 
-class ContinuousQNetwork(NetworkBody):
+class QNetwork(NetworkBody):
     def __init__(  # pylint: disable=W0231
         self,
         stream_names: List[str],
@@ -181,12 +209,13 @@ class ContinuousQNetwork(NetworkBody):
         for vector_size in vector_sizes:
             if vector_size != 0:
                 self.vector_normalizers.append(Normalizer(vector_size))
+                input_size = (
+                    vector_size + sum(act_size)
+                    if not act_type == ActionType.DISCRETE
+                    else vector_size
+                )
                 self.vector_encoders.append(
-                    VectorEncoder(
-                        vector_size + sum(act_size),
-                        self.h_size,
-                        network_settings.num_layers,
-                    )
+                    VectorEncoder(input_size, self.h_size, network_settings.num_layers)
                 )
         for visual_size in visual_sizes:
             self.visual_encoders.append(
@@ -202,7 +231,12 @@ class ContinuousQNetwork(NetworkBody):
         self.visual_encoders = nn.ModuleList(self.visual_encoders)
         if self.use_lstm:
             self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
-        self.q_heads = ValueHeads(stream_names, network_settings.hidden_units)
+        if act_type == ActionType.DISCRETE:
+            self.q_heads = ValueHeads(
+                stream_names, network_settings.hidden_units, sum(act_size)
+            )
+        else:
+            self.q_heads = ValueHeads(stream_names, network_settings.hidden_units)
 
     def forward(  # pylint: disable=W0221
         self,
@@ -340,17 +374,22 @@ class ActorCritic(nn.Module):
 
     def get_probs_and_entropy(self, action_list, dists):
         log_probs = []
+        all_probs = []
         entropies = []
         for action, action_dist in zip(action_list, dists):
             log_prob = action_dist.log_prob(action)
             log_probs.append(log_prob)
             entropies.append(action_dist.entropy())
+            if self.act_type == ActionType.DISCRETE:
+                all_probs.append(action_dist.all_log_prob())
         log_probs = torch.stack(log_probs, dim=-1)
         entropies = torch.stack(entropies, dim=-1)
+        all_probs = torch.cat(all_probs, dim=-1)
         if self.act_type == ActionType.CONTINUOUS:
             log_probs = log_probs.squeeze(-1)
             entropies = entropies.squeeze(-1)
-        return log_probs, entropies
+            all_probs = None
+        return log_probs, entropies, all_probs
 
     def get_dist_and_value(
         self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
@@ -458,13 +497,13 @@ class Normalizer(nn.Module):
 
 
 class ValueHeads(nn.Module):
-    def __init__(self, stream_names, input_size):
+    def __init__(self, stream_names, input_size, output_size=1):
         super(ValueHeads, self).__init__()
         self.stream_names = stream_names
         self.value_heads = {}
 
         for name in stream_names:
-            value = nn.Linear(input_size, 1)
+            value = nn.Linear(input_size, output_size)
             self.value_heads[name] = value
         self.value_heads = nn.ModuleDict(self.value_heads)
 

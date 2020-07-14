@@ -213,7 +213,6 @@ class SACTrainer(RLTrainer):
             self.seed,
             brain_parameters,
             self.trainer_settings,
-            self.is_training,
             self.artifact_path,
             self.load,
             tanh_squash=True,
@@ -239,6 +238,7 @@ class SACTrainer(RLTrainer):
             self.load,
             condition_sigma_on_obs=True,
             tanh_squash=True,
+            separate_critic=True,
         )
         return policy
 

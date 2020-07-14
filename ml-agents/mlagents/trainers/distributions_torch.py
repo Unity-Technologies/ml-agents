@@ -69,6 +69,9 @@ class CategoricalDistInstance(nn.Module):
     def log_prob(self, value):
         return torch.log(self.pdf(value))
 
+    def all_log_prob(self):
+        return torch.log(self.probs)
+
     def entropy(self):
         return torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
