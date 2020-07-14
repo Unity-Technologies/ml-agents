@@ -89,7 +89,7 @@ In some games, it may be desirable to step the environment with the Academy manu
 Note, stepping manually is an advanced scenario and some care is required.
 If this is the case, be sure `Academy.Instance.EnvironmentStep()` is not called directly or indirectly by the agent's
 API e.g. from the `CollectObservations()`, `OnActionReceived`, and `Heuristic()` functions as this will
-cause an infinite loop that prevents the main Academy update function from being called.
+cause an infinite loop that prevents the main Unity `Update()` function from being called.
 
 ### Multiple Areas
 
