@@ -1300,7 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 60
+    VectorObservationSize: 61
     NumStackedVectorObservations: 1
     VectorActionSize: 09000000
     VectorActionDescriptions: []
@@ -1328,18 +1328,19 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
+  walkingSpeedGoal: 7
+  randomizeWalkSpeedEachEpisode: 0
   target: {fileID: 3631016867922337105}
   bodySegment0: {fileID: 1157675730258491367}
   bodySegment1: {fileID: 8710169734452593223}
   bodySegment2: {fileID: 8492982986954425225}
   bodySegment3: {fileID: 4471267154670411807}
   orientationCube: {fileID: 1615945673559713923}
-  rewardMovingTowardsTarget: 0
-  rewardFacingTarget: 0
+  rewardMovingTowardsTarget: 1
+  rewardFacingTarget: 1
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 956508939}
   velReward: 0
-  maximumWalkingSpeed: 5
   facingReward: 0
 --- !u!114 &6354129450058742791
 MonoBehaviour:
@@ -1398,13 +1399,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rewardsList:
   - rewardKey: velReward
-    rewardScalar: 1
+    rewardScalar: 0.03
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
     maxRewardThisSession: 0
   - rewardKey: facingReward
-    rewardScalar: 0.1
+    rewardScalar: 0.01
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
@@ -2528,6 +2529,8 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  walkingSpeedGoal: 15
+  randomizeWalkSpeedEachEpisode: 0
   target: {fileID: 0}
   bodySegment0: {fileID: 0}
   bodySegment1: {fileID: 0}
@@ -2539,7 +2542,6 @@ MonoBehaviour:
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 0}
   velReward: 0
-  maximumWalkingSpeed: 10
   facingReward: 0
 --- !u!114 &3668351471617480446
 MonoBehaviour:
@@ -3767,6 +3769,8 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+  walkingSpeedGoal: 15
+  randomizeWalkSpeedEachEpisode: 0
   target: {fileID: 0}
   bodySegment0: {fileID: 0}
   bodySegment1: {fileID: 0}
@@ -3778,7 +3782,6 @@ MonoBehaviour:
   rewardUseTimePenalty: 0
   rewardManager: {fileID: 0}
   velReward: 0
-  maximumWalkingSpeed: 10
   facingReward: 0
 --- !u!114 &4184493652045809722
 MonoBehaviour:
@@ -5960,7 +5963,7 @@ PrefabInstance:
     - target: {fileID: 3631016866778687563, guid: 46734abd0de454192b407379c6a4ab8d,
         type: 3}
       propertyPath: spawnRadius
-      value: 7
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
         type: 3}

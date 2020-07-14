@@ -6,12 +6,14 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
-    
+    [Range(0, 15)] public float walkingSpeedGoal = 15; //The walking speed to try and achieve
+    float m_maxWalkingSpeed = 15; //The max walking speed
+    public bool randomizeWalkSpeedEachEpisode; //should the walking speed randomize each episode?
+
     [Header("Target To Walk Towards")] [Space(10)]
     public TargetController target; //Target the agent will walk towards.
-    
-    [Header("Body Parts")] [Space(10)]
-    public Transform bodySegment0;
+
+    [Header("Body Parts")] [Space(10)] public Transform bodySegment0;
     public Transform bodySegment1;
     public Transform bodySegment2;
     public Transform bodySegment3;
@@ -26,10 +28,10 @@ public class WormAgent : Agent
     float m_MovingTowardsDot;
     float m_FacingDot;
     Vector3 m_startingPos;
-    
-    [Header("Reward Functions To Use")]
-    [Space(10)]
+
+    [Header("Reward Functions To Use")] [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
+
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
@@ -69,13 +71,17 @@ public class WormAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
+
         //Random start rotation to help generalize
         transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
-        
+
         orientationCube.UpdateOrientation(bodySegment0, target.transform);
         rewardManager.ResetEpisodeRewards();
+
+        walkingSpeedGoal =
+            randomizeWalkSpeedEachEpisode ? Random.Range(0.0f, m_maxWalkingSpeed) : walkingSpeedGoal; //Random Walk Speed
     }
-    
+
     /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
@@ -93,7 +99,8 @@ public class WormAgent : Agent
         if (bp.rb.transform != bodySegment0)
         {
             //Get position relative to hips in the context of our orientation cube's space
-            sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
+            sensor.AddObservation(
+                orientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
             sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
@@ -105,23 +112,23 @@ public class WormAgent : Agent
         float maxDist = 10;
         if (Physics.Raycast(bodySegment0.position, Vector3.down, out hit, maxDist))
         {
-            sensor.AddObservation(hit.distance/maxDist);
+            sensor.AddObservation(hit.distance / maxDist);
         }
         else
             sensor.AddObservation(1);
 
 //        sensor.AddObservation(bodySegment0.rotation);
 //        sensor.AddObservation(orientationCube.transform.rotation);
+        sensor.AddObservation(walkingSpeedGoal);
         sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, orientationCube.transform.forward));
-        
+
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
-        
+
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
-
     }
 
     /// <summary>
@@ -131,7 +138,7 @@ public class WormAgent : Agent
     {
         AddReward(1f);
     }
-    
+
     public override void OnActionReceived(float[] vectorAction)
     {
         // The dictionary with all the body parts in it are in the jdController
@@ -149,7 +156,7 @@ public class WormAgent : Agent
         bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
 
         //Reset if Worm fell through floor;
-        if (bodySegment0.position.y < m_startingPos.y -2)
+        if (bodySegment0.position.y < m_startingPos.y - 2)
         {
             EndEpisode();
         }
@@ -178,43 +185,47 @@ public class WormAgent : Agent
 
     public RewardManager rewardManager;
     public float velReward;
-    public float maximumWalkingSpeed = 5;
+
     /// <summary>
     /// Reward moving towards target & Penalize moving away from target.
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        
-        velReward = Vector3.Dot(orientationCube.transform.forward,
-            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, maximumWalkingSpeed));
-        matchSpeedReward =
-            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+//        velReward = Vector3.Dot(orientationCube.transform.forward,
+//            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, maximumWalkingSpeed));
+        velReward =
+            Mathf.Exp(-0.1f * (orientationCube.transform.forward * walkingSpeedGoal -
                                m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
 //        velReward = Vector3.Dot(orientationCube.transform.forward,
 //            m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 //        rewardManager.UpdateReward("velReward", velReward);
 //        rewardManager.UpdateReward("velReward", (velReward/maximumWalkingSpeed)/MaxStep);
-        rewardManager.UpdateReward("velReward", (velReward/maximumWalkingSpeed));
-        
-        
+//        rewardManager.UpdateReward("velReward", (velReward / maximumWalkingSpeed));
+        rewardManager.UpdateReward("velReward", velReward);
+
+
 //        m_MovingTowardsDot = Vector3.Dot(orientationCube.transform.forward, m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 //        AddReward(0.01f * m_MovingTowardsDot);
     }
 
     public float facingReward;
+
     /// <summary>
     /// Reward facing target & Penalize facing away from target
     /// </summary>
     void RewardFunctionFacingTarget()
     {
 //        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
-        facingReward =  Quaternion.Dot(bodySegment0.rotation, orientationCube.transform.rotation);
+//        facingReward = Quaternion.Dot(bodySegment0.rotation, orientationCube.transform.rotation);
 //        print(Vector3.Dot(bodySegment0.forward, orientationCube.transform.forward));
 //        rewardManager.UpdateReward("facingReward", facingReward);
 
 //        float bodyRotRelativeToMatrixDot = Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
 //        AddReward(0.01f * bodyRotRelativeToMatrixDot);
 
+        //normalizes between (-1, 1)
+        facingReward = 0.5f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward) +
+            0.5f * Vector3.Dot(orientationCube.transform.up, bodySegment0.up);
 //        facingReward =  Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward);
 //        rewardManager.UpdateReward("facingReward", facingReward);
         rewardManager.UpdateReward("facingReward", facingReward);
@@ -229,5 +240,4 @@ public class WormAgent : Agent
     {
         AddReward(-0.001f);
     }
-    
 }
