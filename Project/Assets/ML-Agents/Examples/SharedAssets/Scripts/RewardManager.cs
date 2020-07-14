@@ -11,13 +11,16 @@ public class RewardManager : MonoBehaviour
     {
         public string rewardKey;
 //        [Range(.01f, .05f)]
+        public float rawVal;
         public float rewardScalar = .01f;
 //        public float rewardScalar;
         public float rewardThisStep;
         public float cumulativeThisEpisode;
         public float cumulativeThisSession;
 
-        public float maxRewardThisSession;
+//        public float maxRewardThisSession;
+
+        public int lastNaNStep;
 //        public Reward(string k)
 //        public Reward()
 //        {
@@ -27,13 +30,6 @@ public class RewardManager : MonoBehaviour
     }
 
     private Agent m_thisAgent;
-//    public float moveTowardsTargetReward_episode;
-//    public float moveTowardsTargetReward_cumulative;
-//    public float lookAtTargetReward_episode;
-//    public float lookAtTargetReward_cumulative;
-//    public float headHeightReward_episode;
-//    public float headHeightReward_cumulative;
-
     public List<Reward> rewardsList = new List<Reward>();
     public Dictionary<string, Reward> rewardsDict = new Dictionary<string, Reward>();
     public float maxSteps;
@@ -66,12 +62,19 @@ public class RewardManager : MonoBehaviour
     //Add new rewards
     public void UpdateReward(string key, float rawVal)
     {
-        float val = rawVal * rewardsDict[key].rewardScalar;
-        rewardsDict[key].maxRewardThisSession =1/maxSteps;
-        rewardsDict[key].rewardThisStep = val;
-        rewardsDict[key].cumulativeThisEpisode += val;
-        rewardsDict[key].cumulativeThisSession += val;
-        m_thisAgent.AddReward(val);
+        rewardsDict[key].rawVal = rawVal;
+        float scaledVal = rawVal * rewardsDict[key].rewardScalar;
+
+        //if we get a NaN, set the step
+        if (float.IsNaN(scaledVal))
+            rewardsDict[key].lastNaNStep = m_thisAgent.StepCount;
+        
+//        rewardsDict[key].maxRewardThisSession = scaledVal * maxSteps;
+        rewardsDict[key].rewardThisStep = scaledVal;
+        rewardsDict[key].cumulativeThisEpisode += scaledVal;
+        rewardsDict[key].cumulativeThisSession += scaledVal;
+        
+        m_thisAgent.AddReward(scaledVal);
     }
 
 //    //Add new rewards

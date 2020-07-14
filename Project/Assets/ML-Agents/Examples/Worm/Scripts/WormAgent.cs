@@ -181,6 +181,14 @@ public class WormAgent : Agent
         {
             RewardFunctionTimePenalty();
         }
+        
+        velReward =
+            Mathf.Exp(-0.1f * (orientationCube.transform.forward * walkingSpeedGoal -
+                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
+        facingReward = 0.5f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward) +
+                       0.5f * Vector3.Dot(orientationCube.transform.up, bodySegment0.up);
+        rewardManager.UpdateReward("velFacingComboReward", velReward * facingReward);
+
     }
 
     public RewardManager rewardManager;
