@@ -1,10 +1,11 @@
 import os
+import numpy as np
 from typing import Any, Dict, Optional, List, Tuple
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import DecisionSteps
 from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.models import EncoderType
+from mlagents.trainers.models import EncoderType, NormalizerTensors
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.settings import TrainerSettings
@@ -139,6 +140,7 @@ class TransferPolicy(TFPolicy):
         self.inverse_model = inverse_model
         self.reuse_encoder = reuse_encoder
         self.feature_size = feature_size
+        self.predict_return = predict_return
 
         with self.graph.as_default():
             tf.set_random_seed(self.seed)
@@ -149,8 +151,8 @@ class TransferPolicy(TFPolicy):
                 return
             self.create_input_placeholders()
             self.current_action = tf.placeholder(
-                    shape=[None, sum(self.act_size)], dtype=tf.float32, name="current_action"
-                )
+                shape=[None, sum(self.act_size)], dtype=tf.float32, name="current_action"
+            )
             self.current_reward = tf.placeholder(
                 shape=[None], dtype=tf.float32, name="current_reward"
             )
@@ -295,6 +297,8 @@ class TransferPolicy(TFPolicy):
             "observation": ["encoding", "inverse"]}
         if load_model:
             load_nets["dynamics"].append("predict")
+            if self.predict_return:
+                load_nets["dynamics"].append("reward")
         if load_policy:
             load_nets["dynamics"].append("policy")
         if load_value:
@@ -438,14 +442,20 @@ class TransferPolicy(TFPolicy):
         )
         self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
         if self.normalize:
+            vn_normalization_tensors = self.create_target_normalizer(self.vector_next)
+            self.vn_update_normalization_op = vn_normalization_tensors.update_op
+            self.vn_normalization_steps = vn_normalization_tensors.steps
+            self.vn_running_mean = vn_normalization_tensors.running_mean
+            self.vn_running_variance = vn_normalization_tensors.running_variance
             self.processed_vector_next = ModelUtils.normalize_vector_obs(
                 self.vector_next,
-                self.running_mean,
-                self.running_variance,
-                self.normalization_steps,
+                self.vn_running_mean,
+                self.vn_running_variance,
+                self.vn_normalization_steps,
             )
         else:
             self.processed_vector_next = self.vector_next
+            self.vp_update_normalization_op = None
 
         with tf.variable_scope(next_encoder_scope):
             hidden_stream_targ = ModelUtils.create_observation_streams(
@@ -817,7 +827,56 @@ class TransferPolicy(TFPolicy):
                 inverse_saver = tf.train.Saver(inverse_vars)
                 inverse_checkpoint = os.path.join(self.model_path, f"inverse.ckpt")
                 inverse_saver.save(self.sess, inverse_checkpoint)
+            
+            if self.predict_return:
+                reward_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
+                reward_saver = tf.train.Saver(reward_vars)
+                reward_checkpoint = os.path.join(self.model_path, f"reward.ckpt")
+                reward_saver.save(self.sess, reward_checkpoint)
 
+    def create_target_normalizer(self, vector_obs: tf.Tensor) -> NormalizerTensors:
+        vec_obs_size = vector_obs.shape[1]
+        steps = tf.get_variable(
+            "vn_normalization_steps",
+            [],
+            trainable=False,
+            dtype=tf.int32,
+            initializer=tf.zeros_initializer(),
+        )
+        running_mean = tf.get_variable(
+            "vn_running_mean",
+            [vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initializer=tf.zeros_initializer(),
+        )
+        running_variance = tf.get_variable(
+            "vn_running_variance",
+            [vec_obs_size],
+            trainable=False,
+            dtype=tf.float32,
+            initializer=tf.ones_initializer(),
+        )
+        update_normalization = ModelUtils.create_normalizer_update(
+            vector_obs, steps, running_mean, running_variance
+        )
+        return NormalizerTensors(
+            update_normalization, steps, running_mean, running_variance
+        )
+    
+    def update_normalization(self, vector_obs: np.ndarray, vector_obs_next: np.ndarray) -> None:
+        """
+        If this policy normalizes vector observations, this will update the norm values in the graph.
+        :param vector_obs: The vector observations to add to the running estimate of the distribution.
+        """
+        if self.use_vec_obs and self.normalize:
+            self.sess.run(
+                self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
+            )
+            self.sess.run(
+                self.vn_update_normalization_op, feed_dict={self.vector_next: vector_obs_next}
+            )
+    
     def get_encoder_weights(self):
         with self.graph.as_default():
             enc = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, "encoding/latent/bias:0")
@@ -1093,15 +1152,15 @@ class TransferPolicy(TFPolicy):
                 self.brain.camera_resolutions
             )
             self.vector_bisim = ModelUtils.create_vector_input(self.vec_obs_size)
-            if self.normalize:
-                self.processed_vector_bisim = ModelUtils.normalize_vector_obs(
-                    self.vector_bisim,
-                    self.running_mean,
-                    self.running_variance,
-                    self.normalization_steps,
-                )
-            else:
-                self.processed_vector_bisim = self.vector_bisim
+            # if self.normalize:
+            #     self.processed_vector_bisim = ModelUtils.normalize_vector_obs(
+            #         self.vector_bisim,
+            #         self.running_mean,
+            #         self.running_variance,
+            #         self.normalization_steps,
+            #     )
+            # else:
+            #     self.processed_vector_bisim = self.vector_bisim
 
             hidden_stream = ModelUtils.create_observation_streams(
                 self.visual_bisim,
@@ -1121,10 +1180,14 @@ class TransferPolicy(TFPolicy):
                     kernel_initializer=tf.initializers.variance_scaling(1.0),
                     reuse=True
                 )
-
-        combined_input = tf.concat(
-            [self.bisim_encoder, self.current_action], axis=1
+        self.bisim_action = tf.placeholder(
+            shape=[None, sum(self.act_size)], dtype=tf.float32, name="bisim_action"
         )
+        combined_input = tf.concat(
+            [self.bisim_encoder, self.bisim_action], axis=1
+        )
+        combined_input = tf.stop_gradient(combined_input)
+
         with tf.variable_scope("predict"):
             hidden = combined_input
             for i in range(forward_layers):

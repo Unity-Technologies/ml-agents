@@ -142,7 +142,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 )
                 self.bisim_learning_rate = ModelUtils.create_schedule(
                     ScheduleType.LINEAR,
-                    lr,
+                    lr/10,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
@@ -386,7 +386,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
         self.model_loss = self.policy.forward_loss
         if self.predict_return:
-            self.model_loss += self.policy.reward_loss
+            self.model_loss += 0.5 * self.policy.reward_loss
         if self.with_prior:
             if self.use_var_encoder:
                 self.model_loss += 0.2 * self.policy.encoder_distribution.kl_standard()
@@ -407,7 +407,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 reward_diff = tf.reduce_mean(
                     tf.squared_difference(self.policy.bisim_pred_reward, self.policy.pred_reward)
                 )
-                predict_diff = self.reward_signals["extrinsic"].gamma * predict_diff + reward_diff
+                predict_diff = self.reward_signals["extrinsic"].gamma * predict_diff + tf.abs(reward_diff)
             encode_dist = tf.reduce_mean(
                 tf.squared_difference(self.policy.encoder, self.policy.bisim_encoder)
             )
@@ -637,7 +637,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
         return update_stats
 
-    def update_encoder(self, mini_batch1: AgentBuffer, mini_batch2: AgentBuffer, mini_batch3: AgentBuffer):
+    def update_encoder(self, mini_batch1: AgentBuffer, mini_batch2: AgentBuffer):
         
         stats_needed = {
             "Losses/Bisim Loss": "bisim_loss",
@@ -645,14 +645,20 @@ class PPOTransferOptimizer(TFOptimizer):
         }
         update_stats = {}
 
+        selected_action_1 = self.policy.sess.run(self.policy.selected_actions, feed_dict = {
+            self.policy.vector_in: mini_batch1["vector_obs"],
+        })
+
+        selected_action_2 = self.policy.sess.run(self.policy.selected_actions, feed_dict = {
+            self.policy.vector_in: mini_batch2["vector_obs"],
+        })
+
         feed_dict = {
             self.policy.vector_in: mini_batch1["vector_obs"],
             self.policy.vector_bisim: mini_batch2["vector_obs"],
-            self.policy.current_action: mini_batch3["actions"],
+            self.policy.current_action: selected_action_1,
+            self.policy.bisim_action: selected_action_2,
         }
-        # print("batch 1", mini_batch1["vector_obs"])
-        # print("batch 2", mini_batch2["vector_obs"])
-        # print("batch 3", mini_batch3["vector_obs"])
         
         update_vals = self._execute_model(feed_dict, self.bisim_update_dict)
         

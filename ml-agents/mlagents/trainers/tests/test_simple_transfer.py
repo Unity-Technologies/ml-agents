@@ -198,42 +198,54 @@ def _check_environment_trains(
     #     assert all(reward > success_threshold for reward in processed_rewards)
 
 
-def test_2d_model(config=Transfer_CONFIG, obs_spec_type="rich2", run_id="model_rich2_f4_pv-l0", seed=0):
+def test_2d_model(config=Transfer_CONFIG, obs_spec_type="rich1", run_id="model_rich1_f4_pv-l0_rew-0.5", seed=0):
     env = SimpleTransferEnvironment(
         [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.1, 
         num_vector=2, obs_spec_type=obs_spec_type, goal_type="hard"
     )
     new_hyperparams = attr.evolve(
         config.hyperparameters, batch_size=120, buffer_size=12000, learning_rate=5.0e-3, 
-        # use_bisim=False, predict_return=True, separate_value_train=True, separate_policy_train=True,
-        # use_var_predict=True, with_prior=True, use_op_buffer=True, in_epoch_alter=True, in_batch_alter=False, 
-        # policy_layers=0, value_layers=0, encoder_layers=2, feature_size=4,
+        use_bisim=True, predict_return=True,
+        # separate_value_train=True, separate_policy_train=True,
+        use_var_predict=True, with_prior=True, use_op_buffer=True, in_epoch_alter=True, in_batch_alter=False, 
+        policy_layers=0, value_layers=0, encoder_layers=2, feature_size=4, 
         #use_inverse_model=True
     )
     config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=200000, summary_freq=5000)
     _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
 
-def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich2", run_id="transfer_f4_rich2_from-rich1-retrain-pv", seed=1337):
+def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich1", 
+    transfer_from="./transfer_results/model_rich2_f4_pv-l0_rew_bisim-op_s0/Simple",
+    run_id="transfer_f4_rich1_from-rich2-retrain-pv_rew_bisim-op", seed=1337):
     env = SimpleTransferEnvironment(
         [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.1, 
         num_vector=2, obs_spec_type=obs_spec_type, goal_type="hard"
     )
     new_hyperparams = attr.evolve(
         config.hyperparameters, batch_size=120, buffer_size=12000, use_transfer=True,
-        transfer_path="./transfer_results/model_rich1_f4_pv-l0_s0/Simple",
+        transfer_path=transfer_from,
         use_op_buffer=True, in_epoch_alter=True, in_batch_alter=False, learning_rate=5.0e-3, 
         train_policy=True, train_value=True, train_model=False, feature_size=4,
         use_var_predict=True, with_prior=True, policy_layers=0, load_policy=False, 
-        load_value=False,
-        value_layers=0, encoder_layers=2, 
+        load_value=False, predict_return=True, value_layers=0, encoder_layers=2, 
+        use_bisim=True, 
     )
     config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=200000, summary_freq=5000)
     _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
 
 
 if __name__ == "__main__":
-    # test_2d_model(seed=0)
-    test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
-    # test_2d_transfer(seed=0)
+    for obs in ["normal"]: # ["normal", "rich1", "rich2"]:
+        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs \
+             + "_f4_pv-l0_rew_bisim-op_samelen")
+    # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
+    # for obs in ["normal", "rich1"]:
+    #     test_2d_transfer(seed=0, obs_spec_type="rich2", 
+    #     transfer_from="./transfer_results/model_"+ obs +"_f4_pv-l0_rew_bisim-op_samelen_s0/Simple",
+    #     run_id="transfer_rich2_f4_pv-l0_rew_bisim-op_samelen_from_" + obs)
+    # for obs in ["normal", "rich2"]:
+    #     test_2d_transfer(seed=0, obs_spec_type="rich1", 
+    #     transfer_from="./transfer_results/model_"+ obs +"_f4_pv-l0_rew_bisim-op_new_s0/Simple",
+    #     run_id="transfer_rich1_f4_pv-l0_rew_bisim-op_new_from" + obs)
     # for i in range(5):
     #     test_2d_model(seed=i)
