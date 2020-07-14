@@ -17,10 +17,10 @@ behaviors:
       feature_size: 32
       reuse_encoder: true
       in_epoch_alter: true
-      use_op_buffer: true
-      use_var_predict: true
-      with_prior: true
-      predict_return: true
+      # use_op_buffer: true
+      # use_var_predict: true
+      # with_prior: true
+      # predict_return: true
       # use_bisim: true
       separate_value_net: true
     network_settings:
