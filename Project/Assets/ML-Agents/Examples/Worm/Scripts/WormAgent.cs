@@ -137,6 +137,7 @@ public class WormAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
+        EndEpisode();
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -146,14 +147,16 @@ public class WormAgent : Agent
 
         var i = -1;
         // Pick a new target joint rotation
+        bpDict[bodySegment0].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
         bpDict[bodySegment1].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
         bpDict[bodySegment2].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[bodySegment3].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+//        bpDict[bodySegment3].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
 
         // Update joint strength
+        bpDict[bodySegment0].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment1].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
-        bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
+//        bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
 
         //Reset if Worm fell through floor;
         if (bodySegment0.position.y < m_startingPos.y - 2)
@@ -161,6 +164,29 @@ public class WormAgent : Agent
             EndEpisode();
         }
     }
+//
+//    public override void OnActionReceived(float[] vectorAction)
+//    {
+//        // The dictionary with all the body parts in it are in the jdController
+//        var bpDict = m_JdController.bodyPartsDict;
+//
+//        var i = -1;
+//        // Pick a new target joint rotation
+//        bpDict[bodySegment1].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+//        bpDict[bodySegment2].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+//        bpDict[bodySegment3].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+//
+//        // Update joint strength
+//        bpDict[bodySegment1].SetJointStrength(vectorAction[++i]);
+//        bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
+//        bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
+//
+//        //Reset if Worm fell through floor;
+//        if (bodySegment0.position.y < m_startingPos.y - 2)
+//        {
+//            EndEpisode();
+//        }
+//    }
 
     void FixedUpdate()
     {

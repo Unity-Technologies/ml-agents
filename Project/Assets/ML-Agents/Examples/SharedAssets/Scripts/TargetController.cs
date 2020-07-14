@@ -52,10 +52,10 @@ namespace Unity.MLAgentsExamples
         void OnEnable()
         {
             m_startingPos = transform.position;
-            if (respawnIfTouched)
-            {
+//            if (respawnIfTouched)
+//            {
                 MoveTargetToRandomPosition();
-            }
+//            }
         }
 
         void Update()
