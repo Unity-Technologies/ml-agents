@@ -13,8 +13,11 @@ and this project adheres to
 ### Minor Changes
 
 ### Bug Fixes
-`mlagents-learn` will now raise an error immediately if `--num-envs` is greater than 1 without setting the `--env`
-argument. (#4203)
+#### com.unity.ml-agents (C#)
+- Academy.EnvironmentStep() will now throw an exception if it is called
+recursively (for example, by an Agent's CollectObservations method).
+Previously, this would result in an infinite loop and cause the editor to hang.
+(#4226)
 
 ## [1.2.0-preview] - 2020-07-15
 
