@@ -46,6 +46,11 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
             }
 
+            if (settings.UseJointForces)
+            {
+                totalCount += body.dofCount;
+            }
+
             return totalCount;
         }
 
@@ -78,6 +83,15 @@ namespace Unity.MLAgents.Extensions.Sensors
                     case ArticulationJointType.PrismaticJoint:
                         writer[currentOffset++] = GetPrismaticValue();
                         break;
+                }
+            }
+
+            if (settings.UseJointForces)
+            {
+                for (var dofIndex = 0; dofIndex < m_Body.dofCount; dofIndex++)
+                {
+                    // take tanh to keep in [-1, 1]
+                    writer[currentOffset++] = (float) System.Math.Tanh(m_Body.jointForce[dofIndex]);
                 }
             }
 
@@ -122,8 +136,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var normalized = 2.0f * invLerped - 1.0f;
                 return normalized;
             }
-            // TODO take tanh() to keep in [-1, 1]?
-            return jointPos;
+            // take tanh() to keep in [-1, 1]
+            return (float) System.Math.Tanh(jointPos);
         }
     }
 }

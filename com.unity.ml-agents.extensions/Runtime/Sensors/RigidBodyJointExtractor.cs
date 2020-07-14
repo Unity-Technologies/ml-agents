@@ -27,12 +27,36 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return 0;
             }
 
+            var numObservations = 0;
+            if (settings.UseJointForces)
+            {
+                // 3 force and 3 torque values
+                numObservations += 6;
+            }
 
+            return numObservations;
         }
 
         public int Write(PhysicsSensorSettings settings, ObservationWriter writer, int offset)
         {
-            return 0;
+            if (m_Body == null || m_Joint == null)
+            {
+                return 0;
+            }
+
+            var currentOffset = offset;
+            if (settings.UseJointForces)
+            {
+                // Take tanh of the forces and torques to ensure they're in [-1, 1]
+                writer[currentOffset++] = (float)System.Math.Tanh(m_Joint.currentForce.x);
+                writer[currentOffset++] = (float)System.Math.Tanh(m_Joint.currentForce.y);
+                writer[currentOffset++] = (float)System.Math.Tanh(m_Joint.currentForce.z);
+
+                writer[currentOffset++] = (float)System.Math.Tanh(m_Joint.currentTorque.x);
+                writer[currentOffset++] = (float)System.Math.Tanh(m_Joint.currentTorque.y);
+                writer[currentOffset++] = (float)System.Math.Tanh(m_Joint.currentTorque.z);
+            }
+            return currentOffset - offset;
         }
     }
 }

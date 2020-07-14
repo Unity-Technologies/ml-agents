@@ -167,6 +167,24 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
+        /// <summary>
+        /// Compute the number of floats needed to represent the poses for the given PhysicsSensorSettings.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public int GetNumPoseObservations(PhysicsSensorSettings settings)
+        {
+            int obsPerPose = 0;
+            obsPerPose += settings.UseModelSpaceTranslations ? 3 : 0;
+            obsPerPose += settings.UseModelSpaceRotations ? 4 : 0;
+            obsPerPose += settings.UseLocalSpaceTranslations ? 3 : 0;
+            obsPerPose += settings.UseLocalSpaceRotations ? 4 : 0;
+
+            obsPerPose += settings.UseModelSpaceLinearVelocity ? 3 : 0;
+            obsPerPose += settings.UseLocalSpaceLinearVelocity ? 3 : 0;
+
+            return NumPoses * obsPerPose;
+        }
 
         internal void DrawModelSpace(Vector3 offset)
         {

@@ -72,26 +72,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             get { return UseLocalSpaceTranslations || UseLocalSpaceRotations || UseLocalSpaceLinearVelocity; }
         }
-
-
-        /// <summary>
-        /// The number of floats needed to represent a given number of transforms.
-        /// </summary>
-        /// <param name="numTransforms"></param>
-        /// <returns></returns>
-        public int TransformSize(int numTransforms)
-        {
-            int obsPerTransform = 0;
-            obsPerTransform += UseModelSpaceTranslations ? 3 : 0;
-            obsPerTransform += UseModelSpaceRotations ? 4 : 0;
-            obsPerTransform += UseLocalSpaceTranslations ? 3 : 0;
-            obsPerTransform += UseLocalSpaceRotations ? 4 : 0;
-
-            obsPerTransform += UseModelSpaceLinearVelocity ? 3 : 0;
-            obsPerTransform += UseLocalSpaceLinearVelocity ? 3 : 0;
-
-            return numTransforms * obsPerTransform;
-        }
     }
 
     internal static class ObservationWriterPhysicsExtensions

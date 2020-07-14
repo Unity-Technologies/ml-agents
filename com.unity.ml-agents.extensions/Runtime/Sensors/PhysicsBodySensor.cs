@@ -30,15 +30,22 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numJointExtractorObservations = 0;
             var rigidBodies = poseExtractor.Bodies;
-            m_JointExtractors = new IJointExtractor[rigidBodies.Length - 1]; // skip the root
-            for (var i = 1; i < rigidBodies.Length; i++)
+            if (rigidBodies != null)
             {
-                var jointExtractor = new RigidBodyJointExtractor(rigidBodies[i]);
-                numJointExtractorObservations += jointExtractor.NumObservations(settings);
-                m_JointExtractors[i - 1] = jointExtractor;
+                m_JointExtractors = new IJointExtractor[rigidBodies.Length - 1]; // skip the root
+                for (var i = 1; i < rigidBodies.Length; i++)
+                {
+                    var jointExtractor = new RigidBodyJointExtractor(rigidBodies[i]);
+                    numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                    m_JointExtractors[i - 1] = jointExtractor;
+                }
+            }
+            else
+            {
+                m_JointExtractors = new IJointExtractor[0];
             }
 
-            var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
+            var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
             m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
         }
 
@@ -52,15 +59,22 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numJointExtractorObservations = 0;
             var articBodies = poseExtractor.Bodies;
-            m_JointExtractors = new IJointExtractor[articBodies.Length - 1]; // skip the root
-            for (var i = 1; i < articBodies.Length; i++)
+            if (articBodies != null)
             {
-                var jointExtractor = new ArticulationBodyJointExtractor(articBodies[i]);
-                numJointExtractorObservations += jointExtractor.NumObservations(settings);
-                m_JointExtractors[i - 1] = jointExtractor;
+                m_JointExtractors = new IJointExtractor[articBodies.Length - 1]; // skip the root
+                for (var i = 1; i < articBodies.Length; i++)
+                {
+                    var jointExtractor = new ArticulationBodyJointExtractor(articBodies[i]);
+                    numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                    m_JointExtractors[i - 1] = jointExtractor;
+                }
+            }
+            else
+            {
+                m_JointExtractors = new IJointExtractor[0];
             }
 
-            var numTransformObservations = settings.TransformSize(m_PoseExtractor.NumPoses);
+            var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
             m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
         }
 #endif

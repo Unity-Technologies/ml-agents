@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             // TODO static method in PhysicsBodySensor?
             // TODO only update PoseExtractor when body changes?
             var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject);
-            var numTransformObservations = Settings.TransformSize(poseExtractor.NumPoses);
+            var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;
             // Start from i=1 to ignore the root
@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var joint = body?.GetComponent<Joint>();
                 numJointObservations += RigidBodyJointExtractor.NumObservations(body, joint, Settings);
             }
-            return new[] { numTransformObservations + numJointObservations };
+            return new[] { numPoseObservations + numJointObservations };
         }
     }
 
