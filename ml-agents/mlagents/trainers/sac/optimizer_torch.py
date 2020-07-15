@@ -223,12 +223,14 @@ class TorchSACOptimizer(TorchOptimizer):
                 _q1p_mean = torch.mean(
                     torch.stack(
                         [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q1p]
-                    )
+                    ),
+                    dim=0,
                 )
                 _q2p_mean = torch.mean(
                     torch.stack(
                         [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q2p]
-                    )
+                    ),
+                    dim=0,
                 )
 
                 min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
@@ -412,17 +414,17 @@ class TorchSACOptimizer(TorchOptimizer):
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
         )
-        squeezed_actions = actions.squeeze(-1)
 
         if self.policy.use_continuous_act:
+            squeezed_actions = actions.squeeze(-1)
             q1p_out, q2p_out = self.value_network(vec_obs, vis_obs, sampled_actions)
             q1_out, q2_out = self.value_network(vec_obs, vis_obs, squeezed_actions)
             q1_stream, q2_stream = q1_out, q2_out
         else:
             q1p_out, q2p_out = self.value_network(vec_obs, vis_obs)
             q1_out, q2_out = self.value_network(vec_obs, vis_obs)
-            q1_stream = self._condense_q_streams(q1_out, squeezed_actions)
-            q2_stream = self._condense_q_streams(q2_out, squeezed_actions)
+            q1_stream = self._condense_q_streams(q1_out, actions)
+            q2_stream = self._condense_q_streams(q2_out, actions)
 
         target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
         masks = list_to_tensor(batch["masks"], dtype=torch.int32)
