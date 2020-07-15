@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             var totalCount = 0;
-            if (settings.UseJointPositions)
+            if (settings.UseJointPositionsAndAngles)
             {
                 switch (body.jointType)
                 {
@@ -64,7 +64,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var currentOffset = offset;
 
             // Write joint positions
-            if (settings.UseJointPositions)
+            if (settings.UseJointPositionsAndAngles)
             {
                 switch (m_Body.jointType)
                 {

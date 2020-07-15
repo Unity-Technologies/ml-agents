@@ -40,8 +40,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public bool UseLocalSpaceLinearVelocity;
 
-        public bool UseJointPositions;
+        /// <summary>
+        /// Whether to use joint-specific positions and angles as observations.
+        /// </summary>
+        public bool UseJointPositionsAndAngles;
 
+        /// <summary>
+        /// Whether to use the joint forces and torques that are applied by the solver as observations.
+        /// </summary>
         public bool UseJointForces;
 
         /// <summary>
