@@ -7,7 +7,7 @@ from typing import Dict, cast
 import os
 
 import numpy as np
-
+from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
@@ -76,12 +76,22 @@ class SACTrainer(RLTrainer):
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
-    def save_model(self, name_behavior_id: str) -> None:
+    def _checkpoint(self) -> NNCheckpoint:
         """
-        Saves the model. Overrides the default save_model since we want to save
-        the replay buffer as well.
+        Writes a checkpoint model to memory
+        Overrides the default to save the replay buffer.
         """
-        self.policy.save_model(self.get_step)
+        ckpt = super()._checkpoint()
+        if self.checkpoint_replay_buffer:
+            self.save_replay_buffer()
+        return ckpt
+
+    def save_model(self) -> None:
+        """
+        Saves the final training model to memory
+        Overrides the default to save the replay buffer.
+        """
+        super().save_model()
         if self.checkpoint_replay_buffer:
             self.save_replay_buffer()
 
@@ -308,7 +318,6 @@ class SACTrainer(RLTrainer):
     ) -> None:
         """
         Adds policy to trainer.
-        :param brain_parameters: specifications for policy construction
         """
         if self.policy:
             logger.warning(
@@ -320,6 +329,7 @@ class SACTrainer(RLTrainer):
         if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
+        self.policies[parsed_behavior_id.behavior_id] = policy
         self.optimizer = SACOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)

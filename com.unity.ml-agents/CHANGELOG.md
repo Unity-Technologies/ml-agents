@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Major Changes
+
+### Minor Changes
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Academy.EnvironmentStep() will now throw an exception if it is called
+recursively (for example, by an Agent's CollectObservations method).
+Previously, this would result in an infinite loop and cause the editor to hang.
+(#4226)
+
 ## [1.2.0-preview] - 2020-07-15
 
 ### Major Changes

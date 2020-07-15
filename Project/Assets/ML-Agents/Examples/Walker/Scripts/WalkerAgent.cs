@@ -1,9 +1,11 @@
+using System;
 using MLAgentsExamples;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 using BodyPart = Unity.MLAgentsExamples.BodyPart;
+using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
@@ -171,11 +173,40 @@ public class WalkerAgent : Agent
         // a. Velocity alignment with goal direction.
         var moveTowardsTargetReward = Vector3.Dot(cubeForward,
             Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
+        if (float.IsNaN(moveTowardsTargetReward))
+        {
+            throw new ArgumentException(
+                "NaN in moveTowardsTargetReward.\n" +
+                $" cubeForward: {cubeForward}\n"+
+                $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n"+
+                $" maximumWalkingSpeed: {maximumWalkingSpeed}"
+            );
+        }
+
         // b. Rotation alignment with goal direction.
         var lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
+        if (float.IsNaN(lookAtTargetReward))
+        {
+            throw new ArgumentException(
+                "NaN in lookAtTargetReward.\n" +
+                $" cubeForward: {cubeForward}\n"+
+                $" head.forward: {head.forward}"
+            );
+        }
+
         // c. Encourage head height. //Should normalize to ~1
-        var headHeightOverFeetReward = 
+        var headHeightOverFeetReward =
             ((head.position.y - footL.position.y) + (head.position.y - footR.position.y) / 10);
+        if (float.IsNaN(headHeightOverFeetReward))
+        {
+            throw new ArgumentException(
+                "NaN in headHeightOverFeetReward.\n" +
+                $" head.position: {head.position}\n"+
+                $" footL.position: {footL.position}\n"+
+                $" footR.position: {footR.position}"
+            );
+        }
+
         AddReward(
             + 0.02f * moveTowardsTargetReward
             + 0.02f * lookAtTargetReward

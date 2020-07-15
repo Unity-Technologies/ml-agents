@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
@@ -111,7 +113,7 @@ public class CrawlerAgent : Agent
     {
         //Add body rotation delta relative to orientation cube
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
-        
+
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 
@@ -211,7 +213,15 @@ public class CrawlerAgent : Agent
     {
         var movingTowardsDot = Vector3.Dot(orientationCube.transform.forward,
             Vector3.ClampMagnitude(m_JdController.bodyPartsDict[body].rb.velocity, maximumWalkingSpeed));
-        ;
+        if (float.IsNaN(movingTowardsDot))
+        {
+            throw new ArgumentException(
+                "NaN in movingTowardsDot.\n" +
+                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+                $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n"+
+                $" maximumWalkingSpeed: {maximumWalkingSpeed}"
+            );
+        }
         AddReward(0.03f * movingTowardsDot);
     }
 
@@ -220,7 +230,16 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        AddReward(0.01f * Vector3.Dot(orientationCube.transform.forward, body.forward));
+        var facingReward = Vector3.Dot(orientationCube.transform.forward, body.forward);
+        if (float.IsNaN(facingReward))
+        {
+            throw new ArgumentException(
+                "NaN in movingTowardsDot.\n" +
+                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+                $" body.forward: {body.forward}"
+            );
+        }
+        AddReward(0.01f * facingReward);
     }
 
     /// <summary>

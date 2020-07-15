@@ -95,8 +95,8 @@ in the `results/<run-identifier>` folder:
    blocks. See [Profiling in Python](Profiling-Python.md) for more information
    on the timers generated.
 
-These artifacts (except the `.nn` file) are updated throughout the training
-process and finalized when training completes or is interrupted.
+These artifacts are updated throughout the training
+process and finalized when training is completed or is interrupted.
 
 #### Stopping and Resuming Training
 
