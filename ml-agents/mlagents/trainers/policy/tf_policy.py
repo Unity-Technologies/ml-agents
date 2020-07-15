@@ -446,6 +446,7 @@ class TFPolicy(Policy):
         self.running_variance: Optional[tf.Variable] = None
         self.update_normalization_op: Optional[tf.Operation] = None
         self.vn_update_normalization_op: Optional[tf.Operation] = None
+        self.bi_update_normalization_op: Optional[tf.Operation] = None
         self.value: Optional[tf.Tensor] = None
         self.all_log_probs: tf.Tensor = None
         self.total_log_probs: Optional[tf.Tensor] = None

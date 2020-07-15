@@ -52,6 +52,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
         self.ppo_update_dict: Dict[str, tf.Tensor] = {}
         self.model_update_dict: Dict[str, tf.Tensor] = {}
+        self.model_only_update_dict: Dict[str, tf.Tensor] = {}
         self.bisim_update_dict: Dict[str, tf.Tensor] = {}
 
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
@@ -76,7 +77,7 @@ class PPOTransferOptimizer(TFOptimizer):
             
             self.num_updates = 0
             self.alter_every = 400
-            self.copy_every = 10
+            self.copy_every = 1
             self.old_loss = np.inf
             self.update_mode = "model"
 
@@ -135,6 +136,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 )
                 self.model_learning_rate = ModelUtils.create_schedule(
                     ScheduleType.LINEAR,
+                    # ScheduleType.CONSTANT,
                     lr,
                     self.policy.global_step,
                     int(max_step),
@@ -473,7 +475,7 @@ class PPOTransferOptimizer(TFOptimizer):
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
 
         policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
-            + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
+            + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
         self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
         self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
         self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
@@ -483,6 +485,10 @@ class PPOTransferOptimizer(TFOptimizer):
         self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
         self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
         self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
+
+        self.model_only_optimizer = self.create_optimizer_op(self.model_learning_rate)
+        self.model_only_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=model_train_vars)
+        self.model_only_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=model_train_vars)
 
         self.ppo_update_dict.update(
             {
@@ -505,12 +511,24 @@ class PPOTransferOptimizer(TFOptimizer):
             }
         )
 
+        self.model_only_update_dict.update(
+            {
+                "model_loss": self.model_loss,
+                "update_batch": self.model_only_update_batch,
+                "model_learning_rate": self.model_learning_rate,
+            }
+        )
+
         if self.predict_return:
             self.ppo_update_dict.update({
                 "reward_loss": self.policy.reward_loss,
             })
 
             self.model_update_dict.update({
+                "reward_loss": self.policy.reward_loss,
+            })
+
+            self.model_only_update_dict.update({
                 "reward_loss": self.policy.reward_loss,
             })
 
@@ -599,21 +617,7 @@ class PPOTransferOptimizer(TFOptimizer):
         """
         feed_dict = self._construct_feed_dict(batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
-        # if update_type == "model":
-        #     stats_needed = {
-        #         "Losses/Model Loss": "model_loss",
-        #         "Policy/Learning Rate": "model_learning_rate",
-        #         "Policy/Epsilon": "decay_epsilon",
-        #         "Policy/Beta": "decay_beta",
-        #     }
-        # elif update_type == "policy":
-        #     stats_needed = {
-        #         "Losses/Value Loss": "value_loss",
-        #         "Losses/Policy Loss": "policy_loss",
-        #         "Policy/Learning Rate": "learning_rate",
-        #         "Policy/Epsilon": "decay_epsilon",
-        #         "Policy/Beta": "decay_beta",
-        #     }
+        
         update_stats = {}
         # Collect feed dicts for all reward signals.
         for _, reward_signal in self.reward_signals.items():
@@ -626,6 +630,8 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.model_update_dict)
         elif update_type == "policy":
             update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
+        elif update_type == "model_only":
+            update_vals = self._execute_model(feed_dict, self.model_only_update_dict)
 
         # update target encoder
         if not self.reuse_encoder and self.num_updates % self.copy_every == 0:

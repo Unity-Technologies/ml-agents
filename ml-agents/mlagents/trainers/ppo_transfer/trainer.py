@@ -78,7 +78,8 @@ class PPOTransferTrainer(RLTrainer):
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"], agent_buffer_trajectory["next_vector_in"])
+            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"], 
+                agent_buffer_trajectory["next_vector_in"], agent_buffer_trajectory["vector_obs"])
 
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
@@ -160,7 +161,7 @@ class PPOTransferTrainer(RLTrainer):
         size_of_buffer = self.update_buffer.num_experiences
         return size_of_buffer > self.hyperparameters.buffer_size
 
-    def _update_policy(self):
+    def _update_policy_old(self):
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
@@ -194,6 +195,7 @@ class PPOTransferTrainer(RLTrainer):
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
             if self.use_iealter:
+                # if self.train_model:
                 self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
                 buffer = self.update_buffer
                 max_num_batch = buffer_length // batch_size
@@ -203,6 +205,16 @@ class PPOTransferTrainer(RLTrainer):
                     )
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
+                # else:
+                #     self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                #     buffer = self.update_buffer
+                #     max_num_batch = buffer_length // batch_size
+                #     for i in range(0, max_num_batch * batch_size, batch_size):
+                #         update_stats = self.optimizer.update_part(
+                #             buffer.make_mini_batch(i, i + batch_size), n_sequences, "model_only"
+                #         )
+                #         for stat_name, value in update_stats.items():
+                #             batch_update_stats[stat_name].append(value)
 
                 self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
                 buffer = self.update_buffer
@@ -244,6 +256,8 @@ class PPOTransferTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
+
+        self.num_update += 1
         
         return True
     
@@ -315,7 +329,7 @@ class PPOTransferTrainer(RLTrainer):
         
         return True
     
-    def _update_policy_new(self):
+    def _update_policy(self):
         """
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
@@ -355,7 +369,7 @@ class PPOTransferTrainer(RLTrainer):
                     )
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
-            for _ in range(num_epoch):
+            # for _ in range(num_epoch):
                 self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
                 buffer = self.off_policy_buffer
                 max_num_batch = update_buffer_length // batch_size # update with as much data as the policy has
@@ -365,8 +379,8 @@ class PPOTransferTrainer(RLTrainer):
                     )
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
-            if self.use_bisim:
-                for _ in range(num_epoch):
+                if self.use_bisim:
+                # for _ in range(num_epoch):
                     self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
                     buffer1 = copy.deepcopy(self.off_policy_buffer)
                     self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
@@ -383,7 +397,7 @@ class PPOTransferTrainer(RLTrainer):
             for _ in range(num_epoch):
                 self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
                 buffer = self.update_buffer
-                max_num_batch = buffer_length // batch_size
+                max_num_batch = update_buffer_length // batch_size
                 for i in range(0, max_num_batch * batch_size, batch_size):
                     update_stats = self.optimizer.update(
                         buffer.make_mini_batch(i, i + batch_size), n_sequences
