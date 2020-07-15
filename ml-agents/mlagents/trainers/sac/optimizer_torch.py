@@ -172,7 +172,6 @@ class TorchSACOptimizer(TorchOptimizer):
         for i, name in enumerate(q1_out.keys()):
             q1_stream = q1_out[name]
             q2_stream = q2_out[name]
-
             with torch.no_grad():
                 q_backup = rewards[name] + (
                     (1.0 - self.use_dones_in_backup[name] * dones)
@@ -267,7 +266,6 @@ class TorchSACOptimizer(TorchOptimizer):
                     loss_masks * torch.pow((values[name] - v_backup), 2)
                 )
                 value_losses.append(value_loss)
-
         value_loss = torch.mean(torch.stack(value_losses))
         if torch.isinf(value_loss).any() or torch.isnan(value_loss).any():
             raise UnityTrainerException("Inf found")
@@ -346,11 +344,11 @@ class TorchSACOptimizer(TorchOptimizer):
             branched_q = break_into_branches(item, self.act_size)
             only_action_qs = torch.stack(
                 [
-                    torch.sum(_act * _q, axis=1, keepdim=True)
+                    torch.sum(_act * _q, dim=1, keepdim=True)
                     for _act, _q in zip(onehot_actions, branched_q)
                 ]
             )
-            condensed_q_output[key] = torch.mean(only_action_qs, axis=0)
+            condensed_q_output[key] = torch.mean(only_action_qs, dim=0)
         return condensed_q_output
 
     @timed
@@ -431,6 +429,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         use_discrete = not self.policy.use_continuous_act
         dones = list_to_tensor(batch["done"])
+
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
@@ -438,22 +437,21 @@ class TorchSACOptimizer(TorchOptimizer):
             log_probs, sampled_values, q1p_out, q2p_out, masks, use_discrete
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
-        entropy_loss = self.sac_entropy_loss(
-            log_probs, torch.as_tensor(batch["masks"], dtype=torch.int32), use_discrete
-        )
+        entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
         self.policy_optimizer.step()
         total_value_loss = q1_loss + q2_loss + value_loss
         self.value_optimizer.zero_grad()
         total_value_loss.backward()
+
         self.value_optimizer.step()
 
         self.entropy_optimizer.zero_grad()
         entropy_loss.backward()
         self.entropy_optimizer.step()
 
-        # Update Q network
+        # Update target network
         self.soft_update(self.policy.actor_critic.critic, self.target_network, self.tau)
         update_stats = {
             "Losses/Policy Loss": abs(policy_loss.detach().numpy()),
