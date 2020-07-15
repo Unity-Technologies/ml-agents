@@ -61,7 +61,7 @@ SAC_CONFIG = TrainerSettings(
         tau=0.01,
         init_entcoef=0.01,
     ),
-    network_settings=NetworkSettings(num_layers=2, hidden_units=16),
+    network_settings=NetworkSettings(num_layers=2, hidden_units=16, normalize=True),
     summary_freq=100,
     max_steps=1000,
     threaded=False,
@@ -207,8 +207,8 @@ def test_2d_model(config=Transfer_CONFIG, obs_spec_type="rich1", run_id="model_r
         config.hyperparameters, batch_size=120, buffer_size=12000, learning_rate=5.0e-3, 
         use_bisim=True, predict_return=True, 
         # separate_value_train=True, separate_policy_train=True,
-        use_var_predict=True, with_prior=True, use_op_buffer=False, in_epoch_alter=False, in_batch_alter=True, 
-        policy_layers=1, value_layers=1, encoder_layers=1, feature_size=4, 
+        use_var_predict=True, with_prior=True, use_op_buffer=True, in_epoch_alter=False, in_batch_alter=True, 
+        policy_layers=2, value_layers=2, encoder_layers=0, feature_size=2, 
         #use_inverse_model=True
     )
     config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=200000, summary_freq=5000)
@@ -223,11 +223,11 @@ def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich1",
     )
     new_hyperparams = attr.evolve(
         config.hyperparameters, batch_size=120, buffer_size=12000, use_transfer=True,
-        transfer_path=transfer_from, separate_policy_train=True, 
+        transfer_path=transfer_from, #separate_policy_train=True, separate_value_train=True, 
         use_op_buffer=True, in_epoch_alter=False, in_batch_alter=True, learning_rate=5.0e-3, 
-        train_policy=True, train_value=True, train_model=False, feature_size=4,
-        use_var_predict=True, with_prior=True, policy_layers=0, load_policy=False, 
-        load_value=False, predict_return=True, value_layers=0, encoder_layers=2, 
+        train_policy=False, train_value=False, train_model=False, feature_size=2,
+        use_var_predict=True, with_prior=True, policy_layers=2, load_policy=True, 
+        load_value=True, predict_return=True, value_layers=2, encoder_layers=0, 
         use_bisim=True, 
     )
     config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=300000, summary_freq=5000)
@@ -235,14 +235,15 @@ def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich1",
 
 
 if __name__ == "__main__":
-    for obs in ["normal", "rich1", "rich2"]: # ["normal", "rich1", "rich2"]:
-        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs \
-             + "_f4_pv-l0_rew_bisim_order-ibalter_noreuse-soft0.1_noop_conlr")
+    # for obs in ["normal"]: # ["normal", "rich1", "rich2"]:
+    #     test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs \
+    #          + "_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_bisim")
+
     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
-    # for obs in ["normal"]:
-    #     test_2d_transfer(seed=0, obs_spec_type="rich1", 
-    #     transfer_from="./transfer_results/model_"+ obs +"_f4_pv-l0_rew_bisim_order-ibalter_noreuse-soft0.1_nostop-op10_linlr_s0/Simple",
-    #     run_id="transfer_rich1_f4_pv-l0_soft_ibalter_sepp_from_" + obs)
+    for obs in ["normal"]:
+        test_2d_transfer(seed=0, obs_spec_type="normal", 
+        transfer_from="./transfer_results/model_"+ obs +"_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_bisim_s0/Simple",
+        run_id="transfer_normal_f2_pv-l2_ibalter_fixbisim_from_" + obs)
     
     # for obs in ["normal"]:
     #     test_2d_transfer(seed=0, obs_spec_type="rich1", 

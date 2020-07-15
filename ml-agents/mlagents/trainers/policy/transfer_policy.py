@@ -474,7 +474,7 @@ class TransferPolicy(TFPolicy):
                     feature_size,
                     name="latent",
                     reuse=reuse_encoder,
-                    activation=ModelUtils.swish,
+                    # activation=ModelUtils.swish,
                     kernel_initializer=tf.initializers.variance_scaling(1.0),
                 )
         return latent_targ
@@ -510,7 +510,7 @@ class TransferPolicy(TFPolicy):
                     hidden_stream,
                     feature_size,
                     name="latent",
-                    activation=ModelUtils.swish,
+                    # activation=ModelUtils.swish,
                     kernel_initializer=tf.initializers.variance_scaling(1.0),
                 )
         return latent
@@ -893,6 +893,11 @@ class TransferPolicy(TFPolicy):
         with self.graph.as_default():
             pol = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, "policy/mu/bias:0")
             print("policy:", self.sess.run(pol))
+            pred = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, "predict")
+            print("predict:", self.sess.run(pred))
+
+            rew = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, "reward")
+            print("reward:", self.sess.run(rew))
     
     def create_encoders(self, var_latent: bool=False, reuse_encoder: bool=False) -> Tuple[tf.Tensor, tf.Tensor]:
         encoded_state_list = []
@@ -1144,9 +1149,9 @@ class TransferPolicy(TFPolicy):
             # activation=ModelUtils.swish,
             # kernel_initializer=tf.initializers.variance_scaling(1.0),
         )
-        self.reward_loss = tf.reduce_mean(
+        self.reward_loss = tf.clip_by_value(tf.reduce_mean(
             tf.squared_difference(self.pred_reward, self.current_reward)
-        )
+        ), 1e-10,1.0)
     
     def create_bisim_model(
         self, 

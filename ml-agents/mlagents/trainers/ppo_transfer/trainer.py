@@ -316,6 +316,7 @@ class PPOTransferTrainer(RLTrainer):
                 # if self.num_update >= 10:
                 #     self.train_model = False
                 print(stat, np.mean(stat_list))
+                self.policy.get_encoder_weights()
 
         if self.optimizer.bc_module:
             update_stats = self.optimizer.bc_module.update()
@@ -323,10 +324,10 @@ class PPOTransferTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, val)
         
         # self.off_policy_buffer.reset_agent()
-        if self.off_policy_buffer.num_experiences > 10 * self.hyperparameters.buffer_size:
+        if self.off_policy_buffer.num_experiences > 4 * self.hyperparameters.buffer_size:
             self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
             self.off_policy_buffer.truncate(
-                int(5 * self.hyperparameters.buffer_size)
+                int(2 * self.hyperparameters.buffer_size)
             )
             print("truncate")
             # self.train_model = False

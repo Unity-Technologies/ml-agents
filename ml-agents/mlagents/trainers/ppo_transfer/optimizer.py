@@ -583,7 +583,7 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
             if self.use_bisim:
                 batch1 = copy.deepcopy(batch)
-                batch.shuffle(sequence_length=self.batch_size)
+                batch.shuffle(sequence_length=10)
                 batch2 = copy.deepcopy(batch)
                 bisim_stats = self.update_encoder(batch1, batch2)
             update_vals.update(self._execute_model(feed_dict, self.model_update_dict))
