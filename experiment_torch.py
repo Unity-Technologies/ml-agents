@@ -157,20 +157,22 @@ def main():
     else:
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+    algo = "ppo"
+    if args.sac:
+        algo = "sac"
+
     envs_config_tuples = [
         ("3DBall", "3DBall"),
         ("GridWorld", "GridWorld"),
         ("PushBlock", "PushBlock"),
-        ("Hallway", "Hallway"),
         ("CrawlerStaticTarget", "CrawlerStatic"),
-        ("VisualHallway", "VisualHallway"),
     ]
+    if algo == "ppo":
+        envs_config_tuples += [("Hallway", "Hallway"),
+        ("VisualHallway", "VisualHallway")]
     if args.ball:
         envs_config_tuples = [("3DBall", "3DBall")]
 
-    algo = "ppo"
-    if args.sac:
-        algo = "sac"
 
     labels = (
         "name",
