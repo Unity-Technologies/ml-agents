@@ -160,15 +160,6 @@ class TransferPolicy(TFPolicy):
 
             self.next_visual_in: List[tf.Tensor] = []
             
-            # if var_encoder:
-            #     self.encoder, self.targ_encoder, self.encoder_distribution, _ = self.create_encoders(var_latent=True, reuse_encoder=reuse_encoder)
-            # else:
-            #     self.encoder, self.targ_encoder = self.create_encoders(reuse_encoder=reuse_encoder)
-            
-            # if not reuse_encoder:
-            #     self.targ_encoder = tf.stop_gradient(self.targ_encoder)
-            #     self._create_hard_copy()
-            
             if var_encoder:
                 self.encoder_distribution, self.encoder = self._create_var_encoder(
                     self.visual_in,
@@ -223,28 +214,6 @@ class TransferPolicy(TFPolicy):
             if self.use_bisim:
                 self.create_bisim_model(self.h_size, self.feature_size, encoder_layers,
                     self.vis_encode_type, forward_layers, var_predict, predict_return)
-
-            # if var_predict:
-            #     self.predict_distribution, self.predict = self._create_var_world_model(
-            #         self.encoder,
-            #         self.h_size,
-            #         self.feature_size,
-            #         self.num_layers,
-            #         self.vis_encode_type,
-            #         predict_return
-            #     )
-            # else:
-            #     self.predict = self._create_world_model(
-            #         self.encoder,
-            #         self.h_size,
-            #         self.feature_size,
-            #         self.num_layers,
-            #         self.vis_encode_type,
-            #         predict_return
-            #     )
-            
-            # if inverse_model:
-            #     self._create_inverse_model(self.encoder, self.targ_encoder)
 
             if self.use_continuous_act:
                 self._create_cc_actor(
@@ -314,11 +283,6 @@ class TransferPolicy(TFPolicy):
                 partial_model_checkpoint = os.path.join(path, f"{net}.ckpt")
                 partial_saver.restore(self.sess, partial_model_checkpoint)
                 print("loaded net", net, "from path", path)
-        # variables_to_restore = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent")
-        # partial_saver = tf.train.Saver(variables_to_restore)
-        # partial_model_checkpoint = os.path.join(path, f"latent.ckpt")
-        # partial_saver.restore(self.sess, partial_model_checkpoint)
-        # print("loaded net latent from path", path)
         
         if transfer_type == "observation":
             self.run_hard_copy()
@@ -362,44 +326,7 @@ class TransferPolicy(TFPolicy):
                     )
         return predict
 
-    def _create_var_world_model(
-        self,
-        encoder: tf.Tensor,
-        h_size: int,
-        feature_size: int,
-        num_layers: int,
-        vis_encode_type: EncoderType,
-        predict_return: bool=False
-    ) -> tf.Tensor:
-        """"
-        Builds the world model for state prediction
-        """
-        with self.graph.as_default():
-            with tf.variable_scope("predict"):
-                
-                hidden_stream = ModelUtils.create_vector_observation_encoder(
-                    tf.concat([encoder, self.current_action], axis=1),
-                    h_size,
-                    ModelUtils.swish,
-                    num_layers,
-                    scope=f"main_graph",
-                    reuse=False
-                )
-                with tf.variable_scope("latent"):
-                    if predict_return:
-                        predict_distribution = GaussianEncoderDistribution(
-                                hidden_stream,
-                                feature_size+1
-                            )
-                        # separate prediction of return
-                    else:
-                        predict_distribution = GaussianEncoderDistribution(
-                                hidden_stream,
-                                feature_size
-                            )
-
-                    predict = predict_distribution.sample()
-        return predict_distribution, predict
+  
 
     @timed
     def evaluate(

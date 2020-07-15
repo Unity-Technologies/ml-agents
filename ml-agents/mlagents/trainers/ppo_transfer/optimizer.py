@@ -580,13 +580,13 @@ class PPOTransferOptimizer(TFOptimizer):
                     print("start update policy", self.num_updates)
             
         elif self.in_batch_alter:
-            update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
+            update_vals = self._execute_model(feed_dict, self.model_update_dict)
+            update_vals.update(self._execute_model(feed_dict, self.ppo_update_dict))
             if self.use_bisim:
                 batch1 = copy.deepcopy(batch)
-                batch.shuffle(sequence_length=10)
+                batch.shuffle(sequence_length=1)
                 batch2 = copy.deepcopy(batch)
                 bisim_stats = self.update_encoder(batch1, batch2)
-            update_vals.update(self._execute_model(feed_dict, self.model_update_dict))
         elif self.use_transfer and self.smart_transfer:
             if self.update_mode == "model":
                 update_vals = self._execute_model(feed_dict, self.update_dict)

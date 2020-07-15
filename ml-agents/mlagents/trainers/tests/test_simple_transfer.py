@@ -224,11 +224,11 @@ def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich1",
     new_hyperparams = attr.evolve(
         config.hyperparameters, batch_size=120, buffer_size=12000, use_transfer=True,
         transfer_path=transfer_from, #separate_policy_train=True, separate_value_train=True, 
-        use_op_buffer=True, in_epoch_alter=False, in_batch_alter=True, learning_rate=5.0e-3, 
-        train_policy=False, train_value=False, train_model=False, feature_size=2,
-        use_var_predict=True, with_prior=True, policy_layers=2, load_policy=True, 
-        load_value=True, predict_return=True, value_layers=2, encoder_layers=0, 
-        use_bisim=True, 
+        use_op_buffer=False, in_epoch_alter=False, in_batch_alter=True, learning_rate=5.0e-3, 
+        train_policy=True, train_value=True, train_model=False, feature_size=2,
+        use_var_predict=True, with_prior=True, policy_layers=2, load_policy=False, 
+        load_value=False, predict_return=True, value_layers=2, encoder_layers=1, 
+        use_bisim=False, 
     )
     config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=300000, summary_freq=5000)
     _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
@@ -237,13 +237,13 @@ def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich1",
 if __name__ == "__main__":
     # for obs in ["normal"]: # ["normal", "rich1", "rich2"]:
     #     test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs \
-    #          + "_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_bisim")
+    #          + "_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_bisim_suf1")
 
     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
     for obs in ["normal"]:
-        test_2d_transfer(seed=0, obs_spec_type="normal", 
-        transfer_from="./transfer_results/model_"+ obs +"_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_bisim_s0/Simple",
-        run_id="transfer_normal_f2_pv-l2_ibalter_fixbisim_from_" + obs)
+        test_2d_transfer(seed=0, obs_spec_type="rich1", 
+        transfer_from="./transfer_results/model_"+ obs +"_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_s0/Simple",
+        run_id="transfer_rich1_f2_pv-l2_ibalter_suf1_nobisim_from_" + obs)
     
     # for obs in ["normal"]:
     #     test_2d_transfer(seed=0, obs_spec_type="rich1", 
