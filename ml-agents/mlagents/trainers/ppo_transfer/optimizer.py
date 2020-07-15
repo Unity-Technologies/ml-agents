@@ -1,6 +1,7 @@
 from typing import Optional, Any, Dict, cast
 import numpy as np
 import os
+import copy
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
 from mlagents.trainers.models import ModelUtils, EncoderType, ScheduleType
@@ -23,6 +24,7 @@ class PPOTransferOptimizer(TFOptimizer):
         hyperparameters: PPOTransferSettings = cast(
             PPOTransferSettings, trainer_params.hyperparameters
         )
+        self.batch_size = hyperparameters.batch_size
 
         self.separate_value_train = hyperparameters.separate_value_train
         self.separate_policy_train = hyperparameters.separate_policy_train
@@ -135,15 +137,15 @@ class PPOTransferOptimizer(TFOptimizer):
                     min_value=1e-10,
                 )
                 self.model_learning_rate = ModelUtils.create_schedule(
-                    ScheduleType.LINEAR,
-                    # ScheduleType.CONSTANT,
+                    # ScheduleType.LINEAR,
+                    ScheduleType.CONSTANT,
                     lr,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
                 )
                 self.bisim_learning_rate = ModelUtils.create_schedule(
-                    ScheduleType.LINEAR,
+                    ScheduleType.CONSTANT,
                     lr/10,
                     self.policy.global_step,
                     int(max_step),
@@ -578,8 +580,13 @@ class PPOTransferOptimizer(TFOptimizer):
                     print("start update policy", self.num_updates)
             
         elif self.in_batch_alter:
-            update_vals = self._execute_model(feed_dict, self.model_update_dict)
-            update_vals.update(self._execute_model(feed_dict, self.ppo_update_dict))
+            update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
+            if self.use_bisim:
+                batch1 = copy.deepcopy(batch)
+                batch.shuffle(sequence_length=self.batch_size)
+                batch2 = copy.deepcopy(batch)
+                bisim_stats = self.update_encoder(batch1, batch2)
+            update_vals.update(self._execute_model(feed_dict, self.model_update_dict))
         elif self.use_transfer and self.smart_transfer:
             if self.update_mode == "model":
                 update_vals = self._execute_model(feed_dict, self.update_dict)
@@ -604,6 +611,9 @@ class PPOTransferOptimizer(TFOptimizer):
         for stat_name, update_name in stats_needed.items():
             # if update_name in update_vals.keys():
             update_stats[stat_name] = update_vals[update_name]
+        
+        if self.in_batch_alter and self.use_bisim:
+            update_stats.update(bisim_stats)
         
         self.num_updates += 1
         return update_stats

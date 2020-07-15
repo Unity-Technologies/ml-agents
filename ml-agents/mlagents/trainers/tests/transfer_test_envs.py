@@ -199,7 +199,7 @@ class SimpleTransferEnvironment(BaseEnv):
             # reward += np.exp(-abs(_pos - self.goal[name]))
 
         if done:
-            reward = SUCCESS_REWARD
+            reward = TIME_PENALTY #SUCCESS_REWARD
             # for _pos in self.positions[name]:
             #     if self.goal_type == "easy":
             #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(

@@ -144,7 +144,7 @@ class PPOTransferTrainer(RLTrainer):
             self.update_buffer, training_length=self.policy.sequence_length
         )
         # the off-policy buffer
-        if self.use_op_buffer:
+        if self.use_op_buffer and self.train_model:
             agent_buffer_trajectory.resequence_and_append(
                 self.off_policy_buffer, training_length=self.policy.sequence_length
             )
@@ -309,10 +309,12 @@ class PPOTransferTrainer(RLTrainer):
         for stat, stat_list in batch_update_stats.items():
             self._stats_reporter.add_stat(stat, np.mean(stat_list))
             if stat == "Losses/Model Loss": # and np.mean(stat_list) < 0.01:
-                if abs(self.old_loss - np.mean(stat_list)) < 1e-3:
-                    self.train_model = False
-                else:
-                    self.old_loss = np.mean(stat_list)
+                # if abs(self.old_loss - np.mean(stat_list)) < 1e-3:
+                #     self.train_model = False
+                # else:
+                #     self.old_loss = np.mean(stat_list)
+                # if self.num_update >= 10:
+                #     self.train_model = False
                 print(stat, np.mean(stat_list))
 
         if self.optimizer.bc_module:
@@ -322,10 +324,12 @@ class PPOTransferTrainer(RLTrainer):
         
         # self.off_policy_buffer.reset_agent()
         if self.off_policy_buffer.num_experiences > 10 * self.hyperparameters.buffer_size:
-            print("truncate")
+            self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
             self.off_policy_buffer.truncate(
                 int(5 * self.hyperparameters.buffer_size)
             )
+            print("truncate")
+            # self.train_model = False
         
         return True
     
@@ -334,7 +338,9 @@ class PPOTransferTrainer(RLTrainer):
         Uses demonstration_buffer to update the policy.
         The reward signal generators must be updated in this method at their own pace.
         """
-            
+        if self.train_model and self.use_op_buffer:
+            self._update_model()
+
         update_buffer_length = self.update_buffer.num_experiences
         op_buffer_length = self.off_policy_buffer.num_experiences
         self.cumulative_returns_since_policy_update.clear()
@@ -370,8 +376,8 @@ class PPOTransferTrainer(RLTrainer):
                     for stat_name, value in update_stats.items():
                         batch_update_stats[stat_name].append(value)
             # for _ in range(num_epoch):
-                self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
-                buffer = self.off_policy_buffer
+                self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                buffer = self.update_buffer
                 max_num_batch = update_buffer_length // batch_size # update with as much data as the policy has
                 for i in range(0, max_num_batch * batch_size, batch_size):
                     update_stats = self.optimizer.update_part(
@@ -381,10 +387,10 @@ class PPOTransferTrainer(RLTrainer):
                         batch_update_stats[stat_name].append(value)
                 if self.use_bisim:
                 # for _ in range(num_epoch):
-                    self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
-                    buffer1 = copy.deepcopy(self.off_policy_buffer)
-                    self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
-                    buffer2 = copy.deepcopy(self.off_policy_buffer)
+                    self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                    buffer1 = copy.deepcopy(self.update_buffer)
+                    self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
+                    buffer2 = copy.deepcopy(self.update_buffer)
                     max_num_batch = update_buffer_length // batch_size # update with as much data as the policy has
                     for i in range(0, max_num_batch * batch_size, batch_size):
                         update_stats = self.optimizer.update_encoder(
