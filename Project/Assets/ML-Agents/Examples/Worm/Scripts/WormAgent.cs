@@ -102,8 +102,9 @@ public class WormAgent : Agent
             sensor.AddObservation(
                 orientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
             sensor.AddObservation(bp.rb.transform.localRotation);
-            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
+        if(bp.joint)
+            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
     }
 
     public override void CollectObservations(VectorSensor sensor)
