@@ -571,6 +571,13 @@ MonoBehaviour:
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
     lastNaNStep: 0
+  - rewardKey: productOfAllRewards
+    rawVal: 0
+    rewardScalar: 0.01
+    rewardThisStep: 0
+    cumulativeThisEpisode: 0
+    cumulativeThisSession: 0
+    lastNaNStep: 0
   maxSteps: 0
 --- !u!1001 &6359877978260855390
 PrefabInstance:

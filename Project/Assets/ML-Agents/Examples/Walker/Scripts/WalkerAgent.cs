@@ -211,18 +211,20 @@ public class WalkerAgent : Agent
 //            + 0.01f * headHeightOverFeetReward
 //        );
 
-        rewardManager.UpdateReward("matchSpeed", matchSpeedReward);
-        rewardManager.UpdateReward("lookAtTarget", lookAtTargetReward);
-        rewardManager.UpdateReward("headHeightOverFeet", headHeightOverFeetReward);
-        rewardManager.UpdateReward("hurryUp", hurryUpReward/MaxStep);
+//        rewardManager.UpdateReward("matchSpeed", matchSpeedReward);
+//        rewardManager.UpdateReward("lookAtTarget", lookAtTargetReward);
+//        rewardManager.UpdateReward("headHeightOverFeet", headHeightOverFeetReward);
+//        rewardManager.UpdateReward("hurryUp", hurryUpReward/MaxStep);
+        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
 
-        bpVelPenaltyThisStep = 0;
-        foreach (var item in m_JdController.bodyPartsList)
-        {
-            var velDelta = Mathf.Clamp(item.rb.velocity.magnitude - walkingSpeed, 0, 1);
-            bpVelPenaltyThisStep += velDelta;
-        }
-        rewardManager.UpdateReward("bpVel", bpVelPenaltyThisStep);
+//        //VELOCITY REWARDS
+//        bpVelPenaltyThisStep = 0;
+//        foreach (var item in m_JdController.bodyPartsList)
+//        {
+//            var velDelta = Mathf.Clamp(item.rb.velocity.magnitude - walkingSpeed, 0, 1);
+//            bpVelPenaltyThisStep += velDelta;
+//        }
+//        rewardManager.UpdateReward("bpVel", bpVelPenaltyThisStep);
         
     }
     
