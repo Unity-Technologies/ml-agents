@@ -12,6 +12,8 @@ from mlagents.trainers.distributions import (
     MultiCategoricalDistribution,
 )
 
+from mlagents.trainers.ppo.trainer import TestingConfiguration
+
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 
