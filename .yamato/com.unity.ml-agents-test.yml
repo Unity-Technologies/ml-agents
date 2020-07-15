@@ -39,13 +39,13 @@ all_package_tests:
   dependencies:
   {% for editor in test_editors %}
     {% for platform in test_platforms %}
-  - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
+  - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
   {% endfor %}
 
   {% for editor in trunk_editor %}
     {% for platform in test_platforms %}
-  - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
+  - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
   {% endfor %}
   triggers:
