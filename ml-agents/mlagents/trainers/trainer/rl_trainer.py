@@ -17,6 +17,8 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.stats import StatsPropertyType
 
+from mlagents.trainers.ppo.trainer import TestingConfiguration
+
 RewardSignalResults = Dict[str, RewardSignalResult]
 
 logger = get_logger(__name__)
@@ -40,7 +42,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
-        self.framework = "torch"
+        self.framework = "torch" if TestingConfiguration.use_torch else "tf"
+        if TestingConfiguration.max_steps > 0:
+            self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
         self._next_summary_step = 0
 
