@@ -344,10 +344,11 @@ class TorchSACOptimizer(TorchOptimizer):
             branched_q = break_into_branches(item, self.act_size)
             only_action_qs = torch.stack(
                 [
-                    torch.sum(_act * _q, dim=1, keepdim=True)
+                    torch.sum(_act * _q * 0.0, dim=1, keepdim=True)
                     for _act, _q in zip(onehot_actions, branched_q)
                 ]
             )
+
             condensed_q_output[key] = torch.mean(only_action_qs, dim=0)
         return condensed_q_output
 
@@ -419,7 +420,8 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_out, q2_out = self.value_network(vec_obs, vis_obs, squeezed_actions)
             q1_stream, q2_stream = q1_out, q2_out
         else:
-            q1p_out, q2p_out = self.value_network(vec_obs, vis_obs)
+            with torch.no_grad():
+                q1p_out, q2p_out = self.value_network(vec_obs, vis_obs)
             q1_out, q2_out = self.value_network(vec_obs, vis_obs)
             q1_stream = self._condense_q_streams(q1_out, actions)
             q2_stream = self._condense_q_streams(q2_out, actions)
