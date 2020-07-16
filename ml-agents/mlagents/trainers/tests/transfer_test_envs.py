@@ -92,7 +92,7 @@ class SimpleTransferEnvironment(BaseEnv):
             self.action[name] = None
             self.step_result[name] = None
             self.step_count[name] = 0
-            self.horizon[name] = 1000
+            self.horizon[name] = 5000
         print(self.goal)
 
     def _make_obs_spec(self) -> List[Any]:
@@ -107,7 +107,7 @@ class SimpleTransferEnvironment(BaseEnv):
             for _ in range(self.num_vector):
                 obs_spec.append((self.vec_obs_size,))
         # composed position
-        if "rich" in self.obs_spec_type:
+        elif "rich" in self.obs_spec_type:
             for _ in range(self.num_vector+1):
                 obs_spec.append((self.vec_obs_size,))
         print("obs_spec:", obs_spec)
@@ -115,8 +115,15 @@ class SimpleTransferEnvironment(BaseEnv):
 
     def _make_obs(self, value: List[float]) -> List[np.ndarray]:
         obs = []
+        if self.obs_spec_type == "compact":
+            for name in self.names:
+                for pos, goal in zip(self.positions[name], value):
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (goal-pos))
+            return obs
+
         for i in range(self.num_vector):
             obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * value[i])
+            
         if self.obs_spec_type == "normal":
             for name in self.names:
                 for i in self.positions[name]:
@@ -172,9 +179,9 @@ class SimpleTransferEnvironment(BaseEnv):
         if self.goal_type == "easy":
             done = all(pos >= 1.0 or pos <= -1.0 for pos in self.positions[name]) or self.step_count[name] >= self.horizon[name]
         elif self.goal_type == "hard":
-            done = self.step_count[name] >= self.horizon[name]
-            # done = all(abs(pos-goal) <= 0.1 for pos, goal in zip(self.positions[name], self.goal[name])) \
-            #      or self.step_count[name] >= self.horizon[name]
+            # done = self.step_count[name] >= self.horizon[name]
+            done = all(abs(pos-goal) <= 0.1 for pos, goal in zip(self.positions[name], self.goal[name])) \
+                 or self.step_count[name] >= self.horizon[name]
         # if done:
         #     print(self.positions[name], end=" done ")
         return done
@@ -191,24 +198,24 @@ class SimpleTransferEnvironment(BaseEnv):
 
     def _compute_reward(self, name: str, done: bool) -> float:
         reward = 0.0
-        for _pos, goal in zip(self.positions[name], self.goal[name]):
-        #     if abs(_pos - self.goal[name]) < 0.1:
-        #         reward += SUCCESS_REWARD
-        #     else:
-        #         reward -= TIME_PENALTY
-            reward += 2 - abs(_pos - goal) #np.exp(-abs(_pos - goal))
+        # for _pos, goal in zip(self.positions[name], self.goal[name]):
+        # #     if abs(_pos - self.goal[name]) < 0.1:
+        # #         reward += SUCCESS_REWARD
+        # #     else:
+        # #         reward -= TIME_PENALTY
+        #     reward -= abs(_pos - goal) #np.exp(-abs(_pos - goal))
 
-        # if done:
-        #     reward = SUCCESS_REWARD
-        #     # for _pos in self.positions[name]:
-        #     #     if self.goal_type == "easy":
-        #     #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
-        #     #             self.positions[name]
-        #     #         )
-        #     #     elif self.goal_type == "hard":
-        #     #         reward += np.exp(-abs(_pos - self.goal[name]))
-        # else:
-        #     reward = -TIME_PENALTY
+        if done and self.step_count[name] < self.horizon[name]:
+            reward = SUCCESS_REWARD
+            # for _pos in self.positions[name]:
+            #     if self.goal_type == "easy":
+            #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
+            #             self.positions[name]
+            #         )
+            #     elif self.goal_type == "hard":
+            #         reward += np.exp(-abs(_pos - self.goal[name]))
+        else:
+            reward = -TIME_PENALTY
 
         return reward
 

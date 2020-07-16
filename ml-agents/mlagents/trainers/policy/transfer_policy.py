@@ -57,7 +57,8 @@ class GaussianEncoderDistribution:
         return kl
 
     def w_distance(self, another):
-        return tf.squared_difference(self.mu, another.mu) + tf.squared_difference(self.sigma, another.sigma)
+        return tf.reduce_mean(tf.squared_difference(self.mu, another.mu))\
+             + tf.reduce_mean(tf.squared_difference(self.sigma, another.sigma))
 
 
 class TransferPolicy(TFPolicy):
@@ -102,7 +103,8 @@ class TransferPolicy(TFPolicy):
         self.trainable_variables: List[tf.Variable] = []
         self.encoder = None
         self.encoder_distribution = None
-        self.targ_encoder = None
+        self.next_encoder = None
+        self.target_encoder = None
 
         
         # Non-exposed parameters; these aren't exposed because they don't have a
@@ -187,29 +189,38 @@ class TransferPolicy(TFPolicy):
                     self.vis_encode_type
                 )
 
-                self.targ_encoder = self._create_target_encoder(
+                self.next_encoder = self._create_next_encoder(
                     self.h_size,
                     self.feature_size,
                     encoder_layers,
                     self.vis_encode_type,
-                    reuse_encoder
+                    reuse_encoder=True
                 )
+                self.target_encoder = self._create_target_encoder(
+                    self.visual_in,
+                    self.processed_vector_in,
+                    self.h_size,
+                    self.feature_size,
+                    encoder_layers,
+                    self.vis_encode_type
+                )
+            # used to encode the next state
+            self.next_encoder = tf.stop_gradient(self.next_encoder)
+            # a stable version, used to compute the value
+            self.target_encoder = tf.stop_gradient(self.target_encoder)
+            self._create_hard_copy()
 
-            if not reuse_encoder:
-                self.targ_encoder = tf.stop_gradient(self.targ_encoder)
-                self._create_hard_copy()
-            
             if self.inverse_model:
                 with tf.variable_scope("inverse"):
-                    self.create_inverse_model(self.encoder, self.targ_encoder, inverse_layers)
+                    self.create_inverse_model(self.encoder, self.next_encoder, inverse_layers)
 
             with tf.variable_scope("predict"):
-                self.create_forward_model(self.encoder, self.targ_encoder, forward_layers,
+                self.create_forward_model(self.encoder, self.next_encoder, forward_layers,
                     var_predict=var_predict)
             
             if predict_return:
                 with tf.variable_scope("reward"):
-                    self.create_reward_model(self.encoder, self.targ_encoder, forward_layers)
+                    self.create_reward_model(self.encoder, self.next_encoder, forward_layers)
             
             if self.use_bisim:
                 self.create_bisim_model(self.h_size, self.feature_size, encoder_layers,
@@ -327,7 +338,6 @@ class TransferPolicy(TFPolicy):
         return predict
 
   
-
     @timed
     def evaluate(
         self, decision_requests: DecisionSteps, global_agent_ids: List[str]
@@ -352,7 +362,7 @@ class TransferPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def _create_target_encoder(
+    def _create_next_encoder(
         self,
         h_size: int,
         feature_size: int,
@@ -363,7 +373,7 @@ class TransferPolicy(TFPolicy):
         if reuse_encoder:
             next_encoder_scope = "encoding"
         else:
-            next_encoder_scope = "target_enc"
+            next_encoder_scope = "next_enc"
 
         self.visual_next = ModelUtils.create_visual_input_placeholders(
             self.brain.camera_resolutions
@@ -424,6 +434,41 @@ class TransferPolicy(TFPolicy):
         :return: The hidden layer (tf.Tensor) after the encoder.
         """
         with tf.variable_scope("encoding"):
+            hidden_stream = ModelUtils.create_observation_streams(
+                visual_in,
+                vector_in,
+                1,
+                h_size,
+                num_layers,
+                vis_encode_type,
+            )[0]
+
+            latent = tf.layers.dense(
+                    hidden_stream,
+                    feature_size,
+                    name="latent",
+                    # activation=ModelUtils.swish,
+                    kernel_initializer=tf.initializers.variance_scaling(1.0),
+                )
+        return latent
+
+    def _create_target_encoder(
+        self,
+        visual_in: List[tf.Tensor],
+        vector_in: tf.Tensor,
+        h_size: int,
+        feature_size: int,
+        num_layers: int,
+        vis_encode_type: EncoderType,
+    ) -> tf.Tensor:
+        """
+        Creates an encoder for visual and vector observations.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
+        :return: The hidden layer (tf.Tensor) after the encoder.
+        """
+        with tf.variable_scope("target_enc"):
             hidden_stream = ModelUtils.create_observation_streams(
                 visual_in,
                 vector_in,
@@ -535,6 +580,8 @@ class TransferPolicy(TFPolicy):
             self.target_replace_op = [tf.assign(t, 0.9*t + 0.1*e) for t, e in zip(t_params, e_params)]
 
     def run_hard_copy(self):
+        # print("before:")
+        # self.get_encoder_weights()
         self.sess.run(self.target_replace_op)
 
     def _create_inverse_model(
@@ -826,132 +873,6 @@ class TransferPolicy(TFPolicy):
             rew = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, "reward")
             print("reward:", self.sess.run(rew))
     
-    def create_encoders(self, var_latent: bool=False, reuse_encoder: bool=False) -> Tuple[tf.Tensor, tf.Tensor]:
-        encoded_state_list = []
-        encoded_next_state_list = []
-        if reuse_encoder:
-            next_encoder_scope = "encoding"
-        else:
-            next_encoder_scope = "target_enc"
-        if self.vis_obs_size > 0:
-            self.next_visual_in = []
-            visual_encoders = []
-            next_visual_encoders = []
-            for i in range(self.vis_obs_size):
-                # Create input ops for next (t+1) visual observations.
-                next_visual_input = ModelUtils.create_visual_input(
-                    self.brain.camera_resolutions[i],
-                    name="next_visual_observation_" + str(i),
-                )
-                self.next_visual_in.append(next_visual_input)
-
-                # Create the encoder ops for current and next visual input.
-                # Note that these encoders are siamese.
-                with tf.variable_scope("encoding"):
-                    encoded_visual = ModelUtils.create_visual_observation_encoder(
-                        self.visual_in[i],
-                        self.h_size,
-                        ModelUtils.swish,
-                        self.num_layers,
-                        "stream_{}_visual_obs_encoder".format(i),
-                        False,
-                    )
-                
-                with tf.variable_scope(next_encoder_scope):
-                    encoded_next_visual = ModelUtils.create_visual_observation_encoder(
-                        self.next_visual_in[i],
-                        self.h_size,
-                        ModelUtils.swish,
-                        self.num_layers,
-                        "stream_{}_visual_obs_encoder".format(i),
-                        reuse_encoder
-                    )
-
-                visual_encoders.append(encoded_visual)
-                next_visual_encoders.append(encoded_next_visual)
-
-            hidden_visual = tf.concat(visual_encoders, axis=1)
-            hidden_next_visual = tf.concat(next_visual_encoders, axis=1)
-            encoded_state_list.append(hidden_visual)
-            encoded_next_state_list.append(hidden_next_visual)
-
-        if self.vec_obs_size > 0:
-            # Create the encoder ops for current and next vector input.
-            # Note that these encoders are siamese.
-            # Create input op for next (t+1) vector observation.
-            self.next_vector_in = tf.placeholder(
-                shape=[None, self.vec_obs_size],
-                dtype=tf.float32,
-                name="next_vector_observation",
-            )
-
-            if self.normalize:
-                self.processed_vector_next = ModelUtils.normalize_vector_obs(
-                    self.next_vector_in,
-                    self.running_mean,
-                    self.running_variance,
-                    self.normalization_steps,
-                )
-            else:
-                self.processed_vector_next = self.next_vector_in
-
-            with tf.variable_scope("encoding"):
-                encoded_vector_obs = ModelUtils.create_vector_observation_encoder(
-                    self.vector_in,
-                    self.h_size,
-                    ModelUtils.swish,
-                    self.num_layers,
-                    "vector_obs_encoder",
-                    False,
-                )
-            with tf.variable_scope(next_encoder_scope):
-                encoded_next_vector_obs = ModelUtils.create_vector_observation_encoder(
-                    self.processed_vector_next,
-                    self.h_size,
-                    ModelUtils.swish,
-                    self.num_layers,
-                    "vector_obs_encoder",
-                    reuse_encoder
-                )
-            encoded_state_list.append(encoded_vector_obs)
-            encoded_next_state_list.append(encoded_next_vector_obs)
-
-        encoded_state = tf.concat(encoded_state_list, axis=1)
-        encoded_next_state = tf.concat(encoded_next_state_list, axis=1)
-
-        if var_latent:
-            with tf.variable_scope("encoding/latent"):
-                encoded_state_dist = GaussianEncoderDistribution(
-                    encoded_state,
-                    self.feature_size,
-                )
-                encoded_state = encoded_state_dist.sample()
-            
-            with tf.variable_scope(next_encoder_scope+"/latent"):
-                encoded_next_state_dist = GaussianEncoderDistribution(
-                    encoded_next_state,
-                    self.feature_size,
-                    reuse=reuse_encoder
-                )
-                encoded_next_state = encoded_next_state_dist.sample()
-            return encoded_state, encoded_next_state, encoded_state_dist, encoded_next_state_dist
-        else:
-            with tf.variable_scope("encoding"):
-                encoded_state = tf.layers.dense(
-                            encoded_state,
-                            self.feature_size,
-                            name="latent"
-                        )
-            with tf.variable_scope(next_encoder_scope):
-                encoded_next_state = tf.layers.dense(
-                            encoded_next_state,
-                            self.feature_size,
-                            name="latent",
-                            reuse=reuse_encoder
-                        )
-
-            return encoded_state, encoded_next_state
-
     def create_inverse_model(
         self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor, inverse_layers: int
     ) -> None:
@@ -1010,6 +931,7 @@ class TransferPolicy(TFPolicy):
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
+        self.current_action = tf.stop_gradient(self.current_action)
         combined_input = tf.concat(
             [encoded_state, self.current_action], axis=1
         )
@@ -1078,7 +1000,7 @@ class TransferPolicy(TFPolicy):
         )
         self.reward_loss = tf.clip_by_value(tf.reduce_mean(
             tf.squared_difference(self.pred_reward, self.current_reward)
-        ), 1e-10,1.0)
+        ), 1e-10, 1e10)
     
     def create_bisim_model(
         self, 
