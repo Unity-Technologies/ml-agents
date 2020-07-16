@@ -33,6 +33,7 @@ namespace Unity.MLAgents.Sensors
         /// Write the observation data directly to the <see cref="ObservationWriter"/>.
         /// Note that this (and  <see cref="GetCompressedObservation"/>) may
         /// be called multiple times per agent step, so should not mutate any internal state.
+        /// WHITESPACE CHANGE DON'T MERGE ME
         /// </summary>
         /// <param name="writer">Where the observations will be written to.</param>
         /// <returns>The number of elements written.</returns>
