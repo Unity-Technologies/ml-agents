@@ -121,7 +121,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             sensorComponent.Settings = new PhysicsSensorSettings
             {
                 UseJointForces = true,
-                UseJointPositions = true,
+                UseJointPositionsAndAngles = true,
             };
 
             sensor = sensorComponent.CreateSensor();

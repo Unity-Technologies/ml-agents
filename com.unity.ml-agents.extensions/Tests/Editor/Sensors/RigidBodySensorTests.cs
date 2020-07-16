@@ -113,8 +113,8 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             // Update the settings to only process joint observations
             sensorComponent.Settings = new PhysicsSensorSettings
             {
+                UseJointPositionsAndAngles = true,
                 UseJointForces = true,
-                UseJointPositions = true,
             };
 
             sensor = sensorComponent.CreateSensor();
