@@ -192,9 +192,9 @@ public class WalkerAgent : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches and approach zero as it deviates
-        matchSpeedReward =
-            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
-                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
+//        matchSpeedReward =
+//            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+//                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
 //        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
 //            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
@@ -215,7 +215,6 @@ public class WalkerAgent : Agent
 //        rewardManager.UpdateReward("lookAtTarget", lookAtTargetReward);
 //        rewardManager.UpdateReward("headHeightOverFeet", headHeightOverFeetReward);
 //        rewardManager.UpdateReward("hurryUp", hurryUpReward/MaxStep);
-        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
 
 //        //VELOCITY REWARDS
 //        bpVelPenaltyThisStep = 0;
@@ -225,8 +224,26 @@ public class WalkerAgent : Agent
 //            bpVelPenaltyThisStep += velDelta;
 //        }
 //        rewardManager.UpdateReward("bpVel", bpVelPenaltyThisStep);
+        Vector3 velSum = Vector3.zero;
+
+        int counter = 0;
+        avgVelValue = Vector3.zero;
+        foreach (var item in m_JdController.bodyPartsList)
+        {
+            counter++;
+//            velSum += item.rb.velocity;
+//            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
+            velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
+            avgVelValue = velSum/counter;
+        }
+        //This reward will approach 1 if it matches and approach zero as it deviates
+        matchSpeedReward =
+            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+                               avgVelValue).sqrMagnitude);
+        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
         
     }
+    public Vector3 avgVelValue;
     
 //    void FixedUpdate()
 //    {
