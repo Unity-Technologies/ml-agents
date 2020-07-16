@@ -253,6 +253,6 @@ def test_stats_channel():
     stats = receiver.get_and_reset_stats()
 
     assert len(stats) == 1
-    val, method = stats["stats-1"]
+    val, method = stats["stats-1"][0]
     assert val - 42.0 < 1e-8
     assert method == StatsAggregationMethod.MOST_RECENT

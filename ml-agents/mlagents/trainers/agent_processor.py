@@ -9,7 +9,10 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     TerminalStep,
 )
-from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+from mlagents_envs.side_channel.stats_side_channel import (
+    StatsAggregationMethod,
+    EnvironmentStats,
+)
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
@@ -306,7 +309,7 @@ class AgentManager(AgentProcessor):
         self.publish_trajectory_queue(self.trajectory_queue)
 
     def record_environment_stats(
-        self, env_stats: Dict[str, Tuple[float, StatsAggregationMethod]], worker_id: int
+        self, env_stats: EnvironmentStats, worker_id: int
     ) -> None:
         """
         Pass stats from the environment to the StatsReporter.
@@ -316,11 +319,12 @@ class AgentManager(AgentProcessor):
         :param worker_id:
         :return:
         """
-        for stat_name, (val, agg_type) in env_stats.items():
-            if agg_type == StatsAggregationMethod.AVERAGE:
-                self.stats_reporter.add_stat(stat_name, val)
-            elif agg_type == StatsAggregationMethod.MOST_RECENT:
-                # In order to prevent conflicts between multiple environments,
-                # only stats from the first environment are recorded.
-                if worker_id == 0:
-                    self.stats_reporter.set_stat(stat_name, val)
+        for stat_name, value_list in env_stats.items():
+            for val, agg_type in value_list:
+                if agg_type == StatsAggregationMethod.AVERAGE:
+                    self.stats_reporter.add_stat(stat_name, val)
+                elif agg_type == StatsAggregationMethod.MOST_RECENT:
+                    # In order to prevent conflicts between multiple environments,
+                    # only stats from the first environment are recorded.
+                    if worker_id == 0:
+                        self.stats_reporter.set_stat(stat_name, val)

@@ -6,7 +6,7 @@ from mlagents_envs.base_env import (
     BehaviorSpec,
     BehaviorName,
 )
-from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
@@ -23,7 +23,7 @@ class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
     brain_name_to_action_info: Dict[BehaviorName, ActionInfo]
-    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
+    environment_stats: EnvironmentStats
 
     @property
     def name_behavior_ids(self) -> Iterable[BehaviorName]:

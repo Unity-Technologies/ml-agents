@@ -9,8 +9,15 @@ and this project adheres to
 ## [Unreleased]
 
 ### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- StatsSideChannel now stores multiple values per key. This means that multiple
+calls to `StatsRecorder.Add()` with the same key in the same step will no
+longer overwrite each other. (#4236)
 - Model checkpoints are now also saved as .nn files during training. (#4127)
 - Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
 
@@ -20,6 +27,7 @@ and this project adheres to
 recursively (for example, by an Agent's CollectObservations method).
 Previously, this would result in an infinite loop and cause the editor to hang.
 (#4226)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [1.2.0-preview] - 2020-07-15
 
