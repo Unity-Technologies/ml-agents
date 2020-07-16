@@ -158,7 +158,7 @@ class TFPolicy(Policy):
             ckpt = tf.train.get_checkpoint_state(model_path)
             if ckpt is None:
                 raise UnityPolicyException(
-                    "The model {0} could not be loaded. Make "
+                    "The model {} could not be loaded. Make "
                     "sure you specified the right "
                     "--run-id and that the previous run you are loading from had the same "
                     "behavior names.".format(model_path)
@@ -167,7 +167,7 @@ class TFPolicy(Policy):
                 self.saver.restore(self.sess, ckpt.model_checkpoint_path)
             except tf.errors.NotFoundError:
                 raise UnityPolicyException(
-                    "The model {0} was found but could not be loaded. Make "
+                    "The model {} was found but could not be loaded. Make "
                     "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
                     "and is using the same trainer configuration as the current run.".format(
                         model_path

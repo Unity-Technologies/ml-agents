@@ -8,7 +8,7 @@ from mlagents.trainers.models import ModelUtils
 EPSILON = 1e-7
 
 
-class GAILModel(object):
+class GAILModel:
     def __init__(
         self,
         policy: TFPolicy,

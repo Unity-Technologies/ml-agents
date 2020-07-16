@@ -44,7 +44,7 @@ class PPOTrainer(RLTrainer):
         :param seed: The seed the model will be initialized with
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
-        super(PPOTrainer, self).__init__(
+        super().__init__(
             brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
         self.hyperparameters: PPOSettings = cast(
