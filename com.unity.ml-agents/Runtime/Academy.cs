@@ -19,7 +19,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_3_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_4_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -51,7 +51,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_3_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_4_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -127,6 +127,10 @@ namespace Unity.MLAgents
 
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
+
+        // Whether the Academy is in the middle of a step. This is used to detect and Academy
+        // step called by user code that is also called by the Academy.
+        bool m_IsStepping;
 
         // Random seed used for inference.
         int m_InferenceSeed;
@@ -486,36 +490,59 @@ namespace Unity.MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_HadFirstReset)
+            // Check whether we're already in the middle of a step.
+            // This shouldn't happen generally, but could happen if user code (e.g. CollectObservations)
+            // that is called by EnvironmentStep() also calls EnvironmentStep(). This would result
+            // in an infinite loop and/or stack overflow, so stop it before it happens.
+            if (m_IsStepping)
             {
-                ForcedFullReset();
+                throw new UnityAgentsException(
+                    "Academy.EnvironmentStep() called recursively. " +
+                    "This might happen if you call EnvironmentStep() from custom code such as " +
+                    "CollectObservations() or OnActionReceived()."
+                );
             }
 
-            AgentPreStep?.Invoke(m_StepCount);
+            m_IsStepping = true;
 
-            m_StepCount += 1;
-            m_TotalStepCount += 1;
-            AgentIncrementStep?.Invoke();
-
-            using (TimerStack.Instance.Scoped("AgentSendState"))
+            try
             {
-                AgentSendState?.Invoke();
+                if (!m_HadFirstReset)
+                {
+                    ForcedFullReset();
+                }
+
+                AgentPreStep?.Invoke(m_StepCount);
+
+                m_StepCount += 1;
+                m_TotalStepCount += 1;
+                AgentIncrementStep?.Invoke();
+
+                using (TimerStack.Instance.Scoped("AgentSendState"))
+                {
+                    AgentSendState?.Invoke();
+                }
+
+                using (TimerStack.Instance.Scoped("DecideAction"))
+                {
+                    DecideAction?.Invoke();
+                }
+
+                // If the communicator is not on, we need to clear the SideChannel sending queue
+                if (!IsCommunicatorOn)
+                {
+                    SideChannelManager.GetSideChannelMessage();
+                }
+
+                using (TimerStack.Instance.Scoped("AgentAct"))
+                {
+                    AgentAct?.Invoke();
+                }
             }
-
-            using (TimerStack.Instance.Scoped("DecideAction"))
+            finally
             {
-                DecideAction?.Invoke();
-            }
-
-            // If the communicator is not on, we need to clear the SideChannel sending queue
-            if (!IsCommunicatorOn)
-            {
-                SideChannelManager.GetSideChannelMessage();
-            }
-
-            using (TimerStack.Instance.Scoped("AgentAct"))
-            {
-                AgentAct?.Invoke();
+                // Reset m_IsStepping when we're done (or if an exception occurred).
+                m_IsStepping = false;
             }
         }
 
