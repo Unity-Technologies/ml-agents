@@ -11,6 +11,8 @@ and this project adheres to
 ### Major Changes
 
 ### Minor Changes
+- Model checkpoints are now also saved as .nn files during training. (#4127)
+- Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
