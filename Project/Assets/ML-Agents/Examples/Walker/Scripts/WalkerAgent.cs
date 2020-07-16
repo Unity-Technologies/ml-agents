@@ -234,8 +234,8 @@ public class WalkerAgent : Agent
 //            velSum += item.rb.velocity;
 //            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
             velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
-            avgVelValue = velSum/counter;
         }
+            avgVelValue = velSum/counter;
         //This reward will approach 1 if it matches and approach zero as it deviates
         matchSpeedReward =
             Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
