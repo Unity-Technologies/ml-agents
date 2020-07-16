@@ -1,5 +1,5 @@
 import uuid
-from typing import Tuple, List, DefaultDict
+from typing import Tuple, List, Mapping
 from enum import Enum
 from collections import defaultdict
 
@@ -16,7 +16,7 @@ class StatsAggregationMethod(Enum):
 
 
 StatList = List[Tuple[float, StatsAggregationMethod]]
-EnvironmentStats = DefaultDict[str, StatList]
+EnvironmentStats = Mapping[str, StatList]
 
 
 class StatsSideChannel(SideChannel):
