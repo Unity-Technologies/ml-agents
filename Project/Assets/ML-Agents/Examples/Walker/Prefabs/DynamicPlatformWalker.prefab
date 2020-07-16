@@ -573,7 +573,7 @@ MonoBehaviour:
     lastNaNStep: 0
   - rewardKey: productOfAllRewards
     rawVal: 0
-    rewardScalar: 0.01
+    rewardScalar: 1
     rewardThisStep: 0
     cumulativeThisEpisode: 0
     cumulativeThisSession: 0
