@@ -14,7 +14,6 @@ behaviors:
       policy_layers: 2
       value_layers: 3
       feature_size: 128
-      reuse_encoder: true
       in_epoch_alter: true
       use_op_buffer: true
       use_var_predict: true

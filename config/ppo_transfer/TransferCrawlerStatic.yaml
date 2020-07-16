@@ -24,8 +24,8 @@ behaviors:
       use_transfer: true
       load_policy: false
       load_value: false
-      train_model: false
-      transfer_path: "results/cs-old-bisim/CrawlerStatic"
+      train_model: true
+      transfer_path: "results/old-cs-bisim/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
