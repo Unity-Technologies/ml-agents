@@ -9,6 +9,8 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// not a requirement; for example, the objects could be rigid bodies whose hierarchy
     /// is defined by Joint configurations.
     ///
+    /// NO-OP CHANGE DON'T MERGE ME
+    ///
     /// Poses are either considered in model space, which is relative to a root body,
     /// or in local space, which is relative to their parent.
     /// </summary>
