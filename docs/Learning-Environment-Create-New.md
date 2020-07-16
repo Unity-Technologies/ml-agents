@@ -76,7 +76,7 @@ to seek, and a Sphere to represent the Agent itself.
 1. Right click in Hierarchy window, select 3D Object > Cube.
 1. Name the GameObject "Target"
 1. Select the Target Cube to view its properties in the Inspector window.
-1. Set Transform to Position = `3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale =
+1. Set Transform to Position = `(3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale =
    `(1, 1, 1)`.
 
 <p align="left">
@@ -136,7 +136,7 @@ Then, edit the new `RollerAgent` script:
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
 1. In the editor, add the `using Unity.MLAgents;` and
-   `using Unity.MLAgents.Sensors` statements and then change the base class from
+   `using Unity.MLAgents.Sensors;` statements and then change the base class from
    `MonoBehaviour` to `Agent`.
 1. Delete the `Update()` method, but we will use the `Start()` function, so
    leave it alone for now.

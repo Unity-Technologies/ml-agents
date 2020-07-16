@@ -31,7 +31,7 @@ from the root of the project repository use:
 ```python
 from gym_unity.envs import UnityToGymWrapper
 
-env = UnityToGymWrapper(unity_environment, uint8_visual, allow_multiple_obs)
+env = UnityToGymWrapper(unity_environment, uint8_visual, flatten_branched, allow_multiple_obs)
 ```
 
 - `unity_environment` refers to the Unity environment to be wrapped.
@@ -46,7 +46,7 @@ env = UnityToGymWrapper(unity_environment, uint8_visual, allow_multiple_obs)
 
 - `allow_multiple_obs` will return a list of observations. The first elements contain the visual observations and the
   last element contains the array of vector observations. If False the environment returns a single array (containing
-  a single visual observations, if present, otherwise the vector observation)
+  a single visual observations, if present, otherwise the vector observation). Defaults to `False`.
 
 The returned environment `env` will function as a gym.
 
