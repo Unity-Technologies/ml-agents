@@ -10,7 +10,13 @@ from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.demo_loader import write_demo
-from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary, TensorboardWriter, CSVWriter
+from mlagents.trainers.stats import (
+    StatsReporter,
+    StatsWriter,
+    StatsSummary,
+    TensorboardWriter,
+    CSVWriter,
+)
 from mlagents.trainers.settings import (
     TrainerSettings,
     PPOSettings,
@@ -94,7 +100,6 @@ Transfer_CONFIG = TrainerSettings(
 )
 
 
-
 # The reward processor is passed as an argument to _check_environment_trains.
 # It is applied to the list pf all final rewards for each brain individually.
 # This is so that we can process all final rewards in different ways for different algorithms.
@@ -127,7 +132,7 @@ class DebugWriter(StatsWriter):
                 print(step, val, stats_summary.mean)
                 self.stats[step] = stats_summary.mean
                 self._last_reward_summary[category] = stats_summary.mean
-    
+
     def write2file(self, filename):
         with open(filename, "w") as reward_file:
             for step in self.stats.keys():
@@ -142,7 +147,7 @@ def _check_environment_trains(
     success_threshold=0.9,
     env_manager=None,
     run_id="id",
-    seed=1337
+    seed=1337,
 ):
     # Create controller and begin training.
     model_dir = "./transfer_results/" + run_id
@@ -152,14 +157,9 @@ def _check_environment_trains(
 
     csv_writer = CSVWriter(
         model_dir,
-        required_fields=[
-            "Environment/Cumulative Reward",
-            "Environment/Episode Length",
-        ],
+        required_fields=["Environment/Cumulative Reward", "Environment/Episode Length"],
     )
-    tb_writer = TensorboardWriter(
-        model_dir, clear_past_data=True
-    )
+    tb_writer = TensorboardWriter(model_dir, clear_past_data=True)
     StatsReporter.add_writer(tb_writer)
     StatsReporter.add_writer(csv_writer)
 
@@ -198,56 +198,113 @@ def _check_environment_trains(
     #     assert all(reward > success_threshold for reward in processed_rewards)
 
 
-def test_2d_model(config=Transfer_CONFIG, obs_spec_type="rich1", run_id="model_rich1", seed=0):
+def test_2d_model(
+    config=Transfer_CONFIG, obs_spec_type="rich1", run_id="model_rich1", seed=0
+):
     env = SimpleTransferEnvironment(
-        [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.1, 
-        num_vector=2, obs_spec_type=obs_spec_type, goal_type="hard"
+        [BRAIN_NAME],
+        use_discrete=False,
+        action_size=2,
+        step_size=0.1,
+        num_vector=2,
+        obs_spec_type=obs_spec_type,
+        goal_type="hard",
     )
     new_hyperparams = attr.evolve(
-        config.hyperparameters, batch_size=120, buffer_size=12000, learning_rate=5.0e-3, 
-        use_bisim=True, predict_return=True, 
-        # separate_value_train=True, separate_policy_train=True,
-        use_var_predict=True, with_prior=True, use_op_buffer=True, in_epoch_alter=False, in_batch_alter=True, 
-        policy_layers=2, value_layers=2, encoder_layers=0, feature_size=2, 
-        #use_inverse_model=True
+        config.hyperparameters,
+        batch_size=1200,
+        buffer_size=12000,
+        learning_rate=5.0e-3,
+        use_bisim=True,
+        predict_return=True,
+        reuse_encoder=True,
+        separate_value_train=True,
+        separate_policy_train=False,
+        use_var_predict=True,
+        with_prior=False,
+        use_op_buffer=False,
+        in_epoch_alter=False,
+        in_batch_alter=True,
+        policy_layers=0,
+        value_layers=2,
+        forward_layers=2,
+        encoder_layers=2,
+        feature_size=16,
+        # use_inverse_model=True
     )
-    config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=200000, summary_freq=5000)
-    _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
+    config = attr.evolve(
+        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
+    )
+    _check_environment_trains(
+        env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
+    )
 
-def test_2d_transfer(config=Transfer_CONFIG, obs_spec_type="rich1", 
+
+def test_2d_transfer(
+    config=Transfer_CONFIG,
+    obs_spec_type="rich1",
     transfer_from="./transfer_results/model_rich2_f4_pv-l0_rew_bisim-op_s0/Simple",
-    run_id="transfer_f4_rich1_from-rich2-retrain-pv_rew_bisim-op", seed=1337):
+    run_id="transfer_f4_rich1_from-rich2-retrain-pv_rew_bisim-op",
+    seed=1337,
+):
     env = SimpleTransferEnvironment(
-        [BRAIN_NAME], use_discrete=False, action_size=2, step_size=0.1, 
-        num_vector=2, obs_spec_type=obs_spec_type, goal_type="hard"
+        [BRAIN_NAME],
+        use_discrete=False,
+        action_size=2,
+        step_size=0.1,
+        num_vector=2,
+        obs_spec_type=obs_spec_type,
+        goal_type="hard",
     )
     new_hyperparams = attr.evolve(
-        config.hyperparameters, batch_size=120, buffer_size=12000, use_transfer=True,
-        transfer_path=transfer_from, #separate_policy_train=True, separate_value_train=True, 
-        use_op_buffer=False, in_epoch_alter=False, in_batch_alter=True, learning_rate=5.0e-3, 
-        train_policy=True, train_value=True, train_model=False, feature_size=2,
-        use_var_predict=True, with_prior=True, policy_layers=2, load_policy=False, 
-        load_value=False, predict_return=True, value_layers=2, encoder_layers=1, 
-        use_bisim=False, 
+        config.hyperparameters,
+        batch_size=1200,
+        buffer_size=12000,
+        use_transfer=True,
+        transfer_path=transfer_from,  # separate_policy_train=True, separate_value_train=True,
+        use_op_buffer=False,
+        in_epoch_alter=False,
+        in_batch_alter=True,
+        learning_rate=5.0e-3,
+        train_policy=True,
+        train_value=True,
+        train_model=False,
+        feature_size=16,
+        use_var_predict=True,
+        with_prior=False,
+        policy_layers=0,
+        load_policy=False,
+        load_value=False,
+        predict_return=True,
+        forward_layers=2,
+        value_layers=2,
+        encoder_layers=2,
+        use_bisim=True,
     )
-    config = attr.evolve(config, hyperparameters=new_hyperparams, max_steps=300000, summary_freq=5000)
-    _check_environment_trains(env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed)
+    config = attr.evolve(
+        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
+    )
+    _check_environment_trains(
+        env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
+    )
 
 
 if __name__ == "__main__":
-    # for obs in ["normal"]: # ["normal", "rich1", "rich2"]:
-    #     test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs \
-    #          + "_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_bisim_suf1")
+    for obs in ["normal"]:  # ["normal", "rich1", "rich2"]:
+        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
 
     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
     for obs in ["normal"]:
-        test_2d_transfer(seed=0, obs_spec_type="rich1", 
-        transfer_from="./transfer_results/model_"+ obs +"_f2_pv-l2_linear-rew_ibalter_conlr_enc-l0-op4_s0/Simple",
-        run_id="transfer_rich1_f2_pv-l2_ibalter_suf1_nobisim_from_" + obs)
-    
-    # for obs in ["normal"]:
-    #     test_2d_transfer(seed=0, obs_spec_type="rich1", 
-    #     transfer_from="./transfer_results/model_"+ obs +"_f4_pv-l0_rew_bisim-nop_newalter_noreuse-soft0.1_s0/Simple",
-    #     run_id="transfer_rich1_retrain-all_f4_pv-l0_rew_bisim-nop_noreuse-soft0.1_from_" + obs)
-    # for i in range(5):
-    #     test_2d_model(seed=i)
+        test_2d_transfer(
+            seed=0,
+            obs_spec_type="rich1",
+            transfer_from="./transfer_results/model_" + obs + "_s0/Simple",
+            run_id="transfer_rich1",
+        )
+
+# for obs in ["normal"]:
+#     test_2d_transfer(seed=0, obs_spec_type="rich1",
+#     transfer_from="./transfer_results/model_"+ obs +"_f4_pv-l0_rew_bisim-nop_newalter_noreuse-soft0.1_s0/Simple",
+#     run_id="transfer_rich1_retrain-all_f4_pv-l0_rew_bisim-nop_noreuse-soft0.1_from_" + obs)
+# for i in range(5):
+#     test_2d_model(seed=i)

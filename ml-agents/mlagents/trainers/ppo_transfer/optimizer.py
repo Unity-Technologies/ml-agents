@@ -11,7 +11,9 @@ from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, PPOTransferSettings
+
 # import tf_slim as slim
+
 
 class PPOTransferOptimizer(TFOptimizer):
     def __init__(self, policy: TransferPolicy, trainer_params: TrainerSettings):
@@ -47,7 +49,9 @@ class PPOTransferOptimizer(TFOptimizer):
 
         # Transfer
         self.use_transfer = hyperparameters.use_transfer
-        self.transfer_path = hyperparameters.transfer_path #"results/BallSingle_nosep_cmodel_small/3DBall"
+        self.transfer_path = (
+            hyperparameters.transfer_path
+        )  # "results/BallSingle_nosep_cmodel_small/3DBall"
         self.smart_transfer = hyperparameters.smart_transfer
         self.conv_thres = hyperparameters.conv_thres
         self.transfer_type = hyperparameters.transfer_type
@@ -58,11 +62,22 @@ class PPOTransferOptimizer(TFOptimizer):
         self.bisim_update_dict: Dict[str, tf.Tensor] = {}
 
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
-        policy.create_tf_graph(hyperparameters.encoder_layers, hyperparameters.policy_layers, 
-            hyperparameters.forward_layers, hyperparameters.inverse_layers, hyperparameters.feature_size,
-            self.use_transfer, self.separate_policy_train, self.use_var_encoder, self.use_var_predict, 
-            self.predict_return, self.use_inverse_model, self.reuse_encoder, self.use_bisim)
-        
+        policy.create_tf_graph(
+            hyperparameters.encoder_layers,
+            hyperparameters.policy_layers,
+            hyperparameters.forward_layers,
+            hyperparameters.inverse_layers,
+            hyperparameters.feature_size,
+            self.use_transfer,
+            self.separate_policy_train,
+            self.use_var_encoder,
+            self.use_var_predict,
+            self.predict_return,
+            self.use_inverse_model,
+            self.reuse_encoder,
+            self.use_bisim,
+        )
+
         with policy.graph.as_default():
             super().__init__(policy, trainer_params)
 
@@ -76,7 +91,7 @@ class PPOTransferOptimizer(TFOptimizer):
             num_layers = policy_network_settings.num_layers
             vis_encode_type = policy_network_settings.vis_encode_type
             self.burn_in_ratio = 0.0
-            
+
             self.num_updates = 0
             self.alter_every = 400
             self.copy_every = 1
@@ -99,9 +114,9 @@ class PPOTransferOptimizer(TFOptimizer):
                 "Policy/Beta": "decay_beta",
             }
             if self.predict_return:
-                self.stats_name_to_update_name.update({
-                    "Losses/Reward Loss": "reward_loss",
-                })
+                self.stats_name_to_update_name.update(
+                    {"Losses/Reward Loss": "reward_loss"}
+                )
             # if self.use_bisim:
             #     self.stats_name_to_update_name.update({
             #         "Losses/Bisim Loss": "bisim_loss",
@@ -119,15 +134,23 @@ class PPOTransferOptimizer(TFOptimizer):
             with tf.variable_scope("value"):
                 if policy.use_continuous_act:
                     if hyperparameters.separate_value_net:
-                        self._create_cc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
+                        self._create_cc_critic_old(
+                            h_size, hyperparameters.value_layers, vis_encode_type
+                        )
                     else:
-                        self._create_cc_critic(h_size, hyperparameters.value_layers, vis_encode_type)
+                        self._create_cc_critic(
+                            h_size, hyperparameters.value_layers, vis_encode_type
+                        )
                 else:
                     if hyperparameters.separate_value_net:
-                        self._create_dc_critic_old(h_size, hyperparameters.value_layers, vis_encode_type)
+                        self._create_dc_critic_old(
+                            h_size, hyperparameters.value_layers, vis_encode_type
+                        )
                     else:
-                        self._create_dc_critic(h_size, hyperparameters.value_layers, vis_encode_type)
-            
+                        self._create_dc_critic(
+                            h_size, hyperparameters.value_layers, vis_encode_type
+                        )
+
             with tf.variable_scope("optimizer/"):
                 self.learning_rate = ModelUtils.create_schedule(
                     self._schedule,
@@ -146,7 +169,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 )
                 self.bisim_learning_rate = ModelUtils.create_schedule(
                     ScheduleType.CONSTANT,
-                    lr/10,
+                    lr / 10,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
@@ -174,34 +197,40 @@ class PPOTransferOptimizer(TFOptimizer):
                         "learning_rate": self.learning_rate,
                         "decay_epsilon": self.decay_epsilon,
                         "decay_beta": self.decay_beta,
-                        "model_learning_rate": self.model_learning_rate
+                        "model_learning_rate": self.model_learning_rate,
                     }
                 )
                 if self.predict_return:
-                    self.update_dict.update(
-                    {
-                        "reward_loss": self.policy.reward_loss,
-                    }
-                )
+                    self.update_dict.update({"reward_loss": self.policy.reward_loss})
 
-                if self.use_alter or self.smart_transfer or self.in_batch_alter or self.in_epoch_alter or self.op_buffer:
+                if (
+                    self.use_alter
+                    or self.smart_transfer
+                    or self.in_batch_alter
+                    or self.in_epoch_alter
+                    or self.op_buffer
+                ):
                     self._init_alter_update()
-            
+
             self.policy.initialize_or_load()
             if self.use_transfer:
-                self.policy.load_graph_partial(self.transfer_path, self.transfer_type, 
-                    hyperparameters.load_model, hyperparameters.load_policy, hyperparameters.load_value)
+                self.policy.load_graph_partial(
+                    self.transfer_path,
+                    self.transfer_type,
+                    hyperparameters.load_model,
+                    hyperparameters.load_policy,
+                    hyperparameters.load_value,
+                )
             self.policy.get_encoder_weights()
             self.policy.get_policy_weights()
 
             # slim.model_analyzer.analyze_vars(tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES), print_info=True)
-            
+
             print("All variables in the graph:")
             for variable in tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES):
                 print(variable)
             # tf.summary.FileWriter(self.policy.model_path, self.sess.graph)
 
-    
     def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
@@ -221,7 +250,7 @@ class PPOTransferOptimizer(TFOptimizer):
             ModelUtils.swish,
             num_layers,
             scope=f"main_graph",
-            reuse=False
+            reuse=False,
         )
         self.value_heads, self.value = ModelUtils.create_value_heads(
             self.stream_names, hidden_value
@@ -255,7 +284,7 @@ class PPOTransferOptimizer(TFOptimizer):
             ModelUtils.swish,
             num_layers,
             scope=f"main_graph",
-            reuse=False
+            reuse=False,
         )
         self.value_heads, self.value = ModelUtils.create_value_heads(
             self.stream_names, hidden_value
@@ -300,8 +329,17 @@ class PPOTransferOptimizer(TFOptimizer):
         )
 
     def _create_losses(
-        self, probs, old_probs, value_heads, entropy, targ_encoder, predict, 
-         beta, epsilon, lr, max_step
+        self,
+        probs,
+        old_probs,
+        value_heads,
+        entropy,
+        targ_encoder,
+        predict,
+        beta,
+        epsilon,
+        lr,
+        max_step,
     ):
         """
         Creates training-specific Tensorflow ops for PPO models.
@@ -379,9 +417,9 @@ class PPOTransferOptimizer(TFOptimizer):
         # )
         # target = tf.concat([targ_encoder, tf.expand_dims(self.dis_returns, -1)], axis=1)
         # if self.predict_return:
-        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, target)) 
+        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, target))
         # else:
-        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder)) 
+        #     self.model_loss = tf.reduce_mean(tf.squared_difference(predict, targ_encoder))
         # if self.with_prior:
         #     if self.use_var_encoder:
         #         self.model_loss += encoder_distribution.kl_standard()
@@ -399,19 +437,27 @@ class PPOTransferOptimizer(TFOptimizer):
 
         if self.use_inverse_model:
             self.model_loss += 0.5 * self.policy.inverse_loss
-        
+
         if self.use_bisim:
             if self.use_var_predict:
-                predict_diff = self.policy.predict_distribution.w_distance(self.policy.bisim_predict_distribution)
+                predict_diff = self.policy.predict_distribution.w_distance(
+                    self.policy.bisim_predict_distribution
+                )
             else:
                 predict_diff = tf.reduce_mean(
-                    tf.squared_difference(self.policy.bisim_predict, self.policy.predict)
+                    tf.squared_difference(
+                        self.policy.bisim_predict, self.policy.predict
+                    )
                 )
             if self.predict_return:
                 reward_diff = tf.reduce_mean(
-                    tf.squared_difference(self.policy.bisim_pred_reward, self.policy.pred_reward)
+                    tf.squared_difference(
+                        self.policy.bisim_pred_reward, self.policy.pred_reward
+                    )
                 )
-                predict_diff = self.reward_signals["extrinsic"].gamma * predict_diff + tf.abs(reward_diff)
+                predict_diff = self.reward_signals[
+                    "extrinsic"
+                ].gamma * predict_diff + tf.abs(reward_diff)
             encode_dist = tf.reduce_mean(
                 tf.squared_difference(self.policy.encoder, self.policy.bisim_encoder)
             )
@@ -435,7 +481,9 @@ class PPOTransferOptimizer(TFOptimizer):
     def _create_ppo_optimizer_ops(self):
         train_vars = []
         if self.train_encoder:
-            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+            train_vars += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
+            )
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse")
@@ -449,25 +497,33 @@ class PPOTransferOptimizer(TFOptimizer):
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss, var_list=train_vars)
         self.update_batch = self.tf_optimizer.minimize(self.loss, var_list=train_vars)
-        
+
         if self.use_bisim:
-            bisim_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+            bisim_train_vars = tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
+            )
             self.bisim_optimizer = self.create_optimizer_op(self.bisim_learning_rate)
-            self.bisim_grads = self.tf_optimizer.compute_gradients(self.bisim_loss, var_list=bisim_train_vars)
-            self.bisim_update_batch = self.tf_optimizer.minimize(self.bisim_loss, var_list=bisim_train_vars)
+            self.bisim_grads = self.tf_optimizer.compute_gradients(
+                self.bisim_loss, var_list=bisim_train_vars
+            )
+            self.bisim_update_batch = self.tf_optimizer.minimize(
+                self.bisim_loss, var_list=bisim_train_vars
+            )
             self.bisim_update_dict.update(
-            {
-                "bisim_loss": self.bisim_loss,
-                "update_batch": self.bisim_update_batch,
-                "bisim_learning_rate": self.bisim_learning_rate,
-            }
-        )
-        
+                {
+                    "bisim_loss": self.bisim_loss,
+                    "update_batch": self.bisim_update_batch,
+                    "bisim_learning_rate": self.bisim_learning_rate,
+                }
+            )
+
     def _init_alter_update(self):
-        
+
         train_vars = []
         if self.train_encoder:
-            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+            train_vars += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
+            )
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
@@ -476,21 +532,35 @@ class PPOTransferOptimizer(TFOptimizer):
         if self.train_value:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
 
-        policy_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy") \
-            + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
+        policy_train_vars = tf.get_collection(
+            tf.GraphKeys.TRAINABLE_VARIABLES, "policy"
+        ) + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
         self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
-        self.ppo_grads = self.ppo_optimizer.compute_gradients(self.ppo_loss, var_list=train_vars)
-        self.ppo_update_batch = self.ppo_optimizer.minimize(self.ppo_loss, var_list=train_vars)
+        self.ppo_grads = self.ppo_optimizer.compute_gradients(
+            self.ppo_loss, var_list=train_vars
+        )
+        self.ppo_update_batch = self.ppo_optimizer.minimize(
+            self.ppo_loss, var_list=train_vars
+        )
 
-        model_train_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict") \
-            + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
+        model_train_vars = tf.get_collection(
+            tf.GraphKeys.TRAINABLE_VARIABLES, "predict"
+        ) + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
         self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
-        self.model_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=train_vars)
-        self.model_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=train_vars)
+        self.model_grads = self.model_optimizer.compute_gradients(
+            self.model_loss, var_list=train_vars
+        )
+        self.model_update_batch = self.model_optimizer.minimize(
+            self.model_loss, var_list=train_vars
+        )
 
         self.model_only_optimizer = self.create_optimizer_op(self.model_learning_rate)
-        self.model_only_grads = self.model_optimizer.compute_gradients(self.model_loss, var_list=model_train_vars)
-        self.model_only_update_batch = self.model_optimizer.minimize(self.model_loss, var_list=model_train_vars)
+        self.model_only_grads = self.model_optimizer.compute_gradients(
+            self.model_loss, var_list=model_train_vars
+        )
+        self.model_only_update_batch = self.model_optimizer.minimize(
+            self.model_loss, var_list=model_train_vars
+        )
 
         self.ppo_update_dict.update(
             {
@@ -502,7 +572,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 "decay_beta": self.decay_beta,
             }
         )
-        
+
         self.model_update_dict.update(
             {
                 "model_loss": self.model_loss,
@@ -522,17 +592,11 @@ class PPOTransferOptimizer(TFOptimizer):
         )
 
         if self.predict_return:
-            self.ppo_update_dict.update({
-                "reward_loss": self.policy.reward_loss,
-            })
+            self.ppo_update_dict.update({"reward_loss": self.policy.reward_loss})
 
-            self.model_update_dict.update({
-                "reward_loss": self.policy.reward_loss,
-            })
+            self.model_update_dict.update({"reward_loss": self.policy.reward_loss})
 
-            self.model_only_update_dict.update({
-                "reward_loss": self.policy.reward_loss,
-            })
+            self.model_only_update_dict.update({"reward_loss": self.policy.reward_loss})
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -551,7 +615,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 reward_signal.prepare_update(self.policy, batch, num_sequences)
             )
             stats_needed.update(reward_signal.stats_name_to_update_name)
-        
+
         if self.use_alter:
             # if self.num_updates / self.alter_every == 0:
             #     update_vals = self._execute_model(feed_dict, self.update_dict)
@@ -567,7 +631,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 update_vals = self._execute_model(feed_dict, self.model_update_dict)
                 if self.num_updates % self.alter_every == 0:
                     print("start update model", self.num_updates)
-            else: # (self.num_updates / self.alter_every) % 2 == 0:
+            else:  # (self.num_updates / self.alter_every) % 2 == 0:
                 stats_needed = {
                     "Losses/Value Loss": "value_loss",
                     "Losses/Policy Loss": "policy_loss",
@@ -578,7 +642,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
                 if self.num_updates % self.alter_every == 0:
                     print("start update policy", self.num_updates)
-            
+
         elif self.in_batch_alter:
             update_vals = self._execute_model(feed_dict, self.model_update_dict)
             update_vals.update(self._execute_model(feed_dict, self.ppo_update_dict))
@@ -611,14 +675,16 @@ class PPOTransferOptimizer(TFOptimizer):
         for stat_name, update_name in stats_needed.items():
             # if update_name in update_vals.keys():
             update_stats[stat_name] = update_vals[update_name]
-        
+
         if self.in_batch_alter and self.use_bisim:
             update_stats.update(bisim_stats)
-        
+
         self.num_updates += 1
         return update_stats
 
-    def update_part(self, batch: AgentBuffer, num_sequences: int, update_type: str="policy") -> Dict[str, float]:
+    def update_part(
+        self, batch: AgentBuffer, num_sequences: int, update_type: str = "policy"
+    ) -> Dict[str, float]:
         """
         Performs update on model.
         :param mini_batch: Batch of experiences.
@@ -627,7 +693,7 @@ class PPOTransferOptimizer(TFOptimizer):
         """
         feed_dict = self._construct_feed_dict(batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
-        
+
         update_stats = {}
         # Collect feed dicts for all reward signals.
         for _, reward_signal in self.reward_signals.items():
@@ -635,7 +701,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 reward_signal.prepare_update(self.policy, batch, num_sequences)
             )
             stats_needed.update(reward_signal.stats_name_to_update_name)
-        
+
         if update_type == "model":
             update_vals = self._execute_model(feed_dict, self.model_update_dict)
         elif update_type == "policy":
@@ -654,20 +720,22 @@ class PPOTransferOptimizer(TFOptimizer):
         return update_stats
 
     def update_encoder(self, mini_batch1: AgentBuffer, mini_batch2: AgentBuffer):
-        
+
         stats_needed = {
             "Losses/Bisim Loss": "bisim_loss",
             "Policy/Bisim Learning Rate": "bisim_learning_rate",
         }
         update_stats = {}
 
-        selected_action_1 = self.policy.sess.run(self.policy.selected_actions, feed_dict = {
-            self.policy.vector_in: mini_batch1["vector_obs"],
-        })
+        selected_action_1 = self.policy.sess.run(
+            self.policy.selected_actions,
+            feed_dict={self.policy.vector_in: mini_batch1["vector_obs"]},
+        )
 
-        selected_action_2 = self.policy.sess.run(self.policy.selected_actions, feed_dict = {
-            self.policy.vector_in: mini_batch2["vector_obs"],
-        })
+        selected_action_2 = self.policy.sess.run(
+            self.policy.selected_actions,
+            feed_dict={self.policy.vector_in: mini_batch2["vector_obs"]},
+        )
 
         feed_dict = {
             self.policy.vector_in: mini_batch1["vector_obs"],
@@ -675,13 +743,13 @@ class PPOTransferOptimizer(TFOptimizer):
             self.policy.current_action: selected_action_1,
             self.policy.bisim_action: selected_action_2,
         }
-        
+
         update_vals = self._execute_model(feed_dict, self.bisim_update_dict)
-        
+
         for stat_name, update_name in stats_needed.items():
             if update_name in update_vals.keys():
                 update_stats[stat_name] = update_vals[update_name]
-                
+
         return update_stats
 
     def _construct_feed_dict(
@@ -724,7 +792,9 @@ class PPOTransferOptimizer(TFOptimizer):
         if self.policy.vis_obs_size > 0:
             for i, _ in enumerate(self.policy.visual_in):
                 feed_dict[self.policy.visual_in[i]] = mini_batch["visual_obs%d" % i]
-                feed_dict[self.policy.visual_next[i]] = mini_batch["next_visual_obs%d" % i]
+                feed_dict[self.policy.visual_next[i]] = mini_batch[
+                    "next_visual_obs%d" % i
+                ]
         if self.policy.use_recurrent:
             feed_dict[self.policy.memory_in] = [
                 mini_batch["memory"][i]
@@ -737,8 +807,6 @@ class PPOTransferOptimizer(TFOptimizer):
             )
         # print(self.policy.sess.run(self.policy.encoder, feed_dict={self.policy.vector_in: mini_batch["vector_obs"]}))
         return feed_dict
-
-    
 
     def _create_cc_critic_old(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
@@ -852,5 +920,3 @@ class PPOTransferOptimizer(TFOptimizer):
             axis=1,
             keepdims=True,
         )
-
-    

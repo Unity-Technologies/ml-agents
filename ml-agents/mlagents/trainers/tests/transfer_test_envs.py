@@ -44,8 +44,8 @@ class SimpleTransferEnvironment(BaseEnv):
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
         action_size=1,
-        obs_spec_type="normal", # normal: (x,y); rich: (x+y, x-y, x*y)
-        goal_type="hard", # easy: 1 or -1; hard: uniformly random
+        obs_spec_type="normal",  # normal: (x,y); rich: (x+y, x-y, x*y)
+        goal_type="hard",  # easy: 1 or -1; hard: uniformly random
     ):
         super().__init__()
         self.discrete = use_discrete
@@ -85,7 +85,7 @@ class SimpleTransferEnvironment(BaseEnv):
             elif self.goal_type == "hard":
                 self.goal[name] = []
                 for _ in range(self.num_vector):
-                    self.goal[name].append(self.random.uniform(-1,1))
+                    self.goal[name].append(self.random.uniform(-1, 1))
             self.rewards[name] = 0
             self.final_rewards[name] = []
             self._reset_agent(name)
@@ -108,7 +108,7 @@ class SimpleTransferEnvironment(BaseEnv):
                 obs_spec.append((self.vec_obs_size,))
         # composed position
         if "rich" in self.obs_spec_type:
-            for _ in range(self.num_vector+1):
+            for _ in range(self.num_vector + 1):
                 obs_spec.append((self.vec_obs_size,))
         print("obs_spec:", obs_spec)
         return obs_spec
@@ -125,16 +125,20 @@ class SimpleTransferEnvironment(BaseEnv):
             for name in self.names:
                 i = self.positions[name][0]
                 j = self.positions[name][1]
-                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i+j))
-                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i-j))
-                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i*j))
+                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i + j))
+                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i - j))
+                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i * j))
         elif self.obs_spec_type == "rich2":
             for name in self.names:
                 i = self.positions[name][0]
                 j = self.positions[name][1]
-                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i*j))
-                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (2*i+j))
-                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (2*i-j))
+                obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * (i * j))
+                obs.append(
+                    np.ones((1, self.vec_obs_size), dtype=np.float32) * (2 * i + j)
+                )
+                obs.append(
+                    np.ones((1, self.vec_obs_size), dtype=np.float32) * (2 * i - j)
+                )
         for _ in range(self.num_visual):
             obs.append(np.ones((1,) + self.vis_obs_size, dtype=np.float32) * value)
         return obs
@@ -170,11 +174,19 @@ class SimpleTransferEnvironment(BaseEnv):
             # Both must be in 1.0 to be done
         # print(self.positions[name], end="")
         if self.goal_type == "easy":
-            done = all(pos >= 1.0 or pos <= -1.0 for pos in self.positions[name]) or self.step_count[name] >= self.horizon[name]
+            done = (
+                all(pos >= 1.0 or pos <= -1.0 for pos in self.positions[name])
+                or self.step_count[name] >= self.horizon[name]
+            )
         elif self.goal_type == "hard":
-            done = self.step_count[name] >= self.horizon[name]
-            # done = all(abs(pos-goal) <= 0.1 for pos, goal in zip(self.positions[name], self.goal[name])) \
-            #      or self.step_count[name] >= self.horizon[name]
+            # done = self.step_count[name] >= self.horizon[name]
+            done = (
+                all(
+                    abs(pos - goal) <= 0.1
+                    for pos, goal in zip(self.positions[name], self.goal[name])
+                )
+                or self.step_count[name] >= self.horizon[name]
+            )
         # if done:
         #     print(self.positions[name], end=" done ")
         return done
@@ -190,16 +202,16 @@ class SimpleTransferEnvironment(BaseEnv):
         return action_mask
 
     def _compute_reward(self, name: str, done: bool) -> float:
-        reward = 0.0
-        for _pos, goal in zip(self.positions[name], self.goal[name]):
+        reward = -TIME_PENALTY
+        # for _pos, goal in zip(self.positions[name], self.goal[name]):
         #     if abs(_pos - self.goal[name]) < 0.1:
         #         reward += SUCCESS_REWARD
         #     else:
         #         reward -= TIME_PENALTY
-            reward += 2 - abs(_pos - goal) #np.exp(-abs(_pos - goal))
+        #    reward += 2 - abs(_pos - goal) #np.exp(-abs(_pos - goal))
 
         # if done:
-        #     reward = SUCCESS_REWARD
+        #    reward = 0#SUCCESS_REWARD
         #     # for _pos in self.positions[name]:
         #     #     if self.goal_type == "easy":
         #     #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
@@ -220,8 +232,10 @@ class SimpleTransferEnvironment(BaseEnv):
         elif self.goal_type == "hard":
             self.goal[name] = []
             for _ in range(self.num_vector):
-                self.goal[name].append(self.random.uniform(-1,1))
-        self.positions[name] = [self.random.uniform(-1,1) for _ in range(self.action_size)]
+                self.goal[name].append(self.random.uniform(-1, 1))
+        self.positions[name] = [
+            self.random.uniform(-1, 1) for _ in range(self.action_size)
+        ]
         self.step_count[name] = 0
         self.rewards[name] = 0
         self.agent_id[name] = self.agent_id[name] + 1
