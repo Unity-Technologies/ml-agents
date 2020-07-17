@@ -17,7 +17,7 @@ def check_coverage(root_dir, min_percentage):
             summary_xml = os.path.join(dirpath, SUMMARY_XML_FILENAME)
             break
     if not summary_xml:
-        print("Couldn't find {} in root directory".format(SUMMARY_XML_FILENAME))
+        print(f"Couldn't find {SUMMARY_XML_FILENAME} in root directory")
         sys.exit(1)
 
     with open(summary_xml) as f:

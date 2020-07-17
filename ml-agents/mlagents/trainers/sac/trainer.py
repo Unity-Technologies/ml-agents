@@ -100,7 +100,7 @@ class SACTrainer(RLTrainer):
         Save the training buffer's update buffer to a pickle file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info("Saving Experience Replay Buffer to {}".format(filename))
+        logger.info(f"Saving Experience Replay Buffer to {filename}")
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
 
@@ -109,7 +109,7 @@ class SACTrainer(RLTrainer):
         Loads the last saved replay buffer from a file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info("Loading Experience Replay Buffer from {}".format(filename))
+        logger.info(f"Loading Experience Replay Buffer from {filename}")
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
         logger.info(
@@ -239,7 +239,7 @@ class SACTrainer(RLTrainer):
         while (
             self.step - self.hyperparameters.buffer_init_steps
         ) / self.update_steps > self.steps_per_update:
-            logger.debug("Updating SAC policy at step {}".format(self.step))
+            logger.debug(f"Updating SAC policy at step {self.step}")
             buffer = self.update_buffer
             if self.update_buffer.num_experiences >= self.hyperparameters.batch_size:
                 sampled_minibatch = buffer.sample_mini_batch(
@@ -248,9 +248,9 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    sampled_minibatch[
-                        "{}_rewards".format(name)
-                    ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
+                    sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
+                        sampled_minibatch
+                    ).scaled_reward
 
                 update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
@@ -296,7 +296,7 @@ class SACTrainer(RLTrainer):
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
             for name, signal in self.optimizer.reward_signals.items():
-                logger.debug("Updating {} at step {}".format(name, self.step))
+                logger.debug(f"Updating {name} at step {self.step}")
                 # Some signals don't need a minibatch to be sampled - so we don't!
                 if signal.update_dict:
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(

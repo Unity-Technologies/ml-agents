@@ -124,7 +124,7 @@ class GAILModel:
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "gail_stream_{}_visual_obs_encoder".format(i),
+                    f"gail_stream_{i}_visual_obs_encoder",
                     False,
                 )
 
@@ -133,7 +133,7 @@ class GAILModel:
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "gail_stream_{}_visual_obs_encoder".format(i),
+                    f"gail_stream_{i}_visual_obs_encoder",
                     True,
                 )
                 visual_policy_encoders.append(encoded_policy_visual)

@@ -114,7 +114,7 @@ class ConsoleWriter(StatsWriter):
             )
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                logger.info("{} ELO: {:0.3f}. ".format(category, elo_stats.mean))
+                logger.info(f"{category} ELO: {elo_stats.mean:0.3f}. ")
         else:
             logger.info(
                 "{}: Step: {}. No episode was completed since last summary. {}".format(
@@ -177,7 +177,7 @@ class TensorboardWriter(StatsWriter):
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
             summary = tf.Summary()
-            summary.value.add(tag="{}".format(key), simple_value=value.mean)
+            summary.value.add(tag=f"{key}", simple_value=value.mean)
             self.summary_writers[category].add_summary(summary, step)
             self.summary_writers[category].flush()
 
@@ -195,7 +195,7 @@ class TensorboardWriter(StatsWriter):
         for file_name in os.listdir(directory_name):
             if file_name.startswith("events.out"):
                 logger.warning(
-                    "{} was left over from a previous run. Deleting.".format(file_name)
+                    f"{file_name} was left over from a previous run. Deleting."
                 )
                 full_fname = os.path.join(directory_name, file_name)
                 try:

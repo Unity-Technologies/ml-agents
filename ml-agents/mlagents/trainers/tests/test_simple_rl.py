@@ -80,7 +80,7 @@ SAC_CONFIG = TrainerSettings(
 def default_reward_processor(rewards, last_n_rewards=5):
     rewards_to_use = rewards[-last_n_rewards:]
     # For debugging tests
-    print("Last {} rewards:".format(last_n_rewards), rewards_to_use)
+    print(f"Last {last_n_rewards} rewards:", rewards_to_use)
     return np.array(rewards[-last_n_rewards:], dtype=np.float32).mean()
 
 

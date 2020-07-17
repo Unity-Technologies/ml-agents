@@ -51,7 +51,7 @@ class CuriosityModel:
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "curiosity_stream_{}_visual_obs_encoder".format(i),
+                    f"curiosity_stream_{i}_visual_obs_encoder",
                     False,
                 )
 
@@ -60,7 +60,7 @@ class CuriosityModel:
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "curiosity_stream_{}_visual_obs_encoder".format(i),
+                    f"curiosity_stream_{i}_visual_obs_encoder",
                     True,
                 )
                 visual_encoders.append(encoded_visual)

@@ -275,7 +275,7 @@ class AgentBuffer(dict):
             key_list = list(self.keys())
         if not self.check_length(key_list):
             raise BufferException(
-                "The length of the fields {} were not of same length".format(key_list)
+                f"The length of the fields {key_list} were not of same length"
             )
         for field_key in key_list:
             target_buffer[field_key].extend(

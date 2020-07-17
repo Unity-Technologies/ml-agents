@@ -43,7 +43,7 @@ repos:
     rev: v2.7.0
     hooks:
     -   id: pyupgrade
-        args: [--py3-plus]
+        args: [--py3-plus, --py36-plus]
         exclude: .*barracuda.py
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
