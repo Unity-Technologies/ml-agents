@@ -200,7 +200,7 @@ class TorchPolicy(Policy):
             vec_obs, vis_obs, masks, memories, seq_len
         )
         if len(actions.shape) <= 2:
-            actions.unsqueeze_(-1)
+            actions = actions.unsqueeze(-1)
         action_list = [actions[..., i] for i in range(actions.shape[2])]
         log_probs, entropies, _ = self.actor_critic.get_probs_and_entropy(
             action_list, dists

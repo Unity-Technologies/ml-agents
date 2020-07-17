@@ -282,7 +282,7 @@ class TorchSACOptimizer(TorchOptimizer):
         _ent_coef = torch.exp(self._log_ent_coef)
         mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())), axis=0)
         if not discrete:
-            mean_q1.unsqueeze_(1)
+            mean_q1 = mean_q1.unsqueeze(1)
             batch_policy_loss = torch.mean(_ent_coef * log_probs - mean_q1, dim=1)
             policy_loss = torch.mean(loss_masks * batch_policy_loss)
         else:
@@ -382,7 +382,6 @@ class TorchSACOptimizer(TorchOptimizer):
         ]
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
-
         vis_obs: List[torch.Tensor] = []
         next_vis_obs: List[torch.Tensor] = []
         if self.policy.use_vis_obs:
@@ -405,7 +404,6 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-
         sampled_actions, log_probs, entropies, sampled_values, _ = self.policy.sample_actions(
             vec_obs,
             vis_obs,
@@ -430,7 +428,6 @@ class TorchSACOptimizer(TorchOptimizer):
         with torch.no_grad():
             target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
         masks = list_to_tensor(batch["masks"], dtype=torch.int32)
-
         use_discrete = not self.policy.use_continuous_act
         dones = list_to_tensor(batch["done"])
 
@@ -443,13 +440,14 @@ class TorchSACOptimizer(TorchOptimizer):
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
         entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
 
+        total_value_loss = q1_loss + q2_loss + value_loss
+
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
         self.policy_optimizer.step()
-        total_value_loss = q1_loss + q2_loss + value_loss
+
         self.value_optimizer.zero_grad()
         total_value_loss.backward()
-
         self.value_optimizer.step()
 
         self.entropy_optimizer.zero_grad()
@@ -468,6 +466,7 @@ class TorchSACOptimizer(TorchOptimizer):
             .cpu()
             .numpy(),
         }
+
         return update_stats
 
     def update_reward_signals(
