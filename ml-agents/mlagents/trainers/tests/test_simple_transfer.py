@@ -233,7 +233,7 @@ def test_2d_model(
         # use_inverse_model=True
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=20000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -269,6 +269,8 @@ def test_2d_transfer(
         train_policy=True,
         train_value=True,
         train_model=False,
+        separate_value_train=True,
+        separate_policy_train=False,
         feature_size=16,
         use_var_predict=True,
         with_prior=False,
@@ -282,7 +284,7 @@ def test_2d_transfer(
         use_bisim=True,
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=20000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -290,17 +292,27 @@ def test_2d_transfer(
 
 
 if __name__ == "__main__":
-    for obs in ["normal"]:  # ["normal", "rich1", "rich2"]:
-        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
+    for seed in range(5):
+        for obs in ["normal", "rich1", "rich2"]:
+            test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
 
-    # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
-    for obs in ["normal"]:
-        test_2d_transfer(
-            seed=0,
-            obs_spec_type="rich1",
-            transfer_from="./transfer_results/model_" + obs + "_s0/Simple",
-            run_id="transfer_rich1",
-        )
+        # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
+        for obs in ["normal", "rich2"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type="rich1",
+                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+                run_id=obs + "transfer_to_rich1",
+            )
+
+        for obs in ["normal", "rich1"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type="rich2",
+                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+                run_id=obs + "transfer_to_rich2",
+            )
+
 
 # for obs in ["normal"]:
 #     test_2d_transfer(seed=0, obs_spec_type="rich1",

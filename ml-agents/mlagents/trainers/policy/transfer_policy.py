@@ -56,9 +56,9 @@ class GaussianEncoderDistribution:
         return kl
 
     def w_distance(self, another):
-        return tf.squared_difference(self.mu, another.mu) + tf.squared_difference(
+        return tf.reduce_sum(tf.squared_difference(self.mu, another.mu) + tf.squared_difference(
             self.sigma, another.sigma
-        )
+        ))
 
 
 class TransferPolicy(TFPolicy):
