@@ -94,7 +94,7 @@ def set_version(
 
 
 def set_package_version(new_version: str) -> None:
-    with open(MLAGENTS_PACKAGE_JSON_PATH, "r") as f:
+    with open(MLAGENTS_PACKAGE_JSON_PATH) as f:
         package_json = json.load(f)
     if "version" in package_json:
         package_json["version"] = new_version
@@ -104,7 +104,7 @@ def set_package_version(new_version: str) -> None:
 
 
 def set_extension_package_version(new_version: str) -> None:
-    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH, "r") as f:
+    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH) as f:
         package_json = json.load(f)
     package_json["dependencies"]["com.unity.ml-agents"] = new_version
     with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH, "w") as f:

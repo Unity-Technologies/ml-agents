@@ -58,7 +58,7 @@ class GhostTrainer(Trainer):
         :param artifact_path: Path to store artifacts from this trainer.
         """
 
-        super(GhostTrainer, self).__init__(
+        super().__init__(
             brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 

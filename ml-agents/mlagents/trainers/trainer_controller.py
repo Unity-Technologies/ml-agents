@@ -30,7 +30,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 
 
-class TrainerController(object):
+class TrainerController:
     def __init__(
         self,
         trainer_factory: TrainerFactory,

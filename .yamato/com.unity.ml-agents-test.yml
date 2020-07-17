@@ -72,7 +72,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
     {% if editor.enableCodeCoverage %}
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:
@@ -118,7 +118,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
     {% if editor.enableCodeCoverage %}
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:

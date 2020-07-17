@@ -77,7 +77,7 @@ def check_file(filename: str, global_allow_pattern: Pattern) -> List[str]:
     Validate a single file and return any offending lines.
     """
     bad_lines = []
-    with open(filename, "r") as f:
+    with open(filename) as f:
         for line in f:
             if not RELEASE_PATTERN.search(line):
                 continue

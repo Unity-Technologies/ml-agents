@@ -39,6 +39,13 @@ repos:
         # flake8-tidy-imports is used for banned-modules, not actually tidying
         additional_dependencies: [flake8-comprehensions==3.2.2, flake8-tidy-imports==4.1.0, flake8-bugbear==20.1.4]
 
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v2.7.0
+    hooks:
+    -   id: pyupgrade
+        args: [--py3-plus, --py36-plus]
+        exclude: .*barracuda.py
+
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
     hooks:
