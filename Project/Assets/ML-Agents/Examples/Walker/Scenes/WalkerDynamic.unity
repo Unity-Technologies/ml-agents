@@ -233,6 +233,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
       objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
@@ -426,6 +431,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -680,6 +690,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -1061,6 +1076,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
       objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
@@ -1374,6 +1394,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -1689,6 +1714,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
       objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
@@ -1942,6 +1972,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.x
       value: 0.69999707
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
@@ -2341,6 +2376,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.z
       value: 0.00000023841858
       objectReference: {fileID: 0}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
@@ -2545,6 +2585,11 @@ PrefabInstance:
       propertyPath: rewardManager
       value: 
       objectReference: {fileID: 79411373}
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
@@ -2741,6 +2786,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4507520074116686519, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: walkingSpeed
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 4712600297668500197, guid: f51e8260728fd4c8fa87bcda9d0e2027,
         type: 3}
       propertyPath: m_Name
@@ -2801,6 +2851,12 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6065910098925129095, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: 9cdb96bd3846b477cbf9c5ad7ac2d87e,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f51e8260728fd4c8fa87bcda9d0e2027, type: 3}
 --- !u!4 &6065910099080495282 stripped

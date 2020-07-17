@@ -179,6 +179,8 @@ public class WalkerAgent : Agent
         UpdateRewards();
     }
 
+    public float velInverseLerpVal;
+    public float hipsVelMag;
     public float lookAtTargetReward; //reward for looking at the target
     public float matchSpeedReward; //reward for matching the desired walking speed.
     public float headHeightOverFeetReward; //reward for standing up straight-ish
@@ -195,6 +197,11 @@ public class WalkerAgent : Agent
 //        matchSpeedReward =
 //            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
 //                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
+
+        hipsVelMag = m_JdController.bodyPartsDict[hips].rb.velocity.magnitude;
+//        velInverseLerpVal =
+//            Mathf.InverseLerp(0, walkingSpeed, m_JdController.bodyPartsDict[hips].rb.velocity.magnitude);
+        
 //        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
 //            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
@@ -224,27 +231,66 @@ public class WalkerAgent : Agent
 //            bpVelPenaltyThisStep += velDelta;
 //        }
 //        rewardManager.UpdateReward("bpVel", bpVelPenaltyThisStep);
-        Vector3 velSum = Vector3.zero;
 
-        int counter = 0;
+
+        Vector3 velSum = Vector3.zero;
         avgVelValue = Vector3.zero;
-        foreach (var item in m_JdController.bodyPartsList)
-        {
-            counter++;
-//            velSum += item.rb.velocity;
-//            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
-            velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
-        }
-            avgVelValue = velSum/counter;
+        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
+        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
+        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
+        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
+        avgVelValue = velSum/4;
+        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue);
+        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
+//            velInverseLerpVal = VelocityInverseLerp(Vector3.zero, cubeForward * walkingSpeed, avgVelValue);
+
         //This reward will approach 1 if it matches and approach zero as it deviates
-        matchSpeedReward =
-            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
-                               avgVelValue).sqrMagnitude);
-        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
+//        velInverseLerpVal =
+//            Mathf.InverseLerp(0, walkingSpeed, avgVelValue.magnitude);
+//        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
+//        matchSpeedReward =
+//            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+//                               avgVelValue).sqrMagnitude);
+
+//        matchSpeedReward =
+//            Mathf.Exp(-0.01f * (cubeForward * walkingSpeed -
+//                               avgVelValue).sqrMagnitude);
+//        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
+        
+        
+//        Vector3 velSum = Vector3.zero;
+//
+//        int counter = 0;
+//        avgVelValue = Vector3.zero;
+//        foreach (var item in m_JdController.bodyPartsList)
+//        {
+//            counter++;
+//            velSum += item.rb.velocity;
+////            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
+////            velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
+//        }
+//            avgVelValue = velSum/counter;
+//        //This reward will approach 1 if it matches and approach zero as it deviates
+//        matchSpeedReward =
+//            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
+//                               avgVelValue).sqrMagnitude);
+//        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
         
     }
     public Vector3 avgVelValue;
+    public float VelocityInverseLerp(Vector3 velocityGoal, Vector3 currentVel)
+    {
+        float distance = Vector3.Distance(currentVel, velocityGoal);
+        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, distance);
+        return percent;
+    }
     
+//    public float VelocityInverseLerp(Vector3 a, Vector3 b, Vector3 value)
+//    {
+//        Vector3 AB = b - a;
+//        Vector3 AV = value - a;
+//        return Vector3.Dot(AV, AB) / Vector3.Dot(AB, AB);
+//    }
 //    void FixedUpdate()
 //    {
 //        var cubeForward = orientationCube.transform.forward;
