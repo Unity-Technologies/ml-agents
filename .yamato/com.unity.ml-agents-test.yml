@@ -69,7 +69,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
 
     {% if package.name == "com.unity.ml-agents" %}
     # TODO get coverage tests running for extensions too
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:
