@@ -209,6 +209,7 @@ class TransferPolicy(TFPolicy):
             # a stable version, used to compute the value
             self.target_encoder = tf.stop_gradient(self.target_encoder)
             self._create_hard_copy()
+            self._create_soft_copy()
 
             if self.inverse_model:
                 with tf.variable_scope("inverse"):
@@ -220,11 +221,11 @@ class TransferPolicy(TFPolicy):
             
             if predict_return:
                 with tf.variable_scope("reward"):
-                    self.create_reward_model(self.encoder, self.next_encoder, forward_layers)
+                    self.create_reward_model(self.encoder, self.next_encoder, forward_layers-1)
             
             if self.use_bisim:
                 self.create_bisim_model(self.h_size, self.feature_size, encoder_layers,
-                    self.vis_encode_type, forward_layers, var_predict, predict_return)
+                    self.vis_encode_type, forward_layers, forward_layers-1, var_predict, predict_return)
 
             if self.use_continuous_act:
                 self._create_cc_actor(
@@ -275,7 +276,7 @@ class TransferPolicy(TFPolicy):
     def load_graph_partial(self, path: str, transfer_type="dynamics", load_model=True, load_policy=True,
         load_value=True):
         load_nets = {"dynamics": [], 
-            "observation": ["encoding", "inverse"]}
+            "observation": ["encoding"]}
         if load_model:
             load_nets["dynamics"].append("predict")
             if self.predict_return:
@@ -286,6 +287,7 @@ class TransferPolicy(TFPolicy):
             load_nets["dynamics"].append("value")
         if self.inverse_model:
             load_nets["dynamics"].append("inverse")
+            load_nets["observation"].append("inverse")
             
         with self.graph.as_default():
             for net in load_nets[transfer_type]:
@@ -572,17 +574,29 @@ class TransferPolicy(TFPolicy):
 
         return latent_distribution, latent
     
+    def _create_soft_copy(self):
+        t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='target_enc')
+        e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='encoding')
+
+        with tf.variable_scope('hard_replacement'):
+            self.soft_replace_op = [tf.assign(t, 0.9*t + 0.1*e) for t, e in zip(t_params, e_params)]
+
+    def run_soft_copy(self):
+        # print("before:")
+        # self.get_encoder_weights()
+        self.sess.run(self.soft_replace_op)
+    
     def _create_hard_copy(self):
         t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='target_enc')
         e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope='encoding')
 
         with tf.variable_scope('hard_replacement'):
-            self.target_replace_op = [tf.assign(t, 0.9*t + 0.1*e) for t, e in zip(t_params, e_params)]
+            self.hard_replace_op = [tf.assign(t, e) for t, e in zip(t_params, e_params)]
 
     def run_hard_copy(self):
         # print("before:")
         # self.get_encoder_weights()
-        self.sess.run(self.target_replace_op)
+        self.sess.run(self.hard_replace_op)
 
     def _create_inverse_model(
         self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
@@ -945,8 +959,8 @@ class TransferPolicy(TFPolicy):
                 self.h_size,
                 # * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                # activation=ModelUtils.swish,
-                # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                activation=ModelUtils.swish,
+                kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
         if var_predict:
@@ -985,11 +999,11 @@ class TransferPolicy(TFPolicy):
         for i in range(forward_layers):
             hidden = tf.layers.dense(
                 hidden,
-                self.h_size
-                * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+                self.h_size,
+                # * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                # activation=ModelUtils.swish,
-                # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                activation=ModelUtils.swish,
+                kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
         self.pred_reward = tf.layers.dense(
             hidden,
@@ -1009,6 +1023,7 @@ class TransferPolicy(TFPolicy):
         encoder_layers: int,
         vis_encode_type: EncoderType,
         forward_layers: int,
+        reward_layers: int,
         var_predict: bool,
         predict_return: bool
     ) -> None:
@@ -1090,7 +1105,7 @@ class TransferPolicy(TFPolicy):
         if predict_return:
             with tf.variable_scope("reward"):
                 hidden = combined_input
-                for i in range(forward_layers):
+                for i in range(reward_layers):
                     hidden = tf.layers.dense(
                         hidden,
                         self.h_size

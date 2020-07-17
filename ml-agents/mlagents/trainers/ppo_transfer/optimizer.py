@@ -384,7 +384,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
         self.model_loss = self.policy.forward_loss
         if self.predict_return:
-            self.model_loss += 0.5 * self.policy.reward_loss
+            self.model_loss += self.policy.reward_loss
         if self.with_prior:
             if self.use_var_encoder:
                 self.model_loss += 0.2 * self.policy.encoder_distribution.kl_standard()
@@ -408,6 +408,7 @@ class PPOTransferOptimizer(TFOptimizer):
                 predict_diff = 0.99 * predict_diff + tf.abs(reward_diff)
             encode_dist = tf.reduce_mean(
                 tf.abs(self.policy.encoder - self.policy.bisim_encoder)
+                # tf.squared_difference(self.policy.encoder, self.policy.bisim_encoder)
             )
             self.encode_dist_val = encode_dist
             self.predict_diff_val = predict_diff
@@ -600,7 +601,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
         # update target encoder
         if self.num_updates % self.copy_every == 0:
-            self.policy.run_hard_copy()
+            self.policy.run_soft_copy()
             self.run_soft_critic_copy()
             # print("copy")
             # self.policy.get_encoder_weights()
@@ -635,14 +636,23 @@ class PPOTransferOptimizer(TFOptimizer):
         
         if update_type == "model":
             update_vals = self._execute_model(feed_dict, self.model_update_dict)
+            print("forward loss:", self.policy.sess.run(self.policy.forward_loss, feed_dict=feed_dict), end=" ")
+            # print("reward loss:", self.policy.sess.run(self.policy.reward_loss, feed_dict=feed_dict))
+            # print("true reward:", self.policy.sess.run(self.policy.current_reward, feed_dict=feed_dict))
+            # print("predict reward:", self.policy.sess.run(self.policy.pred_reward, feed_dict=feed_dict))
+            # print("reward loss:", self.policy.sess.run(self.policy.reward_loss, feed_dict=feed_dict))
         elif update_type == "policy":
             update_vals = self._execute_model(feed_dict, self.ppo_update_dict)
         elif update_type == "model_only":
             update_vals = self._execute_model(feed_dict, self.model_only_update_dict)
-
+            print("model only forward loss:", self.policy.sess.run(self.policy.forward_loss, feed_dict=feed_dict), end=" ")
+            # print("model only reward loss:", self.policy.sess.run(self.policy.reward_loss, feed_dict=feed_dict))
+            # print("true reward:", self.policy.sess.run(self.policy.current_reward, feed_dict=feed_dict))
+            # print("predict reward:", self.policy.sess.run(self.policy.pred_reward, feed_dict=feed_dict))
+            # print("reward loss:", self.policy.sess.run(self.policy.reward_loss, feed_dict=feed_dict))
         # update target encoder
         if self.num_updates % self.copy_every == 0:
-            self.policy.run_hard_copy()
+            self.policy.run_soft_copy()
             self.run_soft_critic_copy()
             # print("copy")
             # self.policy.get_encoder_weights()

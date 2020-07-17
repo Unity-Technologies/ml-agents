@@ -46,6 +46,7 @@ class SimpleTransferEnvironment(BaseEnv):
         action_size=1,
         obs_spec_type="normal", # normal: (x,y); rich: (x+y, x-y, x*y)
         goal_type="hard", # easy: 1 or -1; hard: uniformly random
+        act_speed=1
     ):
         super().__init__()
         self.discrete = use_discrete
@@ -75,6 +76,7 @@ class SimpleTransferEnvironment(BaseEnv):
         self.step_result: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
+        self.act_speed = act_speed
 
         for name in self.names:
             self.agent_id[name] = 0
@@ -92,7 +94,7 @@ class SimpleTransferEnvironment(BaseEnv):
             self.action[name] = None
             self.step_result[name] = None
             self.step_count[name] = 0
-            self.horizon[name] = 5000
+            self.horizon[name] = 1000
         print(self.goal)
 
     def _make_obs_spec(self) -> List[Any]:
@@ -198,24 +200,24 @@ class SimpleTransferEnvironment(BaseEnv):
 
     def _compute_reward(self, name: str, done: bool) -> float:
         reward = 0.0
-        # for _pos, goal in zip(self.positions[name], self.goal[name]):
-        # #     if abs(_pos - self.goal[name]) < 0.1:
-        # #         reward += SUCCESS_REWARD
-        # #     else:
-        # #         reward -= TIME_PENALTY
-        #     reward -= abs(_pos - goal) #np.exp(-abs(_pos - goal))
+        for _pos, goal in zip(self.positions[name], self.goal[name]):
+        #     if abs(_pos - self.goal[name]) < 0.1:
+        #         reward += SUCCESS_REWARD
+        #     else:
+        #         reward -= TIME_PENALTY
+            reward -= abs(_pos - goal) / 10 #np.exp(-abs(_pos - goal))
 
-        if done and self.step_count[name] < self.horizon[name]:
-            reward = SUCCESS_REWARD
-            # for _pos in self.positions[name]:
-            #     if self.goal_type == "easy":
-            #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
-            #             self.positions[name]
-            #         )
-            #     elif self.goal_type == "hard":
-            #         reward += np.exp(-abs(_pos - self.goal[name]))
-        else:
-            reward = -TIME_PENALTY
+        # if done and self.step_count[name] < self.horizon[name]:
+        #     reward = SUCCESS_REWARD
+        #     # for _pos in self.positions[name]:
+        #     #     if self.goal_type == "easy":
+        #     #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
+        #     #             self.positions[name]
+        #     #         )
+        #     #     elif self.goal_type == "hard":
+        #     #         reward += np.exp(-abs(_pos - self.goal[name]))
+        # else:
+        #     reward = -TIME_PENALTY
 
         return reward
 
