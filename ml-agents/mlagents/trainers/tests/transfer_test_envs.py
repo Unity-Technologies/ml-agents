@@ -199,25 +199,25 @@ class SimpleTransferEnvironment(BaseEnv):
         return action_mask
 
     def _compute_reward(self, name: str, done: bool) -> float:
-        reward = 0.0
-        for _pos, goal in zip(self.positions[name], self.goal[name]):
-        #     if abs(_pos - self.goal[name]) < 0.1:
-        #         reward += SUCCESS_REWARD
-        #     else:
-        #         reward -= TIME_PENALTY
-            reward -= abs(_pos - goal) / 10 #np.exp(-abs(_pos - goal))
+        # reward = 0.0
+        # for _pos, goal in zip(self.positions[name], self.goal[name]):
+        # #     if abs(_pos - self.goal[name]) < 0.1:
+        # #         reward += SUCCESS_REWARD
+        # #     else:
+        # #         reward -= TIME_PENALTY
+        #     reward -= abs(_pos - goal) / 10 #np.exp(-abs(_pos - goal))
 
-        # if done and self.step_count[name] < self.horizon[name]:
-        #     reward = SUCCESS_REWARD
-        #     # for _pos in self.positions[name]:
-        #     #     if self.goal_type == "easy":
-        #     #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
-        #     #             self.positions[name]
-        #     #         )
-        #     #     elif self.goal_type == "hard":
-        #     #         reward += np.exp(-abs(_pos - self.goal[name]))
-        # else:
-        #     reward = -TIME_PENALTY
+        if done and self.step_count[name] < self.horizon[name]:
+            reward = 0.0 #SUCCESS_REWARD
+            # for _pos in self.positions[name]:
+            #     if self.goal_type == "easy":
+            #         reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
+            #             self.positions[name]
+            #         )
+            #     elif self.goal_type == "hard":
+            #         reward += np.exp(-abs(_pos - self.goal[name]))
+        else:
+            reward = -TIME_PENALTY
 
         return reward
 
