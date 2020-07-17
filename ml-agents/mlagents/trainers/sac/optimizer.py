@@ -271,7 +271,7 @@ class SACOptimizer(TFOptimizer):
                 )
 
             rewards_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_rewards"
             )
             self.rewards_holders[name] = rewards_holder
 
@@ -607,7 +607,7 @@ class SACOptimizer(TFOptimizer):
             self.policy.mask_input: batch["masks"] * burn_in_mask,
         }
         for name in self.reward_signals:
-            feed_dict[self.rewards_holders[name]] = batch["{}_rewards".format(name)]
+            feed_dict[self.rewards_holders[name]] = batch[f"{name}_rewards"]
 
         if self.policy.use_continuous_act:
             feed_dict[self.policy_network.external_action_in] = batch["actions"]

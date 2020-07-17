@@ -38,6 +38,6 @@ setup(
     author_email="ML-Agents@unity3d.com",
     url="https://github.com/Unity-Technologies/ml-agents",
     packages=find_packages(),
-    install_requires=["gym", "mlagents_envs=={}".format(VERSION)],
+    install_requires=["gym", f"mlagents_envs=={VERSION}"],
     cmdclass={"verify": VerifyVersionCommand},
 )

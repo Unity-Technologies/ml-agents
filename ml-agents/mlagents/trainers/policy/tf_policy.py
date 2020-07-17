@@ -182,9 +182,7 @@ class TFPolicy(Policy):
                     )
                 )
             else:
-                logger.info(
-                    "Resuming training from step {}.".format(self.get_current_step())
-                )
+                logger.info(f"Resuming training from step {self.get_current_step()}.")
 
     def initialize_or_load(self):
         # If there is an initialize path, load from that. Else, load from the set model path.

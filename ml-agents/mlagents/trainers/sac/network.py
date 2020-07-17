@@ -99,7 +99,7 @@ class SACNetwork:
         """
         self.value_heads = {}
         for name in stream_names:
-            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
+            value = tf.layers.dense(hidden_input, 1, name=f"{name}_value")
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
@@ -244,7 +244,7 @@ class SACNetwork:
 
             q1_heads = {}
             for name in stream_names:
-                _q1 = tf.layers.dense(q1_hidden, num_outputs, name="{}_q1".format(name))
+                _q1 = tf.layers.dense(q1_hidden, num_outputs, name=f"{name}_q1")
                 q1_heads[name] = _q1
 
             q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
@@ -263,7 +263,7 @@ class SACNetwork:
 
             q2_heads = {}
             for name in stream_names:
-                _q2 = tf.layers.dense(q2_hidden, num_outputs, name="{}_q2".format(name))
+                _q2 = tf.layers.dense(q2_hidden, num_outputs, name=f"{name}_q2")
                 q2_heads[name] = _q2
 
             q2 = tf.reduce_mean(list(q2_heads.values()), axis=0)

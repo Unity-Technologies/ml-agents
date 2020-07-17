@@ -58,7 +58,7 @@ setup(
         # Test-only dependencies should go in test_requirements.txt, not here.
         "grpcio>=1.11.0",
         "h5py>=2.9.0",
-        "mlagents_envs=={}".format(VERSION),
+        f"mlagents_envs=={VERSION}",
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
