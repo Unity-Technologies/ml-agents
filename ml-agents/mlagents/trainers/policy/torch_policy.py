@@ -100,7 +100,6 @@ class TorchPolicy(Policy):
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
         else:
             torch.set_default_tensor_type(torch.FloatTensor)
-        
 
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
@@ -243,7 +242,6 @@ class TorchPolicy(Policy):
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memories"] = memories.detach().cpu().numpy()
-        self.actor_critic.update_normalization(vec_obs)
         return run_out
 
     def get_action(
@@ -291,14 +289,20 @@ class TorchPolicy(Policy):
 
     def export_model(self, step=0):
         try:
-            fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
+            fake_vec_obs = [
+                torch.zeros([1] + [self.brain.vector_observation_space_size])
+            ]
             fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
             fake_masks = torch.ones([1] + self.actor_critic.act_size)
             # fake_memories = torch.zeros([1] + [self.m_size])
             export_path = "./model-" + str(step) + ".onnx"
             output_names = ["action", "action_probs"]
             input_names = ["vector_observation", "action_mask"]
-            dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
+            dynamic_axes = {
+                "vector_observation": [0],
+                "action": [0],
+                "action_probs": [0],
+            }
             onnx.export(
                 self.actor_critic,
                 (fake_vec_obs, fake_vis_obs, fake_masks),

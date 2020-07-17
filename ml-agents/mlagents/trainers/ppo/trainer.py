@@ -2,12 +2,12 @@
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
+
 class TestingConfiguration:
-    use_torch = False
+    use_torch = True
     max_steps = 0
     env_name = ""
     device = "cpu"
-
 
 
 from collections import defaultdict
@@ -28,8 +28,6 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 logger = get_logger(__name__)
-
-
 
 
 class PPOTrainer(RLTrainer):

@@ -122,7 +122,7 @@ class NetworkBody(nn.Module):
                     h_size,
                 )
             )
-
+        self.vector_normalizers = nn.ModuleList(self.vector_normalizers)
         self.vector_encoders = nn.ModuleList(self.vector_encoders)
         self.visual_encoders = nn.ModuleList(self.visual_encoders)
         if use_lstm:
@@ -157,23 +157,26 @@ class NetworkBody(nn.Module):
             vis_embeds.append(hidden)
 
         # embedding = vec_embeds[0]
-        if len(vec_embeds) > 0:
-            vec_embeds = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
-        if len(vis_embeds) > 0:
-            vis_embeds = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
         if len(vec_embeds) > 0 and len(vis_embeds) > 0:
-            embedding = torch.stack([vec_embeds, vis_embeds], dim=-1).sum(dim=-1)
+            vec_embeds_tensor = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
+            vis_embeds_tensor = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
+            embedding = torch.stack([vec_embeds_tensor, vis_embeds_tensor], dim=-1).sum(
+                dim=-1
+            )
         elif len(vec_embeds) > 0:
-            embedding = vec_embeds
+            embedding = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
         elif len(vis_embeds) > 0:
-            embedding = vis_embeds
+            embedding = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
         else:
             raise Exception("No valid inputs to network.")
 
         if self.use_lstm:
             embedding = embedding.view([sequence_length, -1, self.h_size])
             memories = torch.split(memories, self.m_size // 2, dim=-1)
-            embedding, memories = self.lstm(embedding.contiguous(), (memories[0].contiguous(), memories[1].contiguous()))
+            embedding, memories = self.lstm(
+                embedding.contiguous(),
+                (memories[0].contiguous(), memories[1].contiguous()),
+            )
             embedding = embedding.view([-1, self.m_size // 2])
             memories = torch.cat(memories, dim=-1)
         return embedding, memories
@@ -226,11 +229,13 @@ class QNetwork(NetworkBody):
                     self.h_size,
                 )
             )
-
+        self.vector_normalizers = nn.ModuleList(self.vector_normalizers)
         self.vector_encoders = nn.ModuleList(self.vector_encoders)
         self.visual_encoders = nn.ModuleList(self.visual_encoders)
         if self.use_lstm:
             self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
+        else:
+            self.lstm = None
         if act_type == ActionType.DISCRETE:
             self.q_heads = ValueHeads(
                 stream_names, network_settings.hidden_units, sum(act_size)
@@ -247,14 +252,16 @@ class QNetwork(NetworkBody):
         actions: torch.Tensor = None,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         vec_embeds = []
-        for idx, encoder in enumerate(self.vector_encoders):
-            vec_input = vec_inputs[idx]
+        for i, (enc, norm) in enumerate(
+            zip(self.vector_encoders, self.vector_normalizers)
+        ):
+            vec_input = vec_inputs[i]
             if self.normalize:
-                vec_input = self.vector_normalizers[idx](vec_input)
+                vec_input = norm(vec_input)
             if actions is not None:
-                hidden = encoder(torch.cat([vec_input, actions], axis=-1))
+                hidden = enc(torch.cat([vec_input, actions], dim=-1))
             else:
-                hidden = encoder(vec_input)
+                hidden = enc(vec_input)
             vec_embeds.append(hidden)
 
         vis_embeds = []
@@ -265,25 +272,25 @@ class QNetwork(NetworkBody):
             vis_embeds.append(hidden)
 
         # embedding = vec_embeds[0]
-        if len(vec_embeds) > 0:
-            vec_embeds = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
-        if len(vis_embeds) > 0:
-            vis_embeds = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
         if len(vec_embeds) > 0 and len(vis_embeds) > 0:
-            embedding = torch.stack([vec_embeds, vis_embeds], dim=-1).sum(dim=-1)
+            vec_embeds_tensor = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
+            vis_embeds_tensor = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
+            embedding = torch.stack([vec_embeds_tensor, vis_embeds_tensor], dim=-1).sum(
+                dim=-1
+            )
         elif len(vec_embeds) > 0:
-            embedding = vec_embeds
+            embedding = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
         elif len(vis_embeds) > 0:
-            embedding = vis_embeds
+            embedding = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
         else:
             raise Exception("No valid inputs to network.")
 
-        if self.use_lstm:
+        if self.lstm is not None:
             embedding = embedding.view([sequence_length, -1, self.h_size])
-            memories = torch.split(memories, self.m_size // 2, dim=-1)
-            embedding, memories = self.lstm(embedding, memories)
+            memories_tensor = torch.split(memories, self.m_size // 2, dim=-1)
+            embedding, memories = self.lstm(embedding, memories_tensor)
             embedding = embedding.view([-1, self.m_size // 2])
-            memories = torch.cat(memories, dim=-1)
+            memories = torch.cat(memories_tensor, dim=-1)
 
         output, _ = self.q_heads(embedding)
         return output, memories
@@ -501,19 +508,17 @@ class ValueHeads(nn.Module):
     def __init__(self, stream_names, input_size, output_size=1):
         super(ValueHeads, self).__init__()
         self.stream_names = stream_names
-        self.value_heads = {}
+        _value_heads = {}
 
         for name in stream_names:
             value = nn.Linear(input_size, output_size)
-            self.value_heads[name] = value
-        self.value_heads = nn.ModuleDict(self.value_heads)
+            _value_heads[name] = value
+        self.value_heads = nn.ModuleDict(_value_heads)
 
     def forward(self, hidden):
         value_outputs = {}
-        for stream_name, _ in self.value_heads.items():
-            value_outputs[stream_name] = self.value_heads[stream_name](hidden).squeeze(
-                -1
-            )
+        for stream_name, head in self.value_heads.items():
+            value_outputs[stream_name] = head(hidden).squeeze(-1)
         return (
             value_outputs,
             torch.mean(torch.stack(list(value_outputs.values())), dim=0),
@@ -527,13 +532,10 @@ class VectorEncoder(nn.Module):
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
             self.layers.append(nn.ReLU())
-        self.layers = nn.ModuleList(self.layers)
+        self.seq_layers = nn.Sequential(*self.layers)
 
     def forward(self, inputs):
-        x = inputs
-        for layer in self.layers:
-            x = layer(x)
-        return x
+        return self.seq_layers(inputs)
 
 
 def conv_output_shape(h_w, kernel_size=1, stride=1, pad=0, dilation=1):
@@ -572,7 +574,7 @@ class SimpleVisualEncoder(nn.Module):
         conv_1 = torch.relu(self.conv1(visual_obs))
         conv_2 = torch.relu(self.conv2(conv_1))
         # hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
-        hidden = torch.relu(self.dense(torch.reshape(conv_2,(-1, self.final_flat))))
+        hidden = torch.relu(self.dense(torch.reshape(conv_2, (-1, self.final_flat))))
         return hidden
 
 

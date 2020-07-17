@@ -207,7 +207,8 @@ class TorchSACOptimizer(TorchOptimizer):
         discrete: bool,
     ) -> torch.Tensor:
         min_policy_qs = {}
-        _ent_coef = torch.exp(self._log_ent_coef)
+        with torch.no_grad():
+            _ent_coef = torch.exp(self._log_ent_coef)
         for name in values.keys():
             if not discrete:
                 min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
@@ -420,12 +421,14 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_out, q2_out = self.value_network(vec_obs, vis_obs, squeezed_actions)
             q1_stream, q2_stream = q1_out, q2_out
         else:
-            q1p_out, q2p_out = self.value_network(vec_obs, vis_obs)
+            with torch.no_grad():
+                q1p_out, q2p_out = self.value_network(vec_obs, vis_obs)
             q1_out, q2_out = self.value_network(vec_obs, vis_obs)
             q1_stream = self._condense_q_streams(q1_out, actions)
             q2_stream = self._condense_q_streams(q2_out, actions)
 
-        target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
+        with torch.no_grad():
+            target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
         masks = list_to_tensor(batch["masks"], dtype=torch.int32)
 
         use_discrete = not self.policy.use_continuous_act
@@ -439,6 +442,7 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
         entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
+
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
         self.policy_optimizer.step()
@@ -459,7 +463,10 @@ class TorchSACOptimizer(TorchOptimizer):
             "Losses/Value Loss": value_loss.detach().cpu().numpy(),
             "Losses/Q1 Loss": q1_loss.detach().cpu().numpy(),
             "Losses/Q2 Loss": q2_loss.detach().cpu().numpy(),
-            "Policy/Entropy Coeff": torch.exp(self._log_ent_coef).detach().cpu().numpy(),
+            "Policy/Entropy Coeff": torch.exp(self._log_ent_coef)
+            .detach()
+            .cpu()
+            .numpy(),
         }
         return update_stats
 
