@@ -30,7 +30,7 @@ packages:
     minCoveragePct: 72
   - name: com.unity.ml-agents.extensions
     assembly: Unity.ML-Agents.Extensions
-    minCoveragePct: 100
+    minCoveragePct: 75
 ---
 
 all_package_tests:
