@@ -1,4 +1,3 @@
-from io import open
 import os
 import sys
 
@@ -25,7 +24,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv("CIRCLE_TAG")
 
         if tag != EXPECTED_TAG:
-            info = "Git tag: {0} does not match the expected tag of this app: {1}".format(
+            info = "Git tag: {} does not match the expected tag of this app: {}".format(
                 tag, EXPECTED_TAG
             )
             sys.exit(info)

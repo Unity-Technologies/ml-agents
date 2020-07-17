@@ -5,7 +5,7 @@ from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
-class CuriosityModel(object):
+class CuriosityModel:
     def __init__(
         self, policy: TFPolicy, encoding_size: int = 128, learning_rate: float = 3e-4
     ):

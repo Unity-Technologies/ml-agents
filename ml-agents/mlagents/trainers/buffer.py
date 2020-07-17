@@ -134,7 +134,7 @@ class AgentBuffer(dict):
         super().__init__()
 
     def __str__(self):
-        return ", ".join(["'{0}' : {1}".format(k, str(self[k])) for k in self.keys()])
+        return ", ".join(["'{}' : {}".format(k, str(self[k])) for k in self.keys()])
 
     def reset_agent(self) -> None:
         """
@@ -275,7 +275,7 @@ class AgentBuffer(dict):
             key_list = list(self.keys())
         if not self.check_length(key_list):
             raise BufferException(
-                "The length of the fields {0} were not of same length".format(key_list)
+                "The length of the fields {} were not of same length".format(key_list)
             )
         for field_key in key_list:
             target_buffer[field_key].extend(

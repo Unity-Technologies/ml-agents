@@ -33,7 +33,7 @@ class SideChannelManager:
                 )
             if len(message_data) != message_len:
                 raise UnityEnvironmentException(
-                    "The message received by the side channel {0} was "
+                    "The message received by the side channel {} was "
                     "unexpectedly short. Make sure your Unity Environment "
                     "sending side channel data properly.".format(channel_id)
                 )

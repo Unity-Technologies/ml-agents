@@ -32,7 +32,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     """
 
     def __init__(self, *args, **kwargs):
-        super(RLTrainer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.

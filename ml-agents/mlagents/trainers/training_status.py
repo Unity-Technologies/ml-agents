@@ -67,7 +67,7 @@ class GlobalTrainingStatus:
         :param path: Path to the JSON file containing the state.
         """
         try:
-            with open(path, "r") as f:
+            with open(path) as f:
                 loaded_dict = json.load(f)
             # Compare the metadata
             _metadata = loaded_dict[StatusType.STATS_METADATA.value]

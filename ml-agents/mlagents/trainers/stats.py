@@ -127,7 +127,7 @@ class ConsoleWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             logger.info(
-                """Hyperparameters for behavior name {0}: \n{1}""".format(
+                """Hyperparameters for behavior name {}: \n{}""".format(
                     category, self._dict_to_str(value, 0)
                 )
             )
@@ -150,7 +150,7 @@ class ConsoleWriter(StatsWriter):
                 [
                     "\t"
                     + "  " * num_tabs
-                    + "{0}:\t{1}".format(
+                    + "{}:\t{}".format(
                         x, self._dict_to_str(param_dict[x], num_tabs + 1)
                     )
                     for x in param_dict
@@ -226,7 +226,7 @@ class TensorboardWriter(StatsWriter):
                 s_op = tf.summary.text(
                     name,
                     tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                        [[str(x), str(input_dict[x])] for x in input_dict]
                     ),
                 )
                 s = sess.run(s_op)

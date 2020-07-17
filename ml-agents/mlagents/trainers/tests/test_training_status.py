@@ -20,7 +20,7 @@ def test_globaltrainingstatus(tmpdir):
     GlobalTrainingStatus.set_parameter_state("Category1", StatusType.LESSON_NUM, 3)
     GlobalTrainingStatus.save_state(path_dir)
 
-    with open(path_dir, "r") as fp:
+    with open(path_dir) as fp:
         test_json = json.load(fp)
 
     assert "Category1" in test_json

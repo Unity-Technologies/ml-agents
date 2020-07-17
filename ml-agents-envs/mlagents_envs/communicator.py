@@ -3,7 +3,7 @@ from mlagents_envs.communicator_objects.unity_output_pb2 import UnityOutputProto
 from mlagents_envs.communicator_objects.unity_input_pb2 import UnityInputProto
 
 
-class Communicator(object):
+class Communicator:
     def __init__(self, worker_id=0, base_port=5005):
         """
         Python side of the communication. Must be used in pair with the right Unity Communicator equivalent.
