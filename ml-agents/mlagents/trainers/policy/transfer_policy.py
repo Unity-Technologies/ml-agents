@@ -57,8 +57,8 @@ class GaussianEncoderDistribution:
         return kl
 
     def w_distance(self, another):
-        return tf.reduce_mean(tf.squared_difference(self.mu, another.mu))\
-             + tf.reduce_mean(tf.squared_difference(self.sigma, another.sigma))
+        return tf.reduce_sum(tf.squared_difference(self.mu, another.mu))\
+             + tf.reduce_sum(tf.squared_difference(self.sigma, another.sigma))
 
 
 class TransferPolicy(TFPolicy):
@@ -221,11 +221,11 @@ class TransferPolicy(TFPolicy):
             
             if predict_return:
                 with tf.variable_scope("reward"):
-                    self.create_reward_model(self.encoder, self.next_encoder, forward_layers-1)
+                    self.create_reward_model(self.encoder, self.next_encoder, forward_layers)
             
             if self.use_bisim:
                 self.create_bisim_model(self.h_size, self.feature_size, encoder_layers,
-                    self.vis_encode_type, forward_layers, forward_layers-1, var_predict, predict_return)
+                    self.vis_encode_type, forward_layers, forward_layers, var_predict, predict_return)
 
             if self.use_continuous_act:
                 self._create_cc_actor(
