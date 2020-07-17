@@ -655,7 +655,7 @@ PrefabInstance:
     - target: {fileID: 895268871377934275, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
@@ -681,7 +681,7 @@ PrefabInstance:
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 895268871377934298, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
@@ -748,60 +748,85 @@ PrefabInstance:
       propertyPath: rewardManager
       value: 
       objectReference: {fileID: 964178008}
+    - target: {fileID: 7408209125961349353, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: randomizeWalkSpeedEachEpisode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7933235353030744139, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.70000035
+      value: -0.7000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933235353041637844, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933235353041637844, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353041637847, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.7000009
+      value: -0.70000064
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353195701979, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0.5000006
+      value: 0.5000005
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353228551180, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.39999396
+      value: -0.39999408
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353240438170, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: -0.5000001
+      value: -0.5000005
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353272702555, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0
+      value: -0.00000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353655703554, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0
+      value: 0.00000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353711811619, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0
+      value: 0.00000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 7933235353713167636, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0.39999396
+      value: 0.39999408
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933235354616748523, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933235354616748523, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7933235354882597209, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0
+      value: -0.00000011920929
       objectReference: {fileID: 0}
     - target: {fileID: 7933235355057813929, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
-      value: 0.70000035
+      value: 0.7000002
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765582efd9dda46ed98564603316353f, type: 3}
@@ -832,6 +857,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdoll
+      objectReference: {fileID: 0}
+    - target: {fileID: 895268871377934275, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 895268871377934297, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
