@@ -278,10 +278,12 @@ public class WalkerAgent : Agent
         
     }
     public Vector3 avgVelValue;
+    public float velDeltaDistance; //distance between the goal and actual vel
     public float VelocityInverseLerp(Vector3 velocityGoal, Vector3 currentVel)
     {
-        float distance = Vector3.Distance(currentVel, velocityGoal);
-        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, distance);
+        velDeltaDistance = Vector3.Distance(currentVel, velocityGoal);
+//        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, velDeltaDistance);
+        float percent = Mathf.InverseLerp(walkingSpeed, 0, velDeltaDistance);
         return percent;
     }
     
