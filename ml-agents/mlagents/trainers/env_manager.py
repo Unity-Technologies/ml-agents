@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, NamedTuple, Iterable, Tuple
+from typing import List, Dict, NamedTuple, Iterable, Tuple, Set, Callable
 from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
@@ -39,6 +39,8 @@ class EnvManager(ABC):
         self.policies: Dict[BehaviorName, TFPolicy] = {}
         self.agent_managers: Dict[BehaviorName, AgentManager] = {}
         self.first_step_infos: List[EnvironmentStep] = None
+
+        self.new_behavior_added_callback: Callable[[str], None] = lambda x: None
 
     def set_policy(self, brain_name: BehaviorName, policy: TFPolicy) -> None:
         self.policies[brain_name] = policy
@@ -111,6 +113,17 @@ class EnvManager(ABC):
         return num_step_infos
 
     def _process_step_infos(self, step_infos: List[EnvironmentStep]) -> int:
+        behavior_ids: Set[str] = set()
+        # TODO nested set comprehension?
+        for step_info in step_infos:
+            behavior_ids |= set(step_info.name_behavior_ids)
+        old_behavior_ids = set(self.agent_managers.keys())
+        new_behavior_ids = behavior_ids - old_behavior_ids
+
+        for new_behavior_id in new_behavior_ids:
+            # TODO less hacky? BehaviorRegister interface?
+            self.new_behavior_added_callback(new_behavior_id)
+
         for step_info in step_infos:
             for name_behavior_id in step_info.name_behavior_ids:
                 if name_behavior_id not in self.agent_managers:

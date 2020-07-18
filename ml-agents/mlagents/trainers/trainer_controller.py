@@ -167,17 +167,20 @@ class TrainerController:
 
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
+        env_manager.new_behavior_added_callback = lambda new_id: self._create_trainer_and_manager(
+            env_manager, new_id
+        )
         self._create_output_path(self.output_path)
         tf.reset_default_graph()
-        last_brain_behavior_ids: Set[str] = set()
+        # last_brain_behavior_ids: Set[str] = set()
         try:
             # Initial reset
             self._reset_env(env_manager)
             while self._not_done_training():
-                external_brain_behavior_ids = set(env_manager.training_behaviors.keys())
-                new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
-                self._create_trainers_and_managers(env_manager, new_behavior_ids)
-                last_brain_behavior_ids = external_brain_behavior_ids
+                # external_brain_behavior_ids = set(env_manager.training_behaviors.keys())
+                # new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
+                # self._create_trainers_and_managers(env_manager, new_behavior_ids)
+                # last_brain_behavior_ids = external_brain_behavior_ids
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
                     self.reset_env_if_ready(env_manager)
