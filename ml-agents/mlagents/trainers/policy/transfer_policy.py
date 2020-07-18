@@ -423,7 +423,7 @@ class TransferPolicy(TFPolicy):
                 feature_size,
                 name="latent",
                 reuse=reuse_encoder,
-                # activation=ModelUtils.swish,
+                activation=tf.tanh,#ModelUtils.swish,
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
         return latent_targ
@@ -454,7 +454,7 @@ class TransferPolicy(TFPolicy):
                 hidden_stream,
                 feature_size,
                 name="latent",
-                # activation=ModelUtils.swish,
+                activation=tf.tanh,#ModelUtils.swish,
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
         return latent
@@ -505,36 +505,36 @@ class TransferPolicy(TFPolicy):
 
         return latent_targ_distribution, latent_targ
 
-    def _create_var_encoder(
-        self,
-        visual_in: List[tf.Tensor],
-        vector_in: tf.Tensor,
-        h_size: int,
-        feature_size: int,
-        num_layers: int,
-        vis_encode_type: EncoderType,
-    ) -> tf.Tensor:
-        """
-        Creates a variational encoder for visual and vector observations.
-        :param h_size: Size of hidden linear layers.
-        :param num_layers: Number of hidden linear layers.
-        :param vis_encode_type: Type of visual encoder to use if visual input.
-        :return: The hidden layer (tf.Tensor) after the encoder.
-        """
+    #def _create_var_encoder(
+    #    self,
+    #    visual_in: List[tf.Tensor],
+    #    vector_in: tf.Tensor,
+    #    h_size: int,
+    #    feature_size: int,
+    #    num_layers: int,
+    #    vis_encode_type: EncoderType,
+    #) -> tf.Tensor:
+    #    """
+    #    Creates a variational encoder for visual and vector observations.
+    #    :param h_size: Size of hidden linear layers.
+    #    :param num_layers: Number of hidden linear layers.
+    #    :param vis_encode_type: Type of visual encoder to use if visual input.
+    #    :return: The hidden layer (tf.Tensor) after the encoder.
+    #    """
 
-        with tf.variable_scope("encoding"):
-            hidden_stream = ModelUtils.create_observation_streams(
-                visual_in, vector_in, 1, h_size, num_layers, vis_encode_type
-            )[0]
+    #    with tf.variable_scope("encoding"):
+    #        hidden_stream = ModelUtils.create_observation_streams(
+    #            visual_in, vector_in, 1, h_size, num_layers, vis_encode_type
+    #        )[0]
 
-            with tf.variable_scope("latent"):
-                latent_distribution = GaussianEncoderDistribution(
-                    hidden_stream, feature_size
-                )
+    #        with tf.variable_scope("latent"):
+    #            latent_distribution = GaussianEncoderDistribution(
+    #                hidden_stream, feature_size
+    #            )
 
-                latent = latent_distribution.sample()
+    #            latent = latent_distribution.sample()
 
-        return latent_distribution, latent
+    #    return latent_distribution, latent
 
     def _create_hard_copy(self):
         t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="target_enc")
@@ -548,44 +548,44 @@ class TransferPolicy(TFPolicy):
     def run_hard_copy(self):
         self.sess.run(self.target_replace_op)
 
-    def _create_inverse_model(
-        self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
-    ) -> None:
-        """
-        Creates inverse model TensorFlow ops for Curiosity module.
-        Predicts action taken given current and future encoded states.
-        :param encoded_state: Tensor corresponding to encoded current state.
-        :param encoded_next_state: Tensor corresponding to encoded next state.
-        """
-        with tf.variable_scope("inverse"):
-            combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
-            hidden = tf.layers.dense(
-                combined_input, self.h_size, activation=ModelUtils.swish
-            )
-            if self.brain.vector_action_space_type == "continuous":
-                pred_action = tf.layers.dense(hidden, self.act_size[0], activation=None)
-                squared_difference = tf.reduce_sum(
-                    tf.squared_difference(pred_action, self.current_action), axis=1
-                )
-                self.inverse_loss = tf.reduce_mean(
-                    tf.dynamic_partition(squared_difference, self.mask, 2)[1]
-                )
-            else:
-                pred_action = tf.concat(
-                    [
-                        tf.layers.dense(
-                            hidden, self.act_size[i], activation=tf.nn.softmax
-                        )
-                        for i in range(len(self.act_size))
-                    ],
-                    axis=1,
-                )
-                cross_entropy = tf.reduce_sum(
-                    -tf.log(pred_action + 1e-10) * self.current_action, axis=1
-                )
-                self.inverse_loss = tf.reduce_mean(
-                    tf.dynamic_partition(cross_entropy, self.mask, 2)[1]
-                )
+    #def _create_inverse_model(
+    #    self, encoded_state: tf.Tensor, encoded_next_state: tf.Tensor
+    #) -> None:
+    #    """
+    #    Creates inverse model TensorFlow ops for Curiosity module.
+    #    Predicts action taken given current and future encoded states.
+    #    :param encoded_state: Tensor corresponding to encoded current state.
+    #    :param encoded_next_state: Tensor corresponding to encoded next state.
+    #    """
+    #    with tf.variable_scope("inverse"):
+    #        combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
+    #        hidden = tf.layers.dense(
+    #            combined_input, self.h_size, activation=ModelUtils.swish
+    #        )
+    #        if self.brain.vector_action_space_type == "continuous":
+    #            pred_action = tf.layers.dense(hidden, self.act_size[0], activation=None)
+    #            squared_difference = tf.reduce_sum(
+    #                tf.squared_difference(pred_action, self.current_action), axis=1
+    #            )
+    #            self.inverse_loss = tf.reduce_mean(
+    #                tf.dynamic_partition(squared_difference, self.mask, 2)[1]
+    #            )
+    #        else:
+    #            pred_action = tf.concat(
+    #                [
+    #                    tf.layers.dense(
+    #                        hidden, self.act_size[i], activation=tf.nn.softmax
+    #                    )
+    #                    for i in range(len(self.act_size))
+    #                ],
+    #                axis=1,
+    #            )
+    #            cross_entropy = tf.reduce_sum(
+    #                -tf.log(pred_action + 1e-10) * self.current_action, axis=1
+    #            )
+    #            self.inverse_loss = tf.reduce_mean(
+    #                tf.dynamic_partition(cross_entropy, self.mask, 2)[1]
+    #            )
 
     def _create_cc_actor(
         self,
@@ -728,7 +728,7 @@ class TransferPolicy(TFPolicy):
         :param steps: The number of steps the model was trained for
         :return:
         """
-        self.get_policy_weights()
+        #self.get_policy_weights()
         with self.graph.as_default():
             last_checkpoint = os.path.join(self.model_path, f"model-{steps}.ckpt")
             self.saver.save(self.sess, last_checkpoint)
@@ -1067,7 +1067,7 @@ class TransferPolicy(TFPolicy):
                 self.h_size,
                 # * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                # activation=ModelUtils.swish,
+                activation=ModelUtils.swish,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
@@ -1075,13 +1075,13 @@ class TransferPolicy(TFPolicy):
             self.predict_distribution = GaussianEncoderDistribution(
                 hidden, self.feature_size
             )
-            self.predict = self.predict_distribution.sample()
+            self.predict = tf.tanh(self.predict_distribution.sample())
         else:
             self.predict = tf.layers.dense(
                 hidden,
                 self.feature_size,
                 name="latent",
-                # activation=ModelUtils.swish,
+                activation=ModelUtils.swish,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
 
@@ -1112,7 +1112,7 @@ class TransferPolicy(TFPolicy):
                 hidden,
                 self.h_size * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
-                # activation=ModelUtils.swish,
+                activation=ModelUtils.swish,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
         self.pred_reward = tf.layers.dense(
@@ -1122,13 +1122,17 @@ class TransferPolicy(TFPolicy):
             # activation=ModelUtils.swish,
             # kernel_initializer=tf.initializers.variance_scaling(1.0),
         )
-        self.reward_loss = tf.clip_by_value(
-            tf.reduce_mean(
+        
+        self.reward_loss = tf.reduce_mean(
                 tf.squared_difference(self.pred_reward, self.current_reward)
-            ),
-            1e-10,
-            1.0,
-        )
+            )
+        #self.reward_loss = tf.clip_by_value(
+        #    tf.reduce_mean(
+        #        tf.squared_difference(self.pred_reward, self.current_reward)
+        #    ),
+        #    1e-10,
+        #    1.0,
+        #)
 
     def create_bisim_model(
         self,
@@ -1194,42 +1198,31 @@ class TransferPolicy(TFPolicy):
                     hidden,
                     self.h_size,
                     name="hidden_{}".format(i),
-                    reuse=True
-                    # activation=ModelUtils.swish,
+                    reuse=True,
+                    activation=ModelUtils.swish,
                     # kernel_initializer=tf.initializers.variance_scaling(1.0),
                 )
 
-            if var_predict:
-                self.bisim_predict_distribution = GaussianEncoderDistribution(
-                    hidden, self.feature_size, reuse=True
-                )
-                self.bisim_predict = self.predict_distribution.sample()
-            else:
-                self.bisim_predict = tf.layers.dense(
-                    hidden,
-                    self.feature_size,
-                    name="latent",
-                    reuse=True
-                    # activation=ModelUtils.swish,
-                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
-                )
-        if predict_return:
-            with tf.variable_scope("reward"):
-                hidden = combined_input
-                for i in range(forward_layers):
-                    hidden = tf.layers.dense(
-                        hidden,
-                        self.h_size * (self.vis_obs_size + int(self.vec_obs_size > 0)),
-                        name="hidden_{}".format(i),
-                        reuse=True
-                        # activation=ModelUtils.swish,
-                        # kernel_initializer=tf.initializers.variance_scaling(1.0),
-                    )
-                self.bisim_pred_reward = tf.layers.dense(
-                    hidden,
-                    1,
-                    name="reward",
-                    reuse=True
-                    # activation=ModelUtils.swish,
-                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
-                )
+            self.bisim_predict_distribution = GaussianEncoderDistribution(
+                hidden, self.feature_size, reuse=True
+            )
+            self.bisim_predict = tf.tanh(self.predict_distribution.sample())
+        with tf.variable_scope("reward"):
+           hidden = combined_input
+           for i in range(forward_layers):
+               hidden = tf.layers.dense(
+                   hidden,
+                   self.h_size * (self.vis_obs_size + int(self.vec_obs_size > 0)),
+                   name="hidden_{}".format(i),
+                   reuse=True
+                    activation=ModelUtils.swish,
+                   # kernel_initializer=tf.initializers.variance_scaling(1.0),
+               )
+           self.bisim_pred_reward = tf.layers.dense(
+               hidden,
+               1,
+               name="reward",
+               reuse=True
+               # activation=ModelUtils.swish,
+               # kernel_initializer=tf.initializers.variance_scaling(1.0),
+           )

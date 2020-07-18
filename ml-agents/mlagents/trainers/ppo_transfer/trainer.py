@@ -187,13 +187,15 @@ class PPOTransferTrainer(RLTrainer):
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
         for _ in range(num_epoch):
-            self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
+            #self.off_policy_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.off_policy_buffer
-            max_num_batch = buffer_length // batch_size
+            max_num_batch = 20 #buffer_length // batch_size
             for i in range(0, max_num_batch * batch_size, batch_size):
                 update_stats = self.optimizer.update_part(
-                    buffer.make_mini_batch(i, i + batch_size), n_sequences, "model"
+                    buffer.sample_mini_batch(batch_size, self.policy.sequence_length), n_sequences, "model"
                 )
+                    #buffer.make_mini_batch(i, i + batch_size), n_sequences, "model"
+                #)
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
             if self.use_bisim:

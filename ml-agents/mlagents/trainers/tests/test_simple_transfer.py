@@ -50,7 +50,7 @@ PPO_CONFIG = TrainerSettings(
         batch_size=16,
         buffer_size=64,
     ),
-    network_settings=NetworkSettings(num_layers=2, hidden_units=32),
+    network_settings=NetworkSettings(num_layers=2, hidden_units=64),
     summary_freq=500,
     max_steps=3000,
     threaded=False,
@@ -93,7 +93,7 @@ Transfer_CONFIG = TrainerSettings(
         # separate_value_train=True
         # separate_value_net=True,
     ),
-    network_settings=NetworkSettings(num_layers=1, hidden_units=32),
+    network_settings=NetworkSettings(num_layers=1, hidden_units=64),
     summary_freq=500,
     max_steps=3000,
     threaded=False,
@@ -215,7 +215,7 @@ def test_2d_model(
         batch_size=1200,
         buffer_size=12000,
         learning_rate=5.0e-3,
-        use_bisim=True,
+        use_bisim=False,
         predict_return=True,
         reuse_encoder=True,
         separate_value_train=True,
@@ -225,15 +225,15 @@ def test_2d_model(
         use_op_buffer=False,
         in_epoch_alter=False,
         in_batch_alter=True,
-        policy_layers=0,
-        value_layers=2,
-        forward_layers=2,
+        policy_layers=1,
+        value_layers=1,
+        forward_layers=1,
         encoder_layers=2,
-        feature_size=16,
+        feature_size=32,
         # use_inverse_model=True
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=350000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -271,20 +271,20 @@ def test_2d_transfer(
         train_model=False,
         separate_value_train=True,
         separate_policy_train=False,
-        feature_size=16,
+        feature_size=32,
         use_var_predict=True,
         with_prior=False,
-        policy_layers=0,
         load_policy=False,
         load_value=False,
         predict_return=True,
-        forward_layers=2,
-        value_layers=2,
+        policy_layers=1,
+        forward_layers=1,
+        value_layers=1,
         encoder_layers=2,
-        use_bisim=True,
+        use_bisim=False,
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=350000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -293,25 +293,26 @@ def test_2d_transfer(
 
 if __name__ == "__main__":
     for seed in range(5):
-        for obs in ["normal", "rich1", "rich2"]:
-            test_2d_model(seed=seed, obs_spec_type=obs, run_id="tmodel_" + obs)
+        if seed > -1:
+            for obs in ["normal", "rich1", "rich2"]:
+                test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
 
         # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
-#        for obs in ["normal", "rich2"]:
-#            test_2d_transfer(
-#                seed=seed,
-#                obs_spec_type="rich1",
-#                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
-#                run_id=obs + "transfer_to_rich1",
-#            )
-#
-#        for obs in ["normal", "rich1"]:
-#            test_2d_transfer(
-#                seed=seed,
-#                obs_spec_type="rich2",
-#                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
-#                run_id=obs + "transfer_to_rich2",
-#            )
+        for obs in ["normal", "rich2"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type="rich1",
+                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+                run_id=obs + "transfer_to_rich1",
+            )
+
+        for obs in ["normal", "rich1"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type="rich2",
+                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+                run_id=obs + "transfer_to_rich2",
+            )
 
 
 # for obs in ["normal"]:
