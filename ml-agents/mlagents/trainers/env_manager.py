@@ -78,6 +78,7 @@ class EnvManager(ABC):
     @property
     @abstractmethod
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
+        # TODO change this to a function and make it sound slower
         pass
 
     @abstractmethod
@@ -92,13 +93,14 @@ class EnvManager(ABC):
             self._process_step_infos(self.first_step_infos)
             self.first_step_infos = None
         # Get new policies if found. Always get the latest policy.
-        for brain_name in self.training_behaviors:
+        # TODO rename brain_name
+        for brain_name, agent_manager in self.agent_managers.items():
             _policy = None
             try:
                 # We make sure to empty the policy queue before continuing to produce steps.
                 # This halts the trainers until the policy queue is empty.
                 while True:
-                    _policy = self.agent_managers[brain_name].policy_queue.get_nowait()
+                    _policy = agent_manager.policy_queue.get_nowait()
             except AgentManagerQueue.Empty:
                 if _policy is not None:
                     self.set_policy(brain_name, _policy)
