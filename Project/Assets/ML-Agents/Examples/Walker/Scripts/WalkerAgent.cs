@@ -124,10 +124,21 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+
+        var cubeForward = orientationCube.transform.forward;
+//        avgVelValue = GetVelocity();
+        //normalized value of the difference in avg speed vs target walking speed.
+        //value of 0 means we are matching velocity perfectly
+        //value of 1 means we are not matching velocity
+//        sensor.AddObservation(VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue));
+        sensor.AddObservation(VelocityInverseLerp( cubeForward * walkingSpeed));
         
-        sensor.AddObservation(walkingSpeed);
-        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, orientationCube.transform.forward));
-        sensor.AddObservation(Quaternion.FromToRotation(head.forward, orientationCube.transform.forward));
+        
+        
+        
+        sensor.AddObservation(walkingSpeed/m_maxWalkingSpeed);
+        sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
+        sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
 
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 
@@ -177,6 +188,32 @@ public class WalkerAgent : Agent
     void FixedUpdate()
     {
         UpdateRewards();
+    }
+
+    Vector3 GetVelocity()
+    { 
+        Vector3 velSum = Vector3.zero;
+        Vector3 avg = Vector3.zero;
+        
+//        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
+//        avg = velSum/4;
+        
+        //ALL RBS
+        int counter = 0;
+        foreach (var item in m_JdController.bodyPartsList)
+        {
+            counter++;
+            velSum += item.rb.velocity;
+//            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
+//            velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
+        }
+        avg = velSum/counter;
+        return avg;
+        
+//        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue);
     }
 
     public float velInverseLerpVal;
@@ -233,14 +270,15 @@ public class WalkerAgent : Agent
 //        rewardManager.UpdateReward("bpVel", bpVelPenaltyThisStep);
 
 
-        Vector3 velSum = Vector3.zero;
-        avgVelValue = Vector3.zero;
-        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
-        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
-        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
-        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
-        avgVelValue = velSum/4;
-        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue);
+//        Vector3 velSum = Vector3.zero;
+//        avgVelValue = Vector3.zero;
+//        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
+//        avgVelValue = velSum/4;
+//        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue);
+        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed);
         rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
 //            velInverseLerpVal = VelocityInverseLerp(Vector3.zero, cubeForward * walkingSpeed, avgVelValue);
 
@@ -279,13 +317,25 @@ public class WalkerAgent : Agent
     }
     public Vector3 avgVelValue;
     public float velDeltaDistance; //distance between the goal and actual vel
-    public float VelocityInverseLerp(Vector3 velocityGoal, Vector3 currentVel)
+    public float VelocityInverseLerp(Vector3 velocityGoal)
     {
-        velDeltaDistance = Vector3.Distance(currentVel, velocityGoal);
+        avgVelValue = GetVelocity();
+
+        velDeltaDistance = Vector3.Distance(avgVelValue, velocityGoal);
 //        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, velDeltaDistance);
         float percent = Mathf.InverseLerp(walkingSpeed, 0, velDeltaDistance);
         return percent;
     }
+    
+//    public float VelocityInverseLerp(Vector3 velocityGoal, Vector3 currentVel)
+//    {
+//        avgVelValue = GetVelocity();
+//
+//        velDeltaDistance = Vector3.Distance(currentVel, velocityGoal);
+////        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, velDeltaDistance);
+//        float percent = Mathf.InverseLerp(walkingSpeed, 0, velDeltaDistance);
+//        return percent;
+//    }
     
 //    public float VelocityInverseLerp(Vector3 a, Vector3 b, Vector3 value)
 //    {
