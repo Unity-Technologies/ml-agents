@@ -65,13 +65,12 @@ jobs:
 
       - run:
           name: Run Tests for ml-agents and gym_unity
-          no_output_timeout: 15m
           # This also dumps the installed pip packages to a file, so we can see what versions are actually being used.
           command: |
             . venv/bin/activate
             mkdir test-reports
             pip freeze > test-reports/pip_versions.txt
-            pytest -n 2 --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
+            pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=test-reports/junit.xml -p no:warnings
 
       - run:
           name: Verify there are no hidden/missing metafiles.
