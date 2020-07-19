@@ -188,7 +188,58 @@ class PPOTrainer(RLTrainer):
             for stat, val in update_stats.items():
                 self._stats_reporter.add_stat(stat, val)
         self._clear_update_buffer()
+
+        # # # DYNAMIC BUFFER TEST
+        # # if self.get_step in range(0, 50000):
+        # #     # self.expand_buffer(64, 64, 640)
+        # #     # self.expand_buffer(64, 2048, 2048)
+        # #     self.expand_buffer(64, 2048, 512)
+        # batchBase = 256 #512
+        # bufferBase = 2560 #5120
+        # if self.get_step in range(0, 100000):
+        #     # self.expand_buffer(64, 128, 1280)
+        #     # self.expand_buffer(64, 512, 5120)
+        #     self.expand_buffer(64, batchBase * 1, bufferBase * 1)
+        #     # self.expand_buffer(64, 512, 1536)
+        #     # self.expand_buffer(64, 2048, 4096)
+        #     # self.expand_buffer(64, 2048, 1024)
+        # elif self.get_step in range(100000, 300000):
+        #     # self.expand_buffer(64, 1024, 4096)
+        #     self.expand_buffer(64, batchBase * 2,  bufferBase * 2)
+        #     # self.expand_buffer(128, 256, 2560)
+        # elif self.get_step in range(300000, 2000000):
+        #     # self.expand_buffer(64, 2048, 8192)
+        #     self.expand_buffer(64, batchBase * 4,  bufferBase * 4)
+        #     # self.expand_buffer(256, 512, 5120)
+        # elif self.get_step in range(2000000, 4500000):
+        #     # self.expand_buffer(64, 2048, 16384)
+        #     # self.expand_buffer(64, 2048, 4096)
+        # # elif self.get_step in range(2000000, 3500000):
+        # #     self.expand_buffer(512, 1024, 10240)
+        #     self.expand_buffer(1000, batchBase * 8,  bufferBase * 8)
+        # else:
+        #     # self.expand_buffer(64, 2048, 32768)
+        #     # self.expand_buffer(256, 512, 5120)
+        #     # self.expand_buffer(512, 1024, 10240)
+        #     self.expand_buffer(1000, batchBase * 8,  bufferBase * 8)
+        #     # self.expand_buffer(1000, 2048, 20480)
         return True
+
+
+    def expand_buffer(self, th, batch, buffer):
+        # setattr(self.hyperparameters, "buffer_size", buffer)
+        # self.hyperparameters["buffer_size"] = buffer
+        # print(f'updating policy: self.get_step: {self.get_step} | buffer_size: {self.hyperparameters.buffer_size}.')
+        # print(f'updating policy: self.get_step: {self.get_step} | buffer_size: {self.hyperparameters["buffer_size"]}.')
+        # print(f'updating policy: self.get_step: {self.get_step} | batch_size: {self.trainer_parameters["batch_size"]} | buffer_size: {self.trainer_parameters["buffer_size"]}.')
+        # print(self.trainer_parameters["time_horizon"])
+        # print(self.trainer_parameters["batch_size"])
+        # print(self.trainer_parameters["buffer_size"])
+        # self.trainer_parameters["time_horizon"] = th
+        # self.trainer_parameters["batch_size"] = batch
+        # self.trainer_settings["buffer_size"] = buffer
+        self.hyperparameters.batch_size = batch
+        self.hyperparameters.buffer_size = buffer
 
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
