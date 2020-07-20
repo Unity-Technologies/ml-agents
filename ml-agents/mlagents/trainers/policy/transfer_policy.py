@@ -1087,6 +1087,7 @@ class TransferPolicy(TFPolicy):
 
         squared_difference = 0.5 * tf.reduce_sum(
             tf.squared_difference(self.predict, tf.stop_gradient(encoded_next_state)),
+            # tf.squared_difference(self.predict, encoded_next_state),
             axis=1,
         )
 
@@ -1214,8 +1215,8 @@ class TransferPolicy(TFPolicy):
                    hidden,
                    self.h_size * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                    name="hidden_{}".format(i),
-                   reuse=True
-                    activation=ModelUtils.swish,
+                   reuse=True,
+                   activation=ModelUtils.swish,
                    # kernel_initializer=tf.initializers.variance_scaling(1.0),
                )
            self.bisim_pred_reward = tf.layers.dense(

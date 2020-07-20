@@ -197,6 +197,30 @@ def _check_environment_trains(
     #     assert all(not math.isnan(reward) for reward in processed_rewards)
     #     assert all(reward > success_threshold for reward in processed_rewards)
 
+def test_2d_ppo(
+    config=PPO_CONFIG, obs_spec_type="rich1", run_id="ppo_rich1", seed=0
+):
+    env = SimpleTransferEnvironment(
+        [BRAIN_NAME],
+        use_discrete=False,
+        action_size=2,
+        step_size=0.1,
+        num_vector=2,
+        obs_spec_type=obs_spec_type,
+        goal_type="hard",
+    )
+    new_hyperparams = attr.evolve(
+        config.hyperparameters,
+        batch_size=1200,
+        buffer_size=12000,
+        learning_rate=5.0e-3,
+    )
+    config = attr.evolve(
+        config, hyperparameters=new_hyperparams, max_steps=350000, summary_freq=5000
+    )
+    _check_environment_trains(
+        env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
+    )
 
 def test_2d_model(
     config=Transfer_CONFIG, obs_spec_type="rich1", run_id="model_rich1", seed=0
@@ -230,7 +254,6 @@ def test_2d_model(
         forward_layers=1,
         encoder_layers=2,
         feature_size=32,
-        # use_inverse_model=True
     )
     config = attr.evolve(
         config, hyperparameters=new_hyperparams, max_steps=350000, summary_freq=5000
@@ -268,7 +291,7 @@ def test_2d_transfer(
         learning_rate=5.0e-3,
         train_policy=True,
         train_value=True,
-        train_model=False,
+        train_model=True, # YS: I tried retraining model
         separate_value_train=True,
         separate_policy_train=False,
         feature_size=32,
@@ -282,6 +305,7 @@ def test_2d_transfer(
         value_layers=1,
         encoder_layers=2,
         use_bisim=False,
+        reuse_encoder=True, # YS: I added this
     )
     config = attr.evolve(
         config, hyperparameters=new_hyperparams, max_steps=350000, summary_freq=5000
@@ -292,32 +316,33 @@ def test_2d_transfer(
 
 
 if __name__ == "__main__":
-    for seed in range(5):
-        if seed > -1:
-            for obs in ["normal", "rich1", "rich2"]:
-                test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
+    # for seed in range(5):
+    #     if seed > -1:
+    #         for obs in ["normal", "rich1", "rich2"]:
+    #             test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
 
-        # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
-        for obs in ["normal", "rich2"]:
-            test_2d_transfer(
-                seed=seed,
-                obs_spec_type="rich1",
-                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
-                run_id=obs + "transfer_to_rich1",
-            )
+    #     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
+    #     for obs in ["normal", "rich2"]:
+    #         test_2d_transfer(
+    #             seed=seed,
+    #             obs_spec_type="rich1",
+    #             transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+    #             run_id=obs + "transfer_to_rich1",
+    #         )
 
-        for obs in ["normal", "rich1"]:
-            test_2d_transfer(
-                seed=seed,
-                obs_spec_type="rich2",
-                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
-                run_id=obs + "transfer_to_rich2",
-            )
+    #     for obs in ["normal", "rich1"]:
+    #         test_2d_transfer(
+    #             seed=seed,
+    #             obs_spec_type="rich2",
+    #             transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+    #             run_id=obs + "transfer_to_rich2",
+    #         )
 
 
-# for obs in ["normal"]:
-#     test_2d_transfer(seed=0, obs_spec_type="rich1",
-#     transfer_from="./transfer_results/model_"+ obs +"_f4_pv-l0_rew_bisim-nop_newalter_noreuse-soft0.1_s0/Simple",
-#     run_id="transfer_rich1_retrain-all_f4_pv-l0_rew_bisim-nop_noreuse-soft0.1_from_" + obs)
-# for i in range(5):
-#     test_2d_model(seed=i)
+    for obs in ["longpre"]:
+        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
+        test_2d_ppo(seed=0, obs_spec_type=obs, run_id="ppo_" + obs)
+    
+    # test_2d_transfer(seed=0, obs_spec_type="longpre", 
+    #     transfer_from="./transfer_results/model_normal_s0/Simple",
+    #     run_id="normal_transfer_to_longpre_reuse_trainmod")

@@ -22,6 +22,7 @@ STEP_SIZE = 0.1
 TIME_PENALTY = 0.01
 MIN_STEPS = int(1.0 / STEP_SIZE) + 1
 SUCCESS_REWARD = 1.0 + MIN_STEPS * TIME_PENALTY
+EXTRA_OBS_SIZE = 10
 
 
 def clamp(x, min_val, max_val):
@@ -44,8 +45,9 @@ class SimpleTransferEnvironment(BaseEnv):
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
         action_size=1,
-        obs_spec_type="normal",  # normal: (x,y); rich: (x+y, x-y, x*y)
+        obs_spec_type="normal",  # normal: (x,y); rich: (x+y, x-y, x*y); long: (x,y,1,...,1)
         goal_type="hard",  # easy: 1 or -1; hard: uniformly random
+        extra_obs_size=EXTRA_OBS_SIZE,
     ):
         super().__init__()
         self.discrete = use_discrete
@@ -54,6 +56,7 @@ class SimpleTransferEnvironment(BaseEnv):
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
         self.obs_spec_type = obs_spec_type
+        self.extra_obs_size = extra_obs_size
         self.goal_type = goal_type
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
         self.behavior_spec = BehaviorSpec(
@@ -75,6 +78,7 @@ class SimpleTransferEnvironment(BaseEnv):
         self.step_result: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self.agent_id: Dict[str, int] = {}
         self.step_size = step_size  # defines the difficulty of the test
+        
 
         for name in self.names:
             self.agent_id[name] = 0
@@ -110,6 +114,9 @@ class SimpleTransferEnvironment(BaseEnv):
         if "rich" in self.obs_spec_type:
             for _ in range(self.num_vector + 1):
                 obs_spec.append((self.vec_obs_size,))
+        if "long" in self.obs_spec_type:
+            for _ in range(self.num_vector + self.extra_obs_size):
+                obs_spec.append((self.vec_obs_size,))
         print("obs_spec:", obs_spec)
         return obs_spec
 
@@ -139,8 +146,21 @@ class SimpleTransferEnvironment(BaseEnv):
                 obs.append(
                     np.ones((1, self.vec_obs_size), dtype=np.float32) * (2 * i - j)
                 )
+        elif self.obs_spec_type == "long":
+            for name in self.names:
+                for i in self.positions[name]:
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * i)
+                for _ in range(self.extra_obs_size):
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32))  
+        elif self.obs_spec_type == "longpre":
+            for name in self.names:
+                for _ in range(self.extra_obs_size):
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32))  
+                for i in self.positions[name]:
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * i)
         for _ in range(self.num_visual):
             obs.append(np.ones((1,) + self.vis_obs_size, dtype=np.float32) * value)
+            
         return obs
 
     @property
