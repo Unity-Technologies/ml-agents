@@ -124,9 +124,9 @@ class TrainerController:
         parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
         brain_name = parsed_behavior_id.brain_name
         trainerthread = None
-        try:
+        if brain_name in self.trainers:
             trainer = self.trainers[brain_name]
-        except KeyError:
+        else:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
             if trainer.threaded:

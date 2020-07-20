@@ -1,7 +1,8 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (Ghost Trainer)
 
-from typing import Deque, Dict, List, cast
+from collections import defaultdict
+from typing import Deque, Dict, DefaultDict, List, cast
 
 import numpy as np
 
@@ -68,9 +69,9 @@ class GhostTrainer(Trainer):
         self._internal_trajectory_queues: Dict[str, AgentManagerQueue[Trajectory]] = {}
         self._internal_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
 
-        self._team_to_name_to_policy_queue: Dict[
+        self._team_to_name_to_policy_queue: DefaultDict[
             int, Dict[str, AgentManagerQueue[Policy]]
-        ] = {}
+        ] = defaultdict(dict)
 
         self._name_to_parsed_behavior_id: Dict[str, BehaviorIdentifiers] = {}
 
@@ -413,14 +414,9 @@ class GhostTrainer(Trainer):
         """
         super().publish_policy_queue(policy_queue)
         parsed_behavior_id = self._name_to_parsed_behavior_id[policy_queue.behavior_id]
-        try:
-            self._team_to_name_to_policy_queue[parsed_behavior_id.team_id][
-                parsed_behavior_id.brain_name
-            ] = policy_queue
-        except KeyError:
-            self._team_to_name_to_policy_queue[parsed_behavior_id.team_id] = {
-                parsed_behavior_id.brain_name: policy_queue
-            }
+        self._team_to_name_to_policy_queue[parsed_behavior_id.team_id][
+            parsed_behavior_id.brain_name
+        ] = policy_queue
         if parsed_behavior_id.team_id == self.wrapped_trainer_team:
             # With a future multiagent trainer, this will be indexed by 'role'
             internal_policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(
