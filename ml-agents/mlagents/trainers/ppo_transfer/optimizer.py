@@ -160,8 +160,8 @@ class PPOTransferOptimizer(TFOptimizer):
                     min_value=1e-10,
                 )
                 self.model_learning_rate = ModelUtils.create_schedule(
-                    # ScheduleType.LINEAR,
-                    ScheduleType.CONSTANT,
+                    ScheduleType.LINEAR,
+                    # ScheduleType.CONSTANT,
                     lr,
                     self.policy.global_step,
                     int(max_step),
@@ -221,8 +221,8 @@ class PPOTransferOptimizer(TFOptimizer):
                     hyperparameters.load_policy,
                     hyperparameters.load_value,
                 )
-            #self.policy.get_encoder_weights()
-            #self.policy.get_policy_weights()
+            # self.policy.get_encoder_weights()
+            # self.policy.get_policy_weights()
 
             # slim.model_analyzer.analyze_vars(tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES), print_info=True)
 
@@ -448,20 +448,27 @@ class PPOTransferOptimizer(TFOptimizer):
                     tf.reduce_sum(
                         tf.squared_difference(
                             self.policy.bisim_predict, self.policy.predict
-                        ), axis=1)
+                        ),
+                        axis=1,
+                    )
                 )
             if self.predict_return:
-                reward_diff = tf.reduce_sum(tf.abs(
-                        self.policy.bisim_pred_reward - self.policy.pred_reward
-                    ), axis=1)
-                predict_diff = self.reward_signals[
-                    "extrinsic"
-                ].gamma * predict_diff + reward_diff
-            encode_dist = tf.reduce_sum(tf.abs(self.policy.encoder - self.policy.bisim_encoder), axis=1)
+                reward_diff = tf.reduce_sum(
+                    tf.abs(self.policy.bisim_pred_reward - self.policy.pred_reward),
+                    axis=1,
+                )
+                predict_diff = (
+                    self.reward_signals["extrinsic"].gamma * predict_diff + reward_diff
+                )
+            encode_dist = tf.reduce_sum(
+                tf.abs(self.policy.encoder - self.policy.bisim_encoder), axis=1
+            )
             self.predict_difference = predict_diff
             self.reward_difference = reward_diff
             self.encode_difference = encode_dist
-            self.bisim_loss = tf.reduce_mean(tf.squared_difference(encode_dist, predict_diff))
+            self.bisim_loss = tf.reduce_mean(
+                tf.squared_difference(encode_dist, predict_diff)
+            )
 
         self.loss = (
             self.policy_loss
@@ -492,7 +499,7 @@ class PPOTransferOptimizer(TFOptimizer):
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "policy")
         if self.train_value:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
-        #print("trainable", train_vars)
+        # print("trainable", train_vars)
 
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss, var_list=train_vars)
@@ -646,12 +653,13 @@ class PPOTransferOptimizer(TFOptimizer):
         elif self.in_batch_alter:
             update_vals = self._execute_model(feed_dict, self.model_update_dict)
             update_vals.update(self._execute_model(feed_dict, self.ppo_update_dict))
+            # print(self._execute_model(feed_dict, {"pred": self.policy.predict, "enc": self.policy.next_state}))
             if self.use_bisim:
                 batch1 = copy.deepcopy(batch)
                 batch.shuffle(sequence_length=1)
                 batch2 = copy.deepcopy(batch)
                 bisim_stats = self.update_encoder(batch1, batch2)
-            
+
         elif self.use_transfer and self.smart_transfer:
             if self.update_mode == "model":
                 update_vals = self._execute_model(feed_dict, self.update_dict)

@@ -9,18 +9,19 @@ behaviors:
       epsilon: 0.2
       lambd: 0.95
       num_epoch: 3
-      learning_rate_schedule: linear
-      encoder_layers: 2
-      policy_layers: 2
-      value_layers: 3
+      learning_rate_schedule: constant
+      encoder_layers: 3
+      policy_layers: 0
+      forward_layers: 0
+      value_layers: 2
       feature_size: 128
       reuse_encoder: true
-      in_epoch_alter: true
-      use_op_buffer: true
+      in_epoch_alter: false
+      use_op_buffer: false
       use_var_predict: true
-      with_prior: true
+      with_prior: false
       predict_return: true
-      use_bisim: true
+      use_bisim: false
       separate_value_net: true
     network_settings:
       normalize: true
