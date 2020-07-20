@@ -66,8 +66,8 @@ class SACOptimizer(TFOptimizer):
 
                 # Non-exposed SAC parameters
                 self.discrete_target_entropy_scale = (
-                    0.2
-                )  # Roughly equal to e-greedy 0.05
+                    0.2  # Roughly equal to e-greedy 0.05
+                )
                 self.continuous_target_entropy_scale = 1.0
 
                 stream_names = list(self.reward_signals.keys())

@@ -13,7 +13,6 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
@@ -58,7 +57,7 @@ class SACTrainer(RLTrainer):
 
         self.load = load
         self.seed = seed
-        self.policy: NNPolicy = None  # type: ignore
+        self.policy: TFPolicy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
         self.hyperparameters: SACSettings = cast(
             SACSettings, trainer_settings.hyperparameters
@@ -197,11 +196,10 @@ class SACTrainer(RLTrainer):
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
-        policy = NNPolicy(
+        policy = TFPolicy(
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            self.is_training,
             self.artifact_path,
             self.load,
             tanh_squash=True,
@@ -326,7 +324,7 @@ class SACTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, NNPolicy):
+        if not isinstance(policy, TFPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
