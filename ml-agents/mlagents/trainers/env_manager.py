@@ -40,12 +40,11 @@ class EnvManager(ABC):
         self.agent_managers: Dict[BehaviorName, AgentManager] = {}
         self.first_step_infos: List[EnvironmentStep] = None
 
-        def default_added_callback():
-            print("ADDED")
+        def default_added_callback(*args, **kwargs):
+            # raise RuntimeError("default_added_callback")
+            print("** DEFAULT_ADDED_CALLBACK - shouldn't happen **")
 
-        self.new_behavior_added_callback: Callable[
-            [str], None
-        ] = default_added_callback()
+        self.new_behavior_added_callback: Callable[[str], None] = default_added_callback
 
     def set_policy(self, brain_name: BehaviorName, policy: TFPolicy) -> None:
         self.policies[brain_name] = policy
