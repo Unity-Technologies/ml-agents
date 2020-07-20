@@ -223,7 +223,7 @@ class PPOTrainer(RLTrainer):
                 )
             )
         if not isinstance(policy, TFPolicy):
-            raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
+            raise RuntimeError("Non-TFPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
         self.optimizer = PPOOptimizer(self.policy, self.trainer_settings)
