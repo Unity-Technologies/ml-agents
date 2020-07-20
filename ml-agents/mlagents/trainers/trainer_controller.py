@@ -167,6 +167,7 @@ class TrainerController:
 
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
+        print("** setting new_behavior_added_callback **")
         env_manager.new_behavior_added_callback = lambda new_id: self._create_trainer_and_manager(
             env_manager, new_id
         )

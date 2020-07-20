@@ -40,7 +40,12 @@ class EnvManager(ABC):
         self.agent_managers: Dict[BehaviorName, AgentManager] = {}
         self.first_step_infos: List[EnvironmentStep] = None
 
-        self.new_behavior_added_callback: Callable[[str], None] = lambda x: None
+        def default_added_callback():
+            print("ADDED")
+
+        self.new_behavior_added_callback: Callable[
+            [str], None
+        ] = default_added_callback()
 
     def set_policy(self, brain_name: BehaviorName, policy: TFPolicy) -> None:
         self.policies[brain_name] = policy
@@ -122,6 +127,7 @@ class EnvManager(ABC):
 
         for new_behavior_id in new_behavior_ids:
             # TODO less hacky? BehaviorRegister interface?
+            print(f"** registering new behavior: {new_behavior_id} **")
             self.new_behavior_added_callback(new_behavior_id)
 
         for step_info in step_infos:
