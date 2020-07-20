@@ -98,6 +98,7 @@ class PPOTransferSettings(HyperparamSettings):
     lambd: float = 0.95
     num_epoch: int = 3
     learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
+    model_schedule: ScheduleType = ScheduleType.LINEAR
 
     separate_value_train: bool = False
     separate_policy_train: bool = False
@@ -113,10 +114,10 @@ class PPOTransferSettings(HyperparamSettings):
     in_epoch_alter: bool = False
     use_op_buffer: bool = False
     train_encoder: bool = True
+    train_action: bool = True
     train_model: bool = True
     train_policy: bool = True
     train_value: bool = True
-    feature_size: int = 16
     use_bisim: bool = False
         
     # Transfer
@@ -124,17 +125,21 @@ class PPOTransferSettings(HyperparamSettings):
     smart_transfer: bool = False
     conv_thres: float = 1e-3
     transfer_path: str = ""
-    transfer_type: str = "dynamics"
     load_model: bool = True
-    load_value: bool = True
-    load_policy: bool = True
+    load_value: bool = False
+    load_policy: bool = False
+    load_encoder: bool = False
+    load_action: bool = False
 
     # Network
     encoder_layers: int = 1
+    action_layers: int = 1
     policy_layers: int = 1
     value_layers: int = 1
     forward_layers: int = 1
     inverse_layers: int = 1
+    feature_size: int = 16
+    action_feature_size: int = 16
 
 
 @attr.s(auto_attribs=True)

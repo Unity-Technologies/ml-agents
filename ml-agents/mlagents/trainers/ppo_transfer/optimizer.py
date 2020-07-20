@@ -43,18 +43,18 @@ class PPOTransferOptimizer(TFOptimizer):
         self.in_epoch_alter = hyperparameters.in_epoch_alter
         self.op_buffer = hyperparameters.use_op_buffer
         self.train_encoder = hyperparameters.train_encoder
+        self.train_action = hyperparameters.train_action
         self.train_model = hyperparameters.train_model
         self.train_policy = hyperparameters.train_policy
         self.train_value = hyperparameters.train_value
-
+        
         # Transfer
         self.use_transfer = hyperparameters.use_transfer
         self.transfer_path = (
             hyperparameters.transfer_path
-        )  # "results/BallSingle_nosep_cmodel_small/3DBall"
+        )  
         self.smart_transfer = hyperparameters.smart_transfer
         self.conv_thres = hyperparameters.conv_thres
-        self.transfer_type = hyperparameters.transfer_type
 
         self.ppo_update_dict: Dict[str, tf.Tensor] = {}
         self.model_update_dict: Dict[str, tf.Tensor] = {}
@@ -64,10 +64,12 @@ class PPOTransferOptimizer(TFOptimizer):
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
         policy.create_tf_graph(
             hyperparameters.encoder_layers,
+            hyperparameters.action_layers,
             hyperparameters.policy_layers,
             hyperparameters.forward_layers,
             hyperparameters.inverse_layers,
             hyperparameters.feature_size,
+            hyperparameters.action_feature_size,
             self.use_transfer,
             self.separate_policy_train,
             self.use_var_encoder,
@@ -160,15 +162,14 @@ class PPOTransferOptimizer(TFOptimizer):
                     min_value=1e-10,
                 )
                 self.model_learning_rate = ModelUtils.create_schedule(
-                    ScheduleType.LINEAR,
-                    # ScheduleType.CONSTANT,
+                    hyperparameters.model_schedule,
                     lr,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
                 )
                 self.bisim_learning_rate = ModelUtils.create_schedule(
-                    ScheduleType.CONSTANT,
+                    hyperparameters.model_schedule,
                     lr / 10,
                     self.policy.global_step,
                     int(max_step),
@@ -216,10 +217,11 @@ class PPOTransferOptimizer(TFOptimizer):
             if self.use_transfer:
                 self.policy.load_graph_partial(
                     self.transfer_path,
-                    self.transfer_type,
                     hyperparameters.load_model,
                     hyperparameters.load_policy,
                     hyperparameters.load_value,
+                    hyperparameters.load_encoder,
+                    hyperparameters.load_action,
                 )
             # self.policy.get_encoder_weights()
             # self.policy.get_policy_weights()
@@ -488,9 +490,9 @@ class PPOTransferOptimizer(TFOptimizer):
     def _create_ppo_optimizer_ops(self):
         train_vars = []
         if self.train_encoder:
-            train_vars += tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
-            )
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+        if self.train_action:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc")
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse")
@@ -531,6 +533,8 @@ class PPOTransferOptimizer(TFOptimizer):
             train_vars += tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
             )
+        if self.train_action:
+            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc")
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
@@ -539,9 +543,6 @@ class PPOTransferOptimizer(TFOptimizer):
         if self.train_value:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
 
-        policy_train_vars = tf.get_collection(
-            tf.GraphKeys.TRAINABLE_VARIABLES, "policy"
-        ) + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
         self.ppo_optimizer = self.create_optimizer_op(self.learning_rate)
         self.ppo_grads = self.ppo_optimizer.compute_gradients(
             self.ppo_loss, var_list=train_vars
@@ -550,9 +551,6 @@ class PPOTransferOptimizer(TFOptimizer):
             self.ppo_loss, var_list=train_vars
         )
 
-        model_train_vars = tf.get_collection(
-            tf.GraphKeys.TRAINABLE_VARIABLES, "predict"
-        ) + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
         self.model_optimizer = self.create_optimizer_op(self.model_learning_rate)
         self.model_grads = self.model_optimizer.compute_gradients(
             self.model_loss, var_list=train_vars
@@ -561,6 +559,9 @@ class PPOTransferOptimizer(TFOptimizer):
             self.model_loss, var_list=train_vars
         )
 
+        model_train_vars = tf.get_collection(
+            tf.GraphKeys.TRAINABLE_VARIABLES, "predict"
+        ) + tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
         self.model_only_optimizer = self.create_optimizer_op(self.model_learning_rate)
         self.model_only_grads = self.model_optimizer.compute_gradients(
             self.model_loss, var_list=model_train_vars
