@@ -11,10 +11,12 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: constant
       encoder_layers: 3
+      action_layers: 2
       policy_layers: 0
       forward_layers: 0
       value_layers: 2
       feature_size: 128
+      action_feature_size: 128
       reuse_encoder: true
       in_epoch_alter: false
       use_op_buffer: false
