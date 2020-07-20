@@ -23,6 +23,12 @@ behaviors:
       predict_return: true
       use_bisim: false
       separate_value_net: true
+      train_model: false
+      load_model: true
+      train_policy: true
+      load_policy: false
+      train_value: true
+      load_value: false
     network_settings:
       normalize: true
       hidden_units: 512

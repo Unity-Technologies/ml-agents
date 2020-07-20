@@ -321,26 +321,26 @@ if __name__ == "__main__":
             for obs in ["normal", "rich1", "rich2"]:
                 test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
 
-    #     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
-    #     for obs in ["normal", "rich2"]:
-    #         test_2d_transfer(
-    #             seed=seed,
-    #             obs_spec_type="rich1",
-    #             transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
-    #             run_id=obs + "transfer_to_rich1",
-    #         )
+         # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
+        for obs in ["normal", "rich2"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type="rich1",
+                transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+                run_id=obs + "transfer_to_rich1",
+            )
 
-    #     for obs in ["normal", "rich1"]:
-    #         test_2d_transfer(
-    #             seed=seed,
-    #             obs_spec_type="rich2",
-    #             transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
-    #             run_id=obs + "transfer_to_rich2",
-    #         )
+        for obs in ["normal", "rich1"]:
+            test_2d_transfer(
+                 seed=seed,
+                 obs_spec_type="rich2",
+                 transfer_from="./transfer_results/model_" + obs + "_s" + str(seed) + "/Simple",
+                 run_id=obs + "transfer_to_rich2",
+             )
 
-    for obs in ["longpre"]:
-        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
-        test_2d_ppo(seed=0, obs_spec_type=obs, run_id="ppo_" + obs)
+    #for obs in ["longpre"]:
+    #    test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
+    #    test_2d_ppo(seed=0, obs_spec_type=obs, run_id="ppo_" + obs)
 
     # test_2d_transfer(seed=0, obs_spec_type="longpre",
     #     transfer_from="./transfer_results/model_normal_s0/Simple",
