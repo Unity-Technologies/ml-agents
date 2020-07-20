@@ -22,7 +22,7 @@ behaviors:
       with_prior: false
       predict_return: true
       use_bisim: false
-      separate_value_net: true
+      separate_value_train: true
     network_settings:
       normalize: true
       hidden_units: 512
@@ -37,3 +37,4 @@ behaviors:
     time_horizon: 1000
     summary_freq: 30000
     threaded: true
+    transfer: true
