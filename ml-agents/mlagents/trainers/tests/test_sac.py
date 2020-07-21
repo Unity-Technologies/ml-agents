@@ -143,11 +143,6 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
 
-    # Test incorrect class of policy
-    policy = mock.Mock()
-    with pytest.raises(RuntimeError):
-        trainer.add_policy(behavior_id, policy)
-
 
 def test_advance(dummy_config):
     specs = setup_test_behavior_specs(

@@ -329,11 +329,6 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
 
-    # Test incorrect class of policy
-    policy = mock.Mock()
-    with pytest.raises(RuntimeError):
-        trainer.add_policy(behavior_id, policy)
-
 
 if __name__ == "__main__":
     pytest.main()
