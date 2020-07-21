@@ -50,7 +50,7 @@ PPO_CONFIG = TrainerSettings(
         batch_size=16,
         buffer_size=64,
     ),
-    network_settings=NetworkSettings(num_layers=2, hidden_units=64),
+    network_settings=NetworkSettings(num_layers=2, hidden_units=32),
     summary_freq=500,
     max_steps=3000,
     threaded=False,
@@ -77,21 +77,10 @@ Transfer_CONFIG = TrainerSettings(
     trainer_type=TrainerType.PPO_Transfer,
     hyperparameters=PPOTransferSettings(
         learning_rate=5.0e-3,
-        learning_rate_schedule=ScheduleType.CONSTANT,
+        # learning_rate_schedule=ScheduleType.CONSTANT,
         batch_size=16,
         buffer_size=64,
         feature_size=4,
-        reuse_encoder=False,
-        in_epoch_alter=True,
-        # in_batch_alter=True,
-        use_op_buffer=True,
-        # policy_layers=0,
-        # value_layers=0,
-        # conv_thres=1e-4,
-        # predict_return=True
-        # separate_policy_train=True,
-        # separate_value_train=True
-        # separate_value_net=True,
     ),
     network_settings=NetworkSettings(num_layers=1, hidden_units=32),
     summary_freq=500,
@@ -212,7 +201,7 @@ def test_2d_ppo(config=PPO_CONFIG, obs_spec_type="rich1", run_id="ppo_rich1", se
         config.hyperparameters, batch_size=1200, buffer_size=12000, learning_rate=5.0e-3
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=350000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -250,11 +239,12 @@ def test_2d_model(
         value_layers=2,
         forward_layers=0,
         encoder_layers=2,
+        action_layers=1,
         feature_size=16,
-        # use_inverse_model=True
+        action_feature_size=4,
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=250000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -290,25 +280,29 @@ def test_2d_transfer(
         train_policy=True,
         train_value=True,
         train_model=False,
+        train_action=False,
         train_encoder=True,
         reuse_encoder=True,
         separate_value_train=True,
         separate_policy_train=False,
         feature_size=16,
+        action_feature_size=4,
         use_var_predict=True,
         with_prior=False,
         load_policy=False,
         load_value=False,
         load_model=True,
+        load_action=True,
         predict_return=True,
         policy_layers=0,
         value_layers=2,
         forward_layers=0,
         encoder_layers=2,
+        action_layers=1,
         use_bisim=False,
     )
     config = attr.evolve(
-        config, hyperparameters=new_hyperparams, max_steps=250000, summary_freq=5000
+        config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
     )
     _check_environment_trains(
         env, {BRAIN_NAME: config}, run_id=run_id + "_s" + str(seed), seed=seed
@@ -316,10 +310,19 @@ def test_2d_transfer(
 
 
 if __name__ == "__main__":
-    for seed in range(5, 10):
-        if seed > -1:
-            for obs in ["normal", "rich1", "rich2"]:
-                test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
+    for seed in range(5):
+        # if seed > -1:
+        #     for obs in ["normal", "long", "longpre"]:
+        #         test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
+        #         test_2d_ppo(seed=seed, obs_spec_type=obs, run_id="ppo_" + obs)
+
+        for obs in ["long", "longpre"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type=obs,
+                transfer_from="./transfer_results/model_normal_s" + str(seed) + "/Simple",
+                run_id="normal_transfer_linear_fix_to_" + obs,
+            )
 
     #     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
     #     for obs in ["normal", "rich2"]:
@@ -338,10 +341,21 @@ if __name__ == "__main__":
     #             run_id=obs + "transfer_to_rich2",
     #         )
 
-    for obs in ["longpre"]:
-        test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
-        test_2d_ppo(seed=0, obs_spec_type=obs, run_id="ppo_" + obs)
+    # for obs in ["longpre"]:
+    #     test_2d_model(seed=0, obs_spec_type=obs, run_id="model_" + obs)
+    #     test_2d_ppo(seed=0, obs_spec_type=obs, run_id="ppo_" + obs)
 
-    # test_2d_transfer(seed=0, obs_spec_type="longpre",
-    #     transfer_from="./transfer_results/model_normal_s0/Simple",
-    #     run_id="normal_transfer_to_longpre_reuse_trainmod")
+    # # test_2d_transfer(seed=0, obs_spec_type="longpre",
+    # #     transfer_from="./transfer_results/model_normal_s0/Simple",
+    # #     run_id="normal_transfer_to_longpre_reuse_trainmod")
+
+    # for s in range(1, 5):
+    #     for obs in ["normal", "long", "longpre"]:
+    #         test_2d_model(seed=s, obs_spec_type=obs, run_id="model_" + obs)
+    #         test_2d_ppo(seed=s, obs_spec_type=obs, run_id="ppo_" + obs)
+        
+    #     for obs in ["long", "longpre"]:
+    #         test_2d_transfer(seed=s, obs_spec_type=obs, 
+    #             transfer_from="./transfer_results/model_normal_s"+str(s)+"/Simple",
+    #             run_id="normal_transfer_to_"+ obs)
+
