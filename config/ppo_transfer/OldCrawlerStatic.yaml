@@ -10,6 +10,7 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: constant
+      model_schedule: constant
       encoder_layers: 2
       action_layers: 2
       policy_layers: 1
@@ -25,6 +26,7 @@ behaviors:
       predict_return: true
       use_bisim: false
       separate_value_train: true
+      separate_value_net: true
       train_model: false
       load_model: true
       train_action: false
