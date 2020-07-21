@@ -170,8 +170,8 @@ class TorchSACOptimizer(TorchOptimizer):
         q2_losses = []
         # Multiple q losses per stream
         for i, name in enumerate(q1_out.keys()):
-            q1_stream = q1_out[name]
-            q2_stream = q2_out[name]
+            q1_stream = q1_out[name].squeeze()
+            q2_stream = q2_out[name].squeeze()
             with torch.no_grad():
                 q_backup = rewards[name] + (
                     (1.0 - self.use_dones_in_backup[name] * dones)
@@ -179,10 +179,10 @@ class TorchSACOptimizer(TorchOptimizer):
                     * target_values[name]
                 )
             _q1_loss = 0.5 * torch.mean(
-                loss_masks * torch.pow((q_backup - q1_stream), 2)
+                loss_masks * torch.nn.functional.mse_loss(q_backup, q1_stream)
             )
             _q2_loss = 0.5 * torch.mean(
-                loss_masks * torch.pow((q_backup - q2_stream), 2)
+                loss_masks * torch.nn.functional.mse_loss(q_backup, q2_stream)
             )
 
             q1_losses.append(_q1_loss)
@@ -244,7 +244,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     )
                 # print(log_probs, v_backup, _ent_coef, loss_masks)
                 value_loss = 0.5 * torch.mean(
-                    loss_masks * torch.pow((values[name] - v_backup), 2)
+                    loss_masks * torch.nn.functional.mse_loss(values[name], v_backup)
                 )
                 value_losses.append(value_loss)
         else:
@@ -264,7 +264,8 @@ class TorchSACOptimizer(TorchOptimizer):
                         branched_ent_bonus, axis=0
                     )
                 value_loss = 0.5 * torch.mean(
-                    loss_masks * torch.pow((values[name] - v_backup), 2)
+                    loss_masks
+                    * torch.nn.functional.mse_loss(values[name], v_backup.squeeze())
                 )
                 value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
@@ -404,7 +405,13 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        sampled_actions, log_probs, entropies, sampled_values, _ = self.policy.sample_actions(
+        (
+            sampled_actions,
+            log_probs,
+            entropies,
+            sampled_values,
+            _,
+        ) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
@@ -412,7 +419,6 @@ class TorchSACOptimizer(TorchOptimizer):
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
         )
-
         if self.policy.use_continuous_act:
             squeezed_actions = actions.squeeze(-1)
             q1p_out, q2p_out = self.value_network(vec_obs, vis_obs, sampled_actions)
