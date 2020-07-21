@@ -15,7 +15,7 @@ behaviors:
       action_layers: 2
       policy_layers: 2
       forward_layers: 0
-      value_layers: 1
+      value_layers: 3
       feature_size: 128
       action_feature_size: 128
       reuse_encoder: true
