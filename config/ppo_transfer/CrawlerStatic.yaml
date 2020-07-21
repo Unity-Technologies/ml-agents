@@ -13,7 +13,7 @@ behaviors:
       model_schedule: constant
       encoder_layers: 2
       action_layers: 2
-      policy_layers: 1
+      policy_layers: 2
       forward_layers: 0
       value_layers: 1
       feature_size: 128
