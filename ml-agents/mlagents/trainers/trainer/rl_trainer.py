@@ -1,13 +1,20 @@
 # # Unity ML-Agents Toolkit
-from typing import Dict, List
+import os
+from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
 import time
-
+import attr
+from mlagents.model_serialization import SerializationSettings
+from mlagents.trainers.policy.checkpoint_manager import (
+    NNCheckpoint,
+    NNCheckpointManager,
+)
+from mlagents_envs.logging_util import get_logger
+from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
 from mlagents.trainers.agent_processor import AgentManagerQueue
@@ -16,6 +23,8 @@ from mlagents.trainers.stats import StatsPropertyType
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
+logger = get_logger(__name__)
+
 
 class RLTrainer(Trainer):  # pylint: disable=abstract-method
     """
@@ -23,14 +32,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     """
 
     def __init__(self, *args, **kwargs):
-        super(RLTrainer, self).__init__(*args, **kwargs)
-        # Make sure we have at least one reward_signal
-        if not self.trainer_parameters["reward_signals"]:
-            raise UnityTrainerException(
-                "No reward signals were defined. At least one must be used with {}.".format(
-                    self.__class__.__name__
-                )
-            )
+        super().__init__(*args, **kwargs)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
@@ -40,8 +42,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         }
         self.update_buffer: AgentBuffer = AgentBuffer()
         self._stats_reporter.add_property(
-            StatsPropertyType.HYPERPARAMETERS, self.trainer_parameters
+            StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
+        self._next_save_step = 0
+        self._next_summary_step = 0
 
     def end_episode(self) -> None:
         """
@@ -83,6 +87,58 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         return False
 
+    def _policy_mean_reward(self) -> Optional[float]:
+        """ Returns the mean episode reward for the current policy. """
+        rewards = self.cumulative_returns_since_policy_update
+        if len(rewards) == 0:
+            return None
+        else:
+            return sum(rewards) / len(rewards)
+
+    @timed
+    def _checkpoint(self) -> NNCheckpoint:
+        """
+        Checkpoints the policy associated with this trainer.
+        """
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        model_path = policy.model_path
+        settings = SerializationSettings(model_path, self.brain_name)
+        checkpoint_path = os.path.join(model_path, f"{self.brain_name}-{self.step}")
+        policy.checkpoint(checkpoint_path, settings)
+        new_checkpoint = NNCheckpoint(
+            int(self.step),
+            f"{checkpoint_path}.nn",
+            self._policy_mean_reward(),
+            time.time(),
+        )
+        NNCheckpointManager.add_checkpoint(
+            self.brain_name, new_checkpoint, self.trainer_settings.keep_checkpoints
+        )
+        return new_checkpoint
+
+    def save_model(self) -> None:
+        """
+        Saves the policy associated with this trainer.
+        """
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        settings = SerializationSettings(policy.model_path, self.brain_name)
+        model_checkpoint = self._checkpoint()
+        final_checkpoint = attr.evolve(
+            model_checkpoint, file_path=f"{policy.model_path}.nn"
+        )
+        policy.save(policy.model_path, settings)
+        NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
+
     @abc.abstractmethod
     def _update_policy(self) -> bool:
         """
@@ -97,16 +153,20 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param n_steps: number of steps to increment the step count by
         """
         self.step += n_steps
-        self.next_summary_step = self._get_next_summary_step()
+        self._next_summary_step = self._get_next_interval_step(self.summary_freq)
+        self._next_save_step = self._get_next_interval_step(
+            self.trainer_settings.checkpoint_interval
+        )
         p = self.get_policy(name_behavior_id)
         if p:
             p.increment_step(n_steps)
 
-    def _get_next_summary_step(self) -> int:
+    def _get_next_interval_step(self, interval: int) -> int:
         """
-        Get the next step count that should result in a summary write.
+        Get the next step count that should result in an action.
+        :param interval: The interval between actions.
         """
-        return self.step + (self.summary_freq - self.step % self.summary_freq)
+        return self.step + (interval - self.step % interval)
 
     def _write_summary(self, step: int) -> None:
         """
@@ -122,6 +182,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param trajectory: The Trajectory tuple containing the steps to be processed.
         """
         self._maybe_write_summary(self.get_step + len(trajectory.steps))
+        self._maybe_save_model(self.get_step + len(trajectory.steps))
         self._increment_step(len(trajectory.steps), trajectory.behavior_id)
 
     def _maybe_write_summary(self, step_after_process: int) -> None:
@@ -130,8 +191,23 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         write the summary. This logic ensures summaries are written on the update step and not in between.
         :param step_after_process: the step count after processing the next trajectory.
         """
-        if step_after_process >= self.next_summary_step and self.get_step != 0:
-            self._write_summary(self.next_summary_step)
+        if self._next_summary_step == 0:  # Don't write out the first one
+            self._next_summary_step = self._get_next_interval_step(self.summary_freq)
+        if step_after_process >= self._next_summary_step and self.get_step != 0:
+            self._write_summary(self._next_summary_step)
+
+    def _maybe_save_model(self, step_after_process: int) -> None:
+        """
+        If processing the trajectory will make the step exceed the next model write,
+        save the model. This logic ensures models are written on the update step and not in between.
+        :param step_after_process: the step count after processing the next trajectory.
+        """
+        if self._next_save_step == 0:  # Don't save the first one
+            self._next_save_step = self._get_next_interval_step(
+                self.trainer_settings.checkpoint_interval
+            )
+        if step_after_process >= self._next_save_step and self.get_step != 0:
+            self._checkpoint()
 
     def advance(self) -> None:
         """

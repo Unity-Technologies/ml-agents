@@ -10,7 +10,7 @@ def test_run_environment(env_name):
     :param env_name: Name of the Unity environment binary to launch
     """
     u_env = UnityEnvironment(env_name, worker_id=1, no_graphics=True)
-    env = UnityToGymWrapper(u_env, use_visual=False)
+    env = UnityToGymWrapper(u_env)
 
     try:
         # Examine environment parameters
@@ -21,7 +21,7 @@ def test_run_environment(env_name):
 
         if len(env.observation_space.shape) == 1:
             # Examine the initial vector observation
-            print("Agent observations look like: \n{}".format(initial_observations))
+            print(f"Agent observations look like: \n{initial_observations}")
 
         for _episode in range(10):
             env.reset()
@@ -31,7 +31,7 @@ def test_run_environment(env_name):
                 actions = env.action_space.sample()
                 obs, reward, done, _ = env.step(actions)
                 episode_rewards += reward
-            print("Total reward this episode: {}".format(episode_rewards))
+            print(f"Total reward this episode: {episode_rewards}")
     finally:
         env.close()
 
@@ -44,14 +44,14 @@ def test_closing(env_name):
 
     try:
         env1 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=1, no_graphics=True), use_visual=False
+            UnityEnvironment(env_name, worker_id=1, no_graphics=True)
         )
         env1.close()
         env1 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=1, no_graphics=True), use_visual=False
+            UnityEnvironment(env_name, worker_id=1, no_graphics=True)
         )
         env2 = UnityToGymWrapper(
-            UnityEnvironment(env_name, worker_id=2, no_graphics=True), use_visual=False
+            UnityEnvironment(env_name, worker_id=2, no_graphics=True)
         )
         env2.reset()
     finally:

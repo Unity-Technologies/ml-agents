@@ -166,6 +166,7 @@ public class AgentSoccer : Agent
 
     public override void Heuristic(float[] actionsOut)
     {
+        Array.Clear(actionsOut, 0, actionsOut.Length);
         //forward
         if (Input.GetKey(KeyCode.W))
         {

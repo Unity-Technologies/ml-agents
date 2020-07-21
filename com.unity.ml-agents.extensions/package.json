@@ -1,0 +1,10 @@
+{
+  "name": "com.unity.ml-agents.extensions",
+  "displayName": "ML Agents Extensions",
+  "version": "0.0.1-preview",
+  "unity": "2018.4",
+  "description": "A source-only package for new features based on ML-Agents",
+  "dependencies": {
+    "com.unity.ml-agents": "1.2.0-preview"
+  }
+}

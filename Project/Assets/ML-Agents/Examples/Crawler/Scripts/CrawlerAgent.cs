@@ -1,20 +1,19 @@
+using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
 {
-    [Header("Target To Walk Towards")]
-    [Space(10)]
-    public Transform target;
+    public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
+    Vector3 m_WalkDir; //Direction to the target
+    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
-    public Transform ground;
-    public bool detectTargets;
-    public bool targetIsStatic;
-    public bool respawnTargetWhenTouched;
-    public float targetSpawnRadius;
+    [Header("Target To Walk Towards")] [Space(10)]
+    public TargetController target; //Target the agent will walk towards.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -26,20 +25,21 @@ public class CrawlerAgent : Agent
     public Transform leg3Upper;
     public Transform leg3Lower;
 
-    [Header("Joint Settings")] [Space(10)] JointDriveController m_JdController;
-    Vector3 m_DirToTarget;
-    float m_MovingTowardsDot;
-    float m_FacingDot;
 
-    [Header("Reward Functions To Use")]
-    [Space(10)]
+    [Header("Orientation")] [Space(10)]
+    //This will be used as a stabilized model space reference point for observations
+    //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
+    public OrientationCubeController orientationCube;
+
+    JointDriveController m_JdController;
+
+    [Header("Reward Functions To Use")] [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
 
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
-    [Header("Foot Grounded Visualization")]
-    [Space(10)]
+    [Header("Foot Grounded Visualization")] [Space(10)]
     public bool useFootGroundedVisualization;
 
     public MeshRenderer foot0;
@@ -49,14 +49,11 @@ public class CrawlerAgent : Agent
     public Material groundedMaterial;
     public Material unGroundedMaterial;
 
-    Quaternion m_LookRotation;
-    Matrix4x4 m_TargetDirMatrix;
-
     public override void Initialize()
     {
-        m_JdController = GetComponent<JointDriveController>();
-        m_DirToTarget = target.position - body.position;
+        orientationCube.UpdateOrientation(body, target.transform);
 
+        m_JdController = GetComponent<JointDriveController>();
 
         //Setup each body part
         m_JdController.SetupBodyPart(body);
@@ -71,55 +68,65 @@ public class CrawlerAgent : Agent
     }
 
     /// <summary>
+    /// Loop over body parts and reset them to initial conditions.
+    /// </summary>
+    public override void OnEpisodeBegin()
+    {
+        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        {
+            bodyPart.Reset(bodyPart);
+        }
+
+        //Random start rotation to help generalize
+        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+
+        orientationCube.UpdateOrientation(body, target.transform);
+    }
+
+    /// <summary>
     /// Add relevant information on each body part to observations.
     /// </summary>
     public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
     {
-        var rb = bp.rb;
-        sensor.AddObservation(bp.groundContact.touchingGround ? 1 : 0); // Whether the bp touching the ground
+        //GROUND CHECK
+        sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
 
-        var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
-        sensor.AddObservation(velocityRelativeToLookRotationToTarget);
+        //Get velocities in the context of our orientation cube's space
+        //Note: You can get these velocities in world space as well but it may not train as well.
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
-        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
-        sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
+        //Get position relative to hips in the context of our orientation cube's space
+        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
 
         if (bp.rb.transform != body)
         {
-            var localPosRelToBody = body.InverseTransformPoint(rb.position);
-            sensor.AddObservation(localPosRelToBody);
-            sensor.AddObservation(bp.currentXNormalizedRot); // Current x rot
-            sensor.AddObservation(bp.currentYNormalizedRot); // Current y rot
-            sensor.AddObservation(bp.currentZNormalizedRot); // Current z rot
+            sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
 
+    /// <summary>
+    /// Loop over body parts to add them to observation.
+    /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        m_JdController.GetCurrentJointForces();
+        //Add body rotation delta relative to orientation cube
+        sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
 
-        // Update pos to target
-        m_DirToTarget = target.position - body.position;
-        m_LookRotation = Quaternion.LookRotation(m_DirToTarget);
-        m_TargetDirMatrix = Matrix4x4.TRS(Vector3.zero, m_LookRotation, Vector3.one);
+        //Add pos of target relative to orientation cube
+        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 
         RaycastHit hit;
-        if (Physics.Raycast(body.position, Vector3.down, out hit, 10.0f))
+        float maxRaycastDist = 10;
+        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
         {
-            sensor.AddObservation(hit.distance);
+            sensor.AddObservation(hit.distance / maxRaycastDist);
         }
         else
-            sensor.AddObservation(10.0f);
+            sensor.AddObservation(1);
 
-        // Forward & up to help with orientation
-        var bodyForwardRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.forward);
-        sensor.AddObservation(bodyForwardRelativeToLookRotationToTarget);
-
-        var bodyUpRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(body.up);
-        sensor.AddObservation(bodyUpRelativeToLookRotationToTarget);
-
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
@@ -131,20 +138,6 @@ public class CrawlerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        if (respawnTargetWhenTouched)
-        {
-            GetRandomTargetPos();
-        }
-    }
-
-    /// <summary>
-    /// Moves target to a random position within specified radius.
-    /// </summary>
-    public void GetRandomTargetPos()
-    {
-        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
-        target.position = newTargetPos + ground.position;
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -176,16 +169,7 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
-        if (detectTargets)
-        {
-            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-            {
-                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
-                {
-                    TouchedTarget();
-                }
-            }
-        }
+        orientationCube.UpdateOrientation(body, target.transform);
 
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
@@ -227,8 +211,18 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
-        AddReward(0.03f * m_MovingTowardsDot);
+        var movingTowardsDot = Vector3.Dot(orientationCube.transform.forward,
+            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[body].rb.velocity, maximumWalkingSpeed));
+        if (float.IsNaN(movingTowardsDot))
+        {
+            throw new ArgumentException(
+                "NaN in movingTowardsDot.\n" +
+                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+                $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n"+
+                $" maximumWalkingSpeed: {maximumWalkingSpeed}"
+            );
+        }
+        AddReward(0.03f * movingTowardsDot);
     }
 
     /// <summary>
@@ -236,8 +230,16 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        m_FacingDot = Vector3.Dot(m_DirToTarget.normalized, body.forward);
-        AddReward(0.01f * m_FacingDot);
+        var facingReward = Vector3.Dot(orientationCube.transform.forward, body.forward);
+        if (float.IsNaN(facingReward))
+        {
+            throw new ArgumentException(
+                "NaN in movingTowardsDot.\n" +
+                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+                $" body.forward: {body.forward}"
+            );
+        }
+        AddReward(0.01f * facingReward);
     }
 
     /// <summary>
@@ -246,26 +248,5 @@ public class CrawlerAgent : Agent
     void RewardFunctionTimePenalty()
     {
         AddReward(-0.001f);
-    }
-
-    /// <summary>
-    /// Loop over body parts and reset them to initial conditions.
-    /// </summary>
-    public override void OnEpisodeBegin()
-    {
-        if (m_DirToTarget != Vector3.zero)
-        {
-            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
-        }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
-
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-        {
-            bodyPart.Reset(bodyPart);
-        }
-        if (!targetIsStatic)
-        {
-            GetRandomTargetPos();
-        }
     }
 }

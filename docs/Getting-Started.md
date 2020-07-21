@@ -206,12 +206,12 @@ follow the instructions in
 ### Observing Training Progress
 
 Once you start training using `mlagents-learn` in the way described in the
-previous section, the `ml-agents` directory will contain a `summaries`
+previous section, the `ml-agents` directory will contain a `results`
 directory. In order to observe the training process in more detail, you can use
 TensorBoard. From the command line run:
 
 ```sh
-tensorboard --logdir=summaries
+tensorboard --logdir=results
 ```
 
 Then navigate to `localhost:6006` in your browser to view the TensorBoard
@@ -236,7 +236,7 @@ If you've quit the training early using `Ctrl+C` and want to resume training,
 run the same command again, appending the `--resume` flag:
 
 ```sh
-mlagents-learn config/ppo/3DBall.yaml --run-id=firstRun --resume
+mlagents-learn config/ppo/3DBall.yaml --run-id=first3DBallRun --resume
 ```
 
 Your trained model will be at `results/<run-identifier>/<behavior_name>.nn` where

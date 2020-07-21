@@ -3,9 +3,8 @@
 """Launches trainers for each External Brains in a Unity Environment."""
 
 import os
-import sys
 import threading
-from typing import Dict, Optional, Set, List
+from typing import Dict, Set, List
 from collections import defaultdict
 
 import numpy as np
@@ -18,7 +17,6 @@ from mlagents_envs.exception import (
     UnityCommunicationException,
     UnityCommunicatorStoppedException,
 )
-from mlagents.trainers.sampler_class import SamplerManager
 from mlagents_envs.timers import (
     hierarchical_timer,
     timed,
@@ -26,35 +24,30 @@ from mlagents_envs.timers import (
     merge_gauges,
 )
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 
 
-class TrainerController(object):
+class TrainerController:
     def __init__(
         self,
         trainer_factory: TrainerFactory,
         output_path: str,
         run_id: str,
-        save_freq: int,
-        meta_curriculum: Optional[MetaCurriculum],
+        param_manager: EnvironmentParameterManager,
         train: bool,
         training_seed: int,
-        sampler_manager: SamplerManager,
-        resampling_interval: Optional[int],
     ):
         """
         :param output_path: Path to save the model.
         :param summaries_dir: Folder to save training summaries.
         :param run_id: The sub-directory name for model and summary statistics
-        :param save_freq: Frequency at which to save model
-        :param meta_curriculum: MetaCurriculum object which stores information about all curricula.
+        :param param_manager: EnvironmentParameterManager object which stores information about all
+        environment parameters.
         :param train: Whether to train model, or only run inference.
         :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
-        :param sampler_manager: SamplerManager object handles samplers for resampling the reset parameters.
-        :param resampling_interval: Specifies number of simulation steps after which reset parameters are resampled.
         :param threaded: Whether or not to run trainers in a separate thread. Disable for testing/debugging.
         """
         self.trainers: Dict[str, Trainer] = {}
@@ -63,11 +56,8 @@ class TrainerController(object):
         self.output_path = output_path
         self.logger = get_logger(__name__)
         self.run_id = run_id
-        self.save_freq = save_freq
         self.train_model = train
-        self.meta_curriculum = meta_curriculum
-        self.sampler_manager = sampler_manager
-        self.resampling_interval = resampling_interval
+        self.param_manager = param_manager
         self.ghost_controller = self.trainer_factory.ghost_controller
 
         self.trainer_threads: List[threading.Thread] = []
@@ -75,53 +65,27 @@ class TrainerController(object):
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
 
-    def _get_measure_vals(self):
-        brain_names_to_measure_vals = {}
-        if self.meta_curriculum:
-            for (
-                brain_name,
-                curriculum,
-            ) in self.meta_curriculum.brains_to_curricula.items():
-                # Skip brains that are in the metacurriculum but no trainer yet.
-                if brain_name not in self.trainers:
-                    continue
-                if curriculum.measure == "progress":
-                    measure_val = self.trainers[brain_name].get_step / float(
-                        self.trainers[brain_name].get_max_steps
-                    )
-                    brain_names_to_measure_vals[brain_name] = measure_val
-                elif curriculum.measure == "reward":
-                    measure_val = np.mean(self.trainers[brain_name].reward_buffer)
-                    brain_names_to_measure_vals[brain_name] = measure_val
-        else:
-            for brain_name, trainer in self.trainers.items():
-                measure_val = np.mean(trainer.reward_buffer)
-                brain_names_to_measure_vals[brain_name] = measure_val
-        return brain_names_to_measure_vals
-
     @timed
-    def _save_model(self):
+    def _save_models(self):
         """
         Saves current model to checkpoint folder.
         """
         for brain_name in self.trainers.keys():
-            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
-                self.trainers[brain_name].save_model(name_behavior_id)
+            self.trainers[brain_name].save_model()
         self.logger.info("Saved Model")
 
     def _save_model_when_interrupted(self):
         self.logger.info(
             "Learning was interrupted. Please wait while the graph is generated."
         )
-        self._save_model()
+        self._save_models()
 
     def _export_graph(self):
         """
-        Exports latest saved models to .nn format for Unity embedding.
+        Saves models for all trainers.
         """
         for brain_name in self.trainers.keys():
-            for name_behavior_id in self.brain_name_to_identifier[brain_name]:
-                self.trainers[brain_name].export_model(name_behavior_id)
+            self.trainers[brain_name].save_model()
 
     @staticmethod
     def _create_output_path(output_path):
@@ -144,17 +108,8 @@ class TrainerController(object):
             A Data structure corresponding to the initial reset state of the
             environment.
         """
-        sampled_reset_param = self.sampler_manager.sample_all()
-        new_meta_curriculum_config = (
-            self.meta_curriculum.get_config() if self.meta_curriculum else {}
-        )
-        sampled_reset_param.update(new_meta_curriculum_config)
-        env.reset(config=sampled_reset_param)
-
-    def _should_save_model(self, global_step: int) -> bool:
-        return (
-            global_step % self.save_freq == 0 and global_step != 0 and self.train_model
-        )
+        new_config = self.param_manager.get_current_samplers()
+        env.reset(config=new_config)
 
     def _not_done_training(self) -> bool:
         return (
@@ -169,9 +124,9 @@ class TrainerController(object):
         parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id(name_behavior_id)
         brain_name = parsed_behavior_id.brain_name
         trainerthread = None
-        try:
+        if brain_name in self.trainers:
             trainer = self.trainers[brain_name]
-        except KeyError:
+        else:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
             if trainer.threaded:
@@ -182,7 +137,7 @@ class TrainerController(object):
                 self.trainer_threads.append(trainerthread)
 
         policy = trainer.create_policy(
-            parsed_behavior_id, env_manager.external_brains[name_behavior_id]
+            parsed_behavior_id, env_manager.training_behaviors[name_behavior_id]
         )
         trainer.add_policy(parsed_behavior_id, policy)
 
@@ -190,7 +145,7 @@ class TrainerController(object):
             policy,
             name_behavior_id,
             trainer.stats_reporter,
-            trainer.parameters.get("time_horizon", sys.maxsize),
+            trainer.parameters.time_horizon,
             threaded=trainer.threaded,
         )
         env_manager.set_agent_manager(name_behavior_id, agent_manager)
@@ -214,27 +169,20 @@ class TrainerController(object):
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_output_path(self.output_path)
         tf.reset_default_graph()
-        global_step = 0
         last_brain_behavior_ids: Set[str] = set()
         try:
             # Initial reset
             self._reset_env(env_manager)
             while self._not_done_training():
-                external_brain_behavior_ids = set(env_manager.external_brains.keys())
+                external_brain_behavior_ids = set(env_manager.training_behaviors.keys())
                 new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
                 self._create_trainers_and_managers(env_manager, new_behavior_ids)
                 last_brain_behavior_ids = external_brain_behavior_ids
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
-                    global_step += 1
-                    self.reset_env_if_ready(env_manager, global_step)
-                    if self._should_save_model(global_step):
-                        self._save_model()
+                    self.reset_env_if_ready(env_manager)
             # Stop advancing trainers
             self.join_threads()
-            # Final save Tensorflow model
-            if global_step != 0 and self.train_model:
-                self._save_model()
         except (
             KeyboardInterrupt,
             UnityCommunicationException,
@@ -242,9 +190,9 @@ class TrainerController(object):
             UnityCommunicatorStoppedException,
         ) as ex:
             self.join_threads()
-            if self.train_model:
-                self._save_model_when_interrupted()
-
+            self.logger.info(
+                "Learning was interrupted. Please wait while the graph is generated."
+            )
             if isinstance(ex, KeyboardInterrupt) or isinstance(
                 ex, UnityCommunicatorStoppedException
             ):
@@ -255,47 +203,34 @@ class TrainerController(object):
                 raise ex
         finally:
             if self.train_model:
-                self._export_graph()
+                self._save_models()
 
-    def end_trainer_episodes(
-        self, env: EnvManager, lessons_incremented: Dict[str, bool]
-    ) -> None:
-        self._reset_env(env)
+    def end_trainer_episodes(self) -> None:
         # Reward buffers reset takes place only for curriculum learning
         # else no reset.
         for trainer in self.trainers.values():
             trainer.end_episode()
-        for brain_name, changed in lessons_incremented.items():
-            if changed:
-                self.trainers[brain_name].reward_buffer.clear()
 
-    def reset_env_if_ready(self, env: EnvManager, steps: int) -> None:
-        if self.meta_curriculum:
-            # Get the sizes of the reward buffers.
-            reward_buff_sizes = {
-                k: len(t.reward_buffer) for (k, t) in self.trainers.items()
-            }
-            # Attempt to increment the lessons of the brains who
-            # were ready.
-            lessons_incremented = self.meta_curriculum.increment_lessons(
-                self._get_measure_vals(), reward_buff_sizes=reward_buff_sizes
-            )
-        else:
-            lessons_incremented = {}
-        # If any lessons were incremented or the environment is
-        # ready to be reset
-        meta_curriculum_reset = any(lessons_incremented.values())
-        # Check if we are performing generalization training and we have finished the
-        # specified number of steps for the lesson
-        generalization_reset = (
-            not self.sampler_manager.is_empty()
-            and (steps != 0)
-            and (self.resampling_interval)
-            and (steps % self.resampling_interval == 0)
+    def reset_env_if_ready(self, env: EnvManager) -> None:
+        # Get the sizes of the reward buffers.
+        reward_buff = {k: list(t.reward_buffer) for (k, t) in self.trainers.items()}
+        curr_step = {k: int(t.step) for (k, t) in self.trainers.items()}
+        max_step = {k: int(t.get_max_steps) for (k, t) in self.trainers.items()}
+        # Attempt to increment the lessons of the brains who
+        # were ready.
+        updated, param_must_reset = self.param_manager.update_lessons(
+            curr_step, max_step, reward_buff
         )
+        if updated:
+            for trainer in self.trainers.values():
+                trainer.reward_buffer.clear()
+        # If ghost trainer swapped teams
         ghost_controller_reset = self.ghost_controller.should_reset()
-        if meta_curriculum_reset or generalization_reset or ghost_controller_reset:
-            self.end_trainer_episodes(env, lessons_incremented)
+        if param_must_reset or ghost_controller_reset:
+            self._reset_env(env)  # This reset also sends the new config to env
+            self.end_trainer_episodes()
+        elif updated:
+            env.set_env_parameters(self.param_manager.get_current_samplers())
 
     @timed
     def advance(self, env: EnvManager) -> int:
@@ -303,13 +238,15 @@ class TrainerController(object):
         with hierarchical_timer("env_step"):
             num_steps = env.advance()
 
-        # Report current lesson
-        if self.meta_curriculum:
-            for brain_name, curr in self.meta_curriculum.brains_to_curricula.items():
-                if brain_name in self.trainers:
-                    self.trainers[brain_name].stats_reporter.set_stat(
-                        "Environment/Lesson", curr.lesson_num
-                    )
+        # Report current lesson for each environment parameter
+        for (
+            param_name,
+            lesson_number,
+        ) in self.param_manager.get_current_lesson_number().items():
+            for trainer in self.trainers.values():
+                trainer.stats_reporter.set_stat(
+                    f"Environment/Lesson/{param_name}", lesson_number
+                )
 
         for trainer in self.trainers.values():
             if not trainer.threaded:

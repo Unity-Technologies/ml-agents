@@ -1,6 +1,6 @@
 import itertools
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import gym
 from gym import error, spaces
@@ -32,19 +32,20 @@ class UnityToGymWrapper(gym.Env):
     def __init__(
         self,
         unity_env: BaseEnv,
-        use_visual: bool = False,
         uint8_visual: bool = False,
         flatten_branched: bool = False,
-        allow_multiple_visual_obs: bool = False,
+        allow_multiple_obs: bool = False,
     ):
         """
         Environment initialization
         :param unity_env: The Unity BaseEnv to be wrapped in the gym. Will be closed when the UnityToGymWrapper closes.
-        :param use_visual: Whether to use visual observation or vector observation.
         :param uint8_visual: Return visual observations as uint8 (0-255) matrices instead of float (0.0-1.0).
         :param flatten_branched: If True, turn branched discrete action spaces into a Discrete space rather than
             MultiDiscrete.
-        :param allow_multiple_visual_obs: If True, return a list of visual observations instead of only one.
+        :param allow_multiple_obs: If True, return a list of np.ndarrays as observations with the first elements
+            containing the visual observations and the last element containing the array of vector observations.
+            If False, returns a single np.ndarray containing either only a single visual observation or the array of
+            vector observations.
         """
         self._env = unity_env
 
@@ -59,7 +60,7 @@ class UnityToGymWrapper(gym.Env):
         self._flattener = None
         # Hidden flag used by Atari environments to determine if the game is over
         self.game_over = False
-        self._allow_multiple_visual_obs = allow_multiple_visual_obs
+        self._allow_multiple_obs = allow_multiple_obs
 
         # Check brain configuration
         if len(self._env.behavior_specs) != 1:
@@ -71,26 +72,27 @@ class UnityToGymWrapper(gym.Env):
         self.name = list(self._env.behavior_specs.keys())[0]
         self.group_spec = self._env.behavior_specs[self.name]
 
-        if use_visual and self._get_n_vis_obs() == 0:
+        if self._get_n_vis_obs() == 0 and self._get_vec_obs_size() == 0:
             raise UnityGymException(
-                "`use_visual` was set to True, however there are no"
-                " visual observations as part of this environment."
+                "There are no observations provided by the environment."
             )
-        self.use_visual = self._get_n_vis_obs() >= 1 and use_visual
 
-        if not use_visual and uint8_visual:
+        if not self._get_n_vis_obs() >= 1 and uint8_visual:
             logger.warning(
-                "`uint8_visual was set to true, but visual observations are not in use. "
+                "uint8_visual was set to true, but visual observations are not in use. "
                 "This setting will not have any effect."
             )
         else:
             self.uint8_visual = uint8_visual
-
-        if self._get_n_vis_obs() > 1 and not self._allow_multiple_visual_obs:
+        if (
+            self._get_n_vis_obs() + self._get_vec_obs_size() >= 2
+            and not self._allow_multiple_obs
+        ):
             logger.warning(
-                "The environment contains more than one visual observation. "
-                "You must define allow_multiple_visual_obs=True to received them all. "
-                "Otherwise, please note that only the first will be provided in the observation."
+                "The environment contains multiple observations. "
+                "You must define allow_multiple_obs=True to receive them all. "
+                "Otherwise, only the first visual observation (or vector observation if"
+                "there are no visual observations) will be provided in the observation."
             )
 
         # Check for number of agents in scene.
@@ -99,7 +101,7 @@ class UnityToGymWrapper(gym.Env):
         self._check_agents(len(decision_steps))
         self._previous_decision_step = decision_steps
 
-        # Set observation and action spaces
+        # Set action spaces
         if self.group_spec.is_action_discrete():
             branches = self.group_spec.discrete_action_branches
             if self.group_spec.action_shape == 1:
@@ -119,20 +121,23 @@ class UnityToGymWrapper(gym.Env):
                 )
             high = np.array([1] * self.group_spec.action_shape)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
-        high = np.array([np.inf] * self._get_vec_obs_size())
-        if self.use_visual:
-            shape = self._get_vis_obs_shape()
-            if uint8_visual:
-                self._observation_space = spaces.Box(
-                    0, 255, dtype=np.uint8, shape=shape
-                )
-            else:
-                self._observation_space = spaces.Box(
-                    0, 1, dtype=np.float32, shape=shape
-                )
 
+        # Set observations space
+        list_spaces: List[gym.Space] = []
+        shapes = self._get_vis_obs_shape()
+        for shape in shapes:
+            if uint8_visual:
+                list_spaces.append(spaces.Box(0, 255, dtype=np.uint8, shape=shape))
+            else:
+                list_spaces.append(spaces.Box(0, 1, dtype=np.float32, shape=shape))
+        if self._get_vec_obs_size() > 0:
+            # vector observation is last
+            high = np.array([np.inf] * self._get_vec_obs_size())
+            list_spaces.append(spaces.Box(-high, high, dtype=np.float32))
+        if self._allow_multiple_obs:
+            self._observation_space = spaces.Tuple(list_spaces)
         else:
-            self._observation_space = spaces.Box(-high, high, dtype=np.float32)
+            self._observation_space = list_spaces[0]  # only return the first one
 
     def reset(self) -> Union[List[np.ndarray], np.ndarray]:
         """Resets the state of the environment and returns an initial observation.
@@ -180,25 +185,25 @@ class UnityToGymWrapper(gym.Env):
             return self._single_step(decision_step)
 
     def _single_step(self, info: Union[DecisionSteps, TerminalSteps]) -> GymStepResult:
-        if self.use_visual:
+        if self._allow_multiple_obs:
             visual_obs = self._get_vis_obs_list(info)
-
-            if self._allow_multiple_visual_obs:
-                visual_obs_list = []
-                for obs in visual_obs:
-                    visual_obs_list.append(self._preprocess_single(obs[0]))
-                self.visual_obs = visual_obs_list
-            else:
-                self.visual_obs = self._preprocess_single(visual_obs[0][0])
-
-            default_observation = self.visual_obs
-        elif self._get_vec_obs_size() > 0:
-            default_observation = self._get_vector_obs(info)[0, :]
+            visual_obs_list = []
+            for obs in visual_obs:
+                visual_obs_list.append(self._preprocess_single(obs[0]))
+            default_observation = visual_obs_list
+            if self._get_vec_obs_size() >= 1:
+                default_observation.append(self._get_vector_obs(info)[0, :])
         else:
-            raise UnityGymException(
-                "The Agent does not have vector observations and the environment was not setup "
-                + "to use visual observations."
-            )
+            if self._get_n_vis_obs() >= 1:
+                visual_obs = self._get_vis_obs_list(info)
+                default_observation = self._preprocess_single(visual_obs[0][0])
+            else:
+                default_observation = self._get_vector_obs(info)[0, :]
+
+        if self._get_n_vis_obs() >= 1:
+            visual_obs = self._get_vis_obs_list(info)
+            self.visual_obs = self._preprocess_single(visual_obs[0][0])
+
         done = isinstance(info, TerminalSteps)
 
         return (default_observation, info.reward[0], done, {"step": info})
@@ -216,11 +221,12 @@ class UnityToGymWrapper(gym.Env):
                 result += 1
         return result
 
-    def _get_vis_obs_shape(self) -> Optional[Tuple]:
+    def _get_vis_obs_shape(self) -> List[Tuple]:
+        result: List[Tuple] = []
         for shape in self.group_spec.observation_shapes:
             if len(shape) == 3:
-                return shape
-        return None
+                result.append(shape)
+        return result
 
     def _get_vis_obs_list(
         self, step_result: Union[DecisionSteps, TerminalSteps]

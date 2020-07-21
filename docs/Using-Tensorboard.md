@@ -29,9 +29,6 @@ runs you want to display. You can select multiple run-ids to compare statistics.
 The TensorBoard window also provides options for how to display and smooth
 graphs.
 
-When you run the training program, `mlagents-learn`, you can use the
-`--save-freq` option to specify how frequently to save the statistics.
-
 ## The ML-Agents Toolkit training statistics
 
 The ML-Agents training program saves the following statistics:
@@ -129,5 +126,5 @@ To get custom metrics from a C# environment into Tensorboard, you can use the
 
 ```csharp
 var statsRecorder = Academy.Instance.StatsRecorder;
-statsSideChannel.Add("MyMetric", 1.0);
+statsRecorder.Add("MyMetric", 1.0);
 ```

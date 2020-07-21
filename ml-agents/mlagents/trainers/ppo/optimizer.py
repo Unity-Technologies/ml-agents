@@ -1,17 +1,18 @@
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, cast
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType, ScheduleType
+from mlagents.trainers.models import ModelUtils, EncoderType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.settings import TrainerSettings, PPOSettings
 
 from mlagents.trainers.stats import StatsSummary
 
 
 class PPOOptimizer(TFOptimizer):
-    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
@@ -23,20 +24,20 @@ class PPOOptimizer(TFOptimizer):
         with policy.graph.as_default():
             with tf.variable_scope("optimizer/"):
                 super().__init__(policy, trainer_params)
+                hyperparameters: PPOSettings = cast(
+                    PPOSettings, trainer_params.hyperparameters
+                )
+                lr = float(hyperparameters.learning_rate)
+                self._schedule = hyperparameters.learning_rate_schedule
+                epsilon = float(hyperparameters.epsilon)
+                beta = float(hyperparameters.beta)
+                max_step = float(trainer_params.max_steps)
 
-                lr = float(trainer_params["learning_rate"])
-                self._schedule = ScheduleType(
-                    trainer_params.get("learning_rate_schedule", "linear")
-                )
-                h_size = int(trainer_params["hidden_units"])
-                epsilon = float(trainer_params["epsilon"])
-                beta = float(trainer_params["beta"])
-                max_step = float(trainer_params["max_steps"])
-                num_layers = int(trainer_params["num_layers"])
-                vis_encode_type = EncoderType(
-                    trainer_params.get("vis_encode_type", "simple")
-                )
-                self.burn_in_ratio = float(trainer_params.get("burn_in_ratio", 0.0))
+                policy_network_settings = policy.network_settings
+                h_size = int(policy_network_settings.hidden_units)
+                num_layers = policy_network_settings.num_layers
+                vis_encode_type = policy_network_settings.vis_encode_type
+                self.burn_in_ratio = 0.0
 
                 self.stream_names = list(self.reward_signals.keys())
 
@@ -229,10 +230,10 @@ class PPOOptimizer(TFOptimizer):
         self.old_values = {}
         for name in value_heads.keys():
             returns_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_returns".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_returns"
             )
             old_value = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_value_estimate"
             )
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value
@@ -347,12 +348,8 @@ class PPOOptimizer(TFOptimizer):
             self.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
-            feed_dict[self.returns_holders[name]] = mini_batch[
-                "{}_returns".format(name)
-            ]
-            feed_dict[self.old_values[name]] = mini_batch[
-                "{}_value_estimates".format(name)
-            ]
+            feed_dict[self.returns_holders[name]] = mini_batch[f"{name}_returns"]
+            feed_dict[self.old_values[name]] = mini_batch[f"{name}_value_estimates"]
 
         if self.policy.output_pre is not None and "actions_pre" in mini_batch:
             feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]

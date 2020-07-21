@@ -109,6 +109,7 @@ namespace Unity.MLAgentsExamples
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
         [HideInInspector] public List<BodyPart> bodyPartsList = new List<BodyPart>();
+        const float k_MaxAngularVelocity = 50.0f;
 
         /// <summary>
         /// Create BodyPart object and add it to dictionary.
@@ -122,7 +123,7 @@ namespace Unity.MLAgentsExamples
                 startingPos = t.position,
                 startingRot = t.rotation
             };
-            bp.rb.maxAngularVelocity = 100;
+            bp.rb.maxAngularVelocity = k_MaxAngularVelocity;
 
             // Add & setup the ground contact script
             bp.groundContact = t.GetComponent<GroundContact>();
@@ -134,13 +135,6 @@ namespace Unity.MLAgentsExamples
             else
             {
                 bp.groundContact.agent = gameObject.GetComponent<Agent>();
-            }
-
-            // Add & setup the target contact script
-            bp.targetContact = t.GetComponent<TargetContact>();
-            if (!bp.targetContact)
-            {
-                bp.targetContact = t.gameObject.AddComponent<TargetContact>();
             }
 
             bp.thisJdController = this;

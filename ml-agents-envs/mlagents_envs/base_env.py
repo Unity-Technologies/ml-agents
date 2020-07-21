@@ -109,9 +109,7 @@ class DecisionSteps(Mapping):
         :returns: The DecisionStep
         """
         if agent_id not in self.agent_id_to_index:
-            raise KeyError(
-                "agent_id {} is not present in the DecisionSteps".format(agent_id)
-            )
+            raise KeyError(f"agent_id {agent_id} is not present in the DecisionSteps")
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:
@@ -214,9 +212,7 @@ class TerminalSteps(Mapping):
         specific agent
         """
         if agent_id not in self.agent_id_to_index:
-            raise KeyError(
-                "agent_id {} is not present in the TerminalSteps".format(agent_id)
-            )
+            raise KeyError(f"agent_id {agent_id} is not present in the TerminalSteps")
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:
@@ -312,10 +308,42 @@ class BehaviorSpec(NamedTuple):
             return None
 
     def create_empty_action(self, n_agents: int) -> np.ndarray:
+        """
+        Generates a numpy array corresponding to an empty action (all zeros)
+        for a number of agents.
+        :param n_agents: The number of agents that will have actions generated
+        """
         if self.action_type == ActionType.DISCRETE:
             return np.zeros((n_agents, self.action_size), dtype=np.int32)
         else:
             return np.zeros((n_agents, self.action_size), dtype=np.float32)
+
+    def create_random_action(self, n_agents: int) -> np.ndarray:
+        """
+        Generates a numpy array corresponding to a random action (either discrete
+        or continuous) for a number of agents.
+        :param n_agents: The number of agents that will have actions generated
+        :param generator: The random number generator used for creating random action
+        """
+        if self.is_action_continuous():
+            action = np.random.uniform(
+                low=-1.0, high=1.0, size=(n_agents, self.action_size)
+            ).astype(np.float32)
+            return action
+        elif self.is_action_discrete():
+            branch_size = self.discrete_action_branches
+            action = np.column_stack(
+                [
+                    np.random.randint(
+                        0,
+                        branch_size[i],  # type: ignore
+                        size=(n_agents),
+                        dtype=np.int32,
+                    )
+                    for i in range(self.action_size)
+                ]
+            )
+            return action
 
 
 class BehaviorMapping(Mapping):

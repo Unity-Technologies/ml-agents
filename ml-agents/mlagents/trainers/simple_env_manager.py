@@ -1,14 +1,13 @@
 from typing import Dict, List
 
-from mlagents_envs.base_env import BaseEnv, BehaviorName
+from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.brain import BrainParameters
+from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
-from mlagents.trainers.brain_conversion_utils import behavior_spec_to_brain_parameters
 
 
 class SimpleEnvManager(EnvManager):
@@ -42,22 +41,28 @@ class SimpleEnvManager(EnvManager):
     def _reset_env(
         self, config: Dict[BehaviorName, float] = None
     ) -> List[EnvironmentStep]:  # type: ignore
-        if config is not None:
-            for k, v in config.items():
-                self.env_params.set_float_parameter(k, v)
+        self.set_env_parameters(config)
         self.env.reset()
         all_step_result = self._generate_all_results()
         self.previous_step = EnvironmentStep(all_step_result, 0, {}, {})
         return [self.previous_step]
 
+    def set_env_parameters(self, config: Dict = None) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        EnvironmentParametersSidehannel.
+        :param config: Dict of environment parameter keys and values
+        """
+        if config is not None:
+            for k, v in config.items():
+                if isinstance(v, float):
+                    self.env_params.set_float_parameter(k, v)
+                elif isinstance(v, ParameterRandomizationSettings):
+                    v.apply(k, self.env_params)
+
     @property
-    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
-        result = {}
-        for behavior_name, behavior_spec in self.env.behavior_specs.items():
-            result[behavior_name] = behavior_spec_to_brain_parameters(
-                behavior_name, behavior_spec
-            )
-        return result
+    def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
+        return self.env.behavior_specs
 
     def close(self):
         self.env.close()

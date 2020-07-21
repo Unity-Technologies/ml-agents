@@ -1,12 +1,13 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (Ghost Trainer)
 
-from typing import Deque, Dict, List, cast
+from collections import defaultdict
+from typing import Deque, Dict, DefaultDict, List, cast
 
 import numpy as np
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
@@ -43,9 +44,9 @@ class GhostTrainer(Trainer):
         brain_name,
         controller,
         reward_buff_cap,
-        trainer_parameters,
+        trainer_settings,
         training,
-        run_id,
+        artifact_path,
     ):
         """
         Creates a GhostTrainer.
@@ -53,13 +54,13 @@ class GhostTrainer(Trainer):
         :param brain_name: The name of the brain associated with trainer config
         :param controller: GhostController that coordinates all ghost trainers and calculates ELO
         :param reward_buff_cap: Max reward history to track in the reward buffer
-        :param trainer_parameters: The parameters for the trainer (dictionary).
+        :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
-        :param run_id: The identifier of the current run
+        :param artifact_path: Path to store artifacts from this trainer.
         """
 
-        super(GhostTrainer, self).__init__(
-            brain_name, trainer_parameters, training, run_id, reward_buff_cap
+        super().__init__(
+            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 
         self.trainer = trainer
@@ -68,9 +69,9 @@ class GhostTrainer(Trainer):
         self._internal_trajectory_queues: Dict[str, AgentManagerQueue[Trajectory]] = {}
         self._internal_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
 
-        self._team_to_name_to_policy_queue: Dict[
+        self._team_to_name_to_policy_queue: DefaultDict[
             int, Dict[str, AgentManagerQueue[Policy]]
-        ] = {}
+        ] = defaultdict(dict)
 
         self._name_to_parsed_behavior_id: Dict[str, BehaviorIdentifiers] = {}
 
@@ -79,10 +80,10 @@ class GhostTrainer(Trainer):
         # Set the logging to print ELO in the console
         self._stats_reporter.add_property(StatsPropertyType.SELF_PLAY, True)
 
-        self_play_parameters = trainer_parameters["self_play"]
-        self.window = self_play_parameters.get("window", 10)
-        self.play_against_latest_model_ratio = self_play_parameters.get(
-            "play_against_latest_model_ratio", 0.5
+        self_play_parameters = trainer_settings.self_play
+        self.window = self_play_parameters.window
+        self.play_against_latest_model_ratio = (
+            self_play_parameters.play_against_latest_model_ratio
         )
         if (
             self.play_against_latest_model_ratio > 1.0
@@ -92,9 +93,9 @@ class GhostTrainer(Trainer):
                 "The play_against_latest_model_ratio is not between 0 and 1."
             )
 
-        self.steps_between_save = self_play_parameters.get("save_steps", 20000)
-        self.steps_between_swap = self_play_parameters.get("swap_steps", 20000)
-        self.steps_to_train_team = self_play_parameters.get("team_change", 100000)
+        self.steps_between_save = self_play_parameters.save_steps
+        self.steps_between_swap = self_play_parameters.swap_steps
+        self.steps_to_train_team = self_play_parameters.team_change
         if self.steps_to_train_team > self.get_max_steps:
             logger.warning(
                 "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not face \
@@ -104,7 +105,7 @@ class GhostTrainer(Trainer):
                 )
             )
 
-        # Counts the The number of steps of the ghost policies. Snapshot swapping
+        # Counts the number of steps of the ghost policies. Snapshot swapping
         # depends on this counter whereas snapshot saving and team switching depends
         # on the wrapped. This ensures that all teams train for the same number of trainer
         # steps.
@@ -117,7 +118,6 @@ class GhostTrainer(Trainer):
         self.current_policy_snapshot: Dict[str, List[float]] = {}
 
         self.snapshot_counter: int = 0
-        self.policies: Dict[str, TFPolicy] = {}
 
         # wrapped_training_team and learning team need to be separate
         # in the situation where new agents are created destroyed
@@ -130,7 +130,7 @@ class GhostTrainer(Trainer):
         self.last_team_change: int = 0
 
         # Chosen because it is the initial ELO in Chess
-        self.initial_elo: float = self_play_parameters.get("initial_elo", 1200.0)
+        self.initial_elo: float = self_play_parameters.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * (
             self.window + 1
         )  # for learning policy
@@ -240,7 +240,7 @@ class GhostTrainer(Trainer):
                 except AgentManagerQueue.Empty:
                     pass
 
-        self.next_summary_step = self.trainer.next_summary_step
+        self._next_summary_step = self.trainer._next_summary_step
         self.trainer.advance()
         if self.get_step - self.last_team_change > self.steps_to_train_team:
             self.controller.change_training_team(self.get_step)
@@ -298,24 +298,14 @@ class GhostTrainer(Trainer):
         """
         self.trainer.end_episode()
 
-    def save_model(self, name_behavior_id: str) -> None:
+    def save_model(self) -> None:
         """
-        Forwarding call to wrapped trainers save_model
+        Forwarding call to wrapped trainers save_model.
         """
-        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
-        brain_name = parsed_behavior_id.brain_name
-        self.trainer.save_model(brain_name)
-
-    def export_model(self, name_behavior_id: str) -> None:
-        """
-        Forwarding call to wrapped trainers export_model.
-        """
-        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
-        brain_name = parsed_behavior_id.brain_name
-        self.trainer.export_model(brain_name)
+        self.trainer.save_model()
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         """
         Creates policy with the wrapped trainer's create_policy function
@@ -324,7 +314,7 @@ class GhostTrainer(Trainer):
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
         """
-        policy = self.trainer.create_policy(parsed_behavior_id, brain_parameters)
+        policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
         policy.create_tf_graph()
         policy.initialize_or_load()
         policy.init_load_weights()
@@ -334,7 +324,7 @@ class GhostTrainer(Trainer):
         # First policy or a new agent on the same team encountered
         if self.wrapped_trainer_team is None or team_id == self.wrapped_trainer_team:
             internal_trainer_policy = self.trainer.create_policy(
-                parsed_behavior_id, brain_parameters
+                parsed_behavior_id, behavior_spec
             )
             self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
             internal_trainer_policy.init_load_weights()
@@ -424,14 +414,9 @@ class GhostTrainer(Trainer):
         """
         super().publish_policy_queue(policy_queue)
         parsed_behavior_id = self._name_to_parsed_behavior_id[policy_queue.behavior_id]
-        try:
-            self._team_to_name_to_policy_queue[parsed_behavior_id.team_id][
-                parsed_behavior_id.brain_name
-            ] = policy_queue
-        except KeyError:
-            self._team_to_name_to_policy_queue[parsed_behavior_id.team_id] = {
-                parsed_behavior_id.brain_name: policy_queue
-            }
+        self._team_to_name_to_policy_queue[parsed_behavior_id.team_id][
+            parsed_behavior_id.brain_name
+        ] = policy_queue
         if parsed_behavior_id.team_id == self.wrapped_trainer_team:
             # With a future multiagent trainer, this will be indexed by 'role'
             internal_policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(

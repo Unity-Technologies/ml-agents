@@ -4,7 +4,6 @@ from typing import Any, List, Set, NamedTuple
 from distutils.version import LooseVersion
 
 try:
-    import onnx
     from tf2onnx.tfonnx import process_tf_graph, tf_optimize
     from tf2onnx import optimizer
 
@@ -45,7 +44,15 @@ POSSIBLE_OUTPUT_NODES = frozenset(
 )
 
 MODEL_CONSTANTS = frozenset(
-    ["action_output_shape", "is_continuous_control", "memory_size", "version_number"]
+    [
+        "action_output_shape",
+        "is_continuous_control",
+        "memory_size",
+        "version_number",
+        "trainer_major_version",
+        "trainer_minor_version",
+        "trainer_patch_version",
+    ]
 )
 VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
@@ -59,12 +66,22 @@ class SerializationSettings(NamedTuple):
 
 
 def export_policy_model(
-    settings: SerializationSettings, graph: tf.Graph, sess: tf.Session
+    output_filepath: str,
+    settings: SerializationSettings,
+    graph: tf.Graph,
+    sess: tf.Session,
 ) -> None:
     """
-    Exports latest saved model to .nn format for Unity embedding.
+    Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
+
+    :param output_filepath: file path to output the model (without file suffix)
+    :param settings: SerializationSettings describing how to export the model
+    :param graph: Tensorflow Graph for the policy
+    :param sess: Tensorflow session for the policy
     """
     frozen_graph_def = _make_frozen_graph(settings, graph, sess)
+    if not os.path.exists(settings.model_path):
+        os.makedirs(settings.model_path)
     # Save frozen graph
     frozen_graph_def_path = settings.model_path + "/frozen_graph_def.pb"
     with gfile.GFile(frozen_graph_def_path, "wb") as f:
@@ -72,15 +89,15 @@ def export_policy_model(
 
     # Convert to barracuda
     if settings.convert_to_barracuda:
-        tf2bc.convert(frozen_graph_def_path, settings.model_path + ".nn")
-        logger.info(f"Exported {settings.model_path}.nn file")
+        tf2bc.convert(frozen_graph_def_path, f"{output_filepath}.nn")
+        logger.info(f"Exported {output_filepath}.nn")
 
     # Save to onnx too (if we were able to import it)
     if ONNX_EXPORT_ENABLED:
         if settings.convert_to_onnx:
             try:
                 onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
-                onnx_output_path = settings.model_path + ".onnx"
+                onnx_output_path = f"{output_filepath}.onnx"
                 with open(onnx_output_path, "wb") as f:
                     f.write(onnx_graph.SerializeToString())
                 logger.info(f"Converting to {onnx_output_path}")
@@ -118,16 +135,6 @@ def convert_frozen_to_onnx(
 ) -> Any:
     # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
-    # Some constants in the graph need to be read by the inference system.
-    # These aren't used by the model anywhere, so trying to make sure they propagate
-    # through conversion and import is a losing battle. Instead, save them now,
-    # so that we can add them back later.
-    constant_values = {}
-    for n in frozen_graph_def.node:
-        if n.name in MODEL_CONSTANTS:
-            val = n.attr["value"].tensor.int_val[0]
-            constant_values[n.name] = val
-
     inputs = _get_input_node_names(frozen_graph_def)
     outputs = _get_output_node_names(frozen_graph_def)
     logger.info(f"onnx export - inputs:{inputs} outputs:{outputs}")
@@ -149,24 +156,7 @@ def convert_frozen_to_onnx(
     onnx_graph = optimizer.optimize_graph(g)
     model_proto = onnx_graph.make_model(settings.brain_name)
 
-    # Save the constant values back the graph initializer.
-    # This will ensure the importer gets them as global constants.
-    constant_nodes = []
-    for k, v in constant_values.items():
-        constant_node = _make_onnx_node_for_constant(k, v)
-        constant_nodes.append(constant_node)
-    model_proto.graph.initializer.extend(constant_nodes)
     return model_proto
-
-
-def _make_onnx_node_for_constant(name: str, value: int) -> Any:
-    tensor_value = onnx.TensorProto(
-        data_type=onnx.TensorProto.INT32,
-        name=name,
-        int32_data=[value],
-        dims=[1, 1, 1, 1],
-    )
-    return tensor_value
 
 
 def _get_input_node_names(frozen_graph_def: Any) -> List[str]:
@@ -193,10 +183,12 @@ def _get_input_node_names(frozen_graph_def: Any) -> List[str]:
 def _get_output_node_names(frozen_graph_def: Any) -> List[str]:
     """
     Get the list of output node names from the graph.
+    Also include constants, so that they will be readable by the
+    onnx importer.
     Names are suffixed with ":0"
     """
     node_names = _get_frozen_graph_node_names(frozen_graph_def)
-    output_names = node_names & POSSIBLE_OUTPUT_NODES
+    output_names = node_names & (POSSIBLE_OUTPUT_NODES | MODEL_CONSTANTS)
     # Append the port
     return [f"{n}:0" for n in output_names]
 

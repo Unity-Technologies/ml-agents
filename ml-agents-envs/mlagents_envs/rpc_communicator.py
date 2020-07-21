@@ -1,6 +1,7 @@
 import grpc
 from typing import Optional
 
+from sys import platform
 import socket
 from multiprocessing import Pipe
 from concurrent.futures import ThreadPoolExecutor
@@ -74,9 +75,13 @@ class RpcCommunicator(Communicator):
         Attempts to bind to the requested communicator port, checking if it is already in use.
         """
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if platform == "linux" or platform == "linux2":
+            # On linux, the port remains unusable for TIME_WAIT=60 seconds after closing
+            # SO_REUSEADDR frees the port right after closing the environment
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             s.bind(("localhost", port))
-        except socket.error:
+        except OSError:
             raise UnityWorkerInUseException(self.worker_id)
         finally:
             s.close()
@@ -91,7 +96,7 @@ class RpcCommunicator(Communicator):
             raise UnityTimeOutException(
                 "The Unity environment took too long to respond. Make sure that :\n"
                 "\t The environment does not need user interaction to launch\n"
-                "\t The Agents are linked to the appropriate Brains\n"
+                '\t The Agents\' Behavior Parameters > Behavior Type is set to "Default"\n'
                 "\t The environment and the Python interface have compatible versions."
             )
 

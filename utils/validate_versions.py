@@ -14,7 +14,9 @@ DIRECTORIES = [
     "gym-unity/gym_unity",
 ]
 
-UNITY_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
+MLAGENTS_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
+MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH = "com.unity.ml-agents.extensions/package.json"
+
 ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
 
 PYTHON_VERSION_FILE_TEMPLATE = """# Version of the library that will be used to upload to pypi
@@ -82,20 +84,32 @@ def set_version(
     if csharp_version is not None:
         package_version = csharp_version + "-preview"
         print(
-            f"Setting package version to {package_version} in {UNITY_PACKAGE_JSON_PATH}"
+            f"Setting package version to {package_version} in {MLAGENTS_PACKAGE_JSON_PATH}"
+            f" and {MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH}"
         )
         set_package_version(package_version)
+        set_extension_package_version(package_version)
         print(f"Setting package version to {package_version} in {ACADEMY_PATH}")
         set_academy_version_string(package_version)
 
 
 def set_package_version(new_version: str) -> None:
-    with open(UNITY_PACKAGE_JSON_PATH, "r") as f:
+    with open(MLAGENTS_PACKAGE_JSON_PATH) as f:
         package_json = json.load(f)
     if "version" in package_json:
         package_json["version"] = new_version
-    with open(UNITY_PACKAGE_JSON_PATH, "w") as f:
+    with open(MLAGENTS_PACKAGE_JSON_PATH, "w") as f:
         json.dump(package_json, f, indent=2)
+        f.write("\n")
+
+
+def set_extension_package_version(new_version: str) -> None:
+    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH) as f:
+        package_json = json.load(f)
+    package_json["dependencies"]["com.unity.ml-agents"] = new_version
+    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH, "w") as f:
+        json.dump(package_json, f, indent=2)
+        f.write("\n")
 
 
 def set_academy_version_string(new_version):
@@ -117,6 +131,30 @@ def set_academy_version_string(new_version):
         f.writelines(lines)
 
 
+def print_release_tag_commands(
+    python_version: str, csharp_version: str, release_tag: str
+):
+    python_tag = f"python-packages_{python_version}"
+    csharp_tag = f"com.unity.ml-agents_{csharp_version}"
+    docs_tag = f"{release_tag}_docs"
+    print(
+        f"""
+###
+Use these commands to create the tags after the release:
+###
+git checkout {release_tag}
+git tag -f latest_release
+git push -f origin latest_release
+git tag -f {docs_tag}
+git push -f origin {docs_tag}
+git tag {python_tag}
+git push -f origin {python_tag}
+git tag {csharp_tag}
+git push -f origin {csharp_tag}
+"""
+    )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--python-version", default=None)
@@ -131,6 +169,10 @@ if __name__ == "__main__":
         if args.csharp_version:
             print(f"Updating C# package to version {args.csharp_version}")
         set_version(args.python_version, args.csharp_version, args.release_tag)
+        if args.release_tag is not None:
+            print_release_tag_commands(
+                args.python_version, args.csharp_version, args.release_tag
+            )
     else:
         ok = check_versions()
         return_code = 0 if ok else 1

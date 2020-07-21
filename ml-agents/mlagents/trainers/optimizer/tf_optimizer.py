@@ -9,29 +9,29 @@ from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
+from mlagents.trainers.settings import TrainerSettings, RewardSignalType
 from mlagents.trainers.components.bc.module import BCModule
 
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
-    def __init__(self, policy: TFPolicy, trainer_params: Dict[str, Any]):
+    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         self.sess = policy.sess
         self.policy = policy
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.value_heads: Dict[str, tf.Tensor] = {}
-        self.create_reward_signals(trainer_params["reward_signals"])
+        self.create_reward_signals(trainer_params.reward_signals)
         self.memory_in: tf.Tensor = None
         self.memory_out: tf.Tensor = None
         self.m_size: int = 0
         self.bc_module: Optional[BCModule] = None
         # Create pretrainer if needed
-        if "behavioral_cloning" in trainer_params:
-            BCModule.check_config(trainer_params["behavioral_cloning"])
+        if trainer_params.behavioral_cloning is not None:
             self.bc_module = BCModule(
                 self.policy,
-                policy_learning_rate=trainer_params["learning_rate"],
-                default_batch_size=trainer_params["batch_size"],
+                trainer_params.behavioral_cloning,
+                policy_learning_rate=trainer_params.hyperparameters.learning_rate,
+                default_batch_size=trainer_params.hyperparameters.batch_size,
                 default_num_epoch=3,
-                **trainer_params["behavioral_cloning"],
             )
 
     def get_trajectory_value_estimates(
@@ -122,18 +122,23 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
 
         return value_estimates
 
-    def create_reward_signals(self, reward_signal_configs: Dict[str, Any]) -> None:
+    def create_reward_signals(
+        self, reward_signal_configs: Dict[RewardSignalType, Any]
+    ) -> None:
         """
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
         self.reward_signals = {}
         # Create reward signals
-        for reward_signal, config in reward_signal_configs.items():
-            self.reward_signals[reward_signal] = create_reward_signal(
-                self.policy, reward_signal, config
+        for reward_signal, settings in reward_signal_configs.items():
+            # Name reward signals by string in case we have duplicates later
+            self.reward_signals[reward_signal.value] = create_reward_signal(
+                self.policy, reward_signal, settings
             )
-            self.update_dict.update(self.reward_signals[reward_signal].update_dict)
+            self.update_dict.update(
+                self.reward_signals[reward_signal.value].update_dict
+            )
 
     def create_optimizer_op(
         self, learning_rate: tf.Tensor, name: str = "Adam"

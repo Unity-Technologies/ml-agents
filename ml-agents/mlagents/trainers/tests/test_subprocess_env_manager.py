@@ -21,7 +21,6 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests.test_simple_rl import (
     _check_environment_trains,
     PPO_CONFIG,
-    generate_config,
     DebugWriter,
 )
 
@@ -137,20 +136,20 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 
     @mock.patch("mlagents.trainers.subprocess_env_manager.SubprocessEnvManager._step")
     @mock.patch(
-        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.external_brains",
+        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.training_behaviors",
         new_callable=mock.PropertyMock,
     )
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
     )
-    def test_advance(self, mock_create_worker, external_brains_mock, step_mock):
+    def test_advance(self, mock_create_worker, training_behaviors_mock, step_mock):
         brain_name = "testbrain"
         action_info_dict = {brain_name: MagicMock()}
         mock_create_worker.side_effect = create_worker_mock
         env_manager = SubprocessEnvManager(
             mock_env_factory, EngineConfig.default_config(), 3
         )
-        external_brains_mock.return_value = [brain_name]
+        training_behaviors_mock.return_value = [brain_name]
         agent_manager_mock = mock.Mock()
         mock_policy = mock.Mock()
         agent_manager_mock.policy_queue.get_nowait.side_effect = [
@@ -193,11 +192,10 @@ def test_subprocess_env_endtoend(num_envs):
     env_manager = SubprocessEnvManager(
         simple_env_factory, EngineConfig.default_config(), num_envs
     )
-    trainer_config = generate_config(PPO_CONFIG, override_vals={"max_steps": 5000})
     # Run PPO using env_manager
     _check_environment_trains(
         simple_env_factory(0, []),
-        trainer_config,
+        {"1D": PPO_CONFIG},
         env_manager=env_manager,
         success_threshold=None,
     )

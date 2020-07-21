@@ -6,9 +6,8 @@ from mlagents_envs.base_env import (
     BehaviorSpec,
     BehaviorName,
 )
-from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
@@ -24,7 +23,7 @@ class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
     brain_name_to_action_info: Dict[BehaviorName, ActionInfo]
-    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
+    environment_stats: EnvironmentStats
 
     @property
     def name_behavior_ids(self) -> Iterable[BehaviorName]:
@@ -67,9 +66,18 @@ class EnvManager(ABC):
         self.first_step_infos = self._reset_env(config)
         return len(self.first_step_infos)
 
+    @abstractmethod
+    def set_env_parameters(self, config: Dict = None) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        EnvironmentParametersSideChannel.
+        :param config: Dict of environment parameter keys and values
+        """
+        pass
+
     @property
     @abstractmethod
-    def external_brains(self) -> Dict[BehaviorName, BrainParameters]:
+    def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
         pass
 
     @abstractmethod
@@ -84,7 +92,7 @@ class EnvManager(ABC):
             self._process_step_infos(self.first_step_infos)
             self.first_step_infos = None
         # Get new policies if found. Always get the latest policy.
-        for brain_name in self.external_brains:
+        for brain_name in self.training_behaviors:
             _policy = None
             try:
                 # We make sure to empty the policy queue before continuing to produce steps.

@@ -33,6 +33,20 @@ In all of these cases, the issue is a pip/python environment setup issue. Please
 search the tensorflow github issues for similar problems and solutions before
 creating a new issue.
 
+#### Visual C++ Dependency (Windows Users)
+When running `mlagents-learn`, if you see a stack trace with a message like this:
+
+```console
+ImportError: DLL load failed: The specified module could not be found.
+```
+
+then either of the required DLLs, `msvcp140.dll` (old) or `msvcp140_1.dll` (new), are missing on your machine. The `import tensorflow` command will print this warning message.
+
+To solve it, download and install (with a reboot) the install [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-my/help/2977003/the-latest-supported-visual-c-downloads).
+
+For more details, please see the [TensorFlow 2.1.0 release notes](https://github.com/tensorflow/tensorflow/releases/tag/v2.1.0)
+and the [TensorFlow github issue](https://github.com/tensorflow/tensorflow/issues/22794#issuecomment-573297027).
+
 ## Environment Permission Error
 
 If you directly import your Unity environment without building it in the editor,
@@ -75,6 +89,11 @@ There may be a number of possible causes:
   Unity Environment to figure what error happened.
 - _Cause_: You have assigned `HTTP_PROXY` and `HTTPS_PROXY` values in your
   environment variables. _Solution_: Remove these values and try again.
+- _Cause_: You are running in a headless environment (e.g. remotely connected
+  to a server). _Solution_: Pass `--no-graphics` to `mlagents-learn`, or
+  `no_graphics=True` to `RemoteRegistryEntry.make()` or the `UnityEnvironment`
+  initializer. If you need graphics for visual observations, you will need to
+  set up `xvfb` (or equivalent).
 
 ## Communication port {} still in use
 
@@ -94,3 +113,12 @@ terminating. In order to address this, set `Max Steps` for the Agents within the
 Scene Inspector to a value greater than 0. Alternatively, it is possible to
 manually set `done` conditions for episodes from within scripts for custom
 episode-terminating events.
+
+## "File name" cannot be opened because the developer cannot be verified.
+
+If you have downloaded the repository using the github website on macOS 10.15 (Catalina)
+or later, you may see this error when attempting to play scenes in the Unity project.
+Workarounds include installing the package using the Unity Package Manager (this is
+the officially supported approach - see [here](Installation.md)), or following the
+instructions [here](https://support.apple.com/en-us/HT202491) to verify the relevant
+files on your machine on a file-by-file basis.

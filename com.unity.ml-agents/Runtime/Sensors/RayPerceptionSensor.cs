@@ -162,6 +162,12 @@ namespace Unity.MLAgents.Sensors
             public float HitFraction;
 
             /// <summary>
+            /// The hit GameObject (or null if there was no hit).
+            /// </summary>
+            public GameObject HitGameObject;
+
+
+            /// <summary>
             /// Writes the ray output information to a subset of the float array.  Each element in the rayAngles array
             /// determines a sublist of data to the observation. The sublist contains the observation data for a single cast.
             /// The list is composed of the following:
@@ -334,7 +340,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() { }
+        public void Reset() {}
 
         /// <inheritdoc/>
         public int[] GetObservationShape()
@@ -456,15 +462,31 @@ namespace Unity.MLAgents.Sensors
                 HasHit = castHit,
                 HitFraction = hitFraction,
                 HitTaggedObject = false,
-                HitTagIndex = -1
+                HitTagIndex = -1,
+                HitGameObject = hitObject
             };
 
             if (castHit)
             {
                 // Find the index of the tag of the object that was hit.
-                for (var i = 0; i < input.DetectableTags.Count; i++)
+                var numTags = input.DetectableTags?.Count ?? 0;
+                for (var i = 0; i < numTags; i++)
                 {
-                    if (hitObject.CompareTag(input.DetectableTags[i]))
+                    var tagsEqual = false;
+                    try
+                    {
+                        var tag = input.DetectableTags[i];
+                        if (!string.IsNullOrEmpty(tag))
+                        {
+                            tagsEqual = hitObject.CompareTag(tag);
+                        }
+                    }
+                    catch (UnityException)
+                    {
+                        // If the tag is null, empty, or not a valid tag, just ignore it.
+                    }
+
+                    if (tagsEqual)
                     {
                         rayOutput.HitTaggedObject = true;
                         rayOutput.HitTagIndex = i;

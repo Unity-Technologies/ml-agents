@@ -4,22 +4,17 @@ import numpy as np
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from .model import BCModel
 from mlagents.trainers.demo_loader import demo_to_buffer
-from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.settings import BehavioralCloningSettings
 
 
 class BCModule:
     def __init__(
         self,
         policy: TFPolicy,
+        settings: BehavioralCloningSettings,
         policy_learning_rate: float,
         default_batch_size: int,
         default_num_epoch: int,
-        strength: float,
-        demo_path: str,
-        steps: int,
-        batch_size: int = None,
-        num_epoch: int = None,
-        samples_per_update: int = 0,
     ):
         """
         A BC trainer that can be used inline with RL.
@@ -36,14 +31,16 @@ class BCModule:
         :param samples_per_update: Maximum number of samples to train on during each BC update.
         """
         self.policy = policy
-        self.current_lr = policy_learning_rate * strength
-        self.model = BCModel(policy, self.current_lr, steps)
+        self.current_lr = policy_learning_rate * settings.strength
+        self.model = BCModel(policy, self.current_lr, settings.steps)
         _, self.demonstration_buffer = demo_to_buffer(
-            demo_path, policy.sequence_length, policy.brain
+            settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
 
-        self.batch_size = batch_size if batch_size else default_batch_size
-        self.num_epoch = num_epoch if num_epoch else default_num_epoch
+        self.batch_size = (
+            settings.batch_size if settings.batch_size else default_batch_size
+        )
+        self.num_epoch = settings.num_epoch if settings.num_epoch else default_num_epoch
         self.n_sequences = max(
             min(self.batch_size, self.demonstration_buffer.num_experiences)
             // policy.sequence_length,
@@ -52,28 +49,12 @@ class BCModule:
 
         self.has_updated = False
         self.use_recurrent = self.policy.use_recurrent
-        self.samples_per_update = samples_per_update
+        self.samples_per_update = settings.samples_per_update
         self.out_dict = {
             "loss": self.model.loss,
             "update": self.model.update_batch,
             "learning_rate": self.model.annealed_learning_rate,
         }
-
-    @staticmethod
-    def check_config(config_dict: Dict[str, Any]) -> None:
-        """
-        Check the behavioral_cloning config for the required keys.
-        :param config_dict: Pretraining section of trainer_config
-        """
-        param_keys = ["strength", "demo_path", "steps"]
-        for k in param_keys:
-            if k not in config_dict:
-                raise UnityTrainerException(
-                    "The required pre-training hyper-parameter {0} was not defined. Please check your \
-                    trainer YAML file.".format(
-                        k
-                    )
-                )
 
     def update(self) -> Dict[str, Any]:
         """
@@ -126,15 +107,15 @@ class BCModule:
             self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
-        if not self.policy.use_continuous_act:
+        if self.policy.behavior_spec.is_action_discrete():
             feed_dict[self.policy.action_masks] = np.ones(
                 (
                     self.n_sequences * self.policy.sequence_length,
-                    sum(self.policy.brain.vector_action_space_size),
+                    sum(self.policy.behavior_spec.discrete_action_branches),
                 ),
                 dtype=np.float32,
             )
-        if self.policy.brain.vector_observation_space_size > 0:
+        if self.policy.vec_obs_size > 0:
             feed_dict[self.policy.vector_in] = mini_batch_demo["vector_obs"]
         for i, _ in enumerate(self.policy.visual_in):
             feed_dict[self.policy.visual_in[i]] = mini_batch_demo["visual_obs%d" % i]

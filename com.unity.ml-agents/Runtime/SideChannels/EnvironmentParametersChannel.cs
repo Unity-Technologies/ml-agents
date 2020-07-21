@@ -9,7 +9,30 @@ namespace Unity.MLAgents.SideChannels
     /// </summary>
     internal enum EnvironmentDataTypes
     {
-        Float = 0
+        Float = 0,
+        Sampler = 1
+    }
+
+    /// <summary>
+    /// The types of distributions from which to sample reset parameters.
+    /// </summary>
+    internal enum SamplerType
+    {
+        /// <summary>
+        /// Samples a reset parameter from a uniform distribution.
+        /// </summary>
+        Uniform = 0,
+
+        /// <summary>
+        /// Samples a reset parameter from a Gaussian distribution.
+        /// </summary>
+        Gaussian = 1,
+
+        /// <summary>
+        /// Samples a reset parameter from a MultiRangeUniform distribution.
+        /// </summary>
+        MultiRangeUniform = 2
+
     }
 
     /// <summary>
@@ -18,7 +41,7 @@ namespace Unity.MLAgents.SideChannels
     /// </summary>
     internal class EnvironmentParametersChannel : SideChannel
     {
-        Dictionary<string, float> m_Parameters = new Dictionary<string, float>();
+        Dictionary<string, Func<float>> m_Parameters = new Dictionary<string, Func<float>>();
         Dictionary<string, Action<float>> m_RegisteredActions =
             new Dictionary<string, Action<float>>();
 
@@ -42,11 +65,39 @@ namespace Unity.MLAgents.SideChannels
             {
                 var value = msg.ReadFloat32();
 
-                m_Parameters[key] = value;
+                m_Parameters[key] = () => value;
 
                 Action<float> action;
                 m_RegisteredActions.TryGetValue(key, out action);
                 action?.Invoke(value);
+            }
+            else if ((int)EnvironmentDataTypes.Sampler == type)
+            {
+                int seed = msg.ReadInt32();
+                int samplerType = msg.ReadInt32();
+                Func<float> sampler = () => 0.0f;
+                if ((int)SamplerType.Uniform == samplerType)
+                {
+                    float min = msg.ReadFloat32();
+                    float max = msg.ReadFloat32();
+                    sampler = SamplerFactory.CreateUniformSampler(min, max, seed);
+                }
+                else if ((int)SamplerType.Gaussian == samplerType)
+                {
+                    float mean = msg.ReadFloat32();
+                    float stddev = msg.ReadFloat32();
+
+                    sampler = SamplerFactory.CreateGaussianSampler(mean, stddev, seed);
+                }
+                else if ((int)SamplerType.MultiRangeUniform == samplerType)
+                {
+                    IList<float> intervals = msg.ReadFloatList();
+                    sampler = SamplerFactory.CreateMultiRangeUniformSampler(intervals, seed);
+                }
+                else{
+                    Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");
+                }
+                m_Parameters[key] = sampler;
             }
             else
             {
@@ -63,9 +114,9 @@ namespace Unity.MLAgents.SideChannels
         /// <returns></returns>
         public float GetWithDefault(string key, float defaultValue)
         {
-            float valueOut;
+            Func<float> valueOut;
             bool hasKey = m_Parameters.TryGetValue(key, out valueOut);
-            return hasKey ? valueOut : defaultValue;
+            return hasKey ? valueOut.Invoke() : defaultValue;
         }
 
         /// <summary>
