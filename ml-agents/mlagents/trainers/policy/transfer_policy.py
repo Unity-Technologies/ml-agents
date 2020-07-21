@@ -222,6 +222,7 @@ class TransferPolicy(TFPolicy):
                     self.h_size,
                     self.feature_size,
                     encoder_layers,
+                    action_layers,
                     self.vis_encode_type,
                     forward_layers,
                     var_predict,
@@ -464,6 +465,7 @@ class TransferPolicy(TFPolicy):
         h_size: int,
         action_feature_size: int,
         num_layers: int,
+        reuse: bool=False
     ) -> tf.Tensor:
         
         hidden_stream = ModelUtils.create_vector_observation_encoder(
@@ -472,7 +474,7 @@ class TransferPolicy(TFPolicy):
             ModelUtils.swish,
             num_layers, 
             scope="action_enc",
-            reuse=False
+            reuse=reuse
         )
 
         with tf.variable_scope("action_enc"):
@@ -482,6 +484,7 @@ class TransferPolicy(TFPolicy):
                 name="latent",
                 activation=tf.tanh,  
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
+                reuse=reuse
             )
         return latent
 
@@ -933,6 +936,7 @@ class TransferPolicy(TFPolicy):
         h_size: int,
         feature_size: int,
         encoder_layers: int,
+        action_layers: int,
         vis_encode_type: EncoderType,
         forward_layers: int,
         var_predict: bool,
@@ -982,7 +986,14 @@ class TransferPolicy(TFPolicy):
         self.bisim_action = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="bisim_action"
         )
-        combined_input = tf.concat([self.bisim_encoder, self.bisim_action], axis=1)
+        self.bisim_action_encoder = self._create_action_encoder(
+            self.bisim_action,
+            self.h_size,
+            self.action_feature_size,
+            action_layers,
+            reuse=True,
+        )
+        combined_input = tf.concat([self.bisim_encoder, self.bisim_action_encoder], axis=1)
         combined_input = tf.stop_gradient(combined_input)
 
         with tf.variable_scope("predict"):
