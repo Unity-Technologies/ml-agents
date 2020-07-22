@@ -34,7 +34,7 @@ behaviors:
       load_model: true
       train_action: false
       train_model: false
-      transfer_path: "results/csold-bisim-linear/CrawlerStatic"
+      transfer_path: "results/csold/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
