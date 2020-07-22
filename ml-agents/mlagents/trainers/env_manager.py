@@ -84,14 +84,6 @@ class EnvManager(ABC):
     def close(self):
         pass
 
-    def advance(self) -> int:
-        """
-        Deprecated. Use get_steps() followed by process_steps().
-        :return:
-        """
-        new_step_infos = self.get_steps()
-        return self.process_steps(new_step_infos)
-
     def get_steps(self) -> List[EnvironmentStep]:
         """
         Updates the policies, steps the environments, and returns the step information from the environments.
