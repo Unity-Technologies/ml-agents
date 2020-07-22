@@ -120,7 +120,11 @@ class SACTransferTrainer(RLTrainer):
 
         # Update the normalization
         if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+            self.policy.update_normalization(
+                agent_buffer_trajectory["vector_obs"],
+                agent_buffer_trajectory["next_vector_in"],
+                agent_buffer_trajectory["vector_obs"],
+            )
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(
