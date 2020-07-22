@@ -34,11 +34,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     case ArticulationJointType.RevoluteJoint:
                     case ArticulationJointType.SphericalJoint:
-                        // Two floats per angular component
+                        // Both RevoluteJoint and SphericalJoint have all angular components.
+                        // We use sine and cosine of the angles for the observations.
                         totalCount += 2 * body.dofCount;
                         break;
                     case ArticulationJointType.FixedJoint:
-                        break; // TODO (none?)
+                        // Since FixedJoint can't moved, there aren't any interesting observations for it.
+                        break;
                     case ArticulationJointType.PrismaticJoint:
                         // One linear component
                         totalCount += body.dofCount;
@@ -79,7 +81,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                         }
                         break;
                     case ArticulationJointType.FixedJoint:
-                        break; // TODO
+                        // No observations
+                        break;
                     case ArticulationJointType.PrismaticJoint:
                         writer[currentOffset++] = GetPrismaticValue();
                         break;
