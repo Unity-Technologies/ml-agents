@@ -25,7 +25,7 @@ behaviors:
       use_var_predict: true
       with_prior: false
       predict_return: true
-      use_bisim: true
+      use_bisim: false
       separate_value_net: true
     network_settings:
       normalize: true
