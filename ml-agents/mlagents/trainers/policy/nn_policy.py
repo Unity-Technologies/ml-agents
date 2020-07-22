@@ -105,6 +105,10 @@ class NNPolicy(TFPolicy):
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="lstm"
             )  # LSTMs need to be root scope for Barracuda export
 
+        self.saliency = tf.reduce_mean(
+            tf.square(tf.gradients(self.output, self.vector_in)), axis=1
+        )
+
         self.inference_dict: Dict[str, tf.Tensor] = {
             "action": self.output,
             "log_probs": self.all_log_probs,

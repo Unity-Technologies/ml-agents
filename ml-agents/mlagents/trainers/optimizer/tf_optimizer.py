@@ -34,6 +34,13 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
                 default_num_epoch=3,
             )
 
+    def get_saliency(self, batch: AgentBuffer) -> List[float]:
+        feed_dict: Dict[tf.Tensor, Any] = {}
+        feed_dict[self.policy.vector_in] = batch["vector_obs"]
+        feed_dict[self.policy.output] = batch["actions"]
+        saliencies = self.sess.run(self.policy.saliency, feed_dict)
+        return np.mean(saliencies, axis=0)
+
     def get_trajectory_value_estimates(
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:

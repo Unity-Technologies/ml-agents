@@ -294,9 +294,6 @@ class PPOOptimizer(TFOptimizer):
     def _create_ppo_optimizer_ops(self):
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss)
-        self.sensitivity = tf.reduce_mean(
-            tf.square(tf.gradients(self.policy.output, self.policy.vector_in)), axis=1
-        )
         self.update_batch = self.tf_optimizer.minimize(self.loss)
 
     @timed
@@ -327,9 +324,9 @@ class PPOOptimizer(TFOptimizer):
     ) -> Dict[int, float]:
         feed_dict = self._construct_feed_dict(batch, num_sequences)
         sens = self._execute_model(feed_dict, {"sensi": self.sensitivity})["sensi"][0]
-        out = dict((obs, StatsSummary(grad, 0.0, 0.0)) for obs, grad in enumerate(sens))
+        out = {obs: StatsSummary(grad, 0.0, 0.0) for obs, grad in enumerate(sens)}
         for obs, grad in sorted(enumerate(sens), reverse=True, key=lambda x: x[1]):
-            print("Observation {} has relevance {}".format(obs, grad))
+            print(f"Observation {obs} has relevance {grad}")
         return out
 
     def _construct_feed_dict(

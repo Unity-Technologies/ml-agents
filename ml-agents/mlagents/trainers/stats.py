@@ -29,6 +29,7 @@ class StatsSummary(NamedTuple):
 class StatsPropertyType(Enum):
     HYPERPARAMETERS = "hyperparameters"
     SELF_PLAY = "selfplay"
+    SALIENCY = "saliency"
 
 
 class StatsWriter(abc.ABC):
@@ -170,6 +171,7 @@ class TensorboardWriter(StatsWriter):
         self.summary_writers: Dict[str, tf.summary.FileWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
+        self.trajectories = 0
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -214,6 +216,15 @@ class TensorboardWriter(StatsWriter):
             text = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
             self.summary_writers[category].add_summary(text, 0)
+
+        elif property_type == StatsPropertyType.SALIENCY:
+            self._maybe_create_summary_writer(category)
+            with tf.Session(config=generate_session_config()) as sess:
+                hist_op = tf.summary.histogram(category, value)
+                hist = sess.run(hist_op)
+            # self.summary_writers[category].add_summary(hist, 0)
+            # self.trajectories += 1
+            # self.summary_writers[category].flush()
 
     def _dict_to_tensorboard(self, name: str, input_dict: Dict[str, Any]) -> str:
         """
