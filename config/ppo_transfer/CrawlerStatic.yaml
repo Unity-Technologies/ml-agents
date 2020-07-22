@@ -18,7 +18,7 @@ behaviors:
       value_layers: 3
       feature_size: 128
       action_feature_size: 128
-      reuse_encoder: true
+      reuse_encoder: false
       in_epoch_alter: false
       in_batch_alter: true
       use_op_buffer: false
