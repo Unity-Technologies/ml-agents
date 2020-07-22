@@ -22,7 +22,7 @@ TARGET_SCOPE = "target_network"
 
 
 class SACTransferOptimizer(TFOptimizer):
-    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
+    def __init__(self, policy: TransferPolicy, trainer_params: TrainerSettings):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -80,21 +80,21 @@ class SACTransferOptimizer(TFOptimizer):
 
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
         policy.create_tf_graph(
-            # hyperparameters.encoder_layers,
-            # hyperparameters.action_layers,
-            # hyperparameters.policy_layers,
-            # hyperparameters.forward_layers,
-            # hyperparameters.inverse_layers,
-            # hyperparameters.feature_size,
-            # hyperparameters.action_feature_size,
-            # self.use_transfer,
-            # self.separate_policy_train,
-            # self.use_var_encoder,
-            # self.use_var_predict,
-            # self.predict_return,
-            # self.use_inverse_model,
-            # self.reuse_encoder,
-            # self.use_bisim,
+            hyperparameters.encoder_layers,
+            hyperparameters.action_layers,
+            hyperparameters.policy_layers,
+            hyperparameters.forward_layers,
+            hyperparameters.inverse_layers,
+            hyperparameters.feature_size,
+            hyperparameters.action_feature_size,
+            self.use_transfer,
+            self.separate_policy_train,
+            self.use_var_encoder,
+            self.use_var_predict,
+            self.predict_return,
+            self.use_inverse_model,
+            self.reuse_encoder,
+            self.use_bisim,
         )
 
         with policy.graph.as_default():
@@ -199,6 +199,10 @@ class SACTransferOptimizer(TFOptimizer):
                     )
 
                 self.policy.initialize_or_load()
+
+                print("All variables in the graph:")
+                for variable in tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES):
+                    print(variable)
 
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",

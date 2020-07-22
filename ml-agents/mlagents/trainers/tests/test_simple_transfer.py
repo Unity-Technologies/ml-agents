@@ -77,7 +77,7 @@ Transfer_CONFIG = TrainerSettings(
     trainer_type=TrainerType.PPO_Transfer,
     hyperparameters=PPOTransferSettings(
         learning_rate=5.0e-3,
-        # learning_rate_schedule=ScheduleType.CONSTANT,
+        learning_rate_schedule=ScheduleType.CONSTANT,
         batch_size=16,
         buffer_size=64,
         feature_size=4,
@@ -225,7 +225,7 @@ def test_2d_model(
         batch_size=1200,
         buffer_size=12000,
         learning_rate=5.0e-3,
-        use_bisim=False,
+        use_bisim=True,
         predict_return=True,
         reuse_encoder=True,
         separate_value_train=True,
@@ -273,14 +273,14 @@ def test_2d_transfer(
         buffer_size=12000,
         use_transfer=True,
         transfer_path=transfer_from,  # separate_policy_train=True, separate_value_train=True,
-        use_op_buffer=False,
+        use_op_buffer=True,
         in_epoch_alter=False,
         in_batch_alter=True,
         learning_rate=5.0e-3,
         train_policy=True,
         train_value=True,
-        train_model=False,
-        train_action=False,
+        train_model=True,
+        train_action=True,
         train_encoder=True,
         reuse_encoder=True,
         separate_value_train=True,
@@ -310,19 +310,20 @@ def test_2d_transfer(
 
 
 if __name__ == "__main__":
+    
     for seed in range(5):
-        # if seed > -1:
-        #     for obs in ["normal", "long", "longpre"]:
-        #         test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_" + obs)
-        #         test_2d_ppo(seed=seed, obs_spec_type=obs, run_id="ppo_" + obs)
+        if seed > -1:
+            for obs in ["long-n", "longpre-n"]:
+                test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_bisim_" + obs)
+                # test_2d_ppo(seed=seed, obs_spec_type=obs, run_id="ppo_" + obs)
 
-        for obs in ["long", "longpre"]:
-            test_2d_transfer(
-                seed=seed,
-                obs_spec_type=obs,
-                transfer_from="./transfer_results/model_normal_s" + str(seed) + "/Simple",
-                run_id="normal_transfer_linear_fix_to_" + obs,
-            )
+        # for obs in ["long-n", "longpre-n"]:
+        #     test_2d_transfer(
+        #         seed=seed,
+        #         obs_spec_type=obs,
+        #         transfer_from="./transfer_results/model_normal_s" + str(seed) + "/Simple",
+        #         run_id="normal_transfer_bisim_to_" + obs,
+        #     )
 
     #     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
     #     for obs in ["normal", "rich2"]:

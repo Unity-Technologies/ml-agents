@@ -12,6 +12,7 @@ import numpy as np
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.sac_transfer.optimizer import SACTransferOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
@@ -186,7 +187,7 @@ class SACTransferTrainer(RLTrainer):
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
     ) -> TFPolicy:
-        policy = NNPolicy(
+        policy = TransferPolicy(
             self.seed,
             brain_parameters,
             self.trainer_settings,
@@ -316,8 +317,8 @@ class SACTransferTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, NNPolicy):
-            raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
+        if not isinstance(policy, TransferPolicy):
+            raise RuntimeError("Non-TransferPolicy passed to SACTransferTrainer.add_policy()")
         self.policy = policy
         self.optimizer = SACTransferOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():

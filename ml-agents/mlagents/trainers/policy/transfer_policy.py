@@ -879,8 +879,8 @@ class TransferPolicy(TFPolicy):
                 # activation=tf.tanh,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
-        if not self.transfer:
-            encoded_next_state = tf.stop_gradient(encoded_next_state)
+        # if not self.transfer:
+        encoded_next_state = tf.stop_gradient(encoded_next_state)
         squared_difference = 0.5 * tf.reduce_sum(
             tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
         )
