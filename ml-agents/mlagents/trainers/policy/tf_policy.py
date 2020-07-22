@@ -353,6 +353,16 @@ class TFPolicy(Policy):
                 action_matrix[index, :] = self.previous_action_dict[agent_id]
         return action_matrix
 
+    def retrieve_previous_action_single(self, agent_id: str) -> np.ndarray:
+        """
+        A more efficient version of retrieve_previous_action() for a single
+        agent at a time.
+        """
+        prev_action = self.previous_action_dict.get(agent_id)
+        if prev_action is not None:
+            return prev_action
+        return np.zeros(self.num_branches, dtype=np.int)
+
     def remove_previous_action(self, agent_ids):
         for agent_id in agent_ids:
             if agent_id in self.previous_action_dict:
