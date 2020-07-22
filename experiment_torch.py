@@ -14,6 +14,7 @@ def run_experiment(
     name: str,
     steps: int,
     use_torch: bool,
+    algo: str,
     num_torch_threads: int,
     use_gpu: bool,
     num_envs: int = 1,
@@ -32,6 +33,7 @@ def run_experiment(
             name,
             str(steps),
             str(use_torch),
+            algo,
             str(num_torch_threads),
             str(num_envs),
             str(use_gpu),
@@ -46,7 +48,7 @@ def run_experiment(
     if config_name is None:
         config_name = name
     run_options = parse_command_line(
-        [f"config/ppo/{config_name}.yaml", "--num-envs", f"{num_envs}"]
+        [f"config/{algo}/{config_name}.yaml", "--num-envs", f"{num_envs}"]
     )
     run_options.checkpoint_settings.run_id = (
         f"{name}_test_" + str(steps) + "_" + ("torch" if use_torch else "tf")
@@ -87,20 +89,29 @@ def run_experiment(
         tc_advance_total = tc_advance["total"]
         tc_advance_count = tc_advance["count"]
     if use_torch:
-        update_total = update["TorchPPOOptimizer.update"]["total"]
+        if algo == "ppo":
+            update_total = update["TorchPPOOptimizer.update"]["total"]
+            update_count = update["TorchPPOOptimizer.update"]["count"]
+        else:
+            update_total = update["SACTrainer._update_policy"]["total"]
+            update_count = update["SACTrainer._update_policy"]["count"]
         evaluate_total = evaluate["TorchPolicy.evaluate"]["total"]
-        update_count = update["TorchPPOOptimizer.update"]["count"]
         evaluate_count = evaluate["TorchPolicy.evaluate"]["count"]
     else:
-        update_total = update["TFPPOOptimizer.update"]["total"]
+        if algo == "ppo":
+            update_total = update["TFPPOOptimizer.update"]["total"]
+            update_count = update["TFPPOOptimizer.update"]["count"]
+        else:
+            update_total = update["SACTrainer._update_policy"]["total"]
+            update_count = update["SACTrainer._update_policy"]["count"]
         evaluate_total = evaluate["NNPolicy.evaluate"]["total"]
-        update_count = update["TFPPOOptimizer.update"]["count"]
         evaluate_count = evaluate["NNPolicy.evaluate"]["count"]
     # todo: do total / count
     return (
         name,
         str(steps),
         str(use_torch),
+        algo,
         str(num_torch_threads),
         str(num_envs),
         str(use_gpu),
@@ -133,6 +144,12 @@ def main():
         action="store_true",
         help="If true, will only do 3dball",
     )
+    parser.add_argument(
+        "--sac",
+        default=False,
+        action="store_true",
+        help="If true, will run sac instead of ppo",
+    )
     args = parser.parse_args()
 
     if args.gpu:
@@ -140,21 +157,28 @@ def main():
     else:
         os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
+    algo = "ppo"
+    if args.sac:
+        algo = "sac"
+
     envs_config_tuples = [
         ("3DBall", "3DBall"),
         ("GridWorld", "GridWorld"),
         ("PushBlock", "PushBlock"),
-        ("Hallway", "Hallway"),
         ("CrawlerStaticTarget", "CrawlerStatic"),
-        ("VisualHallway", "VisualHallway"),
     ]
+    if algo == "ppo":
+        envs_config_tuples += [("Hallway", "Hallway"),
+        ("VisualHallway", "VisualHallway")]
     if args.ball:
         envs_config_tuples = [("3DBall", "3DBall")]
+
 
     labels = (
         "name",
         "steps",
         "use_torch",
+        "algorithm",
         "num_torch_threads",
         "num_envs",
         "use_gpu",
@@ -170,7 +194,7 @@ def main():
     results = []
     results.append(labels)
     f = open(
-        f"result_data_steps_{args.steps}_envs_{args.num_envs}_gpu_{args.gpu}_thread_{args.threads}.txt",
+        f"result_data_steps_{args.steps}_algo_{algo}_envs_{args.num_envs}_gpu_{args.gpu}_thread_{args.threads}.txt",
         "w",
     )
     f.write(" ".join(labels) + "\n")
@@ -180,6 +204,7 @@ def main():
             name=env_config[0],
             steps=args.steps,
             use_torch=True,
+            algo=algo,
             num_torch_threads=1,
             use_gpu=args.gpu,
             num_envs=args.num_envs,
@@ -193,6 +218,7 @@ def main():
                 name=env_config[0],
                 steps=args.steps,
                 use_torch=True,
+                algo=algo,
                 num_torch_threads=8,
                 use_gpu=args.gpu,
                 num_envs=args.num_envs,
@@ -205,6 +231,7 @@ def main():
             name=env_config[0],
             steps=args.steps,
             use_torch=False,
+            algo=algo,
             num_torch_threads=1,
             use_gpu=args.gpu,
             num_envs=args.num_envs,

@@ -13,13 +13,14 @@ class GaussianDistInstance(nn.Module):
         self.std = std
 
     def sample(self):
-        return self.mean + torch.randn_like(self.mean) * self.std
+        sample = self.mean + torch.randn_like(self.mean) * self.std
+        return sample
 
     def log_prob(self, value):
         var = self.std ** 2
-        log_scale = self.std.log()
+        log_scale = torch.log(self.std + EPSILON)
         return (
-            -((value - self.mean) ** 2) / (2 * var)
+            -((value - self.mean) ** 2) / (2 * var + EPSILON)
             - log_scale
             - math.log(math.sqrt(2 * math.pi))
         )
@@ -29,7 +30,28 @@ class GaussianDistInstance(nn.Module):
         return torch.exp(log_prob)
 
     def entropy(self):
-        return torch.log(2 * math.pi * math.e * self.std)
+        return torch.log(2 * math.pi * math.e * self.std + EPSILON)
+
+
+class TanhGaussianDistInstance(GaussianDistInstance):
+    def __init__(self, mean, std):
+        super().__init__(mean, std)
+        self.transform = torch.distributions.transforms.TanhTransform(cache_size=1)
+
+    def sample(self):
+        unsquashed_sample = super().sample()
+        squashed = self.transform(unsquashed_sample)
+        return squashed
+
+    def _inverse_tanh(self, value):
+        capped_value = torch.clamp(value, -1 + EPSILON, 1 - EPSILON)
+        return 0.5 * torch.log((1 + capped_value) / (1 - capped_value) + EPSILON)
+
+    def log_prob(self, value):
+        unsquashed = self.transform.inv(value)
+        return super().log_prob(unsquashed) - self.transform.log_abs_det_jacobian(
+            unsquashed, value
+        )
 
 
 class CategoricalDistInstance(nn.Module):
@@ -47,15 +69,26 @@ class CategoricalDistInstance(nn.Module):
     def log_prob(self, value):
         return torch.log(self.pdf(value))
 
+    def all_log_prob(self):
+        return torch.log(self.probs)
+
     def entropy(self):
         return torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
 
 class GaussianDistribution(nn.Module):
-    def __init__(self, hidden_size, num_outputs, conditional_sigma=False, **kwargs):
+    def __init__(
+        self,
+        hidden_size,
+        num_outputs,
+        conditional_sigma=False,
+        tanh_squash=False,
+        **kwargs
+    ):
         super(GaussianDistribution, self).__init__(**kwargs)
         self.conditional_sigma = conditional_sigma
         self.mu = nn.Linear(hidden_size, num_outputs)
+        self.tanh_squash = tanh_squash
         nn.init.xavier_uniform_(self.mu.weight, gain=0.01)
         if conditional_sigma:
             self.log_sigma = nn.Linear(hidden_size, num_outputs)
@@ -68,10 +101,13 @@ class GaussianDistribution(nn.Module):
     def forward(self, inputs):
         mu = self.mu(inputs)
         if self.conditional_sigma:
-            log_sigma = self.log_sigma(inputs)
+            log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             log_sigma = self.log_sigma
-        return [GaussianDistInstance(mu, torch.exp(log_sigma))]
+        if self.tanh_squash:
+            return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
+        else:
+            return [GaussianDistInstance(mu, torch.exp(log_sigma))]
 
 
 class MultiCategoricalDistribution(nn.Module):

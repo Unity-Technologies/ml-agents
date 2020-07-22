@@ -1,6 +1,7 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 import numpy as np
 import torch
+
 import os
 from torch import onnx
 from mlagents.trainers.action_info import ActionInfo
@@ -33,6 +34,7 @@ class TorchPolicy(Policy):
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
+        separate_critic: Optional[bool] = None,
     ):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
@@ -56,6 +58,7 @@ class TorchPolicy(Policy):
         self.global_step = 0
         self.m_size = 0
         self.model_path = model_path
+        self.network_settings = trainer_settings.network_settings
 
         self.act_size = brain.vector_action_space_size
         self.act_type = brain.vector_action_space_type
@@ -97,7 +100,6 @@ class TorchPolicy(Policy):
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
         else:
             torch.set_default_tensor_type(torch.FloatTensor)
-        
 
         self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
@@ -122,7 +124,11 @@ class TorchPolicy(Policy):
             visual_sizes=brain.camera_resolutions,
             vis_encode_type=trainer_settings.network_settings.vis_encode_type,
             stream_names=reward_signal_names,
-            separate_critic=self.use_continuous_act,
+            separate_critic=separate_critic
+            if separate_critic is not None
+            else self.use_continuous_act,
+            conditional_sigma=self.condition_sigma_on_obs,
+            tanh_squash=tanh_squash,
         )
 
         self.actor_critic.to(TestingConfiguration.device)
@@ -150,7 +156,18 @@ class TorchPolicy(Policy):
             self.actor_critic.update_normalization(vector_obs)
 
     @timed
-    def sample_actions(self, vec_obs, vis_obs, masks=None, memories=None, seq_len=1):
+    def sample_actions(
+        self,
+        vec_obs,
+        vis_obs,
+        masks=None,
+        memories=None,
+        seq_len=1,
+        all_log_probs=False,
+    ):
+        """
+        :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
+        """
         dists, (
             value_heads,
             mean_value,
@@ -158,14 +175,23 @@ class TorchPolicy(Policy):
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
-        actions = self.actor_critic.sample_action(dists)
-        log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
+        action_list = self.actor_critic.sample_action(dists)
+        log_probs, entropies, all_logs = self.actor_critic.get_probs_and_entropy(
+            action_list, dists
+        )
+        actions = torch.stack(action_list, dim=-1)
         if self.use_continuous_act:
             actions = actions[:, :, 0]
         else:
             actions = actions[:, 0, :]
 
-        return actions, log_probs, entropies, value_heads, memories
+        return (
+            actions,
+            all_logs if all_log_probs else log_probs,
+            entropies,
+            value_heads,
+            memories,
+        )
 
     def evaluate_actions(
         self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
@@ -173,8 +199,12 @@ class TorchPolicy(Policy):
         dists, (value_heads, mean_value), _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-
-        log_probs, entropies = self.actor_critic.get_probs_and_entropy(actions, dists)
+        if len(actions.shape) <= 2:
+            actions = actions.unsqueeze(-1)
+        action_list = [actions[..., i] for i in range(actions.shape[2])]
+        log_probs, entropies, _ = self.actor_critic.get_probs_and_entropy(
+            action_list, dists
+        )
 
         return log_probs, entropies, value_heads
 
@@ -212,7 +242,6 @@ class TorchPolicy(Policy):
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memories"] = memories.detach().cpu().numpy()
-        self.actor_critic.update_normalization(vec_obs)
         return run_out
 
     def get_action(
@@ -260,14 +289,20 @@ class TorchPolicy(Policy):
 
     def export_model(self, step=0):
         try:
-            fake_vec_obs = [torch.zeros([1] + [self.brain.vector_observation_space_size])]
+            fake_vec_obs = [
+                torch.zeros([1] + [self.brain.vector_observation_space_size])
+            ]
             fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
             fake_masks = torch.ones([1] + self.actor_critic.act_size)
             # fake_memories = torch.zeros([1] + [self.m_size])
             export_path = "./model-" + str(step) + ".onnx"
             output_names = ["action", "action_probs"]
             input_names = ["vector_observation", "action_mask"]
-            dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
+            dynamic_axes = {
+                "vector_observation": [0],
+                "action": [0],
+                "action_probs": [0],
+            }
             onnx.export(
                 self.actor_critic,
                 (fake_vec_obs, fake_vis_obs, fake_masks),
