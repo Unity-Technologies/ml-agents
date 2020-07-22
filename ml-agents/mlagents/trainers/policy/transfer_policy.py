@@ -189,12 +189,12 @@ class TransferPolicy(TFPolicy):
                 self.current_action,
                 self.h_size,
                 self.action_feature_size,
-                action_layers
+                action_layers,
             )
 
-            # if not reuse_encoder:
-            #    self.targ_encoder = tf.stop_gradient(self.targ_encoder)
-            #    self._create_hard_copy()
+            if not reuse_encoder:
+                self.targ_encoder = tf.stop_gradient(self.targ_encoder)
+                self._create_hard_copy()
 
             # if self.inverse_model:
             #     with tf.variable_scope("inverse"):
@@ -283,7 +283,7 @@ class TransferPolicy(TFPolicy):
         load_policy=False,
         load_value=False,
         load_encoder=False,
-        load_action=False
+        load_action=False,
     ):
         load_nets = []
         if load_model:
@@ -425,8 +425,9 @@ class TransferPolicy(TFPolicy):
                 activation=tf.tanh,  # ModelUtils.swish,
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
+        if not reuse_encoder:
+            latent_targ = tf.stop_gradient(latent_targ)
         return latent_targ
-        # return tf.stop_gradient(latent_targ)
 
     def _create_encoder(
         self,
@@ -459,20 +460,16 @@ class TransferPolicy(TFPolicy):
         return latent
 
     def _create_action_encoder(
-        self,
-        action: tf.Tensor,
-        h_size: int,
-        action_feature_size: int,
-        num_layers: int,
+        self, action: tf.Tensor, h_size: int, action_feature_size: int, num_layers: int
     ) -> tf.Tensor:
-        
+
         hidden_stream = ModelUtils.create_vector_observation_encoder(
-            action, 
-            h_size, 
+            action,
+            h_size,
             ModelUtils.swish,
-            num_layers, 
+            num_layers,
             scope="action_enc",
-            reuse=False
+            reuse=False,
         )
 
         with tf.variable_scope("action_enc"):
@@ -480,7 +477,7 @@ class TransferPolicy(TFPolicy):
                 hidden_stream,
                 action_feature_size,
                 name="latent",
-                activation=tf.tanh,  
+                activation=tf.tanh,
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
         return latent
