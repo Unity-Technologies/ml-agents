@@ -180,9 +180,8 @@ def worker(
         UnityTimeOutException,
         UnityEnvironmentException,
         UnityCommunicatorStoppedException,
-
         # NOTE - any other exception will cause a deadlock
-        AssertionError
+        AssertionError,
     ) as ex:
         logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(

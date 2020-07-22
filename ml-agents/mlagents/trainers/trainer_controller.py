@@ -238,7 +238,9 @@ class TrainerController:
             external_brain_behavior_ids: Set[str] = set()
             for s in new_step_infos:
                 external_brain_behavior_ids |= set(s.name_behavior_ids)
-            new_behavior_ids = external_brain_behavior_ids - self.last_brain_behavior_ids
+            new_behavior_ids = (
+                external_brain_behavior_ids - self.last_brain_behavior_ids
+            )
             self._create_trainers_and_managers(env, new_behavior_ids)
 
             self.last_brain_behavior_ids |= external_brain_behavior_ids
