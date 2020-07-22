@@ -387,7 +387,6 @@ class SACPolicyNetwork(SACNetwork):
             self._create_memory_ins(m_size)
 
         hidden_critic = self._create_observation_in(vis_encode_type)
-        self.policy.output = self.policy.output
         # Use the sequence length of the policy
         self.sequence_length_ph = self.policy.sequence_length_ph
 
