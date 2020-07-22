@@ -85,6 +85,11 @@ class EnvManager(ABC):
         pass
 
     def advance(self):
+        raise RuntimeError("oops")
+        new_step_infos = self.get_steps()
+        return self.process_steps(new_step_infos)
+
+    def get_steps(self):
         # If we had just reset, process the first EnvironmentSteps.
         # Note that we do it here instead of in reset() so that on the very first reset(),
         # we can create the needed AgentManagers before calling advance() and processing the EnvironmentSteps.
@@ -92,7 +97,7 @@ class EnvManager(ABC):
             self._process_step_infos(self.first_step_infos)
             self.first_step_infos = None
         # Get new policies if found. Always get the latest policy.
-        for brain_name in self.training_behaviors:
+        for brain_name in self.agent_managers.keys():
             _policy = None
             try:
                 # We make sure to empty the policy queue before continuing to produce steps.
@@ -104,6 +109,9 @@ class EnvManager(ABC):
                     self.set_policy(brain_name, _policy)
         # Step the environment
         new_step_infos = self._step()
+        return new_step_infos
+
+    def process_steps(self, new_step_infos):
         # Add to AgentProcessor
         num_step_infos = self._process_step_infos(new_step_infos)
         return num_step_infos

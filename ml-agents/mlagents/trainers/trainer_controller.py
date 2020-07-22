@@ -59,6 +59,7 @@ class TrainerController:
         self.train_model = train
         self.param_manager = param_manager
         self.ghost_controller = self.trainer_factory.ghost_controller
+        self.last_brain_behavior_ids: Set[str] = set()  # TODO RENAME
 
         self.trainer_threads: List[threading.Thread] = []
         self.kill_trainers = False
@@ -169,15 +170,10 @@ class TrainerController:
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_output_path(self.output_path)
         tf.reset_default_graph()
-        last_brain_behavior_ids: Set[str] = set()
         try:
             # Initial reset
             self._reset_env(env_manager)
             while self._not_done_training():
-                external_brain_behavior_ids = set(env_manager.training_behaviors.keys())
-                new_behavior_ids = external_brain_behavior_ids - last_brain_behavior_ids
-                self._create_trainers_and_managers(env_manager, new_behavior_ids)
-                last_brain_behavior_ids = external_brain_behavior_ids
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
                     self.reset_env_if_ready(env_manager)
@@ -236,7 +232,18 @@ class TrainerController:
     def advance(self, env: EnvManager) -> int:
         # Get steps
         with hierarchical_timer("env_step"):
-            num_steps = env.advance()
+            new_step_infos = env.get_steps()
+
+            # TODO helper method?
+            external_brain_behavior_ids: Set[str] = set()
+            for s in new_step_infos:
+                external_brain_behavior_ids |= set(s.name_behavior_ids)
+            new_behavior_ids = external_brain_behavior_ids - self.last_brain_behavior_ids
+            self._create_trainers_and_managers(env, new_behavior_ids)
+
+            self.last_brain_behavior_ids |= external_brain_behavior_ids
+
+            num_steps = env.process_steps(new_step_infos)
 
         # Report current lesson for each environment parameter
         for (
