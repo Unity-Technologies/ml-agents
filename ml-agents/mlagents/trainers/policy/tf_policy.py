@@ -207,13 +207,13 @@ class TFPolicy(Policy):
 
     def _initialize_graph(self):
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
+            self.saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
 
     def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
+            self.saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
             logger.info(f"Loading model from {model_path}.")
             ckpt = tf.train.get_checkpoint_state(model_path)
             if ckpt is None:

@@ -47,13 +47,12 @@ class Policy:
         )
         self.model_path = model_path
         self.initialize_path = self.trainer_settings.init_path
-        self.keep_checkpoints = self.trainer_settings.keep_checkpoints
+        self._keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.use_continuous_act = behavior_spec.is_action_continuous()
         self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
-        self.use_recurrent = trainer_settings.network_settings.memory is not None
         self.use_recurrent = self.network_settings.memory is not None
         self.load = load
         self.h_size = self.network_settings.hidden_units
