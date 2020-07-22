@@ -157,6 +157,50 @@ class SACSettings(HyperparamSettings):
     def _reward_signal_steps_per_update_default(self):
         return self.steps_per_update
 
+@attr.s(auto_attribs=True)
+class SACTransferSettings(SACSettings):
+    model_schedule: ScheduleType = ScheduleType.LINEAR
+
+    separate_value_train: bool = False
+    separate_policy_train: bool = False
+    separate_value_net: bool = False
+    use_var_encoder: bool = False
+    use_var_predict: bool = False
+    with_prior: bool = False
+    use_inverse_model: bool = False
+    predict_return: bool = False
+    reuse_encoder: bool = False
+    use_alter: bool = False
+    in_batch_alter: bool = False
+    in_epoch_alter: bool = False
+    use_op_buffer: bool = False
+    train_encoder: bool = True
+    train_action: bool = True
+    train_model: bool = True
+    train_policy: bool = True
+    train_value: bool = True
+    use_bisim: bool = False
+        
+    # Transfer
+    use_transfer: bool = False
+    smart_transfer: bool = False
+    conv_thres: float = 1e-3
+    transfer_path: str = ""
+    load_model: bool = True
+    load_value: bool = False
+    load_policy: bool = False
+    load_encoder: bool = False
+    load_action: bool = False
+
+    # Network
+    encoder_layers: int = 1
+    action_layers: int = 1
+    policy_layers: int = 1
+    value_layers: int = 1
+    forward_layers: int = 1
+    inverse_layers: int = 1
+    feature_size: int = 16
+    action_feature_size: int = 16
 
 class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
@@ -371,10 +415,11 @@ class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
     PPO_Transfer: str = "ppo_transfer"
+    SAC_Transfer: str = "sac_transfer"
 
     def to_settings(self) -> type:
         _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings, 
-        TrainerType.PPO_Transfer: PPOTransferSettings}
+        TrainerType.PPO_Transfer: PPOTransferSettings, TrainerType.SAC_Transfer: SACTransferSettings}
         return _mapping[self]
 
 

@@ -13,7 +13,7 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy.nn_policy import NNPolicy
-from mlagents.trainers.sac.optimizer import SACOptimizer
+from mlagents.trainers.sac_transfer.optimizer import SACTransferOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.brain import BrainParameters
@@ -26,10 +26,9 @@ logger = get_logger(__name__)
 BUFFER_TRUNCATE_PERCENT = 0.8
 
 
-class SACTrainer(RLTrainer):
+class SACTransferTrainer(RLTrainer):
     """
-    The SACTrainer is an implementation of the SAC algorithm, with support
-    for discrete actions and recurrent networks.
+    The SACTransferTrainer is a variant of the SAC algorithm which supports model transfer
     """
 
     def __init__(
@@ -59,7 +58,7 @@ class SACTrainer(RLTrainer):
         self.load = load
         self.seed = seed
         self.policy: NNPolicy = None  # type: ignore
-        self.optimizer: SACOptimizer = None  # type: ignore
+        self.optimizer: SACTransferOptimizer = None  # type: ignore
         self.hyperparameters: SACSettings = cast(
             SACSettings, trainer_settings.hyperparameters
         )
@@ -320,7 +319,7 @@ class SACTrainer(RLTrainer):
         if not isinstance(policy, NNPolicy):
             raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
         self.policy = policy
-        self.optimizer = SACOptimizer(self.policy, self.trainer_settings)
+        self.optimizer = SACTransferOptimizer(self.policy, self.trainer_settings)
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly

@@ -9,6 +9,7 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.ppo_transfer.trainer import PPOTransferTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.sac_transfer.trainer import SACTransferTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings, TrainerType
@@ -123,6 +124,16 @@ def initialize_trainer(
         )
     elif trainer_type == TrainerType.PPO_Transfer:
         trainer = PPOTransferTrainer(
+            brain_name,
+            min_lesson_length,
+            trainer_settings,
+            train_model,
+            load_model,
+            seed,
+            trainer_artifact_path,
+        )
+    elif trainer_type == TrainerType.SAC_Transfer:
+        trainer = SACTransferTrainer(
             brain_name,
             min_lesson_length,
             trainer_settings,

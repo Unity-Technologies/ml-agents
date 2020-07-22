@@ -11,8 +11,9 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: constant
       model_schedule: constant
-      encoder_layers: 3
-      policy_layers: 0
+      encoder_layers: 2
+      action_layers: 2
+      policy_layers: 2
       forward_layers: 0
       value_layers: 3
       feature_size: 128

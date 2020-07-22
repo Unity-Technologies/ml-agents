@@ -4,13 +4,14 @@ from typing import Dict, List, Optional, Any, Mapping, cast
 from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
+from mlagents.trainers.sac_transfer.network import SACPolicyNetwork, SACTargetNetwork
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.transfer_policy import TransferPolicy
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
-from mlagents.trainers.settings import TrainerSettings, SACSettings
+from mlagents.trainers.settings import TrainerSettings, SACSettings, SACTransferSettings
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
@@ -20,7 +21,7 @@ POLICY_SCOPE = ""
 TARGET_SCOPE = "target_network"
 
 
-class SACOptimizer(TFOptimizer):
+class SACTransferOptimizer(TFOptimizer):
     def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
@@ -39,15 +40,66 @@ class SACOptimizer(TFOptimizer):
         :param tau: Strength of soft-Q update.
         :param m_size: Size of brain memory.
         """
+        hyperparameters: SACTransferSettings = cast(
+            SACTransferSettings, trainer_params.hyperparameters
+        )
+        self.batch_size = hyperparameters.batch_size
+
+        self.separate_value_train = hyperparameters.separate_value_train
+        self.separate_policy_train = hyperparameters.separate_policy_train
+        self.use_var_encoder = hyperparameters.use_var_encoder
+        self.use_var_predict = hyperparameters.use_var_predict
+        self.with_prior = hyperparameters.with_prior
+        self.use_inverse_model = hyperparameters.use_inverse_model
+        self.predict_return = hyperparameters.predict_return
+        self.reuse_encoder = hyperparameters.reuse_encoder
+        self.use_bisim = hyperparameters.use_bisim
+
+        self.use_alter = hyperparameters.use_alter
+        self.in_batch_alter = hyperparameters.in_batch_alter
+        self.in_epoch_alter = hyperparameters.in_epoch_alter
+        self.op_buffer = hyperparameters.use_op_buffer
+        self.train_encoder = hyperparameters.train_encoder
+        self.train_action = hyperparameters.train_action
+        self.train_model = hyperparameters.train_model
+        self.train_policy = hyperparameters.train_policy
+        self.train_value = hyperparameters.train_value
+
+        # Transfer
+        self.use_transfer = hyperparameters.use_transfer
+        self.transfer_path = (
+            hyperparameters.transfer_path
+        )  
+        self.smart_transfer = hyperparameters.smart_transfer
+        self.conv_thres = hyperparameters.conv_thres
+
+        self.sac_update_dict: Dict[str, tf.Tensor] = {}
+        self.model_update_dict: Dict[str, tf.Tensor] = {}
+        self.model_only_update_dict: Dict[str, tf.Tensor] = {}
+        self.bisim_update_dict: Dict[str, tf.Tensor] = {}
+
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
-        policy.create_tf_graph()
+        policy.create_tf_graph(
+            # hyperparameters.encoder_layers,
+            # hyperparameters.action_layers,
+            # hyperparameters.policy_layers,
+            # hyperparameters.forward_layers,
+            # hyperparameters.inverse_layers,
+            # hyperparameters.feature_size,
+            # hyperparameters.action_feature_size,
+            # self.use_transfer,
+            # self.separate_policy_train,
+            # self.use_var_encoder,
+            # self.use_var_predict,
+            # self.predict_return,
+            # self.use_inverse_model,
+            # self.reuse_encoder,
+            # self.use_bisim,
+        )
 
         with policy.graph.as_default():
             with tf.variable_scope(""):
                 super().__init__(policy, trainer_params)
-                hyperparameters: SACSettings = cast(
-                    SACSettings, trainer_params.hyperparameters
-                )
                 lr = hyperparameters.learning_rate
                 lr_schedule = hyperparameters.learning_rate_schedule
                 max_step = trainer_params.max_steps

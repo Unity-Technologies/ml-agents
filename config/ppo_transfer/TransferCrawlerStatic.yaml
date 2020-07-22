@@ -11,8 +11,9 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: constant
       model_schedule: constant
-      encoder_layers: 3
-      policy_layers: 0
+      encoder_layers: 2
+      action_layers: 2
+      policy_layers: 2
       forward_layers: 0
       value_layers: 3
       feature_size: 128
@@ -31,9 +32,9 @@ behaviors:
       load_value: false
       load_action: true
       load_model: true
-      train_action: true
+      train_action: false
       train_model: false
-      transfer_path: "results/csold-bisim/CrawlerStatic"
+      transfer_path: "results/csold-bisim-l2/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
