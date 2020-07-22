@@ -9,17 +9,18 @@ using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
+    [Header("Walk Speed")]
     [Range(0, 15)]
     public float walkingSpeed = 15; //The walking speed to try and achieve
-//    float m_maxWalkingSpeed = 15; //The max walking speed
+    float m_maxWalkingSpeed = 15; //The max walking speed
     public bool randomizeWalkSpeedEachEpisode;
     
     Vector3 m_WalkDir; //Direction to the target
 
-    [Header("Target To Walk Towards")] [Space(10)]
+    [Header("Target To Walk Towards")]
     public TargetController target; //Target the agent will walk towards.
 
-    [Header("Body Parts")] [Space(10)] public Transform hips;
+    [Header("Body Parts")] public Transform hips;
     public Transform chest;
     public Transform spine;
     public Transform head;
@@ -44,11 +45,11 @@ public class WalkerAgent : Agent
     JointDriveController m_JdController;
 
     EnvironmentParameters m_ResetParams;
-    private WalkGroup walkGroup;
+//    private WalkGroup walkGroup;
     public override void Initialize()
     {
         orientationCube.UpdateOrientation(hips, target.transform);
-        walkGroup = FindObjectOfType<WalkGroup>();
+//        walkGroup = FindObjectOfType<WalkGroup>();
         //Setup each body part
         m_JdController = GetComponent<JointDriveController>();
         m_JdController.SetupBodyPart(hips);
@@ -91,7 +92,7 @@ public class WalkerAgent : Agent
 
         rewardManager.ResetEpisodeRewards();
         
-//        walkingSpeed = randomizeWalkSpeedEachEpisode? Random.Range(0.0f, m_maxWalkingSpeed): walkingSpeed; //Random Walk Speed
+        walkingSpeed = randomizeWalkSpeedEachEpisode? Random.Range(0.0f, m_maxWalkingSpeed): walkingSpeed; //Random Walk Speed
 
         SetResetParameters();
     }
@@ -127,18 +128,19 @@ public class WalkerAgent : Agent
 
         var cubeForward = orientationCube.transform.forward;
 //        avgVelValue = GetVelocity();
-        //normalized value of the difference in avg speed vs target walking speed.
-        //value of 0 means we are matching velocity perfectly
-        //value of 1 means we are not matching velocity
+
 //        sensor.AddObservation(VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue));
-        sensor.AddObservation(VelocityInverseLerp( cubeForward * walkGroup.walkingSpeed));
-//        sensor.AddObservation(VelocityInverseLerp( cubeForward * walkingSpeed));
+
+
+        //current ragdoll velocity. normalized 
+//        sensor.AddObservation(VelocityInverseLerp( cubeForward * walkGroup.walkingSpeed)); //
+        sensor.AddObservation(VelocityInverseLerp( cubeForward * walkingSpeed));
         
         
         
-        
-//        sensor.AddObservation(walkingSpeed/m_maxWalkingSpeed);
-        sensor.AddObservation(walkGroup.walkingSpeed/walkGroup.m_maxWalkingSpeed);
+        //current speed goal. normalized.
+        sensor.AddObservation(walkingSpeed/m_maxWalkingSpeed);
+//        sensor.AddObservation(walkGroup.walkingSpeed/walkGroup.m_maxWalkingSpeed);
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
 
@@ -209,8 +211,6 @@ public class WalkerAgent : Agent
         {
             counter++;
             velSum += item.rb.velocity;
-//            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
-//            velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
         }
         avg = velSum/counter;
         return avg;
@@ -280,8 +280,8 @@ public class WalkerAgent : Agent
 //        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
 //        avgVelValue = velSum/4;
 //        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue);
-//        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed);
-        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkGroup.walkingSpeed);
+        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed);
+//        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkGroup.walkingSpeed);
         rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward);
 //        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
 //            velInverseLerpVal = VelocityInverseLerp(Vector3.zero, cubeForward * walkingSpeed, avgVelValue);
@@ -308,8 +308,6 @@ public class WalkerAgent : Agent
 //        {
 //            counter++;
 //            velSum += item.rb.velocity;
-////            velSum += Mathf.Clamp(item.rb.velocity.magnitude, 0, m_maxWalkingSpeed);
-////            velSum += Vector3.ClampMagnitude(item.rb.velocity, m_maxWalkingSpeed);
 //        }
 //            avgVelValue = velSum/counter;
 //        //This reward will approach 1 if it matches and approach zero as it deviates
@@ -319,25 +317,41 @@ public class WalkerAgent : Agent
 //        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
         
     }
-    public Vector3 avgVelValue;
+    public Vector3 bodyVelocity;
+    //value of 0 means we are matching velocity perfectly
+    //value of 1 means we are not matching velocity
     public float velDeltaDistance; //distance between the goal and actual vel
+    
+    //normalized value of the difference in avg speed vs goal walking speed.
     public float VelocityInverseLerp(Vector3 velocityGoal)
     {
-        avgVelValue = GetVelocity();
+        bodyVelocity = GetVelocity();
 
-        velDeltaDistance = Vector3.Distance(avgVelValue, velocityGoal);
-//        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, velDeltaDistance);
+//        velDeltaDistance = Vector3.Distance(avgVelValue, velocityGoal);
+//        velDeltaDistance = Vector3.Distance(avgVelValue, velocityGoal);
+//        velDeltaDistance = Mathf.Clamp(Vector3.Distance(bodyVelocity, velocityGoal), 0, walkGroup.walkingSpeed);
+        velDeltaDistance = Mathf.Clamp(Vector3.Distance(bodyVelocity, velocityGoal), 0, walkingSpeed);
 //        float percent = Mathf.InverseLerp(walkingSpeed, 0, velDeltaDistance);
-        float percent = Mathf.InverseLerp(velocityGoal.magnitude, 0, velDeltaDistance);
+//        float percent = Mathf.InverseLerp(velocityGoal.magnitude, 0, velDeltaDistance);
+//        float percent = Mathf.Pow(1 - Mathf.Pow(velDeltaDistance/walkGroup.walkingSpeed, 2), 2);
+        float percent = Mathf.Pow(1 - Mathf.Pow(velDeltaDistance/walkingSpeed, 2), 2);
         return percent;
     }
+//    public float VelocityInverseLerp(Vector3 velocityGoal)
+//    {
+//        avgVelValue = GetVelocity();
+//
+//        velDeltaDistance = Vector3.Distance(avgVelValue, velocityGoal);
+////        float percent = Mathf.InverseLerp(walkingSpeed, 0, velDeltaDistance);
+//        float percent = Mathf.InverseLerp(velocityGoal.magnitude, 0, velDeltaDistance);
+//        return percent;
+//    }
     
 //    public float VelocityInverseLerp(Vector3 velocityGoal, Vector3 currentVel)
 //    {
 //        avgVelValue = GetVelocity();
 //
 //        velDeltaDistance = Vector3.Distance(currentVel, velocityGoal);
-////        float percent = Mathf.InverseLerp(m_maxWalkingSpeed, 0, velDeltaDistance);
 //        float percent = Mathf.InverseLerp(walkingSpeed, 0, velDeltaDistance);
 //        return percent;
 //    }
