@@ -11,6 +11,7 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       model_schedule: linear
+      load_model: false
       encoder_layers: 2
       action_layers: 2
       policy_layers: 2
