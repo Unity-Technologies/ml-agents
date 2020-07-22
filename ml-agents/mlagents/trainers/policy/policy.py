@@ -6,8 +6,8 @@ from mlagents_envs.base_env import DecisionSteps
 from mlagents_envs.exception import UnityException
 
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.settings import TrainerSettings
+from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 
 
 class UnityPolicyException(UnityException):
@@ -18,41 +18,64 @@ class UnityPolicyException(UnityException):
     pass
 
 
-class Policy(object):
+class Policy:
     def __init__(
-        self, brain: BrainParameters, seed: int, trainer_settings: TrainerSettings
+        self,
+        behavior_spec: BehaviorSpec,
+        seed: int,
+        trainer_settings: TrainerSettings,
+        model_path: str,
+        load: bool = False,
+        tanh_squash: bool = False,
+        reparameterize: bool = False,
+        condition_sigma_on_obs: bool = True,
     ):
-        self.brain = brain
+        self.behavior_spec = behavior_spec
+        self.trainer_settings = trainer_settings
+        self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        self.model_path = None
-        self.use_continuous_act = brain.vector_action_space_type == "continuous"
-        if self.use_continuous_act:
-            self.num_branches = self.brain.vector_action_space_size[0]
-        else:
-            self.num_branches = len(self.brain.vector_action_space_size)
+        self.act_size = (
+            list(behavior_spec.discrete_action_branches)
+            if behavior_spec.is_action_discrete()
+            else [behavior_spec.action_size]
+        )
+        self.vec_obs_size = sum(
+            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
+        )
+        self.vis_obs_size = sum(
+            1 for shape in behavior_spec.observation_shapes if len(shape) == 3
+        )
+        self.model_path = model_path
+        self.initialize_path = self.trainer_settings.init_path
+        self._keep_checkpoints = self.trainer_settings.keep_checkpoints
+        self.use_continuous_act = behavior_spec.is_action_continuous()
+        self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
-        self.use_recurrent = trainer_settings.network_settings.memory is not None
-        self.model_path = trainer_settings.init_path
+        self.use_recurrent = self.network_settings.memory is not None
+        self.load = load
+        self.h_size = self.network_settings.hidden_units
+        num_layers = self.network_settings.num_layers
+        if num_layers < 1:
+            num_layers = 1
+        self.num_layers = num_layers
 
-        if trainer_settings.network_settings.memory is not None:
-            self.m_size = trainer_settings.network_settings.memory.memory_size
-            self.sequence_length = (
-                trainer_settings.network_settings.memory.sequence_length
-            )
-            if self.m_size == 0:
-                raise UnityPolicyException(
-                    "The memory size for brain {0} is 0 even "
-                    "though the trainer uses recurrent.".format(brain.brain_name)
-                )
-            elif self.m_size % 2 != 0:
-                raise UnityPolicyException(
-                    "The memory size for brain {0} is {1} "
-                    "but it must be divisible by 2.".format(
-                        brain.brain_name, self.m_size
-                    )
-                )
+        self.vis_encode_type = self.network_settings.vis_encode_type
+        self.tanh_squash = tanh_squash
+        self.reparameterize = reparameterize
+        self.condition_sigma_on_obs = condition_sigma_on_obs
+
+        self.m_size = 0
+        self.sequence_length = 1
+        if self.network_settings.memory is not None:
+            self.m_size = self.network_settings.memory.memory_size
+            self.sequence_length = self.network_settings.memory.sequence_length
+
+        # Non-exposed parameters; these aren't exposed because they don't have a
+        # good explanation and usually shouldn't be touched.
+        self.log_std_min = -20
+        self.log_std_max = 2
 
     def make_empty_memory(self, num_agents):
         """
@@ -117,18 +140,6 @@ class Policy(object):
 
     @abstractmethod
     def update_normalization(self, vector_obs: np.ndarray) -> None:
-        pass
-
-    @abstractmethod
-    def export_model(self, step=0):
-        pass
-
-    @abstractmethod
-    def save_model(self, step=0):
-        pass
-
-    @abstractmethod
-    def load_model(self, step=0):
         pass
 
     @abstractmethod

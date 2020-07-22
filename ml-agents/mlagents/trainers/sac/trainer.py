@@ -7,16 +7,15 @@ from typing import Dict, cast
 import os
 
 import numpy as np
-
+from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
-from mlagents.trainers.policy.policy import Policy
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
@@ -60,7 +59,7 @@ class SACTrainer(RLTrainer):
 
         self.load = load
         self.seed = seed
-        self.policy: NNPolicy = None  # type: ignore
+        self.policy: TFPolicy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
         self.hyperparameters: SACSettings = cast(
             SACSettings, trainer_settings.hyperparameters
@@ -78,12 +77,22 @@ class SACTrainer(RLTrainer):
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
-    def save_model(self, name_behavior_id: str) -> None:
+    def _checkpoint(self) -> NNCheckpoint:
         """
-        Saves the model. Overrides the default save_model since we want to save
-        the replay buffer as well.
+        Writes a checkpoint model to memory
+        Overrides the default to save the replay buffer.
         """
-        self.policy.save_model(self.get_step)
+        ckpt = super()._checkpoint()
+        if self.checkpoint_replay_buffer:
+            self.save_replay_buffer()
+        return ckpt
+
+    def save_model(self) -> None:
+        """
+        Saves the final training model to memory
+        Overrides the default to save the replay buffer.
+        """
+        super().save_model()
         if self.checkpoint_replay_buffer:
             self.save_replay_buffer()
 
@@ -92,7 +101,7 @@ class SACTrainer(RLTrainer):
         Save the training buffer's update buffer to a pickle file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info("Saving Experience Replay Buffer to {}".format(filename))
+        logger.info(f"Saving Experience Replay Buffer to {filename}")
         with open(filename, "wb") as file_object:
             self.update_buffer.save_to_file(file_object)
 
@@ -101,7 +110,7 @@ class SACTrainer(RLTrainer):
         Loads the last saved replay buffer from a file.
         """
         filename = os.path.join(self.artifact_path, "last_replay_buffer.hdf5")
-        logger.info("Loading Experience Replay Buffer from {}".format(filename))
+        logger.info(f"Loading Experience Replay Buffer from {filename}")
         with open(filename, "rb+") as file_object:
             self.update_buffer.load_from_file(file_object)
         logger.info(
@@ -187,9 +196,18 @@ class SACTrainer(RLTrainer):
         return policy_was_updated
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> Policy:
-        policy = super().create_policy(parsed_behavior_id, brain_parameters)
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TFPolicy:
+        policy = TFPolicy(
+            self.seed,
+            behavior_spec,
+            self.trainer_settings,
+            self.artifact_path,
+            self.load,
+            tanh_squash=True,
+            reparameterize=True,
+            create_tf_graph=False,
+        )
         # Load the replay buffer if load
         if self.load and self.checkpoint_replay_buffer:
             try:
@@ -257,7 +275,7 @@ class SACTrainer(RLTrainer):
         while (
             self.step - self.hyperparameters.buffer_init_steps
         ) / self.update_steps > self.steps_per_update:
-            logger.debug("Updating SAC policy at step {}".format(self.step))
+            logger.debug(f"Updating SAC policy at step {self.step}")
             buffer = self.update_buffer
             if self.update_buffer.num_experiences >= self.hyperparameters.batch_size:
                 sampled_minibatch = buffer.sample_mini_batch(
@@ -266,9 +284,9 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    sampled_minibatch[
-                        "{}_rewards".format(name)
-                    ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
+                    sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
+                        sampled_minibatch
+                    ).scaled_reward
 
                 update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
@@ -314,7 +332,7 @@ class SACTrainer(RLTrainer):
             # Get minibatches for reward signal update if needed
             reward_signal_minibatches = {}
             for name, signal in self.optimizer.reward_signals.items():
-                logger.debug("Updating {} at step {}".format(name, self.step))
+                logger.debug(f"Updating {name} at step {self.step}")
                 # Some signals don't need a minibatch to be sampled - so we don't!
                 if signal.update_dict:
                     reward_signal_minibatches[name] = buffer.sample_mini_batch(
@@ -336,7 +354,6 @@ class SACTrainer(RLTrainer):
     ) -> None:
         """
         Adds policy to trainer.
-        :param brain_parameters: specifications for policy construction
         """
         if self.policy:
             logger.warning(
@@ -351,8 +368,6 @@ class SACTrainer(RLTrainer):
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         else:
-            if not isinstance(policy, NNPolicy):
-                raise RuntimeError("Non-SACPolicy passed to SACTrainer.add_policy()")
             self.optimizer = SACOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore

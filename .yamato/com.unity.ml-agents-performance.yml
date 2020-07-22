@@ -1,0 +1,37 @@
+test_editors:
+  - version: 2019.3
+  - version: 2020.1
+---
+{% for editor in test_editors %}
+Run_Mac_Perfomance_Tests{{ editor.version }}:
+  name: Run Mac Performance Tests {{ editor.version }}
+  agent:
+    type: Unity::VM::osx
+    image: package-ci/mac:stable
+    flavor: b1.small
+  variables:
+    UNITY_VERSION: {{ editor.version }}
+  commands:
+    - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
+    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
+    - curl -s https://artifactory.internal.unity3d.com/core-automation/tools/utr-standalone/utr --output utr
+    - chmod +x ./utr
+    - ./utr --suite=editor --platform=StandaloneOSX --editor-location=.Editor --testproject=DevProject --artifacts_path=build/test-results --report-performance-data --performance-project-id=com.unity.ml-agents --zero-tests-are-ok=1
+  triggers:
+    cancel_old_ci: true
+    expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "DevProject/**" OR
+      pull_request.changes.any match "ml-agents/**" OR
+      pull_request.changes.any match "ml-agents-envs/**" OR
+      pull_request.changes.any match ".yamato/com.unity.ml-agents-performance.yml") AND
+      NOT pull_request.changes.all match "**/*.md"
+  artifacts:
+    logs:
+      paths:
+        - "build/test-results/**"
+        - "*.log"
+{% endfor %}

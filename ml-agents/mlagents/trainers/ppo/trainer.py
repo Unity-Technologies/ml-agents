@@ -18,9 +18,9 @@ from mlagents.trainers.policy import Policy
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
-from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
@@ -53,7 +53,7 @@ class PPOTrainer(RLTrainer):
         :param seed: The seed the model will be initialized with
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
-        super(PPOTrainer, self).__init__(
+        super().__init__(
             brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
         self.hyperparameters: PPOSettings = cast(
@@ -64,7 +64,7 @@ class PPOTrainer(RLTrainer):
         self.framework = "torch" if TestingConfiguration.use_torch else "tf"
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
-        self.policy: Policy = None  # type: ignore
+        self.policy: TFPolicy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -88,7 +88,7 @@ class PPOTrainer(RLTrainer):
         )
 
         for name, v in value_estimates.items():
-            agent_buffer_trajectory["{}_value_estimates".format(name)].extend(v)
+            agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
             self._stats_reporter.add_stat(
                 self.optimizer.reward_signals[name].value_name, np.mean(v)
             )
@@ -101,7 +101,7 @@ class PPOTrainer(RLTrainer):
             evaluate_result = reward_signal.evaluate_batch(
                 agent_buffer_trajectory
             ).scaled_reward
-            agent_buffer_trajectory["{}_rewards".format(name)].extend(evaluate_result)
+            agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
@@ -111,11 +111,9 @@ class PPOTrainer(RLTrainer):
         for name in self.optimizer.reward_signals:
             bootstrap_value = value_next[name]
 
-            local_rewards = agent_buffer_trajectory[
-                "{}_rewards".format(name)
-            ].get_batch()
+            local_rewards = agent_buffer_trajectory[f"{name}_rewards"].get_batch()
             local_value_estimates = agent_buffer_trajectory[
-                "{}_value_estimates".format(name)
+                f"{name}_value_estimates"
             ].get_batch()
 
             local_advantage = get_gae(
@@ -127,8 +125,8 @@ class PPOTrainer(RLTrainer):
             )
             local_return = local_advantage + local_value_estimates
             # This is later use as target for the different value estimates
-            agent_buffer_trajectory["{}_returns".format(name)].set(local_return)
-            agent_buffer_trajectory["{}_advantage".format(name)].set(local_advantage)
+            agent_buffer_trajectory[f"{name}_returns"].set(local_return)
+            agent_buffer_trajectory[f"{name}_advantage"].set(local_advantage)
             tmp_advantages.append(local_advantage)
             tmp_returns.append(local_return)
 
@@ -205,20 +203,19 @@ class PPOTrainer(RLTrainer):
         return True
 
     def create_tf_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> NNPolicy:
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.
-        :param parsed_behavior_id:
-        :param brain_parameters: specifications for policy construction
+        :param behavior_spec: specifications for policy construction
         :return policy
         """
-        policy = NNPolicy(
+        policy = TFPolicy(
             self.seed,
-            brain_parameters,
+            behavior_spec,
             self.trainer_settings,
-            self.artifact_path,
-            self.load,
+            model_path=self.artifact_path,
+            load=self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
         )
         return policy
@@ -257,8 +254,6 @@ class PPOTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, Policy):
-            raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
         if self.framework == "torch":
             self.optimizer = TorchPPOOptimizer(  # type: ignore

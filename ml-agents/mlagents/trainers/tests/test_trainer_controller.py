@@ -3,6 +3,7 @@ import pytest
 
 from mlagents.tf_utils import tf
 from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.ghost.controller import GhostController
 
 
@@ -14,7 +15,7 @@ def basic_trainer_controller():
         trainer_factory=trainer_factory_mock,
         output_path="test_model_path",
         run_id="test_run_id",
-        meta_curriculum=None,
+        param_manager=EnvironmentParameterManager(),
         train=True,
         training_seed=99,
     )
@@ -30,7 +31,7 @@ def test_initialization_seed(numpy_random_seed, tensorflow_set_seed):
         trainer_factory=trainer_factory_mock,
         output_path="",
         run_id="1",
-        meta_curriculum=None,
+        param_manager=None,
         train=True,
         training_seed=seed,
     )
@@ -66,8 +67,7 @@ def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
 
     tc.advance.side_effect = take_step_sideeffect
 
-    tc._export_graph = MagicMock()
-    tc._save_model = MagicMock()
+    tc._save_models = MagicMock()
     return tc, trainer_mock
 
 
@@ -83,14 +83,13 @@ def test_start_learning_trains_forever_if_no_train_model(
     env_mock = MagicMock()
     env_mock.close = MagicMock()
     env_mock.reset = MagicMock()
-    env_mock.external_brains = MagicMock()
+    env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
     tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == 11
-    tc._export_graph.assert_not_called()
-    tc._save_model.assert_not_called()
+    tc._save_models.assert_not_called()
 
 
 @patch.object(tf, "reset_default_graph")
@@ -104,13 +103,13 @@ def test_start_learning_trains_until_max_steps_then_saves(
     env_mock = MagicMock()
     env_mock.close = MagicMock()
     env_mock.reset = MagicMock(return_value=brain_info_mock)
-    env_mock.external_brains = MagicMock()
+    env_mock.training_behaviors = MagicMock()
 
     tc.start_learning(env_mock)
     tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
-    tc._save_model.assert_called_once()
+    tc._save_models.assert_called_once()
 
 
 @pytest.fixture

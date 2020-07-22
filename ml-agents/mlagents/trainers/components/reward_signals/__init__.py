@@ -23,7 +23,7 @@ class RewardSignal(abc.ABC):
         """
         Initializes a reward signal. At minimum, you must pass in the policy it is being applied to,
         the reward strength, and the gamma (discount factor.)
-        :param policy: The Policy object (e.g. NNPolicy) that this Reward Signal will apply to.
+        :param policy: The Policy object (e.g. TFPolicy) that this Reward Signal will apply to.
         :param settings: Settings parameters for this Reward Signal, including gamma and strength.
         :return: A RewardSignal object.
         """

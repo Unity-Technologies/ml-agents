@@ -76,7 +76,7 @@ to seek, and a Sphere to represent the Agent itself.
 1. Right click in Hierarchy window, select 3D Object > Cube.
 1. Name the GameObject "Target"
 1. Select the Target Cube to view its properties in the Inspector window.
-1. Set Transform to Position = `3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale =
+1. Set Transform to Position = `(3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale =
    `(1, 1, 1)`.
 
 <p align="left">
@@ -136,7 +136,7 @@ Then, edit the new `RollerAgent` script:
 1. In the Unity Project window, double-click the `RollerAgent` script to open it
    in your code editor.
 1. In the editor, add the `using Unity.MLAgents;` and
-   `using Unity.MLAgents.Sensors` statements and then change the base class from
+   `using Unity.MLAgents.Sensors;` statements and then change the base class from
    `MonoBehaviour` to `Agent`.
 1. Delete the `Update()` method, but we will use the `Start()` function, so
    leave it alone for now.
@@ -269,7 +269,7 @@ component, `rBody`, using the `Rigidbody.AddForce` function:
 Vector3 controlSignal = Vector3.zero;
 controlSignal.x = action[0];
 controlSignal.z = action[1];
-rBody.AddForce(controlSignal * speed);
+rBody.AddForce(controlSignal * forceMultiplier);
 ```
 
 #### Rewards
@@ -313,14 +313,14 @@ With the action and reward logic outlined above, the final version of the
 `OnActionReceived()` function looks like:
 
 ```csharp
-public float speed = 10;
+public float forceMultiplier = 10;
 public override void OnActionReceived(float[] vectorAction)
 {
     // Actions, size = 2
     Vector3 controlSignal = Vector3.zero;
     controlSignal.x = vectorAction[0];
     controlSignal.z = vectorAction[1];
-    rBody.AddForce(controlSignal * speed);
+    rBody.AddForce(controlSignal * forceMultiplier);
 
     // Rewards
     float distanceToTarget = Vector3.Distance(this.transform.localPosition, Target.localPosition);
@@ -340,32 +340,8 @@ public override void OnActionReceived(float[] vectorAction)
 }
 ```
 
-Note the `speed` class variable is defined before the function. Since `speed` is
+Note the `forceMultiplier` class variable is defined before the function. Since `forceMultiplier` is
 public, you can set the value from the Inspector window.
-
-## Final Editor Setup
-
-Now, that all the GameObjects and ML-Agent components are in place, it is time
-to connect everything together in the Unity Editor. This involves changing some
-of the Agent Component's properties so that they are compatible with our Agent
-code.
-
-1. Select the **RollerAgent** GameObject to show its properties in the Inspector
-   window.
-1. Add the `Decision Requester` script with the Add Component button from the
-   RollerAgent Inspector.
-1. Change **Decision Period** to `10`.
-1. Drag the Target GameObject from the Hierarchy window to the RollerAgent
-   Target field.
-1. Add the `Behavior Parameters` script with the Add Component button from the
-   RollerAgent Inspector.
-1. Modify the Behavior Parameters of the Agent :
-   - `Behavior Name` to _RollerBall_
-   - `Vector Observation` > `Space Size` = 8
-   - `Vector Action` > `Space Type` = **Continuous**
-   - `Vector Action` > `Space Size` = 2
-
-Now you are ready to test the environment before training.
 
 ## Testing the Environment
 
@@ -391,6 +367,30 @@ Press **Play** to run the scene and use the arrows keys to move the Agent around
 the platform. Make sure that there are no errors displayed in the Unity Editor
 Console window and that the Agent resets when it reaches its target or falls
 from the platform.
+
+## Final Editor Setup
+
+Now, that all the GameObjects and ML-Agent components are in place, it is time
+to connect everything together in the Unity Editor. This involves changing some
+of the Agent Component's properties so that they are compatible with our Agent
+code.
+
+1. Select the **RollerAgent** GameObject to show its properties in the Inspector
+   window.
+1. Add the `Decision Requester` script with the Add Component button from the
+   RollerAgent Inspector.
+1. Change **Decision Period** to `10`. For more information on decisions, see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
+1. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+   Target field.
+1. Add the `Behavior Parameters` script with the Add Component button from the
+   RollerAgent Inspector.
+1. Modify the Behavior Parameters of the Agent :
+   - `Behavior Name` to _RollerBall_
+   - `Vector Observation` > `Space Size` = 8
+   - `Vector Action` > `Space Type` = **Continuous**
+   - `Vector Action` > `Space Size` = 2
+
+Now you are ready to test the environment before training.
 
 ## Training the Environment
 
@@ -426,6 +426,8 @@ behaviors:
     time_horizon: 64
     summary_freq: 10000
 ```
+
+Hyperparameters are explained in [the training configuration file documentation](Training-Configuration-File.md)
 
 Since this example creates a very simple training environment with only a few
 inputs and outputs, using small batch and buffer sizes speeds up the training

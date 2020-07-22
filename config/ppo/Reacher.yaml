@@ -2,10 +2,10 @@ behaviors:
   Reacher:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2024
-      buffer_size: 20240
+      batch_size: 512
+      buffer_size: 20480
       learning_rate: 0.0003
-      beta: 0.005
+      beta: 0.001
       epsilon: 0.2
       lambd: 0.95
       num_epoch: 3

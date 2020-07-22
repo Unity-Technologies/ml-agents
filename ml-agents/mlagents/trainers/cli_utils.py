@@ -232,7 +232,7 @@ def load_config(config_path: str) -> Dict[str, Any]:
     try:
         with open(config_path) as data_file:
             return _load_config(data_file)
-    except IOError:
+    except OSError:
         abs_path = os.path.abspath(config_path)
         raise TrainerConfigError(f"Config file could not be found at {abs_path}.")
     except UnicodeDecodeError:

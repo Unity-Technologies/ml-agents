@@ -137,13 +137,6 @@ namespace Unity.MLAgentsExamples
                 bp.groundContact.agent = gameObject.GetComponent<Agent>();
             }
 
-            // Add & setup the target contact script
-            bp.targetContact = t.GetComponent<TargetContact>();
-            if (!bp.targetContact)
-            {
-                bp.targetContact = t.gameObject.AddComponent<TargetContact>();
-            }
-
             bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);

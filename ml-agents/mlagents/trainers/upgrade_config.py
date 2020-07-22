@@ -5,7 +5,7 @@
 import attr
 import cattr
 import yaml
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import argparse
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings, TrainerType
 from mlagents.trainers.cli_utils import load_config
@@ -99,13 +99,72 @@ def convert_samplers(old_sampler_config: Dict[str, Any]) -> Dict[str, Any]:
     return new_sampler_config
 
 
+def convert_samplers_and_curriculum(
+    parameter_dict: Dict[str, Any], curriculum: Dict[str, Any]
+) -> Dict[str, Any]:
+    for key, sampler in parameter_dict.items():
+        if "sampler_parameters" not in sampler:
+            parameter_dict[key]["sampler_parameters"] = {}
+        for argument in [
+            "seed",
+            "min_value",
+            "max_value",
+            "mean",
+            "st_dev",
+            "intervals",
+        ]:
+            if argument in sampler:
+                parameter_dict[key]["sampler_parameters"][argument] = sampler[argument]
+                parameter_dict[key].pop(argument)
+    param_set = set(parameter_dict.keys())
+    for behavior_name, behavior_dict in curriculum.items():
+        measure = behavior_dict["measure"]
+        min_lesson_length = behavior_dict.get("min_lesson_length", 1)
+        signal_smoothing = behavior_dict.get("signal_smoothing", False)
+        thresholds = behavior_dict["thresholds"]
+        num_lessons = len(thresholds) + 1
+        parameters = behavior_dict["parameters"]
+        for param_name in parameters.keys():
+            if param_name in param_set:
+                print(
+                    f"The parameter {param_name} has both a sampler and a curriculum. Will ignore curriculum"
+                )
+            else:
+                param_set.add(param_name)
+                parameter_dict[param_name] = {"curriculum": []}
+                for lesson_index in range(num_lessons - 1):
+                    parameter_dict[param_name]["curriculum"].append(
+                        {
+                            f"Lesson{lesson_index}": {
+                                "completion_criteria": {
+                                    "measure": measure,
+                                    "behavior": behavior_name,
+                                    "signal_smoothing": signal_smoothing,
+                                    "min_lesson_length": min_lesson_length,
+                                    "threshold": thresholds[lesson_index],
+                                },
+                                "value": parameters[param_name][lesson_index],
+                            }
+                        }
+                    )
+                lesson_index += 1  # This is the last lesson
+                parameter_dict[param_name]["curriculum"].append(
+                    {
+                        f"Lesson{lesson_index}": {
+                            "value": parameters[param_name][lesson_index]
+                        }
+                    }
+                )
+    return parameter_dict
+
+
 def parse_args():
     argparser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     argparser.add_argument(
         "trainer_config_path",
-        help="Path to old format (<=0.16.X) trainer configuration YAML.",
+        help="Path to old format (<=0.18.X) trainer configuration YAML.",
     )
     argparser.add_argument(
         "--curriculum",
@@ -124,6 +183,51 @@ def parse_args():
     return args
 
 
+def convert(
+    config: Dict[str, Any],
+    old_curriculum: Optional[Dict[str, Any]],
+    old_param_random: Optional[Dict[str, Any]],
+) -> Dict[str, Any]:
+    if "behaviors" not in config:
+        print("Config file format version :  version <= 0.16.X")
+        behavior_config_dict = convert_behaviors(config)
+        full_config = {"behaviors": behavior_config_dict}
+
+        # Convert curriculum and sampler. note that we don't validate these; if it was correct
+        # before it should be correct now.
+        if old_curriculum is not None:
+            full_config["curriculum"] = old_curriculum
+
+        if old_param_random is not None:
+            sampler_config_dict = convert_samplers(old_param_random)
+            full_config["parameter_randomization"] = sampler_config_dict
+
+        # Convert config to dict
+        config = cattr.unstructure(full_config)
+    if "curriculum" in config or "parameter_randomization" in config:
+        print("Config file format version :  0.16.X < version <= 0.18.X")
+        full_config = {"behaviors": config["behaviors"]}
+
+        param_randomization = config.get("parameter_randomization", {})
+        if "resampling-interval" in param_randomization:
+            param_randomization.pop("resampling-interval")
+        if len(param_randomization) > 0:
+            # check if we use the old format sampler-type vs sampler_type
+            if (
+                "sampler-type"
+                in param_randomization[list(param_randomization.keys())[0]]
+            ):
+                param_randomization = convert_samplers(param_randomization)
+
+        full_config["environment_parameters"] = convert_samplers_and_curriculum(
+            param_randomization, config.get("curriculum", {})
+        )
+
+        # Convert config to dict
+        config = cattr.unstructure(full_config)
+    return config
+
+
 def main() -> None:
     args = parse_args()
     print(
@@ -131,23 +235,14 @@ def main() -> None:
     )
 
     old_config = load_config(args.trainer_config_path)
-    behavior_config_dict = convert_behaviors(old_config)
-    full_config = {"behaviors": behavior_config_dict}
-
-    # Convert curriculum and sampler. note that we don't validate these; if it was correct
-    # before it should be correct now.
+    curriculum_config_dict = None
+    old_sampler_config_dict = None
     if args.curriculum is not None:
         curriculum_config_dict = load_config(args.curriculum)
-        full_config["curriculum"] = curriculum_config_dict
-
     if args.sampler is not None:
         old_sampler_config_dict = load_config(args.sampler)
-        sampler_config_dict = convert_samplers(old_sampler_config_dict)
-        full_config["parameter_randomization"] = sampler_config_dict
-
-    # Convert config to dict
-    unstructed_config = cattr.unstructure(full_config)
-    unstructed_config = remove_nones(unstructed_config)
+    new_config = convert(old_config, curriculum_config_dict, old_sampler_config_dict)
+    unstructed_config = remove_nones(new_config)
     write_to_yaml_file(unstructed_config, args.output_config_path)
 
 

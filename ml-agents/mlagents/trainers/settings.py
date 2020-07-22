@@ -1,10 +1,12 @@
 import attr
 import cattr
-from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple
+from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple, Union
 from enum import Enum
 import collections
 import argparse
 import abc
+import numpy as np
+import math
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
@@ -51,10 +53,21 @@ class ExportableSettings:
 
 @attr.s(auto_attribs=True)
 class NetworkSettings:
-    @attr.s(auto_attribs=True)
+    @attr.s
     class MemorySettings:
-        sequence_length: int = 64
-        memory_size: int = 128
+        sequence_length: int = attr.ib(default=64)
+        memory_size: int = attr.ib(default=128)
+
+        @memory_size.validator
+        def _check_valid_memory_size(self, attribute, value):
+            if value <= 0:
+                raise TrainerConfigError(
+                    "When using a recurrent network, memory size must be greater than 0."
+                )
+            elif value % 2 != 0:
+                raise TrainerConfigError(
+                    "When using a recurrent network, memory size must be divisible by 2."
+                )
 
     normalize: bool = False
     hidden_units: int = 128
@@ -108,6 +121,7 @@ class SACSettings(HyperparamSettings):
         return self.steps_per_update
 
 
+# INTRINSIC REWARD SIGNALS #############################################################
 class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
     GAIL: str = "gail"
@@ -159,16 +173,20 @@ class CuriositySettings(RewardSignalSettings):
     learning_rate: float = 3e-4
 
 
+# SAMPLERS #############################################################################
 class ParameterRandomizationType(Enum):
     UNIFORM: str = "uniform"
     GAUSSIAN: str = "gaussian"
     MULTIRANGEUNIFORM: str = "multirangeuniform"
+    CONSTANT: str = "constant"
 
     def to_settings(self) -> type:
         _mapping = {
             ParameterRandomizationType.UNIFORM: UniformSettings,
             ParameterRandomizationType.GAUSSIAN: GaussianSettings,
             ParameterRandomizationType.MULTIRANGEUNIFORM: MultiRangeUniformSettings,
+            ParameterRandomizationType.CONSTANT: ConstantSettings
+            # Constant type is handled if a float is provided instead of a config
         }
         return _mapping[self]
 
@@ -178,39 +196,50 @@ class ParameterRandomizationSettings(abc.ABC):
     seed: int = parser.get_default("seed")
 
     @staticmethod
-    def structure(d: Mapping, t: type) -> Any:
+    def structure(
+        d: Union[Mapping, float], t: type
+    ) -> "ParameterRandomizationSettings":
         """
-        Helper method to structure a Dict of ParameterRandomizationSettings class. Meant to be registered with
+        Helper method to a ParameterRandomizationSettings class. Meant to be registered with
         cattr.register_structure_hook() and called with cattr.structure(). This is needed to handle
         the special Enum selection of ParameterRandomizationSettings classes.
         """
+        if isinstance(d, (float, int)):
+            return ConstantSettings(value=d)
         if not isinstance(d, Mapping):
             raise TrainerConfigError(
                 f"Unsupported parameter randomization configuration {d}."
             )
-        d_final: Dict[str, List[float]] = {}
-        for environment_parameter, environment_parameter_config in d.items():
-            if environment_parameter == "resampling-interval":
-                logger.warning(
-                    "The resampling-interval is no longer necessary for parameter randomization. It is being ignored."
-                )
-                continue
-            if "sampler_type" not in environment_parameter_config:
-                raise TrainerConfigError(
-                    f"Sampler configuration for {environment_parameter} does not contain sampler_type."
-                )
-            if "sampler_parameters" not in environment_parameter_config:
-                raise TrainerConfigError(
-                    f"Sampler configuration for {environment_parameter} does not contain sampler_parameters."
-                )
-            enum_key = ParameterRandomizationType(
-                environment_parameter_config["sampler_type"]
+        if "sampler_type" not in d:
+            raise TrainerConfigError(
+                f"Sampler configuration does not contain sampler_type : {d}."
             )
-            t = enum_key.to_settings()
-            d_final[environment_parameter] = strict_to_cls(
-                environment_parameter_config["sampler_parameters"], t
+        if "sampler_parameters" not in d:
+            raise TrainerConfigError(
+                f"Sampler configuration does not contain sampler_parameters : {d}."
             )
-        return d_final
+        enum_key = ParameterRandomizationType(d["sampler_type"])
+        t = enum_key.to_settings()
+        return strict_to_cls(d["sampler_parameters"], t)
+
+    @staticmethod
+    def unstructure(d: "ParameterRandomizationSettings") -> Mapping:
+        """
+        Helper method to a ParameterRandomizationSettings class. Meant to be registered with
+        cattr.register_unstructure_hook() and called with cattr.unstructure().
+        """
+        _reversed_mapping = {
+            UniformSettings: ParameterRandomizationType.UNIFORM,
+            GaussianSettings: ParameterRandomizationType.GAUSSIAN,
+            MultiRangeUniformSettings: ParameterRandomizationType.MULTIRANGEUNIFORM,
+            ConstantSettings: ParameterRandomizationType.CONSTANT,
+        }
+        sampler_type: Optional[str] = None
+        for t, name in _reversed_mapping.items():
+            if isinstance(d, t):
+                sampler_type = name.value
+        sampler_parameters = attr.asdict(d)
+        return {"sampler_type": sampler_type, "sampler_parameters": sampler_parameters}
 
     @abc.abstractmethod
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
@@ -221,6 +250,20 @@ class ParameterRandomizationSettings(abc.ABC):
         :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
         """
         pass
+
+
+@attr.s(auto_attribs=True)
+class ConstantSettings(ParameterRandomizationSettings):
+    value: float = 0.0
+
+    def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
+        """
+        Helper method to send sampler settings over EnvironmentParametersChannel
+        Calls the constant sampler type set method.
+        :param key: environment parameter to be sampled
+        :param env_channel: The EnvironmentParametersChannel to communicate sampler settings to environment
+        """
+        env_channel.set_float_parameter(key, self.value)
 
 
 @attr.s(auto_attribs=True)
@@ -301,6 +344,144 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
         )
 
 
+# ENVIRONMENT PARAMETERS ###############################################################
+@attr.s(auto_attribs=True)
+class CompletionCriteriaSettings:
+    """
+    CompletionCriteriaSettings contains the information needed to figure out if the next
+    lesson must start.
+    """
+
+    class MeasureType(Enum):
+        PROGRESS: str = "progress"
+        REWARD: str = "reward"
+
+    measure: MeasureType = attr.ib(default=MeasureType.REWARD)
+    behavior: str = attr.ib(default="")
+    min_lesson_length: int = 0
+    signal_smoothing: bool = True
+    threshold: float = attr.ib(default=0.0)
+    require_reset: bool = False
+
+    @threshold.validator
+    def _check_threshold_value(self, attribute, value):
+        """
+        Verify that the threshold has a value between 0 and 1 when the measure is
+        PROGRESS
+        """
+        if self.measure == self.MeasureType.PROGRESS:
+            if self.threshold > 1.0:
+                raise TrainerConfigError(
+                    "Threshold for next lesson cannot be greater than 1 when the measure is progress."
+                )
+            if self.threshold < 0.0:
+                raise TrainerConfigError(
+                    "Threshold for next lesson cannot be negative when the measure is progress."
+                )
+
+    def need_increment(
+        self, progress: float, reward_buffer: List[float], smoothing: float
+    ) -> Tuple[bool, float]:
+        """
+        Given measures, this method returns a boolean indicating if the lesson
+        needs to change now, and a float corresponding to the new smoothed value.
+        """
+        # Is the min number of episodes reached
+        if len(reward_buffer) < self.min_lesson_length:
+            return False, smoothing
+        if self.measure == CompletionCriteriaSettings.MeasureType.PROGRESS:
+            if progress > self.threshold:
+                return True, smoothing
+        if self.measure == CompletionCriteriaSettings.MeasureType.REWARD:
+            if len(reward_buffer) < 1:
+                return False, smoothing
+            measure = np.mean(reward_buffer)
+            if math.isnan(measure):
+                return False, smoothing
+            if self.signal_smoothing:
+                measure = 0.25 * smoothing + 0.75 * measure
+                smoothing = measure
+            if measure > self.threshold:
+                return True, smoothing
+        return False, smoothing
+
+
+@attr.s(auto_attribs=True)
+class Lesson:
+    """
+    Gathers the data of one lesson for one environment parameter including its name,
+    the condition that must be fullfiled for the lesson to be completed and a sampler
+    for the environment parameter. If the completion_criteria is None, then this is
+    the last lesson in the curriculum.
+    """
+
+    value: ParameterRandomizationSettings
+    name: str
+    completion_criteria: Optional[CompletionCriteriaSettings] = attr.ib(default=None)
+
+
+@attr.s(auto_attribs=True)
+class EnvironmentParameterSettings:
+    """
+    EnvironmentParameterSettings is an ordered list of lessons for one environment
+    parameter.
+    """
+
+    curriculum: List[Lesson]
+
+    @staticmethod
+    def _check_lesson_chain(lessons, parameter_name):
+        """
+        Ensures that when using curriculum, all non-terminal lessons have a valid
+        CompletionCriteria
+        """
+        num_lessons = len(lessons)
+        for index, lesson in enumerate(lessons):
+            if index < num_lessons - 1 and lesson.completion_criteria is None:
+                raise TrainerConfigError(
+                    f"A non-terminal lesson does not have a completion_criteria for {parameter_name}."
+                )
+
+    @staticmethod
+    def structure(d: Mapping, t: type) -> Dict[str, "EnvironmentParameterSettings"]:
+        """
+        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant
+        to be registered with cattr.register_structure_hook() and called with
+        cattr.structure().
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported parameter environment parameter settings {d}."
+            )
+        d_final: Dict[str, EnvironmentParameterSettings] = {}
+        for environment_parameter, environment_parameter_config in d.items():
+            if (
+                isinstance(environment_parameter_config, Mapping)
+                and "curriculum" in environment_parameter_config
+            ):
+                d_final[environment_parameter] = strict_to_cls(
+                    environment_parameter_config, EnvironmentParameterSettings
+                )
+                EnvironmentParameterSettings._check_lesson_chain(
+                    d_final[environment_parameter].curriculum, environment_parameter
+                )
+            else:
+                sampler = ParameterRandomizationSettings.structure(
+                    environment_parameter_config, ParameterRandomizationSettings
+                )
+                d_final[environment_parameter] = EnvironmentParameterSettings(
+                    curriculum=[
+                        Lesson(
+                            completion_criteria=None,
+                            value=sampler,
+                            name=environment_parameter,
+                        )
+                    ]
+                )
+        return d_final
+
+
+# TRAINERS #############################################################################
 @attr.s(auto_attribs=True)
 class SelfPlaySettings:
     save_steps: int = 20000
@@ -402,23 +583,11 @@ class TrainerSettings(ExportableSettings):
         return t(**d_copy)
 
 
-@attr.s(auto_attribs=True)
-class CurriculumSettings:
-    class MeasureType:
-        PROGRESS: str = "progress"
-        REWARD: str = "reward"
-
-    measure: str = attr.ib(default=MeasureType.REWARD)
-    thresholds: List[float] = attr.ib(factory=list)
-    min_lesson_length: int = 0
-    signal_smoothing: bool = True
-    parameters: Dict[str, List[float]] = attr.ib(kw_only=True)
-
-
+# COMMAND LINE #########################################################################
 @attr.s(auto_attribs=True)
 class CheckpointSettings:
     run_id: str = parser.get_default("run_id")
-    initialize_from: str = parser.get_default("initialize_from")
+    initialize_from: Optional[str] = parser.get_default("initialize_from")
     load_model: bool = parser.get_default("load_model")
     resume: bool = parser.get_default("resume")
     force: bool = parser.get_default("force")
@@ -431,8 +600,13 @@ class EnvironmentSettings:
     env_path: Optional[str] = parser.get_default("env_path")
     env_args: Optional[List[str]] = parser.get_default("env_args")
     base_port: int = parser.get_default("base_port")
-    num_envs: int = parser.get_default("num_envs")
+    num_envs: int = attr.ib(default=parser.get_default("num_envs"))
     seed: int = parser.get_default("seed")
+
+    @num_envs.validator
+    def validate_num_envs(self, attribute, value):
+        if value > 1 and self.env_path is None:
+            raise ValueError("num_envs must be 1 if env_path is not set.")
 
 
 @attr.s(auto_attribs=True)
@@ -453,8 +627,7 @@ class RunOptions(ExportableSettings):
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
-    parameter_randomization: Optional[Dict[str, ParameterRandomizationSettings]] = None
-    curriculum: Optional[Dict[str, CurriculumSettings]] = None
+    environment_parameters: Optional[Dict[str, EnvironmentParameterSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
@@ -465,10 +638,15 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(
-        Dict[str, ParameterRandomizationSettings],
-        ParameterRandomizationSettings.structure,
+        Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
     )
-    cattr.register_structure_hook(CurriculumSettings, strict_to_cls)
+    cattr.register_structure_hook(Lesson, strict_to_cls)
+    cattr.register_structure_hook(
+        ParameterRandomizationSettings, ParameterRandomizationSettings.structure
+    )
+    cattr.register_unstructure_hook(
+        ParameterRandomizationSettings, ParameterRandomizationSettings.unstructure
+    )
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
         DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict

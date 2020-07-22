@@ -44,3 +44,10 @@ def create_name_behavior_id(name: str, team_id: int) -> str:
    :return: name_behavior_id
    """
     return name + "?team=" + str(team_id)
+
+
+def get_global_agent_id(worker_id: int, agent_id: int) -> str:
+    """
+    Create an agent id that is unique across environment workers using the worker_id.
+    """
+    return f"${worker_id}-{agent_id}"

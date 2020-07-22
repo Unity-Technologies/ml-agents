@@ -3,7 +3,7 @@ from mlagents.tf_utils import tf
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
-class BCModel(object):
+class BCModel:
     def __init__(
         self, policy: TFPolicy, learning_rate: float = 3e-4, anneal_steps: int = 0
     ):
@@ -26,7 +26,7 @@ class BCModel(object):
         self.done_expert = tf.placeholder(shape=[None, 1], dtype=tf.float32)
         self.done_policy = tf.placeholder(shape=[None, 1], dtype=tf.float32)
 
-        if self.policy.brain.vector_action_space_type == "continuous":
+        if self.policy.behavior_spec.is_action_continuous():
             action_length = self.policy.act_size[0]
             self.action_in_expert = tf.placeholder(
                 shape=[None, action_length], dtype=tf.float32

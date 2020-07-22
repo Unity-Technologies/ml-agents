@@ -21,7 +21,7 @@ feedback on how to optimally perform your changes or reasons for not doing it.
 
 Lastly, if you're looking for input on what to contribute, feel free to reach
 out to us directly at ml-agents@unity3d.com and/or browse the GitHub issues with
-the `contributions welcome` label.
+the `Requests` or `Bug` label.
 
 ## Git Branches
 

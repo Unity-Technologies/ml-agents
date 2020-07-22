@@ -9,7 +9,6 @@ namespace Unity.MLAgents
     {
         /// <summary>
         /// Values within the summary period are averaged before reporting.
-        /// Note that values from the same C# environment in the same step may replace each other.
         /// </summary>
         Average = 0,
 
@@ -42,7 +41,7 @@ namespace Unity.MLAgents
         internal StatsRecorder()
         {
             m_Channel = new StatsSideChannel();
-            SideChannelsManager.RegisterSideChannel(m_Channel);
+            SideChannelManager.RegisterSideChannel(m_Channel);
         }
 
         /// <summary>
@@ -65,7 +64,7 @@ namespace Unity.MLAgents
 
         internal void Dispose()
         {
-            SideChannelsManager.UnregisterSideChannel(m_Channel);
+            SideChannelManager.UnregisterSideChannel(m_Channel);
         }
     }
 }

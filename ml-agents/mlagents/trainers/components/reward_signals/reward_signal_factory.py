@@ -31,7 +31,7 @@ def create_reward_signal(
     """
     rcls = NAME_TO_CLASS.get(name)
     if not rcls:
-        raise UnityTrainerException("Unknown reward signal type {0}".format(name))
+        raise UnityTrainerException(f"Unknown reward signal type {name}")
 
     class_inst = rcls(policy, settings)
     return class_inst
