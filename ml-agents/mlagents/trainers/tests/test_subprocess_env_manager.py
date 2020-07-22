@@ -183,7 +183,6 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         assert agent_manager_mock.policy == mock_policy
 
 
-@pytest.mark.timeout(60)
 @pytest.mark.parametrize("num_envs", [1, 4])
 def test_subprocess_env_endtoend(num_envs):
     def simple_env_factory(worker_id, config):
