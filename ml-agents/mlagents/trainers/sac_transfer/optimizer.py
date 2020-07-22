@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Any, Mapping, cast
 from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.sac_transfer.network import SACPolicyNetwork, SACTargetNetwork
+from mlagents.trainers.sac_transfer.network import SACTransferPolicyNetwork, SACTransferTargetNetwork
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -144,7 +144,7 @@ class SACTransferOptimizer(TFOptimizer):
                 self.update_batch_value: Optional[tf.Operation] = None
                 self.update_batch_entropy: Optional[tf.Operation] = None
 
-                self.policy_network = SACPolicyNetwork(
+                self.policy_network = SACTransferPolicyNetwork(
                     policy=self.policy,
                     m_size=self.policy.m_size,  # 3x policy.m_size
                     h_size=h_size,
@@ -154,7 +154,7 @@ class SACTransferOptimizer(TFOptimizer):
                     stream_names=stream_names,
                     vis_encode_type=vis_encode_type,
                 )
-                self.target_network = SACTargetNetwork(
+                self.target_network = SACTransferTargetNetwork(
                     policy=self.policy,
                     m_size=self.policy.m_size,  # 1x policy.m_size
                     h_size=h_size,
@@ -187,16 +187,16 @@ class SACTransferOptimizer(TFOptimizer):
                 self.selected_actions = (
                     self.policy.selected_actions
                 )  # For GAIL and other reward signals
-                if self.policy.normalize:
-                    target_update_norm = self.target_network.copy_normalization(
-                        self.policy.running_mean,
-                        self.policy.running_variance,
-                        self.policy.normalization_steps,
-                    )
-                    # Update the normalization of the optimizer when the policy does.
-                    self.policy.update_normalization_op = tf.group(
-                        [self.policy.update_normalization_op, target_update_norm]
-                    )
+                # if self.policy.normalize:
+                #     target_update_norm = self.target_network.copy_normalization(
+                #         self.policy.running_mean,
+                #         self.policy.running_variance,
+                #         self.policy.normalization_steps,
+                #     )
+                #     # Update the normalization of the optimizer when the policy does.
+                #     self.policy.update_normalization_op = tf.group(
+                #         [self.policy.update_normalization_op, target_update_norm]
+                #     )
 
                 self.policy.initialize_or_load()
 
@@ -232,8 +232,8 @@ class SACTransferOptimizer(TFOptimizer):
         """
         self.vector_in = self.policy.vector_in
         self.visual_in = self.policy.visual_in
-        self.next_vector_in = self.target_network.vector_in
-        self.next_visual_in = self.target_network.visual_in
+        self.next_vector_in = self.policy.vector_next
+        self.next_visual_in = self.policy.visual_next
         self.sequence_length_ph = self.policy.sequence_length_ph
         self.next_sequence_length_ph = self.target_network.sequence_length_ph
         if not self.policy.use_continuous_act:

@@ -137,6 +137,7 @@ class TransferPolicy(TFPolicy):
         inverse_model=False,
         reuse_encoder=True,
         use_bisim=True,
+        tau=0.1,
     ) -> None:
         """
         Builds the tensorflow graph needed for this policy.
@@ -148,6 +149,7 @@ class TransferPolicy(TFPolicy):
         self.predict_return = predict_return
         self.use_bisim = use_bisim
         self.transfer = transfer
+        self.tau = tau
 
         with self.graph.as_default():
             tf.set_random_seed(self.seed)
@@ -192,15 +194,16 @@ class TransferPolicy(TFPolicy):
                 action_layers
             )
 
-            # if not reuse_encoder:
-            #    self.targ_encoder = tf.stop_gradient(self.targ_encoder)
-            #    self._create_hard_copy()
+            if not reuse_encoder:
+               self.targ_encoder = tf.stop_gradient(self.targ_encoder)
+               self._create_hard_copy()
+               self._create_soft_copy()
 
-            # if self.inverse_model:
-            #     with tf.variable_scope("inverse"):
-            #         self.create_inverse_model(
-            #             self.encoder, self.targ_encoder, inverse_layers
-            #         )
+            if self.inverse_model:
+                with tf.variable_scope("inverse"):
+                    self.create_inverse_model(
+                        self.encoder, self.targ_encoder, inverse_layers
+                    )
 
             with tf.variable_scope("predict"):
                 self.create_forward_model(
@@ -493,12 +496,24 @@ class TransferPolicy(TFPolicy):
         e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="encoding")
 
         with tf.variable_scope("hard_replacement"):
-            self.target_replace_op = [
-                tf.assign(t, 0.9 * t + 0.1 * e) for t, e in zip(t_params, e_params)
+            self.target_hardcp_op = [
+                tf.assign(t, e) for t, e in zip(t_params, e_params)
+            ]
+
+    def _create_soft_copy(self):
+        t_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="target_enc")
+        e_params = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="encoding")
+
+        with tf.variable_scope("soft_replacement"):
+            self.target_softcp_op = [
+                tf.assign(t, (1-self.tau) * t + self.tau * e) for t, e in zip(t_params, e_params)
             ]
 
     def run_hard_copy(self):
-        self.sess.run(self.target_replace_op)
+        self.sess.run(self.target_hardcp_op)
+    
+    def run_soft_copy(self):
+        self.sess.run(self.target_softcp_op)
 
     def _create_cc_actor(
         self,
@@ -879,8 +894,8 @@ class TransferPolicy(TFPolicy):
                 # activation=tf.tanh,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
-        # if not self.transfer:
-        encoded_next_state = tf.stop_gradient(encoded_next_state)
+        if not self.transfer:
+            encoded_next_state = tf.stop_gradient(encoded_next_state)
         squared_difference = 0.5 * tf.reduce_sum(
             tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
         )

@@ -677,8 +677,8 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.update_dict)
 
         # update target encoder
-        if not self.reuse_encoder and self.num_updates % self.copy_every == 0:
-            self.policy.run_hard_copy()
+        if not self.reuse_encoder: # and self.num_updates % self.copy_every == 0:
+            self.policy.run_soft_copy()
             # print("copy")
             # self.policy.get_encoder_weights()
 
@@ -720,8 +720,8 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.model_only_update_dict)
 
         # update target encoder
-        if not self.reuse_encoder and self.num_updates % self.copy_every == 0:
-            self.policy.run_hard_copy()
+        if not self.reuse_encoder: # and self.num_updates % self.copy_every == 0:
+            self.policy.run_soft_copy()
 
         for stat_name, update_name in stats_needed.items():
             if update_name in update_vals.keys():

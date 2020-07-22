@@ -299,7 +299,7 @@ def test_2d_transfer(
         forward_layers=0,
         encoder_layers=2,
         action_layers=1,
-        use_bisim=False,
+        use_bisim=True,
     )
     config = attr.evolve(
         config, hyperparameters=new_hyperparams, max_steps=500000, summary_freq=5000
@@ -313,17 +313,17 @@ if __name__ == "__main__":
     
     for seed in range(5):
         if seed > -1:
-            for obs in ["long-n", "longpre-n"]:
+            for obs in ["normal"]:
                 test_2d_model(seed=seed, obs_spec_type=obs, run_id="model_bisim_" + obs)
                 # test_2d_ppo(seed=seed, obs_spec_type=obs, run_id="ppo_" + obs)
 
-        # for obs in ["long-n", "longpre-n"]:
-        #     test_2d_transfer(
-        #         seed=seed,
-        #         obs_spec_type=obs,
-        #         transfer_from="./transfer_results/model_normal_s" + str(seed) + "/Simple",
-        #         run_id="normal_transfer_bisim_to_" + obs,
-        #     )
+        for obs in ["long-n", "longpre-n"]:
+            test_2d_transfer(
+                seed=seed,
+                obs_spec_type=obs,
+                transfer_from="./transfer_results/model_bisim_normal_s" + str(seed) + "/Simple",
+                run_id="normal_transfer_bisim_to_" + obs,
+            )
 
     #     # test_2d_model(config=SAC_CONFIG, run_id="sac_rich2_hard", seed=0)
     #     for obs in ["normal", "rich2"]:
