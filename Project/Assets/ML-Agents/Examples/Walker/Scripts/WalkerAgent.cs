@@ -250,7 +250,7 @@ public class WalkerAgent : Agent
 //                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);
         // c. Encourage head height.
         headHeightOverFeetReward =
-            (((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
+            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
 //        AddReward(
 //            +0.02f * moveTowardsTargetReward
 //            + 0.01f * lookAtTargetReward
@@ -281,6 +281,9 @@ public class WalkerAgent : Agent
 //        avgVelValue = velSum/4;
 //        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed, avgVelValue);
         velInverseLerpVal = VelocityInverseLerp(cubeForward * walkingSpeed);
+        rewardManager.rewardsDict["matchSpeed"].rewardThisStep = velInverseLerpVal;
+        rewardManager.rewardsDict["lookAtTarget"].rewardThisStep = lookAtTargetReward;
+        rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
 //        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkGroup.walkingSpeed);
 //        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward);
         rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
