@@ -1,8 +1,8 @@
-from enum import Enum
 from typing import Callable, Dict, List, Tuple, NamedTuple
 
 import numpy as np
 from mlagents.tf_utils import tf
+from mlagents.trainers.settings import EncoderType, ScheduleType
 
 from mlagents.trainers.exception import UnityTrainerException
 
@@ -18,17 +18,6 @@ class Tensor3DShape(NamedTuple):
     height: int
     width: int
     num_channels: int
-
-
-class EncoderType(Enum):
-    SIMPLE = "simple"
-    NATURE_CNN = "nature_cnn"
-    RESNET = "resnet"
-
-
-class ScheduleType(Enum):
-    CONSTANT = "constant"
-    LINEAR = "linear"
 
 
 class NormalizerTensors(NamedTuple):
