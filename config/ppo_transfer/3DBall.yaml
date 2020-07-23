@@ -12,7 +12,7 @@ behaviors:
       learning_rate_schedule: linear
       model_schedule: linear
       load_model: false
-      encoder_layers: 2
+      encoder_layers: 1
       action_layers: 1
       policy_layers: 1
       forward_layers: 1
@@ -26,7 +26,7 @@ behaviors:
       with_prior: false
       predict_return: true
       use_bisim: false
-      separate_value_train: true
+      separate_value_train: false
       in_batch_alter: true
     network_settings:
       normalize: true

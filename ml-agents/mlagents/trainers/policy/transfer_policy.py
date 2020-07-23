@@ -847,8 +847,8 @@ class TransferPolicy(TFPolicy):
         """
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
         hidden = combined_input
-        # if self.transfer:
-        #    hidden = tf.stop_gradient(hidden)
+        if not self.transfer:
+            hidden = tf.stop_gradient(hidden)
 
         for i in range(forward_layers):
             hidden = tf.layers.dense(
@@ -894,10 +894,11 @@ class TransferPolicy(TFPolicy):
     ):
 
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
-
         hidden = combined_input
-        # if self.transfer:
-        #    hidden = tf.stop_gradient(hidden)
+
+        if not self.transfer:
+            hidden = tf.stop_gradient(hidden)
+
         for i in range(forward_layers):
             hidden = tf.layers.dense(
                 hidden,
