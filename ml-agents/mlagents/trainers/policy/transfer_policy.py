@@ -185,12 +185,12 @@ class TransferPolicy(TFPolicy):
                 reuse_encoder,
             )
 
-            self.action_encoder = self._create_action_encoder(
-                self.current_action,
-                self.h_size,
-                self.action_feature_size,
-                action_layers,
-            )
+            self.action_encoder = self.current_action  # self._create_action_encoder(
+            #                self.current_action,
+            #                self.h_size,
+            #                self.action_feature_size,
+            #                action_layers,
+            #            )
 
             if not reuse_encoder:
                 self.targ_encoder = tf.stop_gradient(self.targ_encoder)
