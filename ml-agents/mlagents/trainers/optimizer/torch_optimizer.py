@@ -12,12 +12,12 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.settings import TrainerSettings, RewardSignalType
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.models_torch import list_to_tensor
+from mlagents.trainers.torch.models import list_to_tensor
 
 
 class TorchOptimizer(Optimizer):  # pylint: disable=W0223
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
-        super(TorchOptimizer, self).__init__()
+        super().__init__()
         self.policy = policy
         self.trainer_settings = trainer_settings
         self.update_dict: Dict[str, torch.Tensor] = {}

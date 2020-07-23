@@ -7,7 +7,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.models_torch import list_to_tensor
+from mlagents.trainers.torch.models import list_to_tensor
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -21,7 +21,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         """
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
 
-        super(TorchPPOOptimizer, self).__init__(policy, trainer_settings)
+        super().__init__(policy, trainer_settings)
         params = list(self.policy.actor_critic.parameters())
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
@@ -92,8 +92,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         returns = {}
         old_values = {}
         for name in self.reward_signals:
-            old_values[name] = list_to_tensor(batch["{}_value_estimates".format(name)])
-            returns[name] = list_to_tensor(batch["{}_returns".format(name)])
+            old_values[name] = list_to_tensor(batch[f"{name}_value_estimates"])
+            returns[name] = list_to_tensor(batch[f"{name}_returns"])
 
         vec_obs = [list_to_tensor(batch["vector_obs"])]
         act_masks = list_to_tensor(batch["action_mask"])

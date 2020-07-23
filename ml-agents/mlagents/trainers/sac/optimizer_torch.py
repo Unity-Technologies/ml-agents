@@ -7,7 +7,7 @@ from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.models_torch import (
+from mlagents.trainers.torch.models import (
     Critic,
     QNetwork,
     ActionType,

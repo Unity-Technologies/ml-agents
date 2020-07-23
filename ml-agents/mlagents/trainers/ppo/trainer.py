@@ -17,14 +17,11 @@ from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, PPOSettings
-
-
-class TestingConfiguration:
-    use_torch = True
-    max_steps = 0
-    env_name = ""
-    device = "cpu"
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    PPOSettings,
+    TestingConfiguration,
+)
 
 
 logger = get_logger(__name__)

@@ -12,11 +12,9 @@ from mlagents.trainers.policy import Policy
 from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.models_torch import ActorCritic
-
-from mlagents.trainers.ppo.trainer import TestingConfiguration
+from mlagents.trainers.torch.models import ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -48,8 +46,8 @@ class TorchPolicy(Policy):
         in continuous output.
         """
         super().__init__(
-            behavior_spec,
             seed,
+            behavior_spec,
             trainer_settings,
             model_path,
             load,
@@ -290,3 +288,9 @@ class TorchPolicy(Policy):
         """
         self.global_step += n_steps
         return self.get_current_step()
+
+    def load_weights(self, values: List[np.ndarray]) -> None:
+        pass
+
+    def get_weights(self) -> List[np.ndarray]:
+        return []

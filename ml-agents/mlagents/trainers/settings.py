@@ -44,6 +44,13 @@ def defaultdict_to_dict(d: DefaultDict) -> Dict:
     return {key: cattr.unstructure(val) for key, val in d.items()}
 
 
+class TestingConfiguration:
+    use_torch = True
+    max_steps = 0
+    env_name = ""
+    device = "cpu"
+
+
 @attr.s(auto_attribs=True)
 class ExportableSettings:
     def as_dict(self):

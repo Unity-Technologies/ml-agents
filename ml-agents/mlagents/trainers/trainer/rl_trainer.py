@@ -24,9 +24,8 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.settings import TestingConfiguration
 from mlagents.trainers.stats import StatsPropertyType
-
-from mlagents.trainers.ppo.trainer import TestingConfiguration
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 

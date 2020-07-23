@@ -22,7 +22,7 @@ from mlagents.trainers.stats import (
 )
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.settings import RunOptions, TestingConfiguration
 
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
@@ -36,7 +36,6 @@ from mlagents_envs.timers import (
 )
 from mlagents_envs import logging_util
 
-from mlagents.trainers.ppo.trainer import TestingConfiguration
 from mlagents_envs.registry import default_registry
 
 logger = logging_util.get_logger(__name__)
