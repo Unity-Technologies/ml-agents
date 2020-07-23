@@ -2,7 +2,7 @@ from typing import Optional, Any, Dict, cast
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType
+from mlagents.trainers.tf.models import ModelUtils, EncoderType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer

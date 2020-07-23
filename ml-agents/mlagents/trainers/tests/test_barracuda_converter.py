@@ -2,7 +2,7 @@ import os
 import tempfile
 import pytest
 
-import mlagents.trainers.tensorflow_to_barracuda as tf2bc
+import mlagents.trainers.tf.tensorflow_to_barracuda as tf2bc
 from mlagents.trainers.tests.test_nn_policy import create_policy_mock
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.tf_utils import tf
