@@ -29,13 +29,22 @@ namespace Unity.MLAgentsExamples
                 touchingGround = true;
                 if (penalizeGroundContact)
                 {
-                    agent.SetReward(groundContactPenalty);
+//                    agent.SetReward(groundContactPenalty);
+                    agent.SetReward(0);
                 }
 
                 if (agentDoneOnGroundContact)
                 {
                     agent.EndEpisode();
                 }
+            }
+        }
+
+        void FixedUpdate()
+        {
+            if (touchingGround)
+            {
+                agent.SetReward(0);
             }
         }
 
