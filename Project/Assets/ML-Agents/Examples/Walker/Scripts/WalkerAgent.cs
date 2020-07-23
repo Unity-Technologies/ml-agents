@@ -244,7 +244,8 @@ public class WalkerAgent : Agent
 //        var moveTowardsTargetReward = Vector3.Dot(cubeForward,
 //            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[hips].rb.velocity, maximumWalkingSpeed));
         // b. Rotation alignment with goal direction.
-        lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
+//        lookAtTargetReward = Vector3.Dot(cubeForward, head.forward);
+        lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
 //        lookAtTargetReward =
 //            Mathf.Exp(-0.1f * (cubeForward * walkingSpeed -
 //                               m_JdController.bodyPartsDict[hips].rb.velocity).sqrMagnitude);

@@ -2070,6 +2070,21 @@ PrefabInstance:
       propertyPath: randomizeWalkSpeedEachEpisode
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7933235353030744136, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933235353030744136, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7933235353030744136, guid: 765582efd9dda46ed98564603316353f,
+        type: 3}
+      propertyPath: groundContactPenalty
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 765582efd9dda46ed98564603316353f, type: 3}
 --- !u!1 &6065910098925129117 stripped
@@ -2105,6 +2120,11 @@ PrefabInstance:
         type: 3}
       propertyPath: onCollisionEnterEvent.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3826955612593018128, guid: 46734abd0de454192b407379c6a4ab8d,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
         type: 3}
