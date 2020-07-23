@@ -14,7 +14,7 @@ behaviors:
       encoder_layers: 2
       action_layers: 1
       policy_layers: 1
-      forward_layers: 0
+      forward_layers: 1
       value_layers: 1
       feature_size: 64
       action_feature_size: 32
@@ -25,7 +25,7 @@ behaviors:
       with_prior: false
       predict_return: true
       use_bisim: false
-      separate_value_train: false
+      separate_value_train: true
       train_model: false
       load_model: true
       train_action: false
