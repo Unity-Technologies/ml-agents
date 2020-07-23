@@ -2,14 +2,6 @@
 # ## ML-Agent Learning (PPO)
 # Contains an implementation of PPO as described in: https://arxiv.org/abs/1707.06347
 
-
-class TestingConfiguration:
-    use_torch = True
-    max_steps = 0
-    env_name = ""
-    device = "cpu"
-
-
 from collections import defaultdict
 from typing import cast
 
@@ -26,6 +18,14 @@ from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
+
+
+class TestingConfiguration:
+    use_torch = True
+    max_steps = 0
+    env_name = ""
+    device = "cpu"
+
 
 logger = get_logger(__name__)
 
@@ -64,7 +64,7 @@ class PPOTrainer(RLTrainer):
         self.framework = "torch" if TestingConfiguration.use_torch else "tf"
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
-        self.policy: TFPolicy = None  # type: ignore
+        self.policy: Policy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -221,7 +221,7 @@ class PPOTrainer(RLTrainer):
         return policy
 
     def create_torch_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
         """
         Creates a PPO policy to trainers list of policies.
@@ -231,7 +231,7 @@ class PPOTrainer(RLTrainer):
         """
         policy = TorchPolicy(
             self.seed,
-            brain_parameters,
+            behavior_spec,
             self.trainer_settings,
             self.artifact_path,
             self.load,
@@ -255,6 +255,7 @@ class PPOTrainer(RLTrainer):
                 )
             )
         self.policy = policy
+        self.policies[parsed_behavior_id.behavior_id] = policy
         if self.framework == "torch":
             self.optimizer = TorchPPOOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore

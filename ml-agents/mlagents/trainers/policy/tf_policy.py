@@ -7,7 +7,6 @@ from mlagents_envs.timers import timed
 from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
-from mlagents_envs.exception import UnityException
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
@@ -302,10 +301,6 @@ class TFPolicy(Policy):
         feed_dict = self.fill_eval_dict(feed_dict, decision_requests)
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
-
-    def export_model(self, step=0):
-        settings = SerializationSettings(self.model_path, self.brain.brain_name)
-        export_policy_model(settings, self.graph, self.sess)
 
     def get_action(
         self, decision_requests: DecisionSteps, worker_id: int = 0

@@ -7,7 +7,6 @@ from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.brain import CameraResolution
 from mlagents.trainers.models_torch import (
     Critic,
     QNetwork,
@@ -31,28 +30,17 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            vector_sizes: List[int],
-            visual_sizes: List[CameraResolution],
+            observation_shapes: List[Tuple[int, ...]],
             network_settings: NetworkSettings,
             act_type: ActionType,
             act_size: List[int],
         ):
             super().__init__()
             self.q1_network = QNetwork(
-                stream_names,
-                vector_sizes,
-                visual_sizes,
-                network_settings,
-                act_type,
-                act_size,
+                stream_names, observation_shapes, network_settings, act_type, act_size
             )
             self.q2_network = QNetwork(
-                stream_names,
-                vector_sizes,
-                visual_sizes,
-                network_settings,
-                act_type,
-                act_size,
+                stream_names, observation_shapes, network_settings, act_type, act_size
             )
 
         def forward(
@@ -95,25 +83,18 @@ class TorchSACOptimizer(TorchOptimizer):
             name: int(self.reward_signals[name].use_terminal_states)
             for name in self.stream_names
         }
-        # self.disable_use_dones = {
-        #     name: self.use_dones_in_backup[name].assign(0.0)
-        #     for name in stream_names
-        # }
 
-        brain = policy.brain
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            [brain.vector_observation_space_size],
-            brain.camera_resolutions,
+            self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
-            ActionType.from_str(policy.act_type),
+            self.policy.behavior_spec.action_type,
             self.act_size,
         )
         self.target_network = Critic(
             self.stream_names,
             policy_network_settings.hidden_units,
-            [brain.vector_observation_space_size],
-            brain.camera_resolutions,
+            self.policy.behavior_spec.observation_shapes,
             policy_network_settings.normalize,
             policy_network_settings.num_layers,
             policy_network_settings.memory.memory_size
@@ -367,7 +348,7 @@ class TorchSACOptimizer(TorchOptimizer):
         """
         rewards = {}
         for name in self.reward_signals:
-            rewards[name] = list_to_tensor(batch["{}_rewards".format(name)])
+            rewards[name] = list_to_tensor(batch[f"{name}_rewards"])
 
         vec_obs = [list_to_tensor(batch["vector_obs"])]
         next_vec_obs = [list_to_tensor(batch["next_vector_in"])]

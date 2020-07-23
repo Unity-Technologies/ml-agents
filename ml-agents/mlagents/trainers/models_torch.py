@@ -5,6 +5,7 @@ import torch
 from torch import nn
 import numpy as np
 
+from mlagents_envs.base_env import ActionType
 from mlagents.trainers.distributions_torch import (
     GaussianDistribution,
     MultiCategoricalDistribution,
@@ -12,7 +13,6 @@ from mlagents.trainers.distributions_torch import (
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.models import EncoderType
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.brain import CameraResolution
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -30,20 +30,6 @@ def list_to_tensor(
     calling as_tensor on the list directly.
     """
     return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
-
-
-class ActionType(Enum):
-    DISCRETE = "discrete"
-    CONTINUOUS = "continuous"
-
-    @staticmethod
-    def from_str(label):
-        if label in "continuous":
-            return ActionType.CONTINUOUS
-        elif label in "discrete":
-            return ActionType.DISCRETE
-        else:
-            raise NotImplementedError
 
 
 class LearningRateSchedule(Enum):
@@ -88,8 +74,7 @@ def actions_to_onehot(
 class NetworkBody(nn.Module):
     def __init__(
         self,
-        vector_sizes,
-        visual_sizes,
+        observation_shapes,
         h_size,
         normalize,
         num_layers,
@@ -97,34 +82,19 @@ class NetworkBody(nn.Module):
         vis_encode_type,
         use_lstm,
     ):
-        super(NetworkBody, self).__init__()
+        super().__init__()
         self.normalize = normalize
-        self.visual_encoders = []
-        self.vector_encoders = []
-        self.vector_normalizers = []
         self.use_lstm = use_lstm
         self.h_size = h_size
         self.m_size = m_size
 
-        visual_encoder = ModelUtils.get_encoder_for_type(vis_encode_type)
-        for vector_size in vector_sizes:
-            if vector_size != 0:
-                self.vector_normalizers.append(Normalizer(vector_size))
-                self.vector_encoders.append(
-                    VectorEncoder(vector_size, h_size, num_layers)
-                )
-        for visual_size in visual_sizes:
-            self.visual_encoders.append(
-                visual_encoder(
-                    visual_size.height,
-                    visual_size.width,
-                    visual_size.num_channels,
-                    h_size,
-                )
-            )
-        self.vector_normalizers = nn.ModuleList(self.vector_normalizers)
-        self.vector_encoders = nn.ModuleList(self.vector_encoders)
-        self.visual_encoders = nn.ModuleList(self.visual_encoders)
+        (
+            self.visual_encoders,
+            self.vector_encoders,
+            self.vector_normalizers,
+        ) = ModelUtils.create_encoders(
+            observation_shapes, h_size, num_layers, vis_encode_type
+        )
         if use_lstm:
             self.lstm = nn.LSTM(h_size, m_size // 2, 1)
 
@@ -186,8 +156,7 @@ class QNetwork(NetworkBody):
     def __init__(  # pylint: disable=W0231
         self,
         stream_names: List[str],
-        vector_sizes: List[int],
-        visual_sizes: List[CameraResolution],
+        observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
         act_type: ActionType,
         act_size: List[int],
@@ -195,9 +164,6 @@ class QNetwork(NetworkBody):
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
         self.normalize = network_settings.normalize
-        self.visual_encoders = []
-        self.vector_encoders = []
-        self.vector_normalizers = []
         self.use_lstm = network_settings.memory is not None
         self.h_size = network_settings.hidden_units
         self.m_size = (
@@ -206,32 +172,18 @@ class QNetwork(NetworkBody):
             else 0
         )
 
-        visual_encoder = ModelUtils.get_encoder_for_type(
-            network_settings.vis_encode_type
+        (
+            self.visual_encoders,
+            self.vector_encoders,
+            self.vector_normalizers,
+        ) = ModelUtils.create_encoders(
+            observation_shapes,
+            self.h_size,
+            network_settings.num_layers,
+            network_settings.vis_encode_type,
+            action_size=sum(act_size) if act_type == ActionType.CONTINUOUS else 0,
         )
-        for vector_size in vector_sizes:
-            if vector_size != 0:
-                self.vector_normalizers.append(Normalizer(vector_size))
-                input_size = (
-                    vector_size + sum(act_size)
-                    if not act_type == ActionType.DISCRETE
-                    else vector_size
-                )
-                self.vector_encoders.append(
-                    VectorEncoder(input_size, self.h_size, network_settings.num_layers)
-                )
-        for visual_size in visual_sizes:
-            self.visual_encoders.append(
-                visual_encoder(
-                    visual_size.height,
-                    visual_size.width,
-                    visual_size.num_channels,
-                    self.h_size,
-                )
-            )
-        self.vector_normalizers = nn.ModuleList(self.vector_normalizers)
-        self.vector_encoders = nn.ModuleList(self.vector_encoders)
-        self.visual_encoders = nn.ModuleList(self.visual_encoders)
+
         if self.use_lstm:
             self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
         else:
@@ -300,8 +252,7 @@ class ActorCritic(nn.Module):
     def __init__(
         self,
         h_size,
-        vector_sizes,
-        visual_sizes,
+        observation_shapes,
         act_size,
         normalize,
         num_layers,
@@ -314,8 +265,8 @@ class ActorCritic(nn.Module):
         conditional_sigma=False,
         tanh_squash=False,
     ):
-        super(ActorCritic, self).__init__()
-        self.act_type = ActionType.from_str(act_type)
+        super().__init__()
+        self.act_type = act_type
         self.act_size = act_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
         self.memory_size = torch.nn.Parameter(torch.Tensor([0]))
@@ -323,8 +274,7 @@ class ActorCritic(nn.Module):
         self.act_size_vector = torch.nn.Parameter(torch.Tensor(act_size))
         self.separate_critic = separate_critic
         self.network_body = NetworkBody(
-            vector_sizes,
-            visual_sizes,
+            observation_shapes,
             h_size,
             normalize,
             num_layers,
@@ -349,8 +299,7 @@ class ActorCritic(nn.Module):
             self.critic = Critic(
                 stream_names,
                 h_size,
-                vector_sizes,
-                visual_sizes,
+                observation_shapes,
                 normalize,
                 num_layers,
                 m_size,
@@ -441,17 +390,15 @@ class Critic(nn.Module):
         self,
         stream_names,
         h_size,
-        vector_sizes,
-        visual_sizes,
+        observation_shapes,
         normalize,
         num_layers,
         m_size,
         vis_encode_type,
     ):
-        super(Critic, self).__init__()
+        super().__init__()
         self.network_body = NetworkBody(
-            vector_sizes,
-            visual_sizes,
+            observation_shapes,
             h_size,
             normalize,
             num_layers,
@@ -469,7 +416,7 @@ class Critic(nn.Module):
 
 class Normalizer(nn.Module):
     def __init__(self, vec_obs_size, **kwargs):
-        super(Normalizer, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.normalization_steps = torch.tensor(1)
         self.running_mean = torch.zeros(vec_obs_size)
         self.running_variance = torch.ones(vec_obs_size)
@@ -506,7 +453,7 @@ class Normalizer(nn.Module):
 
 class ValueHeads(nn.Module):
     def __init__(self, stream_names, input_size, output_size=1):
-        super(ValueHeads, self).__init__()
+        super().__init__()
         self.stream_names = stream_names
         _value_heads = {}
 
@@ -527,7 +474,7 @@ class ValueHeads(nn.Module):
 
 class VectorEncoder(nn.Module):
     def __init__(self, input_size, hidden_size, num_layers, **kwargs):
-        super(VectorEncoder, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.layers = [nn.Linear(input_size, hidden_size)]
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
@@ -560,7 +507,7 @@ def pool_out_shape(h_w, kernel_size):
 
 class SimpleVisualEncoder(nn.Module):
     def __init__(self, height, width, initial_channels, output_size):
-        super(SimpleVisualEncoder, self).__init__()
+        super().__init__()
         self.h_size = output_size
         conv_1_hw = conv_output_shape((height, width), 8, 4)
         conv_2_hw = conv_output_shape(conv_1_hw, 4, 2)
@@ -580,7 +527,7 @@ class SimpleVisualEncoder(nn.Module):
 
 class NatureVisualEncoder(nn.Module):
     def __init__(self, height, width, initial_channels, output_size):
-        super(NatureVisualEncoder, self).__init__()
+        super().__init__()
         self.h_size = output_size
         conv_1_hw = conv_output_shape((height, width), 8, 4)
         conv_2_hw = conv_output_shape(conv_1_hw, 4, 2)
@@ -602,7 +549,7 @@ class NatureVisualEncoder(nn.Module):
 
 class GlobalSteps(nn.Module):
     def __init__(self):
-        super(GlobalSteps, self).__init__()
+        super().__init__()
         self.global_step = torch.Tensor([0])
 
     def increment(self, value):
@@ -612,13 +559,13 @@ class GlobalSteps(nn.Module):
 class LearningRate(nn.Module):
     def __init__(self, lr):
         # Todo: add learning rate decay
-        super(LearningRate, self).__init__()
+        super().__init__()
         self.learning_rate = torch.Tensor([lr])
 
 
 class ResNetVisualEncoder(nn.Module):
     def __init__(self, height, width, initial_channels, final_hidden):
-        super(ResNetVisualEncoder, self).__init__()
+        super().__init__()
         n_channels = [16, 32, 32]  # channel for each stack
         n_blocks = 2  # number of residual blocks
         self.layers = []
@@ -699,3 +646,50 @@ class ModelUtils:
                 f"Visual observation resolution ({width}x{height}) is too small for"
                 f"the provided EncoderType ({vis_encoder_type.value}). The min dimension is {min_res}"
             )
+
+    @staticmethod
+    def create_encoders(
+        observation_shapes: List[Tuple[int, ...]],
+        h_size: int,
+        num_layers: int,
+        vis_encode_type: EncoderType,
+        action_size: int = 0,
+    ) -> Tuple[nn.ModuleList, nn.ModuleList, nn.ModuleList]:
+        """
+        Creates visual and vector encoders, along with their normalizers.
+        :param observation_shapes: List of Tuples that represent the action dimensions.
+        :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
+            conditioining network on other values (e.g. actions for a Q function)
+        :param h_size: Number of hidden units per layer.
+        :param num_layers: Depth of MLP per encoder.
+        :param vis_encode_type: Type of visual encoder to use.
+        :return: Tuple of visual encoders, vector encoders, and vector normalizers, each as a list.
+        """
+        visual_encoders: List[nn.Module] = []
+        vector_encoders: List[nn.Module] = []
+        vector_normalizers: List[nn.Module] = []
+
+        visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
+        vector_size = 0
+        for i, dimension in enumerate(observation_shapes):
+            if len(dimension) == 3:
+                visual_encoders.append(
+                    visual_encoder_class(
+                        dimension[0], dimension[1], dimension[2], h_size
+                    )
+                )
+            elif len(dimension) == 1:
+                vector_size += dimension[0]
+            else:
+                raise UnityTrainerException(
+                    f"Unsupported shape of {dimension} for observation {i}"
+                )
+        vector_normalizers.append(Normalizer(vector_size))
+        vector_encoders.append(
+            VectorEncoder(vector_size + action_size, h_size, num_layers)
+        )
+        return (
+            nn.ModuleList(visual_encoders),
+            nn.ModuleList(vector_encoders),
+            nn.ModuleList(vector_normalizers),
+        )

@@ -5,6 +5,7 @@ import numpy as np
 from mlagents_envs.base_env import DecisionSteps
 from mlagents_envs.exception import UnityException
 
+from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
@@ -149,3 +150,26 @@ class Policy:
     @abstractmethod
     def get_current_step(self):
         pass
+
+    @abstractmethod
+    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
+        """
+        Checkpoints the policy on disk.
+
+        :param checkpoint_path: filepath to write the checkpoint
+        :param settings: SerializationSettings for exporting the model.
+        """
+        pass
+
+    @abstractmethod
+    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
+        """
+        Saves the serialized model, given a path and SerializationSettings
+
+        This method will save the policy graph to the given filepath.  The path
+        should be provided without an extension as multiple serialized model formats
+        may be generated as a result.
+
+        :param output_filepath: path (without suffix) for the model file(s)
+        :param settings: SerializationSettings for how to save the model.
+        """

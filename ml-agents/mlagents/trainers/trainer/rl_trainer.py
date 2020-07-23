@@ -17,8 +17,10 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
-from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
@@ -96,12 +98,30 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         return False
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> Policy:
         if self.framework == "torch":
-            return self.create_torch_policy(parsed_behavior_id, brain_parameters)
+            return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
-            return self.create_tf_policy(parsed_behavior_id, brain_parameters)
+            return self.create_tf_policy(parsed_behavior_id, behavior_spec)
+
+    @abc.abstractmethod
+    def create_torch_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TorchPolicy:
+        """
+        Create a Policy object that uses the PyTorch backend.
+        """
+        pass
+
+    @abc.abstractmethod
+    def create_tf_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TFPolicy:
+        """
+        Create a Policy object that uses the TensorFlow backend.
+        """
+        pass
 
     def _policy_mean_reward(self) -> Optional[float]:
         """ Returns the mean episode reward for the current policy. """

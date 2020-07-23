@@ -13,6 +13,7 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy.policy import Policy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
@@ -59,7 +60,7 @@ class SACTrainer(RLTrainer):
 
         self.load = load
         self.seed = seed
-        self.policy: TFPolicy = None  # type: ignore
+        self.policy: Policy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
         self.hyperparameters: SACSettings = cast(
             SACSettings, trainer_settings.hyperparameters
@@ -195,19 +196,7 @@ class SACTrainer(RLTrainer):
         self._update_reward_signals()
         return policy_was_updated
 
-    def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
-    ) -> TFPolicy:
-        policy = TFPolicy(
-            self.seed,
-            behavior_spec,
-            self.trainer_settings,
-            self.artifact_path,
-            self.load,
-            tanh_squash=True,
-            reparameterize=True,
-            create_tf_graph=False,
-        )
+    def maybe_load_replay_buffer(self):
         # Load the replay buffer if load
         if self.load and self.checkpoint_replay_buffer:
             try:
@@ -222,14 +211,12 @@ class SACTrainer(RLTrainer):
                 )
             )
 
-        return policy
-
     def create_tf_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
-    ) -> NNPolicy:
-        policy = NNPolicy(
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TFPolicy:
+        policy = TFPolicy(
             self.seed,
-            brain_parameters,
+            behavior_spec,
             self.trainer_settings,
             self.artifact_path,
             self.load,
@@ -237,20 +224,21 @@ class SACTrainer(RLTrainer):
             reparameterize=True,
             create_tf_graph=False,
         )
+        self.maybe_load_replay_buffer()
         return policy
 
     def create_torch_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
         """
         Creates a PPO policy to trainers list of policies.
         :param parsed_behavior_id:
-        :param brain_parameters: specifications for policy construction
+        :param behavior_spec: specifications for policy construction
         :return policy
         """
         policy = TorchPolicy(
             self.seed,
-            brain_parameters,
+            behavior_spec,
             self.trainer_settings,
             self.artifact_path,
             self.load,
@@ -258,6 +246,7 @@ class SACTrainer(RLTrainer):
             tanh_squash=True,
             separate_critic=True,
         )
+        self.maybe_load_replay_buffer()
         return policy
 
     def _update_sac_policy(self) -> bool:
@@ -363,6 +352,7 @@ class SACTrainer(RLTrainer):
                 )
             )
         self.policy = policy
+        self.policies[parsed_behavior_id.behavior_id] = policy
         if self.framework == "torch":
             self.optimizer = TorchSACOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
