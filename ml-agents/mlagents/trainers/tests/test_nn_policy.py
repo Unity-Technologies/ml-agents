@@ -9,10 +9,10 @@ from mlagents.tf_utils import tf
 
 
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.models import EncoderType, ModelUtils, Tensor3DShape
+from mlagents.trainers.tf.models import ModelUtils, Tensor3DShape
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings, EncoderType
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers import __version__
 

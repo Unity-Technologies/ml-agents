@@ -2,7 +2,7 @@ import pytest
 
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.distributions import (
+from mlagents.trainers.tf.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
