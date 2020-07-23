@@ -25,15 +25,15 @@ behaviors:
       with_prior: false
       predict_return: true
       use_bisim: false
-      separate_value_train: false
+      separate_value_train: true
       train_model: false
       load_model: true
       train_action: false
       load_action: false
       train_policy: true
-      load_policy: false
+      load_policy: true
       train_value: true
-      load_value: false
+      load_value: true
       transfer_path: "results/3d-tr-s1/3DBall"
       use_transfer: true
       in_batch_alter: true
