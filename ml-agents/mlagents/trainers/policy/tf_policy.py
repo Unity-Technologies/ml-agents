@@ -15,10 +15,10 @@ from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
-from mlagents.trainers.models import ModelUtils, EncoderType
+from mlagents.trainers.tf.models import ModelUtils, EncoderType
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers import __version__
-from mlagents.trainers.distributions import (
+from mlagents.trainers.tf.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )

@@ -11,7 +11,7 @@ import math
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.models import ScheduleType, EncoderType
+from mlagents.trainers.tf.models import ScheduleType, EncoderType
 
 from mlagents_envs import logging_util
 from mlagents_envs.side_channel.environment_parameters_channel import (

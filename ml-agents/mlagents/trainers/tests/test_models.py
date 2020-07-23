@@ -1,6 +1,6 @@
 import pytest
 
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 from mlagents.tf_utils import tf
 from mlagents_envs.base_env import BehaviorSpec, ActionType
 

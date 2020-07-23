@@ -19,7 +19,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers import tensorflow_to_barracuda as tf2bc
+from mlagents.trainers.tf import tensorflow_to_barracuda as tf2bc
 
 if LooseVersion(tf.__version__) < LooseVersion("1.12.0"):
     # ONNX is only tested on 1.12.0 and later
