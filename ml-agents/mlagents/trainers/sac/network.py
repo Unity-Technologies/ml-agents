@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 from mlagents.tf_utils import tf
-from mlagents.trainers.tf.models import ModelUtils, EncoderType
+from mlagents.trainers.tf.models import ModelUtils
+from mlagents.trainers.settings import EncoderType
 
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
