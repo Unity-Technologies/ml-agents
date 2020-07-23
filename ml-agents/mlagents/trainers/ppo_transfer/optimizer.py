@@ -214,6 +214,7 @@ class PPOTransferOptimizer(TFOptimizer):
                     self._init_alter_update()
 
             self.policy.initialize_or_load()
+
             if self.use_transfer:
                 self.policy.load_graph_partial(
                     self.transfer_path,
@@ -223,6 +224,7 @@ class PPOTransferOptimizer(TFOptimizer):
                     hyperparameters.load_encoder,
                     hyperparameters.load_action,
                 )
+            self.policy.run_hard_copy()
             # self.policy.get_encoder_weights()
             # self.policy.get_policy_weights()
 
@@ -677,10 +679,9 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.update_dict)
 
         # update target encoder
-        if not self.reuse_encoder: # and self.num_updates % self.copy_every == 0:
-            self.policy.run_soft_copy()
-            # print("copy")
-            # self.policy.get_encoder_weights()
+        self.policy.run_soft_copy()
+        # print("copy")
+        # self.policy.get_encoder_weights()
 
         for stat_name, update_name in stats_needed.items():
             # if update_name in update_vals.keys():
@@ -720,8 +721,9 @@ class PPOTransferOptimizer(TFOptimizer):
             update_vals = self._execute_model(feed_dict, self.model_only_update_dict)
 
         # update target encoder
-        if not self.reuse_encoder: # and self.num_updates % self.copy_every == 0:
-            self.policy.run_soft_copy()
+        self.policy.run_soft_copy()
+        # print("copy")
+        # self.policy.get_encoder_weights()
 
         for stat_name, update_name in stats_needed.items():
             if update_name in update_vals.keys():

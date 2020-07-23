@@ -146,6 +146,18 @@ class SimpleTransferEnvironment(BaseEnv):
                 obs.append(
                     np.ones((1, self.vec_obs_size), dtype=np.float32) * (2 * i - j)
                 )
+        elif self.obs_spec_type == "long":
+            for name in self.names:
+                for i in self.positions[name]:
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * i)
+                for _ in range(self.extra_obs_size):
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32))
+        elif self.obs_spec_type == "longpre":
+            for name in self.names:
+                for _ in range(self.extra_obs_size):
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32))
+                for i in self.positions[name]:
+                    obs.append(np.ones((1, self.vec_obs_size), dtype=np.float32) * i)
         elif self.obs_spec_type == "long-n":
             for name in self.names:
                 for i in self.positions[name]:

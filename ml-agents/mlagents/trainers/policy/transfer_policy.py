@@ -102,6 +102,7 @@ class TransferPolicy(TFPolicy):
         self.reparameterize = reparameterize
         self.condition_sigma_on_obs = condition_sigma_on_obs
         self.trainable_variables: List[tf.Variable] = []
+        self.next_visual_in: List[tf.Tensor] = []
         self.encoder = None
         self.encoder_distribution = None
         self.targ_encoder = None
@@ -159,6 +160,7 @@ class TransferPolicy(TFPolicy):
                 # already populated, don't create more tensors.
                 return
             self.create_input_placeholders()
+            self.create_next_inputs()
             self.current_action = tf.placeholder(
                 shape=[None, sum(self.act_size)],
                 dtype=tf.float32,
@@ -168,24 +170,70 @@ class TransferPolicy(TFPolicy):
                 shape=[None], dtype=tf.float32, name="current_reward"
             )
 
-            self.next_visual_in: List[tf.Tensor] = []
-
-            self.encoder = self._create_encoder(
+            self.encoder = self._create_encoder_general(
                 self.visual_in,
                 self.processed_vector_in,
                 self.h_size,
                 self.feature_size,
                 encoder_layers,
                 self.vis_encode_type,
+                scope="encoding"
             )
 
-            self.targ_encoder = self._create_target_encoder(
+            self.next_encoder = self._create_encoder_general(
+                self.visual_next,
+                self.processed_vector_next,
                 self.h_size,
                 self.feature_size,
                 encoder_layers,
                 self.vis_encode_type,
-                reuse_encoder,
+                scope="encoding",
+                reuse=True
             )
+
+            self.targ_encoder = self._create_encoder_general(
+                self.visual_in,
+                self.processed_vector_in,
+                self.h_size,
+                self.feature_size,
+                encoder_layers,
+                self.vis_encode_type,
+                scope="target_enc",
+                stop_gradient=True,
+            )
+
+            self.next_targ_encoder = self._create_encoder_general(
+                self.visual_next,
+                self.processed_vector_next,
+                self.h_size,
+                self.feature_size,
+                encoder_layers,
+                self.vis_encode_type,
+                scope="target_enc",
+                reuse=True,
+                stop_gradient=True,
+            )
+
+            self._create_hard_copy()
+            self._create_soft_copy()
+
+
+            # self.encoder = self._create_encoder(
+            #     self.visual_in,
+            #     self.processed_vector_in,
+            #     self.h_size,
+            #     self.feature_size,
+            #     encoder_layers,
+            #     self.vis_encode_type,
+            # )
+
+            # self.targ_encoder = self._create_target_encoder(
+            #     self.h_size,
+            #     self.feature_size,
+            #     encoder_layers,
+            #     self.vis_encode_type,
+            #     reuse_encoder,
+            # )
 
             self.action_encoder = self._create_action_encoder(
                 self.current_action,
@@ -194,25 +242,30 @@ class TransferPolicy(TFPolicy):
                 action_layers
             )
 
-            if not reuse_encoder:
-               self.targ_encoder = tf.stop_gradient(self.targ_encoder)
-               self._create_hard_copy()
-               self._create_soft_copy()
-
-            if self.inverse_model:
-                with tf.variable_scope("inverse"):
-                    self.create_inverse_model(
-                        self.encoder, self.targ_encoder, inverse_layers
-                    )
+            # if self.inverse_model:
+            #     with tf.variable_scope("inverse"):
+            #         self.create_inverse_model(
+            #             self.encoder, self.targ_encoder, inverse_layers
+            #         )
 
             with tf.variable_scope("predict"):
-                self.create_forward_model(
+
+                self.predict, self.predict_distribution = self.create_forward_model(
                     self.encoder,
                     self.action_encoder,
-                    self.targ_encoder,
                     forward_layers,
                     var_predict=var_predict,
                 )
+
+                self.targ_predict, self.targ_predict_distribution = self.create_forward_model(
+                    self.targ_encoder,
+                    self.action_encoder,
+                    forward_layers,
+                    var_predict=var_predict,
+                    reuse=True
+                )
+
+                self.create_forward_loss(self.reuse_encoder, self.transfer)
 
             if predict_return:
                 with tf.variable_scope("reward"):
@@ -377,62 +430,92 @@ class TransferPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    def _create_target_encoder(
-        self,
-        h_size: int,
-        feature_size: int,
-        num_layers: int,
-        vis_encode_type: EncoderType,
-        reuse_encoder: bool,
-    ) -> tf.Tensor:
-        if reuse_encoder:
-            next_encoder_scope = "encoding"
-        else:
-            next_encoder_scope = "target_enc"
+    # def _create_target_encoder(
+    #     self,
+    #     h_size: int,
+    #     feature_size: int,
+    #     num_layers: int,
+    #     vis_encode_type: EncoderType,
+    #     reuse_encoder: bool,
+    # ) -> tf.Tensor:
+    #     if reuse_encoder:
+    #         next_encoder_scope = "encoding"
+    #     else:
+    #         next_encoder_scope = "target_enc"
 
-        self.visual_next = ModelUtils.create_visual_input_placeholders(
-            self.brain.camera_resolutions
-        )
-        self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
-        if self.normalize:
-            vn_normalization_tensors = self.create_target_normalizer(self.vector_next)
-            self.vn_update_normalization_op = vn_normalization_tensors.update_op
-            self.vn_normalization_steps = vn_normalization_tensors.steps
-            self.vn_running_mean = vn_normalization_tensors.running_mean
-            self.vn_running_variance = vn_normalization_tensors.running_variance
-            self.processed_vector_next = ModelUtils.normalize_vector_obs(
-                self.vector_next,
-                self.vn_running_mean,
-                self.vn_running_variance,
-                self.vn_normalization_steps,
-            )
-        else:
-            self.processed_vector_next = self.vector_next
-            self.vp_update_normalization_op = None
+    #     self.visual_next = ModelUtils.create_visual_input_placeholders(
+    #         self.brain.camera_resolutions
+    #     )
+    #     self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
+    #     if self.normalize:
+    #         vn_normalization_tensors = self.create_target_normalizer(self.vector_next)
+    #         self.vn_update_normalization_op = vn_normalization_tensors.update_op
+    #         self.vn_normalization_steps = vn_normalization_tensors.steps
+    #         self.vn_running_mean = vn_normalization_tensors.running_mean
+    #         self.vn_running_variance = vn_normalization_tensors.running_variance
+    #         self.processed_vector_next = ModelUtils.normalize_vector_obs(
+    #             self.vector_next,
+    #             self.vn_running_mean,
+    #             self.vn_running_variance,
+    #             self.vn_normalization_steps,
+    #         )
+    #     else:
+    #         self.processed_vector_next = self.vector_next
+    #         self.vp_update_normalization_op = None
 
-        with tf.variable_scope(next_encoder_scope):
-            hidden_stream_targ = ModelUtils.create_observation_streams(
-                self.visual_next,
-                self.processed_vector_next,
-                1,
-                h_size,
-                num_layers,
-                vis_encode_type,
-                reuse=reuse_encoder,
-            )[0]
+    #     with tf.variable_scope(next_encoder_scope):
+    #         hidden_stream_targ = ModelUtils.create_observation_streams(
+    #             self.visual_next,
+    #             self.processed_vector_next,
+    #             1,
+    #             h_size,
+    #             num_layers,
+    #             vis_encode_type,
+    #             reuse=reuse_encoder,
+    #         )[0]
 
-            latent_targ = tf.layers.dense(
-                hidden_stream_targ,
-                feature_size,
-                name="latent",
-                reuse=reuse_encoder,
-                activation=tf.tanh,  # ModelUtils.swish,
-                kernel_initializer=tf.initializers.variance_scaling(1.0),
-            )
-        return latent_targ
+    #         latent_targ = tf.layers.dense(
+    #             hidden_stream_targ,
+    #             feature_size,
+    #             name="latent",
+    #             reuse=reuse_encoder,
+    #             activation=tf.tanh,  # ModelUtils.swish,
+    #             kernel_initializer=tf.initializers.variance_scaling(1.0),
+    #         )
+    #     return latent_targ
         # return tf.stop_gradient(latent_targ)
 
-    def _create_encoder(
+    # def _create_encoder(
+    #     self,
+    #     visual_in: List[tf.Tensor],
+    #     vector_in: tf.Tensor,
+    #     h_size: int,
+    #     feature_size: int,
+    #     num_layers: int,
+    #     vis_encode_type: EncoderType,
+    # ) -> tf.Tensor:
+    #     """
+    #     Creates an encoder for visual and vector observations.
+    #     :param h_size: Size of hidden linear layers.
+    #     :param num_layers: Number of hidden linear layers.
+    #     :param vis_encode_type: Type of visual encoder to use if visual input.
+    #     :return: The hidden layer (tf.Tensor) after the encoder.
+    #     """
+    #     with tf.variable_scope("encoding"):
+    #         hidden_stream = ModelUtils.create_observation_streams(
+    #             visual_in, vector_in, 1, h_size, num_layers, vis_encode_type, 
+    #         )[0]
+
+    #         latent = tf.layers.dense(
+    #             hidden_stream,
+    #             feature_size,
+    #             name="latent",
+    #             activation=tf.tanh,  # ModelUtils.swish,
+    #             kernel_initializer=tf.initializers.variance_scaling(1.0),
+    #         )
+    #     return latent
+    
+    def _create_encoder_general(
         self,
         visual_in: List[tf.Tensor],
         vector_in: tf.Tensor,
@@ -440,6 +523,9 @@ class TransferPolicy(TFPolicy):
         feature_size: int,
         num_layers: int,
         vis_encode_type: EncoderType,
+        scope: str,
+        reuse: bool=False,
+        stop_gradient: bool=False
     ) -> tf.Tensor:
         """
         Creates an encoder for visual and vector observations.
@@ -448,9 +534,9 @@ class TransferPolicy(TFPolicy):
         :param vis_encode_type: Type of visual encoder to use if visual input.
         :return: The hidden layer (tf.Tensor) after the encoder.
         """
-        with tf.variable_scope("encoding"):
+        with tf.variable_scope(scope):
             hidden_stream = ModelUtils.create_observation_streams(
-                visual_in, vector_in, 1, h_size, num_layers, vis_encode_type
+                visual_in, vector_in, 1, h_size, num_layers, vis_encode_type, reuse=reuse
             )[0]
 
             latent = tf.layers.dense(
@@ -459,7 +545,10 @@ class TransferPolicy(TFPolicy):
                 name="latent",
                 activation=tf.tanh,  # ModelUtils.swish,
                 kernel_initializer=tf.initializers.variance_scaling(1.0),
+                reuse=reuse
             )
+        if stop_gradient:
+            latent = tf.stop_gradient(latent)
         return latent
 
     def _create_action_encoder(
@@ -730,14 +819,14 @@ class TransferPolicy(TFPolicy):
             initializer=tf.zeros_initializer(),
         )
         running_mean = tf.get_variable(
-            prefix + "vn_running_mean",
+            prefix + "_running_mean",
             [vec_obs_size],
             trainable=False,
             dtype=tf.float32,
             initializer=tf.zeros_initializer(),
         )
         running_variance = tf.get_variable(
-            prefix + "vn_running_variance",
+            prefix + "_running_variance",
             [vec_obs_size],
             trainable=False,
             dtype=tf.float32,
@@ -855,9 +944,9 @@ class TransferPolicy(TFPolicy):
         self,
         encoded_state: tf.Tensor,
         encoded_action: tf.Tensor,
-        encoded_next_state: tf.Tensor,
         forward_layers: int,
         var_predict: bool = False,
+        reuse: bool = False,
         separate_train: bool = False,
     ) -> None:
         """
@@ -868,43 +957,85 @@ class TransferPolicy(TFPolicy):
         """
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
         hidden = combined_input
-        # if self.transfer:
-        #    hidden = tf.stop_gradient(hidden)
 
         for i in range(forward_layers):
             hidden = tf.layers.dense(
                 hidden,
                 self.h_size,
-                # * (self.vis_obs_size + int(self.vec_obs_size > 0)),
                 name="hidden_{}".format(i),
                 activation=ModelUtils.swish,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                reuse=reuse
             )
 
         if var_predict:
-            self.predict_distribution = GaussianEncoderDistribution(
-                hidden, self.feature_size
+            predict_distribution = GaussianEncoderDistribution(
+                hidden, self.feature_size, reuse=reuse
             )
-            self.predict = self.predict_distribution.sample()
+            predict = predict_distribution.sample()
         else:
-            self.predict = tf.layers.dense(
+            predict = tf.layers.dense(
                 hidden,
                 self.feature_size,
                 name="latent",
                 # activation=tf.tanh,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
+                reuse=reuse
             )
-        if not self.transfer:
-            encoded_next_state = tf.stop_gradient(encoded_next_state)
-        squared_difference = 0.5 * tf.reduce_sum(
-            tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
-        )
+            predict_distribution = None
+        
+        return predict, predict_distribution
 
-        # self.forward_loss = tf.reduce_mean(squared_difference)
-        self.next_state = encoded_next_state
-        self.forward_loss = tf.reduce_mean(
-            tf.dynamic_partition(squared_difference, self.mask, 2)[1]
-        )
+        # if not self.transfer:
+        #     encoded_next_state = tf.stop_gradient(encoded_next_state)
+        # squared_difference = 0.5 * tf.reduce_sum(
+        #     tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
+        # )
+
+        # # self.forward_loss = tf.reduce_mean(squared_difference)
+        # self.next_state = encoded_next_state
+        # self.forward_loss = tf.reduce_mean(
+        #     tf.dynamic_partition(squared_difference, self.mask, 2)[1]
+        # )
+    
+    def create_forward_loss(self, reuse: bool, transfer: bool):
+
+        if not transfer:
+            if reuse:
+                encoded_next_state = tf.stop_gradient(self.next_encoder)
+            else:
+                encoded_next_state = self.next_targ_encoder # gradient of target encode is already stopped
+
+            squared_difference = 0.5 * tf.reduce_sum(
+                tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
+            )
+            self.forward_loss = tf.reduce_mean(
+                tf.dynamic_partition(squared_difference, self.mask, 2)[1]
+            )
+
+        else:
+            if reuse:
+                squared_difference_1 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(self.predict), tf.stop_gradient(self.next_encoder)), 
+                    axis=1
+                )
+                squared_difference_2 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(tf.stop_gradient(self.predict)), self.next_encoder), 
+                    axis=1
+                )
+            else:
+                squared_difference_1 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(self.predict), self.next_targ_encoder), 
+                    axis=1
+                )
+                squared_difference_2 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(self.targ_predict), self.next_encoder), 
+                    axis=1
+                )
+            self.forward_loss = tf.reduce_mean(
+                tf.dynamic_partition(0.5 * squared_difference_1 + 0.5 * squared_difference_2, self.mask, 2)[1]
+            )
+
 
     def create_reward_model(
         self,
@@ -964,7 +1095,7 @@ class TransferPolicy(TFPolicy):
             self.vector_bisim = ModelUtils.create_vector_input(self.vec_obs_size)
             if self.normalize:
                 bi_normalization_tensors = self.create_target_normalizer(
-                    self.vector_bisim
+                    self.vector_bisim, prefix="bi"
                 )
                 self.bi_update_normalization_op = bi_normalization_tensors.update_op
                 self.bi_normalization_steps = bi_normalization_tensors.steps
@@ -1046,3 +1177,24 @@ class TransferPolicy(TFPolicy):
                 # activation=ModelUtils.swish,
                 # kernel_initializer=tf.initializers.variance_scaling(1.0),
             )
+
+    def create_next_inputs(self):
+        self.visual_next = ModelUtils.create_visual_input_placeholders(
+            self.brain.camera_resolutions
+        )
+        self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
+        if self.normalize:
+            vn_normalization_tensors = self.create_target_normalizer(self.vector_next)
+            self.vn_update_normalization_op = vn_normalization_tensors.update_op
+            self.vn_normalization_steps = vn_normalization_tensors.steps
+            self.vn_running_mean = vn_normalization_tensors.running_mean
+            self.vn_running_variance = vn_normalization_tensors.running_variance
+            self.processed_vector_next = ModelUtils.normalize_vector_obs(
+                self.vector_next,
+                self.vn_running_mean,
+                self.vn_running_variance,
+                self.vn_normalization_steps,
+            )
+        else:
+            self.processed_vector_next = self.vector_next
+            self.vp_update_normalization_op = None

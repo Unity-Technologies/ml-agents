@@ -95,6 +95,7 @@ class SACTransferOptimizer(TFOptimizer):
             self.use_inverse_model,
             self.reuse_encoder,
             self.use_bisim,
+            hyperparameters.tau
         )
 
         with policy.graph.as_default():
@@ -589,6 +590,8 @@ class SACTransferOptimizer(TFOptimizer):
             update_stats[stat_name] = update_vals[update_name]
         # Update target network. By default, target update happens at every policy update.
         self.sess.run(self.target_update_op)
+        if not self.reuse_encoder:
+            self.policy.run_soft_copy()
         return update_stats
 
     def update_reward_signals(
