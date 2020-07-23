@@ -2,7 +2,7 @@ import pytest
 import copy
 import os
 import mlagents.trainers.tests.mock_brain as mb
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG, SAC_CONFIG
@@ -69,8 +69,8 @@ def create_optimizer_mock(
         if use_rnn
         else None
     )
-    policy = NNPolicy(
-        0, mock_specs, trainer_settings, False, "test", False, create_tf_graph=False
+    policy = TFPolicy(
+        0, mock_specs, trainer_settings, "test", False, create_tf_graph=False
     )
     if trainer_settings.trainer_type == TrainerType.SAC:
         optimizer = SACOptimizer(policy, trainer_settings)

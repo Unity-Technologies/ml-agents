@@ -9,7 +9,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -49,8 +49,8 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         if use_rnn
         else None
     )
-    policy = NNPolicy(
-        0, mock_specs, trainer_settings, False, "test", False, create_tf_graph=False
+    policy = TFPolicy(
+        0, mock_specs, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer
@@ -203,7 +203,7 @@ def test_trainer_increment_step(ppo_optimizer):
     ppo_optimizer.return_value = mock_optimizer
 
     trainer = PPOTrainer("test_brain", 0, trainer_params, True, False, 0, "0")
-    policy_mock = mock.Mock(spec=NNPolicy)
+    policy_mock = mock.Mock(spec=TFPolicy)
     policy_mock.get_current_step.return_value = 0
     step_count = (
         5  # 10 hacked because this function is no longer called through trainer
@@ -319,7 +319,7 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     ppo_optimizer.return_value = mock_optimizer
 
     trainer = PPOTrainer("test_policy", 0, dummy_config, True, False, 0, "0")
-    policy = mock.Mock(spec=NNPolicy)
+    policy = mock.Mock(spec=TFPolicy)
     policy.get_current_step.return_value = 2000
 
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
@@ -328,11 +328,6 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
-
-    # Test incorrect class of policy
-    policy = mock.Mock()
-    with pytest.raises(RuntimeError):
-        trainer.add_policy(behavior_id, policy)
 
 
 if __name__ == "__main__":

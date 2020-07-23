@@ -7,7 +7,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import setup_test_behavior_specs
@@ -46,8 +46,8 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         if use_rnn
         else None
     )
-    policy = NNPolicy(
-        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
+    policy = TFPolicy(
+        0, mock_brain, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = SACOptimizer(policy, trainer_settings)
     return optimizer
@@ -134,7 +134,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     sac_optimizer.return_value = mock_optimizer
 
     trainer = SACTrainer("test", 0, dummy_config, True, False, 0, "0")
-    policy = mock.Mock(spec=NNPolicy)
+    policy = mock.Mock(spec=TFPolicy)
     policy.get_current_step.return_value = 2000
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
     trainer.add_policy(behavior_id, policy)
@@ -142,11 +142,6 @@ def test_add_get_policy(sac_optimizer, dummy_config):
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
-
-    # Test incorrect class of policy
-    policy = mock.Mock()
-    with pytest.raises(RuntimeError):
-        trainer.add_policy(behavior_id, policy)
 
 
 def test_advance(dummy_config):
