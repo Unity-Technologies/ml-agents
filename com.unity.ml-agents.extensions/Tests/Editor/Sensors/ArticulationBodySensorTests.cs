@@ -42,6 +42,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 0f, 0f, 0f, 1f // LocalSpaceRotations
             };
             SensorTestHelper.CompareObservation(sensor, expected);
+            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
         }
 
         [Test]
@@ -61,7 +62,14 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var leafArticBody = leafGameObj.AddComponent<ArticulationBody>();
             leafGameObj.transform.SetParent(middleGamObj.transform);
             leafGameObj.transform.localPosition = new Vector3(4.2f, 0f, 0f);
-            leafArticBody.jointType = ArticulationJointType.RevoluteJoint;
+            leafArticBody.jointType = ArticulationJointType.PrismaticJoint;
+            leafArticBody.linearLockZ = ArticulationDofLock.LimitedMotion;
+            leafArticBody.zDrive = new ArticulationDrive
+            {
+                lowerLimit = -3,
+                upperLimit = 1
+            };
+
 
 #if UNITY_2020_2_OR_NEWER
             // ArticulationBody.velocity is read-only in 2020.1
@@ -107,6 +115,30 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 #endif
             };
             SensorTestHelper.CompareObservation(sensor, expected);
+            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
+
+            // Update the settings to only process joint observations
+            sensorComponent.Settings = new PhysicsSensorSettings
+            {
+                UseJointForces = true,
+                UseJointPositionsAndAngles = true,
+            };
+
+            sensor = sensorComponent.CreateSensor();
+            sensor.Update();
+
+            expected = new[]
+            {
+                // revolute
+                0f, 1f, // joint1.position (sin and cos)
+                0f, // joint1.force
+
+                // prismatic
+                0.5f, // joint2.position (interpolate between limits)
+                0f, // joint2.force
+            };
+            SensorTestHelper.CompareObservation(sensor, expected);
+            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
         }
     }
 }

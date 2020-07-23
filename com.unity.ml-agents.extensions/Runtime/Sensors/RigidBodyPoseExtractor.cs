@@ -75,6 +75,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             var body = m_Bodies[index];
             return new Pose { rotation = body.rotation, position = body.position };
         }
+
+        internal Rigidbody[] Bodies => m_Bodies;
     }
 
 }
