@@ -285,8 +285,8 @@ public class WalkerAgent : Agent
         rewardManager.rewardsDict["lookAtTarget"].rewardThisStep = lookAtTargetReward;
         rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
 //        velInverseLerpVal = VelocityInverseLerp(cubeForward * walkGroup.walkingSpeed);
-//        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward);
-        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
+        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward);
+//        rewardManager.UpdateReward("productOfAllRewards", velInverseLerpVal * lookAtTargetReward * headHeightOverFeetReward);
 //            velInverseLerpVal = VelocityInverseLerp(Vector3.zero, cubeForward * walkingSpeed, avgVelValue);
 
         //This reward will approach 1 if it matches and approach zero as it deviates

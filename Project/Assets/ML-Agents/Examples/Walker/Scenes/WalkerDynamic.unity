@@ -113,6 +113,12 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!4 &46752906 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4415586145134694852, guid: f51e8260728fd4c8fa87bcda9d0e2027,
+    type: 3}
+  m_PrefabInstance: {fileID: 758428434940870731}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &79411373 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 758428434940870733, guid: f51e8260728fd4c8fa87bcda9d0e2027,
@@ -4449,7 +4455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec40c70d5160b47cd8deaab79e24892c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 758428434940870732}
+  target: {fileID: 46752906}
 --- !u!1001 &1481808307
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5573,9 +5579,3 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f51e8260728fd4c8fa87bcda9d0e2027, type: 3}
---- !u!4 &758428434940870732 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 6406643706347117530, guid: f51e8260728fd4c8fa87bcda9d0e2027,
-    type: 3}
-  m_PrefabInstance: {fileID: 758428434940870731}
-  m_PrefabAsset: {fileID: 0}
