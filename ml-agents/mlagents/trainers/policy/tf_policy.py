@@ -7,11 +7,11 @@ from mlagents_envs.timers import timed
 from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
+from mlagents_envs.exception import UnityException
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.policy.policy import UnityPolicyException
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
@@ -32,6 +32,14 @@ logger = get_logger(__name__)
 MODEL_FORMAT_VERSION = 2
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
+
+
+class UnityPolicyException(UnityException):
+    """
+    Related to errors with the Trainer.
+    """
+
+    pass
 
 
 class TFPolicy(Policy):
@@ -61,8 +69,8 @@ class TFPolicy(Policy):
         :param load: If True, load model from model_path. Otherwise, create new model.
         """
         super().__init__(
-            behavior_spec,
             seed,
+            behavior_spec,
             trainer_settings,
             model_path,
             load,
@@ -170,10 +178,6 @@ class TFPolicy(Policy):
                 vis_encode_type,
             )[0]
         return encoded
-
-    def load_model(self, step=0):
-        reset_steps = not self.load
-        self._load_graph(self.model_path, reset_global_steps=reset_steps)
 
     @staticmethod
     def _convert_version_string(version_string: str) -> Tuple[int, ...]:

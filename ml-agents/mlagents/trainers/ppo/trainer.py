@@ -9,8 +9,8 @@ import numpy as np
 from mlagents.trainers.policy import Policy
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer

@@ -22,8 +22,8 @@ class UnityPolicyException(UnityException):
 class Policy:
     def __init__(
         self,
-        behavior_spec: BehaviorSpec,
         seed: int,
+        behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
         model_path: str,
         load: bool = False,
@@ -153,23 +153,16 @@ class Policy:
 
     @abstractmethod
     def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
-        """
-        Checkpoints the policy on disk.
-
-        :param checkpoint_path: filepath to write the checkpoint
-        :param settings: SerializationSettings for exporting the model.
-        """
         pass
 
     @abstractmethod
     def save(self, output_filepath: str, settings: SerializationSettings) -> None:
-        """
-        Saves the serialized model, given a path and SerializationSettings
+        pass
 
-        This method will save the policy graph to the given filepath.  The path
-        should be provided without an extension as multiple serialized model formats
-        may be generated as a result.
+    @abstractmethod
+    def load_weights(self, values: List[np.ndarray]) -> None:
+        pass
 
-        :param output_filepath: path (without suffix) for the model file(s)
-        :param settings: SerializationSettings for how to save the model.
-        """
+    @abstractmethod
+    def get_weights(self) -> List[np.ndarray]:
+        return []

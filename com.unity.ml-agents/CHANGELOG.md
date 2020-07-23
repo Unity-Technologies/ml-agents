@@ -11,7 +11,10 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-The minimum supported python version for ml-agents-envs was changed to 3.6.1. (#4244)
+- The minimum supported python version for ml-agents-envs was changed to 3.6.1. (#4244)
+- The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
+and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up
+Python training by approximately 5-10%. (#4259)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)

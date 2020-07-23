@@ -166,7 +166,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         }
         step_info = EnvironmentStep(step_info_dict, 0, action_info_dict, env_stats)
         step_mock.return_value = [step_info]
-        env_manager.advance()
+        env_manager.process_steps(env_manager.get_steps())
 
         # Test add_experiences
         env_manager._step.assert_called_once()
