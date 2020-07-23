@@ -211,14 +211,14 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             assert isinstance(value, dict)
-            text = self._dict_to_tensorboard("Hyperparameters", value)
+            summary = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
-            if text is not None:
-                self.summary_writers[category].add_summary(text, 0)
+            if summary is not None:
+                self.summary_writers[category].add_summary(summary, 0)
 
     def _dict_to_tensorboard(
         self, name: str, input_dict: Dict[str, Any]
-    ) -> Optional[str]:
+    ) -> Optional[bytes]:
         """
         Convert a dict to a Tensorboard-encoded string.
         :param name: The name of the text.
@@ -235,7 +235,9 @@ class TensorboardWriter(StatsWriter):
                 s = sess.run(s_op)
                 return s
         except Exception:
-            logger.warning(f"Could not write {name} summary for Tensorboard.")
+            logger.warning(
+                f"Could not write {name} summary for Tensorboard: {input_dict}"
+            )
             return None
 
 
