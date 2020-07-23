@@ -69,8 +69,8 @@ class TFPolicy(Policy):
         :param load: If True, load model from model_path. Otherwise, create new model.
         """
         super().__init__(
-            behavior_spec,
             seed,
+            behavior_spec,
             trainer_settings,
             model_path,
             load,

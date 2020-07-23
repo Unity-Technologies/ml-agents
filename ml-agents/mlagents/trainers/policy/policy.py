@@ -5,6 +5,7 @@ import numpy as np
 from mlagents_envs.base_env import DecisionSteps
 from mlagents_envs.exception import UnityException
 
+from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
@@ -21,8 +22,8 @@ class UnityPolicyException(UnityException):
 class Policy:
     def __init__(
         self,
-        behavior_spec: BehaviorSpec,
         seed: int,
+        behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
         model_path: str,
         load: bool = False,
@@ -148,4 +149,12 @@ class Policy:
 
     @abstractmethod
     def get_current_step(self):
+        pass
+
+    @abstractmethod
+    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
+        pass
+
+    @abstractmethod
+    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
         pass
