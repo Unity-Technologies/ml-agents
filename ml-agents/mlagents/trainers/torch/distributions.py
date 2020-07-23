@@ -8,7 +8,7 @@ EPSILON = 1e-7  # Small value to avoid divide by zero
 
 class GaussianDistInstance(nn.Module):
     def __init__(self, mean, std):
-        super(GaussianDistInstance, self).__init__()
+        super().__init__()
         self.mean = mean
         self.std = std
 
@@ -56,7 +56,7 @@ class TanhGaussianDistInstance(GaussianDistInstance):
 
 class CategoricalDistInstance(nn.Module):
     def __init__(self, logits):
-        super(CategoricalDistInstance, self).__init__()
+        super().__init__()
         self.logits = logits
         self.probs = torch.softmax(self.logits, dim=-1)
 
@@ -85,7 +85,7 @@ class GaussianDistribution(nn.Module):
         tanh_squash=False,
         **kwargs
     ):
-        super(GaussianDistribution, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.conditional_sigma = conditional_sigma
         self.mu = nn.Linear(hidden_size, num_outputs)
         self.tanh_squash = tanh_squash
@@ -112,7 +112,7 @@ class GaussianDistribution(nn.Module):
 
 class MultiCategoricalDistribution(nn.Module):
     def __init__(self, hidden_size, act_sizes):
-        super(MultiCategoricalDistribution, self).__init__()
+        super().__init__()
         self.act_sizes = act_sizes
         self.branches = self.create_policy_branches(hidden_size)
 

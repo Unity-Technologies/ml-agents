@@ -6,13 +6,12 @@ from torch import nn
 import numpy as np
 
 from mlagents_envs.base_env import ActionType
-from mlagents.trainers.distributions_torch import (
+from mlagents.trainers.torch.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.models import EncoderType
-from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.settings import EncoderType, NetworkSettings
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
