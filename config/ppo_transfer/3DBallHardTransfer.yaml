@@ -11,7 +11,6 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       model_schedule: linear
-      load_model: false
       encoder_layers: 2
       action_layers: 1
       policy_layers: 1
@@ -27,6 +26,16 @@ behaviors:
       predict_return: true
       use_bisim: false
       separate_value_train: true
+      train_model: false
+      load_model: true
+      train_action: false
+      load_action: true
+      train_policy: true
+      load_policy: false
+      train_value: true
+      load_value: false
+      transfer_path: "results/3d-tr-s1/3DBall"
+      use_transfer: true
       in_batch_alter: true
     network_settings:
       normalize: true

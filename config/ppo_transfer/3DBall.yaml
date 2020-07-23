@@ -10,6 +10,24 @@ behaviors:
       lambd: 0.99
       num_epoch: 3
       learning_rate_schedule: linear
+      model_schedule: linear
+      load_model: false
+      encoder_layers: 2
+      action_layers: 1
+      policy_layers: 1
+      forward_layers: 0
+      value_layers: 1
+      feature_size: 64
+      action_feature_size: 32
+      reuse_encoder: false
+      in_epoch_alter: false
+      use_op_buffer: false
+      use_var_predict: true
+      with_prior: false
+      predict_return: true
+      use_bisim: false
+      separate_value_train: true
+      in_batch_alter: true
     network_settings:
       normalize: true
       hidden_units: 128
