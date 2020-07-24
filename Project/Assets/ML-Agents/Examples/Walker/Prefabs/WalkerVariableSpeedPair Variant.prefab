@@ -1,0 +1,142 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &4935689720737358961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2258134584912140542}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d2b3caecf069467ebf3a650d8ee401e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rewardsList:
+  - rewardKey: matchSpeed
+    rawVal: 0
+    rewardScalar: 0.03
+    rewardThisStep: 0
+    cumulativeThisEpisode: 0
+    cumulativeThisSession: 0
+    lastNaNStep: 0
+  - rewardKey: lookAtTarget
+    rawVal: 0
+    rewardScalar: 0.01
+    rewardThisStep: 0
+    cumulativeThisEpisode: 0
+    cumulativeThisSession: 0
+    lastNaNStep: 0
+  - rewardKey: headHeightOverFeet
+    rawVal: 0
+    rewardScalar: 0.001
+    rewardThisStep: 0
+    cumulativeThisEpisode: 0
+    cumulativeThisSession: 0
+    lastNaNStep: 0
+  - rewardKey: productOfAllRewards
+    rawVal: 0
+    rewardScalar: 1
+    rewardThisStep: 0
+    cumulativeThisEpisode: 0
+    cumulativeThisSession: 0
+    lastNaNStep: 0
+  maxSteps: 0
+--- !u!1001 &4282151720507120665
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1707482909815496, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_Name
+      value: WalkerVariableSpeedPair
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -500
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 2.57
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4878380427462518, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 738575235704034803, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: onCollisionEnterEvent.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2610895078227559675, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: jointDampen
+      value: 5000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2610895078227559675, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: maxJointForceLimit
+      value: 20000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2610895078227559677, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 238
+      objectReference: {fileID: 0}
+    - target: {fileID: 2610895078227559677, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: m_BehaviorName
+      value: WalkerStaticVariableSpeed
+      objectReference: {fileID: 0}
+    - target: {fileID: 5663381556754394061, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: randomizeWalkSpeedEachEpisode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5663381556754394061, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+        type: 3}
+      propertyPath: rewardManager
+      value: 
+      objectReference: {fileID: 4935689720737358961}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 94dced9d2186d4a76b970fb18ef6d7a6, type: 3}
+--- !u!1 &2258134584912140542 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2610895078227559655, guid: 94dced9d2186d4a76b970fb18ef6d7a6,
+    type: 3}
+  m_PrefabInstance: {fileID: 4282151720507120665}
+  m_PrefabAsset: {fileID: 0}

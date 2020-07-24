@@ -16,7 +16,6 @@ public class WalkerAgent : Agent
     public bool randomizeWalkSpeedEachEpisode;
     
     Vector3 m_WalkDir; //Direction to the target
-    public AnimationCurve velocityRewardCurve;
     [Header("Target To Walk Towards")]
     public TargetController target; //Target the agent will walk towards.
 
