@@ -49,7 +49,7 @@ public class Ball3DAgent : Agent
         }
         else
         {
-            SetReward(0.1f - (actionZ * actionZ + actionX * actionX));
+            SetReward(0.1f - (0.05f * actionZ * actionZ + 0.05f * actionX * actionX));
         }
     }
 
