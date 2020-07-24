@@ -14,7 +14,6 @@ from mlagents_envs.side_channel.stats_side_channel import (
     EnvironmentStats,
 )
 from mlagents.trainers.trajectory import Trajectory, AgentExperience
-from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.action_info import ActionInfo, ActionInfoOutputs
 from mlagents.trainers.stats import StatsReporter
@@ -32,7 +31,7 @@ class AgentProcessor:
 
     def __init__(
         self,
-        policy: TFPolicy,
+        policy: Policy,
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
@@ -290,7 +289,7 @@ class AgentManager(AgentProcessor):
 
     def __init__(
         self,
-        policy: TFPolicy,
+        policy: Policy,
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,

@@ -12,7 +12,7 @@ from mlagents.trainers.policy.checkpoint_manager import (
 )
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
-from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
+from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.components.reward_signals import RewardSignalResult
@@ -56,7 +56,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             for agent_id in rewards:
                 rewards[agent_id] = 0
 
-    def _update_end_episode_stats(self, agent_id: str, optimizer: TFOptimizer) -> None:
+    def _update_end_episode_stats(self, agent_id: str, optimizer: Optimizer) -> None:
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
                 self.stats_reporter.add_stat(
