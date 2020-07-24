@@ -14,7 +14,7 @@ behaviors:
       encoder_layers: 1
       action_layers: 1
       policy_layers: 1
-      forward_layers: 0
+      forward_layers: 1
       value_layers: 1
       feature_size: 32
       action_feature_size: 32
