@@ -14,7 +14,7 @@ from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.torch.models import ActorCritic
+from mlagents.trainers.torch.networks import ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 

@@ -4,17 +4,12 @@ import torch
 from torch import nn
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.base_env import ActionType
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.models import (
-    Critic,
-    QNetwork,
-    ActionType,
-    list_to_tensor,
-    break_into_branches,
-    actions_to_onehot,
-)
+from mlagents.trainers.torch.networks import Critic, QNetwork
+from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
 from mlagents.trainers.exception import UnityTrainerException
@@ -195,10 +190,10 @@ class TorchSACOptimizer(TorchOptimizer):
                 min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
             else:
                 action_probs = log_probs.exp()
-                _branched_q1p = break_into_branches(
+                _branched_q1p = ModelUtils.break_into_branches(
                     q1p_out[name] * action_probs, self.act_size
                 )
-                _branched_q2p = break_into_branches(
+                _branched_q2p = ModelUtils.break_into_branches(
                     q2p_out[name] * action_probs, self.act_size
                 )
                 _q1p_mean = torch.mean(
@@ -229,7 +224,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
                 value_losses.append(value_loss)
         else:
-            branched_per_action_ent = break_into_branches(
+            branched_per_action_ent = ModelUtils.break_into_branches(
                 log_probs * log_probs.exp(), self.act_size
             )
             # We have to do entropy bonus per action branch
@@ -269,10 +264,12 @@ class TorchSACOptimizer(TorchOptimizer):
             policy_loss = torch.mean(loss_masks * batch_policy_loss)
         else:
             action_probs = log_probs.exp()
-            branched_per_action_ent = break_into_branches(
+            branched_per_action_ent = ModelUtils.break_into_branches(
                 log_probs * action_probs, self.act_size
             )
-            branched_q_term = break_into_branches(mean_q1 * action_probs, self.act_size)
+            branched_q_term = ModelUtils.break_into_branches(
+                mean_q1 * action_probs, self.act_size
+            )
             branched_policy_loss = torch.stack(
                 [
                     torch.sum(_ent_coef[i] * _lp - _qt, dim=1, keepdim=True)
@@ -296,7 +293,7 @@ class TorchSACOptimizer(TorchOptimizer):
             )
         else:
             with torch.no_grad():
-                branched_per_action_ent = break_into_branches(
+                branched_per_action_ent = ModelUtils.break_into_branches(
                     log_probs * log_probs.exp(), self.act_size
                 )
                 target_current_diff_branched = torch.stack(
@@ -322,9 +319,9 @@ class TorchSACOptimizer(TorchOptimizer):
         self, q_output: Dict[str, torch.Tensor], discrete_actions: torch.Tensor
     ) -> Dict[str, torch.Tensor]:
         condensed_q_output = {}
-        onehot_actions = actions_to_onehot(discrete_actions, self.act_size)
+        onehot_actions = ModelUtils.actions_to_onehot(discrete_actions, self.act_size)
         for key, item in q_output.items():
-            branched_q = break_into_branches(item, self.act_size)
+            branched_q = ModelUtils.break_into_branches(item, self.act_size)
             only_action_qs = torch.stack(
                 [
                     torch.sum(_act * _q, dim=1, keepdim=True)
@@ -348,18 +345,18 @@ class TorchSACOptimizer(TorchOptimizer):
         """
         rewards = {}
         for name in self.reward_signals:
-            rewards[name] = list_to_tensor(batch[f"{name}_rewards"])
+            rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
 
-        vec_obs = [list_to_tensor(batch["vector_obs"])]
-        next_vec_obs = [list_to_tensor(batch["next_vector_in"])]
-        act_masks = list_to_tensor(batch["action_mask"])
+        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
+        next_vec_obs = [ModelUtils.list_to_tensor(batch["next_vector_in"])]
+        act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
         if self.policy.use_continuous_act:
-            actions = list_to_tensor(batch["actions"]).unsqueeze(-1)
+            actions = ModelUtils.list_to_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = list_to_tensor(batch["actions"], dtype=torch.long)
+            actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.long)
 
         memories = [
-            list_to_tensor(batch["memory"][i])
+            ModelUtils.list_to_tensor(batch["memory"][i])
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
         if len(memories) > 0:
@@ -371,9 +368,11 @@ class TorchSACOptimizer(TorchOptimizer):
             for idx, _ in enumerate(
                 self.policy.actor_critic.network_body.visual_encoders
             ):
-                vis_ob = list_to_tensor(batch["visual_obs%d" % idx])
+                vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
-                next_vis_ob = list_to_tensor(batch["next_visual_obs%d" % idx])
+                next_vis_ob = ModelUtils.list_to_tensor(
+                    batch["next_visual_obs%d" % idx]
+                )
                 next_vis_obs.append(next_vis_ob)
 
         # Copy normalizers from policy
@@ -414,9 +413,9 @@ class TorchSACOptimizer(TorchOptimizer):
 
         with torch.no_grad():
             target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
-        masks = list_to_tensor(batch["masks"], dtype=torch.int32)
+        masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.int32)
         use_discrete = not self.policy.use_continuous_act
-        dones = list_to_tensor(batch["done"])
+        dones = ModelUtils.list_to_tensor(batch["done"])
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
