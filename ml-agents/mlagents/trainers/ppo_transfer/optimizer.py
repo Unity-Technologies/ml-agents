@@ -47,17 +47,16 @@ class PPOTransferOptimizer(TFOptimizer):
         self.train_model = hyperparameters.train_model
         self.train_policy = hyperparameters.train_policy
         self.train_value = hyperparameters.train_value
-        
+
         # Transfer
         self.use_transfer = hyperparameters.use_transfer
-        self.transfer_path = (
-            hyperparameters.transfer_path
-        )  
+        self.transfer_path = hyperparameters.transfer_path
         self.smart_transfer = hyperparameters.smart_transfer
         self.conv_thres = hyperparameters.conv_thres
 
         self.ppo_update_dict: Dict[str, tf.Tensor] = {}
         self.model_update_dict: Dict[str, tf.Tensor] = {}
+        self.reward_update_dict: Dict[str, tf.Tensor] = {}
         self.model_only_update_dict: Dict[str, tf.Tensor] = {}
         self.bisim_update_dict: Dict[str, tf.Tensor] = {}
 
@@ -194,6 +193,7 @@ class PPOTransferOptimizer(TFOptimizer):
                         "value_loss": self.value_loss,
                         "policy_loss": self.abs_policy_loss,
                         "model_loss": self.model_loss,
+                        "reward_loss": self.reward_loss,
                         "update_batch": self.update_batch,
                         "learning_rate": self.learning_rate,
                         "decay_epsilon": self.decay_epsilon,
@@ -429,8 +429,9 @@ class PPOTransferOptimizer(TFOptimizer):
         #         self.model_loss += self.policy.predict_distribution.kl_standard()
 
         self.model_loss = self.policy.forward_loss
-        if self.predict_return:
-            self.model_loss += 0.5 * self.policy.reward_loss
+        self.reward_loss = self.policy.reward_loss
+        # if self.predict_return:
+        #    self.model_loss += 0.5 * self.policy.reward_loss
         if self.with_prior:
             if self.use_var_encoder:
                 self.model_loss += 0.2 * self.policy.encoder_distribution.kl_standard()
@@ -490,9 +491,13 @@ class PPOTransferOptimizer(TFOptimizer):
     def _create_ppo_optimizer_ops(self):
         train_vars = []
         if self.train_encoder:
-            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "encoding")
+            train_vars += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
+            )
         if self.train_action:
-            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc")
+            train_vars += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc"
+            )
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "inverse")
@@ -534,7 +539,9 @@ class PPOTransferOptimizer(TFOptimizer):
                 tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
             )
         if self.train_action:
-            train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc")
+            train_vars += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc"
+            )
         if self.train_model:
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "predict")
             train_vars += tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "reward")
@@ -557,6 +564,9 @@ class PPOTransferOptimizer(TFOptimizer):
         )
         self.model_update_batch = self.model_optimizer.minimize(
             self.model_loss, var_list=train_vars
+        )
+        self.reward_update_batch = self.model_optimizer.minimize(
+            self.reward_loss, var_list=train_vars
         )
 
         model_train_vars = tf.get_collection(
@@ -586,11 +596,14 @@ class PPOTransferOptimizer(TFOptimizer):
                 "model_loss": self.model_loss,
                 "update_batch": self.model_update_batch,
                 "model_learning_rate": self.model_learning_rate,
-                "decay_epsilon": self.decay_epsilon,
-                "decay_beta": self.decay_beta,
             }
         )
-
+        self.reward_update_dict.update(
+            {
+                "reward_loss": self.reward_loss,
+                "reward_update_batch": self.reward_update_batch,
+            }
+        )
         self.model_only_update_dict.update(
             {
                 "model_loss": self.model_loss,
@@ -653,8 +666,8 @@ class PPOTransferOptimizer(TFOptimizer):
 
         elif self.in_batch_alter:
             update_vals = self._execute_model(feed_dict, self.model_update_dict)
+            update_vals.update(self._execute_model(feed_dict, self.reward_update_dict))
             update_vals.update(self._execute_model(feed_dict, self.ppo_update_dict))
-            # print(self._execute_model(feed_dict, {"pred": self.policy.predict, "enc": self.policy.next_state}))
             if self.use_bisim:
                 batch1 = copy.deepcopy(batch)
                 batch.shuffle(sequence_length=1)
