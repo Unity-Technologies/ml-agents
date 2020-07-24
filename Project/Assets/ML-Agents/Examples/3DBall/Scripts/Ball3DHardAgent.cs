@@ -25,8 +25,8 @@ public class Ball3DHardAgent : Agent
 
     public override void OnActionReceived(float[] vectorAction)
     {
-        var actionZ = 2f * Mathf.Clamp(vectorAction[0], -1f, 1f);
-        var actionX = 2f * Mathf.Clamp(vectorAction[1], -1f, 1f);
+        var actionZ = 1f * Mathf.Clamp(vectorAction[0], -1f, 1f);
+        var actionX = 1f * Mathf.Clamp(vectorAction[1], -1f, 1f);
 
         if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
             (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
