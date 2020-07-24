@@ -68,14 +68,15 @@ namespace Unity.MLAgentsExamples
         {
             if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z))
             {
+                joint.targetRotation = Quaternion.identity;
                 Debug.LogError($"Joint_NaN on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
-//                return;
+                return;
             }
-            else
-            {
-                Debug.Log($"Action on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
-                
-            }
+//            else
+//            {
+//                Debug.Log($"Action on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
+//                
+//            }
             
             x = (x + 1f) * 0.5f;
             y = (y + 1f) * 0.5f;
@@ -86,17 +87,18 @@ namespace Unity.MLAgentsExamples
             var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
             var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
 
-            currentXNormalizedRot =
-                Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
-            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
-            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
+//            currentXNormalizedRot =
+//                Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
+//            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
+//            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-            currentEularJointRotation = new Vector3(xRot, yRot, zRot);
+//            currentEularJointRotation = new Vector3(xRot, yRot, zRot);
         }
 
         public void SetJointStrength(float strength)
         {
+            strength = float.IsNaN(strength)? thisJdController.maxJointForceLimit: Mathf.Clamp(strength, -1f, 1f);
             var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
 //            var remappedVal = Mathf.InverseLerp(1, 1, strength); 
             JointDrive jd = joint.slerpDrive;

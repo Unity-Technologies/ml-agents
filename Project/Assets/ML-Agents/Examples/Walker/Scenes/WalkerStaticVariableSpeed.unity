@@ -231,6 +231,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -309,6 +314,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
@@ -486,6 +496,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -564,6 +579,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
@@ -653,6 +673,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
@@ -790,6 +815,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
@@ -931,6 +961,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
@@ -1086,6 +1121,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1154,6 +1194,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerVariableSpeedPair (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281606851430919889, guid: 2cf62622451524665a92217adfa00e80,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4286325758371224431, guid: 2cf62622451524665a92217adfa00e80,
         type: 3}
