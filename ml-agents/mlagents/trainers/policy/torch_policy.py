@@ -70,15 +70,10 @@ class TorchPolicy(Policy):
             "Losses/Policy Loss": "policy_loss",
         }
         self.actor_critic = ActorCritic(
-            h_size=int(trainer_settings.network_settings.hidden_units),
-            act_type=behavior_spec.action_type,
             observation_shapes=self.behavior_spec.observation_shapes,
+            network_settings=trainer_settings.network_settings,
+            act_type=behavior_spec.action_type,
             act_size=self.act_size,
-            normalize=trainer_settings.network_settings.normalize,
-            num_layers=int(trainer_settings.network_settings.num_layers),
-            m_size=self.m_size,
-            use_lstm=self.use_recurrent,
-            vis_encode_type=trainer_settings.network_settings.vis_encode_type,
             stream_names=reward_signal_names,
             separate_critic=separate_critic
             if separate_critic is not None

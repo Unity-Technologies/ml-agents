@@ -29,29 +29,35 @@ class NormalizerTensors(NamedTuple):
 class NetworkBody(nn.Module):
     def __init__(
         self,
-        observation_shapes,
-        h_size,
-        normalize,
-        num_layers,
-        m_size,
-        vis_encode_type,
-        use_lstm,
+        observation_shapes: List[Tuple[int, ...]],
+        network_settings: NetworkSettings,
     ):
         super().__init__()
-        self.normalize = normalize
-        self.use_lstm = use_lstm
-        self.h_size = h_size
-        self.m_size = m_size
+        self.normalize = network_settings.normalize
+        self.use_lstm = network_settings.memory is not None
+        self.h_size = network_settings.hidden_units
+        self.m_size = (
+            network_settings.memory.memory_size
+            if network_settings.memory is not None
+            else 0
+        )
 
         (
             self.visual_encoders,
             self.vector_encoders,
             self.vector_normalizers,
         ) = ModelUtils.create_encoders(
-            observation_shapes, h_size, num_layers, vis_encode_type
+            observation_shapes,
+            self.h_size,
+            network_settings.num_layers,
+            network_settings.vis_encode_type,
+            action_size=0,
         )
-        if use_lstm:
-            self.lstm = nn.LSTM(h_size, m_size // 2, 1)
+
+        if self.use_lstm:
+            self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
+        else:
+            self.lstm = None
 
     def update_normalization(self, vec_inputs):
         if self.normalize:
@@ -206,19 +212,14 @@ class QNetwork(NetworkBody):
 class ActorCritic(nn.Module):
     def __init__(
         self,
-        h_size,
-        observation_shapes,
-        act_size,
-        normalize,
-        num_layers,
-        m_size,
-        vis_encode_type,
-        act_type,
-        use_lstm,
-        stream_names,
-        separate_critic,
-        conditional_sigma=False,
-        tanh_squash=False,
+        observation_shapes: List[Tuple[int, ...]],
+        network_settings: NetworkSettings,
+        act_type: ActionType,
+        act_size: List[int],
+        stream_names: List[str],
+        separate_critic: bool,
+        conditional_sigma: bool = False,
+        tanh_squash: bool = False,
     ):
         super().__init__()
         self.act_type = act_type
@@ -228,19 +229,11 @@ class ActorCritic(nn.Module):
         self.is_continuous_int = torch.nn.Parameter(torch.Tensor([1]))
         self.act_size_vector = torch.nn.Parameter(torch.Tensor(act_size))
         self.separate_critic = separate_critic
-        self.network_body = NetworkBody(
-            observation_shapes,
-            h_size,
-            normalize,
-            num_layers,
-            m_size,
-            vis_encode_type,
-            use_lstm,
-        )
-        if use_lstm:
-            embedding_size = m_size // 2
+        self.network_body = NetworkBody(observation_shapes, network_settings)
+        if network_settings.memory is not None:
+            embedding_size = network_settings.memory.memory_size // 2
         else:
-            embedding_size = h_size
+            embedding_size = network_settings.hidden_units
         if self.act_type == ActionType.CONTINUOUS:
             self.distribution = GaussianDistribution(
                 embedding_size,
@@ -251,15 +244,7 @@ class ActorCritic(nn.Module):
         else:
             self.distribution = MultiCategoricalDistribution(embedding_size, act_size)
         if separate_critic:
-            self.critic = Critic(
-                stream_names,
-                h_size,
-                observation_shapes,
-                normalize,
-                num_layers,
-                m_size,
-                vis_encode_type,
-            )
+            self.critic = Critic(stream_names, observation_shapes, network_settings)
         else:
             self.stream_names = stream_names
             self.value_heads = ValueHeads(stream_names, embedding_size)
@@ -343,26 +328,14 @@ class ActorCritic(nn.Module):
 class Critic(nn.Module):
     def __init__(
         self,
-        stream_names,
-        h_size,
-        observation_shapes,
-        normalize,
-        num_layers,
-        m_size,
-        vis_encode_type,
+        stream_names: List[str],
+        observation_shapes: List[Tuple[int, ...]],
+        network_settings: NetworkSettings,
     ):
         super().__init__()
-        self.network_body = NetworkBody(
-            observation_shapes,
-            h_size,
-            normalize,
-            num_layers,
-            m_size,
-            vis_encode_type,
-            False,
-        )
+        self.network_body = NetworkBody(observation_shapes, network_settings)
         self.stream_names = stream_names
-        self.value_heads = ValueHeads(stream_names, h_size)
+        self.value_heads = ValueHeads(stream_names, network_settings.hidden_units)
 
     def forward(self, vec_inputs, vis_inputs):
         embedding, _ = self.network_body(vec_inputs, vis_inputs)
