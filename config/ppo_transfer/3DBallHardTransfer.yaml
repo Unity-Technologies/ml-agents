@@ -14,7 +14,7 @@ behaviors:
       encoder_layers: 1
       action_layers: 1
       policy_layers: 1
-      forward_layers: 0
+      forward_layers: 1
       value_layers: 1
       feature_size: 32
       action_feature_size: 32
@@ -33,7 +33,7 @@ behaviors:
       train_policy: true
       load_policy: false
       train_value: true
-      load_value: true
+      load_value: false
       transfer_path: "results/3d-tr-s1/3DBall"
       use_transfer: true
       in_batch_alter: true
