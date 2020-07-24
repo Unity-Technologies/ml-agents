@@ -146,6 +146,7 @@ class SACTransferOptimizer(TFOptimizer):
                 self.update_batch_value: Optional[tf.Operation] = None
                 self.update_batch_entropy: Optional[tf.Operation] = None
 
+
                 self.policy_network = SACTransferPolicyNetwork(
                     policy=self.policy,
                     m_size=self.policy.m_size,  # 3x policy.m_size
@@ -217,6 +218,7 @@ class SACTransferOptimizer(TFOptimizer):
                     )
 
                 self.policy.initialize_or_load()
+                self.policy.run_hard_copy()
 
                 print("All variables in the graph:")
                 for variable in tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES):
@@ -601,9 +603,9 @@ class SACTransferOptimizer(TFOptimizer):
         ]
         
         policy_vars = self.policy.get_trainable_variables(
-            train_encoder=self.train_encoder,
+            train_encoder=not self.separate_policy_train,
             train_action=self.train_action,
-            train_model=self.train_model,
+            train_model=False,
             train_policy=self.train_policy
         )
 
@@ -611,13 +613,15 @@ class SACTransferOptimizer(TFOptimizer):
             train_encoder=self.train_encoder,
             train_action=self.train_action,
             train_model=self.train_model,
-            train_policy=self.train_policy
+            train_policy=False
         )
 
+        encoding_vars = self.policy.encoding_variables
+
         if self.train_value:
-            critic_vars = self.policy_network.critic_vars + policy_vars
+            critic_vars = self.policy_network.critic_vars + encoding_vars
         else:
-            critic_vars = policy_vars
+            critic_vars = encoding_vars
 
         self.target_init_op = [
             tf.assign(target, source)
@@ -629,11 +633,12 @@ class SACTransferOptimizer(TFOptimizer):
         self.update_batch_policy = policy_optimizer.minimize(
             self.policy_loss, var_list=policy_vars
         )
+        print("value trainable:", critic_vars)
 
         # Make sure policy is updated first, then value, then entropy.
         with tf.control_dependencies([self.update_batch_policy]):
             self.update_batch_value = value_optimizer.minimize(
-                self.total_value_loss, var_list=self.policy_network.critic_vars
+                self.total_value_loss, var_list=critic_vars
             )
             # Add entropy coefficient optimization operation
             with tf.control_dependencies([self.update_batch_value]):
@@ -694,8 +699,11 @@ class SACTransferOptimizer(TFOptimizer):
         stats_needed = self.stats_name_to_update_name
         update_stats: Dict[str, float] = {}
 
+        # update_vals = self._execute_model(feed_dict, self.update_dict)
+
         update_vals = self._execute_model(feed_dict, self.model_update_dict)
         update_vals.update(self._execute_model(feed_dict, self.update_dict))
+
 
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
@@ -707,8 +715,7 @@ class SACTransferOptimizer(TFOptimizer):
         # Update target network. By default, target update happens at every policy update.
         self.sess.run(self.target_update_op)
         self.policy.run_soft_copy()
-        if not self.reuse_encoder:
-            self.policy.run_soft_copy()
+
         return update_stats
 
     def update_encoder(self, mini_batch1: AgentBuffer, mini_batch2: AgentBuffer):

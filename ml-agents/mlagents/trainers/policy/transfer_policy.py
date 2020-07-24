@@ -255,11 +255,11 @@ class TransferPolicy(TFPolicy):
             #     action_layers
             # )
 
-            # if self.inverse_model:
-            #     with tf.variable_scope("inverse"):
-            #         self.create_inverse_model(
-            #             self.encoder, self.targ_encoder, inverse_layers
-            #         )
+            if self.inverse_model:
+                with tf.variable_scope("inverse"):
+                    self.create_inverse_model(
+                        self.encoder, self.targ_encoder, inverse_layers
+                    )
 
             with tf.variable_scope("predict"):
 

@@ -5,7 +5,7 @@ behaviors:
       learning_rate: 0.0003
       learning_rate_schedule: linear
       batch_size: 256
-      buffer_size: 24000
+      buffer_size: 50000
       buffer_init_steps: 0
       tau: 0.005
       steps_per_update: 10.0
@@ -16,19 +16,19 @@ behaviors:
       policy_layers: 1
       forward_layers: 1
       value_layers: 2
-      feature_size: 32
+      feature_size: 16
       reuse_encoder: false
       in_epoch_alter: false
-      in_batch_alter: true
+      in_batch_alter: false
       use_op_buffer: false
       use_var_predict: true
       with_prior: false
       predict_return: true
-      use_bisim: true
+      use_bisim: false
       use_transfer: true
       load_model: true
       train_model: false
-      transfer_path: "results/sac_model_ball_sep_linear_f32/3DBall"
+      transfer_path: "results/sac_model_ball_new/3DBall"
     network_settings:
       normalize: true
       hidden_units: 128
