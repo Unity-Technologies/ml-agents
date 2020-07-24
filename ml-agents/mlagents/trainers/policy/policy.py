@@ -158,3 +158,15 @@ class Policy:
     @abstractmethod
     def save(self, output_filepath: str, settings: SerializationSettings) -> None:
         pass
+
+    @abstractmethod
+    def load_weights(self, values: List[np.ndarray]) -> None:
+        pass
+
+    @abstractmethod
+    def get_weights(self) -> List[np.ndarray]:
+        return []
+
+    @abstractmethod
+    def init_load_weights(self) -> None:
+        pass
