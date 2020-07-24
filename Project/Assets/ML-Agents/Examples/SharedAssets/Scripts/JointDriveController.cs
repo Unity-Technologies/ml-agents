@@ -66,9 +66,21 @@ namespace Unity.MLAgentsExamples
         /// </summary>
         public void SetJointTargetRotation(float x, float y, float z)
         {
+            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z))
+            {
+                Debug.LogError($"Joint_NaN on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
+//                return;
+            }
+            else
+            {
+                Debug.Log($"Action on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
+                
+            }
+            
             x = (x + 1f) * 0.5f;
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
+
 
             var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
             var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
