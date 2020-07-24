@@ -31,7 +31,7 @@ behaviors:
       train_action: false
       load_action: false
       train_policy: true
-      load_policy: true
+      load_policy: false
       train_value: true
       load_value: true
       transfer_path: "results/3d-tr-s1/3DBall"
