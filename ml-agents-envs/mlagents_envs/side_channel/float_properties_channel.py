@@ -13,7 +13,7 @@ class FloatPropertiesChannel(SideChannel):
     def __init__(self, channel_id: uuid.UUID = None) -> None:
         self._float_properties: Dict[str, float] = {}
         if channel_id is None:
-            channel_id = uuid.UUID(("60ccf7d0-4f7e-11ea-b238-784f4387d1f7"))
+            channel_id = uuid.UUID("60ccf7d0-4f7e-11ea-b238-784f4387d1f7")
         super().__init__(channel_id)
 
     def on_message_received(self, msg: IncomingMessage) -> None:

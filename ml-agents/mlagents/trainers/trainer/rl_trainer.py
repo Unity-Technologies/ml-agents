@@ -1,23 +1,31 @@
 # # Unity ML-Agents Toolkit
-from typing import Dict, List
+import os
+from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
 import time
-
+import attr
+from mlagents.model_serialization import SerializationSettings
+from mlagents.trainers.policy.checkpoint_manager import (
+    NNCheckpoint,
+    NNCheckpointManager,
+)
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.optimizer.optimizer import Optimizer
+from mlagents_envs.timers import timed
+from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
-from mlagents.trainers.brain import BrainParameters
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
+from mlagents.trainers.settings import TestingConfiguration
 from mlagents.trainers.stats import StatsPropertyType
-
-from mlagents.trainers.ppo.trainer import TestingConfiguration
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
@@ -30,7 +38,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     """
 
     def __init__(self, *args, **kwargs):
-        super(RLTrainer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # collected_rewards is a dictionary from name of reward signal to a dictionary of agent_id to cumulative reward
         # used for reporting only. We always want to report the environment reward to Tensorboard, regardless
         # of what reward signals are actually present.
@@ -89,12 +97,82 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         return False
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> Policy:
         if self.framework == "torch":
-            return self.create_torch_policy(parsed_behavior_id, brain_parameters)
+            return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
-            return self.create_tf_policy(parsed_behavior_id, brain_parameters)
+            return self.create_tf_policy(parsed_behavior_id, behavior_spec)
+
+    @abc.abstractmethod
+    def create_torch_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TorchPolicy:
+        """
+        Create a Policy object that uses the PyTorch backend.
+        """
+        pass
+
+    @abc.abstractmethod
+    def create_tf_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TFPolicy:
+        """
+        Create a Policy object that uses the TensorFlow backend.
+        """
+        pass
+
+    def _policy_mean_reward(self) -> Optional[float]:
+        """ Returns the mean episode reward for the current policy. """
+        rewards = self.cumulative_returns_since_policy_update
+        if len(rewards) == 0:
+            return None
+        else:
+            return sum(rewards) / len(rewards)
+
+    @timed
+    def _checkpoint(self) -> NNCheckpoint:
+        """
+        Checkpoints the policy associated with this trainer.
+        """
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        model_path = policy.model_path
+        settings = SerializationSettings(model_path, self.brain_name)
+        checkpoint_path = os.path.join(model_path, f"{self.brain_name}-{self.step}")
+        policy.checkpoint(checkpoint_path, settings)
+        new_checkpoint = NNCheckpoint(
+            int(self.step),
+            f"{checkpoint_path}.nn",
+            self._policy_mean_reward(),
+            time.time(),
+        )
+        NNCheckpointManager.add_checkpoint(
+            self.brain_name, new_checkpoint, self.trainer_settings.keep_checkpoints
+        )
+        return new_checkpoint
+
+    def save_model(self) -> None:
+        """
+        Saves the policy associated with this trainer.
+        """
+        n_policies = len(self.policies.keys())
+        if n_policies > 1:
+            logger.warning(
+                "Trainer has multiple policies, but default behavior only saves the first."
+            )
+        policy = list(self.policies.values())[0]
+        settings = SerializationSettings(policy.model_path, self.brain_name)
+        model_checkpoint = self._checkpoint()
+        final_checkpoint = attr.evolve(
+            model_checkpoint, file_path=f"{policy.model_path}.nn"
+        )
+        policy.save(policy.model_path, settings)
+        NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
     @abc.abstractmethod
     def _update_policy(self) -> bool:
@@ -164,8 +242,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.trainer_settings.checkpoint_interval
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
-            logger.info(f"Checkpointing model for {self.brain_name}.")
-            self.save_model(self.brain_name)
+            self._checkpoint()
 
     def advance(self) -> None:
         """

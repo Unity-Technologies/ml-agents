@@ -38,7 +38,10 @@ test_mac_training_int_{{ editor.version }}:
     logs:
       paths:
         - "artifacts/standalone_build.txt"
+        - "artifacts/inference.nn.txt"
+        - "artifacts/inference.onnx.txt"
     standalonebuild:
       paths:
         - "artifacts/testplayer*/**"
+        - "artifacts/models/**"
 {% endfor %}

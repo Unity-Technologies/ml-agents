@@ -84,6 +84,23 @@ def run_standalone_build(
     return res.returncode
 
 
+def find_executables(root_dir: str) -> List[str]:
+    """
+    Try to find the player executable. This seems to vary between Unity versions.
+    """
+    ignored_extension = frozenset([".dll", ".dylib", ".bundle"])
+    exes = []
+    for root, _, files in os.walk(root_dir):
+        for filename in files:
+            file_root, ext = os.path.splitext(filename)
+            if ext in ignored_extension:
+                continue
+            file_path = os.path.join(root, filename)
+            if os.access(file_path, os.X_OK):
+                exes.append(file_path)
+    return exes
+
+
 def init_venv(
     mlagents_python_version: str = None, extra_packages: Optional[List[str]] = None
 ) -> str:
@@ -105,6 +122,7 @@ def init_venv(
         "--upgrade setuptools",
         # TODO build these and publish to internal pypi
         "~/tensorflow_pkg/tensorflow-2.0.0-cp37-cp37m-macosx_10_14_x86_64.whl",
+        "tf2onnx==1.6.1",
     ]
     if mlagents_python_version:
         # install from pypi

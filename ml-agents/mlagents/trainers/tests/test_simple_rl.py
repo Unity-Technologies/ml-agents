@@ -25,8 +25,10 @@ from mlagents.trainers.settings import (
     GAILSettings,
     TrainerType,
     RewardSignalType,
+    EncoderType,
+    ScheduleType,
 )
-from mlagents.trainers.models import EncoderType, ScheduleType
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
@@ -79,7 +81,7 @@ SAC_CONFIG = TrainerSettings(
 def default_reward_processor(rewards, last_n_rewards=5):
     rewards_to_use = rewards[-last_n_rewards:]
     # For debugging tests
-    print("Last {} rewards:".format(last_n_rewards), rewards_to_use)
+    print(f"Last {last_n_rewards} rewards:", rewards_to_use)
     return np.array(rewards[-last_n_rewards:], dtype=np.float32).mean()
 
 
@@ -107,10 +109,12 @@ def _check_environment_trains(
     env,
     trainer_config,
     reward_processor=default_reward_processor,
-    meta_curriculum=None,
+    env_parameter_manager=None,
     success_threshold=0.9,
     env_manager=None,
 ):
+    if env_parameter_manager is None:
+        env_parameter_manager = EnvironmentParameterManager()
     # Create controller and begin training.
     with tempfile.TemporaryDirectory() as dir:
         run_id = "id"
@@ -126,7 +130,7 @@ def _check_environment_trains(
             train_model=True,
             load_model=False,
             seed=seed,
-            meta_curriculum=meta_curriculum,
+            param_manager=env_parameter_manager,
             multi_gpu=False,
         )
 
@@ -134,7 +138,7 @@ def _check_environment_trains(
             trainer_factory=trainer_factory,
             output_path=dir,
             run_id=run_id,
-            meta_curriculum=meta_curriculum,
+            param_manager=env_parameter_manager,
             train=True,
             training_seed=seed,
         )

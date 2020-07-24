@@ -1,15 +1,13 @@
 # # Unity ML-Agents Toolkit
-from typing import List, Deque
+from typing import List, Deque, Dict
 import abc
-
 from collections import deque
 
 from mlagents_envs.logging_util import get_logger
-
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
-from mlagents.trainers.brain import BrainParameters
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
@@ -31,7 +29,7 @@ class Trainer(abc.ABC):
     ):
         """
         Responsible for collecting experiences and training a neural network model.
-        :BrainParameters brain: Brain to be trained.
+        :param brain_name: Brain name of brain to be trained.
         :param trainer_settings: The parameters for the trainer (dictionary).
         :param training: Whether the trainer is set for training.
         :param artifact_path: The directory within which to store artifacts from this trainer
@@ -48,6 +46,7 @@ class Trainer(abc.ABC):
         self.step: int = 0
         self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
+        self.policies: Dict[str, Policy] = {}
 
     @property
     def stats_reporter(self):
@@ -107,18 +106,12 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
-    def save_model(self, name_behavior_id: str) -> None:
+    @abc.abstractmethod
+    def save_model(self) -> None:
         """
-        Saves the model
+        Saves model file(s) for the policy or policies associated with this trainer.
         """
-        self.get_policy(name_behavior_id).save_model(self.get_step)
-
-    def export_model(self, name_behavior_id: str) -> None:
-        """
-        Exports the model
-        """
-        policy = self.get_policy(name_behavior_id)
-        policy.export_model()
+        pass
 
     @abc.abstractmethod
     def end_episode(self):
@@ -130,7 +123,7 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, brain_parameters: BrainParameters
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> Policy:
         """
         Creates policy

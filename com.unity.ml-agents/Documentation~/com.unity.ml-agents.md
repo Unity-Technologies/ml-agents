@@ -108,13 +108,13 @@ ML-Agents with a neural network behavior.
 ## Helpful links
 
 If you are new to the Unity ML-Agents package, or have a question after reading
-the documentation, you can checkout our [GitHUb Repository], which also includes
+the documentation, you can checkout our [GitHub Repository], which also includes
 a number of ways to [connect with us] including our [ML-Agents Forum].
 
 [unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
 [unity inference engine]: https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html
 [package manager documentation]: https://docs.unity3d.com/Manual/upm-ui-install.html
-[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_2_docs/docs/Installation.md
+[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/docs/Installation.md
 [github repository]: https://github.com/Unity-Technologies/ml-agents
 [python package]: https://github.com/Unity-Technologies/ml-agents
 [execution order of event functions]: https://docs.unity3d.com/Manual/ExecutionOrder.html

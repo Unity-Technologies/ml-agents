@@ -1,6 +1,7 @@
 from typing import Dict, Optional
 from mlagents.tf_utils import tf
-from mlagents.trainers.models import ModelUtils, EncoderType
+from mlagents.trainers.tf.models import ModelUtils
+from mlagents.trainers.settings import EncoderType
 
 LOG_STD_MAX = 2
 LOG_STD_MIN = -20
@@ -99,7 +100,7 @@ class SACNetwork:
         """
         self.value_heads = {}
         for name in stream_names:
-            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
+            value = tf.layers.dense(hidden_input, 1, name=f"{name}_value")
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
@@ -244,7 +245,7 @@ class SACNetwork:
 
             q1_heads = {}
             for name in stream_names:
-                _q1 = tf.layers.dense(q1_hidden, num_outputs, name="{}_q1".format(name))
+                _q1 = tf.layers.dense(q1_hidden, num_outputs, name=f"{name}_q1")
                 q1_heads[name] = _q1
 
             q1 = tf.reduce_mean(list(q1_heads.values()), axis=0)
@@ -263,7 +264,7 @@ class SACNetwork:
 
             q2_heads = {}
             for name in stream_names:
-                _q2 = tf.layers.dense(q2_hidden, num_outputs, name="{}_q2".format(name))
+                _q2 = tf.layers.dense(q2_hidden, num_outputs, name=f"{name}_q2")
                 q2_heads[name] = _q2
 
             q2 = tf.reduce_mean(list(q2_heads.values()), axis=0)
@@ -299,10 +300,9 @@ class SACTargetNetwork(SACNetwork):
             vis_encode_type,
         )
         with tf.variable_scope(TARGET_SCOPE):
-            self.visual_in = ModelUtils.create_visual_input_placeholders(
-                policy.brain.camera_resolutions
+            self.vector_in, self.visual_in = ModelUtils.create_input_placeholders(
+                self.policy.behavior_spec.observation_shapes
             )
-            self.vector_in = ModelUtils.create_vector_input(policy.vec_obs_size)
             if self.policy.normalize:
                 normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
@@ -388,7 +388,6 @@ class SACPolicyNetwork(SACNetwork):
             self._create_memory_ins(m_size)
 
         hidden_critic = self._create_observation_in(vis_encode_type)
-        self.policy.output = self.policy.output
         # Use the sequence length of the policy
         self.sequence_length_ph = self.policy.sequence_length_ph
 

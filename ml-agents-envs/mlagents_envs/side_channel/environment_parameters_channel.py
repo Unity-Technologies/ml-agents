@@ -22,7 +22,7 @@ class EnvironmentParametersChannel(SideChannel):
         MULTIRANGEUNIFORM = 2
 
     def __init__(self) -> None:
-        channel_id = uuid.UUID(("534c891e-810f-11ea-a9d0-822485860400"))
+        channel_id = uuid.UUID("534c891e-810f-11ea-a9d0-822485860400")
         super().__init__(channel_id)
 
     def on_message_received(self, msg: IncomingMessage) -> None:

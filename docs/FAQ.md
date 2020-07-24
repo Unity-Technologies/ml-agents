@@ -89,6 +89,11 @@ There may be a number of possible causes:
   Unity Environment to figure what error happened.
 - _Cause_: You have assigned `HTTP_PROXY` and `HTTPS_PROXY` values in your
   environment variables. _Solution_: Remove these values and try again.
+- _Cause_: You are running in a headless environment (e.g. remotely connected
+  to a server). _Solution_: Pass `--no-graphics` to `mlagents-learn`, or
+  `no_graphics=True` to `RemoteRegistryEntry.make()` or the `UnityEnvironment`
+  initializer. If you need graphics for visual observations, you will need to
+  set up `xvfb` (or equivalent).
 
 ## Communication port {} still in use
 
@@ -108,3 +113,12 @@ terminating. In order to address this, set `Max Steps` for the Agents within the
 Scene Inspector to a value greater than 0. Alternatively, it is possible to
 manually set `done` conditions for episodes from within scripts for custom
 episode-terminating events.
+
+## "File name" cannot be opened because the developer cannot be verified.
+
+If you have downloaded the repository using the github website on macOS 10.15 (Catalina)
+or later, you may see this error when attempting to play scenes in the Unity project.
+Workarounds include installing the package using the Unity Package Manager (this is
+the officially supported approach - see [here](Installation.md)), or following the
+instructions [here](https://support.apple.com/en-us/HT202491) to verify the relevant
+files on your machine on a file-by-file basis.

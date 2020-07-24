@@ -4,21 +4,17 @@ import torch
 
 import os
 from torch import onnx
+from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
-from mlagents.trainers.brain_conversion_utils import get_global_agent_id
+from mlagents.trainers.behavior_id_utils import get_global_agent_id
 
 from mlagents.trainers.policy import Policy
-from mlagents_envs.base_env import DecisionSteps
-from mlagents.tf_utils import tf
+from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
-from mlagents.trainers.policy.policy import UnityPolicyException
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.brain import BrainParameters
-from mlagents.trainers.models_torch import ActorCritic
-
-from mlagents.trainers.ppo.trainer import TestingConfiguration
+from mlagents.trainers.torch.networks import ActorCritic
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -27,10 +23,10 @@ class TorchPolicy(Policy):
     def __init__(
         self,
         seed: int,
-        brain: BrainParameters,
+        behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
         model_path: str,
-        load: bool,
+        load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
@@ -49,60 +45,22 @@ class TorchPolicy(Policy):
         :param reparameterize: Whether we are using the resampling trick to update the policy
         in continuous output.
         """
-        super(TorchPolicy, self).__init__(brain, seed, trainer_settings)
-        self.grads = None
-        num_layers = trainer_settings.network_settings.num_layers
-        self.h_size = trainer_settings.network_settings.hidden_units
-        self.seed = seed
-        self.brain = brain
+        super().__init__(
+            seed,
+            behavior_spec,
+            trainer_settings,
+            model_path,
+            load,
+            tanh_squash,
+            reparameterize,
+            condition_sigma_on_obs,
+        )
         self.global_step = 0
-        self.m_size = 0
-        self.model_path = model_path
-        self.network_settings = trainer_settings.network_settings
-
-        self.act_size = brain.vector_action_space_size
-        self.act_type = brain.vector_action_space_type
-        self.sequence_length = 1
-        if trainer_settings.network_settings.memory is not None:
-            self.m_size = trainer_settings.network_settings.memory.memory_size
-            self.sequence_length = (
-                trainer_settings.network_settings.memory.sequence_length
-            )
-            if self.m_size == 0:
-                raise UnityPolicyException(
-                    "The memory size for brain {0} is 0 even "
-                    "though the trainer uses recurrent.".format(brain.brain_name)
-                )
-            elif self.m_size % 2 != 0:
-                raise UnityPolicyException(
-                    "The memory size for brain {0} is {1} "
-                    "but it must be divisible by 2.".format(
-                        brain.brain_name, self.m_size
-                    )
-                )
-        else:
-            self.m_size = 0
-            self.sequence_length = 1
-        if num_layers < 1:
-            num_layers = 1
-        self.num_layers = num_layers
-        self.vis_encode_type = trainer_settings.network_settings.vis_encode_type
-        self.tanh_squash = tanh_squash
-        self.reparameterize = reparameterize
-        self.condition_sigma_on_obs = condition_sigma_on_obs
-
-        # Non-exposed parameters; these aren't exposed because they don't have a
-        # good explanation and usually shouldn't be touched.
-        self.log_std_min = -20
-        self.log_std_max = 2
-
+        self.grads = None
         if TestingConfiguration.device != "cpu":
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
         else:
             torch.set_default_tensor_type(torch.FloatTensor)
-
-        self.inference_dict: Dict[str, tf.Tensor] = {}
-        self.update_dict: Dict[str, tf.Tensor] = {}
 
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
@@ -111,18 +69,11 @@ class TorchPolicy(Policy):
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
         }
-
         self.actor_critic = ActorCritic(
-            h_size=int(trainer_settings.network_settings.hidden_units),
-            act_type=self.act_type,
-            vector_sizes=[brain.vector_observation_space_size],
-            act_size=brain.vector_action_space_size,
-            normalize=trainer_settings.network_settings.normalize,
-            num_layers=int(trainer_settings.network_settings.num_layers),
-            m_size=self.m_size,
-            use_lstm=self.use_recurrent,
-            visual_sizes=brain.camera_resolutions,
-            vis_encode_type=trainer_settings.network_settings.vis_encode_type,
+            observation_shapes=self.behavior_spec.observation_shapes,
+            network_settings=trainer_settings.network_settings,
+            act_type=behavior_spec.action_type,
+            act_size=self.act_size,
             stream_names=reward_signal_names,
             separate_critic=separate_critic
             if separate_critic is not None
@@ -137,9 +88,7 @@ class TorchPolicy(Policy):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
         if not self.use_continuous_act:
-            mask = torch.ones(
-                [len(decision_requests), np.sum(self.brain.vector_action_space_size)]
-            )
+            mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
                     1 - np.concatenate(decision_requests.action_mask, axis=1)
@@ -168,10 +117,11 @@ class TorchPolicy(Policy):
         """
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         """
-        dists, (
-            value_heads,
-            mean_value,
-        ), memories = self.actor_critic.get_dist_and_value(
+        (
+            dists,
+            (value_heads, mean_value),
+            memories,
+        ) = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
 
@@ -273,57 +223,43 @@ class TorchPolicy(Policy):
             agent_ids=list(decision_requests.agent_id),
         )
 
-    def save_model(self, step=0):
+    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
         """
-        Saves the model
-        :param step: The number of steps the model was trained for
+        Checkpoints the policy on disk.
+
+        :param checkpoint_path: filepath to write the checkpoint
+        :param settings: SerializationSettings for exporting the model.
         """
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
-        save_path = self.model_path + "/model-" + str(step) + ".pt"
-        torch.save(self.actor_critic.state_dict(), save_path)
+        torch.save(self.actor_critic.state_dict(), f"{checkpoint_path}.pt")
 
-    def load_model(self, step=0):
+    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
+        self.export_model(self.global_step)
+
+    def load_model(self, step=0):  # TODO: this doesn't work
         load_path = self.model_path + "/model-" + str(step) + ".pt"
         self.actor_critic.load_state_dict(torch.load(load_path))
 
     def export_model(self, step=0):
-        try:
-            fake_vec_obs = [
-                torch.zeros([1] + [self.brain.vector_observation_space_size])
-            ]
-            fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
-            fake_masks = torch.ones([1] + self.actor_critic.act_size)
-            # fake_memories = torch.zeros([1] + [self.m_size])
-            export_path = "./model-" + str(step) + ".onnx"
-            output_names = ["action", "action_probs"]
-            input_names = ["vector_observation", "action_mask"]
-            dynamic_axes = {
-                "vector_observation": [0],
-                "action": [0],
-                "action_probs": [0],
-            }
-            onnx.export(
-                self.actor_critic,
-                (fake_vec_obs, fake_vis_obs, fake_masks),
-                export_path,
-                verbose=True,
-                opset_version=12,
-                input_names=input_names,
-                output_names=output_names,
-                dynamic_axes=dynamic_axes,
-            )
-        except:
-            print("Could not export torch model")
-            return
-
-    @property
-    def vis_obs_size(self):
-        return self.brain.number_visual_observations
-
-    @property
-    def vec_obs_size(self):
-        return self.brain.vector_observation_space_size
+        fake_vec_obs = [torch.zeros([1] + [self.vec_obs_size])]
+        fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
+        fake_masks = torch.ones([1] + self.actor_critic.act_size)
+        # fake_memories = torch.zeros([1] + [self.m_size])
+        export_path = "./model-" + str(step) + ".onnx"
+        output_names = ["action", "action_probs"]
+        input_names = ["vector_observation", "action_mask"]
+        dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
+        onnx.export(
+            self.actor_critic,
+            (fake_vec_obs, fake_vis_obs, fake_masks),
+            export_path,
+            verbose=True,
+            opset_version=12,
+            input_names=input_names,
+            output_names=output_names,
+            dynamic_axes=dynamic_axes,
+        )
 
     @property
     def use_vis_obs(self):
@@ -347,3 +283,12 @@ class TorchPolicy(Policy):
         """
         self.global_step += n_steps
         return self.get_current_step()
+
+    def load_weights(self, values: List[np.ndarray]) -> None:
+        pass
+
+    def init_load_weights(self) -> None:
+        pass
+
+    def get_weights(self) -> List[np.ndarray]:
+        return []

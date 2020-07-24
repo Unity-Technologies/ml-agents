@@ -1,11 +1,11 @@
 from typing import List, Tuple
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
-class CuriosityModel(object):
+class CuriosityModel:
     def __init__(
         self, policy: TFPolicy, encoding_size: int = 128, learning_rate: float = 3e-4
     ):
@@ -33,35 +33,34 @@ class CuriosityModel(object):
         encoded_state_list = []
         encoded_next_state_list = []
 
-        if self.policy.vis_obs_size > 0:
-            self.next_visual_in = []
+        # Create input ops for next (t+1) visual observations.
+        self.next_vector_in, self.next_visual_in = ModelUtils.create_input_placeholders(
+            self.policy.behavior_spec.observation_shapes, name_prefix="curiosity_next_"
+        )
+
+        if self.next_visual_in:
             visual_encoders = []
             next_visual_encoders = []
-            for i in range(self.policy.vis_obs_size):
-                # Create input ops for next (t+1) visual observations.
-                next_visual_input = ModelUtils.create_visual_input(
-                    self.policy.brain.camera_resolutions[i],
-                    name="curiosity_next_visual_observation_" + str(i),
-                )
-                self.next_visual_in.append(next_visual_input)
-
+            for i, (vis_in, next_vis_in) in enumerate(
+                zip(self.policy.visual_in, self.next_visual_in)
+            ):
                 # Create the encoder ops for current and next visual input.
                 # Note that these encoders are siamese.
                 encoded_visual = ModelUtils.create_visual_observation_encoder(
-                    self.policy.visual_in[i],
+                    vis_in,
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "curiosity_stream_{}_visual_obs_encoder".format(i),
+                    f"curiosity_stream_{i}_visual_obs_encoder",
                     False,
                 )
 
                 encoded_next_visual = ModelUtils.create_visual_observation_encoder(
-                    self.next_visual_in[i],
+                    next_vis_in,
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "curiosity_stream_{}_visual_obs_encoder".format(i),
+                    f"curiosity_stream_{i}_visual_obs_encoder",
                     True,
                 )
                 visual_encoders.append(encoded_visual)
@@ -73,15 +72,6 @@ class CuriosityModel(object):
             encoded_next_state_list.append(hidden_next_visual)
 
         if self.policy.vec_obs_size > 0:
-            # Create the encoder ops for current and next vector input.
-            # Note that these encoders are siamese.
-            # Create input op for next (t+1) vector observation.
-            self.next_vector_in = tf.placeholder(
-                shape=[None, self.policy.vec_obs_size],
-                dtype=tf.float32,
-                name="curiosity_next_vector_observation",
-            )
-
             encoded_vector_obs = ModelUtils.create_vector_observation_encoder(
                 self.policy.vector_in,
                 self.encoding_size,
@@ -100,7 +90,6 @@ class CuriosityModel(object):
             )
             encoded_state_list.append(encoded_vector_obs)
             encoded_next_state_list.append(encoded_next_vector_obs)
-
         encoded_state = tf.concat(encoded_state_list, axis=1)
         encoded_next_state = tf.concat(encoded_next_state_list, axis=1)
         return encoded_state, encoded_next_state
@@ -116,7 +105,7 @@ class CuriosityModel(object):
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
-        if self.policy.brain.vector_action_space_type == "continuous":
+        if self.policy.behavior_spec.is_action_continuous():
             pred_action = tf.layers.dense(
                 hidden, self.policy.act_size[0], activation=None
             )

@@ -1,14 +1,14 @@
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple
 
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 
 EPSILON = 1e-7
 
 
-class GAILModel(object):
+class GAILModel:
     def __init__(
         self,
         policy: TFPolicy,
@@ -69,7 +69,7 @@ class GAILModel(object):
         self.done_expert = tf.expand_dims(self.done_expert_holder, -1)
         self.done_policy = tf.expand_dims(self.done_policy_holder, -1)
 
-        if self.policy.brain.vector_action_space_type == "continuous":
+        if self.policy.behavior_spec.is_action_continuous():
             action_length = self.policy.act_size[0]
             self.action_in_expert = tf.placeholder(
                 shape=[None, action_length], dtype=tf.float32
@@ -91,10 +91,14 @@ class GAILModel(object):
         encoded_policy_list = []
         encoded_expert_list = []
 
+        (
+            self.obs_in_expert,
+            self.expert_visual_in,
+        ) = ModelUtils.create_input_placeholders(
+            self.policy.behavior_spec.observation_shapes, "gail_"
+        )
+
         if self.policy.vec_obs_size > 0:
-            self.obs_in_expert = tf.placeholder(
-                shape=[None, self.policy.vec_obs_size], dtype=tf.float32
-            )
             if self.policy.normalize:
                 encoded_expert_list.append(
                     ModelUtils.normalize_vector_obs(
@@ -109,33 +113,27 @@ class GAILModel(object):
                 encoded_expert_list.append(self.obs_in_expert)
                 encoded_policy_list.append(self.policy.vector_in)
 
-        if self.policy.vis_obs_size > 0:
-            self.expert_visual_in: List[tf.Tensor] = []
+        if self.expert_visual_in:
             visual_policy_encoders = []
             visual_expert_encoders = []
-            for i in range(self.policy.vis_obs_size):
-                # Create input ops for next (t+1) visual observations.
-                visual_input = ModelUtils.create_visual_input(
-                    self.policy.brain.camera_resolutions[i],
-                    name="gail_visual_observation_" + str(i),
-                )
-                self.expert_visual_in.append(visual_input)
-
+            for i, (vis_in, exp_vis_in) in enumerate(
+                zip(self.policy.visual_in, self.expert_visual_in)
+            ):
                 encoded_policy_visual = ModelUtils.create_visual_observation_encoder(
-                    self.policy.visual_in[i],
+                    vis_in,
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "gail_stream_{}_visual_obs_encoder".format(i),
+                    f"gail_stream_{i}_visual_obs_encoder",
                     False,
                 )
 
                 encoded_expert_visual = ModelUtils.create_visual_observation_encoder(
-                    self.expert_visual_in[i],
+                    exp_vis_in,
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "gail_stream_{}_visual_obs_encoder".format(i),
+                    f"gail_stream_{i}_visual_obs_encoder",
                     True,
                 )
                 visual_policy_encoders.append(encoded_policy_visual)

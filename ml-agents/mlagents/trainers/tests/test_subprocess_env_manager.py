@@ -136,20 +136,20 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 
     @mock.patch("mlagents.trainers.subprocess_env_manager.SubprocessEnvManager._step")
     @mock.patch(
-        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.external_brains",
+        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.training_behaviors",
         new_callable=mock.PropertyMock,
     )
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
     )
-    def test_advance(self, mock_create_worker, external_brains_mock, step_mock):
+    def test_advance(self, mock_create_worker, training_behaviors_mock, step_mock):
         brain_name = "testbrain"
         action_info_dict = {brain_name: MagicMock()}
         mock_create_worker.side_effect = create_worker_mock
         env_manager = SubprocessEnvManager(
             mock_env_factory, EngineConfig.default_config(), 3
         )
-        external_brains_mock.return_value = [brain_name]
+        training_behaviors_mock.return_value = [brain_name]
         agent_manager_mock = mock.Mock()
         mock_policy = mock.Mock()
         agent_manager_mock.policy_queue.get_nowait.side_effect = [
@@ -166,7 +166,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         }
         step_info = EnvironmentStep(step_info_dict, 0, action_info_dict, env_stats)
         step_mock.return_value = [step_info]
-        env_manager.advance()
+        env_manager.process_steps(env_manager.get_steps())
 
         # Test add_experiences
         env_manager._step.assert_called_once()

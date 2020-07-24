@@ -12,7 +12,7 @@ start TensorBoard:
 
 1. Open a terminal or console window:
 1. Navigate to the directory where the ML-Agents Toolkit is installed.
-1. From the command line run: `tensorboard --logdir=results --port=6006`
+1. From the command line run: `tensorboard --logdir results --port 6006`
 1. Open a browser window and navigate to
    [localhost:6006](http://localhost:6006).
 

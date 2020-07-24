@@ -1,12 +1,11 @@
 import json
 import os
 import torch
-import tensorflow as tf
+from mlagents.tf_utils import tf
 import argparse
 from mlagents.trainers.learn import run_cli, parse_command_line
-from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.settings import TestingConfiguration
 from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.ppo.trainer import TestingConfiguration
 from mlagents_envs.timers import _thread_timer_stacks
 
 
@@ -168,11 +167,12 @@ def main():
         ("CrawlerStaticTarget", "CrawlerStatic"),
     ]
     if algo == "ppo":
-        envs_config_tuples += [("Hallway", "Hallway"),
-        ("VisualHallway", "VisualHallway")]
+        envs_config_tuples += [
+            ("Hallway", "Hallway"),
+            ("VisualHallway", "VisualHallway"),
+        ]
     if args.ball:
         envs_config_tuples = [("3DBall", "3DBall")]
-
 
     labels = (
         "name",
