@@ -11,6 +11,10 @@ public class WalkerAgent : Agent
 {
     [Header("Walk Speed")] [Range(0, 15)] public float walkingSpeed = 15; //The walking speed to try and achieve
     float m_maxWalkingSpeed = 15; //The max walking speed
+    
+    //Should the agent sample a new goal velocity each episode?
+    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
+    //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
     Vector3 m_WalkDir; //Direction to the target
 
@@ -87,8 +91,9 @@ public class WalkerAgent : Agent
 
         rewardManager.ResetEpisodeRewards();
 
+        //Set our goal walking speed
         walkingSpeed =
-            randomizeWalkSpeedEachEpisode ? Random.Range(0.0f, m_maxWalkingSpeed) : walkingSpeed; //Random Walk Speed
+            randomizeWalkSpeedEachEpisode ? Random.Range(0.0f, m_maxWalkingSpeed) : walkingSpeed;
 
         SetResetParameters();
     }
