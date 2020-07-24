@@ -287,5 +287,8 @@ class TorchPolicy(Policy):
     def load_weights(self, values: List[np.ndarray]) -> None:
         pass
 
+    def init_load_weights(self) -> None:
+        pass
+
     def get_weights(self) -> List[np.ndarray]:
         return []

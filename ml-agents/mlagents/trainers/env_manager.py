@@ -8,7 +8,7 @@ from mlagents_envs.base_env import (
 )
 from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
-from mlagents.trainers.policy.policy import Policy
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.logging_util import get_logger

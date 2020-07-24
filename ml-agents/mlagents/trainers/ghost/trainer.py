@@ -9,7 +9,6 @@ import numpy as np
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.policy.tf_policy import TFPolicy
 
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
@@ -306,7 +305,7 @@ class GhostTrainer(Trainer):
 
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
-    ) -> TFPolicy:
+    ) -> Policy:
         """
         Creates policy with the wrapped trainer's create_policy function
         The first policy encountered sets the wrapped

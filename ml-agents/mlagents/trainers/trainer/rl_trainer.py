@@ -11,8 +11,8 @@ from mlagents.trainers.policy.checkpoint_manager import (
     NNCheckpointManager,
 )
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.optimizer.optimizer import Optimizer
 from mlagents_envs.timers import timed
+from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.components.reward_signals import RewardSignalResult

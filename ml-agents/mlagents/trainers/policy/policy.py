@@ -166,3 +166,7 @@ class Policy:
     @abstractmethod
     def get_weights(self) -> List[np.ndarray]:
         return []
+
+    @abstractmethod
+    def init_load_weights(self) -> None:
+        pass

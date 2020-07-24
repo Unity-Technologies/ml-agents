@@ -13,7 +13,7 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.policy.policy import Policy
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations

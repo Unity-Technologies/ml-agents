@@ -88,14 +88,8 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         self.target_network = Critic(
             self.stream_names,
-            policy_network_settings.hidden_units,
             self.policy.behavior_spec.observation_shapes,
-            policy_network_settings.normalize,
-            policy_network_settings.num_layers,
-            policy_network_settings.memory.memory_size
-            if policy_network_settings.memory is not None
-            else 0,
-            policy_network_settings.vis_encode_type,
+            policy_network_settings,
         )
         self.soft_update(self.policy.actor_critic.critic, self.target_network, 1.0)
 
