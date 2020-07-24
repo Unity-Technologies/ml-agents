@@ -3,8 +3,8 @@ behaviors:
     trainer_type: sac_transfer
     hyperparameters:
       learning_rate: 0.0003
-      learning_rate_schedule: constant
-      model_schedule: constant
+      learning_rate_schedule: linear
+      model_schedule: linear
       batch_size: 64
       buffer_size: 12000
       buffer_init_steps: 0
@@ -18,17 +18,16 @@ behaviors:
       forward_layers: 1
       value_layers: 2
       feature_size: 16
-      separate_value_train: true
-      reuse_encoder: true
+      reuse_encoder: false
       in_epoch_alter: false
       in_batch_alter: true
       use_op_buffer: false
       use_var_predict: true
       with_prior: false
       predict_return: true
-      use_bisim: false
+      use_bisim: true
     network_settings:
-      normalize: false
+      normalize: true
       hidden_units: 64
       num_layers: 2
       vis_encode_type: simple

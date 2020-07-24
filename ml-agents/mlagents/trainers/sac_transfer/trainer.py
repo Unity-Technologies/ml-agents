@@ -240,13 +240,20 @@ class SACTransferTrainer(RLTrainer):
                     self.hyperparameters.batch_size,
                     sequence_length=self.policy.sequence_length,
                 )
+                sampled_minibatch_bisim = buffer.sample_mini_batch(
+                    self.hyperparameters.batch_size,
+                    sequence_length=self.policy.sequence_length,
+                )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
                     sampled_minibatch[
                         "{}_rewards".format(name)
                     ] = signal.evaluate_batch(sampled_minibatch).scaled_reward
 
-                update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
+                update_stats = self.optimizer.update(
+                    sampled_minibatch, 
+                    sampled_minibatch_bisim, 
+                    n_sequences)
                 for stat_name, value in update_stats.items():
                     batch_update_stats[stat_name].append(value)
 

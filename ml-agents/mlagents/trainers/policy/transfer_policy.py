@@ -973,7 +973,6 @@ class TransferPolicy(TFPolicy):
         forward_layers: int,
         var_predict: bool = False,
         reuse: bool = False,
-        separate_train: bool = False,
     ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
@@ -983,6 +982,9 @@ class TransferPolicy(TFPolicy):
         """
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
         hidden = combined_input
+
+        if not self.transfer:
+            hidden = tf.stop_gradient(hidden)
 
         for i in range(forward_layers):
             hidden = tf.layers.dense(
@@ -1068,14 +1070,13 @@ class TransferPolicy(TFPolicy):
         encoded_state: tf.Tensor,
         encoded_action: tf.Tensor,
         forward_layers: int,
-        separate_train: bool = False,
     ):
 
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
 
         hidden = combined_input
-        # if self.transfer:
-        #    hidden = tf.stop_gradient(hidden)
+        if not self.transfer:
+           hidden = tf.stop_gradient(hidden)
         for i in range(forward_layers):
             hidden = tf.layers.dense(
                 hidden,
@@ -1158,14 +1159,14 @@ class TransferPolicy(TFPolicy):
         self.bisim_action = tf.placeholder(
             shape=[None, sum(self.act_size)], dtype=tf.float32, name="bisim_action"
         )
-        self.bisim_action_encoder = self._create_action_encoder(
-            self.bisim_action,
-            self.h_size,
-            self.action_feature_size,
-            action_layers,
-            reuse=True,
-        )
-        combined_input = tf.concat([self.bisim_encoder, self.bisim_action_encoder], axis=1)
+        # self.bisim_action_encoder = self._create_action_encoder(
+        #     self.bisim_action,
+        #     self.h_size,
+        #     self.action_feature_size,
+        #     action_layers,
+        #     reuse=True,
+        # )
+        combined_input = tf.concat([self.bisim_encoder, self.bisim_action], axis=1)
         combined_input = tf.stop_gradient(combined_input)
 
         with tf.variable_scope("predict"):

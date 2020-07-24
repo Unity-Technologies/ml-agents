@@ -237,11 +237,6 @@ class SACTransferOptimizer(TFOptimizer):
             self.stats_name_to_update_name.update({
                 "Losses/Reward Loss": "reward_loss",
             })
-        if self.use_bisim:
-            self.stats_name_to_update_name.update({
-                "Losses/Bisim Loss": "bisim_loss",
-                "Policy/Bisim Learning Rate": "bisim_learning_rate",
-            })
 
         self.update_dict = {
             "value_loss": self.total_value_loss,
@@ -608,7 +603,7 @@ class SACTransferOptimizer(TFOptimizer):
         policy_vars = self.policy.get_trainable_variables(
             train_encoder=self.train_encoder,
             train_action=self.train_action,
-            train_model=False,
+            train_model=self.train_model,
             train_policy=self.train_policy
         )
 
@@ -616,7 +611,7 @@ class SACTransferOptimizer(TFOptimizer):
             train_encoder=self.train_encoder,
             train_action=self.train_action,
             train_model=self.train_model,
-            train_policy=False
+            train_policy=self.train_policy
         )
 
         if self.train_value:
@@ -638,7 +633,7 @@ class SACTransferOptimizer(TFOptimizer):
         # Make sure policy is updated first, then value, then entropy.
         with tf.control_dependencies([self.update_batch_policy]):
             self.update_batch_value = value_optimizer.minimize(
-                self.total_value_loss, var_list=critic_vars
+                self.total_value_loss, var_list=self.policy_network.critic_vars
             )
             # Add entropy coefficient optimization operation
             with tf.control_dependencies([self.update_batch_value]):
@@ -685,7 +680,7 @@ class SACTransferOptimizer(TFOptimizer):
             logger.debug(_var)
 
     @timed
-    def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
+    def update(self, batch: AgentBuffer, batch_bisim: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         """
         Updates model using buffer.
         :param num_sequences: Number of trajectories in batch.
@@ -698,18 +693,17 @@ class SACTransferOptimizer(TFOptimizer):
         feed_dict = self._construct_feed_dict(self.policy, batch, num_sequences)
         stats_needed = self.stats_name_to_update_name
         update_stats: Dict[str, float] = {}
-        update_vals = self._execute_model(feed_dict, self.update_dict)
 
-        update_vals.update(self._execute_model(feed_dict, self.model_update_dict))
-
-        if self.use_bisim:
-            batch1 = copy.deepcopy(batch)
-            batch.shuffle(sequence_length=1)
-            batch2 = copy.deepcopy(batch)
-            bisim_stats = self.update_encoder(batch1, batch2)
+        update_vals = self._execute_model(feed_dict, self.model_update_dict)
+        update_vals.update(self._execute_model(feed_dict, self.update_dict))
 
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
+
+        if self.use_bisim:
+            bisim_stats = self.update_encoder(batch, batch_bisim)
+            update_stats.update(bisim_stats)
+        
         # Update target network. By default, target update happens at every policy update.
         self.sess.run(self.target_update_op)
         self.policy.run_soft_copy()
