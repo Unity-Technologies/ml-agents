@@ -10,7 +10,7 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
-      model_schedule: linear
+      model_schedule: constant
       encoder_layers: 2
       policy_layers: 2
       forward_layers: 2
@@ -18,7 +18,7 @@ behaviors:
       feature_size: 128
       reuse_encoder: false
       in_epoch_alter: false
-      in_batch_alter: false
+      in_batch_alter: true
       use_op_buffer: false
       use_var_predict: true
       with_prior: false
