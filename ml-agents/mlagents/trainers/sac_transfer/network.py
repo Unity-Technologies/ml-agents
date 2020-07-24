@@ -103,14 +103,14 @@ class SACTransferNetwork:
             self.value_heads[name] = value
         self.value = tf.reduce_mean(list(self.value_heads.values()), 0)
 
-    def _create_cc_critic(self, hidden_value, scope, create_qs=True):
+    def _create_cc_critic(self, encoder, hidden_value, scope, create_qs=True):
         """
         Creates just the critic network
         """
         scope = self.join_scopes(scope, "critic")
         self.create_sac_value_head(
             self.stream_names,
-            hidden_value,
+            encoder,
             self.num_layers,
             self.h_size,
             self.join_scopes(scope, "value"),
@@ -287,6 +287,7 @@ class SACTransferTargetNetwork(SACTransferNetwork):
         num_layers=2,
         stream_names=None,
         vis_encode_type=EncoderType.SIMPLE,
+        separate_train=False
     ):
         super().__init__(
             policy,
@@ -299,62 +300,65 @@ class SACTransferTargetNetwork(SACTransferNetwork):
             vis_encode_type,
         )
         with tf.variable_scope(TARGET_SCOPE):
-            # self.visual_in = ModelUtils.create_visual_input_placeholders(
-            #     policy.brain.camera_resolutions
-            # )
-            # self.vector_in = ModelUtils.create_vector_input(policy.vec_obs_size)
-            # if self.policy.normalize:
-            #     normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
-            #     self.update_normalization_op = normalization_tensors.update_op
-            #     self.normalization_steps = normalization_tensors.steps
-            #     self.running_mean = normalization_tensors.running_mean
-            #     self.running_variance = normalization_tensors.running_variance
-            #     self.processed_vector_in = ModelUtils.normalize_vector_obs(
-            #         self.vector_in,
-            #         self.running_mean,
-            #         self.running_variance,
-            #         self.normalization_steps,
-            #     )
-            # else:
-            #     self.processed_vector_in = self.vector_in
-            #     self.update_normalization_op = None
+            self.visual_in = ModelUtils.create_visual_input_placeholders(
+                policy.brain.camera_resolutions
+            )
+            self.vector_in = ModelUtils.create_vector_input(policy.vec_obs_size)
+            if self.policy.normalize:
+                normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
+                self.update_normalization_op = normalization_tensors.update_op
+                self.normalization_steps = normalization_tensors.steps
+                self.running_mean = normalization_tensors.running_mean
+                self.running_variance = normalization_tensors.running_variance
+                self.processed_vector_in = ModelUtils.normalize_vector_obs(
+                    self.vector_in,
+                    self.running_mean,
+                    self.running_variance,
+                    self.normalization_steps,
+                )
+            else:
+                self.processed_vector_in = self.vector_in
+                self.update_normalization_op = None
 
             if self.policy.use_recurrent:
                 self.memory_in = tf.placeholder(
                     shape=[None, m_size], dtype=tf.float32, name="target_recurrent_in"
                 )
                 self.value_memory_in = self.memory_in
-            # hidden_streams = ModelUtils.create_observation_streams(
-            #     self.visual_in,
-            #     self.processed_vector_in,
-            #     1,
-            #     self.h_size,
-            #     0,
-            #     vis_encode_type=vis_encode_type,
-            #     stream_scopes=["critic/value/"],
-            # )
+            hidden_streams = ModelUtils.create_observation_streams(
+                self.visual_in,
+                self.processed_vector_in,
+                1,
+                self.h_size,
+                0,
+                vis_encode_type=vis_encode_type,
+                stream_scopes=["critic/value/"],
+            )
+
         if self.policy.use_continuous_act:
-            self._create_cc_critic(self.policy.targ_encoder, TARGET_SCOPE, create_qs=False)
+            self._create_cc_critic(hidden_streams[0], hidden_streams[0], TARGET_SCOPE, create_qs=False)
+            # self._create_cc_critic(self.policy.targ_encoder, TARGET_SCOPE, create_qs=False)
         else:
-            self._create_dc_critic(self.policy.targ_encoder, TARGET_SCOPE, create_qs=False)
+            self._create_dc_critic(hidden_streams[0], TARGET_SCOPE, create_qs=False)
+            # self._create_dc_critic(self.policy.targ_encoder, TARGET_SCOPE, create_qs=False)
         if self.use_recurrent:
             self.memory_out = tf.concat(
                 self.value_memory_out, axis=1
             )  # Needed for Barracuda to work
 
-    # def copy_normalization(self, mean, variance, steps):
-    #     """
-    #     Copies the mean, variance, and steps into the normalizers of the
-    #     input of this SACNetwork. Used to copy the normalizer from the policy network
-    #     to the target network.
-    #     param mean: Tensor containing the mean.
-    #     param variance: Tensor containing the variance
-    #     param steps: Tensor containing the number of steps.
-    #     """
-    #     update_mean = tf.assign(self.running_mean, mean)
-    #     update_variance = tf.assign(self.running_variance, variance)
-    #     update_norm_step = tf.assign(self.normalization_steps, steps)
-    #     return tf.group([update_mean, update_variance, update_norm_step])
+    def copy_normalization(self, mean, variance, steps):
+        """
+        Copies the mean, variance, and steps into the normalizers of the
+        input of this SACNetwork. Used to copy the normalizer from the policy network
+        to the target network.
+        param mean: Tensor containing the mean.
+        param variance: Tensor containing the variance
+        param steps: Tensor containing the number of steps.
+        """
+        update_mean = tf.assign(self.running_mean, mean)
+        update_variance = tf.assign(self.running_variance, variance)
+        update_norm_step = tf.assign(self.normalization_steps, steps)
+        return tf.group([update_mean, update_variance, update_norm_step])
 
 
 class SACTransferPolicyNetwork(SACTransferNetwork):
@@ -373,6 +377,7 @@ class SACTransferPolicyNetwork(SACTransferNetwork):
         num_layers=2,
         stream_names=None,
         vis_encode_type=EncoderType.SIMPLE,
+        separate_train=False
     ):
         super().__init__(
             policy,
@@ -392,11 +397,16 @@ class SACTransferPolicyNetwork(SACTransferNetwork):
         # Use the sequence length of the policy
         self.sequence_length_ph = self.policy.sequence_length_ph
 
-        if self.policy.use_continuous_act:
-            self._create_cc_critic(self.policy.encoder, POLICY_SCOPE)
-
+        if separate_train:
+            hidden = tf.stop_gradient(self.policy.encoder)
         else:
-            self._create_dc_critic(self.policy.encoder, POLICY_SCOPE)
+            hidden = self.policy.encoder
+        if self.policy.use_continuous_act:
+            self._create_cc_critic(hidden_critic, hidden_critic, POLICY_SCOPE)
+            # self._create_cc_critic(hidden, POLICY_SCOPE)
+        else:
+            self._create_dc_critic(hidden_critic, POLICY_SCOPE)
+            # self._create_dc_critic(hidden, POLICY_SCOPE)
 
         if self.use_recurrent:
             mem_outs = [self.value_memory_out, self.q1_memory_out, self.q2_memory_out]

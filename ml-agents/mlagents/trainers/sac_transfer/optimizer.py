@@ -1,5 +1,6 @@
 import numpy as np
 from typing import Dict, List, Optional, Any, Mapping, cast
+import copy
 
 from mlagents.tf_utils import tf
 
@@ -22,7 +23,7 @@ TARGET_SCOPE = "target_network"
 
 
 class SACTransferOptimizer(TFOptimizer):
-    def __init__(self, policy: TransferPolicy, trainer_params: TrainerSettings):
+    def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
         """
         Takes a Unity environment and model-specific hyper-parameters and returns the
         appropriate PPO agent model for the environment.
@@ -151,9 +152,10 @@ class SACTransferOptimizer(TFOptimizer):
                     h_size=h_size,
                     normalize=self.policy.normalize,
                     use_recurrent=self.policy.use_recurrent,
-                    num_layers=num_layers,
+                    num_layers=hyperparameters.value_layers,
                     stream_names=stream_names,
                     vis_encode_type=vis_encode_type,
+                    separate_train=hyperparameters.separate_value_train
                 )
                 self.target_network = SACTransferTargetNetwork(
                     policy=self.policy,
@@ -161,9 +163,10 @@ class SACTransferOptimizer(TFOptimizer):
                     h_size=h_size,
                     normalize=self.policy.normalize,
                     use_recurrent=self.policy.use_recurrent,
-                    num_layers=num_layers,
+                    num_layers=hyperparameters.value_layers,
                     stream_names=stream_names,
                     vis_encode_type=vis_encode_type,
+                    separate_train=hyperparameters.separate_value_train
                 )
                 # The optimizer's m_size is 3 times the policy (Q1, Q2, and Value)
                 self.m_size = 3 * self.policy.m_size
@@ -171,6 +174,20 @@ class SACTransferOptimizer(TFOptimizer):
                 self.learning_rate = ModelUtils.create_schedule(
                     lr_schedule,
                     lr,
+                    self.policy.global_step,
+                    int(max_step),
+                    min_value=1e-10,
+                )
+                self.model_learning_rate = ModelUtils.create_schedule(
+                    hyperparameters.model_schedule,
+                    lr,
+                    self.policy.global_step,
+                    int(max_step),
+                    min_value=1e-10,
+                )
+                self.bisim_learning_rate = ModelUtils.create_schedule(
+                    hyperparameters.model_schedule,
+                    lr / 10,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
@@ -188,16 +205,16 @@ class SACTransferOptimizer(TFOptimizer):
                 self.selected_actions = (
                     self.policy.selected_actions
                 )  # For GAIL and other reward signals
-                # if self.policy.normalize:
-                #     target_update_norm = self.target_network.copy_normalization(
-                #         self.policy.running_mean,
-                #         self.policy.running_variance,
-                #         self.policy.normalization_steps,
-                #     )
-                #     # Update the normalization of the optimizer when the policy does.
-                #     self.policy.update_normalization_op = tf.group(
-                #         [self.policy.update_normalization_op, target_update_norm]
-                #     )
+                if self.policy.normalize:
+                    target_update_norm = self.target_network.copy_normalization(
+                        self.policy.running_mean,
+                        self.policy.running_variance,
+                        self.policy.normalization_steps,
+                    )
+                    # Update the normalization of the optimizer when the policy does.
+                    self.policy.update_normalization_op = tf.group(
+                        [self.policy.update_normalization_op, target_update_norm]
+                    )
 
                 self.policy.initialize_or_load()
 
@@ -207,12 +224,24 @@ class SACTransferOptimizer(TFOptimizer):
 
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
+            "Losses/Model Loss": "model_loss",
             "Losses/Policy Loss": "policy_loss",
             "Losses/Q1 Loss": "q1_loss",
             "Losses/Q2 Loss": "q2_loss",
             "Policy/Entropy Coeff": "entropy_coef",
             "Policy/Learning Rate": "learning_rate",
+            "Policy/Model Learning Rate": "model_learning_rate",
         }
+
+        if self.predict_return:
+            self.stats_name_to_update_name.update({
+                "Losses/Reward Loss": "reward_loss",
+            })
+        if self.use_bisim:
+            self.stats_name_to_update_name.update({
+                "Losses/Bisim Loss": "bisim_loss",
+                "Policy/Bisim Learning Rate": "bisim_learning_rate",
+            })
 
         self.update_dict = {
             "value_loss": self.total_value_loss,
@@ -233,8 +262,8 @@ class SACTransferOptimizer(TFOptimizer):
         """
         self.vector_in = self.policy.vector_in
         self.visual_in = self.policy.visual_in
-        self.next_vector_in = self.policy.vector_next
-        self.next_visual_in = self.policy.visual_next
+        self.next_vector_in = self.target_network.vector_in
+        self.next_visual_in = self.target_network.visual_in
         self.sequence_length_ph = self.policy.sequence_length_ph
         self.next_sequence_length_ph = self.target_network.sequence_length_ph
         if not self.policy.use_continuous_act:
@@ -512,6 +541,47 @@ class SACTransferOptimizer(TFOptimizer):
 
         self.entropy = self.policy_network.entropy
 
+        self.model_loss = self.policy.forward_loss
+        if self.predict_return:
+            self.model_loss += 0.5 * self.policy.reward_loss
+        if self.with_prior:
+            if self.use_var_encoder:
+                self.model_loss += 0.2 * self.policy.encoder_distribution.kl_standard()
+            if self.use_var_predict:
+                self.model_loss += 0.2 * self.policy.predict_distribution.kl_standard()
+        
+        if self.use_bisim:
+            if self.use_var_predict:
+                predict_diff = self.policy.predict_distribution.w_distance(
+                    self.policy.bisim_predict_distribution
+                )
+            else:
+                predict_diff = tf.reduce_mean(
+                    tf.reduce_sum(
+                        tf.squared_difference(
+                            self.policy.bisim_predict, self.policy.predict
+                        ),
+                        axis=1,
+                    )
+                )
+            if self.predict_return:
+                reward_diff = tf.reduce_sum(
+                    tf.abs(self.policy.bisim_pred_reward - self.policy.pred_reward),
+                    axis=1,
+                )
+                predict_diff = (
+                    self.reward_signals["extrinsic"].gamma * predict_diff + reward_diff
+                )
+            encode_dist = tf.reduce_sum(
+                tf.abs(self.policy.encoder - self.policy.bisim_encoder), axis=1
+            )
+            self.predict_difference = predict_diff
+            self.reward_difference = reward_diff
+            self.encode_difference = encode_dist
+            self.bisim_loss = tf.reduce_mean(
+                tf.squared_difference(encode_dist, predict_diff)
+            )
+
     def _create_sac_optimizer_ops(self) -> None:
         """
         Creates the Adam optimizers and update ops for SAC, including
@@ -526,6 +596,7 @@ class SACTransferOptimizer(TFOptimizer):
         value_optimizer = self.create_optimizer_op(
             learning_rate=self.learning_rate, name="sac_value_opt"
         )
+        
 
         self.target_update_op = [
             tf.assign(target, (1 - self.tau) * target + self.tau * source)
@@ -533,17 +604,25 @@ class SACTransferOptimizer(TFOptimizer):
                 self.target_network.value_vars, self.policy_network.value_vars
             )
         ]
-        logger.debug("value_vars")
-        self.print_all_vars(self.policy_network.value_vars)
-        logger.debug("targvalue_vars")
-        self.print_all_vars(self.target_network.value_vars)
-        logger.debug("critic_vars")
-        self.print_all_vars(self.policy_network.critic_vars)
-        logger.debug("q_vars")
-        self.print_all_vars(self.policy_network.q_vars)
-        logger.debug("policy_vars")
-        policy_vars = self.policy.get_trainable_variables()
-        self.print_all_vars(policy_vars)
+        
+        policy_vars = self.policy.get_trainable_variables(
+            train_encoder=self.train_encoder,
+            train_action=self.train_action,
+            train_model=False,
+            train_policy=self.train_policy
+        )
+
+        model_vars = self.policy.get_trainable_variables(
+            train_encoder=self.train_encoder,
+            train_action=self.train_action,
+            train_model=self.train_model,
+            train_policy=False
+        )
+
+        if self.train_value:
+            critic_vars = self.policy_network.critic_vars + policy_vars
+        else:
+            critic_vars = policy_vars
 
         self.target_init_op = [
             tf.assign(target, source)
@@ -559,13 +638,47 @@ class SACTransferOptimizer(TFOptimizer):
         # Make sure policy is updated first, then value, then entropy.
         with tf.control_dependencies([self.update_batch_policy]):
             self.update_batch_value = value_optimizer.minimize(
-                self.total_value_loss, var_list=self.policy_network.critic_vars
+                self.total_value_loss, var_list=critic_vars
             )
             # Add entropy coefficient optimization operation
             with tf.control_dependencies([self.update_batch_value]):
                 self.update_batch_entropy = entropy_optimizer.minimize(
                     self.entropy_loss, var_list=self.log_ent_coef
                 )
+
+        model_optimizer = self.create_optimizer_op(
+            learning_rate=self.model_learning_rate, name="sac_model_opt"
+        )
+        self.update_batch_model = model_optimizer.minimize(
+            self.model_loss, var_list=model_vars
+        )
+        self.model_update_dict.update(
+            {
+                "model_loss": self.model_loss,
+                "update_batch": self.update_batch_model,
+                "model_learning_rate": self.model_learning_rate,
+            }
+        )
+        if self.predict_return:
+            self.model_update_dict.update({"reward_loss": self.policy.reward_loss})
+        
+        if self.use_bisim:
+            bisim_train_vars = tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
+            )
+            self.bisim_optimizer = self.create_optimizer_op(self.bisim_learning_rate)
+
+            self.bisim_update_batch = self.bisim_optimizer.minimize(
+                self.bisim_loss, var_list=bisim_train_vars
+            )
+            self.bisim_update_dict.update(
+                {
+                    "bisim_loss": self.bisim_loss,
+                    "update_batch": self.bisim_update_batch,
+                    "bisim_learning_rate": self.bisim_learning_rate,
+                }
+            )
+
 
     def print_all_vars(self, variables):
         for _var in variables:
@@ -586,14 +699,56 @@ class SACTransferOptimizer(TFOptimizer):
         stats_needed = self.stats_name_to_update_name
         update_stats: Dict[str, float] = {}
         update_vals = self._execute_model(feed_dict, self.update_dict)
+
+        update_vals.update(self._execute_model(feed_dict, self.model_update_dict))
+
+        if self.use_bisim:
+            batch1 = copy.deepcopy(batch)
+            batch.shuffle(sequence_length=1)
+            batch2 = copy.deepcopy(batch)
+            bisim_stats = self.update_encoder(batch1, batch2)
+
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
         # Update target network. By default, target update happens at every policy update.
         self.sess.run(self.target_update_op)
+        self.policy.run_soft_copy()
         if not self.reuse_encoder:
             self.policy.run_soft_copy()
         return update_stats
 
+    def update_encoder(self, mini_batch1: AgentBuffer, mini_batch2: AgentBuffer):
+
+        stats_needed = {
+            "Losses/Bisim Loss": "bisim_loss",
+            "Policy/Bisim Learning Rate": "bisim_learning_rate",
+        }
+        update_stats = {}
+
+        selected_action_1 = self.policy.sess.run(
+            self.policy.selected_actions,
+            feed_dict={self.policy.vector_in: mini_batch1["vector_obs"]},
+        )
+
+        selected_action_2 = self.policy.sess.run(
+            self.policy.selected_actions,
+            feed_dict={self.policy.vector_in: mini_batch2["vector_obs"]},
+        )
+
+        feed_dict = {
+            self.policy.vector_in: mini_batch1["vector_obs"],
+            self.policy.vector_bisim: mini_batch2["vector_obs"],
+            self.policy.current_action: selected_action_1,
+            self.policy.bisim_action: selected_action_2,
+        }
+
+        update_vals = self._execute_model(feed_dict, self.bisim_update_dict)
+        for stat_name, update_name in stats_needed.items():
+            if update_name in update_vals.keys():
+                update_stats[stat_name] = update_vals[update_name]
+
+        return update_stats
+    
     def update_reward_signals(
         self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
     ) -> Dict[str, float]:
@@ -664,6 +819,8 @@ class SACTransferOptimizer(TFOptimizer):
             policy.sequence_length_ph: self.policy.sequence_length,
             self.next_sequence_length_ph: self.policy.sequence_length,
             self.policy.mask_input: batch["masks"] * burn_in_mask,
+            self.policy.current_action: batch["actions"],
+            self.policy.current_reward: batch["extrinsic_rewards"],
         }
         for name in self.reward_signals:
             feed_dict[self.rewards_holders[name]] = batch["{}_rewards".format(name)]
@@ -678,6 +835,7 @@ class SACTransferOptimizer(TFOptimizer):
         if self.policy.use_vec_obs:
             feed_dict[policy.vector_in] = batch["vector_obs"]
             feed_dict[self.next_vector_in] = batch["next_vector_in"]
+            feed_dict[policy.vector_next] = batch["next_vector_in"]
         if self.policy.vis_obs_size > 0:
             for i, _ in enumerate(policy.visual_in):
                 _obs = batch["visual_obs%d" % i]
@@ -685,6 +843,7 @@ class SACTransferOptimizer(TFOptimizer):
             for i, _ in enumerate(self.next_visual_in):
                 _obs = batch["next_visual_obs%d" % i]
                 feed_dict[self.next_visual_in[i]] = _obs
+                feed_dict[policy.visual_next[i]] = _obs
         if self.policy.use_recurrent:
             feed_dict[policy.memory_in] = [
                 batch["memory"][i]

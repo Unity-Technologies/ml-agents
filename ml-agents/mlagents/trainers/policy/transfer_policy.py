@@ -114,12 +114,25 @@ class TransferPolicy(TFPolicy):
         if create_tf_graph:
             self.create_tf_graph()
 
-    def get_trainable_variables(self) -> List[tf.Variable]:
+    def get_trainable_variables(self, 
+        train_encoder: bool=True,
+        train_action: bool=True,
+        train_model: bool=True,
+        train_policy: bool=True) -> List[tf.Variable]:
         """
         Returns a List of the trainable variables in this policy. if create_tf_graph hasn't been called,
         returns empty list.
         """
-        return self.trainable_variables
+        trainable_variables = []
+        if train_encoder:
+            trainable_variables += self.encoding_variables
+        if train_action:
+            trainable_variables += self.action_variables
+        if train_model:
+            trainable_variables += self.model_variables
+        if train_policy:
+            trainable_variables += self.policy_variables
+        return trainable_variables
 
     def create_tf_graph(
         self,
@@ -235,12 +248,12 @@ class TransferPolicy(TFPolicy):
             #     reuse_encoder,
             # )
 
-            self.action_encoder = self._create_action_encoder(
-                self.current_action,
-                self.h_size,
-                self.action_feature_size,
-                action_layers
-            )
+            # self.action_encoder = self._create_action_encoder(
+            #     self.current_action,
+            #     self.h_size,
+            #     self.action_feature_size,
+            #     action_layers
+            # )
 
             # if self.inverse_model:
             #     with tf.variable_scope("inverse"):
@@ -252,14 +265,14 @@ class TransferPolicy(TFPolicy):
 
                 self.predict, self.predict_distribution = self.create_forward_model(
                     self.encoder,
-                    self.action_encoder,
+                    self.current_action,
                     forward_layers,
                     var_predict=var_predict,
                 )
 
                 self.targ_predict, self.targ_predict_distribution = self.create_forward_model(
                     self.targ_encoder,
-                    self.action_encoder,
+                    self.current_action,
                     forward_layers,
                     var_predict=var_predict,
                     reuse=True
@@ -270,7 +283,7 @@ class TransferPolicy(TFPolicy):
             if predict_return:
                 with tf.variable_scope("reward"):
                     self.create_reward_model(
-                        self.encoder, self.action_encoder, forward_layers
+                        self.encoder, self.current_action, forward_layers
                     )
 
             if self.use_bisim:
@@ -300,20 +313,26 @@ class TransferPolicy(TFPolicy):
                     self.encoder, self.h_size, policy_layers, separate_train
                 )
 
-            self.trainable_variables = tf.get_collection(
+            self.policy_variables = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
             )
-            self.trainable_variables += tf.get_collection(
+            self.encoding_variables = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="encoding"
             )
-            self.trainable_variables += tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, scope="predict"
+            self.action_variables = tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope="action_enc"
             )
-            self.trainable_variables += tf.get_collection(
+            self.model_variables = tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope="predict"
+            ) + tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope="reward"
+            )
+
+            self.encoding_variables += tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="lstm"
             )  # LSTMs need to be root scope for Barracuda export
             if self.inverse_model:
-                self.trainable_variables += tf.get_collection(
+                self.model_variables += tf.get_collection(
                     tf.GraphKeys.TRAINABLE_VARIABLES, scope="inverse"
                 )
 
@@ -765,12 +784,12 @@ class TransferPolicy(TFPolicy):
             encoding_checkpoint = os.path.join(self.model_path, f"encoding.ckpt")
             encoding_saver.save(self.sess, encoding_checkpoint)
 
-            action_vars = tf.get_collection(
-                tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc"
-            )
-            action_saver = tf.train.Saver(action_vars)
-            action_checkpoint = os.path.join(self.model_path, f"action_enc.ckpt")
-            action_saver.save(self.sess, action_checkpoint)
+            # action_vars = tf.get_collection(
+            #     tf.GraphKeys.TRAINABLE_VARIABLES, "action_enc"
+            # )
+            # action_saver = tf.train.Saver(action_vars)
+            # action_checkpoint = os.path.join(self.model_path, f"action_enc.ckpt")
+            # action_saver.save(self.sess, action_checkpoint)
 
             latent_vars = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, "encoding/latent"
@@ -787,9 +806,16 @@ class TransferPolicy(TFPolicy):
             predict_saver.save(self.sess, predict_checkpoint)
 
             value_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "value")
-            value_saver = tf.train.Saver(value_vars)
-            value_checkpoint = os.path.join(self.model_path, f"value.ckpt")
-            value_saver.save(self.sess, value_checkpoint)
+            if len(value_vars) > 0:
+                value_saver = tf.train.Saver(value_vars)
+                value_checkpoint = os.path.join(self.model_path, f"value.ckpt")
+                value_saver.save(self.sess, value_checkpoint)
+            
+            critic_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "critic")
+            if len(critic_vars) > 0:
+                critic_saver = tf.train.Saver(critic_vars)
+                critic_checkpoint = os.path.join(self.model_path, f"critic.ckpt")
+                critic_saver.save(self.sess, critic_checkpoint)
 
             if self.inverse_model:
                 inverse_vars = tf.get_collection(

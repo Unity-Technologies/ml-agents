@@ -119,10 +119,10 @@ class PPOTransferOptimizer(TFOptimizer):
                 self.stats_name_to_update_name.update(
                     {"Losses/Reward Loss": "reward_loss"}
                 )
-            # if self.use_bisim:
-            #     self.stats_name_to_update_name.update({
-            #         "Losses/Bisim Loss": "bisim_loss",
-            #     })
+            if self.use_bisim:
+                self.stats_name_to_update_name.update({
+                    "Losses/Bisim Loss": "bisim_loss",
+                })
             if self.policy.use_recurrent:
                 self.m_size = self.policy.m_size
                 self.memory_in = tf.placeholder(
@@ -514,10 +514,10 @@ class PPOTransferOptimizer(TFOptimizer):
                 tf.GraphKeys.TRAINABLE_VARIABLES, "encoding"
             )
             self.bisim_optimizer = self.create_optimizer_op(self.bisim_learning_rate)
-            self.bisim_grads = self.tf_optimizer.compute_gradients(
+            self.bisim_grads = self.bisim_optimizer.compute_gradients(
                 self.bisim_loss, var_list=bisim_train_vars
             )
-            self.bisim_update_batch = self.tf_optimizer.minimize(
+            self.bisim_update_batch = self.bisim_optimizer.minimize(
                 self.bisim_loss, var_list=bisim_train_vars
             )
             self.bisim_update_dict.update(
