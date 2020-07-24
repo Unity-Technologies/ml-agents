@@ -416,6 +416,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: OldCrawler
       objectReference: {fileID: 0}
+    - target: {fileID: 6208443033207927858, guid: e24df050e78384b24b065a2b14effd14,
+        type: 3}
+      propertyPath: targetToLookAt
+      value: 
+      objectReference: {fileID: 4749909135913778}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e24df050e78384b24b065a2b14effd14, type: 3}
 --- !u!4 &4245501741859669185 stripped

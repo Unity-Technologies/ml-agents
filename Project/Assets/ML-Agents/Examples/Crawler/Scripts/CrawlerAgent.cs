@@ -49,10 +49,13 @@ public class CrawlerAgent : Agent
     public Material groundedMaterial;
     public Material unGroundedMaterial;
 
+    Vector3 m_DirToTarget;
+
     public override void Initialize()
     {
         orientationCube.UpdateOrientation(body, target.transform);
 
+        m_DirToTarget = target.transform.position - body.position;
         m_JdController = GetComponent<JointDriveController>();
 
         //Setup each body part
@@ -76,9 +79,14 @@ public class CrawlerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
+        if (m_DirToTarget != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(m_DirToTarget);
+        }
+        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
         //Random start rotation to help generalize
-        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+//        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         orientationCube.UpdateOrientation(body, target.transform);
     }
@@ -88,6 +96,8 @@ public class CrawlerAgent : Agent
     /// </summary>
     public void CollectObservationBodyPart(BodyPart bp, VectorSensor sensor)
     {
+
+        m_DirToTarget = target.transform.position - body.position;
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
 
@@ -211,17 +221,18 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        var movingTowardsDot = Vector3.Dot(orientationCube.transform.forward,
-            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[body].rb.velocity, maximumWalkingSpeed));
-        if (float.IsNaN(movingTowardsDot))
-        {
-            throw new ArgumentException(
-                "NaN in movingTowardsDot.\n" +
-                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
-                $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n"+
-                $" maximumWalkingSpeed: {maximumWalkingSpeed}"
-            );
-        }
+        //var movingTowardsDot = Vector3.Dot(orientationCube.transform.forward,
+        //    Vector3.ClampMagnitude(m_JdController.bodyPartsDict[body].rb.velocity, maximumWalkingSpeed));
+        //if (float.IsNaN(movingTowardsDot))
+        //{
+        //    throw new ArgumentException(
+        //        "NaN in movingTowardsDot.\n" +
+        //        $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+        //        $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n"+
+        //        $" maximumWalkingSpeed: {maximumWalkingSpeed}"
+        //    );
+        //}
+        var movingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[body].rb.velocity, m_DirToTarget.normalized);
         AddReward(0.03f * movingTowardsDot);
     }
 
@@ -230,15 +241,17 @@ public class CrawlerAgent : Agent
     /// </summary>
     void RewardFunctionFacingTarget()
     {
-        var facingReward = Vector3.Dot(orientationCube.transform.forward, body.forward);
-        if (float.IsNaN(facingReward))
-        {
-            throw new ArgumentException(
-                "NaN in movingTowardsDot.\n" +
-                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
-                $" body.forward: {body.forward}"
-            );
-        }
+        //var facingReward = Vector3.Dot(orientationCube.transform.forward, body.forward);
+        //if (float.IsNaN(facingReward))
+        //{
+        //    throw new ArgumentException(
+        //        "NaN in movingTowardsDot.\n" +
+        //        $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+        //        $" body.forward: {body.forward}"
+        //    );
+        //}
+
+        var facingReward = Vector3.Dot(m_DirToTarget.normalized, body.forward);
         AddReward(0.01f * facingReward);
     }
 

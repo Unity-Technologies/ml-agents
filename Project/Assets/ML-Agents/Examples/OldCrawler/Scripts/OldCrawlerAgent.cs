@@ -8,6 +8,7 @@ public class OldCrawlerAgent : Agent
 {
     [Header("Target To Walk Towards")]
     [Space(10)]
+    public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
     public Transform target;
 
     public Transform ground;
