@@ -218,6 +218,15 @@ class SACTransferOptimizer(TFOptimizer):
                     )
 
                 self.policy.initialize_or_load()
+                if self.use_transfer:
+                    self.policy.load_graph_partial(
+                        self.transfer_path,
+                        hyperparameters.load_model,
+                        hyperparameters.load_policy,
+                        hyperparameters.load_value,
+                        hyperparameters.load_encoder,
+                        hyperparameters.load_action,
+                    )
                 self.policy.run_hard_copy()
 
                 print("All variables in the graph:")
