@@ -15,8 +15,9 @@ behaviors:
       encoder_layers: 2
       policy_layers: 1
       forward_layers: 2
-      value_layers: 3
+      value_layers: 2
       feature_size: 128
+      separate_policy_train: true
       reuse_encoder: false
       in_epoch_alter: false
       in_batch_alter: true
