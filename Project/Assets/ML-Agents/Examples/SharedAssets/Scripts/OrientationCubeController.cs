@@ -11,7 +11,7 @@ namespace Unity.MLAgentsExamples
         public void UpdateOrientation(Transform rootBP, Transform target)
         {
             var dirVector = target.position - transform.position;
-            dirVector.y = 0; //flatten dir on the y. this will only work on level, uneven surfaces
+            dirVector.y = 0; //flatten dir on the y. this will only work on level surfaces
             var lookRot =
                 dirVector == Vector3.zero
                     ? Quaternion.identity
@@ -19,6 +19,18 @@ namespace Unity.MLAgentsExamples
 
             //UPDATE ORIENTATION CUBE POS & ROT
             transform.SetPositionAndRotation(rootBP.position, lookRot);
+        }
+        public void UpdateOrientation(Vector3 pos, Vector3 dirVector)
+        {
+//            var dirVector = target.position - transform.position;
+            dirVector.y = 0; //flatten dir on the y. this will only work on level surfaces
+            var lookRot =
+                dirVector == Vector3.zero
+                    ? Quaternion.identity
+                    : Quaternion.LookRotation(dirVector.normalized); //get our look rot to the target
+
+            //UPDATE ORIENTATION CUBE POS & ROT
+            transform.SetPositionAndRotation(pos, lookRot);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Unity.MLAgentsExamples
 {
     public class DirectionIndicator : MonoBehaviour
     {
+        public bool updateManually;
         public Transform transformToFollow; //ex: hips or body
         public Transform targetToLookAt; //target in the scene the indicator will point to
         public float heightOffset;
@@ -18,10 +19,28 @@ namespace Unity.MLAgentsExamples
 
         void Update()
         {
+            if(updateManually) return;
             transform.position = new Vector3(transformToFollow.position.x, m_StartingYPos + heightOffset, transformToFollow.position.z);
             Vector3 walkDir = targetToLookAt.position - transform.position;
             walkDir.y = 0; //flatten dir on the y
             transform.rotation = Quaternion.LookRotation(walkDir);
         }
+
+        public void SetPosAndDir(Vector3 pos, Vector3 lookDir)
+        {
+            transform.position = new Vector3(pos.x, m_StartingYPos + heightOffset, pos.z);
+            lookDir.y = 0; //flatten dir on the y
+            transform.rotation = Quaternion.LookRotation(lookDir);
+        }
+        
+        public void MatchOrientation(Transform t)
+        {
+            transform.position = new Vector3(t.position.x, m_StartingYPos + heightOffset, t.position.z);
+//            Vector3 lookDir = t.rotation.eulerAngles;
+//            lookDir.y = 0; //flatten dir on the y
+//            transform.rotation = Quaternion.Euler(lookDir);
+            transform.rotation = t.rotation;
+        }
+        
     }
 }

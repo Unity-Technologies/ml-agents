@@ -11,14 +11,23 @@ public class WalkerAgent : Agent
 {
     [Header("Walk Speed")] [Range(0, 15)] public float walkingSpeed = 15; //The walking speed to try and achieve
     float m_maxWalkingSpeed = 15; //The max walking speed
-    
+
     //Should the agent sample a new goal velocity each episode?
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
     Vector3 m_WalkDir; //Direction to the target
 
-    [Header("Target To Walk Towards")] public TargetController target; //Target the agent will walk towards.
+
+    public enum WalkDirectionMethod
+    {
+        UseWorldDirection,
+        UseTarget
+    }
+
+    [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
+    public Vector3 dirToLook = Vector3.right;
+    public Transform target; //Target the agent will walk towards.
 
     [Header("Body Parts")] public Transform hips;
     public Transform chest;
@@ -37,18 +46,20 @@ public class WalkerAgent : Agent
     public Transform forearmR;
     public Transform handR;
 
-    [Header("Orientation")] [Space(10)]
+//    [Header("Orientation")] [Space(10)]
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
-    public OrientationCubeController orientationCube;
-
+    OrientationCubeController m_OrientationCube;
+    DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
 
     EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
     {
-        orientationCube.UpdateOrientation(hips, target.transform);
+        m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
+        m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
+
         //Setup each body part
         m_JdController = GetComponent<JointDriveController>();
         m_JdController.SetupBodyPart(hips);
@@ -78,6 +89,11 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+//        if (walkTowardsType == WalkTowardsType.UseTarget && !target)
+//        {
+//            Debug.LogError("Missing a reference toTarget");
+//            Instantiate(targetPrefab)
+//        }
         //Reset all of the body parts
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
@@ -85,9 +101,9 @@ public class WalkerAgent : Agent
         }
 
         //Random start rotation to help generalize
-        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
-        orientationCube.UpdateOrientation(hips, target.transform);
+        UpdateOrientationObjects();
 
         rewardManager.ResetEpisodeRewards();
 
@@ -108,11 +124,11 @@ public class WalkerAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
         //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - hips.position));
 
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
@@ -126,7 +142,7 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        var cubeForward = orientationCube.transform.forward;
+        var cubeForward = m_OrientationCube.transform.forward;
 
         //current ragdoll velocity. normalized 
         sensor.AddObservation(GetMatchingVelocityInverseLerp(cubeForward * walkingSpeed, GetAvgVelocity()));
@@ -136,7 +152,17 @@ public class WalkerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
 
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
+        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
+            ? target.transform.position
+//            : hips.position + (dirToLook * 100);
+//            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
+            : m_OrientationCube.transform.position + (cubeForward * 100);
+        targetPos.y = 0;
+        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
+        sensor.AddObservation(relPos);
+//        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
+//        sensor.AddObservation(Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.transform.position), 100)
+//        sensor.AddObservation(targetPos);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -181,9 +207,38 @@ public class WalkerAgent : Agent
         bpDict[forearmR].SetJointStrength(vectorAction[++i]);
     }
 
+    //Update OrientationCube and DirectionIndicator
+    void UpdateOrientationObjects()
+    {
+        dirToLook = walkDirectionMethod == WalkDirectionMethod.UseTarget
+            ? target.position - hips.position
+            : dirToLook;
+        m_OrientationCube.UpdateOrientation(hips.position, dirToLook);
+        m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
+    }
+
     void FixedUpdate()
     {
-        UpdateRewards();
+        UpdateOrientationObjects();
+        var cubeForward = m_OrientationCube.transform.forward;
+
+        // Set reward for this step according to mixture of the following elements.
+        // a. Match target speed
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        var matchSpeedReward = GetMatchingVelocityInverseLerp(cubeForward * walkingSpeed, GetAvgVelocity());
+
+        // b. Rotation alignment with target direction.
+        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        // c. Encourage head height.
+//        headHeightOverFeetReward =
+//            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
+
+
+        rewardManager.rewardsDict["matchSpeed"].rewardThisStep = matchSpeedReward;
+        rewardManager.rewardsDict["lookAtTarget"].rewardThisStep = lookAtTargetReward;
+//        rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
+        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all the rigidbodies
@@ -206,31 +261,6 @@ public class WalkerAgent : Agent
 
 //    public float headHeightOverFeetReward; //reward for standing up straight-ish
     public RewardManager rewardManager;
-
-    void UpdateRewards()
-    {
-        var cubeForward = orientationCube.transform.forward;
-        orientationCube.UpdateOrientation(hips, target.transform);
-        // Set reward for this step according to mixture of the following elements.
-        
-        // a. Match target speed
-        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityInverseLerp(cubeForward * walkingSpeed, GetAvgVelocity());
-        
-        // b. Rotation alignment with target direction.
-        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
-        // c. Encourage head height.
-//        headHeightOverFeetReward =
-//            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
-
-
-        rewardManager.rewardsDict["matchSpeed"].rewardThisStep = matchSpeedReward;
-        rewardManager.rewardsDict["lookAtTarget"].rewardThisStep = lookAtTargetReward;
-//        rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
-        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward);
-    }
-
 
     //normalized value of the difference in avg speed vs goal walking speed.
     public float GetMatchingVelocityInverseLerp(Vector3 velocityGoal, Vector3 actualVelocity)
