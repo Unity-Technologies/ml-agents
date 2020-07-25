@@ -29,7 +29,7 @@ behaviors:
       train_model: false
       load_model: true
       train_action: false
-      load_action: true
+      load_action: false
       train_policy: true
       load_policy: false
       train_value: true
