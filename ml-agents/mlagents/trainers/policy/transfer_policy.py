@@ -382,6 +382,11 @@ class TransferPolicy(TFPolicy):
                 variables_to_restore = tf.get_collection(
                     tf.GraphKeys.TRAINABLE_VARIABLES, net
                 )
+                if net == "value" and len(variables_to_restore) == 0:
+                    variables_to_restore = tf.get_collection(
+                        tf.GraphKeys.TRAINABLE_VARIABLES, "critic"
+                    )
+                    net = "critic"
                 partial_saver = tf.train.Saver(variables_to_restore)
                 partial_model_checkpoint = os.path.join(path, f"{net}.ckpt")
                 partial_saver.restore(self.sess, partial_model_checkpoint)

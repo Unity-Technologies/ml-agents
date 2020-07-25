@@ -28,7 +28,7 @@ behaviors:
       use_transfer: true
       load_model: true
       train_model: false
-      transfer_path: "results/cs-sacmod-old/3DBall"
+      transfer_path: "results/cs-sacmod-old/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512

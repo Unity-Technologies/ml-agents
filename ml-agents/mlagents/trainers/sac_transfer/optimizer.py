@@ -6,6 +6,7 @@ from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac_transfer.network import SACTransferPolicyNetwork, SACTransferTargetNetwork
+from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
 from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -146,29 +147,52 @@ class SACTransferOptimizer(TFOptimizer):
                 self.update_batch_value: Optional[tf.Operation] = None
                 self.update_batch_entropy: Optional[tf.Operation] = None
 
-
-                self.policy_network = SACTransferPolicyNetwork(
-                    policy=self.policy,
-                    m_size=self.policy.m_size,  # 3x policy.m_size
-                    h_size=h_size,
-                    normalize=self.policy.normalize,
-                    use_recurrent=self.policy.use_recurrent,
-                    num_layers=hyperparameters.value_layers,
-                    stream_names=stream_names,
-                    vis_encode_type=vis_encode_type,
-                    separate_train=hyperparameters.separate_value_train
-                )
-                self.target_network = SACTransferTargetNetwork(
-                    policy=self.policy,
-                    m_size=self.policy.m_size,  # 1x policy.m_size
-                    h_size=h_size,
-                    normalize=self.policy.normalize,
-                    use_recurrent=self.policy.use_recurrent,
-                    num_layers=hyperparameters.value_layers,
-                    stream_names=stream_names,
-                    vis_encode_type=vis_encode_type,
-                    separate_train=hyperparameters.separate_value_train
-                )
+                if not hyperparameters.separate_value_net:
+                    self.policy_network = SACTransferPolicyNetwork(
+                        policy=self.policy,
+                        m_size=self.policy.m_size,  # 3x policy.m_size
+                        h_size=h_size,
+                        normalize=self.policy.normalize,
+                        use_recurrent=self.policy.use_recurrent,
+                        encoder_layers=hyperparameters.encoder_layers,
+                        num_layers=hyperparameters.value_layers,
+                        stream_names=stream_names,
+                        vis_encode_type=vis_encode_type,
+                        separate_train=hyperparameters.separate_value_train,
+                    )
+                    self.target_network = SACTransferTargetNetwork(
+                        policy=self.policy,
+                        m_size=self.policy.m_size,  # 1x policy.m_size
+                        h_size=h_size,
+                        normalize=self.policy.normalize,
+                        use_recurrent=self.policy.use_recurrent,
+                        encoder_layers=hyperparameters.encoder_layers,
+                        num_layers=hyperparameters.value_layers,
+                        stream_names=stream_names,
+                        vis_encode_type=vis_encode_type,
+                        separate_train=hyperparameters.separate_value_train,
+                    )
+                else:
+                    self.policy_network = SACPolicyNetwork(
+                        policy=self.policy,
+                        m_size=self.policy.m_size,  # 3x policy.m_size
+                        h_size=h_size,
+                        normalize=self.policy.normalize,
+                        use_recurrent=self.policy.use_recurrent,
+                        num_layers=num_layers,
+                        stream_names=stream_names,
+                        vis_encode_type=vis_encode_type,
+                    )
+                    self.target_network = SACTargetNetwork(
+                        policy=self.policy,
+                        m_size=self.policy.m_size,  # 1x policy.m_size
+                        h_size=h_size,
+                        normalize=self.policy.normalize,
+                        use_recurrent=self.policy.use_recurrent,
+                        num_layers=num_layers,
+                        stream_names=stream_names,
+                        vis_encode_type=vis_encode_type,
+                    )
                 # The optimizer's m_size is 3 times the policy (Q1, Q2, and Value)
                 self.m_size = 3 * self.policy.m_size
                 self._create_inputs_and_outputs()
