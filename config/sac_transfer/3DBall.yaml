@@ -18,7 +18,8 @@ behaviors:
       forward_layers: 1
       value_layers: 1
       feature_size: 16
-      separate_value_net: true
+      # separate_value_net: true
+      separate_policy_train: true
       reuse_encoder: true
       in_epoch_alter: false
       in_batch_alter: true
@@ -26,7 +27,7 @@ behaviors:
       use_var_predict: true
       with_prior: false
       predict_return: true
-      use_bisim: false
+      use_bisim: true
     network_settings:
       normalize: true
       hidden_units: 64

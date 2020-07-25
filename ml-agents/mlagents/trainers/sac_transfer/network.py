@@ -428,8 +428,8 @@ class SACTransferPolicyNetwork(SACTransferNetwork):
         self.sequence_length_ph = self.policy.sequence_length_ph
 
         hidden_critic = self._create_encoder(
-            self.visual_in, 
-            self.processed_vector_in, 
+            self.policy.visual_in, 
+            self.policy.processed_vector_in, 
             vis_encode_type,
             encoder_layers=encoder_layers,
             scope="encoding",
