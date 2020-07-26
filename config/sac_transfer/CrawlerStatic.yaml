@@ -17,7 +17,8 @@ behaviors:
       forward_layers: 2
       value_layers: 2
       feature_size: 128
-      separate_policy_train: true
+      # separate_policy_train: true
+      separate_value_net: true
       reuse_encoder: false
       in_epoch_alter: false
       in_batch_alter: true
