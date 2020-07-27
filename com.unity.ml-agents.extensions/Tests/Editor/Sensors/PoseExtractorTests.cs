@@ -8,12 +8,12 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
     {
         class UselessPoseExtractor : PoseExtractor
         {
-            protected override Pose GetPoseAt(int index)
+            protected internal override Pose GetPoseAt(int index)
             {
                 return Pose.identity;
             }
 
-            protected override Vector3 GetLinearVelocityAt(int index)
+            protected internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
@@ -63,7 +63,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 SetParentIndices(parents);
             }
 
-            protected override Pose GetPoseAt(int index)
+            protected internal override Pose GetPoseAt(int index)
             {
                 var rotation = Quaternion.identity;
                 var translation = offset + new Vector3(index, index, index);
@@ -74,7 +74,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 };
             }
 
-            protected override Vector3 GetLinearVelocityAt(int index)
+            protected  internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }

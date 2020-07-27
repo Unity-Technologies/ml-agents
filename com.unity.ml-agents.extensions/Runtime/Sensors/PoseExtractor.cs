@@ -98,14 +98,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected abstract Pose GetPoseAt(int index);
+        protected internal abstract Pose GetPoseAt(int index);
 
         /// <summary>
         /// Return the world space linear velocity of the i'th object.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected abstract Vector3 GetLinearVelocityAt(int index);
+        protected internal abstract Vector3 GetLinearVelocityAt(int index);
 
 
         /// <summary>
