@@ -20,7 +20,7 @@ behaviors:
       in_epoch_alter: false
       in_batch_alter: true
       use_op_buffer: false
-      use_var_predict: true
+      use_var_predict: false
       with_prior: false
       predict_return: true
       use_bisim: false

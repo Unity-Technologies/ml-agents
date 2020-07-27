@@ -20,13 +20,13 @@ behaviors:
       in_epoch_alter: false
       in_batch_alter: true
       use_op_buffer: true
-      use_var_predict: true
+      use_var_predict: false
       with_prior: false
       predict_return: true
       use_bisim: false
       separate_value_net: false
       use_transfer: true
-      transfer_path: "results/ball-1/3DBall"
+      transfer_path: "results/ball-novar/3DBall"
       load_model: true
       train_model: false
     network_settings:
@@ -39,7 +39,7 @@ behaviors:
         gamma: 0.995
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 4000000
+    max_steps: 2000000
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
