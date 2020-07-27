@@ -26,7 +26,7 @@ public class WalkerAgent : Agent
     }
 
     [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
-    public Vector3 dirToLook = Vector3.right;
+    public Vector3 dirToWalk = Vector3.right;
     public Transform target; //Target the agent will walk towards.
 
     [Header("Body Parts")] public Transform hips;
@@ -210,10 +210,10 @@ public class WalkerAgent : Agent
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-        dirToLook = walkDirectionMethod == WalkDirectionMethod.UseTarget
+        dirToWalk = walkDirectionMethod == WalkDirectionMethod.UseTarget
             ? target.position - hips.position
-            : dirToLook;
-        m_OrientationCube.UpdateOrientation(hips.position, dirToLook);
+            : dirToWalk;
+        m_OrientationCube.UpdateOrientation(hips.position, dirToWalk);
         m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
     }
 
