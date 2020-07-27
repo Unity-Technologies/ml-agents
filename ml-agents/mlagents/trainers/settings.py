@@ -102,6 +102,7 @@ class PPOTransferSettings(HyperparamSettings):
 
     separate_value_train: bool = False
     separate_policy_train: bool = False
+    separate_model_train: bool = False
     separate_value_net: bool = False
     use_var_encoder: bool = False
     use_var_predict: bool = False
@@ -163,6 +164,7 @@ class SACTransferSettings(SACSettings):
 
     separate_value_train: bool = False
     separate_policy_train: bool = False
+    separate_model_train: bool = False
     separate_value_net: bool = False
     use_var_encoder: bool = False
     use_var_predict: bool = False

@@ -145,6 +145,7 @@ class TransferPolicy(TFPolicy):
         action_feature_size=16,
         transfer=False,
         separate_train=False,
+        separate_model_train=False,
         var_encoder=False,
         var_predict=True,
         predict_return=True,
@@ -268,6 +269,7 @@ class TransferPolicy(TFPolicy):
                     self.current_action,
                     forward_layers,
                     var_predict=var_predict,
+                    separate_train=separate_model_train
                 )
 
                 self.targ_predict, self.targ_predict_distribution = self.create_forward_model(
@@ -275,7 +277,8 @@ class TransferPolicy(TFPolicy):
                     self.current_action,
                     forward_layers,
                     var_predict=var_predict,
-                    reuse=True
+                    reuse=True,
+                    separate_train=separate_model_train
                 )
 
                 self.create_forward_loss(self.reuse_encoder, self.transfer)
@@ -283,7 +286,7 @@ class TransferPolicy(TFPolicy):
             if predict_return:
                 with tf.variable_scope("reward"):
                     self.create_reward_model(
-                        self.encoder, self.current_action, forward_layers
+                        self.encoder, self.current_action, forward_layers, separate_train=separate_model_train
                     )
 
             if self.use_bisim:
@@ -978,6 +981,7 @@ class TransferPolicy(TFPolicy):
         forward_layers: int,
         var_predict: bool = False,
         reuse: bool = False,
+        separate_train: bool = False
     ) -> None:
         """
         Creates forward model TensorFlow ops for Curiosity module.
@@ -988,8 +992,8 @@ class TransferPolicy(TFPolicy):
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
         hidden = combined_input
 
-        if not self.transfer:
-            hidden = tf.stop_gradient(hidden)
+        if separate_train:
+           hidden = tf.stop_gradient(hidden)
 
         for i in range(forward_layers):
             hidden = tf.layers.dense(
@@ -1075,12 +1079,13 @@ class TransferPolicy(TFPolicy):
         encoded_state: tf.Tensor,
         encoded_action: tf.Tensor,
         forward_layers: int,
+        separate_train: bool = False
     ):
 
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
 
         hidden = combined_input
-        if not self.transfer:
+        if separate_train:
            hidden = tf.stop_gradient(hidden)
         for i in range(forward_layers):
             hidden = tf.layers.dense(

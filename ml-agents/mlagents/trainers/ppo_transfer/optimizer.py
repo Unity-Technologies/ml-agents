@@ -31,6 +31,7 @@ class PPOTransferOptimizer(TFOptimizer):
 
         self.separate_value_train = hyperparameters.separate_value_train
         self.separate_policy_train = hyperparameters.separate_policy_train
+        self.separate_model_train = hyperparameters.separate_model_train
         self.use_var_encoder = hyperparameters.use_var_encoder
         self.use_var_predict = hyperparameters.use_var_predict
         self.with_prior = hyperparameters.with_prior
@@ -73,6 +74,7 @@ class PPOTransferOptimizer(TFOptimizer):
             hyperparameters.action_feature_size,
             self.use_transfer,
             self.separate_policy_train,
+            self.separate_model_train,
             self.use_var_encoder,
             self.use_var_predict,
             self.predict_return,
