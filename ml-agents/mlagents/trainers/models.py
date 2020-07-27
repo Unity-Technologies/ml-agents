@@ -623,7 +623,7 @@ class ModelUtils:
 
     @staticmethod
     def create_value_heads(
-        stream_names: List[str], hidden_input: tf.Tensor
+        stream_names: List[str], hidden_input: tf.Tensor, reuse: bool=False
     ) -> Tuple[Dict[str, tf.Tensor], tf.Tensor]:
         """
         Creates one value estimator head for each reward signal in stream_names.
@@ -635,7 +635,7 @@ class ModelUtils:
         """
         value_heads = {}
         for name in stream_names:
-            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
+            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name), reuse=reuse)
             value_heads[name] = value
         value = tf.reduce_mean(list(value_heads.values()), 0)
         return value_heads, value
