@@ -27,7 +27,6 @@ behaviors:
       predict_return: true
       use_bisim: false
       separate_value_train: true
-      separate_value_net: true
       in_batch_alter: true
     network_settings:
       normalize: true
