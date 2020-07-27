@@ -276,6 +276,9 @@ class SACTransferOptimizer(TFOptimizer):
         self.update_dict = {
             "value_loss": self.total_value_loss,
             "policy_loss": self.policy_loss,
+            # "model_loss": self.model_loss,
+            # "model_learning_rate": self.model_learning_rate,
+            # "reward_loss": self.policy.reward_loss,
             "q1_loss": self.q1_loss,
             "q2_loss": self.q2_loss,
             "entropy_coef": self.ent_coef,
