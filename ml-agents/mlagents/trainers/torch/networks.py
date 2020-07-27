@@ -110,30 +110,26 @@ class NetworkBody(nn.Module):
         return embedding, memories
 
 
-class QNetwork(nn.Module):
-    def __init__(  # pylint: disable=W0231
+class ValueNetwork(nn.Module):
+    def __init__(
         self,
         stream_names: List[str],
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        act_type: ActionType,
-        act_size: List[int],
+        encoded_act_size: int = 0,
+        outputs_per_stream: int = 1,
     ):
 
         # This is not a typo, we want to call __init__ of nn.Module
         nn.Module.__init__(self)
-        if act_type == ActionType.DISCRETE:
-            self.network_body = NetworkBody(observation_shapes, network_settings)
-            self.q_heads = ValueHeads(
-                stream_names, network_settings.hidden_units, sum(act_size)
-            )
-        else:
-            self.network_body = NetworkBody(
-                observation_shapes, network_settings, encoded_act_size=sum(act_size)
-            )
-            self.q_heads = ValueHeads(stream_names, network_settings.hidden_units)
+        self.network_body = NetworkBody(
+            observation_shapes, network_settings, encoded_act_size=encoded_act_size
+        )
+        self.value_heads = ValueHeads(
+            stream_names, network_settings.hidden_units, outputs_per_stream
+        )
 
-    def forward(  # pylint: disable=W0221
+    def forward(
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
@@ -144,7 +140,7 @@ class QNetwork(nn.Module):
         embedding, memories = self.network_body(
             vec_inputs, vis_inputs, actions, memories, sequence_length
         )
-        output, _ = self.q_heads(embedding)
+        output, _ = self.value_heads(embedding)
         return output, memories
 
 
@@ -183,7 +179,9 @@ class ActorCritic(nn.Module):
         else:
             self.distribution = MultiCategoricalDistribution(embedding_size, act_size)
         if separate_critic:
-            self.critic = Critic(stream_names, observation_shapes, network_settings)
+            self.critic = ValueNetwork(
+                stream_names, observation_shapes, network_settings
+            )
         else:
             self.stream_names = stream_names
             self.value_heads = ValueHeads(stream_names, embedding_size)
@@ -262,23 +260,6 @@ class ActorCritic(nn.Module):
             self.is_continuous_int,
             self.act_size_vector,
         )
-
-
-class Critic(nn.Module):
-    def __init__(
-        self,
-        stream_names: List[str],
-        observation_shapes: List[Tuple[int, ...]],
-        network_settings: NetworkSettings,
-    ):
-        super().__init__()
-        self.network_body = NetworkBody(observation_shapes, network_settings)
-        self.stream_names = stream_names
-        self.value_heads = ValueHeads(stream_names, network_settings.hidden_units)
-
-    def forward(self, vec_inputs, vis_inputs):
-        embedding, _ = self.network_body(vec_inputs, vis_inputs)
-        return self.value_heads(embedding)
 
 
 class GlobalSteps(nn.Module):
