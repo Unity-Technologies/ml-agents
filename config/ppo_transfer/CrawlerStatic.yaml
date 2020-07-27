@@ -12,12 +12,12 @@ behaviors:
       learning_rate_schedule: linear
       model_schedule: linear
       load_model: false
-      encoder_layers: 2
+      encoder_layers: 3
       action_layers: 2
-      policy_layers: 2
-      forward_layers: 1
+      policy_layers: 0
+      forward_layers: 0
       value_layers: 2
-      feature_size: 128
+      feature_size: 256
       action_feature_size: 128
       reuse_encoder: true
       in_epoch_alter: false

@@ -11,12 +11,12 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       model_schedule: linear
-      encoder_layers: 2
+      encoder_layers: 3
       action_layers: 2
-      policy_layers: 2
-      forward_layers: 1
+      policy_layers: 0
+      forward_layers: 0
       value_layers: 2
-      feature_size: 128
+      feature_size: 256
       action_feature_size: 128
       reuse_encoder: true
       in_epoch_alter: false
@@ -31,9 +31,9 @@ behaviors:
       train_action: false
       load_action: false
       train_policy: true
-      load_policy: false
+      load_policy: true
       train_value: true
-      load_value: false
+      load_value: true
       transfer_path: "results/cs-tr-s1/CrawlerStatic"
       use_transfer: true
       in_batch_alter: true
