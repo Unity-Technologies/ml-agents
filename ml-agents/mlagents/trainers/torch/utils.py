@@ -8,8 +8,8 @@ from mlagents.trainers.torch.encoders import (
     ResNetVisualEncoder,
     NatureVisualEncoder,
     VectorEncoder,
+    ActionVectorEncoder,
 )
-from mlagents.trainers.torch.encoders import Normalizer
 from mlagents.trainers.settings import EncoderType
 from mlagents.trainers.exception import UnityTrainerException
 
@@ -56,8 +56,9 @@ class ModelUtils:
         h_size: int,
         num_layers: int,
         vis_encode_type: EncoderType,
-        action_size: int = 0,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList, nn.ModuleList]:
+        encoded_act_size: int = 0,
+        normalize: bool = False,
+    ) -> Tuple[nn.ModuleList, nn.ModuleList]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_shapes: List of Tuples that represent the action dimensions.
@@ -70,7 +71,6 @@ class ModelUtils:
         """
         visual_encoders: List[nn.Module] = []
         vector_encoders: List[nn.Module] = []
-        vector_normalizers: List[nn.Module] = []
 
         visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
         vector_size = 0
@@ -87,15 +87,17 @@ class ModelUtils:
                 raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
-        vector_normalizers.append(Normalizer(vector_size))
-        vector_encoders.append(
-            VectorEncoder(vector_size + action_size, h_size, num_layers)
-        )
-        return (
-            nn.ModuleList(visual_encoders),
-            nn.ModuleList(vector_encoders),
-            nn.ModuleList(vector_normalizers),
-        )
+        if encoded_act_size > 0:
+            vector_encoders.append(
+                ActionVectorEncoder(
+                    vector_size, h_size, encoded_act_size, num_layers, normalize
+                )
+            )
+        else:
+            vector_encoders.append(
+                VectorEncoder(vector_size, h_size, num_layers, normalize)
+            )
+        return nn.ModuleList(visual_encoders), nn.ModuleList(vector_encoders)
 
     @staticmethod
     def list_to_tensor(

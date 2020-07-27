@@ -370,10 +370,10 @@ class TorchSACOptimizer(TorchOptimizer):
                 next_vis_obs.append(next_vis_ob)
 
         # Copy normalizers from policy
-        self.value_network.q1_network.copy_normalization(
+        self.value_network.q1_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        self.value_network.q2_network.copy_normalization(
+        self.value_network.q2_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
         self.target_network.network_body.copy_normalization(
