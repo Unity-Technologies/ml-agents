@@ -11,12 +11,12 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       model_schedule: linear
-      encoder_layers: 1
+      encoder_layers: 2
       action_layers: 1
-      policy_layers: 1
-      forward_layers: 1
-      value_layers: 1
-      feature_size: 16
+      policy_layers: 0
+      forward_layers: 0
+      value_layers: 2
+      feature_size: 128
       action_feature_size: 32
       reuse_encoder: true
       in_epoch_alter: false
@@ -25,7 +25,8 @@ behaviors:
       with_prior: false
       predict_return: true
       use_bisim: false
-      separate_value_train: false
+      separate_value_train: true
+      separate_value_net: true
       train_model: false
       load_model: true
       train_action: false
@@ -39,7 +40,7 @@ behaviors:
       in_batch_alter: true
     network_settings:
       normalize: true
-      hidden_units: 64
+      hidden_units: 128
       num_layers: 1
       vis_encode_type: simple
     reward_signals:
