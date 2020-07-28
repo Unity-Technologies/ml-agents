@@ -22,7 +22,7 @@ behaviors:
       separate_policy_train: true
       # separate_value_train: true
       separate_model_train: true
-      reuse_encoder: false
+      reuse_encoder: true
       in_epoch_alter: false
       in_batch_alter: true
       use_op_buffer: false
