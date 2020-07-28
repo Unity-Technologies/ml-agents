@@ -16,7 +16,7 @@ public class WalkerAgent : Agent
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
-    Vector3 m_WalkDir; //Direction to the target
+//    Vector3 m_WalkDir; //Direction to the target
 
 
     public enum WalkDirectionMethod
@@ -26,7 +26,7 @@ public class WalkerAgent : Agent
     }
 
     [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
-    public Vector3 dirToWalk = Vector3.right;
+    public Vector3 worldDirToWalk = Vector3.right;
     public Transform target; //Target the agent will walk towards.
 
     [Header("Body Parts")] public Transform hips;
@@ -46,7 +46,6 @@ public class WalkerAgent : Agent
     public Transform forearmR;
     public Transform handR;
 
-//    [Header("Orientation")] [Space(10)]
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     OrientationCubeController m_OrientationCube;
@@ -210,10 +209,10 @@ public class WalkerAgent : Agent
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-        dirToWalk = walkDirectionMethod == WalkDirectionMethod.UseTarget
+        worldDirToWalk = walkDirectionMethod == WalkDirectionMethod.UseTarget
             ? target.position - hips.position
-            : dirToWalk;
-        m_OrientationCube.UpdateOrientation(hips.position, dirToWalk);
+            : worldDirToWalk;
+        m_OrientationCube.UpdateOrientation(hips.position, worldDirToWalk);
         m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
     }
 
