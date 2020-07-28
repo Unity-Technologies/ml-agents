@@ -63,7 +63,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             rb1.velocity = new Vector3(2, 0, 0);
 
             Assert.AreEqual(rb1.position, poseExtractor.GetPoseAt(0).position);
-            Assert.AreEqual(rb1.rotation, poseExtractor.GetPoseAt(0).rotation);
+            Assert.IsTrue(rb1.rotation == poseExtractor.GetPoseAt(0).rotation);
             Assert.AreEqual(rb1.velocity, poseExtractor.GetLinearVelocityAt(0));
         }
 
@@ -103,7 +103,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             virtualRoot.transform.rotation = virtualRootRot;
 
             Assert.AreEqual(virtualRootPos, poseExtractor.GetPoseAt(0).position);
-            Assert.AreEqual(virtualRootRot, poseExtractor.GetPoseAt(0).rotation);
+            Assert.IsTrue(virtualRootRot == poseExtractor.GetPoseAt(0).rotation);
             Assert.AreEqual(Vector3.zero, poseExtractor.GetLinearVelocityAt(0));
 
             // Same as above test, but using index 1
@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             rb1.velocity = new Vector3(2, 0, 0);
 
             Assert.AreEqual(rb1.position, poseExtractor.GetPoseAt(1).position);
-            Assert.AreEqual(rb1.rotation, poseExtractor.GetPoseAt(1).rotation);
+            Assert.IsTrue(rb1.rotation == poseExtractor.GetPoseAt(1).rotation);
             Assert.AreEqual(rb1.velocity, poseExtractor.GetLinearVelocityAt(1));
         }
     }
