@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             public void Init(int[] parentIndices)
             {
-                SetParentIndices(parentIndices);
+                Setup(parentIndices);
             }
         }
 
@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 {
                     parents[i] = i - 1;
                 }
-                SetParentIndices(parents);
+                Setup(parents);
             }
 
             protected internal override Pose GetPoseAt(int index)

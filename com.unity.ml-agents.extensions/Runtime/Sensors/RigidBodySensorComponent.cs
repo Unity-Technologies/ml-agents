@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             // TODO static method in PhysicsBodySensor?
             // TODO only update PoseExtractor when body changes?
-            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject);
+            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;

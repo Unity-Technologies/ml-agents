@@ -96,7 +96,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             m_Bodies = rbs;
-            SetParentIndices(parentIndices);
+            Setup(parentIndices);
         }
 
         /// <inheritdoc/>

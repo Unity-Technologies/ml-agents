@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 parentIndices[i] = bodyToIndex[parentArticBody];
             }
 
-            SetParentIndices(parentIndices);
+            Setup(parentIndices);
         }
 
         /// <inheritdoc/>

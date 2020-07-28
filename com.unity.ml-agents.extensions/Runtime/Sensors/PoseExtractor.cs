@@ -21,6 +21,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         Vector3[] m_ModelSpaceLinearVelocities;
         Vector3[] m_LocalSpaceLinearVelocities;
 
+        bool[] m_PoseEnabled;
+
 
         /// <summary>
         /// Read access to the model space transforms.
@@ -55,11 +57,25 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Number of poses in the hierarchy (read-only).
+        /// Number of enabled poses in the hierarchy (read-only).
         /// </summary>
         public int NumPoses
         {
-            get { return m_ModelSpacePoses?.Length ?? 0;  }
+            get
+            {
+                if (m_PoseEnabled == null)
+                {
+                    return 0;
+                }
+
+                var numEnabled = 0;
+                for (var i = 0; i < m_PoseEnabled.Length; i++)
+                {
+                    numEnabled += m_PoseEnabled[i] ? 1 : 0;
+                }
+
+                return numEnabled;
+            }
         }
 
         /// <summary>
@@ -82,15 +98,22 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// The 0th element is assumed to be -1, indicating that it's the root.
         /// </summary>
         /// <param name="parentIndices"></param>
-        protected void SetParentIndices(int[] parentIndices)
+        protected void Setup(int[] parentIndices)
         {
             m_ParentIndices = parentIndices;
-            var numTransforms = parentIndices.Length;
-            m_ModelSpacePoses = new Pose[numTransforms];
-            m_LocalSpacePoses = new Pose[numTransforms];
+            var numPoses = parentIndices.Length;
+            m_ModelSpacePoses = new Pose[numPoses];
+            m_LocalSpacePoses = new Pose[numPoses];
 
-            m_ModelSpaceLinearVelocities = new Vector3[numTransforms];
-            m_LocalSpaceLinearVelocities = new Vector3[numTransforms];
+            m_ModelSpaceLinearVelocities = new Vector3[numPoses];
+            m_LocalSpaceLinearVelocities = new Vector3[numPoses];
+
+            m_PoseEnabled = new bool[numPoses];
+            // By default, all poses are enabled except the root.
+            for (var i = 1; i < numPoses; i++)
+            {
+                m_PoseEnabled[i] = true;
+            }
         }
 
         /// <summary>
