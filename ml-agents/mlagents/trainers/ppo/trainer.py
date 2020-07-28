@@ -171,7 +171,7 @@ class PPOTrainer(RLTrainer):
         )
         num_epoch = self.hyperparameters.num_epoch
         batch_update_stats = defaultdict(list)
-
+        
         for _ in range(num_epoch):
             self.update_buffer.shuffle(sequence_length=self.policy.sequence_length)
             buffer = self.update_buffer

@@ -96,8 +96,16 @@ class NNPolicy(TFPolicy):
                     self.reparameterize,
                     self.condition_sigma_on_obs,
                 )
+                self.saliency = tf.reduce_mean(
+                    tf.square(tf.gradients(self.output, self.vector_in)), axis=1
+                )
+
             else:
                 self._create_dc_actor(encoded)
+                self.saliency = tf.reduce_mean(
+                    tf.square(tf.gradients(self.output_pre, self.vector_in)), axis=1
+                )
+
             self.trainable_variables = tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
             )
@@ -105,10 +113,7 @@ class NNPolicy(TFPolicy):
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="lstm"
             )  # LSTMs need to be root scope for Barracuda export
 
-        self.saliency = tf.reduce_mean(
-            tf.square(tf.gradients(self.output, self.vector_in)), axis=1
-        )
-
+        
         self.inference_dict: Dict[str, tf.Tensor] = {
             "action": self.output,
             "log_probs": self.all_log_probs,
@@ -122,6 +127,7 @@ class NNPolicy(TFPolicy):
         # We do an initialize to make the Policy usable out of the box. If an optimizer is needed,
         # it will re-load the full graph
         self._initialize_graph()
+        
 
     @timed
     def evaluate(

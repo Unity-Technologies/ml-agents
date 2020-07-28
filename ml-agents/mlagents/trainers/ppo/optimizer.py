@@ -319,16 +319,6 @@ class PPOOptimizer(TFOptimizer):
             update_stats[stat_name] = update_vals[update_name]
         return update_stats
 
-    def compute_input_sensitivity(
-        self, batch: AgentBuffer, num_sequences: int
-    ) -> Dict[int, float]:
-        feed_dict = self._construct_feed_dict(batch, num_sequences)
-        sens = self._execute_model(feed_dict, {"sensi": self.sensitivity})["sensi"][0]
-        out = {obs: StatsSummary(grad, 0.0, 0.0) for obs, grad in enumerate(sens)}
-        for obs, grad in sorted(enumerate(sens), reverse=True, key=lambda x: x[1]):
-            print(f"Observation {obs} has relevance {grad}")
-        return out
-
     def _construct_feed_dict(
         self, mini_batch: AgentBuffer, num_sequences: int
     ) -> Dict[tf.Tensor, Any]:

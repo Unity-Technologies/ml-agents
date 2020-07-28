@@ -219,13 +219,61 @@ class TensorboardWriter(StatsWriter):
 
         elif property_type == StatsPropertyType.SALIENCY:
             self._maybe_create_summary_writer(category)
-            with tf.Session(config=generate_session_config()) as sess:
-                hist_op = tf.summary.histogram(category, value)
-                hist = sess.run(hist_op)
-            # self.summary_writers[category].add_summary(hist, 0)
-            # self.trajectories += 1
-            # self.summary_writers[category].flush()
+            # adapted from https://gist.github.com/gyglim/1f8dfb1b5c82627ae3efcfbbadb9f514
+            counts, bin_edges = np.histogram(value, bins=len(value))
+            
+            hist = tf.HistogramProto()
+            #print(float(np.min(value)))
+            #print(float(np.max(value)))
+            #print(int(np.prod(value.shape)))
+            #print(float(np.sum(value)))
+            #print(float(np.sum(value**2)))
+            #print(bin_edges[1:])
+            #hist.min = float(np.min(value))
+            #hist.max = float(np.max(value))
+            #hist.num = int(np.prod(value.shape))
+            #hist.sum = float(np.sum(value))
+            #hist.sum_squares = float(np.sum(value**2))
+            #value = np.log(value)
+            value = value / np.sum(value)
+            value = np.log(value)
+            value = value - np.min(value)
+            value = value / np.sum(value)
+            for obs, grad in sorted(enumerate(value), reverse=True, key=lambda x: x[1]):
+                print(f"Observation {obs} has relevance {grad}")
+            hist.min = 0.0
+            hist.max = float(len(value))#float(np.max(value))
+            hist.num = len(value)#int(np.prod(value.shape))
+            hist.sum = float(np.sum(value))
+            hist.sum_squares = float(np.sum(value**2))
+            bin_edges = bin_edges[1:]
 
+            for edge in range(len(value)):#counts:
+                #print(edge)
+                hist.bucket_limit.append(edge+.5)
+            for c in value:
+                #print(c)
+                hist.bucket.append(c)
+            # Add bin edges and counts
+        #    for edge,i in zip(range(1,len(value)), bin_edges):
+        #        hist.bucket_limit.append(i)
+        #    for c,i in zip(value, counts):
+        #        hist.bucket.append(i)
+
+            # Create and write Summary
+            summary = tf.Summary(value=[tf.Summary.Value(tag="Saliency", histo=hist)])
+            self.summary_writers[category].add_summary(summary, self.trajectories)
+            self.summary_writers[category].flush()
+            #summary = tf.Summary()
+            #summary.value.add(tag="Saliency", histo=hist)
+            #self.summary_writers[category].add_summary(summary)#, self.trajectories)
+            self.trajectories += 1
+            #self.summary_writers[category].flush()
+
+
+            #with tf.Session(config=generate_session_config()) as sess:
+            #    hist_op = tf.summary.histogram(category, value)
+            #    hist = sess.run(hist_op)
     def _dict_to_tensorboard(self, name: str, input_dict: Dict[str, Any]) -> str:
         """
         Convert a dict to a Tensorboard-encoded string.

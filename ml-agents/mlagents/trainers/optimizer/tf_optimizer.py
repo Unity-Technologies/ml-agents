@@ -37,7 +37,13 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
     def get_saliency(self, batch: AgentBuffer) -> List[float]:
         feed_dict: Dict[tf.Tensor, Any] = {}
         feed_dict[self.policy.vector_in] = batch["vector_obs"]
-        feed_dict[self.policy.output] = batch["actions"]
+        if self.policy.output_pre is not None and "actions_pre" in batch:
+            feed_dict[self.policy.output_pre] = batch["actions_pre"]
+        else:
+            feed_dict[self.policy.output] = batch["actions"]
+            if self.policy.use_recurrent:
+                feed_dict[self.policy.prev_action] = batch["prev_action"]
+            feed_dict[self.policy.action_masks] = batch["action_mask"]
         saliencies = self.sess.run(self.policy.saliency, feed_dict)
         return np.mean(saliencies, axis=0)
 
