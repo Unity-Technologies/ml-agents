@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import Enum
-from typing import List, Dict, NamedTuple, Any
+from typing import List, Dict, NamedTuple, Any, Optional
 import numpy as np
 import abc
 import csv
@@ -213,9 +213,10 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             assert isinstance(value, dict)
-            text = self._dict_to_tensorboard("Hyperparameters", value)
+            summary = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
-            self.summary_writers[category].add_summary(text, 0)
+            if summary is not None:
+                self.summary_writers[category].add_summary(summary, 0)
 
         elif property_type == StatsPropertyType.SALIENCY:
             self._maybe_create_summary_writer(category)
@@ -274,7 +275,9 @@ class TensorboardWriter(StatsWriter):
             #with tf.Session(config=generate_session_config()) as sess:
             #    hist_op = tf.summary.histogram(category, value)
             #    hist = sess.run(hist_op)
-    def _dict_to_tensorboard(self, name: str, input_dict: Dict[str, Any]) -> str:
+    def _dict_to_tensorboard(
+        self, name: str, input_dict: Dict[str, Any]
+    ) -> Optional[bytes]:
         """
         Convert a dict to a Tensorboard-encoded string.
         :param name: The name of the text.
@@ -291,8 +294,10 @@ class TensorboardWriter(StatsWriter):
                 s = sess.run(s_op)
                 return s
         except Exception:
-            logger.warning("Could not write text summary for Tensorboard.")
-            return ""
+            logger.warning(
+                f"Could not write {name} summary for Tensorboard: {input_dict}"
+            )
+            return None
 
 
 class CSVWriter(StatsWriter):

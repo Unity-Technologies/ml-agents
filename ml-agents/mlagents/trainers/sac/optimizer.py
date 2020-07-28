@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -66,8 +66,8 @@ class SACOptimizer(TFOptimizer):
 
                 # Non-exposed SAC parameters
                 self.discrete_target_entropy_scale = (
-                    0.2
-                )  # Roughly equal to e-greedy 0.05
+                    0.2  # Roughly equal to e-greedy 0.05
+                )
                 self.continuous_target_entropy_scale = 1.0
 
                 stream_names = list(self.reward_signals.keys())

@@ -9,8 +9,8 @@ import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.policy.nn_policy import NNPolicy
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
@@ -52,7 +52,7 @@ class PPOTrainer(RLTrainer):
         )
         self.load = load
         self.seed = seed
-        self.policy: NNPolicy = None  # type: ignore
+        self.policy: Policy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
@@ -201,13 +201,12 @@ class PPOTrainer(RLTrainer):
         :param behavior_spec: specifications for policy construction
         :return policy
         """
-        policy = NNPolicy(
+        policy = TFPolicy(
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            self.is_training,
-            self.artifact_path,
-            self.load,
+            model_path=self.artifact_path,
+            load=self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
         )
@@ -215,7 +214,7 @@ class PPOTrainer(RLTrainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to trainer.
@@ -229,17 +228,17 @@ class PPOTrainer(RLTrainer):
                     self.__class__.__name__
                 )
             )
-        if not isinstance(policy, NNPolicy):
-            raise RuntimeError("Non-NNPolicy passed to PPOTrainer.add_policy()")
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        self.optimizer = PPOOptimizer(self.policy, self.trainer_settings)
+        self.optimizer = PPOOptimizer(
+            cast(TFPolicy, self.policy), self.trainer_settings
+        )
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
         # Needed to resume loads properly
         self.step = policy.get_current_step()
 
-    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+    def get_policy(self, name_behavior_id: str) -> Policy:
         """
         Gets policy from trainer associated with name_behavior_id
         :param name_behavior_id: full identifier of policy

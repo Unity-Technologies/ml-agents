@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 from mlagents.tf_utils import tf
 
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 
 EPSILON = 1e-7
 

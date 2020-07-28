@@ -52,6 +52,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 0f, 0f, 0f, 1f // LocalSpaceRotations
             };
             SensorTestHelper.CompareObservation(sensor, expected);
+            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
         }
 
         [Test]
@@ -107,6 +108,27 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 0f, -1f, 1f // Leaf vel
             };
             SensorTestHelper.CompareObservation(sensor, expected);
+            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
+
+            // Update the settings to only process joint observations
+            sensorComponent.Settings = new PhysicsSensorSettings
+            {
+                UseJointPositionsAndAngles = true,
+                UseJointForces = true,
+            };
+
+            sensor = sensorComponent.CreateSensor();
+            sensor.Update();
+
+            expected = new[]
+            {
+                0f, 0f, 0f, // joint1.force
+                0f, 0f, 0f, // joint1.torque
+                0f, 0f, 0f, // joint2.force
+                0f, 0f, 0f, // joint2.torque
+            };
+            SensorTestHelper.CompareObservation(sensor, expected);
+            Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
 
         }
     }

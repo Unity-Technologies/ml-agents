@@ -11,7 +11,6 @@ import math
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
-from mlagents.trainers.models import ScheduleType, EncoderType
 
 from mlagents_envs import logging_util
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -49,6 +48,17 @@ def defaultdict_to_dict(d: DefaultDict) -> Dict:
 class ExportableSettings:
     def as_dict(self):
         return cattr.unstructure(self)
+
+
+class EncoderType(Enum):
+    SIMPLE = "simple"
+    NATURE_CNN = "nature_cnn"
+    RESNET = "resnet"
+
+
+class ScheduleType(Enum):
+    CONSTANT = "constant"
+    LINEAR = "linear"
 
 
 @attr.s(auto_attribs=True)

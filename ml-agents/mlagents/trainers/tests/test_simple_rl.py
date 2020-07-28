@@ -25,9 +25,10 @@ from mlagents.trainers.settings import (
     GAILSettings,
     TrainerType,
     RewardSignalType,
+    EncoderType,
+    ScheduleType,
 )
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.models import EncoderType, ScheduleType
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )

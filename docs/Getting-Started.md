@@ -211,7 +211,7 @@ directory. In order to observe the training process in more detail, you can use
 TensorBoard. From the command line run:
 
 ```sh
-tensorboard --logdir=results
+tensorboard --logdir results
 ```
 
 Then navigate to `localhost:6006` in your browser to view the TensorBoard
