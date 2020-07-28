@@ -361,7 +361,7 @@ class SACTransferTargetNetwork(SACTransferNetwork):
             self.processed_vector_in, 
             vis_encode_type,
             encoder_layers=encoder_layers,
-            scope="target_enc",
+            scope="encoding",
             reuse=True
         )
         if separate_train:
