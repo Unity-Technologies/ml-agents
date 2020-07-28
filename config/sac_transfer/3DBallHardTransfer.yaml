@@ -20,7 +20,7 @@ behaviors:
       # separate_value_net: true
       separate_policy_train: true
       # separate_value_train: true
-      reuse_encoder: true
+      reuse_encoder: false
       in_epoch_alter: false
       in_batch_alter: false
       use_op_buffer: false
@@ -31,7 +31,7 @@ behaviors:
       use_transfer: true
       load_model: true
       train_model: false
-      transfer_path: "results/ball/3DBall"
+      transfer_path: "results/ball-targ/3DBall"
     network_settings:
       normalize: true
       hidden_units: 64
