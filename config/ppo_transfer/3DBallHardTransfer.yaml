@@ -10,7 +10,7 @@ behaviors:
       lambd: 0.95
       num_epoch: 3
       learning_rate_schedule: linear
-      model_schedule: constant
+      model_schedule: linear
       encoder_layers: 1
       policy_layers: 1
       forward_layers: 1
@@ -18,7 +18,7 @@ behaviors:
       feature_size: 16
       reuse_encoder: false
       in_epoch_alter: false
-      in_batch_alter: true
+      in_batch_alter: false
       use_op_buffer: false
       use_var_predict: true
       with_prior: false
@@ -26,7 +26,7 @@ behaviors:
       use_bisim: false
       separate_value_net: false
       use_transfer: true
-      transfer_path: "results/ball-targv/3DBall"
+      transfer_path: "results/ball/3DBall"
       load_model: true
       train_model: false
     network_settings:

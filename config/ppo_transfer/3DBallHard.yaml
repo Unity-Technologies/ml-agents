@@ -11,6 +11,7 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       model_schedule: constant
+      separate_model_train: true
       encoder_layers: 1
       policy_layers: 1
       forward_layers: 1
