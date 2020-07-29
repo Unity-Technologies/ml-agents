@@ -16,7 +16,9 @@ behaviors:
       policy_layers: 0
       forward_layers: 0
       value_layers: 1
-      feature_size: 16
+      action_layers: 1
+      feature_size: 64
+      action_feature_size: 16
       # separate_value_net: true
       separate_policy_train: true
       # separate_value_train: true
