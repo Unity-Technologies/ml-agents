@@ -11,7 +11,7 @@ test_gym_interface_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - pip install pyyaml
+    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python -u -m ml-agents.tests.yamato.setup_venv
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_gym.py --env=artifacts/testPlayer-Basic
   dependencies:
@@ -21,12 +21,12 @@ test_gym_interface_{{ editor.version }}:
     expression: |
       (pull_request.target eq "master" OR
       pull_request.target match "release.+") AND
-      NOT pull_request.draft AND 
-      (pull_request.changes.any match "com.unity.ml-agents/**" OR 
-      pull_request.changes.any match "Project/**" OR 
-      pull_request.changes.any match "ml-agents/**" OR 
-      pull_request.changes.any match "ml-agents-envs/**" OR 
-      pull_request.changes.any match "gym-unity/**" OR 
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "Project/**" OR
+      pull_request.changes.any match "ml-agents/**" OR
+      pull_request.changes.any match "ml-agents-envs/**" OR
+      pull_request.changes.any match "gym-unity/**" OR
       pull_request.changes.any match ".yamato/gym-interface-test.yml") AND
       NOT pull_request.changes.all match "**/*.md"
 {% endfor %}
