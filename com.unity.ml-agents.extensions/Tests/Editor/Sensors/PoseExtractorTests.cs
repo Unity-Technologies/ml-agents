@@ -91,21 +91,42 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             chain.UpdateModelSpacePoses();
             chain.UpdateLocalSpacePoses();
 
-            // Root transforms are currently always the identity.
-            Assert.IsTrue(chain.ModelSpacePoses[0] == Pose.identity);
-            Assert.IsTrue(chain.LocalSpacePoses[0] == Pose.identity);
 
-            // Check the non-root transforms
-            for (var i = 1; i < size; i++)
+            var modelPoseIndex = 0;
+            foreach (var modelSpace in chain.GetModelSpacePoses())
             {
-                var modelSpace = chain.ModelSpacePoses[i];
-                var expectedModelTranslation = new Vector3(i, i, i);
-                Assert.IsTrue(expectedModelTranslation == modelSpace.position);
+                if (modelPoseIndex == 0)
+                {
+                    // Root transforms are currently always the identity.
+                    Assert.IsTrue(modelSpace == Pose.identity);
+                }
+                else
+                {
+                    var expectedModelTranslation = new Vector3(modelPoseIndex, modelPoseIndex, modelPoseIndex);
+                    Assert.IsTrue(expectedModelTranslation == modelSpace.position);
 
-                var localSpace = chain.LocalSpacePoses[i];
-                var expectedLocalTranslation = new Vector3(1, 1, 1);
-                Assert.IsTrue(expectedLocalTranslation == localSpace.position);
+                }
+                modelPoseIndex++;
             }
+            Assert.AreEqual(size, modelPoseIndex);
+
+            var localPoseIndex = 0;
+            foreach (var localSpace in chain.GetLocalSpacePoses())
+            {
+                if (localPoseIndex == 0)
+                {
+                    // Root transforms are currently always the identity.
+                    Assert.IsTrue(localSpace == Pose.identity);
+                }
+                else
+                {
+                    var expectedLocalTranslation = new Vector3(1, 1, 1);
+                    Assert.IsTrue(expectedLocalTranslation == localSpace.position, $"{expectedLocalTranslation} != {localSpace.position}");
+                }
+
+                localPoseIndex++;
+            }
+            Assert.AreEqual(size, localPoseIndex);
         }
 
     }

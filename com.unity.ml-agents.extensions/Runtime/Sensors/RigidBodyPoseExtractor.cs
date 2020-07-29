@@ -97,6 +97,9 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             m_Bodies = rbs;
             Setup(parentIndices);
+
+            // By default, ignore the root
+            SetPoseEnabled(0, false);
         }
 
         /// <inheritdoc/>

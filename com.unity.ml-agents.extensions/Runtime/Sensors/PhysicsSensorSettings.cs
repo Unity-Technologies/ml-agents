@@ -1,5 +1,6 @@
 using System;
-
+using System.Collections;
+using System.Linq;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
@@ -93,27 +94,29 @@ namespace Unity.MLAgents.Extensions.Sensors
         public static int WritePoses(this ObservationWriter writer, PhysicsSensorSettings settings, PoseExtractor poseExtractor, int baseOffset = 0)
         {
             var offset = baseOffset;
+            // TODO retrain UR3 model with new ordering
             if (settings.UseModelSpace)
             {
-                var poses = poseExtractor.ModelSpacePoses;
-                var vels = poseExtractor.ModelSpaceVelocities;
-
-                for(var i=0; i<poseExtractor.NumPoses; i++)
+                foreach (var pose in poseExtractor.GetModelSpacePoses())
                 {
-                    var pose = poses[i];
-                    if(settings.UseModelSpaceTranslations)
+                    if (settings.UseModelSpaceTranslations)
                     {
                         writer.Add(pose.position, offset);
                         offset += 3;
                     }
+
                     if (settings.UseModelSpaceRotations)
                     {
                         writer.Add(pose.rotation, offset);
                         offset += 4;
                     }
+                }
+
+                foreach(var vel in  poseExtractor.GetModelSpaceVelocities())
+                {
                     if (settings.UseModelSpaceLinearVelocity)
                     {
-                        writer.Add(vels[i], offset);
+                        writer.Add(vel, offset);
                         offset += 3;
                     }
                 }
@@ -121,25 +124,26 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (settings.UseLocalSpace)
             {
-                var poses = poseExtractor.LocalSpacePoses;
-                var vels = poseExtractor.LocalSpaceVelocities;
-
-                for(var i=0; i<poseExtractor.NumPoses; i++)
+                foreach (var pose in poseExtractor.GetLocalSpacePoses())
                 {
-                    var pose = poses[i];
-                    if(settings.UseLocalSpaceTranslations)
+                    if (settings.UseLocalSpaceTranslations)
                     {
                         writer.Add(pose.position, offset);
                         offset += 3;
                     }
+
                     if (settings.UseLocalSpaceRotations)
                     {
                         writer.Add(pose.rotation, offset);
                         offset += 4;
                     }
+                }
+
+                foreach(var vel in poseExtractor.GetLocalSpaceVelocities())
+                {
                     if (settings.UseLocalSpaceLinearVelocity)
                     {
-                        writer.Add(vels[i], offset);
+                        writer.Add(vel, offset);
                         offset += 3;
                     }
                 }

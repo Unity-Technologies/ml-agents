@@ -93,15 +93,15 @@ public class CrawlerAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        //sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        //sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
+        //sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity)); // Model space velocity
+        //sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity)); // Not in sensor
 
         //Get position relative to hips in the context of our orientation cube's space
-        //sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
+        //sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position)); // Model space position
 
         if (bp.rb.transform != body)
         {
-            //sensor.AddObservation(bp.rb.transform.localRotation);
+            //sensor.AddObservation(bp.rb.transform.localRotation); // Local space rotation
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
@@ -112,7 +112,7 @@ public class CrawlerAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         //Add body rotation delta relative to orientation cube
-        //sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
+        //sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward)); // Model space rotation (root only)
 
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
