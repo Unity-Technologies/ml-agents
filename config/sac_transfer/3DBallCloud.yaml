@@ -15,7 +15,7 @@ behaviors:
       reward_signal_steps_per_update: 10.0
       encoder_layers: 1
       policy_layers: 1
-      forward_layers: 1
+      forward_layers: 0
       value_layers: 1
       feature_size: 16
       # separate_value_net: true
