@@ -16,7 +16,7 @@ behaviors:
       policy_layers: 1
       forward_layers: 0
       value_layers: 1
-      feature_size: 32
+      feature_size: 16
       # separate_value_net: true
       separate_policy_train: true
       # separate_value_train: true
@@ -31,7 +31,7 @@ behaviors:
       use_transfer: true
       load_model: true
       train_model: false
-      transfer_path: "results/sac-ball-f32-p1f0/3DBall"
+      transfer_path: "results/sac-ball-f16-p1f0/3DBall"
     network_settings:
       normalize: true
       hidden_units: 128
