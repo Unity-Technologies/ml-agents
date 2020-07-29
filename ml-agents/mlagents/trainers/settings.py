@@ -196,7 +196,7 @@ class SACTransferSettings(SACSettings):
 
     # Network
     encoder_layers: int = 1
-    action_layers: int = 1
+    action_layers: int = -1
     policy_layers: int = 1
     value_layers: int = 1
     forward_layers: int = 1
