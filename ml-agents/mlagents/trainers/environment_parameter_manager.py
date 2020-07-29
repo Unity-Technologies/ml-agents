@@ -131,7 +131,7 @@ class EnvironmentParameterManager:
             lesson = settings.curriculum[lesson_num]
             if (
                 lesson.completion_criteria is not None
-                and len(settings.curriculum) > lesson_num
+                and len(settings.curriculum) > lesson_num + 1
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
                 if behavior_to_consider in trainer_steps:
