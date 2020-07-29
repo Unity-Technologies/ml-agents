@@ -31,6 +31,8 @@ behaviors:
       use_transfer: true
       load_model: true
       train_model: false
+      load_policy: true
+      load_value: true
       transfer_path: "results/sac-ball-f16-e1p1f1/3DBall"
     network_settings:
       normalize: true
