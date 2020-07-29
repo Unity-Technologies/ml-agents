@@ -97,6 +97,21 @@ class VectorEncoder(nn.Module):
 
 
 class VectorAndUnnormalizedInputEncoder(VectorEncoder):
+    """
+    Encoder for concatenated vector input (can be normalized) and unnormalized vector input.
+    This is used for passing inputs to the network that should not be normalized, such as
+    actions in the case of a Q function or task parameterizations. It will result in an encoder with
+    this structure:
+    ____________       ____________       ____________
+    | Vector     |     | Normalize  |     | Fully      |
+    |            | --> |            | --> | Connected  |      ___________
+    |____________|     |____________|     |            |     | Output    |
+    ____________                          |            | --> |           |
+    |Unnormalized|                        |            |     |___________|
+    |   Input    | ---------------------> |            |
+    |____________|                        |____________|
+    """
+
     def __init__(
         self,
         input_size: int,
