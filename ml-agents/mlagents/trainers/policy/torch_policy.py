@@ -15,6 +15,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.torch.networks import ActorCritic
+from mlagents.trainers.torch.encoders import Normalizer
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -100,9 +101,10 @@ class TorchPolicy(Policy):
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
-        vector_obs = [torch.as_tensor(vector_obs)]
-        if self.use_vec_obs and self.normalize:
-            self.actor_critic.update_normalization(vector_obs)
+        pass
+        # vector_obs = [torch.as_tensor(vector_obs)]
+        # if self.use_vec_obs and self.normalize:
+        #     self.actor_critic.update_normalization(vector_obs)
 
     @timed
     def sample_actions(
@@ -177,9 +179,10 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, value_heads, memories = self.sample_actions(
-                vec_obs, vis_obs, masks=masks, memories=memories
-            )
+            with Normalizer.update_normalizer():
+                action, log_probs, entropy, value_heads, memories = self.sample_actions(
+                    vec_obs, vis_obs, masks=masks, memories=memories
+                )
         run_out["action"] = action.detach().cpu().numpy()
         run_out["pre_action"] = action.detach().cpu().numpy()
         # Todo - make pre_action difference

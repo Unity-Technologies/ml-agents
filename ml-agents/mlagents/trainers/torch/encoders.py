@@ -1,4 +1,5 @@
 from typing import Tuple, Optional
+import threading
 
 from mlagents.trainers.exception import UnityTrainerException
 
@@ -7,6 +8,33 @@ from torch import nn
 
 
 class Normalizer(nn.Module):
+    class update_normalizer:
+        """
+        Helper class that allows context. Set this context by calling
+        ```
+        with Normalizer.update_normalizer()
+        ```
+        All Normalizers executed with this context will also be updated.
+        """
+
+        _local_data = threading.local()
+        _local_data.must_update = False
+
+        @classmethod
+        def __enter__(cls):
+            Normalizer.update_normalizer._local_data.must_update = True
+
+        @classmethod
+        def __exit__(cls, *args):
+            Normalizer.update_normalizer._local_data.must_update = False
+
+        @staticmethod
+        def must_update():
+            try:
+                return Normalizer.update_normalizer._local_data.must_update
+            except AttributeError:
+                return False
+
     def __init__(self, vec_obs_size: int):
         super().__init__()
         self.normalization_steps = torch.tensor(1)
@@ -14,6 +42,9 @@ class Normalizer(nn.Module):
         self.running_variance = torch.ones(vec_obs_size)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        if Normalizer.update_normalizer.must_update():
+            self.update(inputs)
+
         normalized_state = torch.clamp(
             (inputs - self.running_mean)
             / torch.sqrt(self.running_variance / self.normalization_steps),
@@ -23,6 +54,10 @@ class Normalizer(nn.Module):
         return normalized_state
 
     def update(self, vector_input: torch.Tensor) -> None:
+        """
+        Updates the normalizer based on the input.
+        Note: this will be made a private method in the future.
+        """
         steps_increment = vector_input.size()[0]
         total_new_steps = self.normalization_steps + steps_increment
 
