@@ -8,7 +8,7 @@ from mlagents.trainers.torch.encoders import (
     ResNetVisualEncoder,
     NatureVisualEncoder,
     VectorEncoder,
-    ActionVectorEncoder,
+    VectorAndUnnormalizedInputEncoder,
 )
 from mlagents.trainers.settings import EncoderType
 from mlagents.trainers.exception import UnityTrainerException
@@ -89,7 +89,7 @@ class ModelUtils:
                 )
         if encoded_act_size > 0:
             vector_encoders.append(
-                ActionVectorEncoder(
+                VectorAndUnnormalizedInputEncoder(
                     vector_size, h_size, encoded_act_size, num_layers, normalize
                 )
             )

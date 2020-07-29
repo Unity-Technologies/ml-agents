@@ -96,17 +96,20 @@ class VectorEncoder(nn.Module):
             self.normalizer.update(inputs)
 
 
-class ActionVectorEncoder(VectorEncoder):
+class VectorAndUnnormalizedInputEncoder(VectorEncoder):
     def __init__(
         self,
         input_size: int,
         hidden_size: int,
-        num_actions: int,
+        unnormalized_input_size: int,
         num_layers: int,
         normalize: bool = False,
     ):
         super().__init__(
-            input_size + num_actions, hidden_size, num_layers, normalize=False
+            input_size + unnormalized_input_size,
+            hidden_size,
+            num_layers,
+            normalize=False,
         )
         if normalize:
             self.normalizer = Normalizer(input_size)
@@ -114,15 +117,15 @@ class ActionVectorEncoder(VectorEncoder):
             self.normalizer = None
 
     def forward(  # pylint: disable=W0221
-        self, inputs: torch.Tensor, actions: Optional[torch.Tensor] = None
+        self, inputs: torch.Tensor, unnormalized_inputs: Optional[torch.Tensor] = None
     ) -> None:
-        if actions is None:
+        if unnormalized_inputs is None:
             raise UnityTrainerException(
-                "Attempted to call an ActionVectorEncoder without an action."
+                "Attempted to call an VectorAndUnnormalizedInputEncoder without an unnormalized input."
             )  # Fix mypy errors about method parameters.
         if self.normalizer is not None:
             inputs = self.normalizer(inputs)
-        return self.seq_layers(torch.cat([inputs, actions], dim=-1))
+        return self.seq_layers(torch.cat([inputs, unnormalized_inputs], dim=-1))
 
 
 class SimpleVisualEncoder(nn.Module):
