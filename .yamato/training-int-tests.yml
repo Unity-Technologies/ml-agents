@@ -12,7 +12,7 @@ test_mac_training_int_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - pip install pyyaml
+    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python -u -m ml-agents.tests.yamato.training_int_tests
     # Backwards-compatibility tests.
     # If we make a breaking change to the communication protocol, these will need
