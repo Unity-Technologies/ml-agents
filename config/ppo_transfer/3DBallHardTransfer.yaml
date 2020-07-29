@@ -26,7 +26,7 @@ behaviors:
       use_bisim: false
       separate_value_net: false
       use_transfer: true
-      transfer_path: "results/ball/3DBall"
+      transfer_path: "results/ppo-ball/3DBall"
       load_model: true
       train_model: false
     network_settings:
