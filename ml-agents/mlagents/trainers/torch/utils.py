@@ -12,6 +12,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents_envs.base_env import BehaviorSpec
 
 
 class ModelUtils:
@@ -27,6 +28,33 @@ class ModelUtils:
     def swish(input_activation: torch.Tensor) -> torch.Tensor:
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return torch.mul(input_activation, torch.sigmoid(input_activation))
+
+    class SwishLayer(torch.nn.Module):
+        def forward(self, data: torch.Tensor) -> torch.Tensor:
+            return torch.mul(data, torch.sigmoid(data))
+
+    class ActionFlattener:
+        def __init__(self, behavior_spec: BehaviorSpec):
+            self._specs = behavior_spec
+
+        @property
+        def flattened_size(self) -> int:
+            if self._specs.is_action_continuous():
+                return self._specs.action_size
+            else:
+                return sum(self._specs.discrete_action_branches)
+
+        def forward(self, action: torch.Tensor) -> torch.Tensor:
+            if self._specs.is_action_continuous():
+                return action
+            else:
+                return torch.cat(
+                    ModelUtils.actions_to_onehot(
+                        torch.as_tensor(action, dtype=torch.long),
+                        self._specs.discrete_action_branches,
+                    ),
+                    dim=1,
+                )
 
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
@@ -135,7 +163,28 @@ class ModelUtils:
         discrete_actions: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:
         onehot_branches = [
-            torch.nn.functional.one_hot(_act.T, action_size[i])
-            for i, _act in enumerate(discrete_actions.T)
+            torch.nn.functional.one_hot(_act.T, action_size[i]).float()
+            for i, _act in enumerate(discrete_actions.long().T)
         ]
         return onehot_branches
+
+    @staticmethod
+    def dynamic_partition(
+        data: torch.Tensor, partitions: torch.Tensor, num_partitions: int
+    ) -> List[torch.Tensor]:
+        """
+        Torch implementation of dynamic_partition :
+        https://www.tensorflow.org/api_docs/python/tf/dynamic_partition
+        Splits the data Tensor input into num_partitions Tensors according to the indices in
+        partitions.
+        :param data: The Tensor data that will be split into partitions.
+        :param partitions: An indices tensor that determines in which partition each element
+        of data will be in.
+        :param num_partitions: The number of partitions to output. Corresponds to the
+        maximum possible index in the partitions argument.
+        :return: A list of Tensor partitions (Their indices correspond to their partition index).
+        """
+        res: List[torch.Tensor] = []
+        for i in range(num_partitions):
+            res += [data[(partitions == i).nonzero().squeeze(1)]]
+        return res

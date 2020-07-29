@@ -20,7 +20,7 @@ SEED = [42]
     ],
 )
 def test_construction(behavior_spec: BehaviorSpec) -> None:
-    curiosity_settings = CuriositySettings(256, 0.01)
+    curiosity_settings = CuriositySettings(32, 0.01)
     curiosity_settings.strength = 0.1
     curiosity_rp = CuriosityRewardProvider(behavior_spec, curiosity_settings)
     assert curiosity_rp.strength == 0.1
@@ -31,11 +31,13 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
     "behavior_spec",
     [
         BehaviorSpec([(10,)], ActionType.CONTINUOUS, 5),
-        BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3)),
+        BehaviorSpec([(10,), (64, 66, 3), (84, 86, 1)], ActionType.CONTINUOUS, 5),
+        BehaviorSpec([(10,), (64, 66, 1)], ActionType.DISCRETE, (2, 3)),
+        BehaviorSpec([(10,)], ActionType.DISCRETE, (2,)),
     ],
 )
 def test_factory(behavior_spec: BehaviorSpec) -> None:
-    curiosity_settings = CuriositySettings(256, 0.01)
+    curiosity_settings = CuriositySettings(32, 0.01)
     curiosity_rp = create_reward_provider(
         RewardSignalType.CURIOSITY, behavior_spec, curiosity_settings
     )
@@ -46,7 +48,7 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(10,)], ActionType.CONTINUOUS, 5),
+        BehaviorSpec([(10,), (64, 66, 3), (24, 26, 1)], ActionType.CONTINUOUS, 5),
         BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3)),
         BehaviorSpec([(10,)], ActionType.DISCRETE, (2,)),
     ],
@@ -54,9 +56,9 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
-    curiosity_settings = CuriositySettings(256, 0.01)
+    curiosity_settings = CuriositySettings(32, 0.01)
     curiosity_rp = CuriosityRewardProvider(behavior_spec, curiosity_settings)
-    buffer = create_agent_buffer(behavior_spec, 1000)
+    buffer = create_agent_buffer(behavior_spec, 5)
     reward_old = curiosity_rp.evaluate(buffer)[0]
     for _ in range(10):
         curiosity_rp.update(buffer)
@@ -72,9 +74,9 @@ def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:
 def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
-    curiosity_settings = CuriositySettings(256, 0.1)
+    curiosity_settings = CuriositySettings(32, 0.1)
     curiosity_rp = CuriosityRewardProvider(behavior_spec, curiosity_settings)
-    buffer = create_agent_buffer(behavior_spec, 1000)
+    buffer = create_agent_buffer(behavior_spec, 5)
     for _ in range(200):
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_action(buffer)[0].detach()
@@ -87,7 +89,7 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(10,)], ActionType.CONTINUOUS, 5),
+        BehaviorSpec([(10,), (64, 66, 3)], ActionType.CONTINUOUS, 5),
         BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3)),
         BehaviorSpec([(10,)], ActionType.DISCRETE, (2,)),
     ],
@@ -95,9 +97,9 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
 def test_next_state_prediction(behavior_spec: BehaviorSpec, seed: int) -> None:
     np.random.seed(seed)
     torch.manual_seed(seed)
-    curiosity_settings = CuriositySettings(256, 0.1)
+    curiosity_settings = CuriositySettings(32, 0.1)
     curiosity_rp = CuriosityRewardProvider(behavior_spec, curiosity_settings)
-    buffer = create_agent_buffer(behavior_spec, 1000)
+    buffer = create_agent_buffer(behavior_spec, 5)
     for _ in range(100):
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_next_state(buffer)[0]

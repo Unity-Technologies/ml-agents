@@ -47,7 +47,7 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
 @pytest.mark.parametrize(
     "behavior_spec",
     [
-        BehaviorSpec([(8,)], ActionType.CONTINUOUS, 2),
+        BehaviorSpec([(8,), (24, 26, 1)], ActionType.CONTINUOUS, 2),
         BehaviorSpec([(50,)], ActionType.DISCRETE, (2, 3, 3, 3)),
         BehaviorSpec([(10,)], ActionType.DISCRETE, (20,)),
     ],
@@ -94,7 +94,7 @@ def test_reward_decreases(
     "behavior_spec",
     [
         BehaviorSpec([(8,)], ActionType.CONTINUOUS, 2),
-        BehaviorSpec([(50,)], ActionType.DISCRETE, (2, 3, 3, 3)),
+        BehaviorSpec([(10,)], ActionType.DISCRETE, (2, 3, 3, 3)),
         BehaviorSpec([(10,)], ActionType.DISCRETE, (20,)),
     ],
 )
