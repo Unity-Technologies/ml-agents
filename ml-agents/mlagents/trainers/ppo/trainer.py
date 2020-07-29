@@ -86,18 +86,30 @@ class PPOTrainer(RLTrainer):
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
-            self._stats_reporter.add_stat(
-                self.optimizer.reward_signals[name].value_name, np.mean(v)
-            )
+            if hasattr(self.optimizer.reward_signals[name], "value_name"):
+                self._stats_reporter.add_stat(
+                    self.optimizer.reward_signals[name].value_name, np.mean(v)
+                )
+            else:
+                self._stats_reporter.add_stat(
+                    self.optimizer.reward_signals[name].name + "Value Estimate",
+                    np.mean(v),
+                )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            evaluate_result = reward_signal.evaluate_batch(
-                agent_buffer_trajectory
-            ).scaled_reward
+            if hasattr(reward_signal, "evaluate_batch"):
+                evaluate_result = reward_signal.evaluate_batch(
+                    agent_buffer_trajectory
+                ).scaled_reward
+            else:
+                evaluate_result = (
+                    reward_signal.evaluate(agent_buffer_trajectory)
+                    * reward_signal.strength
+                )
             agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)

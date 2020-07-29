@@ -149,4 +149,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Losses/Value Loss": value_loss.detach().cpu().numpy(),
         }
 
+        for reward_provider in self.reward_signals.values():
+            reward_provider.update(batch)
+
         return update_stats

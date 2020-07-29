@@ -14,6 +14,7 @@ from mlagents.trainers.settings import NetworkSettings, EncoderType
 class CuriosityRewardProvider(BaseRewardProvider):
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__(specs, settings)
+        self._ignore_done = True
         self._network = CuriosityNetwork(specs, settings)
         self.optimizer = torch.optim.Adam(
             self._network.parameters(), lr=settings.learning_rate

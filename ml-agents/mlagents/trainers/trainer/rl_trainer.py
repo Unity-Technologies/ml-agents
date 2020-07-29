@@ -77,9 +77,16 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                self.stats_reporter.add_stat(
-                    optimizer.reward_signals[name].stat_name, rewards.get(agent_id, 0)
-                )
+                if hasattr(optimizer.reward_signals[name], "stat_name"):
+                    self.stats_reporter.add_stat(
+                        optimizer.reward_signals[name].stat_name,
+                        rewards.get(agent_id, 0),
+                    )
+                else:
+                    self.stats_reporter.add_stat(
+                        optimizer.reward_signals[name].name + "Reward",
+                        rewards.get(agent_id, 0),
+                    )
                 rewards[agent_id] = 0
 
     def _clear_update_buffer(self) -> None:

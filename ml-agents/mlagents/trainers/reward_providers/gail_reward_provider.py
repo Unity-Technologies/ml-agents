@@ -15,6 +15,7 @@ from mlagents.trainers.demo_loader import demo_to_buffer
 class GAILRewardProvider(BaseRewardProvider):
     def __init__(self, specs: BehaviorSpec, settings: GAILSettings) -> None:
         super().__init__(specs, settings)
+        self._ignore_done = True
         self._discriminator_network = DiscriminatorNetwork(specs, settings)
         _, self._demo_buffer = demo_to_buffer(
             settings.demo_path, 1, specs
