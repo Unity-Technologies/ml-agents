@@ -11,9 +11,9 @@ test_mac_ll_api_{{ editor.version }}:
   variables:
     UNITY_VERSION: {{ editor.version }}
   commands:
-    - pip install pyyaml
+    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
     - python -u -m ml-agents.tests.yamato.setup_venv
-    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py 
+    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Basic
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-WallJump
     - ./venv/bin/python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Bouncer
@@ -24,11 +24,11 @@ test_mac_ll_api_{{ editor.version }}:
     expression: |
       (pull_request.target eq "master" OR
       pull_request.target match "release.+") AND
-      NOT pull_request.draft AND 
-      (pull_request.changes.any match "com.unity.ml-agents/**" OR 
-      pull_request.changes.any match "Project/**" OR 
-      pull_request.changes.any match "ml-agents/**" OR 
-      pull_request.changes.any match "ml-agents-envs/**" OR 
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "Project/**" OR
+      pull_request.changes.any match "ml-agents/**" OR
+      pull_request.changes.any match "ml-agents-envs/**" OR
       pull_request.changes.any match ".yamato/python-ll-api-test.yml") AND
       NOT pull_request.changes.all match "**/*.md"
 {% endfor %}
