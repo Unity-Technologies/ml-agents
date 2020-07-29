@@ -136,8 +136,9 @@ def init_venv(
     if extra_packages:
         pip_commands += extra_packages
     for cmd in pip_commands:
+        pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python -m pip install -q {cmd}",
+            f"source {venv_path}/bin/activate; python -m pip install -q {cmd} {pip_index_url}",
             shell=True,
         )
     return venv_path
