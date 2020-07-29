@@ -42,7 +42,7 @@ class NetworkBody(nn.Module):
             self.h_size,
             network_settings.num_layers,
             network_settings.vis_encode_type,
-            encoded_act_size=encoded_act_size,
+            unnormalized_inputs=encoded_act_size,
             normalize=self.normalize,
         )
 
