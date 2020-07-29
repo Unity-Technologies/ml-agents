@@ -8,7 +8,7 @@ from mlagents_envs.base_env import ActionType
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.networks import Critic, QNetwork
+from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
@@ -31,11 +31,25 @@ class TorchSACOptimizer(TorchOptimizer):
             act_size: List[int],
         ):
             super().__init__()
-            self.q1_network = QNetwork(
-                stream_names, observation_shapes, network_settings, act_type, act_size
+            if act_type == ActionType.CONTINUOUS:
+                num_value_outs = 1
+                num_action_ins = sum(act_size)
+            else:
+                num_value_outs = sum(act_size)
+                num_action_ins = 0
+            self.q1_network = ValueNetwork(
+                stream_names,
+                observation_shapes,
+                network_settings,
+                num_action_ins,
+                num_value_outs,
             )
-            self.q2_network = QNetwork(
-                stream_names, observation_shapes, network_settings, act_type, act_size
+            self.q2_network = ValueNetwork(
+                stream_names,
+                observation_shapes,
+                network_settings,
+                num_action_ins,
+                num_value_outs,
             )
 
         def forward(
@@ -86,7 +100,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.behavior_spec.action_type,
             self.act_size,
         )
-        self.target_network = Critic(
+        self.target_network = ValueNetwork(
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
@@ -370,10 +384,10 @@ class TorchSACOptimizer(TorchOptimizer):
                 next_vis_obs.append(next_vis_ob)
 
         # Copy normalizers from policy
-        self.value_network.q1_network.copy_normalization(
+        self.value_network.q1_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        self.value_network.q2_network.copy_normalization(
+        self.value_network.q2_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
         self.target_network.network_body.copy_normalization(
