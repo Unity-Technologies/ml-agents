@@ -2,7 +2,7 @@ import pytest
 import yaml
 
 
-from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.exception import TrainerConfigError, TrainerConfigWarning
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.settings import (
     RunOptions,
@@ -154,10 +154,52 @@ environment_parameters:
 """
 
 
+test_bad_curriculum_all_competion_criteria_config_yaml = """
+environment_parameters:
+    param_1:
+      curriculum:
+          - name: Lesson1
+            completion_criteria:
+                measure: reward
+                behavior: fake_behavior
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value: 1
+          - name: Lesson2
+            completion_criteria:
+                measure: reward
+                behavior: fake_behavior
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value: 2
+          - name: Lesson3
+            completion_criteria:
+                measure: reward
+                behavior: fake_behavior
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value:
+                sampler_type: uniform
+                sampler_parameters:
+                    min_value: 1
+                    max_value: 3
+"""
+
+
 def test_curriculum_raises_no_completion_criteria_conversion():
     with pytest.raises(TrainerConfigError):
         RunOptions.from_dict(
             yaml.safe_load(test_bad_curriculum_no_competion_criteria_config_yaml)
+        )
+
+
+def test_curriculum_raises_all_completion_criteria_conversion():
+    with pytest.warns(TrainerConfigWarning):
+        RunOptions.from_dict(
+            yaml.safe_load(test_bad_curriculum_all_competion_criteria_config_yaml)
         )
 
 

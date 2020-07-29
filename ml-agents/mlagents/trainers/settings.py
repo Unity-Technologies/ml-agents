@@ -1,3 +1,5 @@
+import warnings
+
 import attr
 import cattr
 from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple, Union
@@ -10,7 +12,7 @@ import math
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
-from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.exception import TrainerConfigError, TrainerConfigWarning
 
 from mlagents_envs import logging_util
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -443,13 +445,19 @@ class EnvironmentParameterSettings:
     def _check_lesson_chain(lessons, parameter_name):
         """
         Ensures that when using curriculum, all non-terminal lessons have a valid
-        CompletionCriteria
+        CompletionCriteria, and that the terminal lesson does not contain a CompletionCriteria.
         """
         num_lessons = len(lessons)
         for index, lesson in enumerate(lessons):
             if index < num_lessons - 1 and lesson.completion_criteria is None:
                 raise TrainerConfigError(
                     f"A non-terminal lesson does not have a completion_criteria for {parameter_name}."
+                )
+            if index == num_lessons - 1 and lesson.completion_criteria is not None:
+                warnings.warn(
+                    f"Your final lesson definition contains completion_criteria for {parameter_name}."
+                    f"It will be ignored.",
+                    TrainerConfigWarning,
                 )
 
     @staticmethod
