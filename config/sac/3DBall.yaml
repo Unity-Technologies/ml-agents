@@ -5,7 +5,7 @@ behaviors:
       learning_rate: 0.0003
       learning_rate_schedule: constant
       batch_size: 64
-      buffer_size: 12000
+      buffer_size: 500000
       buffer_init_steps: 0
       tau: 0.005
       steps_per_update: 10.0
@@ -14,7 +14,7 @@ behaviors:
       reward_signal_steps_per_update: 10.0
     network_settings:
       normalize: true
-      hidden_units: 64
+      hidden_units: 128
       num_layers: 2
       vis_encode_type: simple
     reward_signals:
