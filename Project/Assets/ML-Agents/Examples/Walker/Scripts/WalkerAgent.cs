@@ -230,15 +230,15 @@ public class WalkerAgent : Agent
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
         var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
         // c. Encourage head height.
-        var headHeightOverFeetReward =
-            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
+//        var headHeightOverFeetReward =
+//            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
 
 
         rewardManager.rewardsDict["matchSpeed"].rewardThisStep = matchSpeedReward;
         rewardManager.rewardsDict["lookAtTarget"].rewardThisStep = lookAtTargetReward;
-        rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
-        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
-//        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward);
+//        rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
+//        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
+        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all the rigidbodies

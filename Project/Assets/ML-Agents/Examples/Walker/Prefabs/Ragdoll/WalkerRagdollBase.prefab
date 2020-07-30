@@ -355,7 +355,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxJointSpring: 40000
   jointDampen: 5000
-  maxJointForceLimit: 15000
+  maxJointForceLimit: 10000
   bodyPartsList: []
 --- !u!114 &895268871377934302
 MonoBehaviour:
