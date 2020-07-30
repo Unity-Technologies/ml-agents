@@ -287,7 +287,7 @@ class ActorCritic(Actor):
         return dists, value_outputs, memories
 
 
-class SeparateActorCritic(ActorCritic):
+class SeparateActorCritic(Actor):
     def __init__(
         self,
         observation_shapes: List[Tuple[int, ...]],
@@ -303,10 +303,10 @@ class SeparateActorCritic(ActorCritic):
             network_settings,
             act_type,
             act_size,
-            stream_names,
             conditional_sigma,
             tanh_squash,
         )
+        self.stream_names = stream_names
         self.critic = ValueNetwork(stream_names, observation_shapes, network_settings)
 
     def critic_pass(
