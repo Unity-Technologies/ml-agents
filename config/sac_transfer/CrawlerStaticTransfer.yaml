@@ -30,7 +30,7 @@ behaviors:
       use_transfer: true
       load_model: true
       train_model: false
-      transfer_path: "results/crawler_linear/CrawlerStatic"
+      transfer_path: "results/crawler-linear/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
