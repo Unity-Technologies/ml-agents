@@ -993,11 +993,12 @@ class TransferPolicy(TFPolicy):
         :param encoded_state: Tensor corresponding to encoded current state.
         :param encoded_next_state: Tensor corresponding to encoded next state.
         """
-        combined_input = tf.concat([encoded_state, encoded_action], axis=1)
-        hidden = combined_input
 
         if separate_train:
-           hidden = tf.stop_gradient(hidden)
+           encoded_state = tf.stop_gradient(encoded_state)
+
+        combined_input = tf.concat([encoded_state, encoded_action], axis=1)
+        hidden = combined_input
 
         for i in range(forward_layers):
             hidden = tf.layers.dense(
@@ -1086,11 +1087,13 @@ class TransferPolicy(TFPolicy):
         separate_train: bool = False
     ):
 
+        if separate_train:
+           encoded_state = tf.stop_gradient(encoded_state)
+
         combined_input = tf.concat([encoded_state, encoded_action], axis=1)
 
         hidden = combined_input
-        if separate_train:
-           hidden = tf.stop_gradient(hidden)
+        
         for i in range(forward_layers):
             hidden = tf.layers.dense(
                 hidden,
