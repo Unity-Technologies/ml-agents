@@ -2893,7 +2893,7 @@ MonoBehaviour:
     UseLocalSpaceTranslations: 0
     UseLocalSpaceRotations: 1
     UseModelSpaceLinearVelocity: 1
-    UseLocalSpaceLinearVelocity: 1
+    UseLocalSpaceLinearVelocity: 0
     UseJointPositionsAndAngles: 0
     UseJointForces: 0
   sensorName: 
