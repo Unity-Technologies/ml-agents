@@ -66,66 +66,35 @@ namespace Unity.MLAgentsExamples
         /// </summary>
         public void SetJointTargetRotation(float x, float y, float z)
         {
-            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z))
-            {
-                joint.targetRotation = Quaternion.identity;
-                Debug.LogError($"Joint_NaN on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
-                return;
-            }
-//            else
-//            {
-//                Debug.Log($"Action on {rb.name}: x:{x}, y:{y}, z:{z}, FrameCount:{Time.frameCount}");
-//                
-//            }
-            
             x = (x + 1f) * 0.5f;
             y = (y + 1f) * 0.5f;
             z = (z + 1f) * 0.5f;
-
 
             var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
             var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
             var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
 
-//            currentXNormalizedRot =
-//                Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
-//            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
-//            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
+            currentXNormalizedRot =
+                Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
+            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
+            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
 
             joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
-//            currentEularJointRotation = new Vector3(xRot, yRot, zRot);
+            currentEularJointRotation = new Vector3(xRot, yRot, zRot);
         }
 
         public void SetJointStrength(float strength)
         {
-            strength = float.IsNaN(strength)? thisJdController.maxJointForceLimit: Mathf.Clamp(strength, -1f, 1f);
             var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
-//            var remappedVal = Mathf.InverseLerp(1, 1, strength); 
-            JointDrive jd = joint.slerpDrive;
-            jd.positionSpring = thisJdController.maxJointSpring;
-            jd.positionDamper = thisJdController.jointDampen;
-            jd.maximumForce = rawVal;
-//            var jd = new JointDrive
-//            {
-//                positionSpring = thisJdController.maxJointSpring,
-//                positionDamper = thisJdController.jointDampen,
-//                maximumForce = rawVal
-//            };
+            var jd = new JointDrive
+            {
+                positionSpring = thisJdController.maxJointSpring,
+                positionDamper = thisJdController.jointDampen,
+                maximumForce = rawVal
+            };
             joint.slerpDrive = jd;
             currentStrength = jd.maximumForce;
         }
-//        public void SetJointStrength(float strength)
-//        {
-//            var rawVal = (strength + 1f) * 0.5f * thisJdController.maxJointForceLimit;
-//            var jd = new JointDrive
-//            {
-//                positionSpring = thisJdController.maxJointSpring,
-//                positionDamper = thisJdController.jointDampen,
-//                maximumForce = rawVal
-//            };
-//            joint.slerpDrive = jd;
-//            currentStrength = jd.maximumForce;
-//        }
     }
 
     public class JointDriveController : MonoBehaviour
@@ -134,14 +103,12 @@ namespace Unity.MLAgentsExamples
         public float maxJointSpring;
 
         public float jointDampen;
-        [Min(1)]
         public float maxJointForceLimit;
         float m_FacingDot;
 
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
-        public List<BodyPart> bodyPartsList = new List<BodyPart>();
-//        [HideInInspector] public List<BodyPart> bodyPartsList = new List<BodyPart>();
+        [HideInInspector] public List<BodyPart> bodyPartsList = new List<BodyPart>();
         const float k_MaxAngularVelocity = 50.0f;
 
         /// <summary>

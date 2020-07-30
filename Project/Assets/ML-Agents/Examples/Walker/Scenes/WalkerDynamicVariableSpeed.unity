@@ -1162,6 +1162,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: DynamicPlatforms_10
       objectReference: {fileID: 0}
+    - target: {fileID: 7175173927432230575, guid: 4ee4867f326424260aa2753712f3d643,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 11400000, guid: 46a49bf7975bf4108b48c00fa9babac1,
+        type: 3}
     - target: {fileID: 7964409123409882683, guid: 4ee4867f326424260aa2753712f3d643,
         type: 3}
       propertyPath: m_ConnectedAnchor.y
