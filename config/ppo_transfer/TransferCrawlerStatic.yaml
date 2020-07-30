@@ -12,23 +12,25 @@ behaviors:
       learning_rate_schedule: linear
       model_schedule: linear
       encoder_layers: 2
-      policy_layers: 2
-      forward_layers: 2
-      value_layers: 3
+      policy_layers: 1
+      forward_layers: 1
+      value_layers: 2
       feature_size: 128
-      reuse_encoder: false
+      separate_model_train: true
+      reuse_encoder: true
       in_epoch_alter: false
       in_batch_alter: false
-      use_op_buffer: false
+      use_op_buffer: true
       use_var_predict: true
       with_prior: false
       predict_return: true
       use_bisim: false
-      separate_value_net: true
       use_transfer: true
       load_model: true
       train_model: false
-      transfer_path: "results/csold-const/CrawlerStatic"
+      load_policy: true
+      load_value: true
+      transfer_path: "results/csold-ppomod/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
