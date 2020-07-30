@@ -71,25 +71,18 @@ class TorchPolicy(Policy):
             "Losses/Policy Loss": "policy_loss",
         }
         if separate_critic:
-            self.actor_critic = SeparateActorCritic(
-                observation_shapes=self.behavior_spec.observation_shapes,
-                network_settings=trainer_settings.network_settings,
-                act_type=behavior_spec.action_type,
-                act_size=self.act_size,
-                stream_names=reward_signal_names,
-                conditional_sigma=self.condition_sigma_on_obs,
-                tanh_squash=tanh_squash,
-            )
+            ac_class = SeparateActorCritic
         else:
-            self.actor_critic = ActorCritic(
-                observation_shapes=self.behavior_spec.observation_shapes,
-                network_settings=trainer_settings.network_settings,
-                act_type=behavior_spec.action_type,
-                act_size=self.act_size,
-                stream_names=reward_signal_names,
-                conditional_sigma=self.condition_sigma_on_obs,
-                tanh_squash=tanh_squash,
-            )
+            ac_class = ActorCritic
+        self.actor_critic = ac_class(
+            observation_shapes=self.behavior_spec.observation_shapes,
+            network_settings=trainer_settings.network_settings,
+            act_type=behavior_spec.action_type,
+            act_size=self.act_size,
+            stream_names=reward_signal_names,
+            conditional_sigma=self.condition_sigma_on_obs,
+            tanh_squash=tanh_squash,
+        )
 
         self.actor_critic.to(TestingConfiguration.device)
 
