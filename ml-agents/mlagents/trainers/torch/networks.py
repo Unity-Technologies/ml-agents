@@ -1,4 +1,5 @@
 from typing import Callable, List, Dict, Tuple, Optional
+import attr
 
 import torch
 from torch import nn
@@ -125,9 +126,11 @@ class ValueNetwork(nn.Module):
         self.network_body = NetworkBody(
             observation_shapes, network_settings, encoded_act_size=encoded_act_size
         )
-        self.value_heads = ValueHeads(
-            stream_names, network_settings.hidden_units, outputs_per_stream
-        )
+        if network_settings.memory is not None:
+            embedding_size = network_settings.memory.memory_size // 2
+        else:
+            embedding_size = network_settings.hidden_units
+        self.value_heads = ValueHeads(stream_names, embedding_size, outputs_per_stream)
 
     def forward(
         self,
@@ -298,16 +301,31 @@ class SeparateActorCritic(Actor):
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
+        # Give the Actor only half the memories. Note we previously validate
+        # that memory_size must be a multiple of 4.
+        if network_settings.memory is not None:
+            self.half_mem_size = network_settings.memory.memory_size // 2
+            new_memory_settings = attr.evolve(
+                network_settings.memory, memory_size=self.half_mem_size
+            )
+            use_network_settings = attr.evolve(
+                network_settings, memory=new_memory_settings
+            )
+        else:
+            use_network_settings = network_settings
+            self.half_mem_size = 0
         super().__init__(
             observation_shapes,
-            network_settings,
+            use_network_settings,
             act_type,
             act_size,
             conditional_sigma,
             tanh_squash,
         )
         self.stream_names = stream_names
-        self.critic = ValueNetwork(stream_names, observation_shapes, network_settings)
+        self.critic = ValueNetwork(
+            stream_names, observation_shapes, use_network_settings
+        )
 
     def critic_pass(
         self,
@@ -315,8 +333,11 @@ class SeparateActorCritic(Actor):
         vis_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
+        if memories is not None:
+            # Use only the back half of memories for critic
+            _, critic_mem = torch.split(memories, self.half_mem_size, -1)
         value_outputs, _memories = self.critic(
-            vec_inputs, vis_inputs, memories=memories
+            vec_inputs, vis_inputs, memories=critic_mem
         )
         return value_outputs
 
@@ -328,18 +349,24 @@ class SeparateActorCritic(Actor):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
-        dists, memories = self.get_dists(
+        if memories is not None:
+            # Use only the back half of memories for critic and actor
+            actor_mem, critic_mem = torch.split(memories, self.half_mem_size, dim=-1)
+        else:
+            critic_mem = None
+            actor_mem = None
+        dists, actor_mem_outs = self.get_dists(
             vec_inputs,
             vis_inputs,
-            memories=memories,
+            memories=actor_mem,
             sequence_length=sequence_length,
             masks=masks,
         )
-        # TODO: Feed critic memories into critic
-        value_outputs, _ = self.critic(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        value_outputs, critic_mem_outs = self.critic(
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
-        return dists, value_outputs, memories
+        mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=1)
+        return dists, value_outputs, mem_out
 
 
 class GlobalSteps(nn.Module):
