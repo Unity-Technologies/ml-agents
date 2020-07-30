@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Linq;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
