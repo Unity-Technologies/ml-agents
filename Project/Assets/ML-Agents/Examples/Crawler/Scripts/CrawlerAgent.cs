@@ -93,7 +93,6 @@ public class CrawlerAgent : Agent
 
         if (bp.rb.transform != body)
         {
-            //sensor.AddObservation(bp.rb.transform.localRotation); // Local space rotation
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
