@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
 
             var modelPoseIndex = 0;
-            foreach (var modelSpace in chain.GetModelSpacePoses())
+            foreach (var modelSpace in chain.GetEnabledModelSpacePoses())
             {
                 if (modelPoseIndex == 0)
                 {
@@ -111,7 +111,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(size, modelPoseIndex);
 
             var localPoseIndex = 0;
-            foreach (var localSpace in chain.GetLocalSpacePoses())
+            foreach (var localSpace in chain.GetEnabledLocalSpacePoses())
             {
                 if (localPoseIndex == 0)
                 {

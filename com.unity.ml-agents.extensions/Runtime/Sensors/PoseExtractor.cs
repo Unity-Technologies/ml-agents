@@ -25,9 +25,9 @@ namespace Unity.MLAgents.Extensions.Sensors
 
 
         /// <summary>
-        /// Read access to the model space transforms.
+        /// Read iterator for the enabled model space transforms.
         /// </summary>
-        public IEnumerable<Pose> GetModelSpacePoses()
+        public IEnumerable<Pose> GetEnabledModelSpacePoses()
         {
             if (m_ModelSpacePoses == null)
             {
@@ -44,9 +44,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Read access to the local space transforms.
+        /// Read iterator for the enabled local space transforms.
         /// </summary>
-        public IEnumerable<Pose> GetLocalSpacePoses()
+        public IEnumerable<Pose> GetEnabledLocalSpacePoses()
         {
             if (m_LocalSpacePoses == null)
             {
@@ -63,9 +63,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Read access to the model space linear velocities.
+        /// Read iterator for the enabled model space linear velocities.
         /// </summary>
-        public IEnumerable<Vector3> GetModelSpaceVelocities()
+        public IEnumerable<Vector3> GetEnabledModelSpaceVelocities()
         {
             if (m_ModelSpaceLinearVelocities == null)
             {
@@ -82,9 +82,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Read access to the local space linear velocities.
+        /// Read iterator for the enabled local space linear velocities.
         /// </summary>
-        public IEnumerable<Vector3> GetLocalSpaceVelocities()
+        public IEnumerable<Vector3> GetEnabledLocalSpaceVelocities()
         {
             if (m_LocalSpaceLinearVelocities == null)
             {

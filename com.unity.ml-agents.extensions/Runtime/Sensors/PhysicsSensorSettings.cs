@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var offset = baseOffset;
             if (settings.UseModelSpace)
             {
-                foreach (var pose in poseExtractor.GetModelSpacePoses())
+                foreach (var pose in poseExtractor.GetEnabledModelSpacePoses())
                 {
                     if (settings.UseModelSpaceTranslations)
                     {
@@ -109,7 +109,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                 }
 
-                foreach(var vel in  poseExtractor.GetModelSpaceVelocities())
+                foreach(var vel in poseExtractor.GetEnabledModelSpaceVelocities())
                 {
                     if (settings.UseModelSpaceLinearVelocity)
                     {
@@ -121,7 +121,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (settings.UseLocalSpace)
             {
-                foreach (var pose in poseExtractor.GetLocalSpacePoses())
+                foreach (var pose in poseExtractor.GetEnabledLocalSpacePoses())
                 {
                     if (settings.UseLocalSpaceTranslations)
                     {
@@ -136,7 +136,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                 }
 
-                foreach(var vel in poseExtractor.GetLocalSpaceVelocities())
+                foreach(var vel in poseExtractor.GetEnabledLocalSpaceVelocities())
                 {
                     if (settings.UseLocalSpaceLinearVelocity)
                     {
