@@ -69,46 +69,45 @@ class NetworkBody(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        vec_embeds = []
+        vec_encodes = []
         for idx, encoder in enumerate(self.vector_encoders):
             vec_input = vec_inputs[idx]
             if actions is not None:
                 hidden = encoder(vec_input, actions)
             else:
                 hidden = encoder(vec_input)
-            vec_embeds.append(hidden)
+            vec_encodes.append(hidden)
 
-        vis_embeds = []
+        vis_encodes = []
         for idx, encoder in enumerate(self.visual_encoders):
             vis_input = vis_inputs[idx]
             vis_input = vis_input.permute([0, 3, 1, 2])
             hidden = encoder(vis_input)
-            vis_embeds.append(hidden)
+            vis_encodes.append(hidden)
 
-        # embedding = vec_embeds[0]
-        if len(vec_embeds) > 0 and len(vis_embeds) > 0:
-            vec_embeds_tensor = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
-            vis_embeds_tensor = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
-            embedding = torch.stack([vec_embeds_tensor, vis_embeds_tensor], dim=-1).sum(
-                dim=-1
-            )
-        elif len(vec_embeds) > 0:
-            embedding = torch.stack(vec_embeds, dim=-1).sum(dim=-1)
-        elif len(vis_embeds) > 0:
-            embedding = torch.stack(vis_embeds, dim=-1).sum(dim=-1)
+        if len(vec_encodes) > 0 and len(vis_encodes) > 0:
+            vec_encodes_tensor = torch.stack(vec_encodes, dim=-1).sum(dim=-1)
+            vis_encodes_tensor = torch.stack(vis_encodes, dim=-1).sum(dim=-1)
+            encoding = torch.stack(
+                [vec_encodes_tensor, vis_encodes_tensor], dim=-1
+            ).sum(dim=-1)
+        elif len(vec_encodes) > 0:
+            encoding = torch.stack(vec_encodes, dim=-1).sum(dim=-1)
+        elif len(vis_encodes) > 0:
+            encoding = torch.stack(vis_encodes, dim=-1).sum(dim=-1)
         else:
             raise Exception("No valid inputs to network.")
 
         if self.use_lstm:
-            embedding = embedding.view([sequence_length, -1, self.h_size])
+            encoding = encoding.view([sequence_length, -1, self.h_size])
             memories = torch.split(memories, self.m_size // 2, dim=-1)
-            embedding, memories = self.lstm(
-                embedding.contiguous(),
+            encoding, memories = self.lstm(
+                encoding.contiguous(),
                 (memories[0].contiguous(), memories[1].contiguous()),
             )
-            embedding = embedding.view([-1, self.m_size // 2])
+            encoding = encoding.view([-1, self.m_size // 2])
             memories = torch.cat(memories, dim=-1)
-        return embedding, memories
+        return encoding, memories
 
 
 class ValueNetwork(nn.Module):
@@ -127,10 +126,10 @@ class ValueNetwork(nn.Module):
             observation_shapes, network_settings, encoded_act_size=encoded_act_size
         )
         if network_settings.memory is not None:
-            embedding_size = network_settings.memory.memory_size // 2
+            encoding_size = network_settings.memory.memory_size // 2
         else:
-            embedding_size = network_settings.hidden_units
-        self.value_heads = ValueHeads(stream_names, embedding_size, outputs_per_stream)
+            encoding_size = network_settings.hidden_units
+        self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
 
     def forward(
         self,
@@ -140,10 +139,10 @@ class ValueNetwork(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
-        embedding, memories = self.network_body(
+        encoding, memories = self.network_body(
             vec_inputs, vis_inputs, actions, memories, sequence_length
         )
-        output = self.value_heads(embedding)
+        output = self.value_heads(encoding)
         return output, memories
 
 
@@ -166,19 +165,19 @@ class Actor(nn.Module):
         self.act_size_vector = torch.nn.Parameter(torch.Tensor(act_size))
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
-            self.embedding_size = network_settings.memory.memory_size // 2
+            self.encoding_size = network_settings.memory.memory_size // 2
         else:
-            self.embedding_size = network_settings.hidden_units
+            self.encoding_size = network_settings.hidden_units
         if self.act_type == ActionType.CONTINUOUS:
             self.distribution = GaussianDistribution(
-                self.embedding_size,
+                self.encoding_size,
                 act_size[0],
                 conditional_sigma=conditional_sigma,
                 tanh_squash=tanh_squash,
             )
         else:
             self.distribution = MultiCategoricalDistribution(
-                self.embedding_size, act_size
+                self.encoding_size, act_size
             )
 
     def update_normalization(self, vector_obs):
@@ -203,13 +202,13 @@ class Actor(nn.Module):
         Returns distributions from this Actor, from which actions can be sampled.
         If memory is enabled, return the memories as well.
         """
-        embedding, memories = self.network_body(
+        encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
         if self.act_type == ActionType.CONTINUOUS:
-            dists = self.distribution(embedding)
+            dists = self.distribution(encoding)
         else:
-            dists = self.distribution(embedding, masks)
+            dists = self.distribution(encoding, masks)
 
         return dists, memories
 
@@ -259,7 +258,7 @@ class ActorCritic(Actor):
             tanh_squash,
         )
         self.stream_names = stream_names
-        self.value_heads = ValueHeads(stream_names, self.embedding_size)
+        self.value_heads = ValueHeads(stream_names, self.encoding_size)
 
     def critic_pass(
         self,
@@ -267,8 +266,8 @@ class ActorCritic(Actor):
         vis_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
-        embedding, _ = self.network_body(vec_inputs, vis_inputs, memories=memories)
-        return self.value_heads(embedding)
+        encoding, _ = self.network_body(vec_inputs, vis_inputs, memories=memories)
+        return self.value_heads(encoding)
 
     def get_dist_and_value(
         self,
@@ -278,15 +277,15 @@ class ActorCritic(Actor):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
-        embedding, memories = self.network_body(
+        encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
         if self.act_type == ActionType.CONTINUOUS:
-            dists = self.distribution(embedding)
+            dists = self.distribution(encoding)
         else:
-            dists = self.distribution(embedding, masks=masks)
+            dists = self.distribution(encoding, masks=masks)
 
-        value_outputs = self.value_heads(embedding)
+        value_outputs = self.value_heads(encoding)
         return dists, value_outputs, memories
 
 
