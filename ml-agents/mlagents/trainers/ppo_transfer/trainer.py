@@ -192,7 +192,7 @@ class PPOTransferTrainer(RLTrainer):
                 update_stats = self.optimizer.update_part(
                     buffer.sample_mini_batch(batch_size, self.policy.sequence_length),
                     n_sequences,
-                    "model",
+                    "model_only",
                 )
                 # buffer.make_mini_batch(i, i + batch_size), n_sequences, "model"
                 # )

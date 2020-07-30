@@ -12,15 +12,16 @@ behaviors:
       learning_rate_schedule: linear
       model_schedule: constant
       separate_model_train: true
+      # separate_value_train: true
       encoder_layers: 1
       policy_layers: 1
       forward_layers: 1
       value_layers: 1
       feature_size: 16
-      reuse_encoder: false
+      reuse_encoder: true
       in_epoch_alter: false
-      in_batch_alter: true
-      use_op_buffer: false
+      in_batch_alter: false
+      use_op_buffer: true
       use_var_predict: true
       with_prior: false
       predict_return: true
@@ -36,7 +37,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 500000
+    max_steps: 2000000
     time_horizon: 1000
     summary_freq: 12000
     threaded: true

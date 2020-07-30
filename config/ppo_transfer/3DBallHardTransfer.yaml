@@ -11,12 +11,13 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
       model_schedule: linear
+      # separate_value_train: true
       encoder_layers: 1
       policy_layers: 1
       forward_layers: 1
       value_layers: 1
       feature_size: 16
-      reuse_encoder: false
+      reuse_encoder: true
       in_epoch_alter: false
       in_batch_alter: false
       use_op_buffer: false
@@ -26,9 +27,11 @@ behaviors:
       use_bisim: false
       separate_value_net: false
       use_transfer: true
-      transfer_path: "results/ppo-ball/3DBall"
+      transfer_path: "results/ppomodel_ball_l1/3DBall"
       load_model: true
       train_model: false
+      # load_policy: true
+      # load_value: true
     network_settings:
       normalize: true
       hidden_units: 128

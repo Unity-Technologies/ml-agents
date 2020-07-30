@@ -254,6 +254,7 @@ class SACTransferOptimizer(TFOptimizer):
                         hyperparameters.load_action,
                     )
                 self.policy.run_hard_copy()
+                # self.sess.run(self.target_init_op)
                 self.num_updates = 0
 
                 print("All variables in the graph:")
@@ -662,9 +663,9 @@ class SACTransferOptimizer(TFOptimizer):
         encoding_vars = self.policy.encoding_variables
 
         if self.train_value:
-            critic_vars = self.policy_network.critic_vars + encoding_vars
+            critic_vars = self.policy_network.critic_vars + model_vars
         else:
-            critic_vars = encoding_vars
+            critic_vars = model_vars
 
         self.target_init_op = [
             tf.assign(target, source)
