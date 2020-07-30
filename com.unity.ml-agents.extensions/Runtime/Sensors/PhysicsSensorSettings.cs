@@ -94,7 +94,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         public static int WritePoses(this ObservationWriter writer, PhysicsSensorSettings settings, PoseExtractor poseExtractor, int baseOffset = 0)
         {
             var offset = baseOffset;
-            // TODO retrain UR3 model with new ordering
             if (settings.UseModelSpace)
             {
                 foreach (var pose in poseExtractor.GetModelSpacePoses())

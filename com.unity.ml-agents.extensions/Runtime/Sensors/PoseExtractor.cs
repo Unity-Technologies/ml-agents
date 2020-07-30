@@ -25,7 +25,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
 
         /// <summary>
-        /// Read access to the model space transforms and velocities.
+        /// Read access to the model space transforms.
         /// </summary>
         public IEnumerable<Pose> GetModelSpacePoses()
         {
@@ -101,7 +101,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Number of poses in the hierarchy (read-only).
+        /// Number of enabled poses in the hierarchy (read-only).
         /// </summary>
         public int NumEnabledPoses
         {
@@ -171,7 +171,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_LocalSpaceLinearVelocities = new Vector3[numPoses];
 
             m_PoseEnabled = new bool[numPoses];
-            // All poses are enabled except the root. Generally we'll want to disable the root though.
+            // All poses are enabled by default. Generally we'll want to disable the root though.
             for (var i = 0; i < numPoses; i++)
             {
                 m_PoseEnabled[i] = true;
