@@ -1,3 +1,4 @@
+import abc
 import torch
 from torch import nn
 import numpy as np
@@ -6,7 +7,41 @@ import math
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
-class GaussianDistInstance(nn.Module):
+class DistInstance(nn.Module, abc.ABC):
+    @abc.abstractmethod
+    def sample(self) -> torch.Tensor:
+        """
+        Return a sample from this distribution.
+        """
+        pass
+
+    @abc.abstractmethod
+    def log_prob(self, value: torch.Tensor) -> torch.Tensor:
+        """
+        Returns the log probabilities of a particular value.
+        :param value: A value sampled from the distribution.
+        :returns: Log probabilities of the given value.
+        """
+        pass
+
+    @abc.abstractmethod
+    def entropy(self) -> torch.Tensor:
+        """
+        Returns the entropy of this distribution.
+        """
+        pass
+
+
+class DiscreteDistInstance(DistInstance):
+    @abc.abstractmethod
+    def all_log_prob(self) -> torch.Tensor:
+        """
+        Returns the log probabilities of all actions represented by this distribution.
+        """
+        pass
+
+
+class GaussianDistInstance(DistInstance):
     def __init__(self, mean, std):
         super().__init__()
         self.mean = mean
@@ -54,7 +89,7 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         )
 
 
-class CategoricalDistInstance(nn.Module):
+class CategoricalDistInstance(DiscreteDistInstance):
     def __init__(self, logits):
         super().__init__()
         self.logits = logits

@@ -140,19 +140,17 @@ class ValueNetwork(nn.Module):
         embedding, memories = self.network_body(
             vec_inputs, vis_inputs, actions, memories, sequence_length
         )
-        output, _ = self.value_heads(embedding)
+        output = self.value_heads(embedding)
         return output, memories
 
 
-class ActorCritic(nn.Module):
+class Actor(nn.Module):
     def __init__(
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
         act_type: ActionType,
         act_size: List[int],
-        stream_names: List[str],
-        separate_critic: bool,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
@@ -163,40 +161,25 @@ class ActorCritic(nn.Module):
         self.memory_size = torch.nn.Parameter(torch.Tensor([0]))
         self.is_continuous_int = torch.nn.Parameter(torch.Tensor([1]))
         self.act_size_vector = torch.nn.Parameter(torch.Tensor(act_size))
-        self.separate_critic = separate_critic
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
-            embedding_size = network_settings.memory.memory_size // 2
+            self.embedding_size = network_settings.memory.memory_size // 2
         else:
-            embedding_size = network_settings.hidden_units
+            self.embedding_size = network_settings.hidden_units
         if self.act_type == ActionType.CONTINUOUS:
             self.distribution = GaussianDistribution(
-                embedding_size,
+                self.embedding_size,
                 act_size[0],
                 conditional_sigma=conditional_sigma,
                 tanh_squash=tanh_squash,
             )
         else:
-            self.distribution = MultiCategoricalDistribution(embedding_size, act_size)
-        if separate_critic:
-            self.critic = ValueNetwork(
-                stream_names, observation_shapes, network_settings
+            self.distribution = MultiCategoricalDistribution(
+                self.embedding_size, act_size
             )
-        else:
-            self.stream_names = stream_names
-            self.value_heads = ValueHeads(stream_names, embedding_size)
 
     def update_normalization(self, vector_obs):
         self.network_body.update_normalization(vector_obs)
-        if self.separate_critic:
-            self.critic.network_body.update_normalization(vector_obs)
-
-    def critic_pass(self, vec_inputs, vis_inputs, memories=None):
-        if self.separate_critic:
-            return self.critic(vec_inputs, vis_inputs)
-        else:
-            embedding, _ = self.network_body(vec_inputs, vis_inputs, memories=memories)
-            return self.value_heads(embedding)
 
     def sample_action(self, dists):
         actions = []
@@ -205,49 +188,40 @@ class ActorCritic(nn.Module):
             actions.append(action)
         return actions
 
-    def get_probs_and_entropy(self, action_list, dists):
-        log_probs = []
-        all_probs = []
-        entropies = []
-        for action, action_dist in zip(action_list, dists):
-            log_prob = action_dist.log_prob(action)
-            log_probs.append(log_prob)
-            entropies.append(action_dist.entropy())
-            if self.act_type == ActionType.DISCRETE:
-                all_probs.append(action_dist.all_log_prob())
-        log_probs = torch.stack(log_probs, dim=-1)
-        entropies = torch.stack(entropies, dim=-1)
-        if self.act_type == ActionType.CONTINUOUS:
-            log_probs = log_probs.squeeze(-1)
-            entropies = entropies.squeeze(-1)
-            all_probs = None
-        else:
-            all_probs = torch.cat(all_probs, dim=-1)
-        return log_probs, entropies, all_probs
-
-    def get_dist_and_value(
-        self, vec_inputs, vis_inputs, masks=None, memories=None, sequence_length=1
-    ):
+    def get_dists(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        """
+        Returns distributions from this Actor, from which actions can be sampled.
+        If memory is enabled, return the memories as well.
+        """
         embedding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
         if self.act_type == ActionType.CONTINUOUS:
             dists = self.distribution(embedding)
         else:
-            dists = self.distribution(embedding, masks=masks)
-        if self.separate_critic:
-            value_outputs = self.critic(vec_inputs, vis_inputs)
-        else:
-            value_outputs = self.value_heads(embedding)
-        return dists, value_outputs, memories
+            dists = self.distribution(embedding, masks)
+
+        return dists, memories
 
     def forward(
-        self, vec_inputs, vis_inputs=None, masks=None, memories=None, sequence_length=1
-    ):
-        embedding, memories = self.network_body(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
-        )
-        dists, value_outputs, memories = self.get_dist_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[torch.Tensor, torch.Tensor, int, int, int, int]:
+        """
+        Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
+        """
+        dists, _ = self.get_dists(
             vec_inputs, vis_inputs, masks, memories, sequence_length
         )
         action_list = self.sample_action(dists)
@@ -260,6 +234,112 @@ class ActorCritic(nn.Module):
             self.is_continuous_int,
             self.act_size_vector,
         )
+
+
+class ActorCritic(Actor):
+    def __init__(
+        self,
+        observation_shapes: List[Tuple[int, ...]],
+        network_settings: NetworkSettings,
+        act_type: ActionType,
+        act_size: List[int],
+        stream_names: List[str],
+        conditional_sigma: bool = False,
+        tanh_squash: bool = False,
+    ):
+        super().__init__(
+            observation_shapes,
+            network_settings,
+            act_type,
+            act_size,
+            conditional_sigma,
+            tanh_squash,
+        )
+        self.stream_names = stream_names
+        self.value_heads = ValueHeads(stream_names, self.embedding_size)
+
+    def critic_pass(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        memories: Optional[torch.Tensor] = None,
+    ) -> Dict[str, torch.Tensor]:
+        embedding, _ = self.network_body(vec_inputs, vis_inputs, memories=memories)
+        return self.value_heads(embedding)
+
+    def get_dist_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[List[torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
+        embedding, memories = self.network_body(
+            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        )
+        if self.act_type == ActionType.CONTINUOUS:
+            dists = self.distribution(embedding)
+        else:
+            dists = self.distribution(embedding, masks=masks)
+
+        value_outputs = self.value_heads(embedding)
+        return dists, value_outputs, memories
+
+
+class SeparateActorCritic(ActorCritic):
+    def __init__(
+        self,
+        observation_shapes: List[Tuple[int, ...]],
+        network_settings: NetworkSettings,
+        act_type: ActionType,
+        act_size: List[int],
+        stream_names: List[str],
+        conditional_sigma: bool = False,
+        tanh_squash: bool = False,
+    ):
+        super().__init__(
+            observation_shapes,
+            network_settings,
+            act_type,
+            act_size,
+            stream_names,
+            conditional_sigma,
+            tanh_squash,
+        )
+        self.critic = ValueNetwork(stream_names, observation_shapes, network_settings)
+
+    def critic_pass(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        memories: Optional[torch.Tensor] = None,
+    ) -> Dict[str, torch.Tensor]:
+        value_outputs, _memories = self.critic(
+            vec_inputs, vis_inputs, memories=memories
+        )
+        return value_outputs
+
+    def get_dist_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[List[torch.Tensor], Dict[str, torch.Tensor], torch.Tensor]:
+        dists, memories = self.get_dists(
+            vec_inputs,
+            vis_inputs,
+            memories=memories,
+            sequence_length=sequence_length,
+            masks=masks,
+        )
+        # TODO: Feed critic memories into critic
+        value_outputs, _ = self.critic(
+            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        )
+        return dists, value_outputs, memories
 
 
 class GlobalSteps(nn.Module):
