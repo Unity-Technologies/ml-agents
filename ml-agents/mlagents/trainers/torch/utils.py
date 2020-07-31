@@ -138,7 +138,7 @@ class ModelUtils:
     ) -> List[torch.Tensor]:
         """
         Takes a tensor of discrete actions and turns it into a List of onehot encoding for each
-        action,
+        action.
         :param discrete_actions: Actions in integer form.
         :param action_size: List of branch sizes. Should be of same size as discrete_actions'
         last dimension.
