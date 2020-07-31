@@ -158,6 +158,8 @@ class SACTransferOptimizer(TFOptimizer):
                         use_recurrent=self.policy.use_recurrent,
                         encoder_layers=hyperparameters.encoder_layers,
                         num_layers=hyperparameters.value_layers,
+                        action_layers=hyperparameters.action_layers,
+                        action_features=hyperparameters.action_feature_size,
                         stream_names=stream_names,
                         vis_encode_type=vis_encode_type,
                         separate_train=hyperparameters.separate_value_train,
@@ -170,6 +172,8 @@ class SACTransferOptimizer(TFOptimizer):
                         use_recurrent=self.policy.use_recurrent,
                         encoder_layers=hyperparameters.encoder_layers,
                         num_layers=hyperparameters.value_layers,
+                        action_layers=hyperparameters.action_layers,
+                        action_features=hyperparameters.action_feature_size,
                         stream_names=stream_names,
                         vis_encode_type=vis_encode_type,
                         separate_train=hyperparameters.separate_value_train,
@@ -648,7 +652,7 @@ class SACTransferOptimizer(TFOptimizer):
         
         policy_vars = self.policy.get_trainable_variables(
             train_encoder=not self.separate_policy_train,
-            train_action=self.train_action,
+            train_action=not self.separate_policy_train,
             train_model=False,
             train_policy=self.train_policy
         )

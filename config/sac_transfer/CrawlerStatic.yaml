@@ -16,10 +16,10 @@ behaviors:
       encoder_layers: 3
       policy_layers: 0
       forward_layers: 0
-      value_layers: 2
-      feature_size: 300
+      value_layers: 0
+      feature_size: 512
       action_layers: 2
-      action_feature_size: 128
+      action_feature_size: 256
       separate_policy_train: true
       separate_model_train: true
       # separate_value_net: true
