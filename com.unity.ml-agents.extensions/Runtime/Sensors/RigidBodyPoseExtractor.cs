@@ -43,7 +43,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 rbs = rootGameObject.GetComponentsInChildren<Rigidbody>();
             }
 
-            if (rbs[0] != rootBody)
+            if (rbs == null || rbs.Length == 0)
+            {
+                Debug.Log("No rigid bodies found!");
+                return;
+            }
+
+                if (rbs[0] != rootBody)
             {
                 Debug.Log("Expected root body at index 0");
                 return;
@@ -64,7 +70,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var bodyToIndex = new Dictionary<Rigidbody, int>(rbs.Length);
             var parentIndices = new int[rbs.Length];
-
+            parentIndices[0] = -1;
 
             for (var i = 0; i < rbs.Length; i++)
             {
@@ -90,7 +96,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (virtualRoot != null)
             {
                 // Make sure the original root treats the virtual root as its parent.
-                parentIndices[0] = -1;
                 parentIndices[1] = 0;
                 m_VirtualRoot = virtualRoot;
             }
