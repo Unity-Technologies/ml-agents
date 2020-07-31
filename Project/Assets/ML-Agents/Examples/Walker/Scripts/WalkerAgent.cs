@@ -159,7 +159,8 @@ public class WalkerAgent : Agent
         targetPos.y = 0;
         Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
         sensor.AddObservation(relPos);
-//        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
+        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
+        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(targetPos), Vector3.up * 2, Color.red,5);
 //        sensor.AddObservation(Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.transform.position), 100)
 //        sensor.AddObservation(targetPos);
 

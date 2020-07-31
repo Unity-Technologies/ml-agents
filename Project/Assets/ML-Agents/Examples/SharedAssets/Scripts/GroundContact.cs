@@ -30,7 +30,6 @@ namespace Unity.MLAgentsExamples
                 if (penalizeGroundContact)
                 {
                     agent.SetReward(groundContactPenalty);
-//                    agent.SetReward(0);
                 }
 
                 if (agentDoneOnGroundContact)
@@ -39,14 +38,6 @@ namespace Unity.MLAgentsExamples
                 }
             }
         }
-
-//        void FixedUpdate()
-//        {
-//            if (touchingGround)
-//            {
-//                agent.SetReward(0);
-//            }
-//        }
 
         /// <summary>
         /// Check for end of ground collision and reset flag appropriately.
