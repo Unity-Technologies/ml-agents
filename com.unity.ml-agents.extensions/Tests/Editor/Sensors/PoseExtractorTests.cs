@@ -129,6 +129,39 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(size, localPoseIndex);
         }
 
+        class BadPoseExtractor : PoseExtractor
+        {
+            public BadPoseExtractor()
+            {
+                var size = 2;
+                var parents = new int[size];
+                // Parents are intentionally invalid - expect -1 at root
+                for (var i = 0; i < size; i++)
+                {
+                    parents[i] = i;
+                }
+                Setup(parents);
+            }
+
+            protected internal override Pose GetPoseAt(int index)
+            {
+                return Pose.identity;
+            }
+
+            protected  internal override Vector3 GetLinearVelocityAt(int index)
+            {
+                return Vector3.zero;
+            }
+        }
+
+        [Test]
+        public void TestExpectedRoot()
+        {
+            Assert.Throws<UnityAgentsException>(() =>
+            {
+                var bad = new BadPoseExtractor();
+            });
+        }
     }
 
     public class PoseExtensionTests
