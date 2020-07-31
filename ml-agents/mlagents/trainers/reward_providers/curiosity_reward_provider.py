@@ -53,13 +53,18 @@ class CuriosityNetwork(torch.nn.Module):
 
         self._action_flattener = ModelUtils.ActionFlattener(specs)
 
-        self.inverse_model_action_predition = torch.nn.Linear(
-            2 * settings.encoding_size, self._action_flattener.flattened_size
+        self.inverse_model_action_predition = torch.nn.Sequential(
+            torch.nn.Linear(2 * settings.encoding_size, 256),
+            ModelUtils.SwishLayer(),
+            torch.nn.Linear(256, self._action_flattener.flattened_size),
         )
 
-        self.forward_model_next_state_prediction = torch.nn.Linear(
-            settings.encoding_size + self._action_flattener.flattened_size,
-            settings.encoding_size,
+        self.forward_model_next_state_prediction = torch.nn.Sequential(
+            torch.nn.Linear(
+                settings.encoding_size + self._action_flattener.flattened_size, 256
+            ),
+            ModelUtils.SwishLayer(),
+            torch.nn.Linear(256, settings.encoding_size),
         )
 
     def get_current_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -100,7 +105,6 @@ class CuriosityNetwork(torch.nn.Module):
         inverse_model_input = torch.cat(
             (self.get_current_state(mini_batch), self.get_next_state(mini_batch)), dim=1
         )
-        inverse_model_input = ModelUtils.swish(inverse_model_input)
         hidden = self.inverse_model_action_predition(inverse_model_input)
         if self._policy_specs.is_action_continuous():
             return hidden
@@ -129,7 +133,7 @@ class CuriosityNetwork(torch.nn.Module):
         forward_model_input = torch.cat(
             (self.get_current_state(mini_batch), action), dim=1
         )
-        forward_model_input = ModelUtils.swish(forward_model_input)
+
         return self.forward_model_next_state_prediction(forward_model_input)
 
     def compute_inverse_loss(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -144,7 +148,13 @@ class CuriosityNetwork(torch.nn.Module):
                 - predicted_action
             ) ** 2
             sq_difference = torch.sum(sq_difference, dim=1)
-            return torch.mean(sq_difference)
+            return torch.mean(
+                ModelUtils.dynamic_partition(
+                    sq_difference,
+                    torch.as_tensor(mini_batch["masks"], dtype=torch.float),
+                    2,
+                )[1]
+            )
         else:
             true_action = torch.cat(
                 ModelUtils.actions_to_onehot(
@@ -159,10 +169,13 @@ class CuriosityNetwork(torch.nn.Module):
             return torch.mean(
                 ModelUtils.dynamic_partition(
                     cross_entropy,
-                    torch.as_tensor(mini_batch["action_mask"], dtype=torch.float),
+                    torch.as_tensor(
+                        mini_batch["masks"], dtype=torch.float
+                    ),  # use masks not action_masks
                     2,
                 )[1]
             )
+            # return torch.mean(cross_entropy)
 
     def compute_reward(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
@@ -170,7 +183,9 @@ class CuriosityNetwork(torch.nn.Module):
         between the predicted and actual next state.
         """
         predicted_next_state = self.predict_next_state(mini_batch)
-        sq_difference = (self.get_next_state(mini_batch) - predicted_next_state) ** 2
+        sq_difference = (
+            0.5 * (self.get_next_state(mini_batch) - predicted_next_state) ** 2
+        )
         sq_difference = torch.sum(sq_difference, dim=1)
         return sq_difference
 
@@ -178,12 +193,21 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Computes the loss for the next state prediction
         """
-        return torch.mean(self.compute_reward(mini_batch))
+        return torch.mean(
+            ModelUtils.dynamic_partition(
+                self.compute_reward(mini_batch),
+                torch.as_tensor(mini_batch["masks"], dtype=torch.float),
+                2,
+            )[1]
+        )
 
     def compute_losses(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Computes the weighted sum of inverse and forward loss.
         """
+        print(
+            self.compute_forward_loss(mini_batch), self.compute_inverse_loss(mini_batch)
+        )
         return self.forward_loss_weight * self.compute_forward_loss(
             mini_batch
         ) + self.inverse_loss_weight * self.compute_inverse_loss(mini_batch)

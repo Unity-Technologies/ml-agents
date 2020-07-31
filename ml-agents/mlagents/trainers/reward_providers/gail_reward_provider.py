@@ -28,8 +28,13 @@ class GAILRewardProvider(BaseRewardProvider):
             estimates, _ = self._discriminator_network.compute_estimate(
                 mini_batch, use_vail_noise=False
             )
-            return -torch.log(
-                1.0 - estimates * (1.0 - self._discriminator_network.EPSILON)
+            return (
+                -torch.log(
+                    1.0 - estimates * (1.0 - self._discriminator_network.EPSILON)
+                )
+                .detach()
+                .cpu()
+                .numpy()
             )
 
     def update(self, mini_batch: AgentBuffer) -> None:

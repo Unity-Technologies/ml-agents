@@ -28,4 +28,5 @@ def create_agent_buffer(
         buffer["actions"].append(action)
         buffer["done"].append(np.zeros(1))
         buffer["reward"].append(np.ones(1) * reward)
+        buffer["masks"].append(np.ones(1))
     return buffer
