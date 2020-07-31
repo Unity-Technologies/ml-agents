@@ -1,21 +1,16 @@
 test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
-    coverageOptions:
-    minCoveragePct: 0
+    enableCodeCoverage: !!bool false
   - version: 2019.3
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
   - version: 2020.1
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
   - version: 2020.2
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
 trunk_editor:
   - version: trunk
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
 test_platforms:
   - name: win
     type: Unity::VM
@@ -31,7 +26,11 @@ test_platforms:
     flavor: b1.medium
 packages:
   - name: com.unity.ml-agents
+    assembly: Unity.ML-Agents
+    minCoveragePct: 72
   - name: com.unity.ml-agents.extensions
+    assembly: Unity.ML-Agents.Extensions
+    minCoveragePct: 75
 ---
 
 all_package_tests:
@@ -57,6 +56,12 @@ all_package_tests:
 {% for package in packages %}
   {% for editor in test_editors %}
     {% for platform in test_platforms %}
+
+{% if editor.enableCodeCoverage %}
+  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+{% else %}
+  {% assign coverageOptions = "" %}
+{% endif %}
 test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
   name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
   agent:
@@ -65,11 +70,9 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ editor.coverageOptions }}
-
-    {% if package.name == "com.unity.ml-agents" %}
-    # TODO get coverage tests running for extensions too
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    {% if editor.enableCodeCoverage %}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:
@@ -97,6 +100,12 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
 {% for package in packages %}
   {% for editor in trunk_editor %}
     {% for platform in test_platforms %}
+
+{% if editor.enableCodeCoverage %}
+  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+{% else %}
+  {% assign coverageOptions = "" %}
+{% endif %}
 test_{{ package.name }}_{{ platform.name }}_trunk:
   name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
   agent:
@@ -107,10 +116,9 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ editor.coverageOptions }}
-    {% if package.name == "com.unity.ml-agents" %}
-    # TODO get coverage tests running for extensions too
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    {% if editor.enableCodeCoverage %}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:

@@ -19,7 +19,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers import tensorflow_to_barracuda as tf2bc
+from mlagents.trainers.tf import tensorflow_to_barracuda as tf2bc
 
 if LooseVersion(tf.__version__) < LooseVersion("1.12.0"):
     # ONNX is only tested on 1.12.0 and later
@@ -66,12 +66,22 @@ class SerializationSettings(NamedTuple):
 
 
 def export_policy_model(
-    settings: SerializationSettings, graph: tf.Graph, sess: tf.Session
+    output_filepath: str,
+    settings: SerializationSettings,
+    graph: tf.Graph,
+    sess: tf.Session,
 ) -> None:
     """
-    Exports latest saved model to .nn format for Unity embedding.
+    Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
+
+    :param output_filepath: file path to output the model (without file suffix)
+    :param settings: SerializationSettings describing how to export the model
+    :param graph: Tensorflow Graph for the policy
+    :param sess: Tensorflow session for the policy
     """
     frozen_graph_def = _make_frozen_graph(settings, graph, sess)
+    if not os.path.exists(settings.model_path):
+        os.makedirs(settings.model_path)
     # Save frozen graph
     frozen_graph_def_path = settings.model_path + "/frozen_graph_def.pb"
     with gfile.GFile(frozen_graph_def_path, "wb") as f:
@@ -79,15 +89,15 @@ def export_policy_model(
 
     # Convert to barracuda
     if settings.convert_to_barracuda:
-        tf2bc.convert(frozen_graph_def_path, settings.model_path + ".nn")
-        logger.info(f"Exported {settings.model_path}.nn file")
+        tf2bc.convert(frozen_graph_def_path, f"{output_filepath}.nn")
+        logger.info(f"Exported {output_filepath}.nn")
 
     # Save to onnx too (if we were able to import it)
     if ONNX_EXPORT_ENABLED:
         if settings.convert_to_onnx:
             try:
                 onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
-                onnx_output_path = settings.model_path + ".onnx"
+                onnx_output_path = f"{output_filepath}.onnx"
                 with open(onnx_output_path, "wb") as f:
                     f.write(onnx_graph.SerializeToString())
                 logger.info(f"Converting to {onnx_output_path}")

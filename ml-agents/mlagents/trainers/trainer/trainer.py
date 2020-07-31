@@ -1,14 +1,10 @@
 # # Unity ML-Agents Toolkit
-from typing import List, Deque
+from typing import List, Deque, Dict
 import abc
-
 from collections import deque
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.model_serialization import export_policy_model, SerializationSettings
-from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
@@ -50,6 +46,7 @@ class Trainer(abc.ABC):
         self.step: int = 0
         self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
+        self.policies: Dict[str, Policy] = {}
 
     @property
     def stats_reporter(self):
@@ -109,20 +106,12 @@ class Trainer(abc.ABC):
         """
         return self._reward_buffer
 
-    @timed
-    def save_model(self, name_behavior_id: str) -> None:
+    @abc.abstractmethod
+    def save_model(self) -> None:
         """
-        Saves the model
+        Saves model file(s) for the policy or policies associated with this trainer.
         """
-        self.get_policy(name_behavior_id).save_model(self.get_step)
-
-    def export_model(self, name_behavior_id: str) -> None:
-        """
-        Exports the model
-        """
-        policy = self.get_policy(name_behavior_id)
-        settings = SerializationSettings(policy.model_path, self.brain_name)
-        export_policy_model(settings, policy.graph, policy.sess)
+        pass
 
     @abc.abstractmethod
     def end_episode(self):
@@ -135,7 +124,7 @@ class Trainer(abc.ABC):
     @abc.abstractmethod
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
-    ) -> TFPolicy:
+    ) -> Policy:
         """
         Creates policy
         """
@@ -143,7 +132,7 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to trainer.
@@ -151,7 +140,7 @@ class Trainer(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+    def get_policy(self, name_behavior_id: str) -> Policy:
         """
         Gets policy from trainer.
         """

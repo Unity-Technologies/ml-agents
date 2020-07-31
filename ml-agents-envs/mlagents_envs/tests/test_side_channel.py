@@ -84,8 +84,8 @@ def test_raw_bytes():
     sender = RawBytesChannel(guid)
     receiver = RawBytesChannel(guid)
 
-    sender.send_raw_data("foo".encode("ascii"))
-    sender.send_raw_data("bar".encode("ascii"))
+    sender.send_raw_data(b"foo")
+    sender.send_raw_data(b"bar")
 
     data = SideChannelManager([sender]).generate_side_channel_messages()
     SideChannelManager([receiver]).process_side_channel_message(data)
@@ -253,6 +253,6 @@ def test_stats_channel():
     stats = receiver.get_and_reset_stats()
 
     assert len(stats) == 1
-    val, method = stats["stats-1"]
+    val, method = stats["stats-1"][0]
     assert val - 42.0 < 1e-8
     assert method == StatsAggregationMethod.MOST_RECENT

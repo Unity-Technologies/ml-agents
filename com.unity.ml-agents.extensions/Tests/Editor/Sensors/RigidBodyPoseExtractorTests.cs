@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Sensors;

@@ -109,9 +109,7 @@ class DecisionSteps(Mapping):
         :returns: The DecisionStep
         """
         if agent_id not in self.agent_id_to_index:
-            raise KeyError(
-                "agent_id {} is not present in the DecisionSteps".format(agent_id)
-            )
+            raise KeyError(f"agent_id {agent_id} is not present in the DecisionSteps")
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:
@@ -214,9 +212,7 @@ class TerminalSteps(Mapping):
         specific agent
         """
         if agent_id not in self.agent_id_to_index:
-            raise KeyError(
-                "agent_id {} is not present in the TerminalSteps".format(agent_id)
-            )
+            raise KeyError(f"agent_id {agent_id} is not present in the TerminalSteps")
         agent_index = self._agent_id_to_index[agent_id]  # type: ignore
         agent_obs = []
         for batched_obs in self.obs:

@@ -23,7 +23,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv("CIRCLE_TAG")
 
         if tag != EXPECTED_TAG:
-            info = "Git tag: {0} does not match the expected tag of this app: {1}".format(
+            info = "Git tag: {} does not match the expected tag of this app: {}".format(
                 tag, EXPECTED_TAG
             )
             sys.exit(info)
@@ -38,6 +38,6 @@ setup(
     author_email="ML-Agents@unity3d.com",
     url="https://github.com/Unity-Technologies/ml-agents",
     packages=find_packages(),
-    install_requires=["gym", "mlagents_envs=={}".format(VERSION)],
+    install_requires=["gym", f"mlagents_envs=={VERSION}"],
     cmdclass={"verify": VerifyVersionCommand},
 )

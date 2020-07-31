@@ -18,6 +18,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         Pose[] m_ModelSpacePoses;
         Pose[] m_LocalSpacePoses;
 
+        Vector3[] m_ModelSpaceLinearVelocities;
+        Vector3[] m_LocalSpaceLinearVelocities;
+
+
         /// <summary>
         /// Read access to the model space transforms.
         /// </summary>
@@ -35,11 +39,42 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Number of transforms in the hierarchy (read-only).
+        /// Read access to the model space linear velocities.
+        /// </summary>
+        public IList<Vector3> ModelSpaceVelocities
+        {
+            get { return m_ModelSpaceLinearVelocities;  }
+        }
+
+        /// <summary>
+        /// Read access to the local space linear velocities.
+        /// </summary>
+        public IList<Vector3> LocalSpaceVelocities
+        {
+            get { return m_LocalSpaceLinearVelocities;  }
+        }
+
+        /// <summary>
+        /// Number of poses in the hierarchy (read-only).
         /// </summary>
         public int NumPoses
         {
             get { return m_ModelSpacePoses?.Length ?? 0;  }
+        }
+
+        /// <summary>
+        /// Get the parent index of the body at the specified index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public int GetParentIndex(int index)
+        {
+            if (m_ParentIndices == null)
+            {
+                return -1;
+            }
+
+            return m_ParentIndices[index];
         }
 
         /// <summary>
@@ -53,6 +88,9 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numTransforms = parentIndices.Length;
             m_ModelSpacePoses = new Pose[numTransforms];
             m_LocalSpacePoses = new Pose[numTransforms];
+
+            m_ModelSpaceLinearVelocities = new Vector3[numTransforms];
+            m_LocalSpaceLinearVelocities = new Vector3[numTransforms];
         }
 
         /// <summary>
@@ -61,6 +99,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="index"></param>
         /// <returns></returns>
         protected abstract Pose GetPoseAt(int index);
+
+        /// <summary>
+        /// Return the world space linear velocity of the i'th object.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        protected abstract Vector3 GetLinearVelocityAt(int index);
+
 
         /// <summary>
         /// Update the internal model space transform storage based on the underlying system.
@@ -72,13 +118,19 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return;
             }
 
-            var worldTransform = GetPoseAt(0);
-            var worldToModel = worldTransform.Inverse();
+            var rootWorldTransform = GetPoseAt(0);
+            var worldToModel = rootWorldTransform.Inverse();
+            var rootLinearVel = GetLinearVelocityAt(0);
 
             for (var i = 0; i < m_ModelSpacePoses.Length; i++)
             {
-                var currentTransform = GetPoseAt(i);
-                m_ModelSpacePoses[i] = worldToModel.Multiply(currentTransform);
+                var currentWorldSpacePose = GetPoseAt(i);
+                var currentModelSpacePose = worldToModel.Multiply(currentWorldSpacePose);
+                m_ModelSpacePoses[i] = currentModelSpacePose;
+
+                var currentBodyLinearVel = GetLinearVelocityAt(i);
+                var relativeVelocity = currentBodyLinearVel - rootLinearVel;
+                m_ModelSpaceLinearVelocities[i] = worldToModel.rotation * relativeVelocity;
             }
         }
 
@@ -102,16 +154,39 @@ namespace Unity.MLAgents.Extensions.Sensors
                     var invParent = parentTransform.Inverse();
                     var currentTransform = GetPoseAt(i);
                     m_LocalSpacePoses[i] = invParent.Multiply(currentTransform);
+
+                    var parentLinearVel = GetLinearVelocityAt(m_ParentIndices[i]);
+                    var currentLinearVel = GetLinearVelocityAt(i);
+                    m_LocalSpaceLinearVelocities[i] = invParent.rotation * (currentLinearVel - parentLinearVel);
                 }
                 else
                 {
                     m_LocalSpacePoses[i] = Pose.identity;
+                    m_LocalSpaceLinearVelocities[i] = Vector3.zero;
                 }
             }
         }
 
+        /// <summary>
+        /// Compute the number of floats needed to represent the poses for the given PhysicsSensorSettings.
+        /// </summary>
+        /// <param name="settings"></param>
+        /// <returns></returns>
+        public int GetNumPoseObservations(PhysicsSensorSettings settings)
+        {
+            int obsPerPose = 0;
+            obsPerPose += settings.UseModelSpaceTranslations ? 3 : 0;
+            obsPerPose += settings.UseModelSpaceRotations ? 4 : 0;
+            obsPerPose += settings.UseLocalSpaceTranslations ? 3 : 0;
+            obsPerPose += settings.UseLocalSpaceRotations ? 4 : 0;
 
-        public void DrawModelSpace(Vector3 offset)
+            obsPerPose += settings.UseModelSpaceLinearVelocity ? 3 : 0;
+            obsPerPose += settings.UseLocalSpaceLinearVelocity ? 3 : 0;
+
+            return NumPoses * obsPerPose;
+        }
+
+        internal void DrawModelSpace(Vector3 offset)
         {
             UpdateLocalSpacePoses();
             UpdateModelSpacePoses();
@@ -138,6 +213,9 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
     }
 
+    /// <summary>
+    /// Extension methods for the Pose struct, in order to improve the readability of some math.
+    /// </summary>
     public static class PoseExtensions
     {
         /// <summary>
@@ -163,6 +241,19 @@ namespace Unity.MLAgents.Extensions.Sensors
         public static Pose Multiply(this Pose pose, Pose rhs)
         {
             return rhs.GetTransformedBy(pose);
+        }
+
+        /// <summary>
+        /// Transform the vector by the pose. Conceptually this is equivalent to treating the Pose
+        /// as a 4x4 matrix and multiplying the augmented vector.
+        /// See https://en.wikipedia.org/wiki/Affine_transformation#Augmented_matrix for more details.
+        /// </summary>
+        /// <param name="pose"></param>
+        /// <param name="rhs"></param>
+        /// <returns></returns>
+        public static Vector3 Multiply(this Pose pose, Vector3 rhs)
+        {
+            return pose.rotation * rhs + pose.position;
         }
 
         // TODO optimize inv(A)*B?

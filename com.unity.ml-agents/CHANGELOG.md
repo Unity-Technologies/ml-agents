@@ -6,6 +6,33 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The minimum supported python version for ml-agents-envs was changed to 3.6.1. (#4244)
+- The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
+and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up
+Python training by approximately 5-10%. (#4259)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- StatsSideChannel now stores multiple values per key. This means that multiple
+calls to `StatsRecorder.Add()` with the same key in the same step will no
+longer overwrite each other. (#4236)
+- Model checkpoints are now also saved as .nn files during training. (#4127)
+- Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Academy.EnvironmentStep() will now throw an exception if it is called
+recursively (for example, by an Agent's CollectObservations method).
+Previously, this would result in an infinite loop and cause the editor to hang.
+(#4226)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
 ## [1.2.0-preview] - 2020-07-15
 
 ### Major Changes

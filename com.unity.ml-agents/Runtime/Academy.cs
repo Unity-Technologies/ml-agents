@@ -128,6 +128,10 @@ namespace Unity.MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
+        // Whether the Academy is in the middle of a step. This is used to detect and Academy
+        // step called by user code that is also called by the Academy.
+        bool m_IsStepping;
+
         // Random seed used for inference.
         int m_InferenceSeed;
 
@@ -486,36 +490,59 @@ namespace Unity.MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_HadFirstReset)
+            // Check whether we're already in the middle of a step.
+            // This shouldn't happen generally, but could happen if user code (e.g. CollectObservations)
+            // that is called by EnvironmentStep() also calls EnvironmentStep(). This would result
+            // in an infinite loop and/or stack overflow, so stop it before it happens.
+            if (m_IsStepping)
             {
-                ForcedFullReset();
+                throw new UnityAgentsException(
+                    "Academy.EnvironmentStep() called recursively. " +
+                    "This might happen if you call EnvironmentStep() from custom code such as " +
+                    "CollectObservations() or OnActionReceived()."
+                );
             }
 
-            AgentPreStep?.Invoke(m_StepCount);
+            m_IsStepping = true;
 
-            m_StepCount += 1;
-            m_TotalStepCount += 1;
-            AgentIncrementStep?.Invoke();
-
-            using (TimerStack.Instance.Scoped("AgentSendState"))
+            try
             {
-                AgentSendState?.Invoke();
+                if (!m_HadFirstReset)
+                {
+                    ForcedFullReset();
+                }
+
+                AgentPreStep?.Invoke(m_StepCount);
+
+                m_StepCount += 1;
+                m_TotalStepCount += 1;
+                AgentIncrementStep?.Invoke();
+
+                using (TimerStack.Instance.Scoped("AgentSendState"))
+                {
+                    AgentSendState?.Invoke();
+                }
+
+                using (TimerStack.Instance.Scoped("DecideAction"))
+                {
+                    DecideAction?.Invoke();
+                }
+
+                // If the communicator is not on, we need to clear the SideChannel sending queue
+                if (!IsCommunicatorOn)
+                {
+                    SideChannelManager.GetSideChannelMessage();
+                }
+
+                using (TimerStack.Instance.Scoped("AgentAct"))
+                {
+                    AgentAct?.Invoke();
+                }
             }
-
-            using (TimerStack.Instance.Scoped("DecideAction"))
+            finally
             {
-                DecideAction?.Invoke();
-            }
-
-            // If the communicator is not on, we need to clear the SideChannel sending queue
-            if (!IsCommunicatorOn)
-            {
-                SideChannelManager.GetSideChannelMessage();
-            }
-
-            using (TimerStack.Instance.Scoped("AgentAct"))
-            {
-                AgentAct?.Invoke();
+                // Reset m_IsStepping when we're done (or if an exception occurred).
+                m_IsStepping = false;
             }
         }
 

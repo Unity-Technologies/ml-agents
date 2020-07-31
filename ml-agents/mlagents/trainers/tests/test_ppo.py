@@ -5,10 +5,11 @@ import numpy as np
 from mlagents.tf_utils import tf
 import copy
 import attr
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
@@ -48,8 +49,8 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         if use_rnn
         else None
     )
-    policy = NNPolicy(
-        0, mock_specs, trainer_settings, False, "test", False, create_tf_graph=False
+    policy = TFPolicy(
+        0, mock_specs, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer
@@ -202,15 +203,16 @@ def test_trainer_increment_step(ppo_optimizer):
     ppo_optimizer.return_value = mock_optimizer
 
     trainer = PPOTrainer("test_brain", 0, trainer_params, True, False, 0, "0")
-    policy_mock = mock.Mock(spec=NNPolicy)
+    policy_mock = mock.Mock(spec=TFPolicy)
     policy_mock.get_current_step.return_value = 0
     step_count = (
         5  # 10 hacked because this function is no longer called through trainer
     )
     policy_mock.increment_step = mock.Mock(return_value=step_count)
-    trainer.add_policy("testbehavior", policy_mock)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
+    trainer.add_policy(behavior_id, policy_mock)
 
-    trainer._increment_step(5, "testbehavior")
+    trainer._increment_step(5, trainer.brain_name)
     policy_mock.increment_step.assert_called_with(5)
     assert trainer.step == step_count
 
@@ -219,7 +221,7 @@ def test_trainer_increment_step(ppo_optimizer):
 def test_trainer_update_policy(
     dummy_config, curiosity_dummy_config, use_discrete  # noqa: F811
 ):
-    mock_brain = mb.setup_test_behavior_specs(
+    mock_behavior_spec = mb.setup_test_behavior_specs(
         use_discrete,
         False,
         vector_action_space=DISCRETE_ACTION_SPACE
@@ -235,11 +237,13 @@ def test_trainer_update_policy(
 
     # Test curiosity reward signal
     trainer_params.reward_signals = curiosity_dummy_config
+    mock_brain_name = "MockBrain"
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(mock_brain_name)
     trainer = PPOTrainer("test", 0, trainer_params, True, False, 0, "0")
-    policy = trainer.create_policy("test", mock_brain)
-    trainer.add_policy("test", policy)
+    policy = trainer.create_policy(behavior_id, mock_behavior_spec)
+    trainer.add_policy(behavior_id, policy)
     # Test update with sequence length smaller than batch size
-    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_brain)
+    buffer = mb.simulate_rollout(BUFFER_INIT_SAMPLES, mock_behavior_spec)
     # Mock out reward signal eval
     buffer["extrinsic_rewards"] = buffer["environment_rewards"]
     buffer["extrinsic_returns"] = buffer["environment_rewards"]
@@ -260,9 +264,11 @@ def test_process_trajectory(dummy_config):
         vector_action_space=DISCRETE_ACTION_SPACE,
         vector_obs_space=VECTOR_OBS_SPACE,
     )
+    mock_brain_name = "MockBrain"
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(mock_brain_name)
     trainer = PPOTrainer("test_brain", 0, dummy_config, True, False, 0, "0")
-    policy = trainer.create_policy("test_brain", behavior_spec)
-    trainer.add_policy("test_brain", policy)
+    policy = trainer.create_policy(behavior_id, behavior_spec)
+    trainer.add_policy(behavior_id, policy)
     trajectory_queue = AgentManagerQueue("testbrain")
     trainer.subscribe_trajectory_queue(trajectory_queue)
     time_horizon = 15
@@ -313,19 +319,15 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     ppo_optimizer.return_value = mock_optimizer
 
     trainer = PPOTrainer("test_policy", 0, dummy_config, True, False, 0, "0")
-    policy = mock.Mock(spec=NNPolicy)
+    policy = mock.Mock(spec=TFPolicy)
     policy.get_current_step.return_value = 2000
 
-    trainer.add_policy("test_policy", policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
+    trainer.add_policy(behavior_id, policy)
     assert trainer.get_policy("test_policy") == policy
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
-
-    # Test incorrect class of policy
-    policy = mock.Mock()
-    with pytest.raises(RuntimeError):
-        trainer.add_policy("test_policy", policy)
 
 
 if __name__ == "__main__":

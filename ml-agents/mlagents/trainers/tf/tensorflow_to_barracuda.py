@@ -23,7 +23,7 @@ if __name__ == "__main__":
     )
     # Te following code can be used as an example of API used from another module
     # convert() is the main entry point for converter
-    import tensorflow_to_barracuda as tf2bc
+    import tf.tensorflow_to_barracuda as tf2bc
 
     tf2bc.convert(args.source_file, args.target_file, args.trim_unused_by_output, args)
 

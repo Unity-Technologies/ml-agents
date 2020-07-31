@@ -5,7 +5,7 @@ from mlagents.tf_utils import tf
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.sac.network import SACPolicyNetwork, SACTargetNetwork
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.buffer import AgentBuffer
@@ -66,8 +66,8 @@ class SACOptimizer(TFOptimizer):
 
                 # Non-exposed SAC parameters
                 self.discrete_target_entropy_scale = (
-                    0.2
-                )  # Roughly equal to e-greedy 0.05
+                    0.2  # Roughly equal to e-greedy 0.05
+                )
                 self.continuous_target_entropy_scale = 1.0
 
                 stream_names = list(self.reward_signals.keys())
@@ -271,7 +271,7 @@ class SACOptimizer(TFOptimizer):
                 )
 
             rewards_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_rewards".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_rewards"
             )
             self.rewards_holders[name] = rewards_holder
 
@@ -607,7 +607,7 @@ class SACOptimizer(TFOptimizer):
             self.policy.mask_input: batch["masks"] * burn_in_mask,
         }
         for name in self.reward_signals:
-            feed_dict[self.rewards_holders[name]] = batch["{}_rewards".format(name)]
+            feed_dict[self.rewards_holders[name]] = batch[f"{name}_rewards"]
 
         if self.policy.use_continuous_act:
             feed_dict[self.policy_network.external_action_in] = batch["actions"]

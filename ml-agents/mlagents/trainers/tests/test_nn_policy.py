@@ -4,14 +4,15 @@ import unittest
 import tempfile
 
 import numpy as np
+from mlagents.model_serialization import SerializationSettings
 from mlagents.tf_utils import tf
 
 
-from mlagents.trainers.policy.nn_policy import NNPolicy
-from mlagents.trainers.models import EncoderType, ModelUtils, Tensor3DShape
+from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.tf.models import ModelUtils, Tensor3DShape
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings, EncoderType
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers import __version__
 
@@ -31,7 +32,7 @@ def create_policy_mock(
     model_path: str = "",
     load: bool = False,
     seed: int = 0,
-) -> NNPolicy:
+) -> TFPolicy:
     mock_spec = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
@@ -46,7 +47,9 @@ def create_policy_mock(
     trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
-    policy = NNPolicy(seed, mock_spec, trainer_settings, False, model_path, load)
+    policy = TFPolicy(
+        seed, mock_spec, trainer_settings, model_path=model_path, load=load
+    )
     return policy
 
 
@@ -57,7 +60,11 @@ def test_load_save(tmp_path):
     policy = create_policy_mock(trainer_params, model_path=path1)
     policy.initialize_or_load()
     policy._set_step(2000)
-    policy.save_model(2000)
+
+    mock_brain_name = "MockBrain"
+    checkpoint_path = f"{policy.model_path}/{mock_brain_name}-2000"
+    serialization_settings = SerializationSettings(policy.model_path, mock_brain_name)
+    policy.checkpoint(checkpoint_path, serialization_settings)
 
     assert len(os.listdir(tmp_path)) > 0
 
@@ -96,7 +103,7 @@ class ModelVersionTest(unittest.TestCase):
             assert len(cm.output) == 1
 
 
-def _compare_two_policies(policy1: NNPolicy, policy2: NNPolicy) -> None:
+def _compare_two_policies(policy1: TFPolicy, policy2: TFPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
     """
@@ -144,11 +151,10 @@ def test_normalization():
     # Change half of the obs to 0
     for i in range(3):
         trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
-    policy = NNPolicy(
+    policy = TFPolicy(
         0,
         behavior_spec,
         TrainerSettings(network_settings=NetworkSettings(normalize=True)),
-        False,
         "testdir",
         False,
     )

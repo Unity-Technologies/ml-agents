@@ -246,12 +246,12 @@ def test_agent_manager_stats():
 
     all_env_stats = [
         {
-            "averaged": (1.0, StatsAggregationMethod.AVERAGE),
-            "most_recent": (2.0, StatsAggregationMethod.MOST_RECENT),
+            "averaged": [(1.0, StatsAggregationMethod.AVERAGE)],
+            "most_recent": [(2.0, StatsAggregationMethod.MOST_RECENT)],
         },
         {
-            "averaged": (3.0, StatsAggregationMethod.AVERAGE),
-            "most_recent": (4.0, StatsAggregationMethod.MOST_RECENT),
+            "averaged": [(3.0, StatsAggregationMethod.AVERAGE)],
+            "most_recent": [(4.0, StatsAggregationMethod.MOST_RECENT)],
         },
     ]
     for env_stats in all_env_stats:

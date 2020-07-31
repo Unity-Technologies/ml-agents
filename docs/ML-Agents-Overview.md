@@ -347,7 +347,7 @@ rewards, which helps explain some of the training methods.
 
 In reinforcement learning, the end goal for the Agent is to discover a behavior
 (a Policy) that maximizes a reward. You will need to provide the agent one or
-more reward signals to use during training.Typically, a reward is defined by
+more reward signals to use during training. Typically, a reward is defined by
 your environment, and corresponds to reaching some goal. These are what we refer
 to as _extrinsic_ rewards, as they are defined external of the learning
 algorithm.
