@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return;
             }
 
-                if (rbs[0] != rootBody)
+            if (rbs[0] != rootBody)
             {
                 Debug.Log("Expected root body at index 0");
                 return;
@@ -136,6 +136,96 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         internal Rigidbody[] Bodies => m_Bodies;
+
+        internal override List<TreeNode> GetTreeNodes()
+        {
+            var nodesOut = new List<TreeNode>(m_Bodies.Length);
+//            for (var i = 0; i < m_Bodies.Length; i++)
+//            {
+//                Object obj = null;
+//                if (i == 0 && m_VirtualRoot != null)
+//                {
+//                    obj = m_VirtualRoot;
+//                }
+//                else
+//                {
+//                    obj = m_Bodies[i];
+//                }
+//                var node = new TreeNode
+//                {
+//                    NodeObject = obj,
+//                    Enabled = true
+//                };
+//                nodesOut.Add(node);
+//            }
+
+            // List of children for each node
+            var tree = new Dictionary<int, List<int>>();
+            for (var i = 0; i < m_Bodies.Length; i++)
+            {
+                var parent = GetParentIndex(i);
+                if (i == -1)
+                {
+                    continue;
+                }
+
+                if (!tree.ContainsKey(parent))
+                {
+                    tree[parent] = new List<int>();
+                }
+                tree[parent].Add(i);
+            }
+
+            // Store (index, depth) in the stack
+            var stack = new Stack<(int, int)>();
+            stack.Push((0, 0));
+
+            while (stack.Count != 0)
+            {
+                var (current, depth) = stack.Pop();
+                Object obj = null;
+                if (current == 0 && m_VirtualRoot != null)
+                {
+                    obj = m_VirtualRoot;
+                }
+                else
+                {
+                    obj = m_Bodies[current];
+                }
+
+                var node = new TreeNode
+                {
+                    NodeObject = obj,
+                    Enabled = true,
+                    OriginalIndex = current,
+                    Depth = depth
+                };
+                nodesOut.Add(node);
+
+                // Add children
+                // TOOD check for already visited. Shouldn't happen, but we'd blow up on loops.
+                if (tree.ContainsKey(current))
+                {
+                    // Push to the stack in reverse order
+                    var children = tree[current];
+                    for (var childIdx = children.Count-1; childIdx >= 0; childIdx--)
+                    {
+                        stack.Push((children[childIdx], depth+1));
+                    }
+                }
+
+                // Safety check
+                {
+                    if (nodesOut.Count > m_Bodies.Length)
+                    {
+                        Debug.Log("oops");
+                        return nodesOut;
+                    }
+                }
+            }
+
+            return nodesOut;
+        }
     }
 
 }

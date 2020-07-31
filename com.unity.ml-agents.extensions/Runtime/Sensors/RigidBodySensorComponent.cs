@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
@@ -60,6 +61,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 numJointObservations += RigidBodyJointExtractor.NumObservations(body, joint, Settings);
             }
             return new[] { numPoseObservations + numJointObservations };
+        }
+
+        internal List<PoseExtractor.TreeNode> GetTreeNodes()
+        {
+            // TODO save
+            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
+            return poseExtractor.GetTreeNodes();
         }
     }
 

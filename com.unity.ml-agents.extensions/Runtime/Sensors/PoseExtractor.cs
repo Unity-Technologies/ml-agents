@@ -308,6 +308,22 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Debug.DrawLine(current.position+offset, current.position+offset+.1f*localRight, Color.blue);
             }
         }
+
+        /// <summary>
+        /// Simplified representation of the a node in the hierarchy for display.
+        /// </summary>
+        public struct TreeNode
+        {
+            public Object NodeObject;
+            public bool Enabled;
+            public int Depth;
+            public int OriginalIndex;
+        }
+
+        internal virtual List<TreeNode> GetTreeNodes()
+        {
+            return null;
+        }
     }
 
     /// <summary>

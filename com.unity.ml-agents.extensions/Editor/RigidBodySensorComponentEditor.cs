@@ -14,6 +14,8 @@ namespace Unity.MLAgents.Extensions.Editor
             var so = serializedObject;
             so.Update();
 
+            var rbSensorComp = so.targetObject as RigidBodySensorComponent;
+
             // Drawing the CameraSensorComponent
             EditorGUI.BeginChangeCheck();
 
@@ -25,21 +27,17 @@ namespace Unity.MLAgents.Extensions.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("VirtualRoot"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("Settings"), true);
 
-                // Draw the tree of bodies
-                EditorGUILayout.Toggle("torso", false);
-                EditorGUI.indentLevel++;
-                EditorGUILayout.Toggle("leftArm", true);
-                EditorGUI.indentLevel++;
-                EditorGUILayout.Toggle("leftForearm", true);
-                EditorGUI.indentLevel--;
-                EditorGUI.indentLevel--;
+                var treeNodes = rbSensorComp.GetTreeNodes();
+                var originalIndent = EditorGUI.indentLevel;
+                foreach (var node in treeNodes)
+                {
+                    var obj = node.NodeObject;
+                    var objContents = EditorGUIUtility.ObjectContent(obj, obj.GetType());
+                    EditorGUI.indentLevel = originalIndent + node.Depth;
+                    EditorGUILayout.Toggle(objContents, node.Enabled);
+                }
 
-                EditorGUI.indentLevel++;
-                EditorGUILayout.Toggle("rightArm", true);
-                EditorGUI.indentLevel++;
-                EditorGUILayout.Toggle("rightForearm", true);
-                EditorGUI.indentLevel--;
-                EditorGUI.indentLevel--;
+                EditorGUI.indentLevel = originalIndent;
 
                 EditorGUILayout.PropertyField(so.FindProperty("sensorName"), true);
             }
