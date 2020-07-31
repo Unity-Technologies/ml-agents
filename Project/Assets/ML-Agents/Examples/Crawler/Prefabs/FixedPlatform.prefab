@@ -392,6 +392,11 @@ PrefabInstance:
       propertyPath: targetToLookAt
       value: 
       objectReference: {fileID: 2673081981996998229}
+    - target: {fileID: 4622120667686875944, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
+        type: 3}
+      propertyPath: Settings.UseLocalSpaceLinearVelocity
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4845971000000621469, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
