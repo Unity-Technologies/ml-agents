@@ -4,7 +4,7 @@ import numpy as np
 from mlagents_envs.base_env import DecisionSteps
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.components.bc.module import BCModule
+from mlagents.trainers.components.bc.module_torch import TorchBCModule
 from mlagents.trainers.components.reward_signals.extrinsic.signal import (
     ExtrinsicRewardSignal,
 )
@@ -26,14 +26,14 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         self.memory_out: torch.Tensor = None
         self.m_size: int = 0
         self.global_step = torch.tensor(0)
-        self.bc_module: Optional[BCModule] = None
+        self.bc_module: Optional[TorchBCModule] = None
         self.create_reward_signals(trainer_settings.reward_signals)
-        if trainer_params.behavioral_cloning is not None:
-            self.bc_module = BCModule(
+        if trainer_settings.behavioral_cloning is not None:
+            self.bc_module = TorchBCModule(
                 self.policy,
-                trainer_params.behavioral_cloning,
-                policy_learning_rate=trainer_params.hyperparameters.learning_rate,
-                default_batch_size=trainer_params.hyperparameters.batch_size,
+                trainer_settings.behavioral_cloning,
+                policy_learning_rate=trainer_settings.hyperparameters.learning_rate,
+                default_batch_size=trainer_settings.hyperparameters.batch_size,
                 default_num_epoch=3,
             )
 
