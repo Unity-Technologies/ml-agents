@@ -238,16 +238,18 @@ class TorchPolicy(Policy):
         self.export_model(self.global_step)
 
     def load_model(self, step=0):  # TODO: this doesn't work
-        load_path = self.model_path + "/model-" + str(step) + ".pt"
+        load_path = os.path.join(self.model_path, "model-" + str(step) + ".pt")
         self.actor_critic.load_state_dict(torch.load(load_path))
 
     def export_model(self, step=0):
         fake_vec_obs = [torch.zeros([1] + [self.vec_obs_size])]
         fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
         fake_masks = torch.ones([1] + self.actor_critic.act_size)
+        print(fake_vec_obs[0].shape, fake_vis_obs[0].shape, fake_masks.shape)
         # fake_memories = torch.zeros([1] + [self.m_size])
-        export_path = "./model-" + str(step) + ".onnx"
-        output_names = ["action", "action_probs"]
+        export_path = os.path.join(self.model_path, "model-" + str(step) + ".onnx")
+        output_names = ["action", "action_probs", "is_continuous_control", \
+            "version_number", "memory_size", "action_output_shape"]
         input_names = ["vector_observation", "action_mask"]
         dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
         onnx.export(
@@ -255,7 +257,7 @@ class TorchPolicy(Policy):
             (fake_vec_obs, fake_vis_obs, fake_masks),
             export_path,
             verbose=True,
-            opset_version=12,
+            opset_version=9,
             input_names=input_names,
             output_names=output_names,
             dynamic_axes=dynamic_axes,
