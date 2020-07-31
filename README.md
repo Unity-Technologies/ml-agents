@@ -64,6 +64,8 @@ under active development and may be unstable. A few helpful guidelines:
   instructions specific to each release. Remember to always use the
   documentation that corresponds to the release version you're using.
 
+| **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
+|:-------:|:------:|:-------------:|:-------:|:------------:|
 | **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
 | **Release 5** | **July 31, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_5)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_5.zip)** |
 | **Release 4** | July 15, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_4) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_4_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_4.zip) |
