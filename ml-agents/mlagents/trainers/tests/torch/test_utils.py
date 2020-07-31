@@ -1,5 +1,6 @@
 import pytest
 import torch
+import numpy as np
 
 from mlagents.trainers.settings import EncoderType
 from mlagents.trainers.torch.utils import ModelUtils
@@ -70,3 +71,52 @@ def test_create_encoders(
 
     for enc in vis_enc:
         assert isinstance(enc, ModelUtils.get_encoder_for_type(encoder_type))
+
+
+def test_list_to_tensor():
+    # Test converting pure list
+    unconverted_list = [[1, 2], [1, 3], [1, 4]]
+    tensor = ModelUtils.list_to_tensor(unconverted_list)
+    # Should be equivalent to torch.tensor conversion
+    assert torch.equal(tensor, torch.tensor(unconverted_list))
+
+    # Test converting pure numpy array
+    np_list = np.asarray(unconverted_list)
+    tensor = ModelUtils.list_to_tensor(np_list)
+    # Should be equivalent to torch.tensor conversion
+    assert torch.equal(tensor, torch.tensor(unconverted_list))
+
+    # Test converting list of numpy arrays
+    list_of_np = [np.asarray(_el) for _el in unconverted_list]
+    tensor = ModelUtils.list_to_tensor(list_of_np)
+    # Should be equivalent to torch.tensor conversion
+    assert torch.equal(tensor, torch.tensor(unconverted_list))
+
+
+def test_break_into_branches():
+    # Test normal multi-branch case
+    all_actions = torch.tensor([[1, 2, 3, 4, 5, 6]])
+    action_size = [2, 1, 3]
+    broken_actions = ModelUtils.break_into_branches(all_actions, action_size)
+    assert len(action_size) == len(broken_actions)
+    for i, _action in enumerate(broken_actions):
+        assert _action.shape == (1, action_size[i])
+
+    # Test 1-branch case
+    action_size = [6]
+    broken_actions = ModelUtils.break_into_branches(all_actions, action_size)
+    assert len(broken_actions) == 1
+    assert broken_actions[0].shape == (1, 6)
+
+
+def test_actions_to_onehot():
+    all_actions = torch.tensor([[1, 0, 2], [1, 0, 2]])
+    action_size = [2, 1, 3]
+    oh_actions = ModelUtils.actions_to_onehot(all_actions, action_size)
+    expected_result = [
+        torch.tensor([[0, 1], [0, 1]]),
+        torch.tensor([[1], [1]]),
+        torch.tensor([[0, 0, 1], [0, 0, 1]]),
+    ]
+    for res, exp in zip(oh_actions, expected_result):
+        assert torch.equal(res, exp)

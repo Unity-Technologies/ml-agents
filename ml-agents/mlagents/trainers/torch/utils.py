@@ -136,6 +136,14 @@ class ModelUtils:
     def actions_to_onehot(
         discrete_actions: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:
+        """
+        Takes a tensor of discrete actions and turns it into a List of onehot encoding for each
+        action,
+        :param discrete_actions: Actions in integer form.
+        :param action_size: List of branch sizes. Should be of same size as discrete_actions'
+        last dimension.
+        :return: List of one-hot tensors, one representing each branch.
+        """
         onehot_branches = [
             torch.nn.functional.one_hot(_act.T, action_size[i])
             for i, _act in enumerate(discrete_actions.T)
