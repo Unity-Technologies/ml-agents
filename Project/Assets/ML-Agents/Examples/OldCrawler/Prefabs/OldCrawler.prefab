@@ -15,7 +15,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 1000
   target: {fileID: 0}
   ground: {fileID: 0}
   detectTargets: 0

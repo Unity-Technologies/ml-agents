@@ -2806,7 +2806,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 5000
+  MaxStep: 1000
   maximumWalkingSpeed: 999
   target: {fileID: 0}
   targetSpawnRadius: 40

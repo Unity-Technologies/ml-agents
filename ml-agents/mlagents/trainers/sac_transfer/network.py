@@ -146,14 +146,14 @@ class SACTransferNetwork:
             self.q1_heads, self.q2_heads, self.q1, self.q2 = self.create_q_heads(
                 self.stream_names,
                 hidden_q,
-                self.num_layers+2,
+                self.num_layers,
                 self.h_size,
                 self.join_scopes(scope, "q"),
             )
             self.q1_pheads, self.q2_pheads, self.q1_p, self.q2_p = self.create_q_heads(
                 self.stream_names,
                 hidden_qp,
-                self.num_layers+2,
+                self.num_layers,
                 self.h_size,
                 self.join_scopes(scope, "q"),
                 reuse=True,
