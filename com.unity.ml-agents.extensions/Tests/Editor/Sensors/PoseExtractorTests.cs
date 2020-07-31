@@ -8,19 +8,19 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
     {
         class UselessPoseExtractor : PoseExtractor
         {
-            protected override Pose GetPoseAt(int index)
+            protected internal override Pose GetPoseAt(int index)
             {
                 return Pose.identity;
             }
 
-            protected override Vector3 GetLinearVelocityAt(int index)
+            protected internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
 
             public void Init(int[] parentIndices)
             {
-                SetParentIndices(parentIndices);
+                Setup(parentIndices);
             }
         }
 
@@ -60,10 +60,10 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 {
                     parents[i] = i - 1;
                 }
-                SetParentIndices(parents);
+                Setup(parents);
             }
 
-            protected override Pose GetPoseAt(int index)
+            protected internal override Pose GetPoseAt(int index)
             {
                 var rotation = Quaternion.identity;
                 var translation = offset + new Vector3(index, index, index);
@@ -74,7 +74,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 };
             }
 
-            protected override Vector3 GetLinearVelocityAt(int index)
+            protected  internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
@@ -91,23 +91,77 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             chain.UpdateModelSpacePoses();
             chain.UpdateLocalSpacePoses();
 
-            // Root transforms are currently always the identity.
-            Assert.IsTrue(chain.ModelSpacePoses[0] == Pose.identity);
-            Assert.IsTrue(chain.LocalSpacePoses[0] == Pose.identity);
 
-            // Check the non-root transforms
-            for (var i = 1; i < size; i++)
+            var modelPoseIndex = 0;
+            foreach (var modelSpace in chain.GetEnabledModelSpacePoses())
             {
-                var modelSpace = chain.ModelSpacePoses[i];
-                var expectedModelTranslation = new Vector3(i, i, i);
-                Assert.IsTrue(expectedModelTranslation == modelSpace.position);
+                if (modelPoseIndex == 0)
+                {
+                    // Root transforms are currently always the identity.
+                    Assert.IsTrue(modelSpace == Pose.identity);
+                }
+                else
+                {
+                    var expectedModelTranslation = new Vector3(modelPoseIndex, modelPoseIndex, modelPoseIndex);
+                    Assert.IsTrue(expectedModelTranslation == modelSpace.position);
 
-                var localSpace = chain.LocalSpacePoses[i];
-                var expectedLocalTranslation = new Vector3(1, 1, 1);
-                Assert.IsTrue(expectedLocalTranslation == localSpace.position);
+                }
+                modelPoseIndex++;
+            }
+            Assert.AreEqual(size, modelPoseIndex);
+
+            var localPoseIndex = 0;
+            foreach (var localSpace in chain.GetEnabledLocalSpacePoses())
+            {
+                if (localPoseIndex == 0)
+                {
+                    // Root transforms are currently always the identity.
+                    Assert.IsTrue(localSpace == Pose.identity);
+                }
+                else
+                {
+                    var expectedLocalTranslation = new Vector3(1, 1, 1);
+                    Assert.IsTrue(expectedLocalTranslation == localSpace.position, $"{expectedLocalTranslation} != {localSpace.position}");
+                }
+
+                localPoseIndex++;
+            }
+            Assert.AreEqual(size, localPoseIndex);
+        }
+
+        class BadPoseExtractor : PoseExtractor
+        {
+            public BadPoseExtractor()
+            {
+                var size = 2;
+                var parents = new int[size];
+                // Parents are intentionally invalid - expect -1 at root
+                for (var i = 0; i < size; i++)
+                {
+                    parents[i] = i;
+                }
+                Setup(parents);
+            }
+
+            protected internal override Pose GetPoseAt(int index)
+            {
+                return Pose.identity;
+            }
+
+            protected  internal override Vector3 GetLinearVelocityAt(int index)
+            {
+                return Vector3.zero;
             }
         }
 
+        [Test]
+        public void TestExpectedRoot()
+        {
+            Assert.Throws<UnityAgentsException>(() =>
+            {
+                var bad = new BadPoseExtractor();
+            });
+        }
     }
 
     public class PoseExtensionTests
