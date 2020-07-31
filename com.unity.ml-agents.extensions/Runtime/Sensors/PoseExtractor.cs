@@ -162,10 +162,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="parentIndices"></param>
         protected void Setup(int[] parentIndices)
         {
+#if DEBUG
             if (parentIndices[0] != -1)
             {
                 throw new UnityAgentsException($"Expected parentIndices[0] to be -1, got {parentIndices[0]}");
             }
+#endif
             m_ParentIndices = parentIndices;
             var numPoses = parentIndices.Length;
             m_ModelSpacePoses = new Pose[numPoses];
