@@ -28,6 +28,14 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         self.global_step = torch.tensor(0)
         self.bc_module: Optional[BCModule] = None
         self.create_reward_signals(trainer_settings.reward_signals)
+        if trainer_params.behavioral_cloning is not None:
+            self.bc_module = BCModule(
+                self.policy,
+                trainer_params.behavioral_cloning,
+                policy_learning_rate=trainer_params.hyperparameters.learning_rate,
+                default_batch_size=trainer_params.hyperparameters.batch_size,
+                default_num_epoch=3,
+            )
 
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass
