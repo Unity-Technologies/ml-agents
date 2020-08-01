@@ -6,9 +6,13 @@ from mlagents.trainers.torch.encoders import (
     VectorEncoder,
     VectorAndUnnormalizedInputEncoder,
     Normalizer,
+    SimpleVisualEncoder,
+    ResNetVisualEncoder,
+    NatureVisualEncoder,
 )
 
 
+# This test will also reveal issues with states not being saved in the state_dict.
 def compare_models(module_1, module_2):
     is_same = True
     for key_item_1, key_item_2 in zip(
@@ -90,3 +94,16 @@ def test_vector_and_unnormalized_encoder(mock_normalizer):
     output = vector_encoder(normal_input, unnormalized_input)
     mock_normalizer_inst.assert_called_with(normal_input)
     assert output.shape == (1, hidden_size)
+
+
+@pytest.mark.parametrize("image_size", [(36, 36, 3), (84, 84, 4), (256, 256, 5)])
+@pytest.mark.parametrize(
+    "vis_class", [SimpleVisualEncoder, ResNetVisualEncoder, NatureVisualEncoder]
+)
+def test_visual_encoder(vis_class, image_size):
+    num_outputs = 128
+    enc = vis_class(image_size[0], image_size[1], image_size[2], num_outputs)
+    # Note: NCHW not NHWC
+    sample_input = torch.ones((1, image_size[2], image_size[0], image_size[1]))
+    encoding = enc(sample_input)
+    assert encoding.shape == (1, num_outputs)
