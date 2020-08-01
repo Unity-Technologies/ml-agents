@@ -9,6 +9,8 @@ namespace Unity.MLAgents.Extensions.Editor
     [CanEditMultipleObjects]
     internal class RigidBodySensorComponentEditor : UnityEditor.Editor
     {
+        bool ShowHierarchy = true;
+
         public override void OnInspectorGUI()
         {
             var so = serializedObject;
@@ -16,40 +18,46 @@ namespace Unity.MLAgents.Extensions.Editor
 
             var rbSensorComp = so.targetObject as RigidBodySensorComponent;
 
-            // Drawing the CameraSensorComponent
-            EditorGUI.BeginChangeCheck();
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
                 // These fields affect the sensor order or observation size,
                 // So can't be changed at runtime.
+                EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(so.FindProperty("RootBody"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("VirtualRoot"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("Settings"), true);
-
-                var treeNodes = rbSensorComp.GetTreeNodes();
-                var originalIndent = EditorGUI.indentLevel;
-                foreach (var node in treeNodes)
+                var requireExtractorUpdate = EditorGUI.EndChangeCheck();
+                so.ApplyModifiedProperties();
+                if (requireExtractorUpdate)
                 {
-                    var obj = node.NodeObject;
-                    var objContents = EditorGUIUtility.ObjectContent(obj, obj.GetType());
-                    EditorGUI.indentLevel = originalIndent + node.Depth;
-                    EditorGUILayout.Toggle(objContents, node.Enabled);
+                    rbSensorComp.ResetPoseExtractor();
                 }
 
-                EditorGUI.indentLevel = originalIndent;
+                ShowHierarchy = EditorGUILayout.Foldout(ShowHierarchy, "Hierarchy", true);
+                if (ShowHierarchy)
+                {
+                    var treeNodes = rbSensorComp.GetTreeNodes();
+                    var originalIndent = EditorGUI.indentLevel;
+                    foreach (var node in treeNodes)
+                    {
+                        var obj = node.NodeObject;
+                        var objContents = EditorGUIUtility.ObjectContent(obj, obj.GetType());
+                        EditorGUI.indentLevel = originalIndent + node.Depth;
+                        var enabled = EditorGUILayout.Toggle(objContents, node.Enabled);
+                        rbSensorComp.SetPoseEnabled(node.OriginalIndex, enabled);
+                    }
+
+                    EditorGUI.indentLevel = originalIndent;
+                }
+
 
                 EditorGUILayout.PropertyField(so.FindProperty("sensorName"), true);
             }
             EditorGUI.EndDisabledGroup();
 
-            var requireSensorUpdate = EditorGUI.EndChangeCheck();
-            so.ApplyModifiedProperties();
 
-            if (requireSensorUpdate)
-            {
 
-            }
         }
 
 

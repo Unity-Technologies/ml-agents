@@ -155,6 +155,11 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_PoseEnabled[index] = val;
         }
 
+        public bool IsPoseEnabled(int index)
+        {
+            return m_PoseEnabled[index];
+        }
+
         /// <summary>
         /// Initialize with the mapping of parent indices.
         /// The 0th element is assumed to be -1, indicating that it's the root.
@@ -197,6 +202,17 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="index"></param>
         /// <returns></returns>
         protected internal abstract Vector3 GetLinearVelocityAt(int index);
+
+        /// <summary>
+        /// Return the underlying object at the given index. This is only
+        /// used for display in the inspector.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        protected internal virtual Object GetObjectAt(int index)
+        {
+            return null;
+        }
 
 
         /// <summary>
@@ -312,7 +328,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Simplified representation of the a node in the hierarchy for display.
         /// </summary>
-        public struct TreeNode
+        public struct DisplayNode
         {
             public Object NodeObject;
             public bool Enabled;
@@ -320,10 +336,78 @@ namespace Unity.MLAgents.Extensions.Sensors
             public int OriginalIndex;
         }
 
-        internal virtual List<TreeNode> GetTreeNodes()
+        /// <summary>
+        /// Get a list of display nodes in depth-first order.
+        /// </summary>
+        /// <returns></returns>
+        internal List<DisplayNode> GetDisplayNodes()
         {
-            return null;
+            var nodesOut = new List<DisplayNode>(NumPoses);
+            if (NumPoses == 0)
+            {
+                return nodesOut;
+            }
+
+            // List of children for each node
+            var tree = new Dictionary<int, List<int>>();
+            for (var i = 0; i < NumPoses; i++)
+            {
+                var parent = GetParentIndex(i);
+                if (i == -1)
+                {
+                    continue;
+                }
+
+                if (!tree.ContainsKey(parent))
+                {
+                    tree[parent] = new List<int>();
+                }
+                tree[parent].Add(i);
+            }
+
+            // Store (index, depth) in the stack
+            var stack = new Stack<(int, int)>();
+            stack.Push((0, 0));
+
+            while (stack.Count != 0)
+            {
+                var (current, depth) = stack.Pop();
+                var obj = GetObjectAt(current);
+
+                var node = new DisplayNode
+                {
+                    NodeObject = obj,
+                    Enabled = IsPoseEnabled(current),
+                    OriginalIndex = current,
+                    Depth = depth
+                };
+                nodesOut.Add(node);
+
+                // Add children
+                // TODO check for already visited. Shouldn't happen, but we'd blow up on loops.
+                if (tree.ContainsKey(current))
+                {
+                    // Push to the stack in reverse order
+                    var children = tree[current];
+                    for (var childIdx = children.Count-1; childIdx >= 0; childIdx--)
+                    {
+                        stack.Push((children[childIdx], depth+1));
+                    }
+                }
+
+                // Safety check
+                {
+                    if (nodesOut.Count > NumPoses)
+                    {
+                        Debug.Log("oops");
+                        return nodesOut;
+                    }
+                }
+            }
+
+            return nodesOut;
         }
+
     }
 
     /// <summary>

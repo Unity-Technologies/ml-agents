@@ -28,18 +28,30 @@ namespace Unity.MLAgents.Extensions.Sensors
             GameObject rootGameObject,
             GameObject virtualRoot,
             PhysicsSensorSettings settings,
-            string sensorName=null
+            string sensorName = null
+        ) : this(
+                new RigidBodyPoseExtractor(rootBody, rootGameObject, virtualRoot),
+                settings,
+                string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName
+            )
+        {
+        }
+
+        public PhysicsBodySensor(
+            RigidBodyPoseExtractor poseExtractor,
+            PhysicsSensorSettings settings,
+            string sensorName
         )
         {
-            var poseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject, virtualRoot);
             m_PoseExtractor = poseExtractor;
-            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
+            m_SensorName = sensorName; // TODO handle null?
             m_Settings = settings;
 
             var numJointExtractorObservations = 0;
             var rigidBodies = poseExtractor.Bodies;
             if (rigidBodies != null)
             {
+                // TODO skip disabled bodies too
                 m_JointExtractors = new IJointExtractor[rigidBodies.Length - 1]; // skip the root
                 for (var i = 1; i < rigidBodies.Length; i++)
                 {

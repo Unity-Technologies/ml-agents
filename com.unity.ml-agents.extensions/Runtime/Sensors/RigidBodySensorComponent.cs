@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.Configuration;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
@@ -28,7 +29,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Optional sensor name. This must be unique for each Agent.
         /// </summary>
+        [SerializeField]
         public string sensorName;
+
+        [SerializeField]
+        [HideInInspector]
+        RigidBodyPoseExtractor m_PoseExtractor;
 
         /// <summary>
         /// Creates a PhysicsBodySensor.
@@ -36,7 +42,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            return new PhysicsBodySensor(RootBody, gameObject, VirtualRoot, Settings, sensorName);
+            var _sensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{RootBody?.name}" : sensorName;
+            return new PhysicsBodySensor(GetPoseExtractor(), Settings, _sensorName);
         }
 
         /// <inheritdoc/>
@@ -47,14 +54,14 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return new[] { 0 };
             }
 
-            // TODO static method in PhysicsBodySensor?
-            // TODO only update PoseExtractor when body changes?
-            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
+            var poseExtractor = GetPoseExtractor();
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;
             // Start from i=1 to ignore the root
-            for (var i = 1; i < poseExtractor.Bodies.Length; i++)
+            // TODO ignore joints on disabled bodies
+            var numBodies = poseExtractor.Bodies?.Length ?? 0;
+            for (var i = 1; i < numBodies; i++)
             {
                 var body = poseExtractor.Bodies[i];
                 var joint = body?.GetComponent<Joint>();
@@ -63,11 +70,29 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new[] { numPoseObservations + numJointObservations };
         }
 
-        internal List<PoseExtractor.TreeNode> GetTreeNodes()
+        internal List<PoseExtractor.DisplayNode> GetTreeNodes()
         {
-            // TODO save
-            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
-            return poseExtractor.GetTreeNodes();
+            return GetPoseExtractor().GetDisplayNodes();
+        }
+
+        RigidBodyPoseExtractor GetPoseExtractor()
+        {
+            if (m_PoseExtractor == null)
+            {
+                ResetPoseExtractor();
+            }
+
+            return m_PoseExtractor;
+        }
+
+        internal void ResetPoseExtractor()
+        {
+            m_PoseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
+        }
+
+        internal void SetPoseEnabled(int index, bool enabled)
+        {
+            GetPoseExtractor().SetPoseEnabled(index, enabled);
         }
     }
 
