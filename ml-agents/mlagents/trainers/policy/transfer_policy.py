@@ -1051,41 +1051,41 @@ class TransferPolicy(TFPolicy):
     
     def create_forward_loss(self, reuse: bool, transfer: bool):
 
-        # if not transfer:
-        if reuse:
-            encoded_next_state = tf.stop_gradient(self.next_encoder)
+        if not transfer:
+            if reuse:
+                encoded_next_state = tf.stop_gradient(self.next_encoder)
+            else:
+                encoded_next_state = self.next_targ_encoder # gradient of target encode is already stopped
+
+            squared_difference = 0.5 * tf.reduce_sum(
+                tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
+            )
+            self.forward_loss = tf.reduce_mean(
+                tf.dynamic_partition(squared_difference, self.mask, 2)[1]
+            )
+
         else:
-            encoded_next_state = self.next_targ_encoder # gradient of target encode is already stopped
-
-        squared_difference = 0.5 * tf.reduce_sum(
-            tf.squared_difference(tf.tanh(self.predict), encoded_next_state), axis=1
-        )
-        self.forward_loss = tf.reduce_mean(
-            tf.dynamic_partition(squared_difference, self.mask, 2)[1]
-        )
-
-        # else:
-        #     if reuse:
-        #         squared_difference_1 = 0.5 * tf.reduce_sum(
-        #             tf.squared_difference(tf.tanh(self.predict), tf.stop_gradient(self.next_encoder)), 
-        #             axis=1
-        #         )
-        #         squared_difference_2 = 0.5 * tf.reduce_sum(
-        #             tf.squared_difference(tf.tanh(tf.stop_gradient(self.predict)), self.next_encoder), 
-        #             axis=1
-        #         )
-        #     else:
-        #         squared_difference_1 = 0.5 * tf.reduce_sum(
-        #             tf.squared_difference(tf.tanh(self.predict), self.next_targ_encoder), 
-        #             axis=1
-        #         )
-        #         squared_difference_2 = 0.5 * tf.reduce_sum(
-        #             tf.squared_difference(tf.tanh(self.targ_predict), self.next_encoder), 
-        #             axis=1
-        #         )
-        #     self.forward_loss = tf.reduce_mean(
-        #         tf.dynamic_partition(0.5 * squared_difference_1 + 0.5 * squared_difference_2, self.mask, 2)[1]
-        #     )
+            if reuse:
+                squared_difference_1 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(self.predict), tf.stop_gradient(self.next_encoder)), 
+                    axis=1
+                )
+                squared_difference_2 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(tf.stop_gradient(self.predict)), self.next_encoder), 
+                    axis=1
+                )
+            else:
+                squared_difference_1 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(self.predict), self.next_targ_encoder), 
+                    axis=1
+                )
+                squared_difference_2 = 0.5 * tf.reduce_sum(
+                    tf.squared_difference(tf.tanh(self.targ_predict), self.next_encoder), 
+                    axis=1
+                )
+            self.forward_loss = tf.reduce_mean(
+                tf.dynamic_partition(0.5 * squared_difference_1 + 0.5 * squared_difference_2, self.mask, 2)[1]
+            )
 
 
     def create_reward_model(
