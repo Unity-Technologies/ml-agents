@@ -18,7 +18,7 @@ behaviors:
       value_layers: 2
       feature_size: 32
       action_layers: 2
-      action_feature_size: 16
+      action_feature_size: 128
       separate_policy_train: true
       # separate_model_train: true
       # separate_value_net: true
@@ -34,7 +34,7 @@ behaviors:
       train_model: false
       load_action: true
       train_action: false
-      transfer_path: "results/oldcs-f32/CrawlerStatic"
+      transfer_path: "results/oldcs-f32-a128/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512

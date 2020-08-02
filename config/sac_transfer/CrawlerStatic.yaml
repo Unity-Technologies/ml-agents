@@ -19,8 +19,9 @@ behaviors:
       value_layers: 2
       feature_size: 32
       action_layers: 2
-      action_feature_size: 16
+      action_feature_size: 128
       separate_policy_train: true
+      # separate_policy_net: true
       separate_model_train: true
       # separate_value_net: true
       reuse_encoder: true
