@@ -107,9 +107,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             )
         policy = list(self.policies.values())[0]
         model_path = policy.model_path
-        settings = SerializationSettings(model_path, self.brain_name)
         checkpoint_path = os.path.join(model_path, f"{self.brain_name}-{self.step}")
-        policy.checkpoint(checkpoint_path, settings)
+        policy.checkpoint(checkpoint_path, None)
         new_checkpoint = NNCheckpoint(
             int(self.step),
             f"{checkpoint_path}.nn",

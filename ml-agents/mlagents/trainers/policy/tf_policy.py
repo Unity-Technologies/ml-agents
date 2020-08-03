@@ -417,12 +417,15 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
+    def checkpoint(
+        self, checkpoint_path: str, settings: Optional[SerializationSettings]
+    ) -> None:
         """
         Checkpoints the policy on disk.
 
         :param checkpoint_path: filepath to write the checkpoint
-        :param settings: SerializationSettings for exporting the model.
+        :param settings: SerializationSettings for exporting the model. If None,
+          the model will not be saved.
         """
         # Save the TF checkpoint and graph definition
         with self.graph.as_default():
@@ -431,8 +434,9 @@ class TFPolicy(Policy):
             tf.train.write_graph(
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
-        # also save the policy so we have optimized model files for each checkpoint
-        self.save(checkpoint_path, settings)
+        if settings is not None:
+            # also save the policy so we have optimized model files for each checkpoint
+            self.save(checkpoint_path, settings)
 
     def save(self, output_filepath: str, settings: SerializationSettings) -> None:
         """

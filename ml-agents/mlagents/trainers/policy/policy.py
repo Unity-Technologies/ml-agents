@@ -152,7 +152,9 @@ class Policy:
         pass
 
     @abstractmethod
-    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
+    def checkpoint(
+        self, checkpoint_path: str, settings: Optional[SerializationSettings]
+    ) -> None:
         pass
 
     @abstractmethod
