@@ -162,7 +162,7 @@ class SACTrainer(RLTrainer):
                 )
             else:
                 self._stats_reporter.add_stat(
-                    self.optimizer.reward_signals[name].name + "Value", np.mean(v)
+                    "Policy/" + self.optimizer.reward_signals[name].name + " Value", np.mean(v)
                 )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.

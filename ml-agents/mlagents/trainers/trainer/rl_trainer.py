@@ -51,6 +51,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
         self.framework = "torch" if TestingConfiguration.use_torch else "tf"
+        # self.framework = "tf"
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
@@ -84,7 +85,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                     )
                 else:
                     self.stats_reporter.add_stat(
-                        optimizer.reward_signals[name].name + "Reward",
+                        "Policy/"+optimizer.reward_signals[name].name + " Reward",
                         rewards.get(agent_id, 0),
                     )
                 rewards[agent_id] = 0

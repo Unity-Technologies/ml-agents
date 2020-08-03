@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Dict
 import torch
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -12,6 +13,9 @@ from mlagents.trainers.settings import NetworkSettings, EncoderType
 
 
 class CuriosityRewardProvider(BaseRewardProvider):
+    beta = 0.2  # Forward loss weight
+    loss_multiplier = 10.0  # Loss multiplier
+
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__(specs, settings)
         self._ignore_done = True
@@ -19,82 +23,111 @@ class CuriosityRewardProvider(BaseRewardProvider):
         self.optimizer = torch.optim.Adam(
             self._network.parameters(), lr=settings.learning_rate
         )
+        self._has_updated_once = False
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
-            rewards = self._network.compute_reward(mini_batch)
-            return rewards.detach().cpu().numpy()
+            rewards = self._network.compute_reward(mini_batch).detach().cpu().numpy()
+        rewards = np.minimum(rewards, 1.0 / self.strength)
+        return rewards * self._has_updated_once
 
-    def update(self, mini_batch: AgentBuffer) -> None:
-        loss = self._network.compute_losses(mini_batch)
+    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+        self._has_updated_once = True
+        forward_loss = self._network.compute_forward_loss(mini_batch)
+        inverse_loss = self._network.compute_inverse_loss(mini_batch)
+
+        loss = self.loss_multiplier * (self.beta * forward_loss + (1.0 - self.beta) * inverse_loss)
         self.optimizer.zero_grad()
-        loss.backward()
+        loss.backward() #retain_graph=True)
         self.optimizer.step()
+        return {"Losses/Curiosity Forward Loss": forward_loss.detach().cpu().numpy(),
+                "Losses/Curiosity Inverse Loss": inverse_loss.detach().cpu().numpy()}
 
 
 class CuriosityNetwork(torch.nn.Module):
     EPSILON = 1e-10
-    forward_loss_weight = 2.0
-    inverse_loss_weight = 8.0
 
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__()
         self._policy_specs = specs
-        state_encoder_settings = NetworkSettings(
-            normalize=False,
-            hidden_units=settings.encoding_size,
-            num_layers=2,
-            vis_encode_type=EncoderType.SIMPLE,
-            memory=None,
+        # state_encoder_settings = NetworkSettings(
+        #     normalize=False,
+        #     hidden_units=settings.encoding_size,
+        #     num_layers=2,
+        #     vis_encode_type=EncoderType.SIMPLE,
+        #     memory=None,
+        # )
+        # self._state_encoder = NetworkBody(
+        #     specs.observation_shapes, state_encoder_settings
+        # )
+        self._state_encoder = torch.nn.Sequential(
+            torch.nn.Linear(172, settings.encoding_size),
+            ModelUtils.SwishLayer(),
+            torch.nn.Linear(settings.encoding_size, settings.encoding_size),
+            ModelUtils.SwishLayer(),
+            # torch.nn.Linear(256, self._action_flattener.flattened_size)
         )
-        self._state_encoder = NetworkBody(
-            specs.observation_shapes, state_encoder_settings
-        )
+        torch.nn.init.xavier_uniform_(self._state_encoder[0].weight.data)
+        torch.nn.init.xavier_uniform_(self._state_encoder[2].weight.data)
+        self._state_encoder[0].bias.data.zero_()
+        self._state_encoder[2].bias.data.zero_()
 
         self._action_flattener = ModelUtils.ActionFlattener(specs)
 
         self.inverse_model_action_predition = torch.nn.Sequential(
             torch.nn.Linear(2 * settings.encoding_size, 256),
             ModelUtils.SwishLayer(),
-            torch.nn.Linear(256, self._action_flattener.flattened_size),
+            # torch.nn.Linear(256, 256),
+            # ModelUtils.SwishLayer(),
+            torch.nn.Linear(256, self._action_flattener.flattened_size)
         )
+        torch.nn.init.xavier_normal_(self.inverse_model_action_predition[0].weight.data)
+        torch.nn.init.xavier_normal_(self.inverse_model_action_predition[2].weight.data)
+        self.inverse_model_action_predition[0].bias.data.zero_()
+        self.inverse_model_action_predition[2].bias.data.zero_()
 
         self.forward_model_next_state_prediction = torch.nn.Sequential(
-            torch.nn.Linear(
-                settings.encoding_size + self._action_flattener.flattened_size, 256
-            ),
+            torch.nn.Linear(settings.encoding_size + self._action_flattener.flattened_size, 256),
             ModelUtils.SwishLayer(),
-            torch.nn.Linear(256, settings.encoding_size),
+            # torch.nn.Linear(256, 256),
+            # ModelUtils.SwishLayer(),
+            torch.nn.Linear(256, settings.encoding_size)
         )
+        torch.nn.init.xavier_normal_(self.forward_model_next_state_prediction[0].weight.data)
+        torch.nn.init.xavier_normal_(self.forward_model_next_state_prediction[2].weight.data)
+        self.forward_model_next_state_prediction[0].bias.data.zero_()
+        self.forward_model_next_state_prediction[2].bias.data.zero_()
 
     def get_current_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_encoders)
-        hidden, _ = self._state_encoder.forward(
-            vec_inputs=[torch.as_tensor(mini_batch["vector_obs"], dtype=torch.float)],
-            vis_inputs=[
-                torch.as_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
-                for i in range(n_vis)
-            ],
-        )
+        n_vis = 0#len(self._state_encoder.visual_encoders)
+        # hidden, _ = self._state_encoder.forward(
+        #     vec_inputs=[ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)],
+        #     vis_inputs=[
+        #         ModelUtils.list_to_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
+        #         for i in range(n_vis)
+        #     ],
+        # )
+        hidden = self._state_encoder.forward(ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float))
         return hidden
 
     def get_next_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
         Extracts the next state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_encoders)
-        hidden, _ = self._state_encoder.forward(
-            vec_inputs=[
-                torch.as_tensor(mini_batch["next_vector_in"], dtype=torch.float)
-            ],
-            vis_inputs=[
-                torch.as_tensor(mini_batch["next_visual_obs%d" % i], dtype=torch.float)
-                for i in range(n_vis)
-            ],
-        )
+        # n_vis = 0#len(self._state_encoder.visual_encoders)
+        # hidden, _ = self._state_encoder.forward(
+        #     vec_inputs=[
+        #         ModelUtils.list_to_tensor(mini_batch["next_vector_in"], dtype=torch.float)
+        #     ],
+        #     vis_inputs=[
+        #         ModelUtils.list_to_tensor(mini_batch["next_visual_obs%d" % i], dtype=torch.float)
+        #         for i in range(n_vis)
+        #     ],
+        # )
+        hidden = self._state_encoder.forward(ModelUtils.list_to_tensor(mini_batch["next_vector_in"], dtype=torch.float))
         return hidden
 
     def predict_action(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -121,18 +154,18 @@ class CuriosityNetwork(torch.nn.Module):
         the next state embedding.
         """
         if self._policy_specs.is_action_continuous():
-            action = torch.as_tensor(mini_batch["actions"], dtype=torch.float)
+            action = ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.float)
         else:
             action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    torch.as_tensor(mini_batch["actions"], dtype=torch.long),
+                    ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.long),
                     self._policy_specs.discrete_action_branches,
                 ),
                 dim=1,
             )
         forward_model_input = torch.cat(
-            (self.get_current_state(mini_batch), action), dim=1
-        )
+                (self.get_current_state(mini_batch), action), dim=1
+            )
 
         return self.forward_model_next_state_prediction(forward_model_input)
 
@@ -144,21 +177,20 @@ class CuriosityNetwork(torch.nn.Module):
         predicted_action = self.predict_action(mini_batch)
         if self._policy_specs.is_action_continuous():
             sq_difference = (
-                torch.as_tensor(mini_batch["actions"], dtype=torch.float)
+                ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.float)
                 - predicted_action
             ) ** 2
             sq_difference = torch.sum(sq_difference, dim=1)
             return torch.mean(
                 ModelUtils.dynamic_partition(
                     sq_difference,
-                    torch.as_tensor(mini_batch["masks"], dtype=torch.float),
+                    ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
                     2,
-                )[1]
-            )
+                )[1])
         else:
             true_action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    torch.as_tensor(mini_batch["actions"], dtype=torch.long),
+                    ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.long),
                     self._policy_specs.discrete_action_branches,
                 ),
                 dim=1,
@@ -169,9 +201,7 @@ class CuriosityNetwork(torch.nn.Module):
             return torch.mean(
                 ModelUtils.dynamic_partition(
                     cross_entropy,
-                    torch.as_tensor(
-                        mini_batch["masks"], dtype=torch.float
-                    ),  # use masks not action_masks
+                    ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),  # use masks not action_masks
                     2,
                 )[1]
             )
@@ -183,9 +213,9 @@ class CuriosityNetwork(torch.nn.Module):
         between the predicted and actual next state.
         """
         predicted_next_state = self.predict_next_state(mini_batch)
-        sq_difference = (
-            0.5 * (self.get_next_state(mini_batch) - predicted_next_state) ** 2
-        )
+        # with torch.no_grad():
+        target = self.get_next_state(mini_batch)
+        sq_difference = 0.5 * (target - predicted_next_state) ** 2
         sq_difference = torch.sum(sq_difference, dim=1)
         return sq_difference
 
@@ -196,18 +226,5 @@ class CuriosityNetwork(torch.nn.Module):
         return torch.mean(
             ModelUtils.dynamic_partition(
                 self.compute_reward(mini_batch),
-                torch.as_tensor(mini_batch["masks"], dtype=torch.float),
-                2,
-            )[1]
-        )
-
-    def compute_losses(self, mini_batch: AgentBuffer) -> torch.Tensor:
-        """
-        Computes the weighted sum of inverse and forward loss.
-        """
-        print(
-            self.compute_forward_loss(mini_batch), self.compute_inverse_loss(mini_batch)
-        )
-        return self.forward_loss_weight * self.compute_forward_loss(
-            mini_batch
-        ) + self.inverse_loss_weight * self.compute_inverse_loss(mini_batch)
+                ModelUtils.list_to_tensor(mini_batch["masks"], dtype=torch.float),
+                2,)[1])

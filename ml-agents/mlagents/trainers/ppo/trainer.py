@@ -77,6 +77,7 @@ class PPOTrainer(RLTrainer):
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
+
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
@@ -92,7 +93,7 @@ class PPOTrainer(RLTrainer):
                 )
             else:
                 self._stats_reporter.add_stat(
-                    self.optimizer.reward_signals[name].name + "Value Estimate",
+                    "Policy/"+self.optimizer.reward_signals[name].name + " Value Estimate",
                     np.mean(v),
                 )
 

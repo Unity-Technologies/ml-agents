@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 import numpy as np
 import torch
 
@@ -37,7 +37,7 @@ class GAILRewardProvider(BaseRewardProvider):
                 .numpy()
             )
 
-    def update(self, mini_batch: AgentBuffer) -> None:
+    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
         expert_batch = self._demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
@@ -45,6 +45,7 @@ class GAILRewardProvider(BaseRewardProvider):
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
+        return {}
 
 
 class DiscriminatorNetwork(torch.nn.Module):
