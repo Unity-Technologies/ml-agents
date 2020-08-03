@@ -150,3 +150,6 @@ class TorchPPOOptimizer(TorchOptimizer):
         }
 
         return update_stats
+
+    def get_modules(self):
+        return {'Optimizer': self.optimizer}

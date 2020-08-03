@@ -96,8 +96,6 @@ class TFPPOOptimizer(TFOptimizer):
                 }
             )
 
-            self.policy.initialize_or_load()
-
     def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:

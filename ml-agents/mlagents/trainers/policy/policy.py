@@ -46,9 +46,6 @@ class Policy:
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
-        self.model_path = model_path
-        self.initialize_path = self.trainer_settings.init_path
-        self._keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.use_continuous_act = behavior_spec.is_action_continuous()
         self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}
@@ -149,14 +146,6 @@ class Policy:
 
     @abstractmethod
     def get_current_step(self):
-        pass
-
-    @abstractmethod
-    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
-        pass
-
-    @abstractmethod
-    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
         pass
 
     @abstractmethod
