@@ -194,7 +194,7 @@ class ModelUtils:
             [],
             trainable=False,
             dtype=tf.int32,
-            initializer=tf.zeros_initializer(),
+            initializer=tf.constant_initializer(100),
         )
         running_mean = tf.get_variable(
             "running_mean",
