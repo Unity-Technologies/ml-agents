@@ -150,19 +150,24 @@ public class WalkerAgent : Agent
         sensor.AddObservation(walkingSpeed / m_maxWalkingSpeed);
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
-
-        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
-            ? target.transform.position
-//            : hips.position + (dirToLook * 100);
-//            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
-            : m_OrientationCube.transform.position + (cubeForward * 100);
-        targetPos.y = 0;
-        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
-        sensor.AddObservation(relPos);
-        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
-        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(targetPos), Vector3.up * 2, Color.red,5);
-//        sensor.AddObservation(Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.transform.position), 100)
-//        sensor.AddObservation(targetPos);
+        
+        //Dist To Target Normalized to 100 meters;
+        //If we're walking in world dir, always return 1;
+        float distToTarget = walkDirectionMethod == WalkDirectionMethod.UseTarget
+            ? (target.position - hips.position).magnitude/100
+            : 1;
+        sensor.AddObservation(distToTarget);
+        
+//        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
+//            ? target.transform.position
+////            : hips.position + (dirToLook * 100);
+////            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
+//            : m_OrientationCube.transform.position + (cubeForward * 100);
+//        targetPos.y = 0;
+//        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
+//        sensor.AddObservation(relPos);
+//        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
+//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(targetPos), Vector3.up * 2, Color.red,5);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -220,6 +225,14 @@ public class WalkerAgent : Agent
     void FixedUpdate()
     {
         UpdateOrientationObjects();
+
+//        if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
+//        {
+//            Vector3 targetPos
+//                if(targetPos hips.position)
+//        }
+        
+        
         var cubeForward = m_OrientationCube.transform.forward;
 
         // Set reward for this step according to mixture of the following elements.

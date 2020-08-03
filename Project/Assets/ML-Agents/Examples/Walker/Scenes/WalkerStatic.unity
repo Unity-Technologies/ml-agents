@@ -381,6 +381,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
 --- !u!1 &459314944
@@ -537,6 +542,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
 --- !u!1001 &833025198
@@ -605,6 +615,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
@@ -675,6 +690,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
 --- !u!1001 &1136586021
@@ -743,6 +763,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
@@ -891,6 +916,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
 --- !u!1 &1409355320
@@ -1022,6 +1052,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
 --- !u!1001 &1679910049
@@ -1150,6 +1185,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
@@ -1337,6 +1377,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStSingleSpeedVariant (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8228205183255163001, guid: c319a0a1c387d420a92f520b38ef875b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c319a0a1c387d420a92f520b38ef875b, type: 3}
