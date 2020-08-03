@@ -31,5 +31,5 @@ parameter_randomization:
   mass:
     sampler_type: uniform
     sampler_parameters:
-      min_value: 5
-      max_value: 5
+      min_value: 2.0
+      max_value: 2.0

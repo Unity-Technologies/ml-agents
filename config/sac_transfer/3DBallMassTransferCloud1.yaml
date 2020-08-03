@@ -21,6 +21,7 @@ behaviors:
       action_feature_size: 32
       # separate_value_net: true
       separate_policy_train: true
+      separate_model_train: true
       # separate_value_train: true
       reuse_encoder: true
       in_epoch_alter: false
@@ -56,5 +57,5 @@ parameter_randomization:
   mass:
     sampler_type: uniform
     sampler_parameters:
-      min_value: 5
-      max_value: 5
+      min_value: 2.0
+      max_value: 2.0
