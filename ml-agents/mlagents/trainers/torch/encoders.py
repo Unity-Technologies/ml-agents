@@ -74,7 +74,6 @@ class VectorEncoder(nn.Module):
         self.normalizer: Optional[Normalizer] = None
         super().__init__()
         self.layers = [nn.Linear(input_size, hidden_size)]
-        print('-'*10, normalize, '-'*10)
         if normalize:
             self.normalizer = Normalizer(input_size)
 
