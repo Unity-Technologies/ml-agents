@@ -111,7 +111,7 @@ namespace Unity.MLAgents.Actuators
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
                 {
-                    continuousActions = ActionSegment<float>.MakeActionSegment(StoredContinuousActions,
+                    continuousActions = new ActionSegment<float>(StoredContinuousActions,
                         continuousStart,
                         numContinuousActions);
                 }
@@ -119,7 +119,7 @@ namespace Unity.MLAgents.Actuators
                 var discreteActions = ActionSegment<int>.Empty;
                 if (numDiscreteActions > 0)
                 {
-                    discreteActions = ActionSegment<int>.MakeActionSegment(StoredDiscreteActions,
+                    discreteActions = new ActionSegment<int>(StoredDiscreteActions,
                         discreteStart,
                         numDiscreteActions);
                 }

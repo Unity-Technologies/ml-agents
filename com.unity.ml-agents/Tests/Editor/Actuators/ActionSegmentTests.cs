@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Tests.Actuators
             Assert.Throws<ArgumentOutOfRangeException>(
                 () => new ActionSegment<float>(floatArray, 100, 1));
 
-            var segment = new ArraySegment<float>(floatArray, 0, 0);
+            var segment = new ActionSegment<float>(floatArray, 0, 0);
             Assert.AreEqual(segment, ActionSegment<float>.Empty);
         }
         [Test]
