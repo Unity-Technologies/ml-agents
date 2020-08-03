@@ -76,12 +76,12 @@ class SACTrainer(RLTrainer):
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
-    def _checkpoint(self) -> NNCheckpoint:
+    def _checkpoint(self, save_model: bool) -> NNCheckpoint:
         """
         Writes a checkpoint model to memory
         Overrides the default to save the replay buffer.
         """
-        ckpt = super()._checkpoint()
+        ckpt = super()._checkpoint(save_model)
         if self.checkpoint_replay_buffer:
             self.save_replay_buffer()
         return ckpt

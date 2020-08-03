@@ -96,7 +96,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             return sum(rewards) / len(rewards)
 
     @timed
-    def _checkpoint(self) -> NNCheckpoint:
+    def _checkpoint(self, save_model: bool) -> NNCheckpoint:
         """
         Checkpoints the policy associated with this trainer.
         """
@@ -108,7 +108,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         policy = list(self.policies.values())[0]
         model_path = policy.model_path
         checkpoint_path = os.path.join(model_path, f"{self.brain_name}-{self.step}")
-        policy.checkpoint(checkpoint_path, None)
+        # Don't pass SerializationSettings if we're not going to save the model.
+        settings = (
+            SerializationSettings(model_path, self.brain_name) if save_model else None
+        )
+        policy.checkpoint(checkpoint_path, settings)
         new_checkpoint = NNCheckpoint(
             int(self.step),
             f"{checkpoint_path}.nn",
@@ -131,7 +135,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             )
         policy = list(self.policies.values())[0]
         settings = SerializationSettings(policy.model_path, self.brain_name)
-        model_checkpoint = self._checkpoint()
+        model_checkpoint = self._checkpoint(save_model=False)
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{policy.model_path}.nn"
         )
@@ -206,7 +210,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.trainer_settings.checkpoint_interval
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
-            self._checkpoint()
+            self._checkpoint(save_model=True)
 
     def advance(self) -> None:
         """
