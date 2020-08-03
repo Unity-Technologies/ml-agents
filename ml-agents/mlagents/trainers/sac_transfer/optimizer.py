@@ -49,6 +49,7 @@ class SACTransferOptimizer(TFOptimizer):
 
         self.separate_value_train = hyperparameters.separate_value_train
         self.separate_policy_train = hyperparameters.separate_policy_train
+        self.separate_policy_net = hyperparameters.separate_policy_net
         self.separate_model_train = hyperparameters.separate_model_train
         self.use_var_encoder = hyperparameters.use_var_encoder
         self.use_var_predict = hyperparameters.use_var_predict
@@ -83,23 +84,24 @@ class SACTransferOptimizer(TFOptimizer):
 
         # Create the graph here to give more granular control of the TF graph to the Optimizer.
         policy.create_tf_graph(
-            hyperparameters.encoder_layers,
-            hyperparameters.action_layers,
-            hyperparameters.policy_layers,
-            hyperparameters.forward_layers,
-            hyperparameters.inverse_layers,
-            hyperparameters.feature_size,
-            hyperparameters.action_feature_size,
-            self.use_transfer,
-            self.separate_policy_train,
-            self.separate_model_train,
-            self.use_var_encoder,
-            self.use_var_predict,
-            self.predict_return,
-            self.use_inverse_model,
-            self.reuse_encoder,
-            self.use_bisim,
-            hyperparameters.tau
+            encoder_layers=hyperparameters.encoder_layers,
+            action_layers=hyperparameters.action_layers,
+            policy_layers=hyperparameters.policy_layers,
+            forward_layers=hyperparameters.forward_layers,
+            inverse_layers=hyperparameters.inverse_layers,
+            feature_size=hyperparameters.feature_size,
+            action_feature_size=hyperparameters.action_feature_size,
+            transfer=self.use_transfer,
+            separate_train=self.separate_policy_train,
+            separate_policy_net=self.separate_policy_net,
+            separate_model_train=self.separate_model_train,
+            var_encoder=self.use_var_encoder,
+            var_predict=self.use_var_predict,
+            predict_return=self.predict_return,
+            inverse_model=self.use_inverse_model,
+            reuse_encoder=self.reuse_encoder,
+            use_bisim=self.use_bisim,
+            tau=hyperparameters.tau
         )
 
         with policy.graph.as_default():

@@ -145,6 +145,7 @@ class TransferPolicy(TFPolicy):
         action_feature_size=16,
         transfer=False,
         separate_train=False,
+        separate_policy_net=False,
         separate_model_train=False,
         var_encoder=False,
         var_predict=True,
@@ -231,24 +232,6 @@ class TransferPolicy(TFPolicy):
             self._create_hard_copy()
             self._create_soft_copy()
 
-
-            # self.encoder = self._create_encoder(
-            #     self.visual_in,
-            #     self.processed_vector_in,
-            #     self.h_size,
-            #     self.feature_size,
-            #     encoder_layers,
-            #     self.vis_encode_type,
-            # )
-
-            # self.targ_encoder = self._create_target_encoder(
-            #     self.h_size,
-            #     self.feature_size,
-            #     encoder_layers,
-            #     self.vis_encode_type,
-            #     reuse_encoder,
-            # )
-
             self.action_encoder = self._create_action_encoder(
                 self.current_action,
                 self.h_size,
@@ -310,6 +293,7 @@ class TransferPolicy(TFPolicy):
                     self.reparameterize,
                     self.condition_sigma_on_obs,
                     separate_train,
+                    separate_policy_net
                 )
             else:
                 self._create_dc_actor(
@@ -377,8 +361,8 @@ class TransferPolicy(TFPolicy):
             load_nets.append("encoding")
         if load_action:
             load_nets.append("action_enc")
-        # if self.inverse_model:
-        #     load_nets.append("inverse")
+        if self.inverse_model:
+            load_nets.append("inverse")
 
         with self.graph.as_default():
             for net in load_nets:
@@ -394,44 +378,6 @@ class TransferPolicy(TFPolicy):
                 partial_model_checkpoint = os.path.join(path, f"{net}.ckpt")
                 partial_saver.restore(self.sess, partial_model_checkpoint)
                 print("loaded net", net, "from path", path)
-
-        # if load_encoder:
-        #     self.run_hard_copy()
-
-    def _create_world_model(
-        self,
-        encoder: tf.Tensor,
-        h_size: int,
-        feature_size: int,
-        num_layers: int,
-        vis_encode_type: EncoderType,
-        predict_return: bool = False,
-    ) -> tf.Tensor:
-        """"
-        Builds the world model for state prediction
-        """
-        with self.graph.as_default():
-            with tf.variable_scope("predict"):
-                # self.current_action = tf.placeholder(
-                #     shape=[None, sum(self.act_size)], dtype=tf.float32, name="current_action"
-                # )
-                hidden_stream = ModelUtils.create_vector_observation_encoder(
-                    tf.concat([encoder, self.current_action], axis=1),
-                    h_size,
-                    ModelUtils.swish,
-                    num_layers,
-                    scope=f"main_graph",
-                    reuse=False,
-                )
-                if predict_return:
-                    predict = tf.layers.dense(
-                        hidden_stream, feature_size + 1, name="next_state"
-                    )
-                else:
-                    predict = tf.layers.dense(
-                        hidden_stream, feature_size, name="next_state"
-                    )
-        return predict
 
     @timed
     def evaluate(
@@ -457,91 +403,6 @@ class TransferPolicy(TFPolicy):
         run_out = self._execute_model(feed_dict, self.inference_dict)
         return run_out
 
-    # def _create_target_encoder(
-    #     self,
-    #     h_size: int,
-    #     feature_size: int,
-    #     num_layers: int,
-    #     vis_encode_type: EncoderType,
-    #     reuse_encoder: bool,
-    # ) -> tf.Tensor:
-    #     if reuse_encoder:
-    #         next_encoder_scope = "encoding"
-    #     else:
-    #         next_encoder_scope = "target_enc"
-
-    #     self.visual_next = ModelUtils.create_visual_input_placeholders(
-    #         self.brain.camera_resolutions
-    #     )
-    #     self.vector_next = ModelUtils.create_vector_input(self.vec_obs_size)
-    #     if self.normalize:
-    #         vn_normalization_tensors = self.create_target_normalizer(self.vector_next)
-    #         self.vn_update_normalization_op = vn_normalization_tensors.update_op
-    #         self.vn_normalization_steps = vn_normalization_tensors.steps
-    #         self.vn_running_mean = vn_normalization_tensors.running_mean
-    #         self.vn_running_variance = vn_normalization_tensors.running_variance
-    #         self.processed_vector_next = ModelUtils.normalize_vector_obs(
-    #             self.vector_next,
-    #             self.vn_running_mean,
-    #             self.vn_running_variance,
-    #             self.vn_normalization_steps,
-    #         )
-    #     else:
-    #         self.processed_vector_next = self.vector_next
-    #         self.vp_update_normalization_op = None
-
-    #     with tf.variable_scope(next_encoder_scope):
-    #         hidden_stream_targ = ModelUtils.create_observation_streams(
-    #             self.visual_next,
-    #             self.processed_vector_next,
-    #             1,
-    #             h_size,
-    #             num_layers,
-    #             vis_encode_type,
-    #             reuse=reuse_encoder,
-    #         )[0]
-
-    #         latent_targ = tf.layers.dense(
-    #             hidden_stream_targ,
-    #             feature_size,
-    #             name="latent",
-    #             reuse=reuse_encoder,
-    #             activation=tf.tanh,  # ModelUtils.swish,
-    #             kernel_initializer=tf.initializers.variance_scaling(1.0),
-    #         )
-    #     return latent_targ
-        # return tf.stop_gradient(latent_targ)
-
-    # def _create_encoder(
-    #     self,
-    #     visual_in: List[tf.Tensor],
-    #     vector_in: tf.Tensor,
-    #     h_size: int,
-    #     feature_size: int,
-    #     num_layers: int,
-    #     vis_encode_type: EncoderType,
-    # ) -> tf.Tensor:
-    #     """
-    #     Creates an encoder for visual and vector observations.
-    #     :param h_size: Size of hidden linear layers.
-    #     :param num_layers: Number of hidden linear layers.
-    #     :param vis_encode_type: Type of visual encoder to use if visual input.
-    #     :return: The hidden layer (tf.Tensor) after the encoder.
-    #     """
-    #     with tf.variable_scope("encoding"):
-    #         hidden_stream = ModelUtils.create_observation_streams(
-    #             visual_in, vector_in, 1, h_size, num_layers, vis_encode_type, 
-    #         )[0]
-
-    #         latent = tf.layers.dense(
-    #             hidden_stream,
-    #             feature_size,
-    #             name="latent",
-    #             activation=tf.tanh,  # ModelUtils.swish,
-    #             kernel_initializer=tf.initializers.variance_scaling(1.0),
-    #         )
-    #     return latent
-    
     def _create_encoder_general(
         self,
         visual_in: List[tf.Tensor],
@@ -643,6 +504,7 @@ class TransferPolicy(TFPolicy):
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
         separate_train: bool = False,
+        separate_net: bool = False
     ) -> None:
         """
         Creates Continuous control actor-critic model.
@@ -652,38 +514,42 @@ class TransferPolicy(TFPolicy):
         :param tanh_squash: Whether to use a tanh function, or a clipped output.
         :param reparameterize: Whether we are using the resampling trick to update the policy.
         """
-        if self.use_recurrent:
-            self.memory_in = tf.placeholder(
-                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
-            )
-            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
-                encoded, self.memory_in, self.sequence_length_ph, name="lstm_policy"
-            )
-
-            self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
-        else:
-            hidden_policy = encoded
-
-        if separate_train:
-            hidden_policy = tf.stop_gradient(hidden_policy)
-
         with tf.variable_scope("policy"):
-            hidden_policy = ModelUtils.create_vector_observation_encoder(
-                hidden_policy,
-                h_size,
-                ModelUtils.swish,
-                num_layers,
-                scope=f"main_graph",
-                reuse=False,
-            )
-            # hidden_policy = ModelUtils.create_vector_observation_encoder(
-            #     self.processed_vector_in,
-            #     h_size,
-            #     ModelUtils.swish,
-            #     num_layers,
-            #     scope=f"main_graph",
-            #     reuse=False,
-            # )
+            if separate_net:
+                encoded = self._create_encoder_general(
+                    self.visual_in,
+                    self.processed_vector_in,
+                    h_size,
+                    self.feature_size,
+                    num_layers,
+                    self.vis_encode_type,
+                    scope="policy_enc"
+                )
+
+            if self.use_recurrent:
+                self.memory_in = tf.placeholder(
+                    shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+                )
+                hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
+                    encoded, self.memory_in, self.sequence_length_ph, name="lstm_policy"
+                )
+
+                self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
+            else:
+                hidden_policy = encoded
+
+            if not separate_net:
+                if separate_train:
+                    hidden_policy = tf.stop_gradient(hidden_policy)
+                hidden_policy = ModelUtils.create_vector_observation_encoder(
+                    hidden_policy,
+                    h_size,
+                    ModelUtils.swish,
+                    num_layers,
+                    scope=f"main_graph",
+                    reuse=False,
+                )
+            
             distribution = GaussianDistribution(
                 hidden_policy,
                 self.act_size,

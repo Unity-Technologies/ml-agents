@@ -166,6 +166,7 @@ class SACTransferSettings(SACSettings):
     separate_policy_train: bool = False
     separate_model_train: bool = False
     separate_value_net: bool = False
+    separate_policy_net: bool = False
     use_var_encoder: bool = False
     use_var_predict: bool = False
     with_prior: bool = False
