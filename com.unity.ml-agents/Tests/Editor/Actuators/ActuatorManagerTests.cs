@@ -75,8 +75,8 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestEnsureBufferDiscrete()
         {
             var manager = new ActuatorManager();
-            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new []{1 ,2, 3, 4}), "actuator1");
-            var actuator2 = new TestActuator(ActionSpaceDef.MakeDiscrete(new [] {1, 1, 1}), "actuator2");
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {1 , 2, 3, 4}), "actuator1");
+            var actuator2 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {1, 1, 1}), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
             var actuator1ActionSpaceDef = actuator1.ActionSpaceDef;
@@ -100,7 +100,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestFailOnMixedActionSpace()
         {
             var manager = new ActuatorManager();
-            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new []{1 ,2, 3, 4}), "actuator1");
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {1 , 2, 3, 4}), "actuator1");
             var actuator2 = new TestActuator(ActionSpaceDef.MakeContinuous(3), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
@@ -124,8 +124,8 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestUpdateActionsDiscrete()
         {
             var manager = new ActuatorManager();
-            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new []{1 ,2, 3, 4}), "actuator1");
-            var actuator2 = new TestActuator(ActionSpaceDef.MakeDiscrete(new [] {1, 1, 1}), "actuator2");
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {1 , 2, 3, 4}), "actuator1");
+            var actuator2 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {1, 1, 1}), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
             var actuator1ActionSpaceDef = actuator1.ActionSpaceDef;
@@ -139,6 +139,7 @@ namespace Unity.MLAgents.Tests.Actuators
             manager.UpdateActions(Array.Empty<float>(),
                 discreteActionBuffer);
 
+            manager.ExecuteActions();
             var actuator1Actions = actuator1.LastActionBuffer.DiscreteActions;
             var actuator2Actions = actuator2.LastActionBuffer.DiscreteActions;
             TestSegmentEquality(actuator1Actions, discreteActionBuffer);
@@ -150,7 +151,7 @@ namespace Unity.MLAgents.Tests.Actuators
         {
             var manager = new ActuatorManager();
             var actuator1 = new TestActuator(ActionSpaceDef.MakeContinuous(3),
-            "actuator1");
+                "actuator1");
             var actuator2 = new TestActuator(ActionSpaceDef.MakeContinuous(3), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
@@ -165,19 +166,21 @@ namespace Unity.MLAgents.Tests.Actuators
             manager.UpdateActions(continuousActionBuffer,
                 Array.Empty<int>());
 
+            // manager.ExecuteActions();
             var actuator1Actions = actuator1.LastActionBuffer.ContinuousActions;
             var actuator2Actions = actuator2.LastActionBuffer.ContinuousActions;
             TestSegmentEquality(actuator1Actions, continuousActionBuffer);
             TestSegmentEquality(actuator2Actions, continuousActionBuffer);
         }
 
-        static void TestSegmentEquality<T>(ActionSegment<T> actuator1Actions, T[] discreteActionBuffer)
-        where T : struct
+        static void TestSegmentEquality<T>(ActionSegment<T> actionSegment, T[] actionBuffer)
+            where T : struct
         {
-            for (var i = 0; i < actuator1Actions.Length; i++)
+            Assert.IsFalse(actionSegment.Length == 0);
+            for (var i = 0; i < actionSegment.Length; i++)
             {
-                var action = actuator1Actions[i];
-                Assert.AreEqual(action, discreteActionBuffer[actuator1Actions.Offset + i]);
+                var action = actionSegment[i];
+                Assert.AreEqual(action, actionBuffer[actionSegment.Offset + i]);
             }
         }
     }
