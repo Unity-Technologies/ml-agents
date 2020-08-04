@@ -4,7 +4,7 @@ import torch
 from mlagents.trainers.torch.networks import (
     NetworkBody,
     ValueNetwork,
-    Actor,
+    SimpleActor,
     ActorCritic,
     SeparateActorCritic,
 )
@@ -121,13 +121,13 @@ def test_valuenetwork():
 
 
 @pytest.mark.parametrize("action_type", [ActionType.DISCRETE, ActionType.CONTINUOUS])
-def test_actor(action_type):
+def test_simple_actor(action_type):
     obs_size = 4
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,)]
     act_size = [2]
     masks = None if action_type == ActionType.CONTINUOUS else torch.ones((1, 1))
-    actor = Actor(obs_shapes, network_settings, action_type, act_size)
+    actor = SimpleActor(obs_shapes, network_settings, action_type, act_size)
     # Test get_dist
     sample_obs = torch.ones((1, obs_size))
     dists, _ = actor.get_dists([sample_obs], [], masks=masks)
