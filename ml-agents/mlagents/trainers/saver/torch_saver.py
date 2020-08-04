@@ -2,7 +2,7 @@ import os
 
 import torch
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.saver.saver import Saver
+from mlagents.trainers.saver.saver import BaseSaver
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -12,7 +12,7 @@ from mlagents.trainers.torch.model_serialization import ModelSerializer
 logger = get_logger(__name__)
 
 
-class TorchSaver(Saver):
+class TorchSaver(BaseSaver):
     """
     Saver class for PyTorch
     """
@@ -35,7 +35,7 @@ class TorchSaver(Saver):
 
     def register(self, module):
         self.modules.update(module.get_modules())
-    
+
     def save_checkpoint(self, checkpoint_path: str, brain_name: str) -> None:
         """
         Checkpoints the policy on disk.

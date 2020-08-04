@@ -2,7 +2,7 @@
 import abc
 
 
-class Saver(abc.ABC):
+class BaseSaver(abc.ABC):
     """This class is the base class for the Saver"""
 
     def __init__(self):

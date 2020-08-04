@@ -124,35 +124,22 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         Create a Policy object that uses the TensorFlow backend.
         """
         pass
-    
+
     def create_saver(self, policy: Policy) -> Saver:
         if self.framework == "torch":
-            return self.create_torch_saver(policy)
+            saver = TorchSaver(
+                policy,
+                self.trainer_settings,
+                model_path=self.artifact_path,
+                load=self.load,
+            )
         else:
-            return self.create_tf_saver(policy)
-
-    def create_torch_saver(self, policy: TorchPolicy) -> TorchSaver:
-        """
-        Create a Saver object that uses the PyTorch backend.
-        """
-        saver = TorchSaver(
-            policy,
-            self.trainer_settings,
-            model_path=self.artifact_path,
-            load=self.load,
-        )
-        return saver
-
-    def create_tf_saver(self, policy: TFPolicy) -> TFSaver:
-        """
-        Create a Saver object that uses the TensorFlow backend.
-        """
-        saver = TFSaver(
-            policy,
-            self.trainer_settings,
-            model_path=self.artifact_path,
-            load=self.load,
-        )
+            saver = TFSaver(
+                policy,
+                self.trainer_settings,
+                model_path=self.artifact_path,
+                load=self.load,
+            )
         return saver
 
     def _policy_mean_reward(self) -> Optional[float]:

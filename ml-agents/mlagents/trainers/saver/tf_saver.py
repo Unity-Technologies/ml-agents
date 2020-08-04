@@ -3,7 +3,7 @@ from distutils.version import LooseVersion
 from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.tf_utils import tf
-from mlagents.trainers.saver.saver import Saver
+from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.tf.model_serialization import export_policy_model
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings
@@ -14,7 +14,7 @@ from mlagents.trainers import __version__
 logger = get_logger(__name__)
 
 
-class TFSaver(Saver):
+class TFSaver(BaseSaver):
     """
     Saver class for TensorFlow
     """
@@ -32,7 +32,7 @@ class TFSaver(Saver):
         self._keep_checkpoints = trainer_settings.keep_checkpoints
         self.load = load
 
-        
+
         self.graph = self.policy.graph
         self.sess = self.policy.sess
         with self.graph.as_default():
