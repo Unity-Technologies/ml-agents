@@ -2,7 +2,7 @@ using System;
 
 namespace Unity.MLAgents.Actuators
 {
-    public struct ActionBuffers
+    internal struct ActionBuffers
     {
         public ActionSegment<float> ContinuousActions { get; internal set; }
         public ActionSegment<int> DiscreteActions { get; internal set; }
@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Actuators
         }
     }
 
-    public interface IActionReceiver
+    internal interface IActionReceiver
     {
         /// <summary>
         ///  This method is called in order to allow the user execution actions

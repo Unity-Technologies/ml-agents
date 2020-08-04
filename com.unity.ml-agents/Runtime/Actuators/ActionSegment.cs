@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace Unity.MLAgents.Actuators
 {
-    public readonly struct ActionSegment<T> : IEnumerable<T>
+    internal readonly struct ActionSegment<T> : IEnumerable<T>
     {
         public readonly int Offset;
         public readonly int Length;

@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Actuators
     /// Editor components for creating Actuators. Generally an IActuator component should
     /// have a corresponding ActuatorComponent.
     /// </summary>
-    public abstract class ActuatorComponent : MonoBehaviour
+    internal abstract class ActuatorComponent : MonoBehaviour
     {
         /// <summary>
         /// Create the IActuator.  This is called by the Agent when it is initialized.

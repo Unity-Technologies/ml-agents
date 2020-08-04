@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Unity.MLAgents.Actuators
 {
-    public interface IDiscreteActionMask
+    internal interface IDiscreteActionMask
     {
         /// <summary>
         /// Modifies an action mask for discrete control agents.

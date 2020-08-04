@@ -3,21 +3,14 @@ using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Actuators
 {
-    class VectorActuator : IActuator
+    internal class VectorActuator : IActuator
     {
         // Easy access for now about which space type to use for business logic.
         // Should be removed once a mixed SpaceType NN is available.
-        string m_Name;
         IActionReceiver m_ActionReceiver;
 
         ActionBuffers m_ActionBuffers;
-        ActuatorSpace m_ActuatorSpace;
-
-        public ActuatorSpace ActuatorSpace
-        {
-            get => m_ActuatorSpace;
-            private set => m_ActuatorSpace = value;
-        }
+        ActionSpaceDef m_ActionSpaceDef;
 
         public VectorActuator(IActionReceiver actionReceiver,
             int[] vectorActionSize,
@@ -25,20 +18,15 @@ namespace Unity.MLAgents.Actuators
             string name = "VectorActuator")
         {
             m_ActionReceiver = actionReceiver;
-            ActionSpaceType = spaceType;
-            ActuatorSpace = new ActuatorSpace();
             string suffix;
-            ActionSpaceDef discreteActionSpace, continuousActionSpace;
-            switch (ActionSpaceType)
+            switch (spaceType)
             {
                 case SpaceType.Continuous:
-                    continuousActionSpace = ActionSpaceDef.MakeContinuous(vectorActionSize[0]);
-                    discreteActionSpace = ActionSpaceDef.MakeDiscrete(Array.Empty<int>());
+                    ActionSpaceDef = ActionSpaceDef.MakeContinuous(vectorActionSize[0]);
                     suffix = "-Continuous";
                     break;
                 case SpaceType.Discrete:
-                    discreteActionSpace = ActionSpaceDef.MakeDiscrete(vectorActionSize);
-                    continuousActionSpace = ActionSpaceDef.MakeContinuous(0);
+                    ActionSpaceDef = ActionSpaceDef.MakeDiscrete(vectorActionSize);
                     suffix = "-Discrete";
                     break;
                 default:
@@ -46,12 +34,8 @@ namespace Unity.MLAgents.Actuators
                         spaceType,
                         "Unknown enum value.");
             }
-
-            m_Name = name + suffix;
-            ActuatorSpace = new ActuatorSpace(continuousActionSpace, discreteActionSpace);
+            Name = name + suffix;
         }
-
-        public SpaceType ActionSpaceType { get; }
 
         public void ResetData()
         {
@@ -67,19 +51,28 @@ namespace Unity.MLAgents.Actuators
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            if (ActionSpaceType == SpaceType.Discrete)
+            if (ActionSpaceDef.SpaceType == SpaceType.Discrete)
             {
                 m_ActionReceiver.WriteDiscreteActionMask(actionMask);
             }
         }
 
+        /// <summary>
+        /// Returns the number of discrete branches + the number of continuous actions.
+        /// </summary>
+        public int TotalNumberOfActions => m_ActionSpaceDef.NumContinuousActions +
+            m_ActionSpaceDef.NumDiscreteActions;
 
-        public int TotalNumberOfActions => m_ActuatorSpace.ContinuousActionSpaceDef.NumActions +
-            m_ActuatorSpace.DiscreteActionSpaceDef.NumActions;
-
-        public string GetName()
+        /// <summary>
+        /// <inheritdoc cref="IActuator.ActionSpaceDef"/>
+        /// </summary>
+        public ActionSpaceDef ActionSpaceDef
         {
-            return m_Name;
+            get => m_ActionSpaceDef;
+            private set => m_ActionSpaceDef = value;
         }
+
+        public string Name { get; }
+
     }
 }

@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Actuators
 {
     /// <summary>
     /// Implementation of IDiscreteActionMask that allows writing to the action mask based on an offset.
     /// </summary>
-    public class BufferedDiscreteActionMask : IDiscreteActionMask
+    internal class BufferedDiscreteActionMask : IDiscreteActionMask
     {
         /// When using discrete control, is the starting indices of the actions
         /// when all the branches are concatenated with each other.
@@ -76,7 +74,7 @@ namespace Unity.MLAgents.Actuators
                 for (var i = 0; i < m_Actuators.Count; i++)
                 {
                     var actuator = m_Actuators[i];
-                    var branchSizes = actuator.ActuatorSpace.DiscreteActionSpaceDef.BranchSizes;
+                    var branchSizes = actuator.ActionSpaceDef.BranchSizes;
                     Array.Copy(branchSizes, 0, m_BranchSizes, start, branchSizes.Length);
                     start += branchSizes.Length;
                 }
