@@ -90,7 +90,6 @@ class TFPolicy(Policy):
             config=tf_utils.generate_session_config(), graph=self.graph
         )
         self.saver: Optional[tf.Operation] = None
-
         self._initialize_tensorflow_references()
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
