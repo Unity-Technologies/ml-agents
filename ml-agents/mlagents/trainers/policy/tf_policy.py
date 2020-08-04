@@ -83,12 +83,14 @@ class TFPolicy(Policy):
         self.assign_ops: List[tf.Operation] = []
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.first_normalization_update: bool = False
 
         self.graph = tf.Graph()
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
         self.saver: Optional[tf.Operation] = None
+
         self._initialize_tensorflow_references()
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
@@ -453,6 +455,12 @@ class TFPolicy(Policy):
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
         if self.use_vec_obs and self.normalize:
+            if self.first_normalization_update:
+                self.sess.run(
+                    self.init_normalization_op,
+                    feed_dict={self.initial_mean: np.mean(vector_obs, axis=0)},
+                )
+                self.first_normalization_update = False
             self.sess.run(
                 self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
             )
@@ -495,9 +503,12 @@ class TFPolicy(Policy):
                 self.behavior_spec.observation_shapes
             )
             if self.normalize:
+                self.first_normalization_update = True
                 normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
+                self.init_normalization_op = normalization_tensors.init_op
                 self.normalization_steps = normalization_tensors.steps
+                self.initial_mean = normalization_tensors.initial_mean
                 self.running_mean = normalization_tensors.running_mean
                 self.running_variance = normalization_tensors.running_variance
                 self.processed_vector_in = ModelUtils.normalize_vector_obs(

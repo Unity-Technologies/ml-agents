@@ -21,8 +21,10 @@ class Tensor3DShape(NamedTuple):
 
 
 class NormalizerTensors(NamedTuple):
+    init_op: tf.Operation
     update_op: tf.Operation
     steps: tf.Tensor
+    initial_mean: tf.Tensor
     running_mean: tf.Tensor
     running_variance: tf.Tensor
 
@@ -187,14 +189,16 @@ class ModelUtils:
         :return: A NormalizerTensors tuple that holds running mean, running variance, number of steps,
             and the update operation.
         """
-
         vec_obs_size = vector_obs.shape[1]
+        initial_mean = tf.placeholder(
+            shape=[vec_obs_size], dtype=tf.float32, name="initial_mean"
+        )
         steps = tf.get_variable(
             "normalization_steps",
             [],
             trainable=False,
             dtype=tf.int32,
-            initializer=tf.constant_initializer(100),
+            initializer=tf.zeros_initializer(),
         )
         running_mean = tf.get_variable(
             "running_mean",
@@ -213,8 +217,14 @@ class ModelUtils:
         update_normalization = ModelUtils.create_normalizer_update(
             vector_obs, steps, running_mean, running_variance
         )
+        initialize_normalization = tf.assign(running_mean, initial_mean)
         return NormalizerTensors(
-            update_normalization, steps, running_mean, running_variance
+            initialize_normalization,
+            update_normalization,
+            steps,
+            initial_mean,
+            running_mean,
+            running_variance,
         )
 
     @staticmethod
