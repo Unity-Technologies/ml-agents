@@ -40,12 +40,9 @@ class ModelUtils:
 
     @staticmethod
     def _check_resolution_for_encoder(
-        vis_in: torch.Tensor, vis_encoder_type: EncoderType
+        height: int, width: int, vis_encoder_type: EncoderType
     ) -> None:
         min_res = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
-        # Note: PyTorch uses NCHW not NHWC (TF).
-        height = vis_in.shape[2]
-        width = vis_in.shape[3]
         if height < min_res or width < min_res:
             raise UnityTrainerException(
                 f"Visual observation resolution ({width}x{height}) is too small for"
@@ -81,6 +78,9 @@ class ModelUtils:
         vector_size = 0
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
+                ModelUtils._check_resolution_for_encoder(
+                    dimension[0], dimension[1], vis_encode_type
+                )
                 visual_encoders.append(
                     visual_encoder_class(
                         dimension[0], dimension[1], dimension[2], h_size
