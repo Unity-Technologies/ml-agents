@@ -30,7 +30,9 @@ class GAILRewardProvider(BaseRewardProvider):
             )
             return (
                 -torch.log(
-                    1.0 - estimates * (1.0 - self._discriminator_network.EPSILON)
+                    1.0
+                    - estimates.squeeze(dim=1)
+                    * (1.0 - self._discriminator_network.EPSILON)
                 )
                 .detach()
                 .cpu()
@@ -41,11 +43,23 @@ class GAILRewardProvider(BaseRewardProvider):
         expert_batch = self._demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
-        loss = self._discriminator_network.compute_loss(mini_batch, expert_batch)
+        loss, policy_mean_estimate, expert_mean_estimate, kl_loss = self._discriminator_network.compute_loss(
+            mini_batch, expert_batch
+        )
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
-        return {}
+        stats_dict = {
+            "Losses/GAIL Discriminator Loss": loss.detach().cpu().numpy(),
+            "Policy/GAIL Policy Estimate": policy_mean_estimate.detach().cpu().numpy(),
+            "Policy/GAIL Expert Estimate": expert_mean_estimate.detach().cpu().numpy(),
+        }
+        if self._discriminator_network.use_vail:
+            stats_dict["Policy/GAIL Beta"] = (
+                self._discriminator_network.beta.detach().cpu().numpy()
+            )
+            stats_dict["Losses/GAIL KL Loss"] = kl_loss.detach().cpu().numpy()
+        return stats_dict
 
 
 class DiscriminatorNetwork(torch.nn.Module):
@@ -54,11 +68,12 @@ class DiscriminatorNetwork(torch.nn.Module):
     alpha = 0.0005
     mutual_information = 0.5
     EPSILON = 1e-7
-    initial_beta = 1.0
+    initial_beta = 0.0
 
     def __init__(self, specs: BehaviorSpec, settings: GAILSettings) -> None:
         super().__init__()
         self._policy_specs = specs
+        self.use_vail = settings.use_vail
         self._settings = settings
 
         state_encoder_settings = NetworkSettings(
@@ -84,7 +99,13 @@ class DiscriminatorNetwork(torch.nn.Module):
             torch.nn.Linear(encoder_input_size, settings.encoding_size),
             ModelUtils.SwishLayer(),
             torch.nn.Linear(settings.encoding_size, settings.encoding_size),
+            ModelUtils.SwishLayer(),
         )
+        torch.nn.init.xavier_normal_(self.encoder[0].weight.data)
+        torch.nn.init.xavier_normal_(self.encoder[2].weight.data)
+        self.encoder[0].bias.data.zero_()
+        self.encoder[2].bias.data.zero_()
+
         estimator_input_size = settings.encoding_size
         if settings.use_vail:
             estimator_input_size = self.z_size
@@ -92,11 +113,18 @@ class DiscriminatorNetwork(torch.nn.Module):
                 torch.ones((self.z_size), dtype=torch.float), requires_grad=True
             )
             self.z_mu_layer = torch.nn.Linear(settings.encoding_size, self.z_size)
-            # self.mu_layer.weight.data Needs a variance scale initializer
-            self.beta = torch.tensor(self.initial_beta)
+            # self.z_mu_layer.weight.data Needs a variance scale initializer
+            torch.nn.init.xavier_normal_(self.z_mu_layer.weight.data)
+            self.z_mu_layer.bias.data.zero_()
+            self.beta = torch.nn.Parameter(
+                torch.tensor(self.initial_beta, dtype=torch.float), requires_grad=False
+            )
+
         self.estimator = torch.nn.Sequential(
             torch.nn.Linear(estimator_input_size, 1), torch.nn.Sigmoid()
         )
+        torch.nn.init.xavier_normal_(self.estimator[0].weight.data)
+        self.estimator[0].bias.data.zero_()
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
@@ -157,9 +185,10 @@ class DiscriminatorNetwork(torch.nn.Module):
             expert_batch, use_vail_noise=True
         )
         loss = -(
-            (expert_estimate * (1 - self.EPSILON)).log()
-            + (1.0 - policy_estimate * (1 - self.EPSILON)).log()
+            torch.log(expert_estimate * (1 - self.EPSILON))
+            + torch.log(1.0 - policy_estimate * (1 - self.EPSILON))
         ).mean()
+        kl_loss: Optional[torch.Tensor] = None
         if self._settings.use_vail:
             # KL divergence loss (encourage latent representation to be normal)
             kl_loss = torch.mean(
@@ -174,7 +203,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             )
             vail_loss = self.beta * (kl_loss - self.mutual_information)
             with torch.no_grad():
-                self.beta = torch.max(
+                self.beta.data = torch.max(
                     self.beta + self.alpha * (kl_loss - self.mutual_information),
                     torch.tensor(0.0),
                 )
@@ -183,7 +212,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             loss += self.gradient_penalty_weight * self.compute_gradient_magnitude(
                 policy_batch, expert_batch
             )
-        return loss
+        return loss, torch.mean(policy_estimate), torch.mean(expert_estimate), kl_loss
 
     def compute_gradient_magnitude(
         self, policy_batch: AgentBuffer, expert_batch: AgentBuffer
