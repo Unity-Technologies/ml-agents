@@ -304,6 +304,7 @@ class SeparateActorCritic(Actor):
     ):
         # Give the Actor only half the memories. Note we previously validate
         # that memory_size must be a multiple of 4.
+        self.use_lstm = network_settings.memory is not None
         if network_settings.memory is not None:
             self.half_mem_size = network_settings.memory.memory_size // 2
             new_memory_settings = attr.evolve(
@@ -337,6 +338,8 @@ class SeparateActorCritic(Actor):
         if memories is not None:
             # Use only the back half of memories for critic
             _, critic_mem = torch.split(memories, self.half_mem_size, -1)
+        else:
+            critic_mem = None
         value_outputs, _memories = self.critic(
             vec_inputs, vis_inputs, memories=critic_mem
         )
@@ -366,7 +369,10 @@ class SeparateActorCritic(Actor):
         value_outputs, critic_mem_outs = self.critic(
             vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
-        mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=1)
+        if self.use_lstm:
+            mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=1)
+        else:
+            mem_out = None
         return dists, value_outputs, mem_out
 
 

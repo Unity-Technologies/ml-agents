@@ -1,7 +1,13 @@
 import pytest
 
 import torch
-from mlagents.trainers.torch.networks import NetworkBody, ValueNetwork, Actor
+from mlagents.trainers.torch.networks import (
+    NetworkBody,
+    ValueNetwork,
+    Actor,
+    ActorCritic,
+    SeparateActorCritic,
+)
 from mlagents.trainers.settings import NetworkSettings
 from mlagents_envs.base_env import ActionType
 from mlagents.trainers.torch.distributions import (
@@ -156,3 +162,47 @@ def test_actor(action_type):
     assert mem_size == 0
     assert is_cont == int(action_type == ActionType.CONTINUOUS)
     assert act_size_vec == torch.tensor(act_size)
+
+
+@pytest.mark.parametrize("ac_type", [ActorCritic, SeparateActorCritic])
+@pytest.mark.parametrize("lstm", [True, False])
+def test_actor_critic(ac_type, lstm):
+    obs_size = 4
+    network_settings = NetworkSettings(
+        memory=NetworkSettings.MemorySettings() if lstm else None
+    )
+    obs_shapes = [(obs_size,)]
+    act_size = [2]
+    stream_names = [f"stream_name{n}" for n in range(4)]
+    actor = ac_type(
+        obs_shapes, network_settings, ActionType.CONTINUOUS, act_size, stream_names
+    )
+    if lstm:
+        sample_obs = torch.ones((1, network_settings.memory.sequence_length, obs_size))
+        memories = torch.ones(
+            (
+                1,
+                network_settings.memory.sequence_length,
+                network_settings.memory.memory_size,
+            )
+        )
+    else:
+        sample_obs = torch.ones((1, obs_size))
+        memories = None
+    # Test critic pass
+    value_out = actor.critic_pass([sample_obs], [], memories=memories)
+    for stream in stream_names:
+        if lstm:
+            assert value_out[stream].shape == (network_settings.memory.sequence_length,)
+        else:
+            assert value_out[stream].shape == (1,)
+
+    # Test get_dist_and_value
+    dists, value_out, _ = actor.get_dist_and_value([sample_obs], [], memories=memories)
+    for dist in dists:
+        assert isinstance(dist, GaussianDistInstance)
+    for stream in stream_names:
+        if lstm:
+            assert value_out[stream].shape == (network_settings.memory.sequence_length,)
+        else:
+            assert value_out[stream].shape == (1,)
