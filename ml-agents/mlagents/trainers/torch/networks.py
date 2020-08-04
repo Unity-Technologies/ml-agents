@@ -151,6 +151,10 @@ class ValueNetwork(nn.Module):
 class Actor(abc.ABC):
     @abc.abstractmethod
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
+        """
+        Updates normalization of Actor based on the provided List of vector obs.
+        :param vector_obs: A List of vector obs as tensors.
+        """
         pass
 
     @abc.abstractmethod
@@ -195,6 +199,46 @@ class Actor(abc.ABC):
         Forward pass of the Actor for inference. This is required for export to ONNX, and
         the inputs and outputs of this method should not be changed without a respective change
         in the ONNX export code.
+        """
+        pass
+
+
+class ActorCritic(Actor):
+    @abc.abstractmethod
+    def critic_pass(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        memories: Optional[torch.Tensor] = None,
+    ) -> Dict[str, torch.Tensor]:
+        """
+        Get value outputs for the given obs.
+        :param vec_inputs: List of vector inputs as tensors.
+        :param vis_inputs: List of visual inputs as tensors.
+        :param memories: Tensor of memories, if using memory. Otherwise, None.
+        :returns: Dict of reward stream to output tensor for values.
+        """
+        pass
+
+    @abc.abstractmethod
+    def get_dist_and_value(
+        self,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+        """
+        Returns distributions, from which actions can be sampled, and value estimates.
+        If memory is enabled, return the memories as well.
+        :param vec_inputs: A List of vector inputs as tensors.
+        :param vis_inputs: A List of visual inputs as tensors.
+        :param masks: If using discrete actions, a Tensor of action masks.
+        :param memories: If using memory, a Tensor of initial memories.
+        :param sequence_length: If using memory, the sequence length.
+        :return: A Tuple of a List of action distribution instances, a Dict of reward signal
+            name to value estimate, and memories. Memories will be None if not using memory.
         """
         pass
 
@@ -253,10 +297,6 @@ class SimpleActor(nn.Module, Actor):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[DistInstance], Optional[torch.Tensor]]:
-        """
-        Returns distributions from this Actor, from which actions can be sampled.
-        If memory is enabled, return the memories as well.
-        """
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
@@ -293,7 +333,7 @@ class SimpleActor(nn.Module, Actor):
         )
 
 
-class ActorCritic(SimpleActor):
+class SharedActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
         observation_shapes: List[Tuple[int, ...]],
@@ -344,7 +384,7 @@ class ActorCritic(SimpleActor):
         return dists, value_outputs, memories
 
 
-class SeparateActorCritic(SimpleActor):
+class SeparateActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
         observation_shapes: List[Tuple[int, ...]],

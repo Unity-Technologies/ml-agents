@@ -14,7 +14,7 @@ from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.torch.networks import ActorCritic, SeparateActorCritic
+from mlagents.trainers.torch.networks import SharedActorCritic, SeparateActorCritic
 from mlagents.trainers.torch.utils import ModelUtils
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
@@ -73,7 +73,7 @@ class TorchPolicy(Policy):
         if separate_critic:
             ac_class = SeparateActorCritic
         else:
-            ac_class = ActorCritic
+            ac_class = SharedActorCritic
         self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,

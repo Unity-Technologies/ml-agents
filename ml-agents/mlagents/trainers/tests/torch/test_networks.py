@@ -5,7 +5,7 @@ from mlagents.trainers.torch.networks import (
     NetworkBody,
     ValueNetwork,
     SimpleActor,
-    ActorCritic,
+    SharedActorCritic,
     SeparateActorCritic,
 )
 from mlagents.trainers.settings import NetworkSettings
@@ -164,7 +164,7 @@ def test_simple_actor(action_type):
     assert act_size_vec == torch.tensor(act_size)
 
 
-@pytest.mark.parametrize("ac_type", [ActorCritic, SeparateActorCritic])
+@pytest.mark.parametrize("ac_type", [SharedActorCritic, SeparateActorCritic])
 @pytest.mark.parametrize("lstm", [True, False])
 def test_actor_critic(ac_type, lstm):
     obs_size = 4
