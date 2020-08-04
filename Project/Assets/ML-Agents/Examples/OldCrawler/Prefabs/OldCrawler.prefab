@@ -15,7 +15,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 1000
+  MaxStep: 5000
   target: {fileID: 0}
   ground: {fileID: 0}
   detectTargets: 0
@@ -33,7 +33,7 @@ MonoBehaviour:
   leg3Lower: {fileID: 3650911777174035777}
   rewardMovingTowardsTarget: 1
   rewardFacingTarget: 1
-  rewardUseTimePenalty: 0
+  rewardUseTimePenalty: 1
   useFootGroundedVisualization: 0
   foot0: {fileID: 0}
   foot1: {fileID: 0}
