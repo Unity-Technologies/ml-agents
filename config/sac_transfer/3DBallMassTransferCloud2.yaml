@@ -1,5 +1,5 @@
 behaviors:
-  3DBallHard:
+  3DBall:
     trainer_type: sac_transfer
     hyperparameters:
       learning_rate: 0.0003
