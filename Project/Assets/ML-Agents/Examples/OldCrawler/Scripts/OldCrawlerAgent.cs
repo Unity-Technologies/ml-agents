@@ -245,7 +245,7 @@ public class OldCrawlerAgent : Agent
     /// </summary>
     void RewardFunctionTimePenalty()
     {
-        AddReward(0.0001f);
+        AddReward(0.001f);
     }
 
     /// <summary>
