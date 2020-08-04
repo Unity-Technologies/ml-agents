@@ -22,6 +22,7 @@ from mlagents.trainers.settings import (
     PPOSettings,
     TestingConfiguration,
 )
+from mlagents.trainers.components.reward_signals import RewardSignal
 
 
 logger = get_logger(__name__)
@@ -77,7 +78,6 @@ class PPOTrainer(RLTrainer):
         if self.is_training:
             self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
-
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(
             agent_buffer_trajectory,
@@ -87,13 +87,13 @@ class PPOTrainer(RLTrainer):
 
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
-            if hasattr(self.optimizer.reward_signals[name], "value_name"):
+            if isinstance(self.optimizer.reward_signals[name], RewardSignal):
                 self._stats_reporter.add_stat(
                     self.optimizer.reward_signals[name].value_name, np.mean(v)
                 )
             else:
                 self._stats_reporter.add_stat(
-                    "Policy/"+self.optimizer.reward_signals[name].name + " Value Estimate",
+                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
                     np.mean(v),
                 )
 
@@ -102,7 +102,7 @@ class PPOTrainer(RLTrainer):
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            if hasattr(reward_signal, "evaluate_batch"):
+            if isinstance(reward_signal, RewardSignal):
                 evaluate_result = reward_signal.evaluate_batch(
                     agent_buffer_trajectory
                 ).scaled_reward

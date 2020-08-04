@@ -21,7 +21,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.settings import TrainerSettings, SACSettings
-
+from mlagents.trainers.components.reward_signals import RewardSignal
 
 logger = get_logger(__name__)
 
@@ -139,7 +139,7 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            if hasattr(reward_signal, "evaluate_batch"):
+            if isinstance(reward_signal, RewardSignal):
                 evaluate_result = reward_signal.evaluate_batch(
                     agent_buffer_trajectory
                 ).scaled_reward
@@ -156,13 +156,14 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
-            if hasattr(self.optimizer.reward_signals[name], "value_name"):
+            if isinstance(self.optimizer.reward_signals[name], RewardSignal):
                 self._stats_reporter.add_stat(
                     self.optimizer.reward_signals[name].value_name, np.mean(v)
                 )
             else:
                 self._stats_reporter.add_stat(
-                    "Policy/" + self.optimizer.reward_signals[name].name + " Value", np.mean(v)
+                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
+                    np.mean(v),
                 )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
@@ -284,7 +285,7 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    if hasattr(signal, "evaluate_batch"):
+                    if isinstance(signal, RewardSignal):
                         sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
                             sampled_minibatch
                         ).scaled_reward
@@ -338,7 +339,7 @@ class SACTrainer(RLTrainer):
             reward_signal_minibatches = {}
             for name, signal in self.optimizer.reward_signals.items():
                 logger.debug(f"Updating {name} at step {self.step}")
-                if hasattr(signal, "update_dict"):
+                if isinstance(signal, RewardSignal):
                     # Some signals don't need a minibatch to be sampled - so we don't!
                     if signal.update_dict:
                         reward_signal_minibatches[name] = buffer.sample_mini_batch(

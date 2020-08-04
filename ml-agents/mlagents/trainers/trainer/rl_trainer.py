@@ -15,7 +15,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.components.reward_signals import RewardSignalResult
+from mlagents.trainers.components.reward_signals import RewardSignalResult, RewardSignal
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
@@ -78,14 +78,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                if hasattr(optimizer.reward_signals[name], "stat_name"):
+                if isinstance(optimizer.reward_signals[name], RewardSignal):
                     self.stats_reporter.add_stat(
                         optimizer.reward_signals[name].stat_name,
                         rewards.get(agent_id, 0),
                     )
                 else:
                     self.stats_reporter.add_stat(
-                        "Policy/"+optimizer.reward_signals[name].name + " Reward",
+                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
                         rewards.get(agent_id, 0),
                     )
                 rewards[agent_id] = 0

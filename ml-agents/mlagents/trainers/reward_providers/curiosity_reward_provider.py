@@ -72,8 +72,6 @@ class CuriosityNetwork(torch.nn.Module):
             ModelUtils.SwishLayer(),
             torch.nn.Linear(256, self._action_flattener.flattened_size),
         )
-        torch.nn.init.xavier_normal_(self.inverse_model_action_predition[0].weight.data)
-        torch.nn.init.xavier_normal_(self.inverse_model_action_predition[2].weight.data)
         self.inverse_model_action_predition[0].bias.data.zero_()
         self.inverse_model_action_predition[2].bias.data.zero_()
 
@@ -83,12 +81,6 @@ class CuriosityNetwork(torch.nn.Module):
             ),
             ModelUtils.SwishLayer(),
             torch.nn.Linear(256, settings.encoding_size),
-        )
-        torch.nn.init.xavier_normal_(
-            self.forward_model_next_state_prediction[0].weight.data
-        )
-        torch.nn.init.xavier_normal_(
-            self.forward_model_next_state_prediction[2].weight.data
         )
         self.forward_model_next_state_prediction[0].bias.data.zero_()
         self.forward_model_next_state_prediction[2].bias.data.zero_()
