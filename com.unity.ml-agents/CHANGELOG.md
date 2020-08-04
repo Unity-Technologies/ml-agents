@@ -18,12 +18,13 @@ Python training by approximately 5-10%. (#4259)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
 - StatsSideChannel now stores multiple values per key. This means that multiple
 calls to `StatsRecorder.Add()` with the same key in the same step will no
 longer overwrite each other. (#4236)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - Model checkpoints are now also saved as .nn files during training. (#4127)
 - Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
+- CSV statistics writer was removed (#4300).
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)

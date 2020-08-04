@@ -3,13 +3,11 @@ import os
 import pytest
 import tempfile
 import unittest
-import csv
 import time
 
 from mlagents.trainers.stats import (
     StatsReporter,
     TensorboardWriter,
-    CSVWriter,
     StatsSummary,
     GaugeWriter,
     ConsoleWriter,
@@ -121,46 +119,6 @@ def test_tensorboard_writer_clear(tmp_path):
     tb_writer = TensorboardWriter(tmp_path, clear_past_data=True)
     tb_writer.write_stats("category1", {"key1": statssummary1}, 10)
     assert len(os.listdir(os.path.join(tmp_path, "category1"))) == 1
-
-
-def test_csv_writer():
-    # Test write_stats
-    category = "category1"
-    with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
-        csv_writer = CSVWriter(base_dir, required_fields=["key1", "key2"])
-        statssummary1 = StatsSummary(mean=1.0, std=1.0, num=1)
-        csv_writer.write_stats("category1", {"key1": statssummary1}, 10)
-
-        # Test that the filewriter has been created and the directory has been created.
-        filewriter_dir = "{basedir}/{category}.csv".format(
-            basedir=base_dir, category=category
-        )
-        # The required keys weren't in the stats
-        assert not os.path.exists(filewriter_dir)
-
-        csv_writer.write_stats(
-            "category1", {"key1": statssummary1, "key2": statssummary1}, 10
-        )
-        csv_writer.write_stats(
-            "category1", {"key1": statssummary1, "key2": statssummary1}, 20
-        )
-
-        # The required keys were in the stats
-        assert os.path.exists(filewriter_dir)
-
-        with open(filewriter_dir) as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter=",")
-            line_count = 0
-            for row in csv_reader:
-                if line_count == 0:
-                    assert "key1" in row
-                    assert "key2" in row
-                    assert "Steps" in row
-                    line_count += 1
-                else:
-                    assert len(row) == 3
-                    line_count += 1
-            assert line_count == 3
 
 
 def test_gauge_stat_writer_sanitize():
