@@ -160,8 +160,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        checkpoint_path = os.path.join(self.saver.model_path, f"{self.brain_name}-{self.step}")
-        self.saver.save_checkpoint(checkpoint_path, self.brain_name)
+        checkpoint_path = self.saver.save_checkpoint(self.brain_name, self.step)
         new_checkpoint = NNCheckpoint(
             int(self.step),
             f"{checkpoint_path}.nn",

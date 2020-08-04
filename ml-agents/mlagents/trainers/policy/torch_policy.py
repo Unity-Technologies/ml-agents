@@ -233,8 +233,7 @@ class TorchPolicy(Policy):
         Gets current model step.
         :return: current model step.
         """
-        step = self.global_step.get_step()
-        return step
+        return self.global_step.current_step
 
     def _set_step(self, step: int) -> int:
         """
@@ -242,7 +241,7 @@ class TorchPolicy(Policy):
         :param step: Step to set the current model step to.
         :return: The step the model was set to.
         """
-        self.global_step.set_step(step)
+        self.global_step.current_step = step
 
     def increment_step(self, n_steps):
         """

@@ -18,7 +18,7 @@ class ModelSerializer:
         dummy_masks = [torch.ones([1] + self.policy.actor_critic.act_size)]
         dummy_memories = [torch.zeros([1] + [self.policy.m_size])]
         dummy_sequence_length = [torch.tensor([self.policy.sequence_length])]
-        
+
         self.input_names = ["vector_observation", "visual_observation", \
             "action_mask", "memories", "sequence_length"]
         self.output_names = ["action", "action_probs", "version_number", \
@@ -37,7 +37,7 @@ class ModelSerializer:
         """
         if not os.path.exists(output_filepath):
             os.makedirs(output_filepath)
-        
+
         onnx_output_path = f"{output_filepath}.onnx"
         logger.info(f"Converting to {onnx_output_path}")
 
@@ -51,3 +51,4 @@ class ModelSerializer:
             output_names=self.output_names,
             dynamic_axes=self.dynamic_axes,
         )
+        logger.info(f"Exported {onnx_output_path}.onnx")

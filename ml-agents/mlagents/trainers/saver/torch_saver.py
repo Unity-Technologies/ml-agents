@@ -36,7 +36,7 @@ class TorchSaver(BaseSaver):
     def register(self, module):
         self.modules.update(module.get_modules())
 
-    def save_checkpoint(self, checkpoint_path: str, brain_name: str) -> None:
+    def save_checkpoint(self, brain_name: str, step: int) -> str:
         """
         Checkpoints the policy on disk.
 
@@ -45,10 +45,12 @@ class TorchSaver(BaseSaver):
         """
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
+        checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{step}")
         state_dict = {name: module.state_dict() for name, module in self.modules.items()}
         torch.save(state_dict, f"{checkpoint_path}.pt")
         torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
         self.export(checkpoint_path, brain_name)
+        return checkpoint_path
 
     def maybe_load(self):
         # If there is an initialize path, load from that. Else, load from the set model path.

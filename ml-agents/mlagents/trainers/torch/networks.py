@@ -268,10 +268,10 @@ class GlobalSteps(nn.Module):
         self._global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
 
     @property
-    def step(self):
+    def current_step(self):
         return int(self._global_step.item())
 
-    @step.setter
+    @current_step.setter
     def set_step(self, value):
         self._global_step.data = value
 
