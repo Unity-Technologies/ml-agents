@@ -3,10 +3,10 @@ import os
 import torch
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.saver.saver import Saver
-from mlagents.model_serialization import SerializationSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.torch.model_serialization import ModelSerializer
 
 
 logger = get_logger(__name__)
@@ -29,18 +29,19 @@ class TorchSaver(Saver):
         self.initialize_path = trainer_settings.init_path
         self._keep_checkpoints = trainer_settings.keep_checkpoints
         self.load = load
+        self.exporter = ModelSerializer(self.policy)
 
         self.modules = {}
 
     def register(self, module):
         self.modules.update(module.get_modules())
     
-    def save_checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
+    def save_checkpoint(self, checkpoint_path: str, brain_name: str) -> None:
         """
         Checkpoints the policy on disk.
 
         :param checkpoint_path: filepath to write the checkpoint
-        :param settings: SerializationSettings for exporting the model.
+        :param brain_name: Brain name of brain to be trained
         """
         print('save checkpoint_path:', checkpoint_path)
         if not os.path.exists(self.model_path):
@@ -48,6 +49,7 @@ class TorchSaver(Saver):
         state_dict = {name: module.state_dict() for name, module in self.modules.items()}
         torch.save(state_dict, f"{checkpoint_path}.pt")
         torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
+        self.export(checkpoint_path, brain_name)
 
     def maybe_load(self):
         # If there is an initialize path, load from that. Else, load from the set model path.
@@ -59,27 +61,9 @@ class TorchSaver(Saver):
         elif self.load:
             self._load_model(self.model_path, reset_global_steps=reset_steps)
 
-    def export(self, output_filepath: str, settings: SerializationSettings) -> None:
+    def export(self, output_filepath: str, brain_name: str) -> None:
         print('export output_filepath:', output_filepath)
-        fake_vec_obs = [torch.zeros([1] + [self.policy.vec_obs_size])]
-        fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
-        fake_masks = torch.ones([1] + self.policy.actor_critic.act_size)
-        # print(fake_vec_obs[0].shape, fake_vis_obs[0].shape, fake_masks.shape)
-        # fake_memories = torch.zeros([1] + [self.m_size])
-        output_names = ["action", "action_probs", "is_continuous_control", \
-            "version_number", "memory_size", "action_output_shape"]
-        input_names = ["vector_observation", "action_mask"]
-        dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
-        torch.onnx.export(
-            self.policy.actor_critic,
-            (fake_vec_obs, fake_vis_obs, fake_masks),
-            f"{output_filepath}.onnx",
-            verbose=False,
-            opset_version=9,
-            input_names=input_names,
-            output_names=output_names,
-            dynamic_axes=dynamic_axes,
-        )
+        self.exporter.export_policy_model(output_filepath)
 
     def _load_model(self, load_path: str, reset_global_steps: bool = False) -> None:
         model_path = os.path.join(load_path, "checkpoint.pt")

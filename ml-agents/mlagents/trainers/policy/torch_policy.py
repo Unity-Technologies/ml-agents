@@ -3,7 +3,6 @@ import numpy as np
 import torch
 
 import os
-from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 

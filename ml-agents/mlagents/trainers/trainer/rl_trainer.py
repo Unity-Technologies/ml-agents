@@ -5,7 +5,6 @@ from collections import defaultdict
 import abc
 import time
 import attr
-from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.policy.checkpoint_manager import (
     NNCheckpoint,
     NNCheckpointManager,
@@ -174,12 +173,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        # policy = list(self.policies.values())[0]
-        # model_path = policy.model_path
-        settings = SerializationSettings(self.saver.model_path, self.brain_name)
         checkpoint_path = os.path.join(self.saver.model_path, f"{self.brain_name}-{self.step}")
-        # policy.checkpoint(checkpoint_path, settings)
-        self.saver.save_checkpoint(checkpoint_path, settings)
+        self.saver.save_checkpoint(checkpoint_path, self.brain_name)
         new_checkpoint = NNCheckpoint(
             int(self.step),
             f"{checkpoint_path}.nn",
@@ -200,14 +195,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        # policy = list(self.policies.values())[0]
-        settings = SerializationSettings(self.saver.model_path, self.brain_name)
         model_checkpoint = self._checkpoint()
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{self.saver.model_path}.nn"
         )
-        # policy.save(policy.model_path, settings)
-        self.saver.export(self.saver.model_path, settings)
+        self.saver.export(self.saver.model_path, self.brain_name)
         NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
     @abc.abstractmethod

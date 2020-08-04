@@ -4,7 +4,7 @@ from mlagents_envs.exception import UnityException
 from mlagents_envs.logging_util import get_logger
 from mlagents.tf_utils import tf
 from mlagents.trainers.saver.saver import Saver
-from mlagents.model_serialization import SerializationSettings, export_policy_model
+from mlagents.trainers.tf.model_serialization import export_policy_model
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -41,12 +41,12 @@ class TFSaver(Saver):
     def register(self, module_dict):
         pass
 
-    def save_checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
+    def save_checkpoint(self, checkpoint_path: str, brain_name: str) -> None:
         """
         Checkpoints the policy on disk.
 
         :param checkpoint_path: filepath to write the checkpoint
-        :param settings: SerializationSettings for exporting the model.
+        :param brain_name: Brain name of brain to be trained
         """
         print('save checkpoint_path:', checkpoint_path)
         # Save the TF checkpoint and graph definition
@@ -57,21 +57,21 @@ class TFSaver(Saver):
                 self.graph, self.model_path, "raw_graph_def.pb", as_text=False
             )
         # also save the policy so we have optimized model files for each checkpoint
-        self.export(checkpoint_path, settings)
+        self.export(checkpoint_path, brain_name)
 
-    def export(self, output_filepath: str, settings: SerializationSettings) -> None:
+    def export(self, output_filepath: str, brain_name: str) -> None:
         """
-        Saves the serialized model, given a path and SerializationSettings
+        Saves the serialized model, given a path and brain name.
 
         This method will save the policy graph to the given filepath.  The path
         should be provided without an extension as multiple serialized model formats
         may be generated as a result.
 
         :param output_filepath: path (without suffix) for the model file(s)
-        :param settings: SerializationSettings for how to save the model.
+        :param brain_name: Brain name of brain to be trained.
         """
         print('export output_filepath:', output_filepath)
-        export_policy_model(output_filepath, settings, self.graph, self.sess)
+        export_policy_model(output_filepath, brain_name, self.graph, self.sess)
 
     def maybe_load(self):
         # If there is an initialize path, load from that. Else, load from the set model path.
