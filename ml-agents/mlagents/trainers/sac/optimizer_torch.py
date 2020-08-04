@@ -467,3 +467,12 @@ class TorchSACOptimizer(TorchOptimizer):
         self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
     ) -> Dict[str, float]:
         return {}
+
+    def get_modules(self):
+        return {
+            "Optimizer:value_network": self.value_network,
+            "Optimizer:target_network": self.target_network,
+            "Optimizer:policy_optimizer": self.policy_optimizer ,
+            "Optimizer:value_optimizer": self.value_optimizer,
+            "Optimizer:entropy_optimizer": self.entropy_optimizer,
+        }

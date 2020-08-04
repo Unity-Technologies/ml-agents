@@ -363,6 +363,13 @@ class SACTrainer(RLTrainer):
             )  # type: ignore
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        if self.saver is None:
+            self.saver = self.create_saver(policy=policy)
+            self.saver.register(self.policy)
+            self.saver.register(self.optimizer)
+            self.saver.maybe_load()
+
         # Needed to resume loads properly
         self.step = policy.get_current_step()
         # Assume steps were updated at the correct ratio before
