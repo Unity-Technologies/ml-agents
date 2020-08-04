@@ -63,8 +63,8 @@ class NetworkBody(nn.Module):
 
     def forward(
         self,
-        vec_inputs: torch.Tensor,
-        vis_inputs: torch.Tensor,
+        vec_inputs: List[torch.Tensor],
+        vis_inputs: List[torch.Tensor],
         actions: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
@@ -161,7 +161,9 @@ class Actor(nn.Module):
         self.act_size = act_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
         self.memory_size = torch.nn.Parameter(torch.Tensor([0]))
-        self.is_continuous_int = torch.nn.Parameter(torch.Tensor([1]))
+        self.is_continuous_int = torch.nn.Parameter(
+            torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
+        )
         self.act_size_vector = torch.nn.Parameter(torch.Tensor(act_size))
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
