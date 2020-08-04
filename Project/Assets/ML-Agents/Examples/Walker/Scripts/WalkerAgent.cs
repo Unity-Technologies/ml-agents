@@ -9,8 +9,8 @@ using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
-    [Header("Walk Speed")] [Range(0, 15)] public float walkingSpeed = 15; //The walking speed to try and achieve
-    float m_maxWalkingSpeed = 15; //The max walking speed
+    [Header("Walk Speed")] [Range(0, 10)] public float walkingSpeed = 10; //The walking speed to try and achieve
+    float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 

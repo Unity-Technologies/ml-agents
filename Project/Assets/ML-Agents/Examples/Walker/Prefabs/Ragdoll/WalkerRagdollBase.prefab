@@ -319,7 +319,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  walkingSpeed: 15
+  walkingSpeed: 10
   randomizeWalkSpeedEachEpisode: 1
   walkDirectionMethod: 0
   worldDirToWalk: {x: 1, y: 0, z: 0}
