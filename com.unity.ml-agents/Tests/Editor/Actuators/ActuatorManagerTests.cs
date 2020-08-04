@@ -1,6 +1,9 @@
 using System;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
+using UnityEngine;
+using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace Unity.MLAgents.Tests.Actuators
@@ -91,6 +94,91 @@ namespace Unity.MLAgents.Tests.Actuators
             Assert.IsTrue(13 == manager.SumOfDiscreteBranchSizes);
             Assert.IsTrue(0 == manager.StoredContinuousActions.Length);
             Assert.IsTrue(7 == manager.StoredDiscreteActions.Length);
+        }
+
+        [Test]
+        public void TestFailOnMixedActionSpace()
+        {
+            var manager = new ActuatorManager();
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new []{1 ,2, 3, 4}), "actuator1");
+            var actuator2 = new TestActuator(ActionSpaceDef.MakeContinuous(3), "actuator2");
+            manager.Add(actuator1);
+            manager.Add(actuator2);
+            manager.EnsureActionBufferSize(new[] { actuator1, actuator2 }, 3, 10, 4);
+            LogAssert.Expect(LogType.Assert, "Actuators on the same Agent must have the same action SpaceType.");
+        }
+
+        [Test]
+        public void TestFailOnSameActuatorName()
+        {
+            var manager = new ActuatorManager();
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeContinuous(3), "actuator1");
+            var actuator2 = new TestActuator(ActionSpaceDef.MakeContinuous(3), "actuator1");
+            manager.Add(actuator1);
+            manager.Add(actuator2);
+            manager.EnsureActionBufferSize(new[] { actuator1, actuator2 }, 3, 10, 4);
+            LogAssert.Expect(LogType.Assert, "Actuator names must be unique.");
+        }
+
+        [Test]
+        public void TestUpdateActionsDiscrete()
+        {
+            var manager = new ActuatorManager();
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new []{1 ,2, 3, 4}), "actuator1");
+            var actuator2 = new TestActuator(ActionSpaceDef.MakeDiscrete(new [] {1, 1, 1}), "actuator2");
+            manager.Add(actuator1);
+            manager.Add(actuator2);
+            var actuator1ActionSpaceDef = actuator1.ActionSpaceDef;
+            var actuator2ActionSpaceDef = actuator2.ActionSpaceDef;
+            manager.EnsureActionBufferSize(new[] { actuator1, actuator2 },
+                actuator1ActionSpaceDef.NumContinuousActions + actuator2ActionSpaceDef.NumContinuousActions,
+                actuator1ActionSpaceDef.SumOfDiscreteBranchSizes + actuator2ActionSpaceDef.SumOfDiscreteBranchSizes,
+                actuator1ActionSpaceDef.NumDiscreteActions + actuator2ActionSpaceDef.NumDiscreteActions);
+
+            var discreteActionBuffer = new[] { 0, 1, 2, 3, 4, 5, 6};
+            manager.UpdateActions(Array.Empty<float>(),
+                discreteActionBuffer);
+
+            var actuator1Actions = actuator1.LastActionBuffer.DiscreteActions;
+            var actuator2Actions = actuator2.LastActionBuffer.DiscreteActions;
+            TestSegmentEquality(actuator1Actions, discreteActionBuffer);
+            TestSegmentEquality(actuator2Actions, discreteActionBuffer);
+        }
+
+        [Test]
+        public void TestUpdateActionsContinuous()
+        {
+            var manager = new ActuatorManager();
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeContinuous(3),
+            "actuator1");
+            var actuator2 = new TestActuator(ActionSpaceDef.MakeContinuous(3), "actuator2");
+            manager.Add(actuator1);
+            manager.Add(actuator2);
+            var actuator1ActionSpaceDef = actuator1.ActionSpaceDef;
+            var actuator2ActionSpaceDef = actuator2.ActionSpaceDef;
+            manager.EnsureActionBufferSize(new[] { actuator1, actuator2 },
+                actuator1ActionSpaceDef.NumContinuousActions + actuator2ActionSpaceDef.NumContinuousActions,
+                actuator1ActionSpaceDef.SumOfDiscreteBranchSizes + actuator2ActionSpaceDef.SumOfDiscreteBranchSizes,
+                actuator1ActionSpaceDef.NumDiscreteActions + actuator2ActionSpaceDef.NumDiscreteActions);
+
+            var continuousActionBuffer = new[] { 0f, 1f, 2f, 3f, 4f, 5f};
+            manager.UpdateActions(continuousActionBuffer,
+                Array.Empty<int>());
+
+            var actuator1Actions = actuator1.LastActionBuffer.ContinuousActions;
+            var actuator2Actions = actuator2.LastActionBuffer.ContinuousActions;
+            TestSegmentEquality(actuator1Actions, continuousActionBuffer);
+            TestSegmentEquality(actuator2Actions, continuousActionBuffer);
+        }
+
+        static void TestSegmentEquality<T>(ActionSegment<T> actuator1Actions, T[] discreteActionBuffer)
+        where T : struct
+        {
+            for (var i = 0; i < actuator1Actions.Length; i++)
+            {
+                var action = actuator1Actions[i];
+                Assert.AreEqual(action, discreteActionBuffer[actuator1Actions.Offset + i]);
+            }
         }
     }
 }
