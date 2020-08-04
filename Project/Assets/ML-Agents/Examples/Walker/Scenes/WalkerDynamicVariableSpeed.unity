@@ -2259,43 +2259,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3ce107b4a79bc4eef83afde434932a68, type: 3}
---- !u!1 &2066646069 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7175173927432230581, guid: 4ee4867f326424260aa2753712f3d643,
-    type: 3}
-  m_PrefabInstance: {fileID: 1359243704}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2066646077
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2066646069}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 74cc05b039aa04d3da17ac9921123c22, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  active: 0
-  showCOMGizmos: 1
-  avgCOMWorldSpace: {x: 0, y: 2.9995303, z: 0.0034782607}
-  avgCOMVelocityWorldSpace: {x: 0, y: 0, z: 0}
-  previousAvgCOM: {x: 0, y: 0, z: 0}
-  avgCOMColor: {r: 0, g: 1, b: 0, a: 1}
-  bodyPartCOMColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  totalMass: 115
-  showBPPosRelToBody: 0
-  useTransformPoint: 0
-  useTransformVector: 0
-  useTransformDir: 0
-  showRBPos: 0
-  showRelPosVectorOnly: 0
-  showInverseTransformPointUnscaledRelToBody: 0
-  showInverseTransformPointRelToBody: 0
-  showInverseTransformVectorRelToBody: 0
-  showInverseTransformDirRelToBody: 0
-  body_T: {fileID: 0}
 --- !u!1 &2095421678
 GameObject:
   m_ObjectHideFlags: 0
