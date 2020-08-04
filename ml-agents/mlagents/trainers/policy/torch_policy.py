@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 import numpy as np
 import torch
 
@@ -14,7 +14,8 @@ from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.torch.networks import ActorCritic
+from mlagents.trainers.torch.networks import SharedActorCritic, SeparateActorCritic
+from mlagents.trainers.torch.utils import ModelUtils
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -29,8 +30,8 @@ class TorchPolicy(Policy):
         load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
+        separate_critic: bool = True,
         condition_sigma_on_obs: bool = True,
-        separate_critic: Optional[bool] = None,
     ):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
@@ -69,15 +70,16 @@ class TorchPolicy(Policy):
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",
         }
-        self.actor_critic = ActorCritic(
+        if separate_critic:
+            ac_class = SeparateActorCritic
+        else:
+            ac_class = SharedActorCritic
+        self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
             act_type=behavior_spec.action_type,
             act_size=self.act_size,
             stream_names=reward_signal_names,
-            separate_critic=separate_critic
-            if separate_critic is not None
-            else self.use_continuous_act,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
@@ -117,16 +119,11 @@ class TorchPolicy(Policy):
         """
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         """
-        (
-            dists,
-            (value_heads, mean_value),
-            memories,
-        ) = self.actor_critic.get_dist_and_value(
+        dists, value_heads, memories = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-
         action_list = self.actor_critic.sample_action(dists)
-        log_probs, entropies, all_logs = self.actor_critic.get_probs_and_entropy(
+        log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists
         )
         actions = torch.stack(action_list, dim=-1)
@@ -146,15 +143,13 @@ class TorchPolicy(Policy):
     def evaluate_actions(
         self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
     ):
-        dists, (value_heads, mean_value), _ = self.actor_critic.get_dist_and_value(
+        dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
         if len(actions.shape) <= 2:
             actions = actions.unsqueeze(-1)
         action_list = [actions[..., i] for i in range(actions.shape[2])]
-        log_probs, entropies, _ = self.actor_critic.get_probs_and_entropy(
-            action_list, dists
-        )
+        log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
 
         return log_probs, entropies, value_heads
 
