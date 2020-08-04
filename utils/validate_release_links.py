@@ -18,20 +18,20 @@ ALLOW_LIST = {
     "docs/Versioning.md": None,
     "com.unity.ml-agents/CHANGELOG.md": None,
     "utils/make_readme_table.py": None,
-    "utils/validate_doc_versions.py": None,
+    "utils/validate_release_links.py": None,
 }
 
 
 def test_pattern():
     # Just some sanity check that the regex works as expected.
     assert RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/Food.md"
+        "https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/Food.md"
     )
     assert RELEASE_PATTERN.search(
-        "https://github.com/Unity-Technologies/ml-agents/blob/release_3/Foo.md"
+        "https://github.com/Unity-Technologies/ml-agents/blob/release_4/Foo.md"
     )
     assert RELEASE_PATTERN.search(
-        "git clone --branch release_3 https://github.com/Unity-Technologies/ml-agents.git"
+        "git clone --branch release_4 https://github.com/Unity-Technologies/ml-agents.git"
     )
     assert RELEASE_PATTERN.search(
         "https://github.com/Unity-Technologies/ml-agents/blob/release_123_docs/Foo.md"
@@ -77,7 +77,7 @@ def check_file(filename: str, global_allow_pattern: Pattern) -> List[str]:
     Validate a single file and return any offending lines.
     """
     bad_lines = []
-    with open(filename, "r") as f:
+    with open(filename) as f:
         for line in f:
             if not RELEASE_PATTERN.search(line):
                 continue

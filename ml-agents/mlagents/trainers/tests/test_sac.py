@@ -3,11 +3,11 @@ from unittest import mock
 import copy
 
 from mlagents.tf_utils import tf
-
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import setup_test_behavior_specs
@@ -46,8 +46,8 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         if use_rnn
         else None
     )
-    policy = NNPolicy(
-        0, mock_brain, trainer_settings, False, "test", False, create_tf_graph=False
+    policy = TFPolicy(
+        0, mock_brain, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = SACOptimizer(policy, trainer_settings)
     return optimizer
@@ -109,20 +109,21 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     trainer_params = dummy_config
     trainer_params.hyperparameters.save_replay_buffer = True
     trainer = SACTrainer("test", 1, trainer_params, True, False, 0, "testdir")
-    policy = trainer.create_policy("test", mock_specs)
-    trainer.add_policy("test", policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
+    policy = trainer.create_policy(behavior_id, mock_specs)
+    trainer.add_policy(behavior_id, policy)
 
     trainer.update_buffer = mb.simulate_rollout(
         BUFFER_INIT_SAMPLES, policy.behavior_spec
     )
     buffer_len = trainer.update_buffer.num_experiences
-    trainer.save_model(trainer.brain_name)
+    trainer.save_model()
 
     # Wipe Trainer and try to load
     trainer2 = SACTrainer("test", 1, trainer_params, True, True, 0, "testdir")
 
-    policy = trainer2.create_policy("test", mock_specs)
-    trainer2.add_policy("test", policy)
+    policy = trainer2.create_policy(behavior_id, mock_specs)
+    trainer2.add_policy(behavior_id, policy)
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 
@@ -133,19 +134,14 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     sac_optimizer.return_value = mock_optimizer
 
     trainer = SACTrainer("test", 0, dummy_config, True, False, 0, "0")
-    policy = mock.Mock(spec=NNPolicy)
+    policy = mock.Mock(spec=TFPolicy)
     policy.get_current_step.return_value = 2000
-
-    trainer.add_policy("test", policy)
-    assert trainer.get_policy("test") == policy
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
+    trainer.add_policy(behavior_id, policy)
+    assert trainer.get_policy(behavior_id.behavior_id) == policy
 
     # Make sure the summary steps were loaded properly
     assert trainer.get_step == 2000
-
-    # Test incorrect class of policy
-    policy = mock.Mock()
-    with pytest.raises(RuntimeError):
-        trainer.add_policy("test", policy)
 
 
 def test_advance(dummy_config):
@@ -156,8 +152,9 @@ def test_advance(dummy_config):
     dummy_config.hyperparameters.reward_signal_steps_per_update = 20
     dummy_config.hyperparameters.buffer_init_steps = 0
     trainer = SACTrainer("test", 0, dummy_config, True, False, 0, "0")
-    policy = trainer.create_policy("test", specs)
-    trainer.add_policy("test", policy)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
+    policy = trainer.create_policy(behavior_id, specs)
+    trainer.add_policy(behavior_id, policy)
 
     trajectory_queue = AgentManagerQueue("testbrain")
     policy_queue = AgentManagerQueue("testbrain")
@@ -222,9 +219,10 @@ def test_advance(dummy_config):
 
     # Call add_policy and check that we update the correct number of times.
     # This is to emulate a load from checkpoint.
-    policy = trainer.create_policy("test", specs)
+    behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
+    policy = trainer.create_policy(behavior_id, specs)
     policy.get_current_step = lambda: 200
-    trainer.add_policy("test", policy)
+    trainer.add_policy(behavior_id, policy)
     trainer.optimizer.update = mock.Mock()
     trainer.optimizer.update_reward_signals = mock.Mock()
     trainer.optimizer.update_reward_signals.return_value = {}

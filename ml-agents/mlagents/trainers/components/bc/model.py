@@ -3,7 +3,7 @@ from mlagents.tf_utils import tf
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
-class BCModel(object):
+class BCModel:
     def __init__(
         self, policy: TFPolicy, learning_rate: float = 3e-4, anneal_steps: int = 0
     ):

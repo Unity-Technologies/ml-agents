@@ -6,9 +6,9 @@ from mlagents_envs.base_env import (
     BehaviorSpec,
     BehaviorName,
 )
-from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
-from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.policy import Policy
 from mlagents.trainers.agent_processor import AgentManager, AgentManagerQueue
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.logging_util import get_logger
@@ -23,7 +23,7 @@ class EnvironmentStep(NamedTuple):
     current_all_step_result: AllStepResult
     worker_id: int
     brain_name_to_action_info: Dict[BehaviorName, ActionInfo]
-    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
+    environment_stats: EnvironmentStats
 
     @property
     def name_behavior_ids(self) -> Iterable[BehaviorName]:
@@ -36,11 +36,11 @@ class EnvironmentStep(NamedTuple):
 
 class EnvManager(ABC):
     def __init__(self):
-        self.policies: Dict[BehaviorName, TFPolicy] = {}
+        self.policies: Dict[BehaviorName, Policy] = {}
         self.agent_managers: Dict[BehaviorName, AgentManager] = {}
-        self.first_step_infos: List[EnvironmentStep] = None
+        self.first_step_infos: List[EnvironmentStep] = []
 
-    def set_policy(self, brain_name: BehaviorName, policy: TFPolicy) -> None:
+    def set_policy(self, brain_name: BehaviorName, policy: Policy) -> None:
         self.policies[brain_name] = policy
         if brain_name in self.agent_managers:
             self.agent_managers[brain_name].policy = policy
@@ -70,7 +70,7 @@ class EnvManager(ABC):
     def set_env_parameters(self, config: Dict = None) -> None:
         """
         Sends environment parameter settings to C# via the
-        EnvironmentParametersSidehannel.
+        EnvironmentParametersSideChannel.
         :param config: Dict of environment parameter keys and values
         """
         pass
@@ -84,15 +84,20 @@ class EnvManager(ABC):
     def close(self):
         pass
 
-    def advance(self):
+    def get_steps(self) -> List[EnvironmentStep]:
+        """
+        Updates the policies, steps the environments, and returns the step information from the environments.
+        Calling code should pass the returned EnvironmentSteps to process_steps() after calling this.
+        :return: The list of EnvironmentSteps
+        """
         # If we had just reset, process the first EnvironmentSteps.
         # Note that we do it here instead of in reset() so that on the very first reset(),
         # we can create the needed AgentManagers before calling advance() and processing the EnvironmentSteps.
-        if self.first_step_infos is not None:
+        if self.first_step_infos:
             self._process_step_infos(self.first_step_infos)
-            self.first_step_infos = None
+            self.first_step_infos = []
         # Get new policies if found. Always get the latest policy.
-        for brain_name in self.training_behaviors:
+        for brain_name in self.agent_managers.keys():
             _policy = None
             try:
                 # We make sure to empty the policy queue before continuing to produce steps.
@@ -101,9 +106,13 @@ class EnvManager(ABC):
                     _policy = self.agent_managers[brain_name].policy_queue.get_nowait()
             except AgentManagerQueue.Empty:
                 if _policy is not None:
-                    self.set_policy(brain_name, _policy)
-        # Step the environment
+                    # policy_queue contains Policy, but we need a TFPolicy here
+                    self.set_policy(brain_name, _policy)  # type: ignore
+        # Step the environments
         new_step_infos = self._step()
+        return new_step_infos
+
+    def process_steps(self, new_step_infos: List[EnvironmentStep]) -> int:
         # Add to AgentProcessor
         num_step_infos = self._process_step_infos(new_step_infos)
         return num_step_infos

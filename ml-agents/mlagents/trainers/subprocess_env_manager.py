@@ -1,4 +1,4 @@
-from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set, Tuple
+from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 import enum
 
@@ -33,7 +33,7 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
 )
 from mlagents_envs.side_channel.stats_side_channel import (
     StatsSideChannel,
-    StatsAggregationMethod,
+    EnvironmentStats,
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
 
@@ -64,7 +64,7 @@ class EnvironmentResponse(NamedTuple):
 class StepResponse(NamedTuple):
     all_step_result: AllStepResult
     timer_root: Optional[TimerNode]
-    environment_stats: Dict[str, Tuple[float, StatsAggregationMethod]]
+    environment_stats: EnvironmentStats
 
 
 class UnityEnvWorker:
@@ -166,9 +166,7 @@ def worker(
                 _send_response(EnvironmentCommand.BEHAVIOR_SPECS, env.behavior_specs)
             elif req.cmd == EnvironmentCommand.ENVIRONMENT_PARAMETERS:
                 for k, v in req.payload.items():
-                    if isinstance(v, float):
-                        env_parameters.set_float_parameter(k, v)
-                    elif isinstance(v, ParameterRandomizationSettings):
+                    if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()

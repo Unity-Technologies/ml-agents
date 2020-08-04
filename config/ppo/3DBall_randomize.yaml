@@ -24,8 +24,7 @@ behaviors:
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
-
-parameter_randomization:
+environment_parameters:
   mass:
     sampler_type: uniform
     sampler_parameters:

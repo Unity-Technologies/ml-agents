@@ -101,7 +101,7 @@ Once you have started training, you can
 2. Unless you started the training as a background process, connect to your VM
    from another terminal instance.
 3. Run the following command from your terminal
-   `tensorboard --logdir=summaries --host 0.0.0.0`
+   `tensorboard --logdir results --host 0.0.0.0`
 4. You should now be able to open a browser and navigate to
    `<Your_VM_IP_Address>:6060` to view the TensorBoard report.
 

@@ -3,7 +3,7 @@ from typing import NamedTuple, List, Tuple
 import numpy as np
 
 from mlagents.tf_utils import tf
-from mlagents.trainers.models import ModelUtils
+from mlagents.trainers.tf.models import ModelUtils
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 

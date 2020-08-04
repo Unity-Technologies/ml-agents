@@ -2,7 +2,7 @@ from typing import Optional, Any, Dict, cast
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType
+from mlagents.trainers.tf.models import ModelUtils, EncoderType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
@@ -229,10 +229,10 @@ class PPOOptimizer(TFOptimizer):
         self.old_values = {}
         for name in value_heads.keys():
             returns_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_returns".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_returns"
             )
             old_value = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_value_estimate"
             )
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value
@@ -334,12 +334,8 @@ class PPOOptimizer(TFOptimizer):
             self.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
-            feed_dict[self.returns_holders[name]] = mini_batch[
-                "{}_returns".format(name)
-            ]
-            feed_dict[self.old_values[name]] = mini_batch[
-                "{}_value_estimates".format(name)
-            ]
+            feed_dict[self.returns_holders[name]] = mini_batch[f"{name}_returns"]
+            feed_dict[self.old_values[name]] = mini_batch[f"{name}_value_estimates"]
 
         if self.policy.output_pre is not None and "actions_pre" in mini_batch:
             feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]

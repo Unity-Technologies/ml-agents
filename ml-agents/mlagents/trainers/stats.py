@@ -1,11 +1,12 @@
 from collections import defaultdict
 from enum import Enum
-from typing import List, Dict, NamedTuple, Any
+from typing import List, Dict, NamedTuple, Any, Optional
 import numpy as np
 import abc
 import csv
 import os
 import time
+from threading import RLock
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
@@ -113,7 +114,7 @@ class ConsoleWriter(StatsWriter):
             )
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                logger.info("{} ELO: {:0.3f}. ".format(category, elo_stats.mean))
+                logger.info(f"{category} ELO: {elo_stats.mean:0.3f}. ")
         else:
             logger.info(
                 "{}: Step: {}. No episode was completed since last summary. {}".format(
@@ -126,7 +127,7 @@ class ConsoleWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             logger.info(
-                """Hyperparameters for behavior name {0}: \n{1}""".format(
+                """Hyperparameters for behavior name {}: \n{}""".format(
                     category, self._dict_to_str(value, 0)
                 )
             )
@@ -149,7 +150,7 @@ class ConsoleWriter(StatsWriter):
                 [
                     "\t"
                     + "  " * num_tabs
-                    + "{0}:\t{1}".format(
+                    + "{}:\t{}".format(
                         x, self._dict_to_str(param_dict[x], num_tabs + 1)
                     )
                     for x in param_dict
@@ -176,7 +177,7 @@ class TensorboardWriter(StatsWriter):
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
             summary = tf.Summary()
-            summary.value.add(tag="{}".format(key), simple_value=value.mean)
+            summary.value.add(tag=f"{key}", simple_value=value.mean)
             self.summary_writers[category].add_summary(summary, step)
             self.summary_writers[category].flush()
 
@@ -194,7 +195,7 @@ class TensorboardWriter(StatsWriter):
         for file_name in os.listdir(directory_name):
             if file_name.startswith("events.out"):
                 logger.warning(
-                    "{} was left over from a previous run. Deleting.".format(file_name)
+                    f"{file_name} was left over from a previous run. Deleting."
                 )
                 full_fname = os.path.join(directory_name, file_name)
                 try:
@@ -210,11 +211,14 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             assert isinstance(value, dict)
-            text = self._dict_to_tensorboard("Hyperparameters", value)
+            summary = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
-            self.summary_writers[category].add_summary(text, 0)
+            if summary is not None:
+                self.summary_writers[category].add_summary(summary, 0)
 
-    def _dict_to_tensorboard(self, name: str, input_dict: Dict[str, Any]) -> str:
+    def _dict_to_tensorboard(
+        self, name: str, input_dict: Dict[str, Any]
+    ) -> Optional[bytes]:
         """
         Convert a dict to a Tensorboard-encoded string.
         :param name: The name of the text.
@@ -225,14 +229,16 @@ class TensorboardWriter(StatsWriter):
                 s_op = tf.summary.text(
                     name,
                     tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                        [[str(x), str(input_dict[x])] for x in input_dict]
                     ),
                 )
                 s = sess.run(s_op)
                 return s
         except Exception:
-            logger.warning("Could not write text summary for Tensorboard.")
-            return ""
+            logger.warning(
+                f"Could not write {name} summary for Tensorboard: {input_dict}"
+            )
+            return None
 
 
 class CSVWriter(StatsWriter):
@@ -290,6 +296,7 @@ class CSVWriter(StatsWriter):
 class StatsReporter:
     writers: List[StatsWriter] = []
     stats_dict: Dict[str, Dict[str, List]] = defaultdict(lambda: defaultdict(list))
+    lock = RLock()
 
     def __init__(self, category: str):
         """
@@ -302,7 +309,8 @@ class StatsReporter:
 
     @staticmethod
     def add_writer(writer: StatsWriter) -> None:
-        StatsReporter.writers.append(writer)
+        with StatsReporter.lock:
+            StatsReporter.writers.append(writer)
 
     def add_property(self, property_type: StatsPropertyType, value: Any) -> None:
         """
@@ -313,8 +321,9 @@ class StatsReporter:
         :param key: The type of property.
         :param value: The property itself.
         """
-        for writer in StatsReporter.writers:
-            writer.add_property(self.category, property_type, value)
+        with StatsReporter.lock:
+            for writer in StatsReporter.writers:
+                writer.add_property(self.category, property_type, value)
 
     def add_stat(self, key: str, value: float) -> None:
         """
@@ -322,7 +331,8 @@ class StatsReporter:
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
         """
-        StatsReporter.stats_dict[self.category][key].append(value)
+        with StatsReporter.lock:
+            StatsReporter.stats_dict[self.category][key].append(value)
 
     def set_stat(self, key: str, value: float) -> None:
         """
@@ -331,7 +341,8 @@ class StatsReporter:
         :param key: The type of statistic, e.g. Environment/Reward.
         :param value: the value of the statistic.
         """
-        StatsReporter.stats_dict[self.category][key] = [value]
+        with StatsReporter.lock:
+            StatsReporter.stats_dict[self.category][key] = [value]
 
     def write_stats(self, step: int) -> None:
         """
@@ -340,14 +351,15 @@ class StatsReporter:
         and the buffer cleared.
         :param step: Training step which to write these stats as.
         """
-        values: Dict[str, StatsSummary] = {}
-        for key in StatsReporter.stats_dict[self.category]:
-            if len(StatsReporter.stats_dict[self.category][key]) > 0:
-                stat_summary = self.get_stats_summaries(key)
-                values[key] = stat_summary
-        for writer in StatsReporter.writers:
-            writer.write_stats(self.category, values, step)
-        del StatsReporter.stats_dict[self.category]
+        with StatsReporter.lock:
+            values: Dict[str, StatsSummary] = {}
+            for key in StatsReporter.stats_dict[self.category]:
+                if len(StatsReporter.stats_dict[self.category][key]) > 0:
+                    stat_summary = self.get_stats_summaries(key)
+                    values[key] = stat_summary
+            for writer in StatsReporter.writers:
+                writer.write_stats(self.category, values, step)
+            del StatsReporter.stats_dict[self.category]
 
     def get_stats_summaries(self, key: str) -> StatsSummary:
         """

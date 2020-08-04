@@ -9,13 +9,12 @@
     - [Loading an Existing Model](#loading-an-existing-model)
 - [Training Configurations](#training-configurations)
   - [Behavior Configurations](#behavior-configurations)
-  - [Curriculum Learning](#curriculum-learning)
-    - [Specifying Curricula](#specifying-curricula)
-    - [Training with a Curriculum](#training-with-a-curriculum)
-  - [Environment Parameter Randomization](#environment-parameter-randomization)
-    - [Included Sampler Types](#included-sampler-types)
-    - [Defining a New Sampler Type](#defining-a-new-sampler-type)
-    - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
+  - [Environment Parameters](#environment-parameters)
+    - [Environment Parameter Randomization](#environment-parameter-randomization)
+      - [Supported Sampler Types](#supported-sampler-types)
+      - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
+    - [Curriculum Learning](#curriculum)
+      - [Training with a Curriculum](#training-with-a-curriculum)
   - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
 
 For a broad overview of reinforcement learning, imitation learning and all the
@@ -96,8 +95,8 @@ in the `results/<run-identifier>` folder:
    blocks. See [Profiling in Python](Profiling-Python.md) for more information
    on the timers generated.
 
-These artifacts (except the `.nn` file) are updated throughout the training
-process and finalized when training completes or is interrupted.
+These artifacts are updated throughout the training
+process and finalized when training is completed or is interrupted.
 
 #### Stopping and Resuming Training
 
@@ -137,8 +136,8 @@ More specifically, this section offers a detailed guide on the command-line
 flags for `mlagents-learn` that control the training configurations:
 
 - `<trainer-config-file>`: defines the training hyperparameters for each
-  Behavior in the scene, and the set-ups for Curriculum Learning and
-  Environment Parameter Randomization
+  Behavior in the scene, and the set-ups for the environment parameters
+  (Curriculum Learning and Environment Parameter Randomization)
 - `--num-envs`: number of concurrent Unity instances to use during training
 
 Reminder that a detailed description of all command-line options can be found by
@@ -179,7 +178,8 @@ use during training, and the answers to the above questions will dictate its con
 The rest of this guide breaks down the different sub-sections of the trainer config file
 and explains the possible settings for each.
 
-**NOTE:** The configuration file format has been changed from 0.17.0 and onwards. To convert
+**NOTE:** The configuration file format has been changed between 0.17.0 and 0.18.0 and
+between 0.18.0 and onwards. To convert
 an old set of configuration files (trainer config, curriculum, and sampler files) to the new
 format, a script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` in your
 console to see the script's usage.
@@ -194,7 +194,7 @@ below is a sample file that includes all the possible settings if we're using a
 PPO trainer with all the possible training functionalities enabled (memory,
 behavioral cloning, curiosity, GAIL and self-play). You will notice that
 curriculum and environment parameter randomization settings are not part of the `behaviors`
-configuration, but their settings live in different sections that we'll cover subsequently.
+configuration, but in their own section called `environment_parameters`.
 
 ```yaml
 behaviors:
@@ -337,11 +337,13 @@ each of these parameters mean and provide guidelines on how to set them. See
 description of all the configurations listed above, along with their defaults.
 Unless otherwise specified, omitting a configuration will revert it to its default.
 
-### Curriculum Learning
 
-To enable curriculum learning, you need to add a `curriculum ` sub-section to the trainer
-configuration YAML file. Within this sub-section, add an entry for each behavior that defines
-the curriculum for thatbehavior. Here is one example:
+### Environment Parameters
+
+In order to control the `EnvironmentParameters` in the Unity simulation during training,
+you need to add a section called `environment_parameters`. For example you can set the
+value of an `EnvironmentParameter` called `my_environment_parameter` to `3.0` with
+the following code :
 
 ```yml
 behaviors:
@@ -349,93 +351,30 @@ behaviors:
     # < Same as above >
 
 # Add this section
-curriculum:
+environment_parameters:
+  my_environment_parameter: 3.0
+```
+
+Inside the Unity simulation, you can access your Environment Parameters by doing :
+
+```csharp
+Academy.Instance.EnvironmentParameters.GetWithDefault("my_environment_parameter", 0.0f);
+```
+
+#### Environment Parameter Randomization
+
+To enable environment parameter randomization, you need to edit the `environment_parameters`
+section of your training configuration yaml file. Instead of providing a single float value
+for your environment parameter, you can specify a sampler instead. Here is an example with
+three environment parameters called `mass`, `length` and `scale`:
+
+```yml
+behaviors:
   BehaviorY:
-    measure: progress
-    thresholds: [0.1, 0.3, 0.5]
-    min_lesson_length: 100
-    signal_smoothing: true
-    parameters:
-      wall_height: [1.5, 2.0, 2.5, 4.0]
-```
+    # < Same as above >
 
-Each group of Agents under the same `Behavior Name` in an environment can have a
-corresponding curriculum. These curricula are held in what we call a
-"metacurriculum". A metacurriculum allows different groups of Agents to follow
-different curricula within the same environment.
-
-#### Specifying Curricula
-
-In order to define the curricula, the first step is to decide which parameters
-of the environment will vary. In the case of the Wall Jump environment, the
-height of the wall is what varies. Rather than adjusting it by hand, we will
-create a configuration which describes the structure of the curricula. Within it, we
-can specify which points in the training process our wall height will change,
-either based on the percentage of training steps which have taken place, or what
-the average reward the agent has received in the recent past is. Below is an
-example config for the curricula for the Wall Jump environment.
-
-```yaml
-behaviors:
-  BigWallJump:
-    # < Trainer parameters for BigWallJump >
-  SmallWallJump:
-    # < Trainer parameters for SmallWallJump >
-
-curriculum:
-  BigWallJump:
-      measure: progress
-      thresholds: [0.1, 0.3, 0.5]
-      min_lesson_length: 100
-      signal_smoothing: true
-      parameters:
-        big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
-        big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
-  SmallWallJump:
-    measure: progress
-    thresholds: [0.1, 0.3, 0.5]
-    min_lesson_length: 100
-    signal_smoothing: true
-    parameters:
-      small_wall_height: [1.5, 2.0, 2.5, 4.0]
-```
-
-The curriculum for each Behavior has the following parameters:
-
-| **Setting**         | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
-| `thresholds`        | Points in value of `measure` where lesson should be increased.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> **Important**: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |
-| `signal_smoothing`  | Whether to weight the current progress measure by previous values.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| `parameters`        | Corresponds to environment parameters to control. Length of each array should be one greater than number of thresholds.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-
-#### Training with a Curriculum
-
-Once we have specified our metacurriculum and curricula, we can launch
-`mlagents-learn` to point to the config file containing
-our curricula and PPO will train using Curriculum Learning. For example, to
-train agents in the Wall Jump environment with curriculum learning, we can run:
-
-```sh
-mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
-```
-
-We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
-the run, you can resume it using `--resume` and lesson progress will start off where it
-ended.
-
-### Environment Parameter Randomization
-
-To enable parameter randomization, you need to add a `parameter-randomization` sub-section
-to your trainer config YAML file. Here is one example:
-
-```yaml
-behaviors:
-  # < Same as above>
-
-parameter_randomization:
-
+# Add this section
+environment_parameters:
   mass:
     sampler_type: uniform
     sampler_parameters:
@@ -454,16 +393,13 @@ parameter_randomization:
         st_dev: .3
 ```
 
-Note that `mass`, `length` and `scale` are the names of the environment
-parameters that will be sampled. These are used as keys by the `EnvironmentParameter`
-class to sample new parameters via the function `GetWithDefault`.
 
 | **Setting**                  | **Description**                                                                                                                                                                                                                                                                                                                         |
 | :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `sampler_type`               | A string identifier for the type of sampler to use for this `Environment Parameter`.                                                                                                                                                                                                    |
 | `sampler_parameters` | The parameters for a given `sampler_type`. Samplers of different types can have different `sampler_parameters` |
 
-#### Supported Sampler Types
+##### Supported Sampler Types
 
 Below is a list of the `sampler_type` values supported by the toolkit.
 
@@ -487,18 +423,96 @@ Below is a list of the `sampler_type` values supported by the toolkit.
 The implementation of the samplers can be found in the
 [Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
 
-#### Training with Environment Parameter Randomization
+##### Training with Environment Parameter Randomization
 
 After the sampler configuration is defined, we proceed by launching `mlagents-learn`
-and specify trainer configuration with `parameter-randomization` defined. For example,
-if we wanted to train the 3D ball agent with parameter randomization using
-`Environment Parameters` with sampling setup, we would run
+and specify trainer configuration with  parameter randomization enabled. For example,
+if we wanted to train the 3D ball agent with parameter randomization, we would run
 
 ```sh
 mlagents-learn config/ppo/3DBall_randomize.yaml --run-id=3D-Ball-randomize
 ```
 
 We can observe progress and metrics via Tensorboard.
+
+#### Curriculum
+
+To enable curriculum learning, you need to add a `curriculum` sub-section to your environment
+parameter. Here is one example with the environment parameter `my_environment_parameter` :
+
+```yml
+behaviors:
+  BehaviorY:
+    # < Same as above >
+
+# Add this section
+environment_parameters:
+  my_environment_parameter:
+    curriculum:
+      - name: MyFirstLesson # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: my_behavior
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.2
+        value: 0.0
+      - name: MySecondLesson # This is the start of the second lesson
+        completion_criteria:
+          measure: progress
+          behavior: my_behavior
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.6
+          require_reset: true
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 4.0
+            max_value: 7.0
+      - name: MyLastLesson
+        value: 8.0
+```
+
+Note that this curriculum __only__ applies to `my_environment_parameter`. The `curriculum` section
+contains a list of `Lessons`. In the example, the lessons are named `MyFirstLesson`, `MySecondLesson`
+and `MyLastLesson`.
+Each `Lesson` has 3 fields :
+
+ - `name` which is a user defined name for the lesson (The name of the lesson will be displayed in
+ the console when the lesson changes)
+ - `completion_criteria` which determines what needs to happen in the simulation before the lesson
+ can be considered complete. When that condition is met, the curriculum moves on to the next
+ `Lesson`. Note that you do not need to specify a `completion_criteria` for the last `Lesson`
+ - `value` which is the value the environment parameter will take during the lesson. Note that this
+ can be a float or a sampler.
+
+ There are the different settings of the `completion_criteria` :
+
+
+| **Setting**         | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `behavior`        | Specifies which behavior is being tracked. There can be multiple behaviors with different names, each at different points of training. This setting allows the curriculum to track only one of them.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `threshold`        | Determines at what point in value of `measure` the lesson should be increased.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> **Important**: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |
+| `signal_smoothing`  | Whether to weight the current progress measure by previous values.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `require_reset`  | Whether changing lesson requires the environment to reset (default: false)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+##### Training with a Curriculum
+
+Once we have specified our metacurriculum and curricula, we can launch
+`mlagents-learn` to point to the config file containing
+our curricula and PPO will train using Curriculum Learning. For example, to
+train agents in the Wall Jump environment with curriculum learning, we can run:
+
+```sh
+mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
+```
+
+We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
+the run, you can resume it using `--resume` and lesson progress will start off where it
+ended.
+
 
 ### Training Using Concurrent Unity Instances
 

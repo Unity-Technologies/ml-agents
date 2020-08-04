@@ -14,7 +14,9 @@ DIRECTORIES = [
     "gym-unity/gym_unity",
 ]
 
-UNITY_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
+MLAGENTS_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
+MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH = "com.unity.ml-agents.extensions/package.json"
+
 ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
 
 PYTHON_VERSION_FILE_TEMPLATE = """# Version of the library that will be used to upload to pypi
@@ -82,20 +84,32 @@ def set_version(
     if csharp_version is not None:
         package_version = csharp_version + "-preview"
         print(
-            f"Setting package version to {package_version} in {UNITY_PACKAGE_JSON_PATH}"
+            f"Setting package version to {package_version} in {MLAGENTS_PACKAGE_JSON_PATH}"
+            f" and {MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH}"
         )
         set_package_version(package_version)
+        set_extension_package_version(package_version)
         print(f"Setting package version to {package_version} in {ACADEMY_PATH}")
         set_academy_version_string(package_version)
 
 
 def set_package_version(new_version: str) -> None:
-    with open(UNITY_PACKAGE_JSON_PATH, "r") as f:
+    with open(MLAGENTS_PACKAGE_JSON_PATH) as f:
         package_json = json.load(f)
     if "version" in package_json:
         package_json["version"] = new_version
-    with open(UNITY_PACKAGE_JSON_PATH, "w") as f:
+    with open(MLAGENTS_PACKAGE_JSON_PATH, "w") as f:
         json.dump(package_json, f, indent=2)
+        f.write("\n")
+
+
+def set_extension_package_version(new_version: str) -> None:
+    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH) as f:
+        package_json = json.load(f)
+    package_json["dependencies"]["com.unity.ml-agents"] = new_version
+    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH, "w") as f:
+        json.dump(package_json, f, indent=2)
+        f.write("\n")
 
 
 def set_academy_version_string(new_version):

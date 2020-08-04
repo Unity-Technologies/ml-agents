@@ -14,7 +14,21 @@ double-check that the versions are in the same. The versions can be found in
 
 # Migrating
 
-## Migrating from Release 1 to latest
+## Migrating from Release 3 to latest
+
+### Important changes
+- The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
+in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
+behavior. More information
+[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
+
+### Steps to Migrate
+- The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
+an upgrade script has been provided. Run `python -m mlagents.trainers.upgrade_config -h` to see the script usage. Note that you will have had to upgrade to/install the current version of ML-Agents before running the script. To update manually:
+  - If your config file used a `parameter_randomization` section, rename that section to `environment_parameters`
+  - If your config file used a `curriculum` section, you will need to rewrite your curriculum with this [format](Training-ML-Agents.md#curriculum).
+
+## Migrating from Release 1 to Release 3
 
 ### Important changes
 - Training artifacts (trained models, summaries) are now found under `results/`

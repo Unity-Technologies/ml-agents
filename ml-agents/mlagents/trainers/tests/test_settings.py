@@ -13,7 +13,9 @@ from mlagents.trainers.settings import (
     RewardSignalType,
     RewardSignalSettings,
     CuriositySettings,
-    ParameterRandomizationSettings,
+    EnvironmentSettings,
+    EnvironmentParameterSettings,
+    ConstantSettings,
     UniformSettings,
     GaussianSettings,
     MultiRangeUniformSettings,
@@ -191,11 +193,11 @@ def test_memory_settings_validation():
         NetworkSettings.MemorySettings(sequence_length=128, memory_size=0)
 
 
-def test_parameter_randomization_structure():
+def test_env_parameter_structure():
     """
-    Tests the ParameterRandomizationSettings structure method and all validators.
+    Tests the EnvironmentParameterSettings structure method and all validators.
     """
-    parameter_randomization_dict = {
+    env_params_dict = {
         "mass": {
             "sampler_type": "uniform",
             "sampler_parameters": {"min_value": 1.0, "max_value": 2.0},
@@ -208,14 +210,35 @@ def test_parameter_randomization_structure():
             "sampler_type": "multirangeuniform",
             "sampler_parameters": {"intervals": [[1.0, 2.0], [3.0, 4.0]]},
         },
+        "gravity": 1,
+        "wall_height": {
+            "curriculum": [
+                {
+                    "name": "Lesson1",
+                    "completion_criteria": {
+                        "measure": "reward",
+                        "behavior": "fake_behavior",
+                        "threshold": 10,
+                    },
+                    "value": 1,
+                },
+                {"value": 4, "name": "Lesson2"},
+            ]
+        },
     }
-    parameter_randomization_distributions = ParameterRandomizationSettings.structure(
-        parameter_randomization_dict, Dict[str, ParameterRandomizationSettings]
+    env_param_settings = EnvironmentParameterSettings.structure(
+        env_params_dict, Dict[str, EnvironmentParameterSettings]
     )
-    assert isinstance(parameter_randomization_distributions["mass"], UniformSettings)
-    assert isinstance(parameter_randomization_distributions["scale"], GaussianSettings)
+    assert isinstance(env_param_settings["mass"].curriculum[0].value, UniformSettings)
+    assert isinstance(env_param_settings["scale"].curriculum[0].value, GaussianSettings)
     assert isinstance(
-        parameter_randomization_distributions["length"], MultiRangeUniformSettings
+        env_param_settings["length"].curriculum[0].value, MultiRangeUniformSettings
+    )
+    assert isinstance(
+        env_param_settings["wall_height"].curriculum[0].value, ConstantSettings
+    )
+    assert isinstance(
+        env_param_settings["wall_height"].curriculum[1].value, ConstantSettings
     )
 
     # Check invalid distribution type
@@ -226,8 +249,8 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(ValueError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check min less than max in uniform
@@ -238,8 +261,8 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check min less than max in multirange
@@ -250,8 +273,8 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check multirange has valid intervals
@@ -262,14 +285,35 @@ def test_parameter_randomization_structure():
         }
     }
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            invalid_distribution_dict, Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            invalid_distribution_dict, Dict[str, EnvironmentParameterSettings]
         )
 
     # Check non-Dict input
     with pytest.raises(TrainerConfigError):
-        ParameterRandomizationSettings.structure(
-            "notadict", Dict[str, ParameterRandomizationSettings]
+        EnvironmentParameterSettings.structure(
+            "notadict", Dict[str, EnvironmentParameterSettings]
+        )
+
+    invalid_curriculum_dict = {
+        "wall_height": {
+            "curriculum": [
+                {
+                    "name": "Lesson1",
+                    "completion_criteria": {
+                        "measure": "progress",
+                        "behavior": "fake_behavior",
+                        "threshold": 10,
+                    },  # > 1 is too large
+                    "value": 1,
+                },
+                {"value": 4, "name": "Lesson2"},
+            ]
+        }
+    }
+    with pytest.raises(TrainerConfigError):
+        EnvironmentParameterSettings.structure(
+            invalid_curriculum_dict, Dict[str, EnvironmentParameterSettings]
         )
 
 
@@ -342,6 +386,51 @@ def test_exportable_settings(use_defaults):
         train_model: false
         inference: false
     debug: true
+    environment_parameters:
+        big_wall_height:
+            curriculum:
+              - name: Lesson0
+                completion_criteria:
+                    measure: progress
+                    behavior: BigWallJump
+                    signal_smoothing: true
+                    min_lesson_length: 100
+                    threshold: 0.1
+                value:
+                    sampler_type: uniform
+                    sampler_parameters:
+                        min_value: 0.0
+                        max_value: 4.0
+              - name: Lesson1
+                completion_criteria:
+                    measure: reward
+                    behavior: BigWallJump
+                    signal_smoothing: true
+                    min_lesson_length: 100
+                    threshold: 0.2
+                value:
+                    sampler_type: gaussian
+                    sampler_parameters:
+                        mean: 4.0
+                        st_dev: 7.0
+              - name: Lesson2
+                completion_criteria:
+                    measure: progress
+                    behavior: BigWallJump
+                    signal_smoothing: true
+                    min_lesson_length: 20
+                    threshold: 0.3
+                value:
+                    sampler_type: multirangeuniform
+                    sampler_parameters:
+                        intervals: [[1.0, 2.0],[4.0, 5.0]]
+              - name: Lesson3
+                value: 8.0
+        small_wall_height: 42.0
+        other_wall_height:
+            sampler_type: multirangeuniform
+            sampler_parameters:
+                intervals: [[1.0, 2.0],[4.0, 5.0]]
     """
     if not use_defaults:
         loaded_yaml = yaml.safe_load(test_yaml)
@@ -351,11 +440,31 @@ def test_exportable_settings(use_defaults):
     dict_export = run_options.as_dict()
 
     if not use_defaults:  # Don't need to check if no yaml
-        check_dict_is_at_least(loaded_yaml, dict_export)
-
+        check_dict_is_at_least(
+            loaded_yaml, dict_export, exceptions=["environment_parameters"]
+        )
     # Re-import and verify has same elements
     run_options2 = RunOptions.from_dict(dict_export)
     second_export = run_options2.as_dict()
 
+    check_dict_is_at_least(dict_export, second_export)
+    # Should be able to use equality instead of back-and-forth once environment_parameters
+    # is working
+    check_dict_is_at_least(second_export, dict_export)
     # Check that the two exports are the same
     assert dict_export == second_export
+
+
+def test_environment_settings():
+    # default args
+    EnvironmentSettings()
+
+    # 1 env is OK if no env_path
+    EnvironmentSettings(num_envs=1)
+
+    # multiple envs is OK if env_path is set
+    EnvironmentSettings(num_envs=42, env_path="/foo/bar.exe")
+
+    # Multiple environments with no env_path is an error
+    with pytest.raises(ValueError):
+        EnvironmentSettings(num_envs=2)

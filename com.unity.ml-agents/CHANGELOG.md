@@ -11,8 +11,38 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- The minimum supported python version for ml-agents-envs was changed to 3.6.1. (#4244)
+- The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
+and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up
+Python training by approximately 5-10%. (#4259)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- StatsSideChannel now stores multiple values per key. This means that multiple
+calls to `StatsRecorder.Add()` with the same key in the same step will no
+longer overwrite each other. (#4236)
+- Model checkpoints are now also saved as .nn files during training. (#4127)
+- Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Academy.EnvironmentStep() will now throw an exception if it is called
+recursively (for example, by an Agent's CollectObservations method).
+Previously, this would result in an infinite loop and cause the editor to hang.
+(#4226)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.2.0-preview] - 2020-07-15
+
+### Major Changes
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - The Parameter Randomization feature has been refactored to enable sampling of new parameters per episode to improve robustness. The
   `resampling-interval` parameter has been removed and the config structure updated. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md). (#4065)
+- The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
+in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
+behavior. More information
+[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
@@ -32,6 +62,10 @@ empty string). (#4155)
 - Fixed an error when setting `initialize_from` in the trainer confiiguration YAML to
 `null`. (#4175)
 - Fixed issue with FoodCollector, Soccer, and WallJump when playing with keyboard. (#4147, #4174)
+- Fixed a crash in StatsReporter when using threaded trainers with very frequent summary writes
+(#4201)
+- `mlagents-learn` will now raise an error immediately if `--num-envs` is greater than 1 without setting the `--env`
+argument. (#4203)
 
 ## [1.1.0-preview] - 2020-06-10
 ### Major Changes
@@ -41,7 +75,7 @@ empty string). (#4155)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
-- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/docs/Unity-Environment-Registry.md)(#3967)
+- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_5_docs/docs/Unity-Environment-Registry.md)(#3967)
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously. (#3981) Thank you @shakenes !
@@ -49,7 +83,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
   into the main training configuration file. Note that this means training
   configuration files are now environment-specific. (#3791)
 - The format for trainer configuration has changed, and the "default" behavior has been deprecated.
-  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_3_docs/docs/Migrating.md) for more details. (#3936)
+  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_5_docs/docs/Migrating.md) for more details. (#3936)
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
 - When using Curriculum, the current lesson will resume if training is quit and resumed. As such,
