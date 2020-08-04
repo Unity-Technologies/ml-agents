@@ -25,7 +25,7 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.settings import TestingConfiguration
 from mlagents.trainers.stats import StatsPropertyType
-from mlagents.trainers.saver.saver import Saver
+from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.saver.torch_saver import TorchSaver
 from mlagents.trainers.saver.tf_saver import TFSaver
 
@@ -125,7 +125,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         pass
 
-    def create_saver(self, policy: Policy) -> Saver:
+    def create_saver(self, policy: Policy) -> BaseSaver:
         if self.framework == "torch":
             saver = TorchSaver(
                 policy,
