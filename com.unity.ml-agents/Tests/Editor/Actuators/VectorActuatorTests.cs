@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Tests.Actuators
             public ActionBuffers LastActionBuffers;
             public int Branch;
             public IList<int> Mask;
-            public ActionSpecs actionSpecs { get; }
+            public ActionSpec actionSpec { get; }
 
             public void OnActionReceived(ActionBuffers actionBuffers)
             {
@@ -34,14 +34,14 @@ namespace Unity.MLAgents.Tests.Actuators
             var ar = new TestActionReceiver();
             var va = new VectorActuator(ar, new[] {1, 2, 3}, SpaceType.Discrete, "name");
 
-            Assert.IsTrue(va.actionSpecs.NumDiscreteActions == 3);
-            Assert.IsTrue(va.actionSpecs.SumOfDiscreteBranchSizes == 6);
-            Assert.IsTrue(va.actionSpecs.NumContinuousActions == 0);
+            Assert.IsTrue(va.actionSpec.NumDiscreteActions == 3);
+            Assert.IsTrue(va.actionSpec.SumOfDiscreteBranchSizes == 6);
+            Assert.IsTrue(va.actionSpec.NumContinuousActions == 0);
 
             var va1 = new VectorActuator(ar, new[] {4}, SpaceType.Continuous, "name");
 
-            Assert.IsTrue(va1.actionSpecs.NumContinuousActions == 4);
-            Assert.IsTrue(va1.actionSpecs.SumOfDiscreteBranchSizes == 0);
+            Assert.IsTrue(va1.actionSpec.NumContinuousActions == 4);
+            Assert.IsTrue(va1.actionSpec.SumOfDiscreteBranchSizes == 0);
             Assert.AreEqual(va1.Name, "name-Continuous");
         }
 

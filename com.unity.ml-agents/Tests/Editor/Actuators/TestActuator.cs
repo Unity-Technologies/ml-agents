@@ -5,9 +5,9 @@ namespace Unity.MLAgents.Tests.Actuators
     {
         public ActionBuffers LastActionBuffer;
         public int[][] Masks;
-        public TestActuator(ActionSpecs actuatorSpace, string name)
+        public TestActuator(ActionSpec actuatorSpace, string name)
         {
-            actionSpecs = actuatorSpace;
+            actionSpec = actuatorSpace;
             TotalNumberOfActions = actuatorSpace.NumContinuousActions +
                 actuatorSpace.NumDiscreteActions;
             Name = name;
@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Tests.Actuators
         }
 
         public int TotalNumberOfActions { get; }
-        public ActionSpecs actionSpecs { get; }
+        public ActionSpec actionSpec { get; }
 
         public string Name { get; }
 

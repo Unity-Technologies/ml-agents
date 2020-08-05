@@ -65,12 +65,12 @@ namespace Unity.MLAgents.Actuators
     internal interface IActionReceiver
     {
 
-        ActionSpecs actionSpecs { get; }
+        ActionSpec actionSpec { get; }
 
         /// <summary>
         /// Method called in order too allow object to execute actions based on the
         /// <see cref="ActionBuffers"/> contents.  The structure of the contents in the <see cref="ActionBuffers"/>
-        /// are defined by the <see cref="actionSpecs"/>.
+        /// are defined by the <see cref="actionSpec"/>.
         /// </summary>
         /// <param name="actionBuffers">The data structure containing the action buffers for this object.</param>
         void OnActionReceived(ActionBuffers actionBuffers);
