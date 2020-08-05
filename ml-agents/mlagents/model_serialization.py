@@ -1,5 +1,6 @@
 from distutils.util import strtobool
 import os
+import shutil
 from typing import Any, List, Set, NamedTuple
 from distutils.version import LooseVersion
 
@@ -227,3 +228,20 @@ def _enforce_onnx_conversion() -> bool:
         return strtobool(val)
     except Exception:
         return False
+
+
+def copy_model_files(source_nn_path: str, destination_nn_path: str) -> None:
+    """
+    Copy the .nn file at the given source to the destination.
+    Also copies the corresponding .onnx file if it exists.
+    """
+    shutil.copyfile(source_nn_path, destination_nn_path)
+    logger.info(f"Copied {source_nn_path} to {destination_nn_path}.")
+    # Copy the onnx file if it exists
+    source_onnx_path = os.path.splitext(source_nn_path)[0] + ".onnx"
+    destination_onnx_path = os.path.splitext(destination_nn_path)[0] + ".onnx"
+    try:
+        shutil.copyfile(source_onnx_path, destination_onnx_path)
+        logger.info(f"Copied {source_onnx_path} to {destination_onnx_path}.")
+    except Exception:
+        pass
