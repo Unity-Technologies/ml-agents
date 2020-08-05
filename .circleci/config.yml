@@ -220,10 +220,10 @@ jobs:
             cd << parameters.directory >>
             twine upload -u << parameters.username >> -p $PYPI_PASSWORD << parameters.test_repository_args >> dist/*
 
-workflows:
-  version: 2
-  workflow:
-    jobs:
+#workflows:
+#  version: 2
+#  workflow:
+#    jobs:
 #      - build_python:
 #          name: python_3.6.1
 #          executor: python361
