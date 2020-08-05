@@ -2220,7 +2220,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7933235353030744116}
   serializedVersion: 2
-  m_Mass: 5
+  m_Mass: 4
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -2397,7 +2397,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7933235353041637840}
   serializedVersion: 2
-  m_Mass: 3
+  m_Mass: 2
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -2574,7 +2574,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7933235353195701956}
   serializedVersion: 2
-  m_Mass: 4
+  m_Mass: 3
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -2930,7 +2930,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7933235353240438151}
   serializedVersion: 2
-  m_Mass: 4
+  m_Mass: 3
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -3993,7 +3993,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7933235354616748503}
   serializedVersion: 2
-  m_Mass: 3
+  m_Mass: 2
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -4704,7 +4704,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7933235355057813906}
   serializedVersion: 2
-  m_Mass: 5
+  m_Mass: 4
   m_Drag: 0.05
   m_AngularDrag: 0.05
   m_UseGravity: 1

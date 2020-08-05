@@ -136,6 +136,7 @@ public class WalkerAgent : Agent
         }
     }
 
+    public Transform rotTest;
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
@@ -148,13 +149,15 @@ public class WalkerAgent : Agent
 
         //current speed goal. normalized.
         sensor.AddObservation(walkingSpeed / m_maxWalkingSpeed);
+        
+        //rotation deltas
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
         
-        //Dist To Target Normalized to 100 meters;
+        //Dist To Target. Max 50 meters. Normalized;
         //If we're walking in world dir, always return 1;
         float distToTarget = walkDirectionMethod == WalkDirectionMethod.UseTarget
-            ? (target.position - hips.position).magnitude/100
+            ? Mathf.Clamp((target.position - hips.position).magnitude, 0, 50)/50
             : 1;
         sensor.AddObservation(distToTarget);
         
@@ -260,18 +263,29 @@ public class WalkerAgent : Agent
     {
         Vector3 velSum = Vector3.zero;
         Vector3 avgVel = Vector3.zero;
-
-        //ALL RBS
-        int numOfRB = 0;
-        foreach (var item in m_JdController.bodyPartsList)
-        {
-            numOfRB++;
-            velSum += item.rb.velocity;
-        }
-
-        avgVel = velSum / numOfRB;
+        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
+        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
+        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
+        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
+        avgVel = velSum / 4;
         return avgVel;
     }
+//    Vector3 GetAvgVelocity()
+//    {
+//        Vector3 velSum = Vector3.zero;
+//        Vector3 avgVel = Vector3.zero;
+//
+//        //ALL RBS
+//        int numOfRB = 0;
+//        foreach (var item in m_JdController.bodyPartsList)
+//        {
+//            numOfRB++;
+//            velSum += item.rb.velocity;
+//        }
+//
+//        avgVel = velSum / numOfRB;
+//        return avgVel;
+//    }
 
 //    public float headHeightOverFeetReward; //reward for standing up straight-ish
     public RewardManager rewardManager;
