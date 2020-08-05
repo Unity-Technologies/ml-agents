@@ -38,6 +38,11 @@ namespace Unity.MLAgents.Actuators
         internal int NumContinuousActions { get; private set; }
 
         /// <summary>
+        /// Returns the total actions which is calculated by <see cref="NumContinuousActions"/> + <see cref="NumDiscreteBranches"/>.
+        /// </summary>
+        public int TotalNumberOfActions => NumContinuousActions + NumDiscreteBranches;
+
+        /// <summary>
         /// Gets the <see cref="IDiscreteActionMask"/> managed by this object.
         /// </summary>
         public IDiscreteActionMask DiscreteActionMask => m_DiscreteActionMask;
