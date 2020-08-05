@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Unity.MLAgents.Tests
             return validBrainParameters;
         }
 
-        [SetUp]
+        //[SetUp]
         public void SetUp()
         {
             continuous2vis8vec2actionModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuous2vis8vec2actionPath, typeof(NNModel));
@@ -77,7 +78,7 @@ namespace Unity.MLAgents.Tests
 //            modelRunner.Dispose();
 //        }
 
-        [Test]
+        //[Test]
         public void TestRunModel()
         {
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
@@ -97,5 +98,54 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(brainParameters.VectorActionSize.Count(), modelRunner.GetAction(1).Count());
             modelRunner.Dispose();
         }
+    }
+
+    [TestFixture]
+    public class BarracudaReproTest
+    {
+        private IWorker m_Worker;
+
+        [SetUp]
+        public void Setup()
+        {
+            var model = new Model();
+            var builder = new ModelBuilder(model);
+            var input = new Model.Input();
+            Tensor kernel0 = new Tensor(8,8,3,16);
+            Tensor bias0 = new Tensor(1,1,1,16);
+            Tensor kernel1 = new Tensor(4,4,16,32);
+            Tensor bias1 = new Tensor(1,1,1,32);
+
+            input.name = "input";
+            input.shape = (new TensorShape(1, 20, 21, 3)).ToArray();
+            model.inputs.Add(input);
+
+            List<string> outputs = new List<string> { "conv1" };
+            builder.model.outputs = outputs;
+
+            builder.Conv2D("conv0", "input", new int[] { 4, 4 }, new int[] { 0, 0, 0, 0 }, kernel0, bias0);
+            builder.Conv2D("conv1", "conv0", new int[] { 2, 2 }, new int[] { 0, 0, 0, 0 }, kernel1, bias1);
+
+            //Debug.Log(model);
+
+            m_Worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, model);
+        }
+
+        [Test]
+        public void TestRepro()
+        {
+            float[] randomData = new float[1260];
+
+            for ( int i = 0; i < 1260; i++ ) {
+                randomData[i] = Random.Range(-100.0f, 100.0f);
+            }
+
+            Tensor inputValues = new Tensor(1, 20, 21, 3, randomData);
+            m_Worker.Execute(inputValues);
+            //Tensor Output = m_Worker.PeekOutput("conv1");
+            //Debug.Log(Output);
+            inputValues.Dispose();
+        }
+
     }
 }
