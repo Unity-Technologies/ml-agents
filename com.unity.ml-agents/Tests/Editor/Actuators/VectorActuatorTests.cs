@@ -15,6 +15,8 @@ namespace Unity.MLAgents.Tests.Actuators
             public ActionBuffers LastActionBuffers;
             public int Branch;
             public IList<int> Mask;
+            public ActionSpaceDef ActionSpaceDef { get; }
+
             public void OnActionReceived(ActionBuffers actionBuffers)
             {
                 LastActionBuffers = actionBuffers;
@@ -81,7 +83,7 @@ namespace Unity.MLAgents.Tests.Actuators
         {
             var ar = new TestActionReceiver();
             var va = new VectorActuator(ar, new[] {1, 2, 3}, SpaceType.Discrete, "name");
-            var bdam = new BufferedDiscreteActionMask(new[] {va}, 6, 3);
+            var bdam = new ActuatorDiscreteActionMask(new[] {va}, 6, 3);
 
             var groundTruthMask = new[] { false, true, false, false, true, true };
 

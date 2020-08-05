@@ -10,8 +10,6 @@ namespace Unity.MLAgents.Actuators
     {
         int TotalNumberOfActions { get; }
 
-        ActionSpaceDef ActionSpaceDef { get; }
-
         /// <summary>
         /// Gets the name of this IActuator which will be used to sort it.
         /// </summary>

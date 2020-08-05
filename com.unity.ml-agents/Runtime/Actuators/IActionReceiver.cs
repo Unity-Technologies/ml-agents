@@ -3,17 +3,40 @@ using System.Linq;
 
 namespace Unity.MLAgents.Actuators
 {
+    /// <summary>
+    /// A structure that wraps the <see cref="ActionSegment{T}"/>s for a particular <see cref="IActionReceiver"/> and is
+    /// used when <see cref="IActionReceiver.OnActionReceived"/> is called.
+    /// </summary>
     internal readonly struct ActionBuffers
     {
+        /// <summary>
+        /// An empty action buffer.
+        /// </summary>
         public static ActionBuffers Empty = new ActionBuffers(ActionSegment<float>.Empty, ActionSegment<int>.Empty);
+
+        /// <summary>
+        /// Holds the Continuous <see cref="ActionSegment{T}"/> to be used by an <see cref="IActionReceiver"/>.
+        /// </summary>
         public ActionSegment<float> ContinuousActions { get; }
+
+        /// <summary>
+        /// Holds the Discrete <see cref="ActionSegment{T}"/> to be used by an <see cref="IActionReceiver"/>.
+        /// </summary>
         public ActionSegment<int> DiscreteActions { get; }
+
+        /// <summary>
+        /// Construct an <see cref="ActionBuffers"/> instance with the continuous and discrete actions that will
+        /// bee used.
+        /// </summary>
+        /// <param name="continuousActions">The continuous actions to send to an <see cref="IActionReceiver"/>.</param>
+        /// <param name="discreteActions">The discrete actions to send to an <see cref="IActionReceiver"/>.</param>
         public ActionBuffers(ActionSegment<float> continuousActions, ActionSegment<int> discreteActions)
         {
             ContinuousActions = continuousActions;
             DiscreteActions = discreteActions;
         }
 
+        /// <inheritdoc cref="ValueType.Equals(object)"/>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionBuffers))
@@ -26,6 +49,7 @@ namespace Unity.MLAgents.Actuators
                 ab.DiscreteActions.SequenceEqual(DiscreteActions);
         }
 
+        /// <inheritdoc cref="ValueType.GetHashCode"/>
         public override int GetHashCode()
         {
             unchecked
@@ -35,14 +59,20 @@ namespace Unity.MLAgents.Actuators
         }
     }
 
+    /// <summary>
+    /// An interface that describes how an object can receive actions from a Reinforcement learning network.
+    /// </summary>
     internal interface IActionReceiver
     {
+
+        ActionSpaceDef ActionSpaceDef { get; }
+
         /// <summary>
-        ///  This method is called in order to allow the user execution actions
-        /// with the array of actions passed in.
+        /// Method called in order too allow object to execute actions based on the
+        /// <see cref="ActionBuffers"/> contents.  The structure of the contents in the <see cref="ActionBuffers"/>
+        /// are defined by the <see cref="ActionSpaceDef"/>.
         /// </summary>
-        /// <param name="actionBuffers">The definition of the actuator space which contains the actions
-        /// for the current step.</param>
+        /// <param name="actionBuffers">The data structure containing the action buffers for this object.</param>
         void OnActionReceived(ActionBuffers actionBuffers);
 
         /// <summary>

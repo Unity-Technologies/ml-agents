@@ -2,6 +2,9 @@ using System.Collections.Generic;
 
 namespace Unity.MLAgents.Actuators
 {
+    /// <summary>
+    /// Interface for writing a mask to disable discrete actions for agents for the next decision.
+    /// </summary>
     internal interface IDiscreteActionMask
     {
         /// <summary>
@@ -32,6 +35,9 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         void ResetMask();
 
-        int CurrentBranchOffset { get; }
+        /// <summary>
+        ///
+        /// </summary>
+        int CurrentBranchOffset { get; set; }
     }
 }

@@ -6,19 +6,19 @@ using Unity.MLAgents.Actuators;
 namespace Unity.MLAgents.Tests.Actuators
 {
     [TestFixture]
-    public class BufferedDiscreteActionMaskTests
+    public class ActuatorDiscreteActionMaskTests
     {
         [Test]
-        public void Contruction()
+        public void Construction()
         {
-            var masker = new BufferedDiscreteActionMask(new List<IActuator>(), 0, 0);
+            var masker = new ActuatorDiscreteActionMask(new List<IActuator>(), 0, 0);
             Assert.IsNotNull(masker);
         }
 
         [Test]
         public void NullMask()
         {
-            var masker = new BufferedDiscreteActionMask(Array.Empty<int>());
+            var masker = new ActuatorDiscreteActionMask(new List<IActuator>(), 0, 0);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
         }
@@ -26,7 +26,8 @@ namespace Unity.MLAgents.Tests.Actuators
         [Test]
         public void FirstBranchMask()
         {
-            var masker = new BufferedDiscreteActionMask(new []{4, 5, 6});
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {4, 5, 6}), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new IActuator[] {actuator1}, 15, 3);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
             masker.WriteMask(0, new[] {1, 2, 3});
@@ -42,7 +43,8 @@ namespace Unity.MLAgents.Tests.Actuators
         [Test]
         public void SecondBranchMask()
         {
-            var masker = new BufferedDiscreteActionMask(new []{4, 5, 6});
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {4, 5, 6}), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new[] {actuator1}, 15, 3);
             masker.WriteMask(1, new[] {1, 2, 3});
             var mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
@@ -57,7 +59,8 @@ namespace Unity.MLAgents.Tests.Actuators
         [Test]
         public void MaskReset()
         {
-            var masker = new BufferedDiscreteActionMask(new []{4, 5, 6});
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {4, 5, 6}), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new IActuator[] {actuator1}, 15, 3);
             masker.WriteMask(1, new[] {1, 2, 3});
             masker.ResetMask();
             var mask = masker.GetMask();
@@ -70,7 +73,8 @@ namespace Unity.MLAgents.Tests.Actuators
         [Test]
         public void ThrowsError()
         {
-            var masker = new BufferedDiscreteActionMask(new []{4, 5, 6});
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {4, 5, 6}), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new IActuator[] {actuator1}, 15, 3);
             Assert.Catch<UnityAgentsException>(
                 () => masker.WriteMask(0, new[] {5}));
             Assert.Catch<UnityAgentsException>(
@@ -88,7 +92,8 @@ namespace Unity.MLAgents.Tests.Actuators
         [Test]
         public void MultipleMaskEdit()
         {
-            var masker = new BufferedDiscreteActionMask(new []{4, 5, 6});
+            var actuator1 = new TestActuator(ActionSpaceDef.MakeDiscrete(new[] {4, 5, 6}), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new IActuator[] {actuator1}, 15, 3);
             masker.WriteMask(0, new[] {0, 1});
             masker.WriteMask(0, new[] {3});
             masker.WriteMask(2, new[] {1});

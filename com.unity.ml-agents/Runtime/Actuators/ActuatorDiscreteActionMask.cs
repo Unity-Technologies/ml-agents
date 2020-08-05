@@ -5,9 +5,9 @@ using System.Linq;
 namespace Unity.MLAgents.Actuators
 {
     /// <summary>
-    /// Implementation of IDiscreteActionMask that allows writing to the action mask based on an offset.
+    /// Implementation of IDiscreteActionMask that allows writing to the action mask from an <see cref="IActuator"/>.
     /// </summary>
-    internal class BufferedDiscreteActionMask : IDiscreteActionMask
+    internal class ActuatorDiscreteActionMask : IDiscreteActionMask
     {
         /// When using discrete control, is the starting indices of the actions
         /// when all the branches are concatenated with each other.
@@ -22,24 +22,12 @@ namespace Unity.MLAgents.Actuators
         readonly int m_SumOfDiscreteBranchSizes;
         readonly int m_NumBranches;
 
-        public int CurrentBranchOffset
-        {
-            get;
-            internal set;
-        }
+        /// <summary>
+        /// The offset into the branches array that is used when actuators are writing to the action mask.
+        /// </summary>
+        public int CurrentBranchOffset { get; set; }
 
-        internal BufferedDiscreteActionMask(int[] branchSizes)
-        {
-            if (branchSizes == null)
-            {
-                branchSizes = Array.Empty<int>();
-            }
-            m_BranchSizes = branchSizes;
-            m_SumOfDiscreteBranchSizes = branchSizes.Sum();
-            m_NumBranches = branchSizes.Length;
-        }
-
-        internal BufferedDiscreteActionMask(IList<IActuator> actuators, int sumOfDiscreteBranchSizes, int numBranches)
+        internal ActuatorDiscreteActionMask(IList<IActuator> actuators, int sumOfDiscreteBranchSizes, int numBranches)
         {
             m_Actuators = actuators;
             m_SumOfDiscreteBranchSizes = sumOfDiscreteBranchSizes;

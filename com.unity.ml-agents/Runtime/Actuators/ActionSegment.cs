@@ -5,24 +5,50 @@ using System.Diagnostics;
 
 namespace Unity.MLAgents.Actuators
 {
-    internal readonly struct ActionSegment<T> : IEnumerable<T>
+    /// <summary>
+    /// ActionSegment{T} is a data structure that allows access to a segment of an underlying array
+    /// in order to avoid the copying and allocation of sub-arrays.  The segment is defined by
+    /// the offset into the original array, and an length.
+    /// </summary>
+    /// <typeparam name="T">The type of object stored in the underlying <see cref="Array"/></typeparam>
+    internal readonly struct ActionSegment<T> : IEnumerable<T>, IEquatable<ActionSegment<T>>
+        where T : struct
     {
+        /// <summary>
+        /// The zero-based offset into the original array at which this segment starts.
+        /// </summary>
         public readonly int Offset;
+
+        /// <summary>
+        /// The number of items this segment can access in the underlying array.
+        /// </summary>
         public readonly int Length;
 
+        /// <summary>
+        /// An Empty segment which has an offset of 0, a Length of 0, and it's underlying array
+        /// is also empty.
+        /// </summary>
         public static ActionSegment<T> Empty = new ActionSegment<T>(System.Array.Empty<T>(), 0, 0);
 
+#if DEBUG
         static void CheckParameters(T[] actionArray, int offset, int length)
         {
-#if DEBUG
             if (offset + length > actionArray.Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(offset), $"Arguments offset: {offset} and length: {length} " +
+                throw new ArgumentOutOfRangeException(nameof(offset),
+                    $"Arguments offset: {offset} and length: {length} " +
                     $"are out of bounds of actionArray: {actionArray.Length}.");
             }
-#endif
         }
+#endif
 
+        /// <summary>
+        /// Construct an <see cref="ActionSegment{T}"/> with an underlying array
+        /// and offset, and a length.
+        /// </summary>
+        /// <param name="actionArray">The underlying array which this segment has a view into</param>
+        /// <param name="offset">The zero-based offset into the underlying array.</param>
+        /// <param name="length">The length of the segment.</param>
         public ActionSegment(T[] actionArray, int offset, int length)
         {
             CheckParameters(actionArray, offset, length);
@@ -31,8 +57,17 @@ namespace Unity.MLAgents.Actuators
             Length = length;
         }
 
+        /// <summary>
+        /// Get the underlying <see cref="Array"/> of this segment.
+        /// </summary>
         public T[] Array { get; }
 
+        /// <summary>
+        /// Allows access to the underlying array using array syntax.
+        /// </summary>
+        /// <param name="index">The zero-based index of the segment.</param>
+        /// <exception cref="IndexOutOfRangeException">Thrown when the index is less than 0 or
+        /// greater than or equal to <see cref="Length"/></exception>
         public T this[int index]
         {
             get
@@ -45,26 +80,35 @@ namespace Unity.MLAgents.Actuators
             }
         }
 
+        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return new Enumerator(this);
         }
 
+        /// <inheritdoc cref="IEnumerable{T}"/>
         public IEnumerator GetEnumerator()
         {
             return new Enumerator(this);
         }
 
+        /// <inheritdoc cref="ValueType.Equals(object)"/>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionSegment<T>))
             {
                 return false;
             }
-            var other = (ActionSegment<T>)obj;
+            return Equals((ActionSegment<T>)obj);
+        }
+
+        /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
+        public bool Equals(ActionSegment<T> other)
+        {
             return Offset == other.Offset && Length == other.Length && Equals(Array, other.Array);
         }
 
+        /// <inheritdoc cref="ValueType.GetHashCode"/>
         public override int GetHashCode()
         {
             unchecked
@@ -76,6 +120,10 @@ namespace Unity.MLAgents.Actuators
             }
         }
 
+        /// <summary>
+        /// A private <see cref="IEnumerator{T}"/> for the <see cref="ActionSegment{T}"/> value type which follows its
+        /// rules of being a view into an underlying <see cref="Array"/>.
+        /// </summary>
         struct Enumerator : IEnumerator<T>
         {
             readonly T[] m_Array;
