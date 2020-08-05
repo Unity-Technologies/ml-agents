@@ -188,7 +188,9 @@ def test_actor_critic(ac_type, lstm):
         )
     else:
         sample_obs = torch.ones((1, obs_size))
-        memories = None
+        memories = torch.tensor([])
+        # memories isn't always set to None, the network should be able to
+        # deal with that.
     # Test critic pass
     value_out = actor.critic_pass([sample_obs], [], memories=memories)
     for stream in stream_names:
