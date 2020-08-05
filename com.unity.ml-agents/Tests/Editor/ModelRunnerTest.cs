@@ -51,31 +51,31 @@ namespace Unity.MLAgents.Tests
             sensor_20_22_3.Sensor = new Test3DSensor("SensorB", 20, 22, 3);
         }
 
-        [Test]
-        public void TestModelExist()
-        {
-            Assert.IsNotNull(continuous2vis8vec2actionModel);
-            Assert.IsNotNull(discrete1vis0vec_2_3action_recurrModel);
-        }
-
-        [Test]
-        public void TestCreation()
-        {
-            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionBrainParameters());
-            modelRunner.Dispose();
-            modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters());
-            modelRunner.Dispose();
-        }
-
-        [Test]
-        public void TestHasModel()
-        {
-            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionBrainParameters(), InferenceDevice.CPU);
-            Assert.True(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.CPU));
-            Assert.False(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.GPU));
-            Assert.False(modelRunner.HasModel(discrete1vis0vec_2_3action_recurrModel, InferenceDevice.CPU));
-            modelRunner.Dispose();
-        }
+//        [Test]
+//        public void TestModelExist()
+//        {
+//            Assert.IsNotNull(continuous2vis8vec2actionModel);
+//            Assert.IsNotNull(discrete1vis0vec_2_3action_recurrModel);
+//        }
+//
+//        [Test]
+//        public void TestCreation()
+//        {
+//            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionBrainParameters());
+//            modelRunner.Dispose();
+//            modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters());
+//            modelRunner.Dispose();
+//        }
+//
+//        [Test]
+//        public void TestHasModel()
+//        {
+//            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionBrainParameters(), InferenceDevice.CPU);
+//            Assert.True(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.CPU));
+//            Assert.False(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.GPU));
+//            Assert.False(modelRunner.HasModel(discrete1vis0vec_2_3action_recurrModel, InferenceDevice.CPU));
+//            modelRunner.Dispose();
+//        }
 
         [Test]
         public void TestRunModel()
