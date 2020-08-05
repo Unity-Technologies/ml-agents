@@ -21,6 +21,6 @@ behaviors:
         strength: 1.0
     keep_checkpoints: 5
     max_steps: 30000000
-    time_horizon: 1000
+    time_horizon: 256 #1000
     summary_freq: 30000
     threaded: true

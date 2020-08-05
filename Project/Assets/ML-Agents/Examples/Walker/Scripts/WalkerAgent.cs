@@ -257,34 +257,34 @@ public class WalkerAgent : Agent
         rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward);
     }
 
-    //Returns the average velocity of all the rigidbodies
-    Vector3 GetAvgVelocity()
-    {
-        Vector3 velSum = Vector3.zero;
-        Vector3 avgVel = Vector3.zero;
-        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
-        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
-        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
-        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
-        avgVel = velSum / 4;
-        return avgVel;
-    }
+//    //Returns the average velocity of all the rigidbodies
 //    Vector3 GetAvgVelocity()
 //    {
 //        Vector3 velSum = Vector3.zero;
 //        Vector3 avgVel = Vector3.zero;
-//
-//        //ALL RBS
-//        int numOfRB = 0;
-//        foreach (var item in m_JdController.bodyPartsList)
-//        {
-//            numOfRB++;
-//            velSum += item.rb.velocity;
-//        }
-//
-//        avgVel = velSum / numOfRB;
+//        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
+//        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
+//        avgVel = velSum / 4;
 //        return avgVel;
 //    }
+    Vector3 GetAvgVelocity()
+    {
+        Vector3 velSum = Vector3.zero;
+        Vector3 avgVel = Vector3.zero;
+
+        //ALL RBS
+        int numOfRB = 0;
+        foreach (var item in m_JdController.bodyPartsList)
+        {
+            numOfRB++;
+            velSum += item.rb.velocity;
+        }
+
+        avgVel = velSum / numOfRB;
+        return avgVel;
+    }
 
 //    public float headHeightOverFeetReward; //reward for standing up straight-ish
     public RewardManager rewardManager;
