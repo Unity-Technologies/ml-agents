@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Tests
     public class SensorShapeValidatorTests
     {
 
-        [Test]
+
         public void TestShapesAgree()
         {
             var validator = new SensorShapeValidator();
@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Tests
             validator.ValidateSensors(sensorList2);
         }
 
-        [Test]
+
         public void TestNumSensorMismatch()
         {
             var validator = new SensorShapeValidator();
@@ -86,7 +86,7 @@ namespace Unity.MLAgents.Tests
             LogAssert.Expect(LogType.Assert, "Number of Sensors must match. 2 != 3");
             validator.ValidateSensors(sensorList1);
         }
-        [Test]
+
         public void TestDimensionMismatch()
         {
             var validator = new SensorShapeValidator();
@@ -104,7 +104,7 @@ namespace Unity.MLAgents.Tests
             validator.ValidateSensors(sensorList1);
         }
 
-        [Test]
+
         public void TestSizeMismatch()
         {
             var validator = new SensorShapeValidator();
@@ -122,7 +122,7 @@ namespace Unity.MLAgents.Tests
             validator.ValidateSensors(sensorList1);
         }
 
-        [Test]
+
         public void TestEverythingMismatch()
         {
             var validator = new SensorShapeValidator();

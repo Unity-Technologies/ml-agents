@@ -10,7 +10,7 @@ namespace Unity.MLAgents.Tests.Communicator
     public class RpcCommunicatorTests
     {
 
-        [Test]
+
         public void TestCheckCommunicationVersionsAreCompatible()
         {
             var unityVerStr = "1.0.0";

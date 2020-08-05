@@ -10,7 +10,7 @@ namespace Unity.MLAgents.Tests
         const float k_SecondValue = -0.97345f;
         const double k_Epsilon = 0.0001;
 
-        [Test]
+
         public void RandomNormalTestTwoDouble()
         {
             var rn = new RandomNormal(2018);
@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(k_SecondValue, rn.NextDouble(), k_Epsilon);
         }
 
-        [Test]
+
         public void RandomNormalTestWithMean()
         {
             var rn = new RandomNormal(2018, 5.0f);
@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(k_SecondValue + 5.0, rn.NextDouble(), k_Epsilon);
         }
 
-        [Test]
+
         public void RandomNormalTestWithStddev()
         {
             var rn = new RandomNormal(2018, 0.0f, 4.2f);
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(k_SecondValue * 4.2, rn.NextDouble(), k_Epsilon);
         }
 
-        [Test]
+
         public void RandomNormalTestWithMeanStddev()
         {
             const float mean = -3.2f;
@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(k_SecondValue * stddev + mean, rn.NextDouble(), k_Epsilon);
         }
 
-        [Test]
+
         public void RandomNormalTestDistribution()
         {
             const float mean = -3.2f;

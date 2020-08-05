@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests
 {
     public class DiscreteActionOutputApplierTest
     {
-        [Test]
+
         public void TestEvalP()
         {
             var m = new Multinomial(2018);
@@ -36,7 +36,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestEvalLogits()
         {
             var m = new Multinomial(2018);
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestEvalBatching()
         {
             var m = new Multinomial(2018);
@@ -97,7 +97,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestSrcInt()
         {
             var m = new Multinomial(2018);
@@ -111,7 +111,7 @@ namespace Unity.MLAgents.Tests
                 () => DiscreteActionOutputApplier.Eval(src, null, m));
         }
 
-        [Test]
+
         public void TestDstInt()
         {
             var m = new Multinomial(2018);
@@ -130,7 +130,7 @@ namespace Unity.MLAgents.Tests
                 () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
 
-        [Test]
+
         public void TestSrcDataNull()
         {
             var m = new Multinomial(2018);
@@ -149,7 +149,7 @@ namespace Unity.MLAgents.Tests
                 () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
 
-        [Test]
+
         public void TestDstDataNull()
         {
             var m = new Multinomial(2018);
@@ -169,7 +169,7 @@ namespace Unity.MLAgents.Tests
                 () => DiscreteActionOutputApplier.Eval(src, dst, m));
         }
 
-        [Test]
+
         public void TestUnequalBatchSize()
         {
             var m = new Multinomial(2018);

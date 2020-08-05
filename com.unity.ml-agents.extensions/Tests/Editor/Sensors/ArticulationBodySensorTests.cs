@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
     public class ArticulationBodySensorTests
     {
-        [Test]
+
         public void TestNullRootBody()
         {
             var gameObj = new GameObject();
@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             SensorTestHelper.CompareObservation(sensor, new float[0]);
         }
 
-        [Test]
+
         public void TestSingleBody()
         {
             var gameObj = new GameObject();
@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(expected.Length, sensorComponent.GetObservationShape()[0]);
         }
 
-        [Test]
+
         public void TestBodiesWithJoint()
         {
             var rootObj = new GameObject();

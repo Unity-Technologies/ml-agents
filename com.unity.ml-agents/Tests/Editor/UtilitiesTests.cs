@@ -4,7 +4,7 @@ namespace Unity.MLAgents.Tests
 {
     public class UtilitiesTests
     {
-        [Test]
+
         public void TestCumSum()
         {
             var output = Utilities.CumSum(new[] {1, 2, 3, 10});

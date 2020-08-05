@@ -168,7 +168,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAcademy()
         {
             var aca = Academy.Instance;
@@ -178,7 +178,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, aca.TotalStepCount);
         }
 
-        [Test]
+
         public void TestAgent()
         {
             var agentGo = new GameObject("TestAgent");
@@ -201,7 +201,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAcademy()
         {
             Assert.AreEqual(false, Academy.IsInitialized);
@@ -225,7 +225,7 @@ namespace Unity.MLAgents.Tests
             aca.Dispose();
         }
 
-        [Test]
+
         public void TestAcademyDispose()
         {
             var envParams1 = SideChannelManager.GetSideChannel<EnvironmentParametersChannel>();
@@ -244,7 +244,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreNotEqual(statsParams1, statsParams2);
         }
 
-        [Test]
+
         public void TestAgent()
         {
             var agentGo1 = new GameObject("TestAgent");
@@ -300,7 +300,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAcademy()
         {
             var aca = Academy.Instance;
@@ -320,7 +320,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAcademyAutostep()
         {
             var aca = Academy.Instance;
@@ -331,7 +331,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsTrue(aca.AutomaticSteppingEnabled);
         }
 
-        [Test]
+
         public void TestAgent()
         {
             var agentGo1 = new GameObject("TestAgent");
@@ -414,7 +414,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAcademy()
         {
             var aca = Academy.Instance;
@@ -437,7 +437,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAgent()
         {
             var agentGo1 = new GameObject("TestAgent");
@@ -517,7 +517,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void AssertStackingReset()
         {
             var agentGo1 = new GameObject("TestAgent");
@@ -565,7 +565,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestCumulativeReward()
         {
             var agentGo1 = new GameObject("TestAgent");
@@ -605,7 +605,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestMaxStepsReset()
         {
             var agentGo1 = new GameObject("TestAgent");
@@ -667,7 +667,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestHeuristicPolicyStepsSensors()
         {
             // Make sure that Agents with HeuristicPolicies step their sensors each Academy step.
@@ -741,13 +741,13 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAgentCallBaseOnEnable()
         {
             _InnerAgentTestOnEnableOverride(true);
         }
 
-        [Test]
+
         public void TestAgentDontCallBaseOnEnable()
         {
             _InnerAgentTestOnEnableOverride();
@@ -770,7 +770,7 @@ namespace Unity.MLAgents.Tests
         }
 
 
-        [Test]
+
         public void TestObservableAttributeBehaviorIgnore()
         {
             var variants = new[]

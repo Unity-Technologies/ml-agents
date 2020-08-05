@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Tests
 {
     public class ObservationWriterTests
     {
-        [Test]
+
         public void TestWritesToIList()
         {
             ObservationWriter writer = new ObservationWriter();
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(new[] { 4f, 6f, 7f }, buffer);
         }
 
-        [Test]
+
         public void TestWritesToTensor()
         {
             ObservationWriter writer = new ObservationWriter();
@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(-2f, t.data[1, 2]);
         }
 
-        [Test]
+
         public void TestWritesToTensor3D()
         {
             ObservationWriter writer = new ObservationWriter();

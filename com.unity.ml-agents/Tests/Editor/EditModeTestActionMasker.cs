@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Tests
 {
     public class EditModeTestActionMasker
     {
-        [Test]
+
         public void Contruction()
         {
             var bp = new BrainParameters();
@@ -13,7 +13,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(masker);
         }
 
-        [Test]
+
         public void FailsWithContinuous()
         {
             var bp = new BrainParameters();
@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Tests
             Assert.Catch<UnityAgentsException>(() => masker.GetMask());
         }
 
-        [Test]
+
         public void NullMask()
         {
             var bp = new BrainParameters();
@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsNull(mask);
         }
 
-        [Test]
+
         public void FirstBranchMask()
         {
             var bp = new BrainParameters();
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(mask.Length, 15);
         }
 
-        [Test]
+
         public void SecondBranchMask()
         {
             var bp = new BrainParameters
@@ -73,7 +73,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsFalse(mask[9]);
         }
 
-        [Test]
+
         public void MaskReset()
         {
             var bp = new BrainParameters
@@ -91,7 +91,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void ThrowsError()
         {
             var bp = new BrainParameters
@@ -115,7 +115,7 @@ namespace Unity.MLAgents.Tests
                 () => masker.GetMask());
         }
 
-        [Test]
+
         public void MultipleMaskEdit()
         {
             var bp = new BrainParameters();

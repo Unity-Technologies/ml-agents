@@ -113,14 +113,14 @@ namespace Unity.MLAgents.Tests
             sensor_20_22_3.Sensor = new Test3DSensor("SensorA", 20, 22, 3);
         }
 
-        [Test]
+
         public void TestModelExist()
         {
             Assert.IsNotNull(continuous2vis8vec2actionModel);
             Assert.IsNotNull(discrete1vis0vec_2_3action_recurrModel);
         }
 
-        [Test]
+
         public void TestGetInputTensors1()
         {
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
@@ -139,7 +139,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, BarracudaModelParamLoader.GetNumVisualInputs(null));
         }
 
-        [Test]
+
         public void TestGetInputTensors2()
         {
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
@@ -151,7 +151,7 @@ namespace Unity.MLAgents.Tests
             // TODO :There are some memory tensors as well
         }
 
-        [Test]
+
         public void TestGetOutputTensors1()
         {
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
@@ -162,7 +162,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, BarracudaModelParamLoader.GetOutputNames(null).Count());
         }
 
-        [Test]
+
         public void TestGetOutputTensors2()
         {
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
@@ -171,7 +171,7 @@ namespace Unity.MLAgents.Tests
             // TODO : There are some memory tensors as well
         }
 
-        [Test]
+
         public void TestCheckModelValid1()
         {
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
@@ -181,7 +181,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
-        [Test]
+
         public void TestCheckModelValid2()
         {
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
@@ -191,7 +191,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
-        [Test]
+
         public void TestCheckModelThrowsVectorObservation1()
         {
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
@@ -207,7 +207,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
+
         public void TestCheckModelThrowsVectorObservation2()
         {
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
@@ -218,7 +218,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
+
         public void TestCheckModelThrowsAction1()
         {
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
@@ -234,7 +234,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
+
         public void TestCheckModelThrowsAction2()
         {
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
@@ -250,7 +250,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [Test]
+
         public void TestCheckModelThrowsNoModel()
         {
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();

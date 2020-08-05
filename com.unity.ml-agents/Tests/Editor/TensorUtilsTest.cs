@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Tests
 {
     public class TensorUtilsTest
     {
-        [Test]
+
         public void RandomNormalTestTensorInt()
         {
             var rn = new RandomNormal(1982);
@@ -21,7 +21,7 @@ namespace Unity.MLAgents.Tests
                 () => TensorUtils.FillTensorWithRandomNormal(t, rn));
         }
 
-        [Test]
+
         public void RandomNormalTestDataNull()
         {
             var rn = new RandomNormal(1982);
@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Tests
                 () => TensorUtils.FillTensorWithRandomNormal(t, rn));
         }
 
-        [Test]
+
         public void RandomNormalTestTensor()
         {
             var rn = new RandomNormal(1982);

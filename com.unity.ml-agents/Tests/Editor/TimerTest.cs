@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Tests
 {
     public class TimerTests
     {
-        [Test]
+
         public void TestNested()
         {
             TimerStack myTimer = TimerStack.Instance;
@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(myTimer.RootNode.Children, null);
         }
 
-        [Test]
+
         public void TestGauges()
         {
             TimerStack myTimer = TimerStack.Instance;

@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Tests
 {
     public class MultinomialTest
     {
-        [Test]
+
         public void TestDim1()
         {
             var m = new Multinomial(2018);
@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, m.Sample(cdf));
         }
 
-        [Test]
+
         public void TestDim1Unscaled()
         {
             var m = new Multinomial(2018);
@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, m.Sample(cdf));
         }
 
-        [Test]
+
         public void TestDim3()
         {
             var m = new Multinomial(2018);
@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1, m.Sample(cdf));
         }
 
-        [Test]
+
         public void TestDim3Unscaled()
         {
             var m = new Multinomial(2018);

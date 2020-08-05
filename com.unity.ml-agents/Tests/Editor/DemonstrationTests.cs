@@ -25,7 +25,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestSanitization()
         {
             const string dirtyString = "abc1234567&!@";
@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(cleanString, knownCleanString);
         }
 
-        [Test]
+
         public void TestStoreInitialize()
         {
             var fileSystem = new MockFileSystem();
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestAgentWrite()
         {
             var agentGo1 = new GameObject("TestAgent");

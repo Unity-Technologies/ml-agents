@@ -172,7 +172,7 @@ namespace Unity.MLAgents.Tests
 
         }
 
-        [Test]
+
         public void TestGetObservableSensors()
         {
             var testClass = new TestClass();
@@ -238,7 +238,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensorsByName["flagProperty"], new[] { 0.0f, 1.0f, 1.0f });
         }
 
-        [Test]
+
         public void TestGetTotalObservationSize()
         {
             var testClass = new TestClass();
@@ -281,7 +281,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestInvalidObservables()
         {
             var bad = new BadClass();
@@ -301,7 +301,7 @@ namespace Unity.MLAgents.Tests
             public float FloatVal;
         }
 
-        [Test]
+
         public void TestObservableAttributeStacking()
         {
             var c = new StackingClass();
@@ -335,7 +335,7 @@ namespace Unity.MLAgents.Tests
             float m_DerivedField;
         }
 
-        [Test]
+
         public void TestObservableAttributeExcludeInherited()
         {
             var d = new DerivedClass();

@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class AcademyTests
     {
-        [Test]
+
         public void TestPackageVersion()
         {
             // Make sure that the version strings in the package and Academy don't get out of sync.
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestRecursiveStepThrows()
         {
             var gameObj = new GameObject();

@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class RenderTextureSensorComponentTest
     {
-        [Test]
+
         public void TestRenderTextureSensorComponent()
         {
             foreach (var grayscale in new[] { true, false })

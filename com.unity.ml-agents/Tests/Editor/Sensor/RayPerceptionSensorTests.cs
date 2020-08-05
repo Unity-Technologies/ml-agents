@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests
 {
     public class RayPerceptionSensorTests
     {
-        [Test]
+
         public void TestGetRayAngles()
         {
             var angles = RayPerceptionSensorComponentBase.GetRayAngles(3, 90f);
@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Tests
             Physics.SyncTransforms();
         }
 
-        [Test]
+
         public void TestRaycasts()
         {
             SetupScene();
@@ -139,7 +139,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestRaycastMiss()
         {
             var obj = new GameObject("agent");
@@ -167,7 +167,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(new float[] { 0, 0, 1, 1 }, outputBuffer);
         }
 
-        [Test]
+
         public void TestRayFilter()
         {
             var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -228,7 +228,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestRaycastsScaled()
         {
             SetupScene();
@@ -274,7 +274,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestRayZeroLength()
         {
             // Place the cube touching the origin
@@ -312,7 +312,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestStaticPerceive()
         {
             SetupScene();
@@ -341,7 +341,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestStaticPerceiveInvalidTags()
         {
             SetupScene();
@@ -376,7 +376,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestStaticPerceiveNoTags()
         {
             SetupScene();

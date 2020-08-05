@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
     public class RigidBodySensorTests
     {
-        [Test]
+
         public void TestNullRootBody()
         {
             var gameObj = new GameObject();
@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             SensorTestHelper.CompareObservation(sensor, new float[0]);
         }
 
-        [Test]
+
         public void TestSingleRigidbody()
         {
             var gameObj = new GameObject();
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             SensorTestHelper.CompareObservation(sensor, expected);
         }
 
-        [Test]
+
         public void TestBodiesWithJoint()
         {
             var rootObj = new GameObject();

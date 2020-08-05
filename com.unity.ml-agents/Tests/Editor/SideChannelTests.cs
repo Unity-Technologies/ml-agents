@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestIntegerSideChannel()
         {
             var intSender = new TestSideChannel();
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(intReceiver.messagesReceived[2], 6);
         }
 
-        [Test]
+
         public void TestRawBytesSideChannel()
         {
             var str1 = "Test string";
@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(Encoding.ASCII.GetString(messages[1]), str2);
         }
 
-        [Test]
+
         public void TestFloatPropertiesSideChannel()
         {
             var k1 = "gravity";
@@ -120,7 +120,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsTrue(keysB.Contains(k2));
         }
 
-        [Test]
+
         public void TestOutgoingMessageRawBytes()
         {
             // Make sure that SetRawBytes resets the buffer correctly.
@@ -136,7 +136,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(data, result);
         }
 
-        [Test]
+
         public void TestMessageReadWrites()
         {
             var boolVal = true;
@@ -164,7 +164,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(floatListVal, incomingMsg.ReadFloatList());
         }
 
-        [Test]
+
         public void TestMessageReadDefaults()
         {
             // Make sure reading past the end of a message will apply defaults.

@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Tests.Communicator
     [TestFixture]
     public class UnityRLCapabilitiesTests
     {
-        [Test]
+
         public void TestWarnOnPythonMissingBaseRLCapabilities()
         {
             var caps = new UnityRLCapabilities();

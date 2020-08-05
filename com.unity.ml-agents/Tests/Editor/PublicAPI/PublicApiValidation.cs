@@ -14,7 +14,7 @@ namespace Unity.MLAgentsExamples
     [TestFixture]
     public class PublicApiValidation
     {
-        [Test]
+
         public void CheckSetupCameraSensorComponent()
         {
             var gameObject = new GameObject();
@@ -35,7 +35,7 @@ namespace Unity.MLAgentsExamples
             Assert.IsTrue(sensorComponent.Grayscale);
         }
 
-        [Test]
+
         public void CheckSetupRenderTextureSensorComponent()
         {
             var gameObject = new GameObject();
@@ -53,7 +53,7 @@ namespace Unity.MLAgentsExamples
             Assert.IsTrue(sensorComponent.Grayscale);
         }
 
-        [Test]
+
         public void CheckSetupRayPerceptionSensorComponent()
         {
             var gameObject = new GameObject();

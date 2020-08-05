@@ -71,7 +71,7 @@ namespace Unity.MLAgents.Tests
 
     public class FloatVisualSensorTests
     {
-        [Test]
+
         public void TestFloat2DSensorWrite()
         {
             var sensor = new Float2DSensor(3, 4, "floatsensor");
@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-        [Test]
+
         public void TestFloat2DSensorExternalData()
         {
             var data = new float[4, 3];

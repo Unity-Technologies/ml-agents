@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class CameraSensorTest
     {
-        [Test]
+
         public void TestCameraSensor()
         {
             foreach (var grayscale in new[] { true, false })

@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Tests
 
     public class VectorSensorTests
     {
-        [Test]
+
         public void TestCtor()
         {
             ISensor sensor = new VectorSensor(4);
@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual("test_sensor", sensor.GetName());
         }
 
-        [Test]
+
         public void TestWrite()
         {
             var sensor = new VectorSensor(4);
@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f, 0f });
         }
 
-        [Test]
+
         public void TestAddObservationFloat()
         {
             var sensor = new VectorSensor(1);
@@ -52,7 +52,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] {1.2f});
         }
 
-        [Test]
+
         public void TestAddObservationInt()
         {
             var sensor = new VectorSensor(1);
@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] {42f});
         }
 
-        [Test]
+
         public void TestAddObservationVec()
         {
             var sensor = new VectorSensor(3);
@@ -72,7 +72,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 4f, 5f });
         }
 
-        [Test]
+
         public void TestAddObservationQuaternion()
         {
             var sensor = new VectorSensor(4);
@@ -80,7 +80,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f, 1f});
         }
 
-        [Test]
+
         public void TestWriteEnumerable()
         {
             var sensor = new VectorSensor(4);
@@ -89,7 +89,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f, 3f, 4f });
         }
 
-        [Test]
+
         public void TestAddObservationBool()
         {
             var sensor = new VectorSensor(1);
@@ -97,7 +97,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] {1f});
         }
 
-        [Test]
+
         public void TestAddObservationOneHot()
         {
             var sensor = new VectorSensor(4);
@@ -105,7 +105,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 1f, 0f});
         }
 
-        [Test]
+
         public void TestWriteTooMany()
         {
             var sensor = new VectorSensor(2);
@@ -114,7 +114,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 1f, 2f});
         }
 
-        [Test]
+
         public void TestWriteNotEnough()
         {
             var sensor = new VectorSensor(4);

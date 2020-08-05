@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Tests
 {
     public class StackingSensorTests
     {
-        [Test]
+
         public void TestCtor()
         {
             ISensor wrapped = new VectorSensor(4);
@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(sensor.GetObservationShape(), new[] {16});
         }
 
-        [Test]
+
         public void TestStacking()
         {
             VectorSensor wrapped = new VectorSensor(2);
@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] {5f, 6f, 7f, 8f, 9f, 10f});
         }
 
-        [Test]
+
         public void TestStackingReset()
         {
             VectorSensor wrapped = new VectorSensor(2);

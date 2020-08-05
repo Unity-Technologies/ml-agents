@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
         }
 
-        [Test]
+
         public void TestEmptyExtractor()
         {
             var poseExtractor = new UselessPoseExtractor();
@@ -36,7 +36,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(0, poseExtractor.NumPoses);
         }
 
-        [Test]
+
         public void TestSimpleExtractor()
         {
             var poseExtractor = new UselessPoseExtractor();
@@ -81,7 +81,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
         }
 
-        [Test]
+
         public void TestChain()
         {
             var size = 4;
@@ -154,7 +154,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
         }
 
-        [Test]
+
         public void TestExpectedRoot()
         {
             Assert.Throws<UnityAgentsException>(() =>
@@ -166,7 +166,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
     public class PoseExtensionTests
     {
-        [Test]
+
         public void TestInverse()
         {
             Pose t = new Pose

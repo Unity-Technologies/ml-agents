@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
         }
 
-        [Test]
+
         public void TestNullRoot()
         {
             var poseExtractor = new ArticulationBodyPoseExtractor(null);
@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(0, poseExtractor.NumPoses);
         }
 
-        [Test]
+
         public void TestSingleBody()
         {
             var go = new GameObject();
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(1, poseExtractor.NumPoses);
         }
 
-        [Test]
+
         public void TestTwoBodies()
         {
             // * rootObj

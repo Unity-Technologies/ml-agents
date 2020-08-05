@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Tests
         const int k_Seed = 1337;
         const double k_Epsilon = 0.0001;
         EnvironmentParametersChannel m_Channel;
-    
+
         public SamplerTests()
         {
             m_Channel = SideChannelManager.GetSideChannel<EnvironmentParametersChannel>();
@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
                 SideChannelManager.RegisterSideChannel(m_Channel);
             }
         }
-        [Test]
+
         public void UniformSamplerTest()
         {
             float min_value = 1.0f;
@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1.118017f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
         }
 
-        [Test]
+
         public void GaussianSamplerTest()
         {
             float mean = 3.0f;
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(2.951348f, m_Channel.GetWithDefault(parameter, 1.0f), k_Epsilon);
         }
 
-        [Test]
+
         public void MultiRangeUniformSamplerTest()
         {
             float[] intervals = new float[4];

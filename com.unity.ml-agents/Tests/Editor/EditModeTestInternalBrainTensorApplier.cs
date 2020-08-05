@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Tests
         {
         }
 
-        [Test]
+
         public void Construction()
         {
             var bp = new BrainParameters();
@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
             alloc.Dispose();
         }
 
-        [Test]
+
         public void ApplyContinuousActionOutput()
         {
             var inputTensor = new TensorProxy()
@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(actionDict[1][2], 6);
         }
 
-        [Test]
+
         public void ApplyDiscreteActionOutput()
         {
             var inputTensor = new TensorProxy()

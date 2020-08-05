@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class GrpcExtensionsTests
     {
-        [Test]
+
         public void TestDefaultBrainParametersToProto()
         {
             // Should be able to convert a default instance to proto.
@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Tests
             brain.ToProto("foo", false);
         }
 
-        [Test]
+
         public void TestDefaultAgentInfoToProto()
         {
             // Should be able to convert a default instance to proto.
@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Tests
             agentInfo.ToAgentInfoProto();
         }
 
-        [Test]
+
         public void TestDefaultDemonstrationMetaDataToProto()
         {
             // Should be able to convert a default instance to proto.

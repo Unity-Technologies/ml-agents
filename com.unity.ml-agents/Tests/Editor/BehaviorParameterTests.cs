@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Tests
             // No-op
         }
 
-        [Test]
+
         public void TestNoModelInferenceOnlyThrows()
         {
             var gameObj = new GameObject();

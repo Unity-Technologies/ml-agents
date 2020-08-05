@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Tests
             return agents;
         }
 
-        [Test]
+
         public void Construction()
         {
             var alloc = new TensorCachingAllocator();
@@ -72,7 +72,7 @@ namespace Unity.MLAgents.Tests
             alloc.Dispose();
         }
 
-        [Test]
+
         public void GenerateBatchSize()
         {
             var inputTensor = new TensorProxy();
@@ -85,7 +85,7 @@ namespace Unity.MLAgents.Tests
             alloc.Dispose();
         }
 
-        [Test]
+
         public void GenerateSequenceLength()
         {
             var inputTensor = new TensorProxy();
@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Tests
             alloc.Dispose();
         }
 
-        [Test]
+
         public void GenerateVectorObservation()
         {
             var inputTensor = new TensorProxy
@@ -129,7 +129,7 @@ namespace Unity.MLAgents.Tests
             alloc.Dispose();
         }
 
-        [Test]
+
         public void GeneratePreviousActionInput()
         {
             var inputTensor = new TensorProxy
@@ -157,7 +157,7 @@ namespace Unity.MLAgents.Tests
             alloc.Dispose();
         }
 
-        [Test]
+
         public void GenerateActionMaskInput()
         {
             var inputTensor = new TensorProxy
