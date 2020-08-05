@@ -17,7 +17,7 @@ def test_valueheads():
     for stream_name in stream_names:
         assert value_out[stream_name].shape == (batch_size,)
 
-    # Test that iinputting the wrong size input will throw an error
+    # Test that inputting the wrong size input will throw an error
     with pytest.raises(Exception):
         value_out = value_heads(torch.ones((batch_size, input_size + 2)))
 

@@ -18,6 +18,7 @@ def compare_models(module_1, module_2):
     for key_item_1, key_item_2 in zip(
         module_1.state_dict().items(), module_2.state_dict().items()
     ):
+        # Compare tensors in state_dict and not the keys.
         is_same = torch.equal(key_item_1[1], key_item_2[1]) and is_same
     return is_same
 
