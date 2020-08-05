@@ -21,6 +21,7 @@ from mlagents.trainers.settings import (
     TrainerSettings,
     PPOSettings,
     TestingConfiguration,
+    FrameworkType,
 )
 
 
@@ -58,7 +59,6 @@ class PPOTrainer(RLTrainer):
         )
         self.load = load
         self.seed = seed
-        self.framework = "torch" if TestingConfiguration.use_torch else "tf"
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self.policy: Policy = None  # type: ignore
@@ -254,7 +254,7 @@ class PPOTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        if self.framework == "torch":
+        if self.framework == FrameworkType.PYTORCH:
             self.optimizer = TorchPPOOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
