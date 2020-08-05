@@ -43,7 +43,7 @@ use for Inference.
 be faster than GPU. You should use the GPU only if you use the ResNet visual
 encoder or have a large number of agents with visual observations.
 
-# Unsupported systems
+# Unsupported use cases
 ## Externally trained models
 The ML-Agents Toolkit only supports the models created with our trainers. Model
 loading expects certain conventions for constants and tensor names. While it is
