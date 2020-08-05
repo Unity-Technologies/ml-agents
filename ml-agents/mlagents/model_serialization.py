@@ -243,5 +243,5 @@ def copy_model_files(source_nn_path: str, destination_nn_path: str) -> None:
     try:
         shutil.copyfile(source_onnx_path, destination_onnx_path)
         logger.info(f"Copied {source_onnx_path} to {destination_onnx_path}.")
-    except Exception:
+    except OSError:
         pass
