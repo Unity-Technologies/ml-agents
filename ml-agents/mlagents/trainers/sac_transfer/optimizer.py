@@ -878,7 +878,6 @@ class SACTransferOptimizer(TFOptimizer):
             policy.sequence_length_ph: self.policy.sequence_length,
             self.next_sequence_length_ph: self.policy.sequence_length,
             self.policy.mask_input: batch["masks"] * burn_in_mask,
-            self.policy.current_action: batch["actions"],
             self.policy.current_reward: batch["extrinsic_rewards"],
         }
         for name in self.reward_signals:
@@ -886,7 +885,11 @@ class SACTransferOptimizer(TFOptimizer):
 
         if self.policy.use_continuous_act:
             feed_dict[self.policy_network.external_action_in] = batch["actions"]
+            feed_dict[self.policy.current_action] = batch["actions"]
         else:
+            arr = np.array(batch["actions"]).astype(int)
+            onehot = np.eye(sum(self.policy.act_size))[arr[:,0]]
+            feed_dict[self.policy.current_action] = onehot
             feed_dict[policy.output] = batch["actions"]
             if self.policy.use_recurrent:
                 feed_dict[policy.prev_action] = batch["prev_action"]
