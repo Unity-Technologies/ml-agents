@@ -85,8 +85,7 @@ class VectorEncoder(nn.Module):
 
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
-            self.layers.append(SwishLayer())
-            # self.layers.append(nn.ReLU())
+            self.layers.append(nn.LeakyReLU())
         self.seq_layers = nn.Sequential(*self.layers)
 
     def forward(self, inputs: torch.Tensor) -> None:
@@ -165,10 +164,12 @@ class SimpleVisualEncoder(nn.Module):
         self.dense = nn.Linear(self.final_flat, self.h_size)
 
     def forward(self, visual_obs: torch.Tensor) -> None:
-        conv_1 = torch.relu(self.conv1(visual_obs))
-        conv_2 = torch.relu(self.conv2(conv_1))
+        conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
+        conv_2 = nn.functional.leaky_relu(self.conv2(conv_1))
         # hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
-        hidden = torch.relu(self.dense(torch.reshape(conv_2, (-1, self.final_flat))))
+        hidden = nn.functional.leaky_relu(
+            self.dense(torch.reshape(conv_2, (-1, self.final_flat)))
+        )
         return hidden
 
 
@@ -187,10 +188,12 @@ class NatureVisualEncoder(nn.Module):
         self.dense = nn.Linear(self.final_flat, self.h_size)
 
     def forward(self, visual_obs):
-        conv_1 = torch.relu(self.conv1(visual_obs))
-        conv_2 = torch.relu(self.conv2(conv_1))
-        conv_3 = torch.relu(self.conv3(conv_2))
-        hidden = torch.relu(self.dense(conv_3.view([-1, self.final_flat])))
+        conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
+        conv_2 = nn.functional.leaky_relu(self.conv2(conv_1))
+        conv_3 = nn.functional.leaky_relu(self.conv3(conv_2))
+        hidden = nn.functional.leaky_relu(
+            self.dense(conv_3.view([-1, self.final_flat]))
+        )
         return hidden
 
 
@@ -210,15 +213,15 @@ class ResNetVisualEncoder(nn.Module):
             for _ in range(n_blocks):
                 self.layers.append(self.make_block(channel))
             last_channel = channel
-        self.layers.append(nn.ReLU())
+        self.layers.append(nn.LeakyReLU())
         self.dense = nn.Linear(n_channels[-1] * height * width, final_hidden)
 
     @staticmethod
     def make_block(channel):
         block_layers = [
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
         ]
         return block_layers

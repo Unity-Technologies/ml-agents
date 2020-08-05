@@ -13,6 +13,7 @@ from mlagents.trainers.torch.encoders import (
 from mlagents.trainers.settings import EncoderType
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.base_env import BehaviorSpec
+from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
 class ModelUtils:
@@ -118,16 +119,17 @@ class ModelUtils:
                 raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
-        if unnormalized_inputs > 0:
-            vector_encoders.append(
-                VectorAndUnnormalizedInputEncoder(
-                    vector_size, h_size, unnormalized_inputs, num_layers, normalize
+        if vector_size + unnormalized_inputs > 0:
+            if unnormalized_inputs > 0:
+                vector_encoders.append(
+                    VectorAndUnnormalizedInputEncoder(
+                        vector_size, h_size, unnormalized_inputs, num_layers, normalize
+                    )
                 )
-            )
-        else:
-            vector_encoders.append(
-                VectorEncoder(vector_size, h_size, num_layers, normalize)
-            )
+            else:
+                vector_encoders.append(
+                    VectorEncoder(vector_size, h_size, num_layers, normalize)
+                )
         return nn.ModuleList(visual_encoders), nn.ModuleList(vector_encoders)
 
     @staticmethod
@@ -188,3 +190,26 @@ class ModelUtils:
         for i in range(num_partitions):
             res += [data[(partitions == i).nonzero().squeeze(1)]]
         return res
+    
+    @staticmethod 
+    def get_probs_and_entropy(
+        action_list: List[torch.Tensor], dists: List[DistInstance]
+    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
+        log_probs_list = []
+        all_probs_list = []
+        entropies_list = []
+        for action, action_dist in zip(action_list, dists):
+            log_prob = action_dist.log_prob(action)
+            log_probs_list.append(log_prob)
+            entropies_list.append(action_dist.entropy())
+            if isinstance(action_dist, DiscreteDistInstance):
+                all_probs_list.append(action_dist.all_log_prob())
+        log_probs = torch.stack(log_probs_list, dim=-1)
+        entropies = torch.stack(entropies_list, dim=-1)
+        if not all_probs_list:
+            log_probs = log_probs.squeeze(-1)
+            entropies = entropies.squeeze(-1)
+            all_probs = None
+        else:
+            all_probs = torch.cat(all_probs, dim=-1)
+        return log_probs, entropies, all_probs

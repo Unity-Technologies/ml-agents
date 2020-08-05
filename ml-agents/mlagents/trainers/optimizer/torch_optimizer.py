@@ -56,7 +56,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         """
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
 
-        value_estimates, mean_value = self.policy.actor_critic.critic_pass(
+        value_estimates = self.policy.actor_critic.critic_pass(
             np.expand_dims(vec_vis_obs.vector_observations[idx], 0),
             np.expand_dims(vec_vis_obs.visual_observations[idx], 0),
         )
@@ -91,11 +91,11 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         next_obs = [ModelUtils.list_to_tensor(next_obs).unsqueeze(0)]
         next_memory = torch.zeros([1, 1, self.policy.m_size])
 
-        value_estimates, mean_value = self.policy.actor_critic.critic_pass(
+        value_estimates = self.policy.actor_critic.critic_pass(
             vector_obs, visual_obs, memory
         )
 
-        next_value_estimate, next_value = self.policy.actor_critic.critic_pass(
+        next_value_estimate = self.policy.actor_critic.critic_pass(
             next_obs, next_obs, next_memory
         )
 
