@@ -98,8 +98,8 @@ def run_experiment(
         evaluate_count = evaluate["TorchPolicy.evaluate"]["count"]
     else:
         if algo == "ppo":
-            update_total = update["TFPPOOptimizer.update"]["total"]
-            update_count = update["TFPPOOptimizer.update"]["count"]
+            update_total = update["PPOOptimizer.update"]["total"]
+            update_count = update["PPOOptimizer.update"]["count"]
         else:
             update_total = update["SACTrainer._update_policy"]["total"]
             update_count = update["SACTrainer._update_policy"]["count"]

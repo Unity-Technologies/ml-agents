@@ -14,7 +14,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
-from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import (
@@ -259,7 +259,7 @@ class PPOTrainer(RLTrainer):
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         else:
-            self.optimizer = TFPPOOptimizer(  # type: ignore
+            self.optimizer = PPOOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         for _reward_signal in self.optimizer.reward_signals.keys():
