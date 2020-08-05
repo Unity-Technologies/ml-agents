@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// Defines the structure of an Action Space to be used by the Actuator system.
     /// </summary>
-    internal readonly struct ActionSpec
+    internal readonly struct ActionSpec : IActionSpec
     {
 
         /// <summary>
@@ -19,20 +19,19 @@ namespace Unity.MLAgents.Actuators
         /// The cumulative sum of the total number of discrete actions can be retrieved
         /// by the <see cref="SumOfDiscreteBranchSizes"/> property.
         ///
-        /// For an IActuator with a Continuous <see cref="SpaceType"/>, the number of continuous
-        /// actions is at the 0th index of array.
+        /// For an IActuator with a Continuous it will be null.
         /// </summary>
         public readonly int[] BranchSizes;
 
         /// <summary>
         /// The number of actions for a Continuous <see cref="SpaceType"/>.
         /// </summary>
-        public readonly int NumContinuousActions;
+        public int NumContinuousActions { get; }
 
         /// <summary>
         /// The number of branches for a Discrete <see cref="SpaceType"/>.
         /// </summary>
-        public readonly int NumDiscreteActions;
+        public int NumDiscreteActions { get; }
 
         /// <summary>
         /// Get the total number of Discrete Actions that can be taken by calculating the Sum
@@ -69,7 +68,7 @@ namespace Unity.MLAgents.Actuators
         {
             NumContinuousActions = numContinuousActions;
             NumDiscreteActions = numDiscreteActions;
-            BranchSizes = branchSizes ?? new[] { numContinuousActions };
+            BranchSizes =  branchSizes;
             SumOfDiscreteBranchSizes = branchSizes?.Sum() ?? 0;
         }
     }

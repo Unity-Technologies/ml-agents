@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// A class that manages the delegation of events, action buffers, and action mask for a list of IActuators.
     /// </summary>
-    internal class ActuatorManager : IList<IActuator>
+    internal class ActuatorManager : IList<IActuator>, IActionSpec
     {
         // IActuators managed by this object.
         IList<IActuator> m_Actuators;
@@ -25,22 +25,22 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// The sum of all of the discrete branches for all of the <see cref="IActuator"/>s in this manager.
         /// </summary>
-        internal int SumOfDiscreteBranchSizes { get; private set; }
+        public int SumOfDiscreteBranchSizes { get; private set; }
 
         /// <summary>
         /// The number of the discrete branches for all of the <see cref="IActuator"/>s in this manager.
         /// </summary>
-        internal int NumDiscreteBranches { get; private set; }
+        public int NumDiscreteActions { get; private set; }
 
         /// <summary>
         /// The number of continuous actions for all of the <see cref="IActuator"/>s in this manager.
         /// </summary>
-        internal int NumContinuousActions { get; private set; }
+        public int NumContinuousActions { get; private set; }
 
         /// <summary>
-        /// Returns the total actions which is calculated by <see cref="NumContinuousActions"/> + <see cref="NumDiscreteBranches"/>.
+        /// Returns the total actions which is calculated by <see cref="NumContinuousActions"/> + <see cref="NumDiscreteActions"/>.
         /// </summary>
-        public int TotalNumberOfActions => NumContinuousActions + NumDiscreteBranches;
+        public int TotalNumberOfActions => NumContinuousActions + NumDiscreteActions;
 
         /// <summary>
         /// Gets the <see cref="IDiscreteActionMask"/> managed by this object.
@@ -72,7 +72,7 @@ namespace Unity.MLAgents.Actuators
         void ReadyActuatorsForExecution()
         {
             ReadyActuatorsForExecution(m_Actuators, NumContinuousActions, SumOfDiscreteBranchSizes,
-                NumDiscreteBranches);
+                NumDiscreteActions);
         }
 
         /// <summary>
@@ -252,7 +252,7 @@ namespace Unity.MLAgents.Actuators
             }
 
             NumContinuousActions += actuatorItem.actionSpec.NumContinuousActions;
-            NumDiscreteBranches += actuatorItem.actionSpec.NumDiscreteActions;
+            NumDiscreteActions += actuatorItem.actionSpec.NumDiscreteActions;
             SumOfDiscreteBranchSizes += actuatorItem.actionSpec.SumOfDiscreteBranchSizes;
         }
 
@@ -268,7 +268,7 @@ namespace Unity.MLAgents.Actuators
             }
 
             NumContinuousActions -= actuatorItem.actionSpec.NumContinuousActions;
-            NumDiscreteBranches -= actuatorItem.actionSpec.NumDiscreteActions;
+            NumDiscreteActions -= actuatorItem.actionSpec.NumDiscreteActions;
             SumOfDiscreteBranchSizes -= actuatorItem.actionSpec.SumOfDiscreteBranchSizes;
         }
 
@@ -277,7 +277,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         void ClearBufferSizes()
         {
-            NumContinuousActions = NumDiscreteBranches = SumOfDiscreteBranchSizes = 0;
+            NumContinuousActions = NumDiscreteActions = SumOfDiscreteBranchSizes = 0;
         }
 
         /*********************************************************************************

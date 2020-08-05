@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests.Actuators
                 { 0f, 1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f, 9f, 10f, 11f }, Array.Empty<int>());
 
             Assert.IsTrue(12 == manager.NumContinuousActions);
-            Assert.IsTrue(0 == manager.NumDiscreteBranches);
+            Assert.IsTrue(0 == manager.NumDiscreteActions);
             Assert.IsTrue(0 == manager.SumOfDiscreteBranchSizes);
             Assert.IsTrue(12 == manager.StoredContinuousActions.Length);
             Assert.IsTrue(0 == manager.StoredDiscreteActions.Length);
@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Tests.Actuators
                 new[] { 0, 1, 2, 3, 4, 5, 6});
 
             Assert.IsTrue(0 == manager.NumContinuousActions);
-            Assert.IsTrue(7 == manager.NumDiscreteBranches);
+            Assert.IsTrue(7 == manager.NumDiscreteActions);
             Assert.IsTrue(13 == manager.SumOfDiscreteBranchSizes);
             Assert.IsTrue(0 == manager.StoredContinuousActions.Length);
             Assert.IsTrue(7 == manager.StoredDiscreteActions.Length);
@@ -183,21 +183,21 @@ namespace Unity.MLAgents.Tests.Actuators
 
             manager.Add(actuator1);
             manager.Add(actuator2);
-            Assert.IsTrue(manager.NumDiscreteBranches == 6);
+            Assert.IsTrue(manager.NumDiscreteActions == 6);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 12);
 
             manager.Remove(actuator2);
 
-            Assert.IsTrue(manager.NumDiscreteBranches == 3);
+            Assert.IsTrue(manager.NumDiscreteActions == 3);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 6);
 
             manager.Remove(null);
 
-            Assert.IsTrue(manager.NumDiscreteBranches == 3);
+            Assert.IsTrue(manager.NumDiscreteActions == 3);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 6);
 
             manager.RemoveAt(0);
-            Assert.IsTrue(manager.NumDiscreteBranches == 0);
+            Assert.IsTrue(manager.NumDiscreteActions == 0);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 0);
         }
 
@@ -211,12 +211,12 @@ namespace Unity.MLAgents.Tests.Actuators
             manager.Add(actuator1);
             manager.Add(actuator2);
 
-            Assert.IsTrue(manager.NumDiscreteBranches == 6);
+            Assert.IsTrue(manager.NumDiscreteActions == 6);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 12);
 
             manager.Clear();
 
-            Assert.IsTrue(manager.NumDiscreteBranches == 0);
+            Assert.IsTrue(manager.NumDiscreteActions == 0);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 0);
         }
 
@@ -228,10 +228,10 @@ namespace Unity.MLAgents.Tests.Actuators
                 "actuator1");
             var actuator2 = new TestActuator(ActionSpec.MakeDiscrete(new[] {1, 2, 3}), "actuator2");
             manager.Add(actuator1);
-            Assert.IsTrue(manager.NumDiscreteBranches == 4);
+            Assert.IsTrue(manager.NumDiscreteActions == 4);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 10);
             manager[0] = actuator2;
-            Assert.IsTrue(manager.NumDiscreteBranches == 3);
+            Assert.IsTrue(manager.NumDiscreteActions == 3);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 6);
         }
 
@@ -243,10 +243,10 @@ namespace Unity.MLAgents.Tests.Actuators
                 "actuator1");
             var actuator2 = new TestActuator(ActionSpec.MakeDiscrete(new[] {1, 2, 3}), "actuator2");
             manager.Add(actuator1);
-            Assert.IsTrue(manager.NumDiscreteBranches == 4);
+            Assert.IsTrue(manager.NumDiscreteActions == 4);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 10);
             manager.Insert(0, actuator2);
-            Assert.IsTrue(manager.NumDiscreteBranches == 7);
+            Assert.IsTrue(manager.NumDiscreteActions == 7);
             Assert.IsTrue(manager.SumOfDiscreteBranchSizes == 16);
             Assert.IsTrue(manager.IndexOf(actuator2) == 0);
         }
