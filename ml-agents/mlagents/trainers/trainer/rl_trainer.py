@@ -5,7 +5,7 @@ from collections import defaultdict
 import abc
 import time
 import attr
-from mlagents.model_serialization import SerializationSettings
+from mlagents.model_serialization import SerializationSettings, copy_model_files
 from mlagents.trainers.policy.checkpoint_manager import (
     NNCheckpoint,
     NNCheckpointManager,
@@ -131,12 +131,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         policy = list(self.policies.values())[0]
-        settings = SerializationSettings(policy.model_path, self.brain_name)
         model_checkpoint = self._checkpoint()
+
+        # Copy the checkpointed model files to the final output location
+        copy_model_files(model_checkpoint.file_path, f"{policy.model_path}.nn")
+
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{policy.model_path}.nn"
         )
-        policy.save(policy.model_path, settings)
         NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
     @abc.abstractmethod
