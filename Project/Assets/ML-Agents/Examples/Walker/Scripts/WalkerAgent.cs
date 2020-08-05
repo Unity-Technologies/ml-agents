@@ -136,7 +136,6 @@ public class WalkerAgent : Agent
         }
     }
 
-    public Transform rotTest;
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
