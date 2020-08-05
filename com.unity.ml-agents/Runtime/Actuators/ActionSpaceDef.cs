@@ -11,8 +11,6 @@ namespace Unity.MLAgents.Actuators
     internal readonly struct ActionSpaceDef
     {
 
-        public readonly SpaceType SpaceType;
-
         /// <summary>
         /// An array of branch sizes for our action space.
         ///
@@ -49,7 +47,7 @@ namespace Unity.MLAgents.Actuators
         /// <returns>An Continuous ActionSpaceDef initialized with the number of actions available.</returns>
         public static ActionSpaceDef MakeContinuous(int numActions)
         {
-            var actuatorSpace = new ActionSpaceDef(SpaceType.Continuous, numActions, 0);
+            var actuatorSpace = new ActionSpaceDef(numActions, 0);
             return actuatorSpace;
         }
 
@@ -63,17 +61,16 @@ namespace Unity.MLAgents.Actuators
         public static ActionSpaceDef MakeDiscrete(int[] branchSizes)
         {
             var numActions = branchSizes.Length;
-            var actuatorSpace = new ActionSpaceDef(SpaceType.Discrete, 0, numActions, branchSizes);
+            var actuatorSpace = new ActionSpaceDef(0, numActions, branchSizes);
             return actuatorSpace;
         }
 
-        ActionSpaceDef(SpaceType spaceType, int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
+        ActionSpaceDef(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
         {
-            SpaceType = spaceType;
             NumContinuousActions = numContinuousActions;
             NumDiscreteActions = numDiscreteActions;
-            BranchSizes = branchSizes;
-            SumOfDiscreteBranchSizes = BranchSizes?.Sum() ?? 0;
+            BranchSizes = branchSizes ?? new[] { numContinuousActions };
+            SumOfDiscreteBranchSizes = branchSizes?.Sum() ?? 0;
         }
     }
 }

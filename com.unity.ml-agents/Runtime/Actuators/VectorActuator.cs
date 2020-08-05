@@ -55,10 +55,7 @@ namespace Unity.MLAgents.Actuators
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            if (ActionSpaceDef.SpaceType == SpaceType.Discrete)
-            {
                 m_ActionReceiver.WriteDiscreteActionMask(actionMask);
-            }
         }
 
         /// <summary>

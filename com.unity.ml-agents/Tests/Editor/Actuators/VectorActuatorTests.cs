@@ -34,14 +34,12 @@ namespace Unity.MLAgents.Tests.Actuators
             var ar = new TestActionReceiver();
             var va = new VectorActuator(ar, new[] {1, 2, 3}, SpaceType.Discrete, "name");
 
-            Assert.IsTrue(va.ActionSpaceDef.SpaceType == SpaceType.Discrete);
             Assert.IsTrue(va.ActionSpaceDef.NumDiscreteActions == 3);
             Assert.IsTrue(va.ActionSpaceDef.SumOfDiscreteBranchSizes == 6);
             Assert.IsTrue(va.ActionSpaceDef.NumContinuousActions == 0);
 
             var va1 = new VectorActuator(ar, new[] {4}, SpaceType.Continuous, "name");
 
-            Assert.IsTrue(va1.ActionSpaceDef.SpaceType == SpaceType.Continuous);
             Assert.IsTrue(va1.ActionSpaceDef.NumContinuousActions == 4);
             Assert.IsTrue(va1.ActionSpaceDef.SumOfDiscreteBranchSizes == 0);
             Assert.AreEqual(va1.Name, "name-Continuous");
