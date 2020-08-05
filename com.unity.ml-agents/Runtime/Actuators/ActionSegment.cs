@@ -55,6 +55,27 @@ namespace Unity.MLAgents.Actuators
             return new Enumerator(this);
         }
 
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ActionSegment<T>))
+            {
+                return false;
+            }
+            var other = (ActionSegment<T>)obj;
+            return Offset == other.Offset && Length == other.Length && Equals(Array, other.Array);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Offset;
+                hashCode = (hashCode * 397) ^ Length;
+                hashCode = (hashCode * 397) ^ (Array != null ? Array.GetHashCode() : 0);
+                return hashCode;
+            }
+        }
+
         struct Enumerator : IEnumerator<T>
         {
             readonly T[] m_Array;
@@ -109,5 +130,4 @@ namespace Unity.MLAgents.Actuators
             }
         }
     }
-
 }

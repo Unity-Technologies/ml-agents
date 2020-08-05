@@ -94,8 +94,10 @@ namespace Unity.MLAgents.Actuators
         /// discrete actions for the IActuators in this list.</param>
         public void UpdateActions(float[] continuousActionBuffer, int[] discreteActionBuffer)
         {
-            Debug.Assert(m_BuffersInitialized,
-                "UpdateActions was called before the buffers were initialized.");
+            if (!m_BuffersInitialized)
+            {
+                EnsureActionBufferSize();
+            }
             UpdateActionArray(continuousActionBuffer, StoredContinuousActions);
             UpdateActionArray(discreteActionBuffer, StoredDiscreteActions);
         }
@@ -118,6 +120,10 @@ namespace Unity.MLAgents.Actuators
 
         public void WriteActionMask()
         {
+            if (!m_BuffersInitialized)
+            {
+                EnsureActionBufferSize();
+            }
             m_DiscreteActionMask.ResetMask();
             var offset = 0;
             for (var i = 0; i < m_Actuators.Count; i++)
@@ -185,7 +191,8 @@ namespace Unity.MLAgents.Actuators
 
         void EnsureActionBufferSize()
         {
-            EnsureActionBufferSize(m_Actuators, NumContinuousActions, NumDiscreteBranches, SumOfDiscreteBranchSizes);
+            EnsureActionBufferSize(m_Actuators, NumContinuousActions, SumOfDiscreteBranchSizes,
+                NumDiscreteBranches);
         }
 
         /// <summary>
@@ -365,7 +372,7 @@ namespace Unity.MLAgents.Actuators
             set
             {
                 Debug.Assert(m_BuffersInitialized == false,
-                "Cannot modify the ActuatorManager after its buffers have been initialized");
+                    "Cannot modify the ActuatorManager after its buffers have been initialized");
                 var old = m_Actuators[index];
                 SubtractFromBufferSize(old);
                 m_Actuators[index] = value;

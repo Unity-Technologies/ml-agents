@@ -37,8 +37,8 @@ namespace Unity.MLAgents.Actuators
             m_BranchSizes = branchSizes;
             m_SumOfDiscreteBranchSizes = branchSizes.Sum();
             m_NumBranches = branchSizes.Length;
-
         }
+
         internal BufferedDiscreteActionMask(IList<IActuator> actuators, int sumOfDiscreteBranchSizes, int numBranches)
         {
             m_Actuators = actuators;
@@ -55,13 +55,13 @@ namespace Unity.MLAgents.Actuators
             foreach (var actionIndex in actionIndices)
             {
 #if DEBUG
-                if ( branch >= m_NumBranches || actionIndex >= m_BranchSizes[branch])
+                if (branch >= m_NumBranches || actionIndex >= m_BranchSizes[CurrentBranchOffset + branch])
                 {
                     throw new UnityAgentsException(
                         "Invalid Action Masking: Action Mask is too large for specified branch.");
                 }
 #endif
-                m_CurrentMask[actionIndex + m_StartingActionIndices[branch + CurrentBranchOffset]] = true;
+                m_CurrentMask[actionIndex + m_StartingActionIndices[CurrentBranchOffset + branch]] = true;
             }
         }
 
@@ -123,6 +123,7 @@ namespace Unity.MLAgents.Actuators
                 }
             }
         }
+
 #endif
 
         /// <summary>

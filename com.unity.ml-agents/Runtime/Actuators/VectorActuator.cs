@@ -1,4 +1,5 @@
 using System;
+
 using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Actuators
@@ -10,12 +11,16 @@ namespace Unity.MLAgents.Actuators
         IActionReceiver m_ActionReceiver;
 
         ActionBuffers m_ActionBuffers;
-        ActionSpaceDef m_ActionSpaceDef;
+        internal ActionBuffers ActionBuffers
+        {
+            get => m_ActionBuffers;
+            private set => m_ActionBuffers = value;
+        }
 
         public VectorActuator(IActionReceiver actionReceiver,
-            int[] vectorActionSize,
-            SpaceType spaceType,
-            string name = "VectorActuator")
+                              int[] vectorActionSize,
+                              SpaceType spaceType,
+                              string name = "VectorActuator")
         {
             m_ActionReceiver = actionReceiver;
             string suffix;
@@ -39,14 +44,13 @@ namespace Unity.MLAgents.Actuators
 
         public void ResetData()
         {
-            m_ActionBuffers.DiscreteActions = new ActionSegment<int>();
-            m_ActionBuffers.ContinuousActions = new ActionSegment<float>();
+            m_ActionBuffers = ActionBuffers.Empty;
         }
 
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
-            m_ActionBuffers = actionBuffers;
-            m_ActionReceiver.OnActionReceived(m_ActionBuffers);
+            ActionBuffers = actionBuffers;
+            m_ActionReceiver.OnActionReceived(ActionBuffers);
         }
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -60,19 +64,14 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Returns the number of discrete branches + the number of continuous actions.
         /// </summary>
-        public int TotalNumberOfActions => m_ActionSpaceDef.NumContinuousActions +
-            m_ActionSpaceDef.NumDiscreteActions;
+        public int TotalNumberOfActions => ActionSpaceDef.NumContinuousActions +
+        ActionSpaceDef.NumDiscreteActions;
 
         /// <summary>
         /// <inheritdoc cref="IActuator.ActionSpaceDef"/>
         /// </summary>
-        public ActionSpaceDef ActionSpaceDef
-        {
-            get => m_ActionSpaceDef;
-            private set => m_ActionSpaceDef = value;
-        }
+        public ActionSpaceDef ActionSpaceDef { get; }
 
         public string Name { get; }
-
     }
 }

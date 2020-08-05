@@ -1,15 +1,37 @@
 using System;
+using System.Linq;
 
 namespace Unity.MLAgents.Actuators
 {
-    internal struct ActionBuffers
+    internal readonly struct ActionBuffers
     {
-        public ActionSegment<float> ContinuousActions { get; internal set; }
-        public ActionSegment<int> DiscreteActions { get; internal set; }
+        public static ActionBuffers Empty = new ActionBuffers(ActionSegment<float>.Empty, ActionSegment<int>.Empty);
+        public ActionSegment<float> ContinuousActions { get; }
+        public ActionSegment<int> DiscreteActions { get; }
         public ActionBuffers(ActionSegment<float> continuousActions, ActionSegment<int> discreteActions)
         {
             ContinuousActions = continuousActions;
             DiscreteActions = discreteActions;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ActionBuffers))
+            {
+                return false;
+            }
+
+            var ab = (ActionBuffers)obj;
+            return ab.ContinuousActions.SequenceEqual(ContinuousActions) &&
+                ab.DiscreteActions.SequenceEqual(DiscreteActions);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (ContinuousActions.GetHashCode() * 397) ^ DiscreteActions.GetHashCode();
+            }
         }
     }
 
