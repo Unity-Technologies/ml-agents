@@ -1,5 +1,4 @@
 # # Unity ML-Agents Toolkit
-import os
 from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
@@ -127,15 +126,15 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
     def create_saver(self, policy: Policy) -> BaseSaver:
         if self.framework == "torch":
-            saver = TorchSaver(
-                policy,
+            saver = TorchSaver(  # type: ignore
+                policy,  # type: ignore
                 self.trainer_settings,
                 model_path=self.artifact_path,
                 load=self.load,
             )
         else:
-            saver = TFSaver(
-                policy,
+            saver = TFSaver(  # type: ignore
+                policy,  # type: ignore
                 self.trainer_settings,
                 model_path=self.artifact_path,
                 load=self.load,

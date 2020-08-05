@@ -24,6 +24,7 @@ class Trainer(abc.ABC):
         brain_name: str,
         trainer_settings: TrainerSettings,
         training: bool,
+        load: bool,
         artifact_path: str,
         reward_buff_cap: int = 1,
     ):
@@ -40,6 +41,7 @@ class Trainer(abc.ABC):
         self._threaded = trainer_settings.threaded
         self._stats_reporter = StatsReporter(brain_name)
         self.is_training = training
+        self.load = load
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []

@@ -265,18 +265,18 @@ class ActorCritic(nn.Module):
 class GlobalSteps(nn.Module):
     def __init__(self):
         super().__init__()
-        self._global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
 
     @property
     def current_step(self):
-        return int(self._global_step.item())
+        return int(self.__global_step.item())
 
     @current_step.setter
-    def set_step(self, value):
-        self._global_step.data = value
+    def current_step(self, value):
+        self.__global_step[:] = value
 
     def increment(self, value):
-        self._global_step += value
+        self.__global_step += value
 
 
 class LearningRate(nn.Module):

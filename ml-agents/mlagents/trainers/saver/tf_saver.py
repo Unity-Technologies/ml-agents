@@ -1,11 +1,9 @@
-from typing import Tuple
-from distutils.version import LooseVersion
-from mlagents_envs.exception import UnityException
+import os
+from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
 from mlagents.tf_utils import tf
 from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.tf.model_serialization import export_policy_model
-from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers import __version__
@@ -18,6 +16,7 @@ class TFSaver(BaseSaver):
     """
     Saver class for TensorFlow
     """
+
     def __init__(
         self,
         policy: TFPolicy,
@@ -32,16 +31,15 @@ class TFSaver(BaseSaver):
         self._keep_checkpoints = trainer_settings.keep_checkpoints
         self.load = load
 
-
         self.graph = self.policy.graph
         self.sess = self.policy.sess
         with self.graph.as_default():
             self.saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
 
-    def register(self, module_dict):
+    def register(self, module):
         pass
 
-    def save_checkpoint(self, brain_name: str, step: int) -> None:
+    def save_checkpoint(self, brain_name: str, step: int) -> str:
         """
         Checkpoints the policy on disk.
 
@@ -115,7 +113,9 @@ class TFSaver(BaseSaver):
                     )
                 )
             else:
-                logger.info(f"Resuming training from step {self.policy.get_current_step()}.")
+                logger.info(
+                    f"Resuming training from step {self.policy.get_current_step()}."
+                )
 
     def _check_model_version(self, version: str) -> None:
         """

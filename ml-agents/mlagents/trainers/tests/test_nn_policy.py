@@ -47,9 +47,7 @@ def create_policy_mock(
     trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
-    policy = TFPolicy(
-        seed, mock_spec, trainer_settings, model_path=model_path, load=load
-    )
+    policy = TFPolicy(seed, mock_spec, trainer_settings)
     return policy
 
 

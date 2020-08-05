@@ -50,10 +50,12 @@ class TestingConfiguration:
     env_name = ""
     device = "cpu"
 
+
 class SerializationSettings:
     convert_to_barracuda = True
     convert_to_onnx = True
     onnx_opset = 9
+
 
 @attr.s(auto_attribs=True)
 class ExportableSettings:

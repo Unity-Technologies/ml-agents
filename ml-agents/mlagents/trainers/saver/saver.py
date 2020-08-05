@@ -12,11 +12,11 @@ class BaseSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def register(self):
+    def register(self, module):
         pass
 
     @abc.abstractmethod
-    def save_checkpoint(self):
+    def save_checkpoint(self, brain_name: str, step: int) -> str:
         pass
 
     @abc.abstractmethod
@@ -24,5 +24,5 @@ class BaseSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def export(self):
+    def export(self, output_filepath: str, brain_name: str) -> None:
         pass

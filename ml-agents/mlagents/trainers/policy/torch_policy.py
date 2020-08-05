@@ -2,7 +2,6 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import torch
 
-import os
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents.trainers.policy import Policy
@@ -22,8 +21,6 @@ class TorchPolicy(Policy):
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
@@ -46,13 +43,13 @@ class TorchPolicy(Policy):
             seed,
             behavior_spec,
             trainer_settings,
-            model_path,
-            load,
             tanh_squash,
             reparameterize,
             condition_sigma_on_obs,
         )
-        self.global_step = GlobalSteps() # could be much simpler if TorchPolicy is nn.Module
+        self.global_step = (
+            GlobalSteps()
+        )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
         if TestingConfiguration.device != "cpu":
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
@@ -242,6 +239,7 @@ class TorchPolicy(Policy):
         :return: The step the model was set to.
         """
         self.global_step.current_step = step
+        return step
 
     def increment_step(self, n_steps):
         """
@@ -260,4 +258,4 @@ class TorchPolicy(Policy):
         return []
 
     def get_modules(self):
-        return {'Policy': self.actor_critic, 'global_step': self.global_step}
+        return {"Policy": self.actor_critic, "global_step": self.global_step}

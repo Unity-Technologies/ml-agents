@@ -11,7 +11,9 @@ class Normalizer(nn.Module):
         super().__init__()
         self.normalization_steps = nn.Parameter(torch.tensor(1), requires_grad=False)
         self.running_mean = nn.Parameter(torch.zeros(vec_obs_size), requires_grad=False)
-        self.running_variance = nn.Parameter(torch.ones(vec_obs_size), requires_grad=False)
+        self.running_variance = nn.Parameter(
+            torch.ones(vec_obs_size), requires_grad=False
+        )
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         normalized_state = torch.clamp(

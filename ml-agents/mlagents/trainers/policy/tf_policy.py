@@ -52,8 +52,6 @@ class TFPolicy(Policy):
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
@@ -64,15 +62,11 @@ class TFPolicy(Policy):
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
         :param trainer_settings: The trainer parameters.
-        :param model_path: Where to load/save the model.
-        :param load: If True, load model from model_path. Otherwise, create new model.
         """
         super().__init__(
             seed,
             behavior_spec,
             trainer_settings,
-            model_path,
-            load,
             tanh_squash,
             reparameterize,
             condition_sigma_on_obs,

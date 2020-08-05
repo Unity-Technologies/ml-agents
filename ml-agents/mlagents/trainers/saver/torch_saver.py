@@ -1,9 +1,9 @@
 import os
 
 import torch
+from typing import Dict
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.saver.saver import BaseSaver
-from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.torch.model_serialization import ModelSerializer
@@ -16,6 +16,7 @@ class TorchSaver(BaseSaver):
     """
     Saver class for PyTorch
     """
+
     def __init__(
         self,
         policy: TorchPolicy,
@@ -31,7 +32,7 @@ class TorchSaver(BaseSaver):
         self.load = load
         self.exporter = ModelSerializer(self.policy)
 
-        self.modules = {}
+        self.modules: Dict[str, torch.nn.Modules] = {}
 
     def register(self, module):
         self.modules.update(module.get_modules())
@@ -46,7 +47,9 @@ class TorchSaver(BaseSaver):
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
         checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{step}")
-        state_dict = {name: module.state_dict() for name, module in self.modules.items()}
+        state_dict = {
+            name: module.state_dict() for name, module in self.modules.items()
+        }
         torch.save(state_dict, f"{checkpoint_path}.pt")
         torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
         self.export(checkpoint_path, brain_name)
@@ -78,4 +81,6 @@ class TorchSaver(BaseSaver):
                 )
             )
         else:
-            logger.info(f"Resuming training from step {self.policy.get_current_step()}.")
+            logger.info(
+                f"Resuming training from step {self.policy.get_current_step()}."
+            )
