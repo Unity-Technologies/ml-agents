@@ -145,14 +145,14 @@ namespace Unity.MLAgents.Actuators
                 var actuator = m_Actuators[i];
                 m_DiscreteActionMask.CurrentBranchOffset = offset;
                 actuator.WriteDiscreteActionMask(m_DiscreteActionMask);
-                offset += actuator.ActionSpaceDef.NumDiscreteActions;
+                offset += actuator.actionSpecs.NumDiscreteActions;
             }
         }
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
-        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="IActionReceiver.ActionSpaceDef"/>.
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="IActionReceiver.actionSpecs"/>.
         /// </summary>
         public void ExecuteActions()
         {
@@ -162,8 +162,8 @@ namespace Unity.MLAgents.Actuators
             for (var i = 0; i < m_Actuators.Count; i++)
             {
                 var actuator = m_Actuators[i];
-                var numContinuousActions = actuator.ActionSpaceDef.NumContinuousActions;
-                var numDiscreteActions = actuator.ActionSpaceDef.NumDiscreteActions;
+                var numContinuousActions = actuator.actionSpecs.NumContinuousActions;
+                var numDiscreteActions = actuator.actionSpecs.NumDiscreteActions;
 
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
@@ -224,8 +224,8 @@ namespace Unity.MLAgents.Actuators
                 Debug.Assert(
                     !m_Actuators[i].Name.Equals(m_Actuators[i + 1].Name),
                     "Actuator names must be unique.");
-                var first = m_Actuators[i].ActionSpaceDef;
-                var second = m_Actuators[i + 1].ActionSpaceDef;
+                var first = m_Actuators[i].actionSpecs;
+                var second = m_Actuators[i + 1].actionSpecs;
                 Debug.Assert(first.NumContinuousActions > 0 == second.NumContinuousActions > 0,
                     "Actuators on the same Agent must have the same action SpaceType.");
             }
@@ -242,9 +242,9 @@ namespace Unity.MLAgents.Actuators
                 return;
             }
 
-            NumContinuousActions += actuatorItem.ActionSpaceDef.NumContinuousActions;
-            NumDiscreteBranches += actuatorItem.ActionSpaceDef.NumDiscreteActions;
-            SumOfDiscreteBranchSizes += actuatorItem.ActionSpaceDef.SumOfDiscreteBranchSizes;
+            NumContinuousActions += actuatorItem.actionSpecs.NumContinuousActions;
+            NumDiscreteBranches += actuatorItem.actionSpecs.NumDiscreteActions;
+            SumOfDiscreteBranchSizes += actuatorItem.actionSpecs.SumOfDiscreteBranchSizes;
         }
 
         /// <summary>
@@ -258,9 +258,9 @@ namespace Unity.MLAgents.Actuators
                 return;
             }
 
-            NumContinuousActions -= actuatorItem.ActionSpaceDef.NumContinuousActions;
-            NumDiscreteBranches -= actuatorItem.ActionSpaceDef.NumDiscreteActions;
-            SumOfDiscreteBranchSizes -= actuatorItem.ActionSpaceDef.SumOfDiscreteBranchSizes;
+            NumContinuousActions -= actuatorItem.actionSpecs.NumContinuousActions;
+            NumDiscreteBranches -= actuatorItem.actionSpecs.NumDiscreteActions;
+            SumOfDiscreteBranchSizes -= actuatorItem.actionSpecs.SumOfDiscreteBranchSizes;
         }
 
         /// <summary>

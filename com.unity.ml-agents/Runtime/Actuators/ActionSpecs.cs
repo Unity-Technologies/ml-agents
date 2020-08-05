@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// Defines the structure of an Action Space to be used by the Actuator system.
     /// </summary>
-    internal readonly struct ActionSpaceDef
+    internal readonly struct ActionSpecs
     {
 
         /// <summary>
@@ -41,31 +41,31 @@ namespace Unity.MLAgents.Actuators
         public int SumOfDiscreteBranchSizes { get; }
 
         /// <summary>
-        /// Creates a Continuous <see cref="ActionSpaceDef"/> with the number of actions available.
+        /// Creates a Continuous <see cref="ActionSpecs"/> with the number of actions available.
         /// </summary>
         /// <param name="numActions">The number of actions available.</param>
-        /// <returns>An Continuous ActionSpaceDef initialized with the number of actions available.</returns>
-        public static ActionSpaceDef MakeContinuous(int numActions)
+        /// <returns>An Continuous ActionSpecs initialized with the number of actions available.</returns>
+        public static ActionSpecs MakeContinuous(int numActions)
         {
-            var actuatorSpace = new ActionSpaceDef(numActions, 0);
+            var actuatorSpace = new ActionSpecs(numActions, 0);
             return actuatorSpace;
         }
 
         /// <summary>
-        /// Creates a Discrete <see cref="ActionSpaceDef"/> with the array of branch sizes that
+        /// Creates a Discrete <see cref="ActionSpecs"/> with the array of branch sizes that
         /// represents the action space.
         /// </summary>
         /// <param name="branchSizes">The array of branch sizes for the discrete action space.  Each index
         /// contains the number of actions available for that branch.</param>
-        /// <returns>An Discrete ActionSpaceDef initialized with the array of branch sizes.</returns>
-        public static ActionSpaceDef MakeDiscrete(int[] branchSizes)
+        /// <returns>An Discrete ActionSpecs initialized with the array of branch sizes.</returns>
+        public static ActionSpecs MakeDiscrete(int[] branchSizes)
         {
             var numActions = branchSizes.Length;
-            var actuatorSpace = new ActionSpaceDef(0, numActions, branchSizes);
+            var actuatorSpace = new ActionSpecs(0, numActions, branchSizes);
             return actuatorSpace;
         }
 
-        ActionSpaceDef(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
+        ActionSpecs(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
         {
             NumContinuousActions = numContinuousActions;
             NumDiscreteActions = numDiscreteActions;

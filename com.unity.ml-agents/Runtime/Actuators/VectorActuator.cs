@@ -27,11 +27,11 @@ namespace Unity.MLAgents.Actuators
             switch (spaceType)
             {
                 case SpaceType.Continuous:
-                    ActionSpaceDef = ActionSpaceDef.MakeContinuous(vectorActionSize[0]);
+                    actionSpecs = ActionSpecs.MakeContinuous(vectorActionSize[0]);
                     suffix = "-Continuous";
                     break;
                 case SpaceType.Discrete:
-                    ActionSpaceDef = ActionSpaceDef.MakeDiscrete(vectorActionSize);
+                    actionSpecs = ActionSpecs.MakeDiscrete(vectorActionSize);
                     suffix = "-Discrete";
                     break;
                 default:
@@ -61,13 +61,13 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Returns the number of discrete branches + the number of continuous actions.
         /// </summary>
-        public int TotalNumberOfActions => ActionSpaceDef.NumContinuousActions +
-        ActionSpaceDef.NumDiscreteActions;
+        public int TotalNumberOfActions => actionSpecs.NumContinuousActions +
+        actionSpecs.NumDiscreteActions;
 
         /// <summary>
-        /// <inheritdoc cref="IActuator.ActionSpaceDef"/>
+        /// <inheritdoc cref="IActionReceiver.actionSpecs"/>
         /// </summary>
-        public ActionSpaceDef ActionSpaceDef { get; }
+        public ActionSpecs actionSpecs { get; }
 
         public string Name { get; }
     }
