@@ -198,6 +198,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public void ResetData()
         {
+            ReadyActuatorsForExecution();
             Array.Clear(StoredContinuousActions, 0, StoredContinuousActions.Length);
             Array.Clear(StoredDiscreteActions, 0, StoredDiscreteActions.Length);
             for (var i = 0; i < m_Actuators.Count; i++)
