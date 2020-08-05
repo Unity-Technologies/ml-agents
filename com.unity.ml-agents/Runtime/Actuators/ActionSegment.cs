@@ -30,17 +30,17 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public static ActionSegment<T> Empty = new ActionSegment<T>(System.Array.Empty<T>(), 0, 0);
 
-#if DEBUG
         static void CheckParameters(T[] actionArray, int offset, int length)
         {
+#if DEBUG
             if (offset + length > actionArray.Length)
             {
                 throw new ArgumentOutOfRangeException(nameof(offset),
                     $"Arguments offset: {offset} and length: {length} " +
                     $"are out of bounds of actionArray: {actionArray.Length}.");
             }
-        }
 #endif
+        }
 
         /// <summary>
         /// Construct an <see cref="ActionSegment{T}"/> with an underlying array
