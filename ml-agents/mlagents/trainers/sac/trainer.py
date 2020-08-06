@@ -361,7 +361,13 @@ class SACTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
         if self.saver is None:
-            self.saver = self.create_saver(policy=policy)
+            self.saver = self.create_saver(
+                self.framework,
+                policy,
+                self.trainer_settings,
+                self.artifact_path,
+                self.load,
+            )
             self.saver.register(self.policy)
             self.saver.register(self.optimizer)
             self.saver.maybe_load()

@@ -47,7 +47,6 @@ class ModelSerializer:
         }
         self.dummy_input = (dummy_vec_obs, dummy_vis_obs, dummy_masks, dummy_memories)
 
-    @staticmethod
     def export_policy_model(self, output_filepath: str) -> None:
         """
         Exports a Torch model for a Policy to .onnx format for Unity embedding.
