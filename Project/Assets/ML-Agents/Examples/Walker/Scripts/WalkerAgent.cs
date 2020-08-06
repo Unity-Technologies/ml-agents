@@ -16,7 +16,6 @@ public class WalkerAgent : Agent
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
-//    Vector3 m_WalkDir; //Direction to the target
 
 
     public enum WalkDirectionMethod
@@ -27,7 +26,6 @@ public class WalkerAgent : Agent
 
     [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
     public Vector3 worldDirToWalk = Vector3.right;
-    public Vector3 m_currentWorldDirToWalk = Vector3.right;
     public Vector3 worldPosToWalkTo;
     public Transform target; //Target the agent will walk towards.
 
