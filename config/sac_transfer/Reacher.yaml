@@ -6,7 +6,7 @@ behaviors:
       learning_rate_schedule: linear
       model_schedule: constant
       batch_size: 128
-      buffer_size: 500000
+      buffer_size: 6000000
       buffer_init_steps: 0
       tau: 0.005
       steps_per_update: 20.0
@@ -17,7 +17,7 @@ behaviors:
       policy_layers: 2
       forward_layers: 0
       value_layers: 2
-      action_layers: 2
+      action_layers: 1
       feature_size: 64
       action_feature_size: 16
       separate_policy_train: true
