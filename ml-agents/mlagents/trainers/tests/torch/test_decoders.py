@@ -12,7 +12,7 @@ def test_valueheads():
     # Test default 1 value per head
     value_heads = ValueHeads(stream_names, input_size)
     input_data = torch.ones((batch_size, input_size))
-    value_out, _ = value_heads(input_data)  # Note: mean value will be removed shortly
+    value_out = value_heads(input_data)  # Note: mean value will be removed shortly
 
     for stream_name in stream_names:
         assert value_out[stream_name].shape == (batch_size,)
@@ -25,7 +25,7 @@ def test_valueheads():
     output_size = 4
     value_heads = ValueHeads(stream_names, input_size, output_size)
     input_data = torch.ones((batch_size, input_size))
-    value_out, _ = value_heads(input_data)
+    value_out = value_heads(input_data)
 
     for stream_name in stream_names:
         assert value_out[stream_name].shape == (batch_size, output_size)
