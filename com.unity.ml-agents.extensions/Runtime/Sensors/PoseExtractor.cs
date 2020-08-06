@@ -399,7 +399,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 nodesOut.Add(node);
 
                 // Add children
-                // TODO check for already visited. Shouldn't happen, but we'd blow up on loops.
                 if (tree.ContainsKey(current))
                 {
                     // Push to the stack in reverse order
@@ -411,10 +410,11 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
 
                 // Safety check
+                // This shouldn't even happen, but in case we have a cycle in the graph
+                // exit instead of looping forever and eating up all the memory.
                 {
                     if (nodesOut.Count > NumPoses)
                     {
-                        Debug.Log("oops");
                         return nodesOut;
                     }
                 }

@@ -72,6 +72,12 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new Pose { rotation = t.rotation, position = t.position };
         }
 
+        /// <inheritdoc/>
+        protected internal override Object GetObjectAt(int index)
+        {
+            return m_Bodies[index];
+        }
+
         internal ArticulationBody[] Bodies => m_Bodies;
 
         internal IEnumerable<ArticulationBody> GetEnabledArticulationBodies()
