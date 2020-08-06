@@ -31,6 +31,12 @@ behaviors:
       use_var_predict: true
       with_prior: false
       predict_return: true
+      use_transfer: true
+      load_model: true
+      train_model: false
+      load_action: true
+      train_action: false
+      transfer_path: "results/oldcs-sep-f512/CrawlerStatic"
     network_settings:
       normalize: true
       hidden_units: 512
