@@ -69,9 +69,9 @@ namespace Unity.MLAgents
                 return;
             }
 
-            if (continuousActions != null)
+            if (discreteActions != null)
             {
-                Array.Copy(discreteActions, 0, storedVectorActions, continuousActions.Length, discreteActions.Length);
+                Array.Copy(discreteActions, 0, storedVectorActions, start, discreteActions.Length);
             }
         }
     }
