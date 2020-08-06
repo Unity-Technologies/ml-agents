@@ -20,6 +20,7 @@ namespace Unity.MLAgentsExamples
             //UPDATE ORIENTATION CUBE POS & ROT
             transform.SetPositionAndRotation(rootBP.position, lookRot);
         }
+
         public void UpdateOrientation(Vector3 pos, Vector3 dirVector)
         {
 //            var dirVector = target.position - transform.position;
