@@ -32,8 +32,8 @@ behaviors:
       use_transfer: true
       load_model: true
       train_model: false
-      load_action: true
-      train_action: false
+      # load_action: true
+      # train_action: false
       transfer_path: "results/block/PushBlock"
     network_settings:
       normalize: false
