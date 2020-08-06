@@ -9,11 +9,9 @@ from torch import nn
 class Normalizer(nn.Module):
     def __init__(self, vec_obs_size: int):
         super().__init__()
-        self.normalization_steps = nn.Parameter(torch.tensor(1), requires_grad=False)
-        self.running_mean = nn.Parameter(torch.zeros(vec_obs_size), requires_grad=False)
-        self.running_variance = nn.Parameter(
-            torch.ones(vec_obs_size), requires_grad=False
-        )
+        self.register_buffer("normalization_steps", torch.tensor(1))
+        self.register_buffer("running_mean", torch.zeros(vec_obs_size))
+        self.register_buffer("running_variance", torch.ones(vec_obs_size))
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         normalized_state = torch.clamp(
@@ -35,9 +33,10 @@ class Normalizer(nn.Module):
         new_variance = self.running_variance + (
             input_to_new_mean * input_to_old_mean
         ).sum(0)
-        self.running_mean.data = new_mean.data
-        self.running_variance.data = new_variance.data
-        self.normalization_steps.data = total_new_steps.data
+        # Update in-place
+        self.running_mean.data.copy_(new_mean.data)
+        self.running_variance.data.copy_(new_variance.data)
+        self.normalization_steps.data.copy_(total_new_steps.data)
 
     def copy_from(self, other_normalizer: "Normalizer") -> None:
         self.normalization_steps.data.copy_(other_normalizer.normalization_steps.data)
@@ -81,7 +80,7 @@ class VectorEncoder(nn.Module):
 
         for _ in range(num_layers - 1):
             self.layers.append(nn.Linear(hidden_size, hidden_size))
-            self.layers.append(nn.ReLU())
+            self.layers.append(nn.LeakyReLU())
         self.seq_layers = nn.Sequential(*self.layers)
 
     def forward(self, inputs: torch.Tensor) -> None:
@@ -160,10 +159,12 @@ class SimpleVisualEncoder(nn.Module):
         self.dense = nn.Linear(self.final_flat, self.h_size)
 
     def forward(self, visual_obs: torch.Tensor) -> None:
-        conv_1 = torch.relu(self.conv1(visual_obs))
-        conv_2 = torch.relu(self.conv2(conv_1))
+        conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
+        conv_2 = nn.functional.leaky_relu(self.conv2(conv_1))
         # hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
-        hidden = torch.relu(self.dense(torch.reshape(conv_2, (-1, self.final_flat))))
+        hidden = nn.functional.leaky_relu(
+            self.dense(torch.reshape(conv_2, (-1, self.final_flat)))
+        )
         return hidden
 
 
@@ -182,10 +183,12 @@ class NatureVisualEncoder(nn.Module):
         self.dense = nn.Linear(self.final_flat, self.h_size)
 
     def forward(self, visual_obs):
-        conv_1 = torch.relu(self.conv1(visual_obs))
-        conv_2 = torch.relu(self.conv2(conv_1))
-        conv_3 = torch.relu(self.conv3(conv_2))
-        hidden = torch.relu(self.dense(conv_3.view([-1, self.final_flat])))
+        conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
+        conv_2 = nn.functional.leaky_relu(self.conv2(conv_1))
+        conv_3 = nn.functional.leaky_relu(self.conv3(conv_2))
+        hidden = nn.functional.leaky_relu(
+            self.dense(conv_3.view([-1, self.final_flat]))
+        )
         return hidden
 
 
@@ -205,15 +208,15 @@ class ResNetVisualEncoder(nn.Module):
             for _ in range(n_blocks):
                 self.layers.append(self.make_block(channel))
             last_channel = channel
-        self.layers.append(nn.ReLU())
+        self.layers.append(nn.LeakyReLU())
         self.dense = nn.Linear(n_channels[-1] * height * width, final_hidden)
 
     @staticmethod
     def make_block(channel):
         block_layers = [
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
-            nn.ReLU(),
+            nn.LeakyReLU(),
             nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
         ]
         return block_layers
