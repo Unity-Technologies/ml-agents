@@ -54,7 +54,7 @@ public class ReacherAgent : Agent
 
         sensor.AddObservation(goal.transform.localPosition);
         sensor.AddObservation(hand.transform.localPosition);
-
+        
         sensor.AddObservation(m_GoalSpeed);
     }
 
@@ -70,9 +70,13 @@ public class ReacherAgent : Agent
         var torqueZ = Mathf.Clamp(vectorAction[1], -1f, 1f) * 150f;
         m_RbA.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 
+        AddReward( - (0.05f * torqueX * torqueX + 0.05f * torqueZ * torqueZ));
+
         torqueX = Mathf.Clamp(vectorAction[2], -1f, 1f) * 150f;
         torqueZ = Mathf.Clamp(vectorAction[3], -1f, 1f) * 150f;
         m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
+
+        AddReward( - (0.05f * torqueX * torqueX + 0.05f * torqueZ * torqueZ));
     }
 
     /// <summary>
