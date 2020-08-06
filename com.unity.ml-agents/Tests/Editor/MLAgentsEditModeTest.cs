@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
             OnRequestDecision?.Invoke();
         }
 
-        public float[] DecideAction() { return new float[0]; }
+        public (float[] continuousActions, int[] discreteActions) DecideAction() { return (new float[0], new int[0]); }
 
         public void Dispose() {}
     }

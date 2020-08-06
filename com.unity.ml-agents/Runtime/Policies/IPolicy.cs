@@ -26,6 +26,6 @@ namespace Unity.MLAgents.Policies
         /// it must be taken now. The Brain is expected to update the actions
         /// of the Agents at this point the latest.
         /// </summary>
-        float[] DecideAction();
+        (float[] continuousActions,  int[] discreteActions) DecideAction();
     }
 }

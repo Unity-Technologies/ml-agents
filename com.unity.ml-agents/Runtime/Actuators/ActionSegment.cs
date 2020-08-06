@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Actuators
     /// the offset into the original array, and an length.
     /// </summary>
     /// <typeparam name="T">The type of object stored in the underlying <see cref="Array"/></typeparam>
-    internal readonly struct ActionSegment<T> : IEnumerable<T>, IEquatable<ActionSegment<T>>
+    public readonly struct ActionSegment<T> : IEnumerable<T>, IEquatable<ActionSegment<T>>
         where T : struct
     {
         /// <summary>

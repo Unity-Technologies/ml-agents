@@ -12,9 +12,10 @@ namespace Unity.MLAgents.Policies
     /// </summary>
     internal class HeuristicPolicy : IPolicy
     {
-        public delegate void ActionGenerator(float[] actionsOut);
+        public delegate void ActionGenerator(float[] continuousActionsOut, int[] discreteActionsOut);
         ActionGenerator m_Heuristic;
-        float[] m_LastDecision;
+        float[] m_LastContinuousDecision;
+        int[] m_LastDiscreteDecision;
         bool m_Done;
         bool m_DecisionRequested;
 
@@ -23,10 +24,11 @@ namespace Unity.MLAgents.Policies
 
 
         /// <inheritdoc />
-        public HeuristicPolicy(ActionGenerator heuristic, int numActions)
+        public HeuristicPolicy(ActionGenerator heuristic, int numContinuousActions, int numDiscreteActions)
         {
             m_Heuristic = heuristic;
-            m_LastDecision = new float[numActions];
+            m_LastContinuousDecision = new float[numContinuousActions];
+            m_LastDiscreteDecision = new int[numDiscreteActions];
         }
 
         /// <inheritdoc />
@@ -35,18 +37,17 @@ namespace Unity.MLAgents.Policies
             StepSensors(sensors);
             m_Done = info.done;
             m_DecisionRequested = true;
-
         }
 
         /// <inheritdoc />
-        public float[] DecideAction()
+        public (float[], int[]) DecideAction()
         {
             if (!m_Done && m_DecisionRequested)
             {
-                 m_Heuristic.Invoke(m_LastDecision);
+                m_Heuristic.Invoke(m_LastContinuousDecision, m_LastDiscreteDecision);
             }
             m_DecisionRequested = false;
-            return m_LastDecision;
+            return (m_LastContinuousDecision, m_LastDiscreteDecision);
         }
 
         public void Dispose()
@@ -110,7 +111,7 @@ namespace Unity.MLAgents.Policies
             public float this[int index]
             {
                 get { return 0.0f; }
-                set { }
+                set {}
             }
         }
 

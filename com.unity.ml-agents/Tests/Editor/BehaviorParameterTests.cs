@@ -7,7 +7,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class BehaviorParameterTests
     {
-        static void DummyHeuristic(float[] actionsOut)
+        static void DummyHeuristic(float[] actionsOut, int[] discreteActionsOut)
         {
             // No-op
         }

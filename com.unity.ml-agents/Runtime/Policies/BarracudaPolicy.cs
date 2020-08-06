@@ -1,3 +1,4 @@
+using System;
 using Unity.Barracuda;
 using System.Collections.Generic;
 using Unity.MLAgents.Inference;
@@ -36,6 +37,7 @@ namespace Unity.MLAgents.Policies
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
         /// </summary>
         List<int[]> m_SensorShapes;
+        SpaceType m_SapceType;
 
         /// <inheritdoc />
         public BarracudaPolicy(
@@ -45,6 +47,7 @@ namespace Unity.MLAgents.Policies
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_ModelRunner = modelRunner;
+            m_SapceType = brainParameters.VectorActionSpaceType;
         }
 
         /// <inheritdoc />
@@ -55,10 +58,15 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public float[] DecideAction()
+        public (float[], int[]) DecideAction()
         {
             m_ModelRunner?.DecideBatch();
-            return m_ModelRunner?.GetAction(m_AgentId);
+            var actions = m_ModelRunner?.GetAction(m_AgentId);
+            if (m_SapceType == SpaceType.Continuous)
+            {
+                return (actions, Array.Empty<int>());
+            }
+            return (Array.Empty<float>(), actions == null ? Array.Empty<int>() : Array.ConvertAll(actions, x => (int)x));
         }
 
         public void Dispose()

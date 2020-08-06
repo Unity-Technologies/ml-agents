@@ -7,7 +7,7 @@ namespace Unity.MLAgents.Actuators
     /// A structure that wraps the <see cref="ActionSegment{T}"/>s for a particular <see cref="IActionReceiver"/> and is
     /// used when <see cref="IActionReceiver.OnActionReceived"/> is called.
     /// </summary>
-    internal readonly struct ActionBuffers
+    public readonly struct ActionBuffers
     {
         /// <summary>
         /// An empty action buffer.
@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// An interface that describes an object that can receive actions from a Reinforcement Learning network.
     /// </summary>
-    internal interface IActionReceiver
+    public interface IActionReceiver
     {
 
         /// <summary>
