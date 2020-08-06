@@ -14,7 +14,7 @@ behaviors:
       reward_signal_steps_per_update: 10.0
       encoder_layers: 2
       policy_layers: 2
-      forward_layers: 0
+      forward_layers: 2
       value_layers: 2
       action_layers: -1
       feature_size: 128
