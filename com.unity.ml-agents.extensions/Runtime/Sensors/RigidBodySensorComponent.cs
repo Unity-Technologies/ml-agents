@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Net.Configuration;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
@@ -58,14 +57,10 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;
-            // Start from i=1 to ignore the root
-            // TODO ignore joints on disabled bodies
-            var numBodies = poseExtractor.Bodies?.Length ?? 0;
-            for (var i = 1; i < numBodies; i++)
+            foreach(var rb in poseExtractor.GetEnabledRigidbodies())
             {
-                var body = poseExtractor.Bodies[i];
-                var joint = body?.GetComponent<Joint>();
-                numJointObservations += RigidBodyJointExtractor.NumObservations(body, joint, Settings);
+                var joint = rb.GetComponent<Joint>();
+                numJointObservations += RigidBodyJointExtractor.NumObservations(rb, joint, Settings);
             }
             return new[] { numPoseObservations + numJointObservations };
         }

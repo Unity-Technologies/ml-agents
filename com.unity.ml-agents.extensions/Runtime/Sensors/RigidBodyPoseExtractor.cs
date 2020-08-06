@@ -181,6 +181,29 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             return bodyPosesEnabled;
         }
+
+        internal IEnumerable<Rigidbody> GetEnabledRigidbodies()
+        {
+            if (m_Bodies == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_Bodies.Length; i++)
+            {
+                var rb = m_Bodies[i];
+                if (rb == null)
+                {
+                    // Ignore a virtual root.
+                    continue;
+                }
+
+                if (IsPoseEnabled(i))
+                {
+                    yield return rb;
+                }
+            }
+        }
     }
 
 }
