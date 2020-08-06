@@ -2,6 +2,7 @@ from typing import List, Dict
 
 import torch
 from torch import nn
+from mlagents.trainers.torch.layers import linear_layer
 
 
 class ValueHeads(nn.Module):
@@ -11,7 +12,7 @@ class ValueHeads(nn.Module):
         _value_heads = {}
 
         for name in stream_names:
-            value = nn.Linear(input_size, output_size)
+            value = linear_layer(input_size, output_size)
             _value_heads[name] = value
         self.value_heads = nn.ModuleDict(_value_heads)
 

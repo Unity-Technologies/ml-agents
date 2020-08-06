@@ -1,6 +1,7 @@
 from typing import Tuple, Optional
 
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 import torch
 from torch import nn
@@ -74,12 +75,26 @@ class VectorEncoder(nn.Module):
     ):
         self.normalizer: Optional[Normalizer] = None
         super().__init__()
-        self.layers = [nn.Linear(input_size, hidden_size)]
+        self.layers = [
+            linear_layer(
+                input_size,
+                hidden_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            )
+        ]
         if normalize:
             self.normalizer = Normalizer(input_size)
 
         for _ in range(num_layers - 1):
-            self.layers.append(nn.Linear(hidden_size, hidden_size))
+            self.layers.append(
+                linear_layer(
+                    hidden_size,
+                    hidden_size,
+                    kernel_init=Initialization.KaimingHeNormal,
+                    kernel_gain=1.0,
+                )
+            )
             self.layers.append(nn.LeakyReLU())
         self.seq_layers = nn.Sequential(*self.layers)
 
@@ -156,7 +171,12 @@ class SimpleVisualEncoder(nn.Module):
 
         self.conv1 = nn.Conv2d(initial_channels, 16, [8, 8], [4, 4])
         self.conv2 = nn.Conv2d(16, 32, [4, 4], [2, 2])
-        self.dense = nn.Linear(self.final_flat, self.h_size)
+        self.dense = linear_layer(
+            self.final_flat,
+            self.h_size,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=1.0,
+        )
 
     def forward(self, visual_obs: torch.Tensor) -> None:
         conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
@@ -180,7 +200,12 @@ class NatureVisualEncoder(nn.Module):
         self.conv1 = nn.Conv2d(initial_channels, 32, [8, 8], [4, 4])
         self.conv2 = nn.Conv2d(32, 64, [4, 4], [2, 2])
         self.conv3 = nn.Conv2d(64, 64, [3, 3], [1, 1])
-        self.dense = nn.Linear(self.final_flat, self.h_size)
+        self.dense = linear_layer(
+            self.final_flat,
+            self.h_size,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=1.0,
+        )
 
     def forward(self, visual_obs):
         conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
@@ -209,7 +234,12 @@ class ResNetVisualEncoder(nn.Module):
                 self.layers.append(self.make_block(channel))
             last_channel = channel
         self.layers.append(nn.LeakyReLU())
-        self.dense = nn.Linear(n_channels[-1] * height * width, final_hidden)
+        self.dense = linear_layer(
+            n_channels[-1] * height * width,
+            final_hidden,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=1.0,
+        )
 
     @staticmethod
     def make_block(channel):
