@@ -9,9 +9,9 @@ from torch import nn
 class Normalizer(nn.Module):
     def __init__(self, vec_obs_size: int):
         super().__init__()
-        self.normalization_steps = torch.tensor(1)
-        self.running_mean = torch.zeros(vec_obs_size)
-        self.running_variance = torch.ones(vec_obs_size)
+        self.register_buffer("normalization_steps", torch.tensor(1))
+        self.register_buffer("running_mean", torch.zeros(vec_obs_size))
+        self.register_buffer("running_variance", torch.ones(vec_obs_size))
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         normalized_state = torch.clamp(
@@ -33,9 +33,10 @@ class Normalizer(nn.Module):
         new_variance = self.running_variance + (
             input_to_new_mean * input_to_old_mean
         ).sum(0)
-        self.running_mean = new_mean
-        self.running_variance = new_variance
-        self.normalization_steps = total_new_steps
+        # Update in-place
+        self.running_mean.data.copy_(new_mean.data)
+        self.running_variance.data.copy_(new_variance.data)
+        self.normalization_steps.data.copy_(total_new_steps.data)
 
     def copy_from(self, other_normalizer: "Normalizer") -> None:
         self.normalization_steps.data.copy_(other_normalizer.normalization_steps.data)

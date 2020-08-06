@@ -100,11 +100,9 @@ class ModelUtils:
 
     @staticmethod
     def _check_resolution_for_encoder(
-        vis_in: torch.Tensor, vis_encoder_type: EncoderType
+        height: int, width: int, vis_encoder_type: EncoderType
     ) -> None:
         min_res = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
-        height = vis_in.shape[1]
-        width = vis_in.shape[2]
         if height < min_res or width < min_res:
             raise UnityTrainerException(
                 f"Visual observation resolution ({width}x{height}) is too small for"
@@ -140,6 +138,9 @@ class ModelUtils:
         vector_size = 0
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
+                ModelUtils._check_resolution_for_encoder(
+                    dimension[0], dimension[1], vis_encode_type
+                )
                 visual_encoders.append(
                     visual_encoder_class(
                         dimension[0], dimension[1], dimension[2], h_size
@@ -196,6 +197,14 @@ class ModelUtils:
     def actions_to_onehot(
         discrete_actions: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:
+        """
+        Takes a tensor of discrete actions and turns it into a List of onehot encoding for each
+        action.
+        :param discrete_actions: Actions in integer form.
+        :param action_size: List of branch sizes. Should be of same size as discrete_actions'
+        last dimension.
+        :return: List of one-hot tensors, one representing each branch.
+        """
         onehot_branches = [
             torch.nn.functional.one_hot(_act.T, action_size[i])
             for i, _act in enumerate(discrete_actions.T)
@@ -222,5 +231,5 @@ class ModelUtils:
             entropies = entropies.squeeze(-1)
             all_probs = None
         else:
-            all_probs = torch.cat(all_probs, dim=-1)
+            all_probs = torch.cat(all_probs_list, dim=-1)
         return log_probs, entropies, all_probs

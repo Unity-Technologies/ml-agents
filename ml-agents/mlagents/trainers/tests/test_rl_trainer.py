@@ -25,7 +25,10 @@ class FakeTrainer(RLTrainer):
     def add_policy(self, mock_behavior_id, mock_policy):
         self.policies[mock_behavior_id] = mock_policy
 
-    def create_policy(self):
+    def create_tf_policy(self):
+        return mock.Mock()
+
+    def create_torch_policy(self):
         return mock.Mock()
 
     def _process_trajectory(self, trajectory):
