@@ -10,18 +10,24 @@ import numpy as np
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
-from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
-from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import (
     TrainerSettings,
     PPOSettings,
     TestingConfiguration,
+    FrameworkType,
 )
+
+try:
+    from mlagents.trainers.policy.torch_policy import TorchPolicy
+    from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
+except ModuleNotFoundError:
+    TorchPolicy = None  # type: ignore
+    TorchPPOOptimizer = None  # type: ignore
 
 
 logger = get_logger(__name__)
@@ -58,7 +64,6 @@ class PPOTrainer(RLTrainer):
         )
         self.load = load
         self.seed = seed
-        self.framework = "torch" if TestingConfiguration.use_torch else "tf"
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self.policy: Policy = None  # type: ignore
@@ -254,12 +259,12 @@ class PPOTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        if self.framework == "torch":
+        if self.framework == FrameworkType.PYTORCH:
             self.optimizer = TorchPPOOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         else:
-            self.optimizer = TFPPOOptimizer(  # type: ignore
+            self.optimizer = PPOOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore
         for _reward_signal in self.optimizer.reward_signals.keys():

@@ -40,6 +40,7 @@ def test_networkbody_vector():
 
 
 def test_networkbody_lstm():
+    torch.manual_seed(0)
     obs_size = 4
     seq_len = 16
     network_settings = NetworkSettings(
@@ -64,6 +65,7 @@ def test_networkbody_lstm():
 
 
 def test_networkbody_visual():
+    torch.manual_seed(0)
     vec_obs_size = 4
     obs_size = (84, 84, 3)
     network_settings = NetworkSettings()
@@ -89,6 +91,7 @@ def test_networkbody_visual():
 
 
 def test_valuenetwork():
+    torch.manual_seed(0)
     obs_size = 4
     num_outputs = 2
     network_settings = NetworkSettings()
