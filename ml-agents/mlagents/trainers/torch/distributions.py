@@ -1,3 +1,5 @@
+import abc
+from typing import List
 import torch
 from torch import nn
 import numpy as np
@@ -6,7 +8,41 @@ import math
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
 
-class GaussianDistInstance(nn.Module):
+class DistInstance(nn.Module, abc.ABC):
+    @abc.abstractmethod
+    def sample(self) -> torch.Tensor:
+        """
+        Return a sample from this distribution.
+        """
+        pass
+
+    @abc.abstractmethod
+    def log_prob(self, value: torch.Tensor) -> torch.Tensor:
+        """
+        Returns the log probabilities of a particular value.
+        :param value: A value sampled from the distribution.
+        :returns: Log probabilities of the given value.
+        """
+        pass
+
+    @abc.abstractmethod
+    def entropy(self) -> torch.Tensor:
+        """
+        Returns the entropy of this distribution.
+        """
+        pass
+
+
+class DiscreteDistInstance(DistInstance):
+    @abc.abstractmethod
+    def all_log_prob(self) -> torch.Tensor:
+        """
+        Returns the log probabilities of all actions represented by this distribution.
+        """
+        pass
+
+
+class GaussianDistInstance(DistInstance):
     def __init__(self, mean, std):
         super().__init__()
         self.mean = mean
@@ -54,7 +90,7 @@ class TanhGaussianDistInstance(GaussianDistInstance):
         )
 
 
-class CategoricalDistInstance(nn.Module):
+class CategoricalDistInstance(DiscreteDistInstance):
     def __init__(self, logits):
         super().__init__()
         self.logits = logits
@@ -79,13 +115,12 @@ class CategoricalDistInstance(nn.Module):
 class GaussianDistribution(nn.Module):
     def __init__(
         self,
-        hidden_size,
-        num_outputs,
-        conditional_sigma=False,
-        tanh_squash=False,
-        **kwargs
+        hidden_size: int,
+        num_outputs: int,
+        conditional_sigma: bool = False,
+        tanh_squash: bool = False,
     ):
-        super().__init__(**kwargs)
+        super().__init__()
         self.conditional_sigma = conditional_sigma
         self.mu = nn.Linear(hidden_size, num_outputs)
         self.tanh_squash = tanh_squash
@@ -98,7 +133,7 @@ class GaussianDistribution(nn.Module):
                 torch.zeros(1, num_outputs, requires_grad=True)
             )
 
-    def forward(self, inputs):
+    def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
         mu = self.mu(inputs)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
@@ -111,12 +146,12 @@ class GaussianDistribution(nn.Module):
 
 
 class MultiCategoricalDistribution(nn.Module):
-    def __init__(self, hidden_size, act_sizes):
+    def __init__(self, hidden_size: int, act_sizes: List[int]):
         super().__init__()
         self.act_sizes = act_sizes
-        self.branches = self.create_policy_branches(hidden_size)
+        self.branches = self._create_policy_branches(hidden_size)
 
-    def create_policy_branches(self, hidden_size):
+    def _create_policy_branches(self, hidden_size: int) -> nn.ModuleList:
         branches = []
         for size in self.act_sizes:
             branch_output_layer = nn.Linear(hidden_size, size)
@@ -124,13 +159,13 @@ class MultiCategoricalDistribution(nn.Module):
             branches.append(branch_output_layer)
         return nn.ModuleList(branches)
 
-    def mask_branch(self, logits, mask):
+    def _mask_branch(self, logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
         raw_probs = torch.nn.functional.softmax(logits, dim=-1) * mask
         normalized_probs = raw_probs / torch.sum(raw_probs, dim=-1).unsqueeze(-1)
         normalized_logits = torch.log(normalized_probs + EPSILON)
         return normalized_logits
 
-    def split_masks(self, masks):
+    def _split_masks(self, masks: torch.Tensor) -> List[torch.Tensor]:
         split_masks = []
         for idx, _ in enumerate(self.act_sizes):
             start = int(np.sum(self.act_sizes[:idx]))
@@ -138,13 +173,13 @@ class MultiCategoricalDistribution(nn.Module):
             split_masks.append(masks[:, start:end])
         return split_masks
 
-    def forward(self, inputs, masks):
+    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
         # Todo - Support multiple branches in mask code
         branch_distributions = []
-        masks = self.split_masks(masks)
+        masks = self._split_masks(masks)
         for idx, branch in enumerate(self.branches):
             logits = branch(inputs)
-            norm_logits = self.mask_branch(logits, masks[idx])
+            norm_logits = self._mask_branch(logits, masks[idx])
             distribution = CategoricalDistInstance(norm_logits)
             branch_distributions.append(distribution)
         return branch_distributions

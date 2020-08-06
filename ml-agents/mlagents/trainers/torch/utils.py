@@ -12,6 +12,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
 class ModelUtils:
@@ -39,11 +40,9 @@ class ModelUtils:
 
     @staticmethod
     def _check_resolution_for_encoder(
-        vis_in: torch.Tensor, vis_encoder_type: EncoderType
+        height: int, width: int, vis_encoder_type: EncoderType
     ) -> None:
         min_res = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[vis_encoder_type]
-        height = vis_in.shape[1]
-        width = vis_in.shape[2]
         if height < min_res or width < min_res:
             raise UnityTrainerException(
                 f"Visual observation resolution ({width}x{height}) is too small for"
@@ -79,6 +78,9 @@ class ModelUtils:
         vector_size = 0
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
+                ModelUtils._check_resolution_for_encoder(
+                    dimension[0], dimension[1], vis_encode_type
+                )
                 visual_encoders.append(
                     visual_encoder_class(
                         dimension[0], dimension[1], dimension[2], h_size
@@ -90,16 +92,17 @@ class ModelUtils:
                 raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
-        if unnormalized_inputs > 0:
-            vector_encoders.append(
-                VectorAndUnnormalizedInputEncoder(
-                    vector_size, h_size, unnormalized_inputs, num_layers, normalize
+        if vector_size + unnormalized_inputs > 0:
+            if unnormalized_inputs > 0:
+                vector_encoders.append(
+                    VectorAndUnnormalizedInputEncoder(
+                        vector_size, h_size, unnormalized_inputs, num_layers, normalize
+                    )
                 )
-            )
-        else:
-            vector_encoders.append(
-                VectorEncoder(vector_size, h_size, num_layers, normalize)
-            )
+            else:
+                vector_encoders.append(
+                    VectorEncoder(vector_size, h_size, num_layers, normalize)
+                )
         return nn.ModuleList(visual_encoders), nn.ModuleList(vector_encoders)
 
     @staticmethod
@@ -134,8 +137,39 @@ class ModelUtils:
     def actions_to_onehot(
         discrete_actions: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:
+        """
+        Takes a tensor of discrete actions and turns it into a List of onehot encoding for each
+        action.
+        :param discrete_actions: Actions in integer form.
+        :param action_size: List of branch sizes. Should be of same size as discrete_actions'
+        last dimension.
+        :return: List of one-hot tensors, one representing each branch.
+        """
         onehot_branches = [
             torch.nn.functional.one_hot(_act.T, action_size[i])
             for i, _act in enumerate(discrete_actions.T)
         ]
         return onehot_branches
+
+    @staticmethod
+    def get_probs_and_entropy(
+        action_list: List[torch.Tensor], dists: List[DistInstance]
+    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
+        log_probs_list = []
+        all_probs_list = []
+        entropies_list = []
+        for action, action_dist in zip(action_list, dists):
+            log_prob = action_dist.log_prob(action)
+            log_probs_list.append(log_prob)
+            entropies_list.append(action_dist.entropy())
+            if isinstance(action_dist, DiscreteDistInstance):
+                all_probs_list.append(action_dist.all_log_prob())
+        log_probs = torch.stack(log_probs_list, dim=-1)
+        entropies = torch.stack(entropies_list, dim=-1)
+        if not all_probs_list:
+            log_probs = log_probs.squeeze(-1)
+            entropies = entropies.squeeze(-1)
+            all_probs = None
+        else:
+            all_probs = torch.cat(all_probs_list, dim=-1)
+        return log_probs, entropies, all_probs
