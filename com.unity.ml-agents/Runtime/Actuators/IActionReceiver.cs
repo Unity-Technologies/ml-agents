@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Actuators
     }
 
     /// <summary>
-    /// An interface that describes how an object can receive actions from a Reinforcement learning network.
+    /// An interface that describes an object that can receive actions from a Reinforcement Learning network.
     /// </summary>
     internal interface IActionReceiver
     {
