@@ -35,6 +35,26 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var rootRb = go.AddComponent<Rigidbody>();
             var poseExtractor = new RigidBodyPoseExtractor(rootRb);
             Assert.AreEqual(1, poseExtractor.NumPoses);
+
+            // Also pass the GameObject
+            poseExtractor = new RigidBodyPoseExtractor(rootRb, go);
+            Assert.AreEqual(1, poseExtractor.NumPoses);
+        }
+
+        [Test]
+        public void TestNoBodiesFound()
+        {
+            // Check that if we can't find any bodies under the game object, we get an empty extractor
+            var gameObj = new GameObject();
+            var rootRb = gameObj.AddComponent<Rigidbody>();
+            var otherGameObj = new GameObject();
+            var poseExtractor = new RigidBodyPoseExtractor(rootRb, otherGameObj);
+            Assert.AreEqual(0, poseExtractor.NumPoses);
+
+            // Add an RB under the other GameObject. Constructor will find a rigid body, but not the root.
+            var otherRb = otherGameObj.AddComponent<Rigidbody>();
+            poseExtractor = new RigidBodyPoseExtractor(rootRb, otherGameObj);
+            Assert.AreEqual(0, poseExtractor.NumPoses);
         }
 
         [Test]
@@ -65,6 +85,15 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(rb1.position, poseExtractor.GetPoseAt(0).position);
             Assert.IsTrue(rb1.rotation == poseExtractor.GetPoseAt(0).rotation);
             Assert.AreEqual(rb1.velocity, poseExtractor.GetLinearVelocityAt(0));
+
+            // Check DisplayNodes gives expected results
+            var displayNodes = poseExtractor.GetDisplayNodes();
+            Assert.AreEqual(2, displayNodes);
+            Assert.AreEqual(rb1, displayNodes[0].NodeObject);
+            Assert.AreEqual(false, displayNodes[0].Enabled);
+
+            Assert.AreEqual(rb2, displayNodes[1].NodeObject);
+            Assert.AreEqual(true, displayNodes[1].Enabled);
         }
 
         [Test]

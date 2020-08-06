@@ -38,6 +38,30 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             poseExtractor.UpdateModelSpacePoses();
 
             Assert.AreEqual(0, poseExtractor.NumPoses);
+
+            // Iterating through poses and velocities should be an empty loop
+            foreach (var pose in poseExtractor.GetEnabledModelSpacePoses())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            foreach (var pose in poseExtractor.GetEnabledLocalSpacePoses())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            foreach (var vel in poseExtractor.GetEnabledModelSpaceVelocities())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            foreach (var vel in poseExtractor.GetEnabledLocalSpaceVelocities())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            // Getting a parent index should throw an index exception
+
         }
 
         [Test]

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
@@ -139,7 +141,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ParentIndices == null)
             {
-                return -1;
+                throw new NullReferenceException("No parent indices set");
             }
 
             return m_ParentIndices[index];
@@ -355,13 +357,13 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Get a list of display nodes in depth-first order.
         /// </summary>
         /// <returns></returns>
-        internal List<DisplayNode> GetDisplayNodes()
+        internal IList<DisplayNode> GetDisplayNodes()
         {
-            var nodesOut = new List<DisplayNode>(NumPoses);
             if (NumPoses == 0)
             {
-                return nodesOut;
+                return Array.Empty<DisplayNode>();
             }
+            var nodesOut = new List<DisplayNode>(NumPoses);
 
             // List of children for each node
             var tree = new Dictionary<int, List<int>>();
