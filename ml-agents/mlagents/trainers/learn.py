@@ -15,7 +15,6 @@ from mlagents.trainers.environment_parameter_manager import EnvironmentParameter
 from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
-    CSVWriter,
     StatsReporter,
     GaugeWriter,
     ConsoleWriter,
@@ -90,22 +89,13 @@ def run_training(run_seed: int, options: RunOptions) -> None:
                 os.path.join(run_logs_dir, "training_status.json")
             )
 
-        # Configure CSV, Tensorboard Writers and StatsReporter
-        # We assume reward and episode length are needed in the CSV.
-        csv_writer = CSVWriter(
-            write_path,
-            required_fields=[
-                "Environment/Cumulative Reward",
-                "Environment/Episode Length",
-            ],
-        )
+        # Configure Tensorboard Writers and StatsReporter
         tb_writer = TensorboardWriter(
             write_path, clear_past_data=not checkpoint_settings.resume
         )
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
-        StatsReporter.add_writer(csv_writer)
         StatsReporter.add_writer(gauge_write)
         StatsReporter.add_writer(console_writer)
 
@@ -194,15 +184,15 @@ def write_timing_tree(output_dir: str) -> None:
 
 
 def create_environment_factory(
-    env_path: Optional[str],
-    no_graphics: bool,
-    seed: int,
-    start_port: Optional[int],
-    env_args: Optional[List[str]],
-    log_folder: str,
+        env_path: Optional[str],
+        no_graphics: bool,
+        seed: int,
+        start_port: Optional[int],
+        env_args: Optional[List[str]],
+        log_folder: str,
 ) -> Callable[[int, List[SideChannel]], BaseEnv]:
     def create_unity_environment(
-        worker_id: int, side_channels: List[SideChannel]
+            worker_id: int, side_channels: List[SideChannel]
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
