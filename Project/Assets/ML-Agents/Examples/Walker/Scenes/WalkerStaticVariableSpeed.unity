@@ -510,29 +510,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d0b01030cfe47462398dd15595ca95de, type: 3}
---- !u!1 &400826853 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
-    type: 3}
-  m_PrefabInstance: {fileID: 44340990}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &400826854
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 400826853}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Record: 1
-  numStepsToRecord: 25000
-  currentAcademyStepCount: 0
-  DemonstrationName: ExpertWalkerStVS
-  DemonstrationDirectory: 
 --- !u!1 &459314944
 GameObject:
   m_ObjectHideFlags: 0
