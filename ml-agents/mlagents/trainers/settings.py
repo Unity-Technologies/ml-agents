@@ -99,10 +99,8 @@ class BehavioralCloningSettings:
     steps: int = 0
     strength: float = 1.0
     samples_per_update: int = 0
-    # Setting either of these to None will allow the Optimizer
-    # to decide these parameters, based on Trainer hyperparams
-    num_epoch: Optional[int] = None
-    batch_size: Optional[int] = None
+    num_epoch: int = 3
+    batch_size: int = 64
 
 
 @attr.s(auto_attribs=True)
