@@ -27,6 +27,8 @@ public class WalkerAgent : Agent
 
     [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
     public Vector3 worldDirToWalk = Vector3.right;
+    public Vector3 m_currentWorldDirToWalk = Vector3.right;
+    public Vector3 worldPosToWalkTo;
     public Transform target; //Target the agent will walk towards.
 
     [Header("Body Parts")] public Transform hips;
@@ -88,6 +90,7 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+
 //        if (walkTowardsType == WalkTowardsType.UseTarget && !target)
 //        {
 //            Debug.LogError("Missing a reference toTarget");
@@ -98,12 +101,19 @@ public class WalkerAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
+        
 
         //Random start rotation to help generalize
         hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationObjects();
 
+        //Set the initial position to walk toa
+        if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
+        {
+            worldPosToWalkTo = hips.position + (worldDirToWalk * 1000);
+        }
+        
         rewardManager.ResetEpisodeRewards();
 
         //Set our goal walking speed
@@ -152,13 +162,62 @@ public class WalkerAgent : Agent
         //rotation deltas
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
+//        sensor.AddObservation((int)walkDirectionMethod);
         
-        //Dist To Target. Max 50 meters. Normalized;
-        //If we're walking in world dir, always return 1;
-        float distToTarget = walkDirectionMethod == WalkDirectionMethod.UseTarget
-            ? Mathf.Clamp((target.position - hips.position).magnitude, 0, 50)/50
-            : 1;
-        sensor.AddObservation(distToTarget);
+
+//        //Dist To Target. Max 50 meters. Normalized;
+//        //If we're walking in world dir, always return 1;
+//        float distToTarget = walkDirectionMethod == WalkDirectionMethod.UseTarget
+//            ? Mathf.Clamp((target.position - hips.position).magnitude, 0, 50)/50
+//            : 1;
+//        sensor.AddObservation(distToTarget);
+
+
+//        worldPosToWalkTo = GetUpdatedTargetPosition();
+//
+//        Vector3 relPos = Vector3.zero;
+//        if (walkDirectionMethod == WalkDirectionMethod.UseTarget)
+//        {
+//            relPos =  Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.transform.position), 100);
+//        }
+//        sensor.AddObservation(relPos);
+
+        if (walkDirectionMethod == WalkDirectionMethod.UseTarget)
+        {
+            worldPosToWalkTo = target.transform.position;
+        }
+        
+        
+//        worldPosToWalkTo = walkDirectionMethod == WalkDirectionMethod.UseTarget
+//            ? target.transform.position
+////            : hips.position + (dirToLook * 100);
+////            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
+//            : m_OrientationCube.transform.position + (cubeForward * 100);
+//        targetPos.y = 0;
+        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), 100);
+        sensor.AddObservation(relPos);
+//        Debug.DrawRay(worldPosToWalkTo, Vector3.up, Color.green,1);
+//        Debug.DrawRay(relPos, Vector3.up, Color.green,1);
+//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), Vector3.up * 2, Color.red,5);
+
+
+//        worldPosToWalkTo = GetUpdatedWorldTargetPosition();
+//        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), 100);
+//        sensor.AddObservation(relPos);
+//        Debug.DrawRay(worldPosToWalkTo, Vector3.up, Color.green,1);
+//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), Vector3.up * 2, Color.red,5);
+        
+//        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
+//            ? target.transform.position
+////            : hips.position + (dirToLook * 100);
+////            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
+//            : m_OrientationCube.transform.position + (cubeForward * 100);
+//        targetPos.y = 0;
+//        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
+//        sensor.AddObservation(relPos);
+//        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
+//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(targetPos), Vector3.up * 2, Color.red,5);
+        
         
 //        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
 //            ? target.transform.position
@@ -224,6 +283,28 @@ public class WalkerAgent : Agent
         m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
     }
 
+    Vector3 GetUpdatedWorldTargetPosition()
+    {
+        if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
+        {
+            //Wait until we are within 10 units and then update the position
+            //This helps prevent direction drift
+            if (Vector3.Distance(worldPosToWalkTo, hips.position) < 10)
+            {
+                return hips.position + (worldDirToWalk * 100);
+            }
+            else
+            {
+                return worldPosToWalkTo;
+            }
+        }
+        else //use target
+        {
+            return target.position;
+        }
+    }
+    
+    
     void FixedUpdate()
     {
         UpdateOrientationObjects();
@@ -233,7 +314,11 @@ public class WalkerAgent : Agent
 //            Vector3 targetPos
 //                if(targetPos hips.position)
 //        }
-        
+
+//        if(m_currentWorldDirToWalk != worldDirToWalk)
+//        {
+//            worldPosToWalkTo = hips.position + (worldDirToWalk * 100);
+//        }
         
         var cubeForward = m_OrientationCube.transform.forward;
 

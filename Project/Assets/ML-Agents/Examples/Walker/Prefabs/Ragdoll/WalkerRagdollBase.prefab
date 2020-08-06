@@ -291,7 +291,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 236
+    VectorObservationSize: 238
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -323,6 +323,7 @@ MonoBehaviour:
   randomizeWalkSpeedEachEpisode: 1
   walkDirectionMethod: 0
   worldDirToWalk: {x: 1, y: 0, z: 0}
+  posToWalkTo: {x: 0, y: 0, z: 0}
   target: {fileID: 0}
   hips: {fileID: 895268871264836332}
   chest: {fileID: 7933235354845945071}

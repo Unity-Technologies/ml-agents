@@ -189,7 +189,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 163fdf9da8bd8441c97f6e760543fa06,
+      objectReference: {fileID: 11400000, guid: 71f39bc92e5ae49edba82a2d411c0678,
         type: 3}
     - target: {fileID: 1077752704035527914, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -372,6 +372,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -665,6 +670,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -869,6 +879,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -1195,6 +1210,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1338,7 +1358,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 163fdf9da8bd8441c97f6e760543fa06,
+      objectReference: {fileID: 11400000, guid: 71f39bc92e5ae49edba82a2d411c0678,
         type: 3}
     - target: {fileID: 1077752704035527914, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -1399,6 +1419,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -1604,6 +1629,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -1829,6 +1859,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -2033,6 +2068,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
@@ -2367,6 +2407,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: WalkerRagdollStVariableSpeedVariant (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1077752704035527923, guid: d0b01030cfe47462398dd15595ca95de,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7818481575132336858, guid: d0b01030cfe47462398dd15595ca95de,
         type: 3}
