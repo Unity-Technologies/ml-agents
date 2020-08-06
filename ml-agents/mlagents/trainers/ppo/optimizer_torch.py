@@ -103,7 +103,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         decay_epsilon = ModelUtils.get_decayed_parameter(
             self.decay_schedule,
-            self.hyperparameters.beta,
+            self.hyperparameters.epsilon,
             0.1,
             self.trainer_settings.max_steps,
             self.policy.get_current_step(),
