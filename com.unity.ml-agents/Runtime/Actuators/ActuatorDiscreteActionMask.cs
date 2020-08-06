@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Actuators
                 for (var i = 0; i < m_Actuators.Count; i++)
                 {
                     var actuator = m_Actuators[i];
-                    var branchSizes = actuator.actionSpec.BranchSizes;
+                    var branchSizes = actuator.ActionSpec.BranchSizes;
                     Array.Copy(branchSizes, 0, m_BranchSizes, start, branchSizes.Length);
                     start += branchSizes.Length;
                 }

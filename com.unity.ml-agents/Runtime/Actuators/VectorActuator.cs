@@ -6,8 +6,6 @@ namespace Unity.MLAgents.Actuators
 {
     internal class VectorActuator : IActuator
     {
-        // Easy access for now about which space type to use for business logic.
-        // Should be removed once a mixed SpaceType NN is available.
         IActionReceiver m_ActionReceiver;
 
         ActionBuffers m_ActionBuffers;
@@ -27,11 +25,11 @@ namespace Unity.MLAgents.Actuators
             switch (spaceType)
             {
                 case SpaceType.Continuous:
-                    actionSpec = ActionSpec.MakeContinuous(vectorActionSize[0]);
+                    ActionSpec = ActionSpec.MakeContinuous(vectorActionSize[0]);
                     suffix = "-Continuous";
                     break;
                 case SpaceType.Discrete:
-                    actionSpec = ActionSpec.MakeDiscrete(vectorActionSize);
+                    ActionSpec = ActionSpec.MakeDiscrete(vectorActionSize);
                     suffix = "-Discrete";
                     break;
                 default:
@@ -61,13 +59,13 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Returns the number of discrete branches + the number of continuous actions.
         /// </summary>
-        public int TotalNumberOfActions => actionSpec.NumContinuousActions +
-        actionSpec.NumDiscreteActions;
+        public int TotalNumberOfActions => ActionSpec.NumContinuousActions +
+        ActionSpec.NumDiscreteActions;
 
         /// <summary>
-        /// <inheritdoc cref="IActionReceiver.actionSpec"/>
+        /// <inheritdoc cref="IActionReceiver.ActionSpec"/>
         /// </summary>
-        public ActionSpec actionSpec { get; }
+        public ActionSpec ActionSpec { get; }
 
         public string Name { get; }
     }

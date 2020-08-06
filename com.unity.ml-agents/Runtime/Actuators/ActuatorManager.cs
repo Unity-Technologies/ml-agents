@@ -14,7 +14,7 @@ namespace Unity.MLAgents.Actuators
         IList<IActuator> m_Actuators;
 
         // An implementation of IDiscreteActionMask that allows for writing to it based on an offset.
-        IDiscreteActionMask m_DiscreteActionMask;
+        ActuatorDiscreteActionMask m_DiscreteActionMask;
 
         /// <summary>
         /// Flag used to check if our IActuators are ready for execution.
@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Gets the <see cref="IDiscreteActionMask"/> managed by this object.
         /// </summary>
-        public IDiscreteActionMask DiscreteActionMask => m_DiscreteActionMask;
+        public ActuatorDiscreteActionMask DiscreteActionMask => m_DiscreteActionMask;
 
         /// <summary>
         /// Returns the previously stored actions for the actuators in this list.
@@ -150,14 +150,14 @@ namespace Unity.MLAgents.Actuators
                 var actuator = m_Actuators[i];
                 m_DiscreteActionMask.CurrentBranchOffset = offset;
                 actuator.WriteDiscreteActionMask(m_DiscreteActionMask);
-                offset += actuator.actionSpec.NumDiscreteActions;
+                offset += actuator.ActionSpec.NumDiscreteActions;
             }
         }
 
         /// <summary>
         /// Iterates through all of the IActuators in this list and calls their
         /// <see cref="IActionReceiver.OnActionReceived"/> method on them with the appropriate
-        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="IActionReceiver.actionSpec"/>.
+        /// <see cref="ActionSegment{T}"/>s depending on their <see cref="IActionReceiver.ActionSpec"/>.
         /// </summary>
         public void ExecuteActions()
         {
@@ -167,8 +167,8 @@ namespace Unity.MLAgents.Actuators
             for (var i = 0; i < m_Actuators.Count; i++)
             {
                 var actuator = m_Actuators[i];
-                var numContinuousActions = actuator.actionSpec.NumContinuousActions;
-                var numDiscreteActions = actuator.actionSpec.NumDiscreteActions;
+                var numContinuousActions = actuator.ActionSpec.NumContinuousActions;
+                var numDiscreteActions = actuator.ActionSpec.NumDiscreteActions;
 
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
@@ -233,8 +233,8 @@ namespace Unity.MLAgents.Actuators
                 Debug.Assert(
                     !m_Actuators[i].Name.Equals(m_Actuators[i + 1].Name),
                     "Actuator names must be unique.");
-                var first = m_Actuators[i].actionSpec;
-                var second = m_Actuators[i + 1].actionSpec;
+                var first = m_Actuators[i].ActionSpec;
+                var second = m_Actuators[i + 1].ActionSpec;
                 Debug.Assert(first.NumContinuousActions > 0 == second.NumContinuousActions > 0,
                     "Actuators on the same Agent must have the same action SpaceType.");
             }
@@ -251,9 +251,9 @@ namespace Unity.MLAgents.Actuators
                 return;
             }
 
-            NumContinuousActions += actuatorItem.actionSpec.NumContinuousActions;
-            NumDiscreteActions += actuatorItem.actionSpec.NumDiscreteActions;
-            SumOfDiscreteBranchSizes += actuatorItem.actionSpec.SumOfDiscreteBranchSizes;
+            NumContinuousActions += actuatorItem.ActionSpec.NumContinuousActions;
+            NumDiscreteActions += actuatorItem.ActionSpec.NumDiscreteActions;
+            SumOfDiscreteBranchSizes += actuatorItem.ActionSpec.SumOfDiscreteBranchSizes;
         }
 
         /// <summary>
@@ -267,9 +267,9 @@ namespace Unity.MLAgents.Actuators
                 return;
             }
 
-            NumContinuousActions -= actuatorItem.actionSpec.NumContinuousActions;
-            NumDiscreteActions -= actuatorItem.actionSpec.NumDiscreteActions;
-            SumOfDiscreteBranchSizes -= actuatorItem.actionSpec.SumOfDiscreteBranchSizes;
+            NumContinuousActions -= actuatorItem.ActionSpec.NumContinuousActions;
+            NumDiscreteActions -= actuatorItem.ActionSpec.NumDiscreteActions;
+            SumOfDiscreteBranchSizes -= actuatorItem.ActionSpec.SumOfDiscreteBranchSizes;
         }
 
         /// <summary>

@@ -22,8 +22,8 @@ namespace Unity.MLAgents.Tests.Actuators
             var actuator2 = new TestActuator(ActionSpec.MakeContinuous(2), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
-            var actuator1ActionSpaceDef = actuator1.actionSpec;
-            var actuator2ActionSpaceDef = actuator2.actionSpec;
+            var actuator1ActionSpaceDef = actuator1.ActionSpec;
+            var actuator2ActionSpaceDef = actuator2.ActionSpec;
             manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 },
                 actuator1ActionSpaceDef.NumContinuousActions + actuator2ActionSpaceDef.NumContinuousActions,
                 actuator1ActionSpaceDef.SumOfDiscreteBranchSizes + actuator2ActionSpaceDef.SumOfDiscreteBranchSizes,
@@ -47,8 +47,8 @@ namespace Unity.MLAgents.Tests.Actuators
             var actuator2 = new TestActuator(ActionSpec.MakeDiscrete(new[] {1, 1, 1}), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
-            var actuator1ActionSpaceDef = actuator1.actionSpec;
-            var actuator2ActionSpaceDef = actuator2.actionSpec;
+            var actuator1ActionSpaceDef = actuator1.ActionSpec;
+            var actuator2ActionSpaceDef = actuator2.ActionSpec;
             manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 },
                 actuator1ActionSpaceDef.NumContinuousActions + actuator2ActionSpaceDef.NumContinuousActions,
                 actuator1ActionSpaceDef.SumOfDiscreteBranchSizes + actuator2ActionSpaceDef.SumOfDiscreteBranchSizes,
