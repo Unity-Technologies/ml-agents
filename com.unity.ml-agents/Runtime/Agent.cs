@@ -301,7 +301,7 @@ namespace Unity.MLAgents
         ActuatorManager m_Actuators;
 
         /// <summary>
-        /// DiscreteVectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
+        /// VectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
         /// delegate its actions to <see cref="IActionReceiver.OnActionReceived"/> by default in order to keep backward compatibility
         /// with the current behavior of Agent.
         /// </summary>
