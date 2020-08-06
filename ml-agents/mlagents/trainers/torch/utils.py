@@ -25,11 +25,6 @@ class ModelUtils:
     }
 
     @staticmethod
-    def swish(input_activation: torch.Tensor) -> torch.Tensor:
-        """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
-        return torch.mul(input_activation, torch.sigmoid(input_activation))
-
-    @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
         ENCODER_FUNCTION_BY_TYPE = {
             EncoderType.SIMPLE: SimpleVisualEncoder,
