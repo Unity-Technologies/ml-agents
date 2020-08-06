@@ -314,7 +314,7 @@ class TFPolicy(Policy):
         step = self.sess.run(self.global_step)
         return step
 
-    def _set_step(self, step: int) -> int:
+    def set_step(self, step: int) -> int:
         """
         Sets current model step to step without creating additional ops.
         :param step: Step to set the current model step to.

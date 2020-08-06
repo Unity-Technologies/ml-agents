@@ -74,7 +74,7 @@ class TorchSaver(BaseSaver):
         for name, state_dict in saved_state_dict.items():
             self.modules[name].load_state_dict(state_dict)
         if reset_global_steps:
-            self.policy._set_step(0)
+            self.policy.set_step(0)
             logger.info(
                 "Starting training from step 0 and saving to {}.".format(
                     self.model_path

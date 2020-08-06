@@ -124,6 +124,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         pass
 
+    @staticmethod
     def create_saver(self, policy: Policy) -> BaseSaver:
         if self.framework == "torch":
             saver = TorchSaver(  # type: ignore
