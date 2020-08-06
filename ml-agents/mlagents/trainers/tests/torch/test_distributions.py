@@ -112,7 +112,7 @@ def test_gaussian_dist_instance():
 def test_tanh_gaussian_dist_instance():
     torch.manual_seed(0)
     act_size = 4
-    dist_instance = GaussianDistInstance(
+    dist_instance = TanhGaussianDistInstance(
         torch.zeros(1, act_size), torch.ones(1, act_size)
     )
     for _ in range(10):
