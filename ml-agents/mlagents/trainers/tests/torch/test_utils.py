@@ -22,7 +22,7 @@ def test_min_visual_size():
     for encoder_type in EncoderType:
         good_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
         vis_input = torch.ones((1, 3, good_size, good_size))
-        ModelUtils._check_resolution_for_encoder(vis_input, encoder_type)
+        ModelUtils._check_resolution_for_encoder(good_size, good_size, encoder_type)
         enc_func = ModelUtils.get_encoder_for_type(encoder_type)
         enc = enc_func(good_size, good_size, 3, 1)
         enc.forward(vis_input)
@@ -34,7 +34,9 @@ def test_min_visual_size():
 
             with pytest.raises(UnityTrainerException):
                 # Make sure we'd hit a friendly error during model setup time.
-                ModelUtils._check_resolution_for_encoder(vis_input, encoder_type)
+                ModelUtils._check_resolution_for_encoder(
+                    bad_size, bad_size, encoder_type
+                )
 
             enc = enc_func(bad_size, bad_size, 3, 1)
             enc.forward(vis_input)
