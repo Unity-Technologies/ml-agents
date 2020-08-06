@@ -6,18 +6,22 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
     public class PoseExtractorTests
     {
-        class UselessPoseExtractor : PoseExtractor
+
+        class BasicPoseExtractor : PoseExtractor
         {
             protected internal override Pose GetPoseAt(int index)
             {
                 return Pose.identity;
             }
 
-            protected internal override Vector3 GetLinearVelocityAt(int index)
+            protected  internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
+        }
 
+        class UselessPoseExtractor : BasicPoseExtractor
+        {
             public void Init(int[] parentIndices)
             {
                 Setup(parentIndices);
@@ -129,7 +133,43 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(size, localPoseIndex);
         }
 
-        class BadPoseExtractor : PoseExtractor
+        [Test]
+        public void TestChainDisplayNodes()
+        {
+            var size = 4;
+            var chain = new ChainPoseExtractor(size);
+
+            var displayNodes = chain.GetDisplayNodes();
+            Assert.AreEqual(size, displayNodes.Count);
+
+            for (var i = 0; i < size; i++)
+            {
+                var displayNode = displayNodes[i];
+                Assert.AreEqual(i, displayNode.OriginalIndex);
+                Assert.AreEqual(null, displayNode.NodeObject);
+                Assert.AreEqual(i, displayNode.Depth);
+                Assert.AreEqual(true, displayNode.Enabled);
+            }
+        }
+
+        [Test]
+        public void TestDisplayNodesLoop()
+        {
+            // Degenerate case with a loop
+            var poseExtractor = new UselessPoseExtractor();
+            poseExtractor.Init(new[] {-1, 2, 1});
+
+            // This just shouldn't blow up
+            poseExtractor.GetDisplayNodes();
+
+            // Self-loop
+            poseExtractor.Init(new[] {-1, 1});
+
+            // This just shouldn't blow up
+            poseExtractor.GetDisplayNodes();
+        }
+
+        class BadPoseExtractor : BasicPoseExtractor
         {
             public BadPoseExtractor()
             {
@@ -142,16 +182,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 }
                 Setup(parents);
             }
-
-            protected internal override Pose GetPoseAt(int index)
-            {
-                return Pose.identity;
-            }
-
-            protected  internal override Vector3 GetLinearVelocityAt(int index)
-            {
-                return Vector3.zero;
-            }
         }
 
         [Test]
@@ -162,6 +192,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 var bad = new BadPoseExtractor();
             });
         }
+
     }
 
     public class PoseExtensionTests

@@ -412,11 +412,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 // Safety check
                 // This shouldn't even happen, but in case we have a cycle in the graph
                 // exit instead of looping forever and eating up all the memory.
+                if (nodesOut.Count > NumPoses)
                 {
-                    if (nodesOut.Count > NumPoses)
-                    {
-                        return nodesOut;
-                    }
+                    return nodesOut;
                 }
             }
 
