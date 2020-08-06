@@ -25,14 +25,14 @@ class PPOTrainer(RLTrainer):
     """The PPOTrainer is an implementation of the PPO algorithm."""
 
     def __init__(
-            self,
-            brain_name: str,
-            reward_buff_cap: int,
-            trainer_settings: TrainerSettings,
-            training: bool,
-            load: bool,
-            seed: int,
-            artifact_path: str,
+        self,
+        brain_name: str,
+        reward_buff_cap: int,
+        trainer_settings: TrainerSettings,
+        training: bool,
+        load: bool,
+        seed: int,
+        artifact_path: str,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -73,7 +73,7 @@ class PPOTrainer(RLTrainer):
             agent_buffer_trajectory,
             trajectory.next_obs,
             trajectory.done_reached and not trajectory.interrupted,
-            )
+        )
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
             self._stats_reporter.add_stat(
@@ -151,8 +151,8 @@ class PPOTrainer(RLTrainer):
         # Make sure batch_size is a multiple of sequence length. During training, we
         # will need to reshape the data into a batch_size x sequence_length tensor.
         batch_size = (
-                self.hyperparameters.batch_size
-                - self.hyperparameters.batch_size % self.policy.sequence_length
+            self.hyperparameters.batch_size
+            - self.hyperparameters.batch_size % self.policy.sequence_length
         )
         # Make sure there is at least one sequence
         batch_size = max(batch_size, self.policy.sequence_length)
@@ -189,7 +189,7 @@ class PPOTrainer(RLTrainer):
         return True
 
     def create_policy(
-            self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.
