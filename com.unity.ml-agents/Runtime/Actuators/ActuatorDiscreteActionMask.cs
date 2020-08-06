@@ -98,9 +98,9 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Makes sure that the current mask is usable.
         /// </summary>
-#if DEBUG
         void AssertMask()
         {
+#if DEBUG
             for (var branchIndex = 0; branchIndex < m_NumBranches; branchIndex++)
             {
                 if (AreAllActionsMasked(branchIndex))
@@ -110,9 +110,8 @@ namespace Unity.MLAgents.Actuators
                         " are masked.");
                 }
             }
-        }
-
 #endif
+        }
 
         /// <summary>
         /// Resets the current mask for an agent.
