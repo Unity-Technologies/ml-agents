@@ -298,7 +298,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// List of IActuators that this Agent will delegate actions to if any exist.
         /// </summary>
-        ActuatorManager m_Actuators;
+        ActuatorManager m_ActuatorManager;
 
         /// <summary>
         /// VectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
@@ -438,7 +438,7 @@ namespace Unity.MLAgents
                 InitializeActuators();
             }
 
-            m_Info.storedVectorActions = new float[m_Actuators.TotalNumberOfActions];
+            m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
 
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
@@ -766,7 +766,7 @@ namespace Unity.MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-            m_Actuators?.ResetData();
+            m_ActuatorManager?.ResetData();
         }
 
         /// <summary>
@@ -948,14 +948,14 @@ namespace Unity.MLAgents
             // Support legacy OnActionReceived
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
-            m_Actuators = new ActuatorManager(attachedActuators.Length + 1);
+            m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
             m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions];
 
-            m_Actuators.Add(m_VectorActuator);
+            m_ActuatorManager.Add(m_VectorActuator);
 
             foreach (var actuatorComponent in attachedActuators)
             {
-                m_Actuators.Add(actuatorComponent.CreateActuator());
+                m_ActuatorManager.Add(actuatorComponent.CreateActuator());
             }
         }
 
@@ -981,7 +981,7 @@ namespace Unity.MLAgents
             }
             else
             {
-                m_Info.CopyActions(m_Actuators.StoredContinuousActions, m_Actuators.StoredDiscreteActions);
+                m_Info.CopyActions(m_ActuatorManager.StoredContinuousActions, m_ActuatorManager.StoredDiscreteActions);
             }
 
             UpdateSensors();
@@ -991,13 +991,10 @@ namespace Unity.MLAgents
             }
             using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
             {
-                if (m_PolicyFactory.BrainParameters.VectorActionSpaceType == SpaceType.Discrete)
-                {
-                    m_Actuators.WriteActionMask();
-                }
+                m_ActuatorManager.WriteActionMask();
             }
 
-            m_Info.discreteActionMasks = m_Actuators.DiscreteActionMask?.GetMask();
+            m_Info.discreteActionMasks = m_ActuatorManager.DiscreteActionMask?.GetMask();
             m_Info.reward = m_Reward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
@@ -1133,7 +1130,7 @@ namespace Unity.MLAgents
         /// three values in the action array to use as the force components. During
         /// training, the agent's  policy learns to set those particular elements of
         /// the array to maximize the training rewards the agent receives. (Of course,
-        /// if you implement a <seealso cref="Heuristic(float[])"/> function, it must use the same
+        /// if you implement a <seealso cref="Heuristic(float[], int[])"/> function, it must use the same
         /// elements of the action array for the same purpose since there is no learning
         /// involved.)
         ///
@@ -1222,12 +1219,12 @@ namespace Unity.MLAgents
 
         public float[] GetStoredContinuousActions()
         {
-            return m_Actuators.StoredContinuousActions;
+            return m_ActuatorManager.StoredContinuousActions;
         }
 
         public int[] GetStoredDiscreteActions()
         {
-            return m_Actuators.StoredDiscreteActions;
+            return m_ActuatorManager.StoredDiscreteActions;
         }
 
         /// <summary>
@@ -1281,7 +1278,7 @@ namespace Unity.MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-                m_Actuators.ExecuteActions();
+                m_ActuatorManager.ExecuteActions();
             }
 
             if ((m_StepCount >= MaxStep) && (MaxStep > 0))
@@ -1293,13 +1290,13 @@ namespace Unity.MLAgents
 
         void DecideAction()
         {
-            if (m_Actuators.StoredContinuousActions == null)
+            if (m_ActuatorManager.StoredContinuousActions == null)
             {
                 ResetData();
             }
             var action = m_Brain?.DecideAction() ?? (continuousActions : Array.Empty<float>(), discreteActions : Array.Empty<int>());
             m_Info.CopyActions(action.continuousActions, action.discreteActions);
-            m_Actuators.UpdateActions(action.continuousActions, action.discreteActions);
+            m_ActuatorManager.UpdateActions(action.continuousActions, action.discreteActions);
         }
     }
 }

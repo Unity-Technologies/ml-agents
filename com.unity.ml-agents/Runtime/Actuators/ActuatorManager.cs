@@ -148,9 +148,12 @@ namespace Unity.MLAgents.Actuators
             for (var i = 0; i < m_Actuators.Count; i++)
             {
                 var actuator = m_Actuators[i];
-                m_DiscreteActionMask.CurrentBranchOffset = offset;
-                actuator.WriteDiscreteActionMask(m_DiscreteActionMask);
-                offset += actuator.ActionSpec.NumDiscreteActions;
+                if (actuator.ActionSpec.NumDiscreteActions > 0)
+                {
+                    m_DiscreteActionMask.CurrentBranchOffset = offset;
+                    actuator.WriteDiscreteActionMask(m_DiscreteActionMask);
+                    offset += actuator.ActionSpec.NumDiscreteActions;
+                }
             }
         }
 
@@ -208,6 +211,7 @@ namespace Unity.MLAgents.Actuators
             {
                 m_Actuators[i].ResetData();
             }
+            m_DiscreteActionMask.ResetMask();
         }
 
 
