@@ -22,7 +22,7 @@ Python training by approximately 5-10%. (#4259)
 calls to `StatsRecorder.Add()` with the same key in the same step will no
 longer overwrite each other. (#4236)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The supported versions of `numpy` ml-agents-envs was changed to not allow 1.19.0 or later. This was done to reflect
+- The versions of `numpy` supported by ml-agents-envs was changed to disallow 1.19.0 or later. This was done to reflect
 a similar change in TensorFlow's requirements. (#4274)
 - Model checkpoints are now also saved as .nn files during training. (#4127)
 - Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
