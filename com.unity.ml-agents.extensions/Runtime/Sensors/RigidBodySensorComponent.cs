@@ -70,11 +70,19 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new[] { numPoseObservations + numJointObservations };
         }
 
-        internal List<PoseExtractor.DisplayNode> GetTreeNodes()
+        /// <summary>
+        /// Get the DisplayNodes of the hierarchy.
+        /// </summary>
+        /// <returns></returns>
+        internal List<PoseExtractor.DisplayNode> GetDisplayNodes()
         {
             return GetPoseExtractor().GetDisplayNodes();
         }
 
+        /// <summary>
+        /// Lazy construction of the PoseExtractor.
+        /// </summary>
+        /// <returns></returns>
         RigidBodyPoseExtractor GetPoseExtractor()
         {
             if (m_PoseExtractor == null)
@@ -85,11 +93,25 @@ namespace Unity.MLAgents.Extensions.Sensors
             return m_PoseExtractor;
         }
 
+        /// <summary>
+        /// Reset the pose extractor, trying to keep the enabled state of the corresponding poses the same.
+        /// </summary>
         internal void ResetPoseExtractor()
         {
-            m_PoseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
+            // Get the current enabled state of each body, so that we can reinitialize with them.
+            Dictionary<Rigidbody, bool> bodyPosesEnabled = null;
+            if (m_PoseExtractor != null)
+            {
+                bodyPosesEnabled = m_PoseExtractor.GetBodyPosesEnabled();
+            }
+            m_PoseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot, bodyPosesEnabled);
         }
 
+        /// <summary>
+        /// Toggle the pose at the given index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="enabled"></param>
         internal void SetPoseEnabled(int index, bool enabled)
         {
             GetPoseExtractor().SetPoseEnabled(index, enabled);

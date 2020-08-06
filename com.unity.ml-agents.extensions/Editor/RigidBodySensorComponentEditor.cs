@@ -17,27 +17,26 @@ namespace Unity.MLAgents.Extensions.Editor
             so.Update();
 
             var rbSensorComp = so.targetObject as RigidBodySensorComponent;
-
+            bool requireExtractorUpdate;
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());
             {
-                // These fields affect the sensor order or observation size,
+                // All the fields affect the sensor order or observation size,
                 // So can't be changed at runtime.
                 EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(so.FindProperty("RootBody"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("VirtualRoot"), true);
-                EditorGUILayout.PropertyField(so.FindProperty("Settings"), true);
-                var requireExtractorUpdate = EditorGUI.EndChangeCheck();
-                so.ApplyModifiedProperties();
-                if (requireExtractorUpdate)
-                {
-                    rbSensorComp.ResetPoseExtractor();
-                }
 
+                // Changing the root body or virtual root changes the hierarchy, so we need to reset later.
+                requireExtractorUpdate = EditorGUI.EndChangeCheck();
+
+                EditorGUILayout.PropertyField(so.FindProperty("Settings"), true);
+
+                // Collapsible tree for the body hierarchy
                 ShowHierarchy = EditorGUILayout.Foldout(ShowHierarchy, "Hierarchy", true);
                 if (ShowHierarchy)
                 {
-                    var treeNodes = rbSensorComp.GetTreeNodes();
+                    var treeNodes = rbSensorComp.GetDisplayNodes();
                     var originalIndent = EditorGUI.indentLevel;
                     foreach (var node in treeNodes)
                     {
@@ -51,13 +50,15 @@ namespace Unity.MLAgents.Extensions.Editor
                     EditorGUI.indentLevel = originalIndent;
                 }
 
-
                 EditorGUILayout.PropertyField(so.FindProperty("sensorName"), true);
             }
             EditorGUI.EndDisabledGroup();
 
-
-
+            so.ApplyModifiedProperties();
+            if (requireExtractorUpdate)
+            {
+                rbSensorComp.ResetPoseExtractor();
+            }
         }
 
 

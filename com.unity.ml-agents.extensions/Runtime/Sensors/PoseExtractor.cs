@@ -328,11 +328,26 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Simplified representation of the a node in the hierarchy for display.
         /// </summary>
-        public struct DisplayNode
+        internal struct DisplayNode
         {
+            /// <summary>
+            /// Underlying object in the hierarchy. Pass to EditorGUIUtility.ObjectContent() for display.
+            /// </summary>
             public Object NodeObject;
+
+            /// <summary>
+            /// Whether the poses for the object are enabled.
+            /// </summary>
             public bool Enabled;
+
+            /// <summary>
+            /// Depth in the hierarchy, used for adjusting the indent level.
+            /// </summary>
             public int Depth;
+
+            /// <summary>
+            /// The index of the corresponding object in the PoseExtractor.
+            /// </summary>
             public int OriginalIndex;
         }
 

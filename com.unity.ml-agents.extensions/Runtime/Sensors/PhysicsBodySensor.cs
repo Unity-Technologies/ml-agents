@@ -16,27 +16,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         PhysicsSensorSettings m_Settings;
 
         /// <summary>
-        ///  Construct a new PhysicsBodySensor
+        /// Construct a new PhysicsBodySensor
         /// </summary>
-        /// <param name="rootBody">The root Rigidbody. This has no Joints on it (but other Joints may connect to it).</param>
-        /// <param name="rootGameObject">Optional GameObject used to find Rigidbodies in the hierarchy.</param>
-        /// <param name="virtualRoot">Optional GameObject used to determine the root of the poses,
+        /// <param name="poseExtractor"></param>
         /// <param name="settings"></param>
         /// <param name="sensorName"></param>
-        public PhysicsBodySensor(
-            Rigidbody rootBody,
-            GameObject rootGameObject,
-            GameObject virtualRoot,
-            PhysicsSensorSettings settings,
-            string sensorName = null
-        ) : this(
-                new RigidBodyPoseExtractor(rootBody, rootGameObject, virtualRoot),
-                settings,
-                string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName
-            )
-        {
-        }
-
         public PhysicsBodySensor(
             RigidBodyPoseExtractor poseExtractor,
             PhysicsSensorSettings settings,
@@ -44,7 +28,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         )
         {
             m_PoseExtractor = poseExtractor;
-            m_SensorName = sensorName; // TODO handle null?
+            m_SensorName = sensorName;
             m_Settings = settings;
 
             var numJointExtractorObservations = 0;
