@@ -458,19 +458,22 @@ you would like to contribute environments, please see our
 - Set-up: Physics-based Humanoid agents with 26 degrees of freedom. These DOFs
   correspond to articulation of the following body-parts: hips, chest, spine,
   head, thighs, shins, feet, arms, forearms and hands.
-- Goal: The agents must move its body toward the goal direction as quickly as
-  possible without falling.
-  - `WalkerStatic` - Goal direction is always forward.
+- Goal: The agents must move its body toward the goal direction without falling.
   - `WalkerDynamic`- Goal direction is randomized.
+  - `WalkerDynamicVariableSpeed`- Goal direction and walking speed are randomized. 
+  - `WalkerStatic` - Goal direction is always forward.
+  - `WalkerStaticVariableSpeed` - Goal direction is always forward. Walking
+     speed is randomized
 - Agents: The environment contains 10 independent agents with same Behavior
   Parameters.
 - Agent Reward Function (independent):
-  - +0.02 times body velocity in the goal direction. (run towards target)
-  - +0.01 times head direction alignment with goal direction. (face towards target)
-  - +0.005 times head y position - left foot y position. (encourage head height)
-  - +0.005 times head y position - right foot y position. (encourage head height)
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.
+  - Body velocity matches goal velocity. (normalized between (0,1))
+  - Head direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 236 variables corresponding to position, rotation,
+  - Vector Observation space: 238 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb, along with goal direction.
   - Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations and strength applicable to the joints.
@@ -481,7 +484,7 @@ you would like to contribute environments, please see our
     - Recommended Minimum:
     - Recommended Maximum:
   - hip_mass: Mass of the hip component of the walker
-    - Default: 15
+    - Default: 8
     - Recommended Minimum: 7
     - Recommended Maximum: 28
   - chest_mass: Mass of the chest component of the walker
@@ -489,11 +492,15 @@ you would like to contribute environments, please see our
     - Recommended Minimum: 3
     - Recommended Maximum: 20
   - spine_mass: Mass of the spine component of the walker
-    - Default: 10
+    - Default: 8
     - Recommended Minimum: 3
     - Recommended Maximum: 20
-- Benchmark Mean Reward for `WalkerStatic`: 1500
-- Benchmark Mean Reward for `WalkerDynamic`: 700
+- Benchmark Mean Reward for `WalkerDynamic`: 2500
+- Benchmark Mean Reward for `WalkerDynamicVariableSpeed`: 1200
+- Benchmark Mean Reward for `WalkerStatic`: 3500
+- Benchmark Mean Reward for `WalkerStaticVariableSpeed`: 3000
+
+
 
 ## Pyramids
 
