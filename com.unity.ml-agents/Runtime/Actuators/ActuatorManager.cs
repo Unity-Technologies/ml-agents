@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// A class that manages the delegation of events, action buffers, and action mask for a list of IActuators.
     /// </summary>
-    internal class ActuatorManager : IList<IActuator>, IActionSpec
+    internal class ActuatorManager : IList<IActuator>
     {
         // IActuators managed by this object.
         IList<IActuator> m_Actuators;
@@ -25,17 +25,17 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// The sum of all of the discrete branches for all of the <see cref="IActuator"/>s in this manager.
         /// </summary>
-        public int SumOfDiscreteBranchSizes { get; private set; }
+        internal int SumOfDiscreteBranchSizes { get; private set; }
 
         /// <summary>
         /// The number of the discrete branches for all of the <see cref="IActuator"/>s in this manager.
         /// </summary>
-        public int NumDiscreteActions { get; private set; }
+        internal int NumDiscreteActions { get; private set; }
 
         /// <summary>
         /// The number of continuous actions for all of the <see cref="IActuator"/>s in this manager.
         /// </summary>
-        public int NumContinuousActions { get; private set; }
+        internal int NumContinuousActions { get; private set; }
 
         /// <summary>
         /// Returns the total actions which is calculated by <see cref="NumContinuousActions"/> + <see cref="NumDiscreteActions"/>.

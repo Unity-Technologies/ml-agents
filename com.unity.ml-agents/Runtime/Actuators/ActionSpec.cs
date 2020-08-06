@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// Defines the structure of an Action Space to be used by the Actuator system.
     /// </summary>
-    internal readonly struct ActionSpec : IActionSpec
+    internal readonly struct ActionSpec
     {
 
         /// <summary>
