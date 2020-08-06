@@ -19,13 +19,18 @@ from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
-from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.settings import TestingConfiguration
+from mlagents.trainers.settings import TestingConfiguration, FrameworkType
 from mlagents.trainers.stats import StatsPropertyType
+from mlagents.trainers.exception import UnityTrainerException
+
+try:
+    from mlagents.trainers.policy.torch_policy import TorchPolicy
+except ModuleNotFoundError:
+    TorchPolicy = None  # type: ignore
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
@@ -50,7 +55,8 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
-        self.framework = "torch" if TestingConfiguration.use_torch else "tf"
+        self.framework = self.trainer_settings.framework
+        logger.debug(f"Using framework {self.framework.value}")
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
@@ -99,7 +105,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def create_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> Policy:
-        if self.framework == "torch":
+        if self.framework == FrameworkType.PYTORCH and TorchPolicy is None:
+            raise UnityTrainerException(
+                "To use the experimental PyTorch backend, install the PyTorch Python package first."
+            )
+        elif self.framework == FrameworkType.PYTORCH:
             return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
             return self.create_tf_policy(parsed_behavior_id, behavior_spec)
@@ -165,6 +175,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
+        elif n_policies == 0:
+            logger.warning("Trainer has no policies, not saving anything.")
+            return
         policy = list(self.policies.values())[0]
         settings = SerializationSettings(policy.model_path, self.brain_name)
         model_checkpoint = self._checkpoint()
