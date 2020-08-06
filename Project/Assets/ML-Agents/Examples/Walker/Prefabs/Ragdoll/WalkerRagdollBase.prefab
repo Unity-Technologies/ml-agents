@@ -253,7 +253,6 @@ GameObject:
   - component: {fileID: 895268871377934303}
   - component: {fileID: 895268871377934302}
   - component: {fileID: 895268871377934301}
-  - component: {fileID: 5891315090006581283}
   m_Layer: 0
   m_Name: WalkerRagdollBase
   m_TagString: Untagged
@@ -323,7 +322,7 @@ MonoBehaviour:
   randomizeWalkSpeedEachEpisode: 1
   walkDirectionMethod: 0
   worldDirToWalk: {x: 1, y: 0, z: 0}
-  posToWalkTo: {x: 0, y: 0, z: 0}
+  worldPosToWalkTo: {x: 0, y: 0, z: 0}
   target: {fileID: 0}
   hips: {fileID: 895268871264836332}
   chest: {fileID: 7933235354845945071}
@@ -341,7 +340,6 @@ MonoBehaviour:
   armR: {fileID: 7933235355057813930}
   forearmR: {fileID: 7933235353195701980}
   handR: {fileID: 7933235354616748502}
-  rewardManager: {fileID: 5891315090006581283}
 --- !u!114 &895268871377934303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,48 +383,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &5891315090006581283
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 895268871377934275}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d2b3caecf069467ebf3a650d8ee401e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rewardsList:
-  - rewardKey: matchSpeed
-    rawVal: 0
-    rewardScalar: 0.03
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  - rewardKey: lookAtTarget
-    rawVal: 0
-    rewardScalar: 0.01
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  - rewardKey: headHeightOverFeet
-    rawVal: 0
-    rewardScalar: 0.001
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  - rewardKey: productOfAllRewards
-    rawVal: 0
-    rewardScalar: 1
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  maxSteps: 0
 --- !u!1 &895268871382313704
 GameObject:
   m_ObjectHideFlags: 0

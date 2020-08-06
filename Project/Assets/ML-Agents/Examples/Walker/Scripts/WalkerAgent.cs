@@ -17,7 +17,6 @@ public class WalkerAgent : Agent
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
 
-
     public enum WalkDirectionMethod
     {
         UseWorldDirection,
@@ -51,7 +50,6 @@ public class WalkerAgent : Agent
     OrientationCubeController m_OrientationCube;
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
-
     EnvironmentParameters m_ResetParams;
 
     public override void Initialize()
@@ -88,18 +86,11 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
-
-//        if (walkTowardsType == WalkTowardsType.UseTarget && !target)
-//        {
-//            Debug.LogError("Missing a reference toTarget");
-//            Instantiate(targetPrefab)
-//        }
         //Reset all of the body parts
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
-        
 
         //Random start rotation to help generalize
         hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
@@ -111,8 +102,6 @@ public class WalkerAgent : Agent
         {
             worldPosToWalkTo = hips.position + (worldDirToWalk * 1000);
         }
-        
-        rewardManager.ResetEpisodeRewards();
 
         //Set our goal walking speed
         walkingSpeed =
@@ -156,77 +145,20 @@ public class WalkerAgent : Agent
 
         //current speed goal. normalized.
         sensor.AddObservation(walkingSpeed / m_maxWalkingSpeed);
-        
+
         //rotation deltas
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
-//        sensor.AddObservation((int)walkDirectionMethod);
-        
-
-//        //Dist To Target. Max 50 meters. Normalized;
-//        //If we're walking in world dir, always return 1;
-//        float distToTarget = walkDirectionMethod == WalkDirectionMethod.UseTarget
-//            ? Mathf.Clamp((target.position - hips.position).magnitude, 0, 50)/50
-//            : 1;
-//        sensor.AddObservation(distToTarget);
-
-
-//        worldPosToWalkTo = GetUpdatedTargetPosition();
-//
-//        Vector3 relPos = Vector3.zero;
-//        if (walkDirectionMethod == WalkDirectionMethod.UseTarget)
-//        {
-//            relPos =  Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(target.transform.position), 100);
-//        }
-//        sensor.AddObservation(relPos);
 
         if (walkDirectionMethod == WalkDirectionMethod.UseTarget)
         {
             worldPosToWalkTo = target.transform.position;
         }
-        
-        
-//        worldPosToWalkTo = walkDirectionMethod == WalkDirectionMethod.UseTarget
-//            ? target.transform.position
-////            : hips.position + (dirToLook * 100);
-////            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
-//            : m_OrientationCube.transform.position + (cubeForward * 100);
-//        targetPos.y = 0;
-        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), 100);
+
+        //Position of target position relative to cube
+        Vector3 relPos =
+            Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), 100);
         sensor.AddObservation(relPos);
-//        Debug.DrawRay(worldPosToWalkTo, Vector3.up, Color.green,1);
-//        Debug.DrawRay(relPos, Vector3.up, Color.green,1);
-//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), Vector3.up * 2, Color.red,5);
-
-
-//        worldPosToWalkTo = GetUpdatedWorldTargetPosition();
-//        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), 100);
-//        sensor.AddObservation(relPos);
-//        Debug.DrawRay(worldPosToWalkTo, Vector3.up, Color.green,1);
-//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), Vector3.up * 2, Color.red,5);
-        
-//        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
-//            ? target.transform.position
-////            : hips.position + (dirToLook * 100);
-////            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
-//            : m_OrientationCube.transform.position + (cubeForward * 100);
-//        targetPos.y = 0;
-//        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
-//        sensor.AddObservation(relPos);
-//        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
-//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(targetPos), Vector3.up * 2, Color.red,5);
-        
-        
-//        Vector3 targetPos = walkDirectionMethod == WalkDirectionMethod.UseTarget
-//            ? target.transform.position
-////            : hips.position + (dirToLook * 100);
-////            : m_OrientationCube.transform.TransformDirection(dirToLook * 100);
-//            : m_OrientationCube.transform.position + (cubeForward * 100);
-//        targetPos.y = 0;
-//        Vector3 relPos = Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(targetPos), 100);
-//        sensor.AddObservation(relPos);
-//        Debug.DrawRay(targetPos, Vector3.up, Color.green,1);
-//        Debug.DrawRay(m_OrientationCube.transform.InverseTransformPoint(targetPos), Vector3.up * 2, Color.red,5);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -281,77 +213,48 @@ public class WalkerAgent : Agent
         m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
     }
 
-    Vector3 GetUpdatedWorldTargetPosition()
-    {
-        if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
-        {
-            //Wait until we are within 10 units and then update the position
-            //This helps prevent direction drift
-            if (Vector3.Distance(worldPosToWalkTo, hips.position) < 10)
-            {
-                return hips.position + (worldDirToWalk * 100);
-            }
-            else
-            {
-                return worldPosToWalkTo;
-            }
-        }
-        else //use target
-        {
-            return target.position;
-        }
-    }
-    
-    
     void FixedUpdate()
     {
         UpdateOrientationObjects();
 
-//        if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
-//        {
-//            Vector3 targetPos
-//                if(targetPos hips.position)
-//        }
-
-//        if(m_currentWorldDirToWalk != worldDirToWalk)
-//        {
-//            worldPosToWalkTo = hips.position + (worldDirToWalk * 100);
-//        }
-        
         var cubeForward = m_OrientationCube.transform.forward;
 
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         var matchSpeedReward = GetMatchingVelocityInverseLerp(cubeForward * walkingSpeed, GetAvgVelocity());
+        
+        //Check for NaNs
+        if (float.IsNaN(matchSpeedReward))
+        {
+            throw new ArgumentException(
+                "NaN in moveTowardsTargetReward.\n" +
+                $" cubeForward: {cubeForward}\n"+
+                $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n"+
+                $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
+            );
+        }
 
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
         var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
-        // c. Encourage head height.
-//        var headHeightOverFeetReward =
-//            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
 
+        //Check for NaNs
+        if (float.IsNaN(lookAtTargetReward))
+        {
+            throw new ArgumentException(
+                "NaN in lookAtTargetReward.\n" +
+                $" cubeForward: {cubeForward}\n"+
+                $" head.forward: {head.forward}"
+            );
+        }
 
-        rewardManager.rewardsDict["matchSpeed"].rewardThisStep = matchSpeedReward;
-        rewardManager.rewardsDict["lookAtTarget"].rewardThisStep = lookAtTargetReward;
-//        rewardManager.rewardsDict["headHeightOverFeet"].rewardThisStep = headHeightOverFeetReward;
-//        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
-        rewardManager.UpdateReward("productOfAllRewards", matchSpeedReward * lookAtTargetReward);
+        AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
-//    //Returns the average velocity of all the rigidbodies
-//    Vector3 GetAvgVelocity()
-//    {
-//        Vector3 velSum = Vector3.zero;
-//        Vector3 avgVel = Vector3.zero;
-//        velSum += m_JdController.bodyPartsDict[head].rb.velocity;
-//        velSum += m_JdController.bodyPartsDict[chest].rb.velocity;
-//        velSum += m_JdController.bodyPartsDict[spine].rb.velocity;
-//        velSum += m_JdController.bodyPartsDict[hips].rb.velocity;
-//        avgVel = velSum / 4;
-//        return avgVel;
-//    }
+    //Returns the average velocity of all of the body parts
+    //Using the velocity of the hips only has shown to result in more erratic movement from the limbs, so...
+    //...using the average helps prevent this erratic movment
     Vector3 GetAvgVelocity()
     {
         Vector3 velSum = Vector3.zero;
@@ -369,16 +272,14 @@ public class WalkerAgent : Agent
         return avgVel;
     }
 
-//    public float headHeightOverFeetReward; //reward for standing up straight-ish
-    public RewardManager rewardManager;
-
     //normalized value of the difference in avg speed vs goal walking speed.
     public float GetMatchingVelocityInverseLerp(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
         var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, walkingSpeed);
 
-        //get the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / walkingSpeed, 2), 2);
     }
 
