@@ -11,19 +11,36 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The minimum supported python version for ml-agents-envs was changed to 3.6.1. (#4244)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.3.0-preview] 2020-08-12
+
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The minimum supported Python version for ml-agents-envs was changed to 3.6.1. (#4244)
 - The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
 and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up
 Python training by approximately 5-10%. (#4259)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
 - StatsSideChannel now stores multiple values per key. This means that multiple
 calls to `StatsRecorder.Add()` with the same key in the same step will no
 longer overwrite each other. (#4236)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The versions of `numpy` supported by ml-agents-envs were changed to disallow 1.19.0 or later. This was done to reflect
+a similar change in TensorFlow's requirements. (#4274)
 - Model checkpoints are now also saved as .nn files during training. (#4127)
 - Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
+- CSV statistics writer was removed (#4300).
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)

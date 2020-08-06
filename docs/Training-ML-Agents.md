@@ -433,7 +433,7 @@ if we wanted to train the 3D ball agent with parameter randomization, we would r
 mlagents-learn config/ppo/3DBall_randomize.yaml --run-id=3D-Ball-randomize
 ```
 
-We can observe progress and metrics via Tensorboard.
+We can observe progress and metrics via TensorBoard.
 
 #### Curriculum
 
