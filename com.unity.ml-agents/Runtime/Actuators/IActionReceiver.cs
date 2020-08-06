@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// Construct an <see cref="ActionBuffers"/> instance with the continuous and discrete actions that will
-        /// bee used.
+        /// be used.
         /// </summary>
         /// <param name="continuousActions">The continuous actions to send to an <see cref="IActionReceiver"/>.</param>
         /// <param name="discreteActions">The discrete actions to send to an <see cref="IActionReceiver"/>.</param>
