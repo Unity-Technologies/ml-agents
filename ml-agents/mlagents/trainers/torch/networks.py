@@ -428,7 +428,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         vis_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
     ) -> Dict[str, torch.Tensor]:
-        if memories is not None:
+        if self.use_lstm:
             # Use only the back half of memories for critic
             _, critic_mem = torch.split(memories, self.half_mem_size, -1)
         else:
@@ -446,7 +446,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
-        if memories is not None:
+        if self.use_lstm:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.half_mem_size, dim=-1)
         else:
