@@ -23,7 +23,6 @@ namespace Unity.MLAgentsExamples
 
         public void UpdateOrientation(Vector3 pos, Vector3 dirVector)
         {
-//            var dirVector = target.position - transform.position;
             dirVector.y = 0; //flatten dir on the y. this will only work on level surfaces
             var lookRot =
                 dirVector == Vector3.zero
