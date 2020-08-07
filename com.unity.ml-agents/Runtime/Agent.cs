@@ -56,23 +56,9 @@ namespace Unity.MLAgents
             Array.Clear(storedVectorActions, 0, storedVectorActions.Length);
         }
 
-        public void CopyActions(float[] continuousActions, int[] discreteActions)
+        public void CopyActions(ActionBuffers actionBuffers)
         {
-            var start = 0;
-            if (continuousActions != null)
-            {
-                Array.Copy(continuousActions, 0, storedVectorActions, start, continuousActions.Length);
-                start = continuousActions.Length;
-            }
-            if (start >= storedVectorActions.Length)
-            {
-                return;
-            }
-
-            if (discreteActions != null)
-            {
-                Array.Copy(discreteActions, 0, storedVectorActions, start, discreteActions.Length);
-            }
+            actionBuffers.PackActions(storedVectorActions);
         }
     }
 
@@ -794,7 +780,8 @@ namespace Unity.MLAgents
         /// control of an agent using keyboard, mouse, or game controller input.
         ///
         /// Your heuristic implementation can use any decision making logic you specify. Assign decision
-        /// values to the float[] array, <paramref name="continuousActionsOut"/>, passed to your function as a parameter.
+        /// values to the <see cref="ActionBuffers.ContinuousActions"/>  and <see cref="ActionBuffers.DiscreteActions"/>
+        /// arrays , passed to your function as a parameter.
         /// The same array will be reused between steps. It is up to the user to initialize
         /// the values on each call, for example by calling `Array.Clear(actionsOut, 0, actionsOut.Length);`.
         /// Add values to the array at the same indexes as they are used in your
@@ -830,39 +817,42 @@ namespace Unity.MLAgents
         /// You can also use the [Input System package], which provides a more flexible and
         /// configurable input system.
         /// <code>
-        ///     public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
+        ///     public override void Heuristic(ActionBuffers actionsOut)
         ///     {
-        ///         continuousActions[0] = Input.GetAxis("Horizontal");
-        ///         continuousActions[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
-        ///         continuousActions[2] = Input.GetAxis("Vertical");
+        ///         actionsOut.ContinuousActions[0] = Input.GetAxis("Horizontal");
+        ///         actionsOut.ContinuousActions[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        ///         actionsOut.ContinuousActions[2] = Input.GetAxis("Vertical");
         ///     }
         /// </code>
         /// [Input Manager]: https://docs.unity3d.com/Manual/class-InputManager.html
         /// [Input System package]: https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0/manual/index.html
         /// </example>
-        /// <param name="continuousActionsOut">Array to write the continuous actions to.</param>
-        /// <param name="discreteActionsOut">Array to write the discreteActions to.</param>
+        /// <param name="actionsOut">The <see cref="ActionBuffers"/> which contain the continuous and
+        /// discrete action buffers to write to.</param>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
-        public virtual void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
+        public virtual void Heuristic(in ActionBuffers actionsOut)
         {
-            Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
             // For backward compatibility
             switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
             {
                 case SpaceType.Continuous:
                     #pragma warning disable CS0618
-                    Heuristic(continuousActionsOut);
+                    Heuristic(actionsOut.ContinuousActions.Array);
                     #pragma warning restore CS0618
-                    Array.Clear(discreteActionsOut, 0, discreteActionsOut.Length);
+                    actionsOut.DiscreteActions.Clear();
                     break;
                 case SpaceType.Discrete:
-                    var convertedOut = Array.ConvertAll(discreteActionsOut, x => (float)x);
-                    #pragma warning disable CS0618
+                    var convertedOut = Array.ConvertAll(actionsOut.DiscreteActions.Array, x => (float)x);
+#pragma warning disable CS0618
                     Heuristic(convertedOut);
-                    #pragma warning restore CS0618
-                    var convertedBackToInt = Array.ConvertAll(convertedOut, x => (int)x);
-                    Array.Copy(convertedBackToInt, 0, discreteActionsOut, 0, discreteActionsOut.Length);
-                    Array.Clear(continuousActionsOut, 0, continuousActionsOut.Length);
+#pragma warning restore CS0618
+                    var backToInt = Array.ConvertAll(convertedOut, x => (int)x);
+                    Array.Copy(backToInt,
+                        0,
+                        actionsOut.DiscreteActions.Array,
+                        actionsOut.DiscreteActions.Offset,
+                        actionsOut.DiscreteActions.Length);
+                    actionsOut.ContinuousActions.Clear();
                     break;
             }
         }
@@ -981,7 +971,7 @@ namespace Unity.MLAgents
             }
             else
             {
-                m_Info.CopyActions(m_ActuatorManager.StoredContinuousActions, m_ActuatorManager.StoredDiscreteActions);
+                m_ActuatorManager.StoredActions.PackActions(m_Info.storedVectorActions);
             }
 
             UpdateSensors();
@@ -1077,7 +1067,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Returns a read-only view of the observations that were generated in
         /// <see cref="CollectObservations(VectorSensor)"/>. This is mainly useful inside of a
-        /// <see cref="Heuristic(float[])"/> method to avoid recomputing the observations.
+        /// <see cref="Heuristic(float[], int[])"/> method to avoid recomputing the observations.
         /// </summary>
         /// <returns>A read-only view of the observations list.</returns>
         public ReadOnlyCollection<float> GetObservations()
@@ -1217,14 +1207,12 @@ namespace Unity.MLAgents
         /// <seealso cref="EndEpisode"/>
         public virtual void OnEpisodeBegin() {}
 
-        public float[] GetStoredContinuousActions()
+        /// <summary>
+        /// Gets the last ActionBuffer for this agent.
+        /// </summary>
+        public ActionBuffers GetStoredContinuousActions()
         {
-            return m_ActuatorManager.StoredContinuousActions;
-        }
-
-        public int[] GetStoredDiscreteActions()
-        {
-            return m_ActuatorManager.StoredDiscreteActions;
+            return m_ActuatorManager.StoredActions;
         }
 
         /// <summary>
@@ -1290,13 +1278,13 @@ namespace Unity.MLAgents
 
         void DecideAction()
         {
-            if (m_ActuatorManager.StoredContinuousActions == null)
+            if (m_ActuatorManager.StoredActions.ContinuousActions.Array == null)
             {
                 ResetData();
             }
-            var action = m_Brain?.DecideAction() ?? (continuousActions : Array.Empty<float>(), discreteActions : Array.Empty<int>());
-            m_Info.CopyActions(action.continuousActions, action.discreteActions);
-            m_ActuatorManager.UpdateActions(action.continuousActions, action.discreteActions);
+            var actions = m_Brain?.DecideAction() ?? new ActionBuffers();
+            m_Info.CopyActions(actions);
+            m_ActuatorManager.UpdateActions(actions);
         }
     }
 }

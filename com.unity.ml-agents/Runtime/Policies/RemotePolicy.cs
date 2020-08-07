@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
@@ -14,6 +15,7 @@ namespace Unity.MLAgents.Policies
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
         SpaceType m_SpaceType;
+        ActionBuffers m_LasActionBuffer;
 
         internal ICommunicator m_Communicator;
 
@@ -36,15 +38,17 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public (float[], int[]) DecideAction()
+        public ref readonly ActionBuffers DecideAction()
         {
             m_Communicator?.DecideBatch();
             var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
             if (m_SpaceType == SpaceType.Continuous)
             {
-                return (actions, Array.Empty<int>());
+                m_LasActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
+                return ref m_LasActionBuffer;
             }
-            return (Array.Empty<float>(), Array.ConvertAll(actions, x => (int)x));
+            m_LasActionBuffer = new ActionBuffers(Array.Empty<float>(), Array.ConvertAll(actions ?? Array.Empty<float>(), x => (int)x));
+            return ref m_LasActionBuffer;
         }
 
         public void Dispose()

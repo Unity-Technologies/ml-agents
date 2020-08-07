@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System;
 using System.Collections;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
@@ -12,10 +13,9 @@ namespace Unity.MLAgents.Policies
     /// </summary>
     internal class HeuristicPolicy : IPolicy
     {
-        public delegate void ActionGenerator(float[] continuousActionsOut, int[] discreteActionsOut);
+        public delegate void ActionGenerator(in ActionBuffers actionBuffers);
         ActionGenerator m_Heuristic;
-        float[] m_LastContinuousDecision;
-        int[] m_LastDiscreteDecision;
+        ActionBuffers m_ActionBuffers;
         bool m_Done;
         bool m_DecisionRequested;
 
@@ -27,8 +27,9 @@ namespace Unity.MLAgents.Policies
         public HeuristicPolicy(ActionGenerator heuristic, int numContinuousActions, int numDiscreteActions)
         {
             m_Heuristic = heuristic;
-            m_LastContinuousDecision = new float[numContinuousActions];
-            m_LastDiscreteDecision = new int[numDiscreteActions];
+            var continuousDecision = new ActionSegment<float>(new float[numContinuousActions], 0, numContinuousActions);
+            var discreteDecision = new ActionSegment<int>(new int[numDiscreteActions], 0, numDiscreteActions);
+            m_ActionBuffers = new ActionBuffers(continuousDecision, discreteDecision);
         }
 
         /// <inheritdoc />
@@ -40,14 +41,14 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public (float[], int[]) DecideAction()
+        public ref readonly ActionBuffers DecideAction()
         {
             if (!m_Done && m_DecisionRequested)
             {
-                m_Heuristic.Invoke(m_LastContinuousDecision, m_LastDiscreteDecision);
+                m_Heuristic.Invoke(m_ActionBuffers);
             }
             m_DecisionRequested = false;
-            return (m_LastContinuousDecision, m_LastDiscreteDecision);
+            return ref m_ActionBuffers;
         }
 
         public void Dispose()

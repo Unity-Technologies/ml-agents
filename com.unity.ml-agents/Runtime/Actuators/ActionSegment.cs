@@ -43,6 +43,13 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
+        /// Construct an <see cref="ActionSegment{T}"/> with just an actionArray.  The <see cref="Offset"/> will
+        /// be set to 0 and the <see cref="Length"/> will be set to `actionArray.Length`.
+        /// </summary>
+        /// <param name="actionArray">The action array to use for the this segment.</param>
+        public ActionSegment(T[] actionArray) : this(actionArray, 0, actionArray.Length) {}
+
+        /// <summary>
         /// Construct an <see cref="ActionSegment{T}"/> with an underlying array
         /// and offset, and a length.
         /// </summary>
@@ -78,6 +85,22 @@ namespace Unity.MLAgents.Actuators
                 }
                 return Array[Offset + index];
             }
+            set
+            {
+                if (index < 0 || index > Length)
+                {
+                    throw new IndexOutOfRangeException($"Index out of bounds, expected a number between 0 and {Length}");
+                }
+                Array[Offset + index] = value;
+            }
+        }
+
+        /// <summary>
+        /// Sets the segment of the backing array to all zeros.
+        /// </summary>
+        public void Clear()
+        {
+            System.Array.Clear(Array, Offset, Length);
         }
 
         /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>

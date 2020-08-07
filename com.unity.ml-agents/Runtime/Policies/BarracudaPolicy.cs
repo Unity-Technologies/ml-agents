@@ -1,6 +1,7 @@
 using System;
 using Unity.Barracuda;
 using System.Collections.Generic;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
 
@@ -30,6 +31,7 @@ namespace Unity.MLAgents.Policies
     internal class BarracudaPolicy : IPolicy
     {
         protected ModelRunner m_ModelRunner;
+        ActionBuffers m_LastActionBuffer;
 
         int m_AgentId;
 
@@ -58,15 +60,21 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public (float[], int[]) DecideAction()
+        public ref readonly ActionBuffers DecideAction()
         {
             m_ModelRunner?.DecideBatch();
             var actions = m_ModelRunner?.GetAction(m_AgentId);
             if (m_SapceType == SpaceType.Continuous)
             {
-                return (actions, Array.Empty<int>());
+                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
+                return ref m_LastActionBuffer;
             }
-            return (Array.Empty<float>(), actions == null ? Array.Empty<int>() : Array.ConvertAll(actions, x => (int)x));
+
+            // Need to use ConvertAll since you cannot copy a float[] int an int[].
+            m_LastActionBuffer = new ActionBuffers(ActionSegment<float>.Empty, actions == null ? ActionSegment<int>.Empty
+                    : new ActionSegment<int>(Array.ConvertAll(actions,
+                        x => (int)x)));
+            return ref m_LastActionBuffer;
         }
 
         public void Dispose()

@@ -24,6 +24,9 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public ActionSegment<int> DiscreteActions { get; }
 
+        public ActionBuffers(float[] continuousActions, int[] discreteActions)
+            : this(new ActionSegment<float>(continuousActions), new ActionSegment<int>(discreteActions)) { }
+
         /// <summary>
         /// Construct an <see cref="ActionBuffers"/> instance with the continuous and discrete actions that will
         /// be used.
@@ -49,12 +52,46 @@ namespace Unity.MLAgents.Actuators
                 ab.DiscreteActions.SequenceEqual(DiscreteActions);
         }
 
+        public void Clear()
+        {
+            ContinuousActions.Clear();
+            DiscreteActions.Clear();
+        }
+
         /// <inheritdoc cref="ValueType.GetHashCode"/>
         public override int GetHashCode()
         {
             unchecked
             {
                 return (ContinuousActions.GetHashCode() * 397) ^ DiscreteActions.GetHashCode();
+            }
+        }
+
+        /// <summary>
+        /// Packs the continuous and discrete actions into one float array.  The array passed into this method
+        /// must have a Length that is greater than or equal to the sum of the Lengths of
+        /// <see cref="ContinuousActions"/> and <see cref="DiscreteActions"/>.
+        /// </summary>
+        /// <param name="destination">A float array to pack actions into whose length is greater than or
+        /// equal to the addition of the Lengths of this objects <see cref="ContinuousActions"/> and
+        /// <see cref="DiscreteActions"/> segments.</param>
+        public void PackActions(in float[] destination)
+        {
+
+            var start = 0;
+            if (ContinuousActions.Length > 0)
+            {
+                Array.Copy(ContinuousActions.Array, ContinuousActions.Offset, destination, start, ContinuousActions.Length);
+                start = ContinuousActions.Length;
+            }
+            if (start >= destination.Length)
+            {
+                return;
+            }
+
+            if (DiscreteActions.Length > 0)
+            {
+                Array.Copy(DiscreteActions.Array, DiscreteActions.Offset, destination, start, DiscreteActions.Length);
             }
         }
     }
