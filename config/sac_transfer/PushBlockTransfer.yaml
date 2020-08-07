@@ -34,7 +34,7 @@ behaviors:
       train_model: false
       load_action: true
       train_action: false
-      transfer_path: "results/block-f256/PushBlock"
+      transfer_path: "results/block-long/PushBlock"
     network_settings:
       normalize: false
       hidden_units: 256
