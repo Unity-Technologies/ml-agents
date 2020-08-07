@@ -59,10 +59,7 @@ VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
 
 def export_policy_model(
-    output_filepath: str,
-    brain_name: str,
-    graph: tf.Graph,
-    sess: tf.Session,
+    output_filepath: str, brain_name: str, graph: tf.Graph, sess: tf.Session
 ) -> None:
     """
     Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
@@ -123,9 +120,7 @@ def _make_frozen_graph(
     return output_graph_def
 
 
-def convert_frozen_to_onnx(
-    brain_name: str, frozen_graph_def: tf.GraphDef
-) -> Any:
+def convert_frozen_to_onnx(brain_name: str, frozen_graph_def: tf.GraphDef) -> Any:
     # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
     inputs = _get_input_node_names(frozen_graph_def)

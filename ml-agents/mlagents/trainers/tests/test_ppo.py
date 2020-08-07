@@ -53,7 +53,7 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         0, mock_specs, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = PPOOptimizer(policy, trainer_settings)
-    policy._initialize_graph()
+    policy.initialize()
     return optimizer
 
 
@@ -211,7 +211,7 @@ def test_trainer_increment_step(ppo_optimizer):
     )
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
-    trainer.add_policy(behavior_id, policy_mock, create_saver=False)
+    trainer.add_policy(behavior_id, policy_mock, register_saver=False)
 
     trainer._increment_step(5, trainer.brain_name)
     policy_mock.increment_step.assert_called_with(5)
@@ -324,7 +324,7 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     policy.get_current_step.return_value = 2000
 
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
-    trainer.add_policy(behavior_id, policy, create_saver=False)
+    trainer.add_policy(behavior_id, policy, register_saver=False)
     assert trainer.get_policy("test_policy") == policy
 
     # Make sure the summary steps were loaded properly

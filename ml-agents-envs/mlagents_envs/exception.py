@@ -77,6 +77,7 @@ class UnityWorkerInUseException(UnityException):
         message = self.MESSAGE_TEMPLATE.format(str(worker_id))
         super().__init__(message)
 
+
 class UnityPolicyException(UnityException):
     """
     Related to errors with the Trainer.

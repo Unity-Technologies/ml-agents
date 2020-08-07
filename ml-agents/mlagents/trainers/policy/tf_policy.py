@@ -143,7 +143,7 @@ class TFPolicy(Policy):
 
         # We do an initialize to make the Policy usable out of the box. If an optimizer is needed,
         # it will re-load the full graph
-        self._initialize_graph()
+        self.initialize()
 
     def _create_encoder(
         self,
@@ -181,7 +181,7 @@ class TFPolicy(Policy):
         ver = LooseVersion(version_string)
         return tuple(map(int, ver.version[0:3]))
 
-    def _initialize_graph(self):
+    def initialize(self):
         with self.graph.as_default():
             init = tf.global_variables_initializer()
             self.sess.run(init)

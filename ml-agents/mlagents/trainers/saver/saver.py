@@ -1,5 +1,6 @@
 # # Unity ML-Agents Toolkit
 import abc
+from mlagents.trainers.policy import Policy
 
 
 class BaseSaver(abc.ABC):
@@ -9,7 +10,7 @@ class BaseSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def register(self, module):
+    def register(self, module: object, init_or_load: bool) -> None:
         pass
 
     @abc.abstractmethod
@@ -34,6 +35,5 @@ class BaseSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def maybe_load(self):
+    def initialize_or_load(self, policy: Policy) -> None:
         pass
-

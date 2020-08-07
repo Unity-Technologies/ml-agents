@@ -96,6 +96,8 @@ class PPOOptimizer(TFOptimizer):
                 }
             )
 
+            self.initialize()
+
     def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
     ) -> None:
@@ -292,6 +294,9 @@ class PPOOptimizer(TFOptimizer):
         self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
         self.grads = self.tf_optimizer.compute_gradients(self.loss)
         self.update_batch = self.tf_optimizer.minimize(self.loss)
+
+    def initialize(self):
+        self.policy.initialize()
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:

@@ -1,5 +1,4 @@
 # # Unity ML-Agents Toolkit
-import os
 from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
@@ -14,7 +13,6 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.components.reward_signals import RewardSignalResult
 from mlagents_envs.timers import hierarchical_timer
 from mlagents.trainers.agent_processor import AgentManagerQueue
@@ -49,7 +47,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         )
         self._next_save_step = 0
         self._next_summary_step = 0
-        self.saver = None
+        self.saver = self.create_saver(
+            self.trainer_settings, self.artifact_path, self.load
+        )
 
     def end_episode(self) -> None:
         """
@@ -62,19 +62,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
     @staticmethod
     def create_saver(
-        policy: TFPolicy,
-        trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool,
+        trainer_settings: TrainerSettings, model_path: str, load: bool
     ) -> BaseSaver:
-        saver = TFSaver(
-            policy,
-            trainer_settings,
-            model_path,
-            load,
-        )
+        saver = TFSaver(trainer_settings, model_path, load)
         return saver
-
 
     def _update_end_episode_stats(self, agent_id: str, optimizer: Optimizer) -> None:
         for name, rewards in self.collected_rewards.items():

@@ -50,7 +50,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         0, mock_brain, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = SACOptimizer(policy, trainer_settings)
-    policy._initialize_graph()
+    policy.initialize()
     return optimizer
 
 
@@ -138,7 +138,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     policy = mock.Mock(spec=TFPolicy)
     policy.get_current_step.return_value = 2000
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
-    trainer.add_policy(behavior_id, policy, create_saver=False)
+    trainer.add_policy(behavior_id, policy, register_saver=False)
     assert trainer.get_policy(behavior_id.behavior_id) == policy
 
     # Make sure the summary steps were loaded properly

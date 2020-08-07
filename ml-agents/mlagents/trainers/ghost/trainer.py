@@ -315,7 +315,7 @@ class GhostTrainer(Trainer):
         """
         policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
         policy.create_tf_graph()
-        policy.initialize_or_load()
+        self.trainer.saver.initialize_or_load(policy)
         policy.init_load_weights()
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
@@ -338,7 +338,10 @@ class GhostTrainer(Trainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy, create_saver: bool = True,
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        policy: Policy,
+        register_saver: bool = True,
     ) -> None:
         """
         Adds policy to GhostTrainer.

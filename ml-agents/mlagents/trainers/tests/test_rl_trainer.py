@@ -26,6 +26,7 @@ class FakeTrainer(RLTrainer):
     def add_policy(self, mock_behavior_id, mock_policy):
         def checkpoint_path(brain_name, step):
             return os.path.join(self.saver.model_path, f"{brain_name}-{step}")
+
         self.policies[mock_behavior_id] = mock_policy
         mock_saver = mock.Mock()
         mock_saver.model_path = self.artifact_path

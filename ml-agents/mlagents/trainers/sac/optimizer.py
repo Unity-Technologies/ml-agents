@@ -167,6 +167,8 @@ class SACOptimizer(TFOptimizer):
             "learning_rate": self.learning_rate,
         }
 
+        self.initialize()
+
     def _create_inputs_and_outputs(self) -> None:
         """
         Assign the higher-level SACModel's inputs and outputs to those of its policy or
@@ -507,6 +509,9 @@ class SACOptimizer(TFOptimizer):
                 self.update_batch_entropy = entropy_optimizer.minimize(
                     self.entropy_loss, var_list=self.log_ent_coef
                 )
+
+    def initialize(self):
+        self.policy.initialize()
 
     def print_all_vars(self, variables):
         for _var in variables:

@@ -20,13 +20,7 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
         NetworkSettings.MemorySettings() if use_rnn else None
     )
     policy = TFPolicy(
-        0,
-        mock_behavior_specs,
-        trainer_config,
-        "test",
-        False,
-        tanhresample,
-        tanhresample,
+        0, mock_behavior_specs, trainer_config, tanhresample, tanhresample
     )
     with policy.graph.as_default():
         bc_module = BCModule(
@@ -36,7 +30,7 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
             default_num_epoch=3,
             settings=bc_settings,
         )
-    policy.initialize_or_load()  # Normally the optimizer calls this after the BCModule is created
+    policy.initialize()  # Normally the optimizer calls this after the BCModule is created
     return bc_module
 
 
