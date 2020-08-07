@@ -146,8 +146,6 @@ class SACOptimizer(TFOptimizer):
                         [self.policy.update_normalization_op, target_update_norm]
                     )
 
-                self.policy.initialize_or_load()
-
         self.stats_name_to_update_name = {
             "Losses/Value Loss": "value_loss",
             "Losses/Policy Loss": "policy_loss",

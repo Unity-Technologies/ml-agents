@@ -4,7 +4,6 @@ from distutils.version import LooseVersion
 
 from mlagents_envs.timers import timed
 
-from mlagents.model_serialization import SerializationSettings, export_policy_model
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
 from mlagents_envs.exception import UnityException
@@ -53,8 +52,6 @@ class TFPolicy(Policy):
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
@@ -65,15 +62,11 @@ class TFPolicy(Policy):
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
         :param trainer_settings: The trainer parameters.
-        :param model_path: Where to load/save the model.
-        :param load: If True, load model from model_path. Otherwise, create new model.
         """
         super().__init__(
             seed,
             behavior_spec,
             trainer_settings,
-            model_path,
-            load,
             tanh_squash,
             reparameterize,
             condition_sigma_on_obs,
@@ -88,7 +81,6 @@ class TFPolicy(Policy):
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
-        self.saver: Optional[tf.Operation] = None
         self._initialize_tensorflow_references()
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
@@ -189,72 +181,10 @@ class TFPolicy(Policy):
         ver = LooseVersion(version_string)
         return tuple(map(int, ver.version[0:3]))
 
-    def _check_model_version(self, version: str) -> None:
-        """
-        Checks whether the model being loaded was created with the same version of
-        ML-Agents, and throw a warning if not so.
-        """
-        if self.version_tensors is not None:
-            loaded_ver = tuple(
-                num.eval(session=self.sess) for num in self.version_tensors
-            )
-            if loaded_ver != TFPolicy._convert_version_string(version):
-                logger.warning(
-                    f"The model checkpoint you are loading from was saved with ML-Agents version "
-                    f"{loaded_ver[0]}.{loaded_ver[1]}.{loaded_ver[2]} but your current ML-Agents"
-                    f"version is {version}. Model may not behave properly."
-                )
-
     def _initialize_graph(self):
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
-
-    def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
-        with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
-            logger.info(f"Loading model from {model_path}.")
-            ckpt = tf.train.get_checkpoint_state(model_path)
-            if ckpt is None:
-                raise UnityPolicyException(
-                    "The model {} could not be loaded. Make "
-                    "sure you specified the right "
-                    "--run-id and that the previous run you are loading from had the same "
-                    "behavior names.".format(model_path)
-                )
-            try:
-                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
-            except tf.errors.NotFoundError:
-                raise UnityPolicyException(
-                    "The model {} was found but could not be loaded. Make "
-                    "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
-                    "and is using the same trainer configuration as the current run.".format(
-                        model_path
-                    )
-                )
-            self._check_model_version(__version__)
-            if reset_global_steps:
-                self._set_step(0)
-                logger.info(
-                    "Starting training from step 0 and saving to {}.".format(
-                        self.model_path
-                    )
-                )
-            else:
-                logger.info(f"Resuming training from step {self.get_current_step()}.")
-
-    def initialize_or_load(self):
-        # If there is an initialize path, load from that. Else, load from the set model path.
-        # If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
-        # e.g., resume from an initialize path.
-        reset_steps = not self.load
-        if self.initialize_path is not None:
-            self._load_graph(self.initialize_path, reset_global_steps=reset_steps)
-        elif self.load:
-            self._load_graph(self.model_path, reset_global_steps=reset_steps)
-        else:
-            self._initialize_graph()
 
     def get_weights(self):
         with self.graph.as_default():
@@ -384,7 +314,7 @@ class TFPolicy(Policy):
         step = self.sess.run(self.global_step)
         return step
 
-    def _set_step(self, step: int) -> int:
+    def set_step(self, step: int) -> int:
         """
         Sets current model step to step without creating additional ops.
         :param step: Step to set the current model step to.
@@ -416,36 +346,6 @@ class TFPolicy(Policy):
         :return:list of update var names
         """
         return list(self.update_dict.keys())
-
-    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
-        """
-        Checkpoints the policy on disk.
-
-        :param checkpoint_path: filepath to write the checkpoint
-        :param settings: SerializationSettings for exporting the model.
-        """
-        # Save the TF checkpoint and graph definition
-        with self.graph.as_default():
-            if self.saver:
-                self.saver.save(self.sess, f"{checkpoint_path}.ckpt")
-            tf.train.write_graph(
-                self.graph, self.model_path, "raw_graph_def.pb", as_text=False
-            )
-        # also save the policy so we have optimized model files for each checkpoint
-        self.save(checkpoint_path, settings)
-
-    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
-        """
-        Saves the serialized model, given a path and SerializationSettings
-
-        This method will save the policy graph to the given filepath.  The path
-        should be provided without an extension as multiple serialized model formats
-        may be generated as a result.
-
-        :param output_filepath: path (without suffix) for the model file(s)
-        :param settings: SerializationSettings for how to save the model.
-        """
-        export_policy_model(output_filepath, settings, self.graph, self.sess)
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """

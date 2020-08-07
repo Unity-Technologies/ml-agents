@@ -45,12 +45,11 @@ class PPOTrainer(RLTrainer):
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
+            brain_name, trainer_settings, training, load, artifact_path, reward_buff_cap
         )
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, self.trainer_settings.hyperparameters
         )
-        self.load = load
         self.seed = seed
         self.policy: Policy = None  # type: ignore
 
@@ -200,8 +199,6 @@ class PPOTrainer(RLTrainer):
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            model_path=self.artifact_path,
-            load=self.load,
             condition_sigma_on_obs=False,  # Faster training for PPO
             create_tf_graph=False,  # We will create the TF graph in the Optimizer
         )
@@ -209,7 +206,7 @@ class PPOTrainer(RLTrainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy, create_saver: bool=True,
     ) -> None:
         """
         Adds policy to trainer.
@@ -230,6 +227,18 @@ class PPOTrainer(RLTrainer):
         )
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        if self.saver is None and create_saver:
+            self.saver = self.create_saver(
+                policy,
+                self.trainer_settings,
+                self.artifact_path,
+                self.load,
+            )
+            self.saver.register(self.policy)
+            self.saver.register(self.optimizer)
+            self.saver.maybe_load()
+
         # Needed to resume loads properly
         self.step = policy.get_current_step()
 

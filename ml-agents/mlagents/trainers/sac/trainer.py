@@ -53,10 +53,9 @@ class SACTrainer(RLTrainer):
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
+            brain_name, trainer_settings, training, load, artifact_path, reward_buff_cap
         )
 
-        self.load = load
         self.seed = seed
         self.policy: Policy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
@@ -201,8 +200,6 @@ class SACTrainer(RLTrainer):
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            self.artifact_path,
-            self.load,
             tanh_squash=True,
             reparameterize=True,
             create_tf_graph=False,
@@ -313,7 +310,7 @@ class SACTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy, create_saver: bool = True,
     ) -> None:
         """
         Adds policy to trainer.
@@ -332,6 +329,19 @@ class SACTrainer(RLTrainer):
         )
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        if self.saver is None and create_saver:
+            self.saver = self.create_saver(
+                self.framework,
+                policy,
+                self.trainer_settings,
+                self.artifact_path,
+                self.load,
+            )
+            self.saver.register(self.policy)
+            self.saver.register(self.optimizer)
+            self.saver.maybe_load()
+
         # Needed to resume loads properly
         self.step = policy.get_current_step()
         # Assume steps were updated at the correct ratio before
