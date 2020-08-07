@@ -36,7 +36,7 @@ behaviors:
       load_model: false
       load_encoder: true
       train_encoder: false
-      transfer_path: "results/mass-s4/3DBall"
+      transfer_path: "results/ball-s4/3DBall"
     network_settings:
       normalize: true
       hidden_units: 128
@@ -51,3 +51,10 @@ behaviors:
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
+    
+parameter_randomization:
+  scale:
+    sampler_type: uniform
+    sampler_parameters:
+      min_value: 2
+      max_value: 2

@@ -28,8 +28,8 @@ behaviors:
     threaded: true
 
 parameter_randomization:
-  mass:
+  scale:
     sampler_type: uniform
     sampler_parameters:
-      min_value: 2.0
-      max_value: 2.0
+      min_value: 2
+      max_value: 2
