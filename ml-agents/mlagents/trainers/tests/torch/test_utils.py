@@ -152,9 +152,9 @@ def test_actions_to_onehot():
     action_size = [2, 1, 3]
     oh_actions = ModelUtils.actions_to_onehot(all_actions, action_size)
     expected_result = [
-        torch.tensor([[0, 1], [0, 1]]),
-        torch.tensor([[1], [1]]),
-        torch.tensor([[0, 0, 1], [0, 0, 1]]),
+        torch.tensor([[0, 1], [0, 1]], dtype=torch.float),
+        torch.tensor([[1], [1]], dtype=torch.float),
+        torch.tensor([[0, 0, 1], [0, 0, 1]], dtype=torch.float),
     ]
     for res, exp in zip(oh_actions, expected_result):
         assert torch.equal(res, exp)

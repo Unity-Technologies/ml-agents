@@ -109,7 +109,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.probs)
 
     def entropy(self):
-        return torch.sum(self.probs * torch.log(self.probs), dim=-1)
+        return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
 
 class GaussianDistribution(nn.Module):

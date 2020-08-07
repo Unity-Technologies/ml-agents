@@ -83,7 +83,7 @@ class TorchSACOptimizer(TorchOptimizer):
         # Use to reduce "survivor bonus" when using Curiosity or GAIL.
         self.gammas = [_val.gamma for _val in trainer_params.reward_signals.values()]
         self.use_dones_in_backup = {
-            name: int(self.reward_signals[name].use_terminal_states)
+            name: int(not self.reward_signals[name].ignore_done)
             for name in self.stream_names
         }
 
@@ -471,6 +471,9 @@ class TorchSACOptimizer(TorchOptimizer):
             .numpy(),
             "Policy/Learning Rate": decay_lr,
         }
+
+        for signal in self.reward_signals.values():
+            signal.update(batch)
 
         return update_stats
 

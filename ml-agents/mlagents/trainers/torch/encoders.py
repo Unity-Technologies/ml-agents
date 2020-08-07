@@ -64,6 +64,11 @@ def pool_out_shape(h_w: Tuple[int, int], kernel_size: int) -> Tuple[int, int]:
     return height, width
 
 
+class SwishLayer(torch.nn.Module):
+    def forward(self, data: torch.Tensor) -> torch.Tensor:
+        return torch.mul(data, torch.sigmoid(data))
+
+
 class VectorEncoder(nn.Module):
     def __init__(
         self,
@@ -75,6 +80,7 @@ class VectorEncoder(nn.Module):
         self.normalizer: Optional[Normalizer] = None
         super().__init__()
         self.layers = [nn.Linear(input_size, hidden_size)]
+        self.layers.append(SwishLayer())
         if normalize:
             self.normalizer = Normalizer(input_size)
 

@@ -15,7 +15,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.components.reward_signals import RewardSignalResult
+from mlagents.trainers.components.reward_signals import RewardSignalResult, RewardSignal
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
@@ -57,6 +57,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         )
         self.framework = self.trainer_settings.framework
         logger.debug(f"Using framework {self.framework.value}")
+
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
@@ -83,9 +84,16 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                self.stats_reporter.add_stat(
-                    optimizer.reward_signals[name].stat_name, rewards.get(agent_id, 0)
-                )
+                if isinstance(optimizer.reward_signals[name], RewardSignal):
+                    self.stats_reporter.add_stat(
+                        optimizer.reward_signals[name].stat_name,
+                        rewards.get(agent_id, 0),
+                    )
+                else:
+                    self.stats_reporter.add_stat(
+                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
+                        rewards.get(agent_id, 0),
+                    )
                 rewards[agent_id] = 0
 
     def _clear_update_buffer(self) -> None:
