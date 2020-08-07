@@ -134,7 +134,10 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        policy: Policy,
+        create_saver: bool = True,
     ) -> None:
         """
         Adds policy to trainer.

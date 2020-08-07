@@ -195,8 +195,8 @@ def test_rl_functions():
     )
 
 
-@mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
-def test_trainer_increment_step(ppo_optimizer):
+@mock.patch("mlagents.trainers.ppo.trainer.TFPPOOptimizer")
+def test_trainer_increment_step(ppo_optimizer, dummy_config):
     trainer_params = PPO_CONFIG
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
@@ -210,7 +210,7 @@ def test_trainer_increment_step(ppo_optimizer):
     )
     policy_mock.increment_step = mock.Mock(return_value=step_count)
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
-    trainer.add_policy(behavior_id, policy_mock)
+    trainer.add_policy(behavior_id, policy_mock, create_saver=False)
 
     trainer._increment_step(5, trainer.brain_name)
     policy_mock.increment_step.assert_called_with(5)
@@ -312,7 +312,7 @@ def test_process_trajectory(dummy_config):
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
-@mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
+@mock.patch("mlagents.trainers.ppo.trainer.TFPPOOptimizer")
 def test_add_get_policy(ppo_optimizer, dummy_config):
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
@@ -323,7 +323,7 @@ def test_add_get_policy(ppo_optimizer, dummy_config):
     policy.get_current_step.return_value = 2000
 
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
-    trainer.add_policy(behavior_id, policy)
+    trainer.add_policy(behavior_id, policy, create_saver=False)
     assert trainer.get_policy("test_policy") == policy
 
     # Make sure the summary steps were loaded properly

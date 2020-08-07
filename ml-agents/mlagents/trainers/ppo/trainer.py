@@ -233,7 +233,10 @@ class PPOTrainer(RLTrainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        policy: Policy,
+        create_saver: bool = True,
     ) -> None:
         """
         Adds policy to trainer.
@@ -260,7 +263,7 @@ class PPOTrainer(RLTrainer):
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-        if self.saver is None:
+        if self.saver is None and create_saver:
             self.saver = self.create_saver(
                 self.framework,
                 policy,
