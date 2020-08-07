@@ -24,8 +24,8 @@ def test_networkbody_vector():
 
     networkbody = NetworkBody(obs_shapes, network_settings, encoded_act_size=2)
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
-    sample_obs = torch.ones((1, obs_size))
-    sample_act = torch.ones((1, 2))
+    sample_obs = 0.1 * torch.ones((1, obs_size))
+    sample_act = 0.1 * torch.ones((1, 2))
 
     for _ in range(300):
         encoded, _ = networkbody([sample_obs], [], sample_act)

@@ -1,7 +1,7 @@
 from typing import Tuple, Optional
 
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.torch.layers import linear_layer, Initialization
+from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
 
 import torch
 from torch import nn
@@ -95,7 +95,7 @@ class VectorEncoder(nn.Module):
                     kernel_gain=1.0,
                 )
             )
-            self.layers.append(nn.LeakyReLU())
+            self.layers.append(Swish())
         self.seq_layers = nn.Sequential(*self.layers)
 
     def forward(self, inputs: torch.Tensor) -> None:
@@ -233,7 +233,7 @@ class ResNetVisualEncoder(nn.Module):
             for _ in range(n_blocks):
                 self.layers.append(self.make_block(channel))
             last_channel = channel
-        self.layers.append(nn.LeakyReLU())
+        self.layers.append(Swish())
         self.dense = linear_layer(
             n_channels[-1] * height * width,
             final_hidden,
@@ -244,9 +244,9 @@ class ResNetVisualEncoder(nn.Module):
     @staticmethod
     def make_block(channel):
         block_layers = [
-            nn.LeakyReLU(),
+            Swish(),
             nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
-            nn.LeakyReLU(),
+            Swish(),
             nn.Conv2d(channel, channel, [3, 3], [1, 1], padding=1),
         ]
         return block_layers
