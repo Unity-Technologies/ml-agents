@@ -17,6 +17,7 @@ from mlagents.trainers.torch.distributions import (
 
 
 def test_networkbody_vector():
+    torch.manual_seed(0)
     obs_size = 4
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,)]
@@ -26,7 +27,7 @@ def test_networkbody_vector():
     sample_obs = torch.ones((1, obs_size))
     sample_act = torch.ones((1, 2))
 
-    for _ in range(200):
+    for _ in range(300):
         encoded, _ = networkbody([sample_obs], [], sample_act)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
