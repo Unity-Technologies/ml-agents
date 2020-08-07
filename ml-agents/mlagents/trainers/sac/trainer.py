@@ -332,7 +332,6 @@ class SACTrainer(RLTrainer):
 
         if self.saver is None and create_saver:
             self.saver = self.create_saver(
-                self.framework,
                 policy,
                 self.trainer_settings,
                 self.artifact_path,
