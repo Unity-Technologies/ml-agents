@@ -13,6 +13,8 @@ def test_swish():
 def test_initialization_layer():
     torch.manual_seed(0)
     # Test Zero
-    layer = linear_layer(3, 4, Initialization.Zero, Initialization.Zero)
+    layer = linear_layer(
+        3, 4, kernel_init=Initialization.Zero, bias_init=Initialization.Zero
+    )
     assert torch.all(torch.eq(layer.weight.data, torch.zeros_like(layer.weight.data)))
     assert torch.all(torch.eq(layer.bias.data, torch.zeros_like(layer.bias.data)))

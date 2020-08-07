@@ -26,7 +26,7 @@ def test_networkbody_vector():
     sample_obs = torch.ones((1, obs_size))
     sample_act = torch.ones((1, 2))
 
-    for _ in range(100):
+    for _ in range(200):
         encoded, _ = networkbody([sample_obs], [], sample_act)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
@@ -77,7 +77,7 @@ def test_networkbody_visual():
     sample_obs = torch.ones((1, 84, 84, 3))
     sample_vec_obs = torch.ones((1, vec_obs_size))
 
-    for _ in range(100):
+    for _ in range(150):
         encoded, _ = networkbody([sample_vec_obs], [sample_obs])
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
