@@ -149,7 +149,7 @@ def test_get_probs_and_entropy():
 
     for ent in entropies.flatten():
         # entropy of standard normal at 0
-        assert ent == pytest.approx(2.83, abs=0.01)
+        assert ent == pytest.approx(1.42, abs=0.01)
 
     # Test continuous
     # Add two dists to the list.

@@ -105,8 +105,8 @@ def test_gaussian_dist_instance():
         assert log_prob == pytest.approx(-0.919, abs=0.01)
 
     for ent in dist_instance.entropy().flatten():
-        # entropy of standard normal at 0
-        assert ent == pytest.approx(2.83, abs=0.01)
+        # entropy of standard normal at 0, based on 1/2 + ln(sqrt(2pi)sigma)
+        assert ent == pytest.approx(1.42, abs=0.01)
 
 
 def test_tanh_gaussian_dist_instance():
