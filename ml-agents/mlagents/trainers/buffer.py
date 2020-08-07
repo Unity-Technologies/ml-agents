@@ -48,7 +48,7 @@ class AgentBuffer(dict):
             Adds a list of np.arrays to the end of the list of np.arrays.
             :param data: The np.array list to append.
             """
-            self += list(np.array(data))
+            self += list(np.array(data, dtype=np.float32))
 
         def set(self, data):
             """
