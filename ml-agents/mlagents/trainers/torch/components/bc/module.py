@@ -8,14 +8,12 @@ from mlagents.trainers.settings import BehavioralCloningSettings
 from mlagents.trainers.torch.utils import ModelUtils
 
 
-class TorchBCModule:
+class BCModule:
     def __init__(
         self,
         policy: TorchPolicy,
         settings: BehavioralCloningSettings,
         policy_learning_rate: float,
-        default_batch_size: int,
-        default_num_epoch: int,
     ):
         """
         A BC trainer that can be used inline with RL.
