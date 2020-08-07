@@ -26,7 +26,24 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, trainer_settings.hyperparameters
         )
-        self.decay_schedule = self.hyperparameters.learning_rate_schedule
+        self.decay_learning_rate = ModelUtils.DecayedValue(
+            self.hyperparameters.learning_rate_schedule,
+            self.hyperparameters.learning_rate,
+            1e-10,
+            self.trainer_settings.max_steps,
+        )
+        self.decay_epsilon = ModelUtils.DecayedValue(
+            self.hyperparameters.learning_rate_schedule,
+            self.hyperparameters.epsilon,
+            0.1,
+            self.trainer_settings.max_steps,
+        )
+        self.decay_beta = ModelUtils.DecayedValue(
+            self.hyperparameters.learning_rate_schedule,
+            self.hyperparameters.beta,
+            1e-5,
+            self.trainer_settings.max_steps,
+        )
 
         self.optimizer = torch.optim.Adam(
             params, lr=self.trainer_settings.hyperparameters.learning_rate
@@ -94,27 +111,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         :return: Results of update.
         """
         # Get decayed parameters
-        decay_learning_rate = ModelUtils.get_decayed_parameter(
-            self.decay_schedule,
-            self.hyperparameters.learning_rate,
-            1e-10,
-            self.trainer_settings.max_steps,
-            self.policy.get_current_step(),
-        )
-        decay_epsilon = ModelUtils.get_decayed_parameter(
-            self.decay_schedule,
-            self.hyperparameters.epsilon,
-            0.1,
-            self.trainer_settings.max_steps,
-            self.policy.get_current_step(),
-        )
-        decay_beta = ModelUtils.get_decayed_parameter(
-            self.decay_schedule,
-            self.hyperparameters.beta,
-            1e-5,
-            self.trainer_settings.max_steps,
-            self.policy.get_current_step(),
-        )
+        decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
+        decay_eps = self.decay_epsilon.get_value(self.policy.get_current_step())
+        decay_bet = self.decay_beta.get_value(self.policy.get_current_step())
         returns = {}
         old_values = {}
         for name in self.reward_signals:
@@ -154,17 +153,17 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        value_loss = self.ppo_value_loss(values, old_values, returns, decay_epsilon)
+        value_loss = self.ppo_value_loss(values, old_values, returns, decay_eps)
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
             ModelUtils.list_to_tensor(batch["action_probs"]),
             ModelUtils.list_to_tensor(batch["masks"], dtype=torch.int32),
         )
-        loss = policy_loss + 0.5 * value_loss - decay_beta * torch.mean(entropy)
+        loss = policy_loss + 0.5 * value_loss - decay_bet * torch.mean(entropy)
 
         # Set optimizer learning rate
-        ModelUtils.apply_learning_rate(self.optimizer, decay_learning_rate)
+        ModelUtils.update_learning_rate(self.optimizer, decay_lr)
         self.optimizer.zero_grad()
         loss.backward()
 
@@ -172,9 +171,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         update_stats = {
             "Losses/Policy Loss": abs(policy_loss.detach().cpu().numpy()),
             "Losses/Value Loss": value_loss.detach().cpu().numpy(),
-            "Policy/Learning Rate": decay_learning_rate,
-            "Policy/Epsilon": decay_epsilon,
-            "Policy/Beta": decay_beta,
+            "Policy/Learning Rate": decay_lr,
+            "Policy/Epsilon": decay_eps,
+            "Policy/Beta": decay_bet,
         }
 
         return update_stats
