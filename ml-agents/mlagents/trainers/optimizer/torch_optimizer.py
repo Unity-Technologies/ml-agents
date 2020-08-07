@@ -5,7 +5,7 @@ from mlagents_envs.base_env import DecisionSteps
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.components.bc.module import BCModule
-from mlagents.trainers.reward_providers import create_reward_provider
+from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer

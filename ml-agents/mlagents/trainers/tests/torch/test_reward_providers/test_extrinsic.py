@@ -1,11 +1,13 @@
 import pytest
-from mlagents.trainers.reward_providers import (
+from mlagents.trainers.torch.components.reward_providers import (
     ExtrinsicRewardProvider,
     create_reward_provider,
 )
 from mlagents_envs.base_env import BehaviorSpec, ActionType
 from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
-from mlagents.trainers.tests.test_reward_providers.utils import create_agent_buffer
+from mlagents.trainers.tests.torch.test_reward_providers.utils import (
+    create_agent_buffer,
+)
 
 
 @pytest.mark.parametrize(

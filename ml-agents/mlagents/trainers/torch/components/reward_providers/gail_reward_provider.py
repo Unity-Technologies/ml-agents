@@ -3,7 +3,9 @@ import numpy as np
 import torch
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.reward_providers.base_reward_provider import BaseRewardProvider
+from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+    BaseRewardProvider,
+)
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils

@@ -4,7 +4,7 @@ import os
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG, SAC_CONFIG
 from mlagents.trainers.settings import (
     GAILSettings,
@@ -75,7 +75,7 @@ def create_optimizer_mock(
     if trainer_settings.trainer_type == TrainerType.SAC:
         optimizer = SACOptimizer(policy, trainer_settings)
     else:
-        optimizer = TFPPOOptimizer(policy, trainer_settings)
+        optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer
 
 

@@ -18,10 +18,15 @@ from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.policy.torch_policy import TorchPolicy
-from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-from mlagents.trainers.settings import TrainerSettings, SACSettings
+from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
 from mlagents.trainers.components.reward_signals import RewardSignal
+
+try:
+    from mlagents.trainers.policy.torch_policy import TorchPolicy
+    from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
+except ModuleNotFoundError:
+    TorchPolicy = None  # type: ignore
+    TorchSACOptimizer = None  # type: ignore
 
 logger = get_logger(__name__)
 
@@ -371,7 +376,7 @@ class SACTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        if self.framework == "torch":
+        if self.framework == FrameworkType.PYTORCH:
             self.optimizer = TorchSACOptimizer(  # type: ignore
                 self.policy, self.trainer_settings  # type: ignore
             )  # type: ignore

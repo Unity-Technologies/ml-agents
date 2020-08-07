@@ -4,20 +4,25 @@ import pytest
 from unittest.mock import patch
 import torch
 import os
-from mlagents.trainers.reward_providers import (
+from mlagents.trainers.torch.components.reward_providers import (
     GAILRewardProvider,
     create_reward_provider,
 )
 from mlagents_envs.base_env import BehaviorSpec, ActionType
 from mlagents.trainers.settings import GAILSettings, RewardSignalType
-from mlagents.trainers.tests.test_reward_providers.utils import create_agent_buffer
-from mlagents.trainers.reward_providers.gail_reward_provider import DiscriminatorNetwork
+from mlagents.trainers.tests.torch.test_reward_providers.utils import (
+    create_agent_buffer,
+)
+from mlagents.trainers.torch.components.reward_providers.gail_reward_provider import (
+    DiscriminatorNetwork,
+)
 
 CONTINUOUS_PATH = (
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir) + "/test.demo"
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
+    + "/test.demo"
 )
 DISCRETE_PATH = (
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
     + "/testdcvis.demo"
 )
 SEED = [42]
@@ -53,7 +58,9 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
-@patch("mlagents.trainers.reward_providers.gail_reward_provider.demo_to_buffer")
+@patch(
+    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.demo_to_buffer"
+)
 def test_reward_decreases(
     demo_to_buffer: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
 ) -> None:
@@ -99,7 +106,9 @@ def test_reward_decreases(
     ],
 )
 @pytest.mark.parametrize("use_actions", [False, True])
-@patch("mlagents.trainers.reward_providers.gail_reward_provider.demo_to_buffer")
+@patch(
+    "mlagents.trainers.torch.components.reward_providers.gail_reward_provider.demo_to_buffer"
+)
 def test_reward_decreases_vail(
     demo_to_buffer: Any, use_actions: bool, behavior_spec: BehaviorSpec, seed: int
 ) -> None:

@@ -3,7 +3,9 @@ from typing import Dict
 import torch
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.reward_providers.base_reward_provider import BaseRewardProvider
+from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+    BaseRewardProvider,
+)
 from mlagents.trainers.settings import CuriositySettings
 
 from mlagents_envs.base_env import BehaviorSpec
