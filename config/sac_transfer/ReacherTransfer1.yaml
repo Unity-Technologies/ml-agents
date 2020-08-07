@@ -35,7 +35,7 @@ behaviors:
       train_model: false
       load_action: true
       train_action: false
-      transfer_path: "results/reacher-qr-s0/Reacher"
+      transfer_path: "results/reacher-qr-s1/Reacher"
     network_settings:
       normalize: true
       hidden_units: 128
