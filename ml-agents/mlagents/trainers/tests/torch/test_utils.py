@@ -2,7 +2,7 @@ import pytest
 import torch
 import numpy as np
 
-from mlagents.trainers.settings import EncoderType
+from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import (
@@ -77,6 +77,38 @@ def test_create_encoders(
 
     for enc in vis_enc:
         assert isinstance(enc, ModelUtils.get_encoder_for_type(encoder_type))
+
+
+def test_decayed_value():
+    test_steps = [0, 4, 9]
+    # Test constant decay
+    param = ModelUtils.DecayedValue(ScheduleType.CONSTANT, 1.0, 0.2, test_steps[-1])
+    for _step in test_steps:
+        _param = param.get_value(_step)
+        assert _param == 1.0
+
+    test_results = [1.0, 0.6444, 0.2]
+    # Test linear decay
+    param = ModelUtils.DecayedValue(ScheduleType.LINEAR, 1.0, 0.2, test_steps[-1])
+    for _step, _result in zip(test_steps, test_results):
+        _param = param.get_value(_step)
+        assert _param == pytest.approx(_result, abs=0.01)
+
+    # Test invalid
+    with pytest.raises(UnityTrainerException):
+        ModelUtils.DecayedValue(
+            "SomeOtherSchedule", 1.0, 0.2, test_steps[-1]
+        ).get_value(0)
+
+
+def test_polynomial_decay():
+    test_steps = [0, 4, 9]
+    test_results = [1.0, 0.7, 0.2]
+    for _step, _result in zip(test_steps, test_results):
+        decayed = ModelUtils.polynomial_decay(
+            1.0, 0.2, test_steps[-1], _step, power=0.8
+        )
+        assert decayed == pytest.approx(_result, abs=0.01)
 
 
 def test_list_to_tensor():

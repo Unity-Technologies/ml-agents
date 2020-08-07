@@ -65,18 +65,12 @@ class TorchSACOptimizer(TorchOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
         super().__init__(policy, trainer_params)
         hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
-        lr = hyperparameters.learning_rate
-        # lr_schedule = hyperparameters.learning_rate_schedule
-        # max_step = trainer_params.max_steps
         self.tau = hyperparameters.tau
         self.init_entcoef = hyperparameters.init_entcoef
 
         self.policy = policy
         self.act_size = policy.act_size
         policy_network_settings = policy.network_settings
-        # h_size = policy_network_settings.hidden_units
-        # num_layers = policy_network_settings.num_layers
-        # vis_encode_type = policy_network_settings.vis_encode_type
 
         self.tau = hyperparameters.tau
         self.burn_in_ratio = 0.0
@@ -137,9 +131,21 @@ class TorchSACOptimizer(TorchOptimizer):
         for param in policy_params:
             logger.debug(param.shape)
 
-        self.policy_optimizer = torch.optim.Adam(policy_params, lr=lr)
-        self.value_optimizer = torch.optim.Adam(value_params, lr=lr)
-        self.entropy_optimizer = torch.optim.Adam([self._log_ent_coef], lr=lr)
+        self.decay_learning_rate = ModelUtils.DecayedValue(
+            hyperparameters.learning_rate_schedule,
+            hyperparameters.learning_rate,
+            1e-10,
+            self.trainer_settings.max_steps,
+        )
+        self.policy_optimizer = torch.optim.Adam(
+            policy_params, lr=hyperparameters.learning_rate
+        )
+        self.value_optimizer = torch.optim.Adam(
+            value_params, lr=hyperparameters.learning_rate
+        )
+        self.entropy_optimizer = torch.optim.Adam(
+            [self._log_ent_coef], lr=hyperparameters.learning_rate
+        )
 
     def sac_q_loss(
         self,
@@ -436,14 +442,18 @@ class TorchSACOptimizer(TorchOptimizer):
 
         total_value_loss = q1_loss + q2_loss + value_loss
 
+        decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
+        ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
         self.policy_optimizer.zero_grad()
         policy_loss.backward()
         self.policy_optimizer.step()
 
+        ModelUtils.update_learning_rate(self.value_optimizer, decay_lr)
         self.value_optimizer.zero_grad()
         total_value_loss.backward()
         self.value_optimizer.step()
 
+        ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
         self.entropy_optimizer.zero_grad()
         entropy_loss.backward()
         self.entropy_optimizer.step()
@@ -459,6 +469,7 @@ class TorchSACOptimizer(TorchOptimizer):
             .detach()
             .cpu()
             .numpy(),
+            "Policy/Learning Rate": decay_lr,
         }
 
         return update_stats

@@ -10,7 +10,7 @@ from mlagents.trainers.torch.encoders import (
     VectorEncoder,
     VectorAndUnnormalizedInputEncoder,
 )
-from mlagents.trainers.settings import EncoderType
+from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
@@ -28,6 +28,77 @@ class ModelUtils:
     def swish(input_activation: torch.Tensor) -> torch.Tensor:
         """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
         return torch.mul(input_activation, torch.sigmoid(input_activation))
+
+    @staticmethod
+    def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:
+        """
+        Apply a learning rate to a torch optimizer.
+        :param optim: Optimizer
+        :param lr: Learning rate
+        """
+        for param_group in optim.param_groups:
+            param_group["lr"] = lr
+
+    class DecayedValue:
+        def __init__(
+            self,
+            schedule: ScheduleType,
+            initial_value: float,
+            min_value: float,
+            max_step: int,
+        ):
+            """
+            Object that represnets value of a parameter that should be decayed, assuming it is a function of
+            global_step.
+            :param schedule: Type of learning rate schedule.
+            :param initial_value: Initial value before decay.
+            :param min_value: Decay value to this value by max_step.
+            :param max_step: The final step count where the return value should equal min_value.
+            :param global_step: The current step count.
+            :return: The value.
+            """
+            self.schedule = schedule
+            self.initial_value = initial_value
+            self.min_value = min_value
+            self.max_step = max_step
+
+        def get_value(self, global_step: int) -> float:
+            """
+            Get the value at a given global step.
+            :param global_step: Step count.
+            :returns: Decayed value at this global step.
+            """
+            if self.schedule == ScheduleType.CONSTANT:
+                return self.initial_value
+            elif self.schedule == ScheduleType.LINEAR:
+                return ModelUtils.polynomial_decay(
+                    self.initial_value, self.min_value, self.max_step, global_step
+                )
+            else:
+                raise UnityTrainerException(f"The schedule {self.schedule} is invalid.")
+
+    @staticmethod
+    def polynomial_decay(
+        initial_value: float,
+        min_value: float,
+        max_step: int,
+        global_step: int,
+        power: float = 1.0,
+    ) -> float:
+        """
+        Get a decayed value based on a polynomial schedule, with respect to the current global step.
+        :param initial_value: Initial value before decay.
+        :param min_value: Decay value to this value by max_step.
+        :param max_step: The final step count where the return value should equal min_value.
+        :param global_step: The current step count.
+        :param power: Power of polynomial decay. 1.0 (default) is a linear decay.
+        :return: The current decayed value.
+        """
+        global_step = min(global_step, max_step)
+        decayed_value = (initial_value - min_value) * (
+            1 - float(global_step) / max_step
+        ) ** (power) + min_value
+        return decayed_value
 
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
