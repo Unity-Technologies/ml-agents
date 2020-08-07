@@ -79,28 +79,26 @@ def test_create_encoders(
         assert isinstance(enc, ModelUtils.get_encoder_for_type(encoder_type))
 
 
-def test_get_decayed_parameter():
+def test_decayed_value():
     test_steps = [0, 4, 9]
     # Test constant decay
+    param = ModelUtils.DecayedValue(ScheduleType.CONSTANT, 1.0, 0.2, test_steps[-1])
     for _step in test_steps:
-        _param = ModelUtils.get_decayed_parameter(
-            ScheduleType.CONSTANT, 1.0, 0.2, test_steps[-1], _step
-        )
+        _param = param.get_value(_step)
         assert _param == 1.0
 
     test_results = [1.0, 0.6444, 0.2]
     # Test linear decay
+    param = ModelUtils.DecayedValue(ScheduleType.LINEAR, 1.0, 0.2, test_steps[-1])
     for _step, _result in zip(test_steps, test_results):
-        _param = ModelUtils.get_decayed_parameter(
-            ScheduleType.LINEAR, 1.0, 0.2, test_steps[-1], _step
-        )
+        _param = param.get_value(_step)
         assert _param == pytest.approx(_result, abs=0.01)
 
     # Test invalid
     with pytest.raises(UnityTrainerException):
-        ModelUtils.get_decayed_parameter(
-            "SomeOtherSchedule", 1.0, 0.2, test_steps[-1], _step
-        )
+        ModelUtils.DecayedValue(
+            "SomeOtherSchedule", 1.0, 0.2, test_steps[-1]
+        ).get_value(0)
 
 
 def test_polynomial_decay():
