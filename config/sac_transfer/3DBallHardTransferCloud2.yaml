@@ -31,11 +31,14 @@ behaviors:
       predict_return: true
       use_bisim: false
       use_transfer: true
-      load_model: true
-      train_model: false
-      load_action: true
-      train_action: false
-      transfer_path: "results/ball-action-s12/3DBall"
+      # load_model: true
+      # train_model: false
+      # load_action: true
+      # train_action: false
+      load_model: false
+      load_encoder: true
+      train_encoder: false
+      transfer_path: "results/hard-s2/3DBall"
     network_settings:
       normalize: true
       hidden_units: 128
@@ -50,3 +53,10 @@ behaviors:
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
+
+parameter_randomization:
+  scale:
+    sampler_type: uniform
+    sampler_parameters:
+      min_value: 2
+      max_value: 2
