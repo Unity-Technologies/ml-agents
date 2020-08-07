@@ -66,7 +66,7 @@ class GaussianDistInstance(DistInstance):
         return torch.exp(log_prob)
 
     def entropy(self):
-        return torch.log(2 * math.pi * math.e * self.std + EPSILON)
+        return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
