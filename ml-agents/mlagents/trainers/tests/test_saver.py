@@ -21,12 +21,13 @@ def test_register(tmp_path):
 
     opt = mock.Mock(spec=PPOOptimizer)
     saver.register(opt)
-    assert(saver.policy is None)
+    assert saver.policy is None
 
     trainer_params = TrainerSettings()
     policy = create_policy_mock(trainer_params)
     saver.register(policy)
-    assert(saver.policy is not None)
+    assert saver.policy is not None
+
 
 class ModelVersionTest(unittest.TestCase):
     def test_version_compare(self):
@@ -47,6 +48,7 @@ class ModelVersionTest(unittest.TestCase):
             # Assert that no additional warnings have been thrown wth correct ver
             assert len(cm.output) == 1
 
+
 def test_load_save(tmp_path):
     path1 = os.path.join(tmp_path, "runid1")
     path2 = os.path.join(tmp_path, "runid2")
@@ -57,7 +59,6 @@ def test_load_save(tmp_path):
     policy.set_step(2000)
 
     mock_brain_name = "MockBrain"
-    checkpoint_path = f"{saver.model_path}/{mock_brain_name}-2000"
     saver.save_checkpoint(mock_brain_name, 2000)
     assert len(os.listdir(tmp_path)) > 0
 
@@ -78,6 +79,7 @@ def test_load_save(tmp_path):
     # Assert that the steps are 0.
     assert policy3.get_current_step() == 0
 
+
 def _compare_two_policies(policy1: TFPolicy, policy2: TFPolicy) -> None:
     """
     Make sure two policies have the same output for the same input.
@@ -97,12 +99,9 @@ def _compare_two_policies(policy1: TFPolicy, policy2: TFPolicy) -> None:
 def test_checkpoint_conversion(tmpdir, rnn, visual, discrete):
     tf.reset_default_graph()
     dummy_config = TrainerSettings()
-    model_path=os.path.join(tmpdir, "Mock_Brain")
+    model_path = os.path.join(tmpdir, "Mock_Brain")
     policy = create_policy_mock(
-        dummy_config,
-        use_rnn=rnn,
-        use_discrete=discrete,
-        use_visual=visual,
+        dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     trainer_params = TrainerSettings()
     saver = TFSaver(trainer_params, model_path)
