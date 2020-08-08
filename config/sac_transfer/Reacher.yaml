@@ -15,7 +15,7 @@ behaviors:
       reward_signal_steps_per_update: 20.0
       encoder_layers: 1
       policy_layers: 2
-      forward_layers: 0
+      forward_layers: 1
       value_layers: 2
       action_layers: 1
       feature_size: 64
@@ -41,7 +41,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 3000000
+    max_steps: 6000000
     time_horizon: 1000
     summary_freq: 60000
     threaded: true
