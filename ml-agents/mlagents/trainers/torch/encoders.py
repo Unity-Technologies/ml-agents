@@ -170,22 +170,26 @@ class SimpleVisualEncoder(nn.Module):
         conv_2_hw = conv_output_shape(conv_1_hw, 4, 2)
         self.final_flat = conv_2_hw[0] * conv_2_hw[1] * 32
 
-        self.conv1 = nn.Conv2d(initial_channels, 16, [8, 8], [4, 4])
-        self.conv2 = nn.Conv2d(16, 32, [4, 4], [2, 2])
-        self.dense = linear_layer(
-            self.final_flat,
-            self.h_size,
-            kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=1.0,
+        self.conv_layers = nn.Sequential(
+            nn.Conv2d(initial_channels, 16, [8, 8], [4, 4]),
+            nn.LeakyReLU(),
+            nn.Conv2d(16, 32, [4, 4], [2, 2]),
+            nn.LeakyReLU(),
+        )
+        self.dense = nn.Sequential(
+            linear_layer(
+                self.final_flat,
+                self.h_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            ),
+            nn.LeakyReLU(),
         )
 
     def forward(self, visual_obs: torch.Tensor) -> None:
-        conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
-        conv_2 = nn.functional.leaky_relu(self.conv2(conv_1))
-        # hidden = torch.relu(self.dense(conv_2.view([-1, self.final_flat])))
-        hidden = nn.functional.leaky_relu(
-            self.dense(torch.reshape(conv_2, (-1, self.final_flat)))
-        )
+        hidden = self.conv_layers(visual_obs)
+        hidden = torch.reshape(hidden, (-1, self.final_flat))
+        hidden = self.dense(hidden)
         return hidden
 
 
@@ -198,23 +202,28 @@ class NatureVisualEncoder(nn.Module):
         conv_3_hw = conv_output_shape(conv_2_hw, 3, 1)
         self.final_flat = conv_3_hw[0] * conv_3_hw[1] * 64
 
-        self.conv1 = nn.Conv2d(initial_channels, 32, [8, 8], [4, 4])
-        self.conv2 = nn.Conv2d(32, 64, [4, 4], [2, 2])
-        self.conv3 = nn.Conv2d(64, 64, [3, 3], [1, 1])
-        self.dense = linear_layer(
-            self.final_flat,
-            self.h_size,
-            kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=1.0,
+        self.conv_layers = nn.Sequential(
+            nn.Conv2d(initial_channels, 32, [8, 8], [4, 4]),
+            nn.LeakyReLU(),
+            nn.Conv2d(32, 64, [4, 4], [2, 2]),
+            nn.LeakyReLU(),
+            nn.Conv2d(64, 64, [3, 3], [1, 1]),
+            nn.LeakyReLU(),
+        )
+        self.dense = nn.Sequential(
+            linear_layer(
+                self.final_flat,
+                self.h_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            ),
+            nn.LeakyReLU(),
         )
 
-    def forward(self, visual_obs):
-        conv_1 = nn.functional.leaky_relu(self.conv1(visual_obs))
-        conv_2 = nn.functional.leaky_relu(self.conv2(conv_1))
-        conv_3 = nn.functional.leaky_relu(self.conv3(conv_2))
-        hidden = nn.functional.leaky_relu(
-            self.dense(conv_3.view([-1, self.final_flat]))
-        )
+    def forward(self, visual_obs: torch.Tensor) -> None:
+        hidden = self.conv_layers(visual_obs)
+        hidden = hidden.view([-1, self.final_flat])
+        hidden = self.dense(hidden)
         return hidden
 
 
