@@ -147,12 +147,22 @@ public class WalkerAgent : Agent
     {
         var cubeForward = m_OrientationCube.transform.forward;
 
+        //ragdoll's avg vel
+        var velGoal = cubeForward * targetWalkingSpeed;
+        var avgVel = GetAvgVelocity();
+        
         //current ragdoll velocity. normalized 
-        sensor.AddObservation(Vector3.Distance(cubeForward * targetWalkingSpeed, GetAvgVelocity()));
+        sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
 //        sensor.AddObservation(GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity()));
 
-        //current speed goal. normalized.
-        sensor.AddObservation(targetWalkingSpeed / m_maxWalkingSpeed);
+        //actual vel relative to cube
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
+        //vel goal relative to cube
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+
+//        sensor.AddObservation(avgVel);
+//        //current speed goal
+//        sensor.AddObservation(targetWalkingSpeed);
 
         //rotation deltas
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));

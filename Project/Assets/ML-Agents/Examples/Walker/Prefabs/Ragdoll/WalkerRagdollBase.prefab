@@ -290,7 +290,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 238
+    VectorObservationSize: 243
     NumStackedVectorObservations: 1
     VectorActionSize: 27000000
     VectorActionDescriptions: []
@@ -318,7 +318,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
-  walkingSpeed: 10
+  targetWalkingSpeed: 10
   randomizeWalkSpeedEachEpisode: 1
   walkDirectionMethod: 0
   worldDirToWalk: {x: 1, y: 0, z: 0}
@@ -2052,7 +2052,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1513f8a85fedd47efba089213b7c5bde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  updateViaScript: 0
+  updatedByAgent: 0
   transformToFollow: {fileID: 895268871264836332}
   targetToLookAt: {fileID: 0}
   heightOffset: 0
