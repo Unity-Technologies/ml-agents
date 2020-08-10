@@ -402,7 +402,7 @@ class TorchSACOptimizer(TorchOptimizer):
         offset = 1 if self.policy.sequence_length > 1 else 0
         next_memories_list = [
             ModelUtils.list_to_tensor(
-                batch["memory"][i][: self.policy.m_size // 2]
+                batch["memory"][i][self.policy.m_size // 2 :]
             )  # only pass value part of memory to target network
             for i in range(offset, len(batch["memory"]), self.policy.sequence_length)
         ]
