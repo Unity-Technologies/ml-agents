@@ -11,6 +11,7 @@ from mlagents.trainers.settings import CuriositySettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
+from mlagents.trainers.torch.layers import linear_layer, Swish
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 
 
@@ -70,22 +71,18 @@ class CuriosityNetwork(torch.nn.Module):
         self._action_flattener = ModelUtils.ActionFlattener(specs)
 
         self.inverse_model_action_predition = torch.nn.Sequential(
-            torch.nn.Linear(2 * settings.encoding_size, 256),
-            ModelUtils.SwishLayer(),
-            torch.nn.Linear(256, self._action_flattener.flattened_size),
+            linear_layer(2 * settings.encoding_size, 256),
+            Swish(),
+            linear_layer(256, self._action_flattener.flattened_size),
         )
-        self.inverse_model_action_predition[0].bias.data.zero_()
-        self.inverse_model_action_predition[2].bias.data.zero_()
 
         self.forward_model_next_state_prediction = torch.nn.Sequential(
-            torch.nn.Linear(
+            linear_layer(
                 settings.encoding_size + self._action_flattener.flattened_size, 256
             ),
-            ModelUtils.SwishLayer(),
-            torch.nn.Linear(256, settings.encoding_size),
+            Swish(),
+            linear_layer(256, settings.encoding_size),
         )
-        self.forward_model_next_state_prediction[0].bias.data.zero_()
-        self.forward_model_next_state_prediction[2].bias.data.zero_()
 
     def get_current_state(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
