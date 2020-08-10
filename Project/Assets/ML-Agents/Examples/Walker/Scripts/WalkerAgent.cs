@@ -148,7 +148,8 @@ public class WalkerAgent : Agent
         var cubeForward = m_OrientationCube.transform.forward;
 
         //current ragdoll velocity. normalized 
-        sensor.AddObservation(GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity()));
+        sensor.AddObservation(Vector3.Distance(cubeForward * targetWalkingSpeed, GetAvgVelocity()));
+//        sensor.AddObservation(GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity()));
 
         //current speed goal. normalized.
         sensor.AddObservation(targetWalkingSpeed / m_maxWalkingSpeed);
@@ -232,7 +233,8 @@ public class WalkerAgent : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity());
+//        var matchSpeedReward = GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * targetWalkingSpeed, GetAvgVelocity());
         
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
@@ -283,7 +285,7 @@ public class WalkerAgent : Agent
     }
 
     //normalized value of the difference in avg speed vs goal walking speed.
-    public float GetMatchingVelocityInverseLerp(Vector3 velocityGoal, Vector3 actualVelocity)
+    public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
         var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, targetWalkingSpeed);
