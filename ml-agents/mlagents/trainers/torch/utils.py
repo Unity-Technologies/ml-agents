@@ -10,8 +10,9 @@ from mlagents.trainers.torch.encoders import (
     VectorEncoder,
     VectorAndUnnormalizedInputEncoder,
 )
-from mlagents.trainers.settings import EncoderType
+from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
@@ -23,6 +24,100 @@ class ModelUtils:
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
     }
+
+    class ActionFlattener:
+        def __init__(self, behavior_spec: BehaviorSpec):
+            self._specs = behavior_spec
+
+        @property
+        def flattened_size(self) -> int:
+            if self._specs.is_action_continuous():
+                return self._specs.action_size
+            else:
+                return sum(self._specs.discrete_action_branches)
+
+        def forward(self, action: torch.Tensor) -> torch.Tensor:
+            if self._specs.is_action_continuous():
+                return action
+            else:
+                return torch.cat(
+                    ModelUtils.actions_to_onehot(
+                        torch.as_tensor(action, dtype=torch.long),
+                        self._specs.discrete_action_branches,
+                    ),
+                    dim=1,
+                )
+
+    @staticmethod
+    def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:
+        """
+        Apply a learning rate to a torch optimizer.
+        :param optim: Optimizer
+        :param lr: Learning rate
+        """
+        for param_group in optim.param_groups:
+            param_group["lr"] = lr
+
+    class DecayedValue:
+        def __init__(
+            self,
+            schedule: ScheduleType,
+            initial_value: float,
+            min_value: float,
+            max_step: int,
+        ):
+            """
+            Object that represnets value of a parameter that should be decayed, assuming it is a function of
+            global_step.
+            :param schedule: Type of learning rate schedule.
+            :param initial_value: Initial value before decay.
+            :param min_value: Decay value to this value by max_step.
+            :param max_step: The final step count where the return value should equal min_value.
+            :param global_step: The current step count.
+            :return: The value.
+            """
+            self.schedule = schedule
+            self.initial_value = initial_value
+            self.min_value = min_value
+            self.max_step = max_step
+
+        def get_value(self, global_step: int) -> float:
+            """
+            Get the value at a given global step.
+            :param global_step: Step count.
+            :returns: Decayed value at this global step.
+            """
+            if self.schedule == ScheduleType.CONSTANT:
+                return self.initial_value
+            elif self.schedule == ScheduleType.LINEAR:
+                return ModelUtils.polynomial_decay(
+                    self.initial_value, self.min_value, self.max_step, global_step
+                )
+            else:
+                raise UnityTrainerException(f"The schedule {self.schedule} is invalid.")
+
+    @staticmethod
+    def polynomial_decay(
+        initial_value: float,
+        min_value: float,
+        max_step: int,
+        global_step: int,
+        power: float = 1.0,
+    ) -> float:
+        """
+        Get a decayed value based on a polynomial schedule, with respect to the current global step.
+        :param initial_value: Initial value before decay.
+        :param min_value: Decay value to this value by max_step.
+        :param max_step: The final step count where the return value should equal min_value.
+        :param global_step: The current step count.
+        :param power: Power of polynomial decay. 1.0 (default) is a linear decay.
+        :return: The current decayed value.
+        """
+        global_step = min(global_step, max_step)
+        decayed_value = (initial_value - min_value) * (
+            1 - float(global_step) / max_step
+        ) ** (power) + min_value
+        return decayed_value
 
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
@@ -141,10 +236,31 @@ class ModelUtils:
         :return: List of one-hot tensors, one representing each branch.
         """
         onehot_branches = [
-            torch.nn.functional.one_hot(_act.T, action_size[i])
-            for i, _act in enumerate(discrete_actions.T)
+            torch.nn.functional.one_hot(_act.T, action_size[i]).float()
+            for i, _act in enumerate(discrete_actions.long().T)
         ]
         return onehot_branches
+
+    @staticmethod
+    def dynamic_partition(
+        data: torch.Tensor, partitions: torch.Tensor, num_partitions: int
+    ) -> List[torch.Tensor]:
+        """
+        Torch implementation of dynamic_partition :
+        https://www.tensorflow.org/api_docs/python/tf/dynamic_partition
+        Splits the data Tensor input into num_partitions Tensors according to the indices in
+        partitions.
+        :param data: The Tensor data that will be split into partitions.
+        :param partitions: An indices tensor that determines in which partition each element
+        of data will be in.
+        :param num_partitions: The number of partitions to output. Corresponds to the
+        maximum possible index in the partitions argument.
+        :return: A list of Tensor partitions (Their indices correspond to their partition index).
+        """
+        res: List[torch.Tensor] = []
+        for i in range(num_partitions):
+            res += [data[(partitions == i).nonzero().squeeze(1)]]
+        return res
 
     @staticmethod
     def get_probs_and_entropy(

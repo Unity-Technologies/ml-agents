@@ -2,7 +2,7 @@ import pytest
 import torch
 import numpy as np
 
-from mlagents.trainers.settings import EncoderType
+from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.encoders import (
@@ -79,6 +79,38 @@ def test_create_encoders(
         assert isinstance(enc, ModelUtils.get_encoder_for_type(encoder_type))
 
 
+def test_decayed_value():
+    test_steps = [0, 4, 9]
+    # Test constant decay
+    param = ModelUtils.DecayedValue(ScheduleType.CONSTANT, 1.0, 0.2, test_steps[-1])
+    for _step in test_steps:
+        _param = param.get_value(_step)
+        assert _param == 1.0
+
+    test_results = [1.0, 0.6444, 0.2]
+    # Test linear decay
+    param = ModelUtils.DecayedValue(ScheduleType.LINEAR, 1.0, 0.2, test_steps[-1])
+    for _step, _result in zip(test_steps, test_results):
+        _param = param.get_value(_step)
+        assert _param == pytest.approx(_result, abs=0.01)
+
+    # Test invalid
+    with pytest.raises(UnityTrainerException):
+        ModelUtils.DecayedValue(
+            "SomeOtherSchedule", 1.0, 0.2, test_steps[-1]
+        ).get_value(0)
+
+
+def test_polynomial_decay():
+    test_steps = [0, 4, 9]
+    test_results = [1.0, 0.7, 0.2]
+    for _step, _result in zip(test_steps, test_results):
+        decayed = ModelUtils.polynomial_decay(
+            1.0, 0.2, test_steps[-1], _step, power=0.8
+        )
+        assert decayed == pytest.approx(_result, abs=0.01)
+
+
 def test_list_to_tensor():
     # Test converting pure list
     unconverted_list = [[1, 2], [1, 3], [1, 4]]
@@ -120,9 +152,9 @@ def test_actions_to_onehot():
     action_size = [2, 1, 3]
     oh_actions = ModelUtils.actions_to_onehot(all_actions, action_size)
     expected_result = [
-        torch.tensor([[0, 1], [0, 1]]),
-        torch.tensor([[1], [1]]),
-        torch.tensor([[0, 0, 1], [0, 0, 1]]),
+        torch.tensor([[0, 1], [0, 1]], dtype=torch.float),
+        torch.tensor([[1], [1]], dtype=torch.float),
+        torch.tensor([[0, 0, 1], [0, 0, 1]], dtype=torch.float),
     ]
     for res, exp in zip(oh_actions, expected_result):
         assert torch.equal(res, exp)
@@ -149,7 +181,7 @@ def test_get_probs_and_entropy():
 
     for ent in entropies.flatten():
         # entropy of standard normal at 0
-        assert ent == pytest.approx(2.83, abs=0.01)
+        assert ent == pytest.approx(1.42, abs=0.01)
 
     # Test continuous
     # Add two dists to the list.

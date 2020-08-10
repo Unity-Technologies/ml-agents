@@ -83,6 +83,7 @@ class VectorEncoder(nn.Module):
                 kernel_gain=1.0,
             )
         ]
+        self.layers.append(Swish())
         if normalize:
             self.normalizer = Normalizer(input_size)
 

@@ -67,7 +67,7 @@ class GaussianDistInstance(DistInstance):
         return torch.exp(log_prob)
 
     def entropy(self):
-        return torch.log(2 * math.pi * math.e * self.std + EPSILON)
+        return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -101,7 +101,10 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.multinomial(self.probs, 1)
 
     def pdf(self, value):
-        return torch.diag(self.probs.T[value.flatten().long()])
+        idx = torch.range(start=0, end=len(value)).unsqueeze(-1)
+        return torch.gather(
+            self.probs.permute(1, 0)[value.flatten().long()], -1, idx
+        ).squeeze(-1)
 
     def log_prob(self, value):
         return torch.log(self.pdf(value))
@@ -110,7 +113,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.probs)
 
     def entropy(self):
-        return torch.sum(self.probs * torch.log(self.probs), dim=-1)
+        return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
 
 class GaussianDistribution(nn.Module):
