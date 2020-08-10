@@ -99,7 +99,7 @@ class VectorEncoder(nn.Module):
             self.layers.append(Swish())
         self.seq_layers = nn.Sequential(*self.layers)
 
-    def forward(self, inputs: torch.Tensor) -> None:
+    def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         if self.normalizer is not None:
             inputs = self.normalizer(inputs)
         return self.seq_layers(inputs)
