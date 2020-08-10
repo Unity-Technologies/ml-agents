@@ -17,6 +17,11 @@ public class WalkerAgent : Agent
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
 
+    //The method the agent will use during training to determine walk direction
+    //If UseWorldDirection is selected, the agent will be rewarded for facing worldDirToWalk during training
+    //If UseTarget is selected, the agent will be rewarded for facing target during training
+    //The purpose of this is to be able to give a target to chase OR a direction to walk. This could be useful when...
+    //...making behaviors for player controllers OR NPC behaviors
     public enum WalkDirectionMethod
     {
         UseWorldDirection,
@@ -24,8 +29,9 @@ public class WalkerAgent : Agent
     }
 
     [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
-    public Vector3 worldDirToWalk = Vector3.right;
-    public Vector3 worldPosToWalkTo;
+    //The direction an agent will walk during training. Only used if UseWorldDirection is selected.
+    public Vector3 worldDirToWalk = Vector3.right; 
+    public Vector3 worldPosToWalkTo; //The position the agent will walk towards.
     public Transform target; //Target the agent will walk towards.
 
     [Header("Body Parts")] public Transform hips;
@@ -48,6 +54,7 @@ public class WalkerAgent : Agent
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     OrientationCubeController m_OrientationCube;
+    //The indicator graphic gameobject that points towards the target
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
     EnvironmentParameters m_ResetParams;
@@ -97,7 +104,7 @@ public class WalkerAgent : Agent
 
         UpdateOrientationObjects();
 
-        //Set the initial position to walk toa
+        //Set the initial position to walk to
         if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
         {
             worldPosToWalkTo = hips.position + (worldDirToWalk * 1000);
@@ -210,7 +217,10 @@ public class WalkerAgent : Agent
             ? target.position - hips.position
             : worldDirToWalk;
         m_OrientationCube.UpdateOrientation(hips.position, worldDirToWalk);
-        m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
+        if(m_DirectionIndicator)
+        {
+            m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
+        }
     }
 
     void FixedUpdate()
