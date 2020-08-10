@@ -59,7 +59,7 @@ VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
 
 def export_policy_model(
-    output_filepath: str, brain_name: str, graph: tf.Graph, sess: tf.Session
+    model_path:str, output_filepath: str, brain_name: str, graph: tf.Graph, sess: tf.Session
 ) -> None:
     """
     Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
@@ -73,7 +73,7 @@ def export_policy_model(
     if not os.path.exists(output_filepath):
         os.makedirs(output_filepath)
     # Save frozen graph
-    frozen_graph_def_path = output_filepath + "/frozen_graph_def.pb"
+    frozen_graph_def_path = model_path + "/frozen_graph_def.pb"
     with gfile.GFile(frozen_graph_def_path, "wb") as f:
         f.write(frozen_graph_def.SerializeToString())
 

@@ -58,7 +58,7 @@ class TFSaver(BaseSaver):
         return checkpoint_path
 
     def export(self, output_filepath: str, brain_name: str) -> None:
-        export_policy_model(output_filepath, brain_name, self.graph, self.sess)
+        export_policy_model(self.model_path, output_filepath, brain_name, self.graph, self.sess)
 
     def initialize_or_load(self, policy):
         # If there is an initialize path, load from that. Else, load from the set model path.
