@@ -334,8 +334,8 @@ class SACTrainer(RLTrainer):
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
         if register_saver:
-            # initialization/loading is also done here
             self.saver.register(self.policy)
+            self.saver.initialize_or_load(self.policy)
             self.saver.register(self.optimizer)
 
         # Needed to resume loads properly

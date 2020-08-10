@@ -30,8 +30,11 @@ class TFSaver(BaseSaver):
 
         # Currently only support saving one policy. This is the one to be saved.
         self.policy: Optional[TFPolicy] = None
+        self.graph = None
+        self.sess = None
+        self.tf_saver = None
 
-    def register(self, module, init_or_load=True):
+    def register(self, module):
         if isinstance(module, TFPolicy):
             if self.policy is None:
                 self.policy = module
@@ -39,18 +42,17 @@ class TFSaver(BaseSaver):
                 self.sess = self.policy.sess
                 with self.graph.as_default():
                     self.tf_saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
-            if init_or_load:
-                self.initialize_or_load(module)
 
     def save_checkpoint(self, brain_name: str, step: int) -> str:
         checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{step}")
         # Save the TF checkpoint and graph definition
-        with self.graph.as_default():
-            if self.tf_saver:
-                self.tf_saver.save(self.sess, f"{checkpoint_path}.ckpt")
-            tf.train.write_graph(
-                self.graph, self.model_path, "raw_graph_def.pb", as_text=False
-            )
+        if self.graph:
+            with self.graph.as_default():
+                if self.tf_saver:
+                    self.tf_saver.save(self.sess, f"{checkpoint_path}.ckpt")
+                tf.train.write_graph(
+                    self.graph, self.model_path, "raw_graph_def.pb", as_text=False
+                )
         # also save the policy so we have optimized model files for each checkpoint
         self.export(checkpoint_path, brain_name)
         return checkpoint_path
@@ -85,16 +87,17 @@ class TFSaver(BaseSaver):
                     "--run-id and that the previous run you are loading from had the same "
                     "behavior names.".format(model_path)
                 )
-            try:
-                self.tf_saver.restore(policy.sess, ckpt.model_checkpoint_path)
-            except tf.errors.NotFoundError:
-                raise UnityPolicyException(
-                    "The model {} was found but could not be loaded. Make "
-                    "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
-                    "and is using the same trainer configuration as the current run.".format(
-                        model_path
+            if self.tf_saver:
+                try:
+                    self.tf_saver.restore(policy.sess, ckpt.model_checkpoint_path)
+                except tf.errors.NotFoundError:
+                    raise UnityPolicyException(
+                        "The model {} was found but could not be loaded. Make "
+                        "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
+                        "and is using the same trainer configuration as the current run.".format(
+                            model_path
+                        )
                     )
-                )
             self._check_model_version(__version__)
             if reset_global_steps:
                 policy.set_step(0)

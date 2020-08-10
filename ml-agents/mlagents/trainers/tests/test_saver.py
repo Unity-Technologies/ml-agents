@@ -56,6 +56,7 @@ def test_load_save(tmp_path):
     policy = create_policy_mock(trainer_params)
     saver = TFSaver(trainer_params, path1)
     saver.register(policy)
+    saver.initialize_or_load(policy)
     policy.set_step(2000)
 
     mock_brain_name = "MockBrain"
@@ -66,6 +67,7 @@ def test_load_save(tmp_path):
     saver = TFSaver(trainer_params, path1, load=True)
     policy2 = create_policy_mock(trainer_params)
     saver.register(policy2)
+    saver.initialize_or_load(policy2)
     _compare_two_policies(policy, policy2)
     assert policy2.get_current_step() == 2000
 
@@ -74,6 +76,7 @@ def test_load_save(tmp_path):
     saver = TFSaver(trainer_params, path2)
     policy3 = create_policy_mock(trainer_params)
     saver.register(policy3)
+    saver.initialize_or_load(policy3)
 
     _compare_two_policies(policy2, policy3)
     # Assert that the steps are 0.
