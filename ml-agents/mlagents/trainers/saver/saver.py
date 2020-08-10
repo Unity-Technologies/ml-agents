@@ -10,7 +10,7 @@ class BaseSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def register(self, module: object, init_or_load: bool) -> None:
+    def register(self, module: Any, init_or_load: bool) -> None:
         pass
 
     @abc.abstractmethod
