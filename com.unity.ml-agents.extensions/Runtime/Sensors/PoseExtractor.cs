@@ -21,45 +21,113 @@ namespace Unity.MLAgents.Extensions.Sensors
         Vector3[] m_ModelSpaceLinearVelocities;
         Vector3[] m_LocalSpaceLinearVelocities;
 
+        bool[] m_PoseEnabled;
+
 
         /// <summary>
-        /// Read access to the model space transforms.
+        /// Read iterator for the enabled model space transforms.
         /// </summary>
-        public IList<Pose> ModelSpacePoses
+        public IEnumerable<Pose> GetEnabledModelSpacePoses()
         {
-            get { return m_ModelSpacePoses;  }
+            if (m_ModelSpacePoses == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_ModelSpacePoses.Length; i++)
+            {
+                if (m_PoseEnabled[i])
+                {
+                    yield return m_ModelSpacePoses[i];
+                }
+            }
         }
 
         /// <summary>
-        /// Read access to the local space transforms.
+        /// Read iterator for the enabled local space transforms.
         /// </summary>
-        public IList<Pose> LocalSpacePoses
+        public IEnumerable<Pose> GetEnabledLocalSpacePoses()
         {
-            get { return m_LocalSpacePoses;  }
+            if (m_LocalSpacePoses == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_LocalSpacePoses.Length; i++)
+            {
+                if (m_PoseEnabled[i])
+                {
+                    yield return m_LocalSpacePoses[i];
+                }
+            }
         }
 
         /// <summary>
-        /// Read access to the model space linear velocities.
+        /// Read iterator for the enabled model space linear velocities.
         /// </summary>
-        public IList<Vector3> ModelSpaceVelocities
+        public IEnumerable<Vector3> GetEnabledModelSpaceVelocities()
         {
-            get { return m_ModelSpaceLinearVelocities;  }
+            if (m_ModelSpaceLinearVelocities == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_ModelSpaceLinearVelocities.Length; i++)
+            {
+                if (m_PoseEnabled[i])
+                {
+                    yield return m_ModelSpaceLinearVelocities[i];
+                }
+            }
         }
 
         /// <summary>
-        /// Read access to the local space linear velocities.
+        /// Read iterator for the enabled local space linear velocities.
         /// </summary>
-        public IList<Vector3> LocalSpaceVelocities
+        public IEnumerable<Vector3> GetEnabledLocalSpaceVelocities()
         {
-            get { return m_LocalSpaceLinearVelocities;  }
+            if (m_LocalSpaceLinearVelocities == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_LocalSpaceLinearVelocities.Length; i++)
+            {
+                if (m_PoseEnabled[i])
+                {
+                    yield return m_LocalSpaceLinearVelocities[i];
+                }
+            }
         }
 
         /// <summary>
-        /// Number of poses in the hierarchy (read-only).
+        /// Number of enabled poses in the hierarchy (read-only).
+        /// </summary>
+        public int NumEnabledPoses
+        {
+            get
+            {
+                if (m_PoseEnabled == null)
+                {
+                    return 0;
+                }
+
+                var numEnabled = 0;
+                for (var i = 0; i < m_PoseEnabled.Length; i++)
+                {
+                    numEnabled += m_PoseEnabled[i] ? 1 : 0;
+                }
+
+                return numEnabled;
+            }
+        }
+
+        /// <summary>
+        /// Number of total poses in the hierarchy (read-only).
         /// </summary>
         public int NumPoses
         {
-            get { return m_ModelSpacePoses?.Length ?? 0;  }
+            get { return m_ModelSpacePoses?.Length ?? 0; }
         }
 
         /// <summary>
@@ -78,19 +146,42 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
+        /// Set whether the pose at the given index is enabled or disabled for observations.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="val"></param>
+        public void SetPoseEnabled(int index, bool val)
+        {
+            m_PoseEnabled[index] = val;
+        }
+
+        /// <summary>
         /// Initialize with the mapping of parent indices.
         /// The 0th element is assumed to be -1, indicating that it's the root.
         /// </summary>
         /// <param name="parentIndices"></param>
-        protected void SetParentIndices(int[] parentIndices)
+        protected void Setup(int[] parentIndices)
         {
+#if DEBUG
+            if (parentIndices[0] != -1)
+            {
+                throw new UnityAgentsException($"Expected parentIndices[0] to be -1, got {parentIndices[0]}");
+            }
+#endif
             m_ParentIndices = parentIndices;
-            var numTransforms = parentIndices.Length;
-            m_ModelSpacePoses = new Pose[numTransforms];
-            m_LocalSpacePoses = new Pose[numTransforms];
+            var numPoses = parentIndices.Length;
+            m_ModelSpacePoses = new Pose[numPoses];
+            m_LocalSpacePoses = new Pose[numPoses];
 
-            m_ModelSpaceLinearVelocities = new Vector3[numTransforms];
-            m_LocalSpaceLinearVelocities = new Vector3[numTransforms];
+            m_ModelSpaceLinearVelocities = new Vector3[numPoses];
+            m_LocalSpaceLinearVelocities = new Vector3[numPoses];
+
+            m_PoseEnabled = new bool[numPoses];
+            // All poses are enabled by default. Generally we'll want to disable the root though.
+            for (var i = 0; i < numPoses; i++)
+            {
+                m_PoseEnabled[i] = true;
+            }
         }
 
         /// <summary>
@@ -98,14 +189,14 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected abstract Pose GetPoseAt(int index);
+        protected internal abstract Pose GetPoseAt(int index);
 
         /// <summary>
         /// Return the world space linear velocity of the i'th object.
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        protected abstract Vector3 GetLinearVelocityAt(int index);
+        protected internal abstract Vector3 GetLinearVelocityAt(int index);
 
 
         /// <summary>
@@ -113,24 +204,27 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public void UpdateModelSpacePoses()
         {
-            if (m_ModelSpacePoses == null)
+            using (TimerStack.Instance.Scoped("UpdateModelSpacePoses"))
             {
-                return;
-            }
+                if (m_ModelSpacePoses == null)
+                {
+                    return;
+                }
 
-            var rootWorldTransform = GetPoseAt(0);
-            var worldToModel = rootWorldTransform.Inverse();
-            var rootLinearVel = GetLinearVelocityAt(0);
+                var rootWorldTransform = GetPoseAt(0);
+                var worldToModel = rootWorldTransform.Inverse();
+                var rootLinearVel = GetLinearVelocityAt(0);
 
-            for (var i = 0; i < m_ModelSpacePoses.Length; i++)
-            {
-                var currentWorldSpacePose = GetPoseAt(i);
-                var currentModelSpacePose = worldToModel.Multiply(currentWorldSpacePose);
-                m_ModelSpacePoses[i] = currentModelSpacePose;
+                for (var i = 0; i < m_ModelSpacePoses.Length; i++)
+                {
+                    var currentWorldSpacePose = GetPoseAt(i);
+                    var currentModelSpacePose = worldToModel.Multiply(currentWorldSpacePose);
+                    m_ModelSpacePoses[i] = currentModelSpacePose;
 
-                var currentBodyLinearVel = GetLinearVelocityAt(i);
-                var relativeVelocity = currentBodyLinearVel - rootLinearVel;
-                m_ModelSpaceLinearVelocities[i] = worldToModel.rotation * relativeVelocity;
+                    var currentBodyLinearVel = GetLinearVelocityAt(i);
+                    var relativeVelocity = currentBodyLinearVel - rootLinearVel;
+                    m_ModelSpaceLinearVelocities[i] = worldToModel.rotation * relativeVelocity;
+                }
             }
         }
 
@@ -139,30 +233,33 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         public void UpdateLocalSpacePoses()
         {
-            if (m_LocalSpacePoses == null)
+            using (TimerStack.Instance.Scoped("UpdateLocalSpacePoses"))
             {
-                return;
-            }
-
-            for (var i = 0; i < m_LocalSpacePoses.Length; i++)
-            {
-                if (m_ParentIndices[i] != -1)
+                if (m_LocalSpacePoses == null)
                 {
-                    var parentTransform = GetPoseAt(m_ParentIndices[i]);
-                    // This is slightly inefficient, since for a body with multiple children, we'll end up inverting
-                    // the transform multiple times. Might be able to trade space for perf here.
-                    var invParent = parentTransform.Inverse();
-                    var currentTransform = GetPoseAt(i);
-                    m_LocalSpacePoses[i] = invParent.Multiply(currentTransform);
-
-                    var parentLinearVel = GetLinearVelocityAt(m_ParentIndices[i]);
-                    var currentLinearVel = GetLinearVelocityAt(i);
-                    m_LocalSpaceLinearVelocities[i] = invParent.rotation * (currentLinearVel - parentLinearVel);
+                    return;
                 }
-                else
+
+                for (var i = 0; i < m_LocalSpacePoses.Length; i++)
                 {
-                    m_LocalSpacePoses[i] = Pose.identity;
-                    m_LocalSpaceLinearVelocities[i] = Vector3.zero;
+                    if (m_ParentIndices[i] != -1)
+                    {
+                        var parentTransform = GetPoseAt(m_ParentIndices[i]);
+                        // This is slightly inefficient, since for a body with multiple children, we'll end up inverting
+                        // the transform multiple times. Might be able to trade space for perf here.
+                        var invParent = parentTransform.Inverse();
+                        var currentTransform = GetPoseAt(i);
+                        m_LocalSpacePoses[i] = invParent.Multiply(currentTransform);
+
+                        var parentLinearVel = GetLinearVelocityAt(m_ParentIndices[i]);
+                        var currentLinearVel = GetLinearVelocityAt(i);
+                        m_LocalSpaceLinearVelocities[i] = invParent.rotation * (currentLinearVel - parentLinearVel);
+                    }
+                    else
+                    {
+                        m_LocalSpacePoses[i] = Pose.identity;
+                        m_LocalSpaceLinearVelocities[i] = Vector3.zero;
+                    }
                 }
             }
         }
@@ -183,7 +280,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             obsPerPose += settings.UseModelSpaceLinearVelocity ? 3 : 0;
             obsPerPose += settings.UseLocalSpaceLinearVelocity ? 3 : 0;
 
-            return NumPoses * obsPerPose;
+            return NumEnabledPoses * obsPerPose;
         }
 
         internal void DrawModelSpace(Vector3 offset)

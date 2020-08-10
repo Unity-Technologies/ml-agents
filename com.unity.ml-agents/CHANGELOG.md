@@ -11,19 +11,36 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-- The minimum supported python version for ml-agents-envs was changed to 3.6.1. (#4244)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.3.0-preview] 2020-08-12
+
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The minimum supported Python version for ml-agents-envs was changed to 3.6.1. (#4244)
 - The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
 and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up
 Python training by approximately 5-10%. (#4259)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
 - StatsSideChannel now stores multiple values per key. This means that multiple
 calls to `StatsRecorder.Add()` with the same key in the same step will no
 longer overwrite each other. (#4236)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- The versions of `numpy` supported by ml-agents-envs were changed to disallow 1.19.0 or later. This was done to reflect
+a similar change in TensorFlow's requirements. (#4274)
 - Model checkpoints are now also saved as .nn files during training. (#4127)
 - Model checkpoint info is saved in TrainingStatus.json after training is concluded (#4127)
+- CSV statistics writer was removed (#4300).
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
@@ -75,7 +92,7 @@ argument. (#4203)
 - `max_step` in the `TerminalStep` and `TerminalSteps` objects was renamed `interrupted`.
 - `beta` and `epsilon` in `PPO` are no longer decayed by default but follow the same schedule as learning rate. (#3940)
 - `get_behavior_names()` and `get_behavior_spec()` on UnityEnvironment were replaced by the `behavior_specs` property. (#3946)
-- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/docs/Unity-Environment-Registry.md)(#3967)
+- The first version of the Unity Environment Registry (Experimental) has been released. More information [here](https://github.com/Unity-Technologies/ml-agents/blob/release_5_docs/docs/Unity-Environment-Registry.md)(#3967)
 - `use_visual` and `allow_multiple_visual_obs` in the `UnityToGymWrapper` constructor
 were replaced by `allow_multiple_obs` which allows one or more visual observations and
 vector observations to be used simultaneously. (#3981) Thank you @shakenes !
@@ -83,7 +100,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
   into the main training configuration file. Note that this means training
   configuration files are now environment-specific. (#3791)
 - The format for trainer configuration has changed, and the "default" behavior has been deprecated.
-  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_4_docs/docs/Migrating.md) for more details. (#3936)
+  See the [Migration Guide](https://github.com/Unity-Technologies/ml-agents/blob/release_5_docs/docs/Migrating.md) for more details. (#3936)
 - Training artifacts (trained models, summaries) are now found in the `results/`
   directory. (#3829)
 - When using Curriculum, the current lesson will resume if training is quit and resumed. As such,
