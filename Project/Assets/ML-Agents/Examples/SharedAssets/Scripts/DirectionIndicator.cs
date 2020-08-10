@@ -4,7 +4,8 @@ namespace Unity.MLAgentsExamples
 {
     public class DirectionIndicator : MonoBehaviour
     {
-        public bool updateViaScript;
+       
+        public bool updatedByAgent; //should this be updated by the agent? If not, it will use local settings
         public Transform transformToFollow; //ex: hips or body
         public Transform targetToLookAt; //target in the scene the indicator will point to
         public float heightOffset;
@@ -17,7 +18,7 @@ namespace Unity.MLAgentsExamples
 
         void Update()
         {
-            if (updateViaScript) return;
+            if (updatedByAgent) return;
             transform.position = new Vector3(transformToFollow.position.x, m_StartingYPos + heightOffset,
                 transformToFollow.position.z);
             Vector3 walkDir = targetToLookAt.position - transform.position;
@@ -25,13 +26,7 @@ namespace Unity.MLAgentsExamples
             transform.rotation = Quaternion.LookRotation(walkDir);
         }
 
-        public void SetPosAndDir(Vector3 pos, Vector3 lookDir)
-        {
-            transform.position = new Vector3(pos.x, m_StartingYPos + heightOffset, pos.z);
-            lookDir.y = 0; //flatten dir on the y
-            transform.rotation = Quaternion.LookRotation(lookDir);
-        }
-
+        //Public method to allow an agent to directly update this component
         public void MatchOrientation(Transform t)
         {
             transform.position = new Vector3(t.position.x, m_StartingYPos + heightOffset, t.position.z);

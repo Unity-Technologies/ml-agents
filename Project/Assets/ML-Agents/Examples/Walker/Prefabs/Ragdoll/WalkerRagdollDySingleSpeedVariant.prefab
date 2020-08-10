@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: updateViaScript
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 693499830, guid: 765582efd9dda46ed98564603316353f, type: 3}
+      propertyPath: updatedByAgent
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 895268871377934275, guid: 765582efd9dda46ed98564603316353f,
         type: 3}
       propertyPath: m_Name

@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 3826955612593018128}
   - component: {fileID: 3858402326794362026}
   - component: {fileID: 3631016866778687563}
-  - component: {fileID: 5100011760572799339}
   m_Layer: 0
   m_Name: DynamicTarget
   m_TagString: target
@@ -145,18 +144,3 @@ MonoBehaviour:
   onCollisionExitEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &5100011760572799339
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3840539935788495952}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab1096666cc514d9aac1e289b32ccfc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxTorque: {x: 100, y: 100, z: 100}
-  randomizeTorqueEveryXSec: 10
-  forceMode: 0
