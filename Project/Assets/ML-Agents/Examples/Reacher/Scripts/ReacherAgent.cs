@@ -86,8 +86,12 @@ public class ReacherAgent : Agent
     /// </summary>
     void UpdateGoalPosition()
     {
-        AddReward( - 0.001f * (goal.transform.position - hand.transform.position).magnitude);
-        // Debug.Log( - 0.001f * (goal.transform.position - hand.transform.position).magnitude);
+        if ((goal.transform.position - hand.transform.position).magnitude > 3.5f)
+        {
+            AddReward(-0.001f);
+        }
+        // AddReward( - 0.001f * (goal.transform.position - hand.transform.position).magnitude);
+        // Debug.Log((goal.transform.position - hand.transform.position).magnitude);
         var radians = m_GoalDegree * Mathf.PI / 180f;
         var goalX = 8f * Mathf.Cos(radians);
         var goalY = 8f * Mathf.Sin(radians);
