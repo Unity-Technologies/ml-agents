@@ -271,12 +271,7 @@ public class WalkerAgent : Agent
             );
         }
         
-        // c. Encourage head height.
-        var headHeightOverFeetReward =
-            Mathf.Clamp01(((head.position.y - footL.position.y) + (head.position.y - footR.position.y))/ 10); //Should normalize to ~1
-
-        AddReward(matchSpeedReward * lookAtTargetReward * headHeightOverFeetReward);
-//        AddReward(matchSpeedReward * lookAtTargetReward);
+        AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all of the body parts
