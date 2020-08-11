@@ -258,7 +258,11 @@ class ModelUtils:
         # First mean and variance calculated normally
         initial_mean, initial_variance = tf.nn.moments(vector_input, axes=[0])
         initialize_mean = tf.assign(running_mean, initial_mean)
-        initialize_variance = tf.assign(running_variance, initial_variance + EPSILON)
+        # Multiplied by total_new_step because it is divided by total_new_step in the normalization
+        initialize_variance = tf.assign(
+            running_variance,
+            (initial_variance + EPSILON) * tf.cast(total_new_steps, dtype=tf.float32),
+        )
         return (
             tf.group([initialize_mean, initialize_variance, update_norm_step]),
             tf.group([update_mean, update_variance, update_norm_step]),
