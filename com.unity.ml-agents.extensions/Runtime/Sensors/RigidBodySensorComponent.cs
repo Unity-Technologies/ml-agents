@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Get the DisplayNodes of the hierarchy.
         /// </summary>
         /// <returns></returns>
-        internal List<PoseExtractor.DisplayNode> GetDisplayNodes()
+        internal IList<PoseExtractor.DisplayNode> GetDisplayNodes()
         {
             return GetPoseExtractor().GetDisplayNodes();
         }
