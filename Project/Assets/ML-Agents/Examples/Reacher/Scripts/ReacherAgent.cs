@@ -74,11 +74,11 @@ public class ReacherAgent : Agent
         torqueZ = Mathf.Clamp(vectorAction[3], -1f, 1f) * 150f;
         m_RbB.AddTorque(new Vector3(torqueX, 0f, torqueZ));
 
-        AddReward( - 0.001f * (vectorAction[0] * vectorAction[0] 
-                + vectorAction[1] * vectorAction[1] 
-                + vectorAction[2] * vectorAction[2] 
-                + vectorAction[3] * vectorAction[3] 
-        ));
+        // AddReward( - 0.001f * (vectorAction[0] * vectorAction[0] 
+        //         + vectorAction[1] * vectorAction[1] 
+        //         + vectorAction[2] * vectorAction[2] 
+        //         + vectorAction[3] * vectorAction[3] 
+        // ));
     }
 
     /// <summary>
@@ -86,10 +86,10 @@ public class ReacherAgent : Agent
     /// </summary>
     void UpdateGoalPosition()
     {
-        if ((goal.transform.position - hand.transform.position).magnitude > 3.5f)
-        {
-            AddReward(-0.002f);
-        }
+        // if ((goal.transform.position - hand.transform.position).magnitude > 3.5f)
+        // {
+        //     AddReward(-0.002f);
+        // }
         // AddReward( - 0.001f * (goal.transform.position - hand.transform.position).magnitude);
         // Debug.Log((goal.transform.position - hand.transform.position).magnitude);
         var radians = m_GoalDegree * Mathf.PI / 180f;
