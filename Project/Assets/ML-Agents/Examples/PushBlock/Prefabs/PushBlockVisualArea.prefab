@@ -859,17 +859,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 07000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 1
+    VectorActionSize: 07000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: VisualHallway
-  m_TeamID: 0
-  m_useChildSensors: 1
+  m_BehaviorName: VisualPushBlock
+  TeamId: 0
+  m_UseChildSensors: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114812843792483960
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -882,7 +883,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea8c4f2604b947e6b7b97750dde87ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
   ground: {fileID: 1913379827958244}
   area: {fileID: 1632733799967290}
   areaBounds:
@@ -917,12 +921,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20961401228419460}
-  sensorName: CameraSensor
-  width: 84
-  height: 84
-  grayscale: 0
-  compression: 1
+  m_Camera: {fileID: 20961401228419460}
+  m_SensorName: CameraSensor
+  m_Width: 84
+  m_Height: 84
+  m_Grayscale: 0
+  m_Compression: 1
 --- !u!114 &9049837659352187721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -936,8 +940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
-  offsetStep: 0
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &1626651094211584
 GameObject:
   m_ObjectHideFlags: 0
