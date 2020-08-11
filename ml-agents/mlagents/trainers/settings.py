@@ -102,7 +102,7 @@ class BehavioralCloningSettings:
     strength: float = 1.0
     samples_per_update: int = 0
     num_epoch: int = 3
-    batch_size: int = 64
+    batch_size: int = 256
 
 
 @attr.s(auto_attribs=True)

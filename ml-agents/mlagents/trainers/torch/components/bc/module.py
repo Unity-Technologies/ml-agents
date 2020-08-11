@@ -4,7 +4,7 @@ import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
-from mlagents.trainers.settings import BehavioralCloningSettings
+from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 
 
@@ -18,19 +18,19 @@ class BCModule:
         """
         A BC trainer that can be used inline with RL.
         :param policy: The policy of the learning model
+        :param settings: The settings for BehavioralCloning including LR strength, batch_size,
+        num_epochs, samples_per_update and LR annealing steps.
         :param policy_learning_rate: The initial Learning Rate of the policy. Used to set an appropriate learning rate
             for the pretrainer.
-        :param default_batch_size: The default batch size to use if batch_size isn't provided.
-        :param default_num_epoch: The default num_epoch to use if num_epoch isn't provided.
-        :param strength: The proportion of learning rate used to update through BC.
-        :param steps: The number of steps to anneal BC training over. 0 for continuous training.
-        :param demo_path: The path to the demonstration file.
-        :param batch_size: The batch size to use during BC training.
-        :param num_epoch: Number of epochs to train for during each update.
-        :param samples_per_update: Maximum number of samples to train on during each BC update.
         """
         self.policy = policy
+        self._anneal_steps = settings.steps
         self.current_lr = policy_learning_rate * settings.strength
+
+        learning_rate_schedule: ScheduleType = ScheduleType.LINEAR if self._anneal_steps > 0 else ScheduleType.CONSTANT
+        self.decay_learning_rate = ModelUtils.DecayedValue(
+            learning_rate_schedule, self.current_lr, 1e-10, self._anneal_steps
+        )
         params = list(self.policy.actor_critic.parameters())
         self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
 
@@ -57,6 +57,8 @@ class BCModule:
         :return: The loss of the update.
         """
         # Don't continue training if the learning rate has reached 0, to reduce training time.
+
+        decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         if self.current_lr <= 0:
             return {"Losses/Pretraining Loss": 0}
 
@@ -84,9 +86,11 @@ class BCModule:
                 mini_batch_demo = demo_update_buffer.make_mini_batch(start, end)
                 run_out = self._update_batch(mini_batch_demo, self.n_sequences)
                 loss = run_out["loss"]
-                # TODO: anneal LR
-                # self.current_lr = update_stats["learning_rate"]
                 batch_losses.append(loss)
+
+        ModelUtils.update_learning_rate(self.optimizer, decay_lr)
+        self.current_lr = decay_lr
+
         self.has_updated = True
         update_stats = {"Losses/Pretraining Loss": np.mean(batch_losses)}
         return update_stats
