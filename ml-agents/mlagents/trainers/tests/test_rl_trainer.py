@@ -33,7 +33,10 @@ class FakeTrainer(RLTrainer):
         mock_saver.save_checkpoint.side_effect = checkpoint_path
         self.saver = mock_saver
 
-    def create_policy(self):
+    def create_tf_policy(self):
+        return mock.Mock()
+
+    def create_torch_policy(self):
         return mock.Mock()
 
     def _process_trajectory(self, trajectory):

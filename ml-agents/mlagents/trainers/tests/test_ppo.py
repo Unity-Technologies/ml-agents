@@ -8,7 +8,7 @@ import attr
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
-from mlagents.trainers.ppo.optimizer_tf import TFPPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
@@ -52,7 +52,7 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
     policy = TFPolicy(
         0, mock_specs, trainer_settings, "test", False, create_tf_graph=False
     )
-    optimizer = TFPPOOptimizer(policy, trainer_settings)
+    optimizer = PPOOptimizer(policy, trainer_settings)
     return optimizer
 
 

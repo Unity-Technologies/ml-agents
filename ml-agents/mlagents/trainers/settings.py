@@ -1,3 +1,5 @@
+import warnings
+
 import attr
 import cattr
 from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple, Union
@@ -10,7 +12,7 @@ import math
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
-from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.exception import TrainerConfigError, TrainerConfigWarning
 
 from mlagents_envs import logging_util
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -456,13 +458,19 @@ class EnvironmentParameterSettings:
     def _check_lesson_chain(lessons, parameter_name):
         """
         Ensures that when using curriculum, all non-terminal lessons have a valid
-        CompletionCriteria
+        CompletionCriteria, and that the terminal lesson does not contain a CompletionCriteria.
         """
         num_lessons = len(lessons)
         for index, lesson in enumerate(lessons):
             if index < num_lessons - 1 and lesson.completion_criteria is None:
                 raise TrainerConfigError(
                     f"A non-terminal lesson does not have a completion_criteria for {parameter_name}."
+                )
+            if index == num_lessons - 1 and lesson.completion_criteria is not None:
+                warnings.warn(
+                    f"Your final lesson definition contains completion_criteria for {parameter_name}."
+                    f"It will be ignored.",
+                    TrainerConfigWarning,
                 )
 
     @staticmethod
@@ -530,6 +538,11 @@ class TrainerType(Enum):
         return _mapping[self]
 
 
+class FrameworkType(Enum):
+    TENSORFLOW: str = "tensorflow"
+    PYTORCH: str = "pytorch"
+
+
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     trainer_type: TrainerType = TrainerType.PPO
@@ -552,6 +565,7 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
+    framework: FrameworkType = FrameworkType.TENSORFLOW
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
@@ -719,7 +733,13 @@ class RunOptions(ExportableSettings):
                     configured_dict["engine_settings"][key] = val
                 else:  # Base options
                     configured_dict[key] = val
-        return RunOptions.from_dict(configured_dict)
+
+        # Apply --torch retroactively
+        final_runoptions = RunOptions.from_dict(configured_dict)
+        if "torch" in DetectDefault.non_default_args:
+            for trainer_set in final_runoptions.behaviors.values():
+                trainer_set.framework = FrameworkType.PYTORCH
+        return final_runoptions
 
     @staticmethod
     def from_dict(options_dict: Dict[str, Any]) -> "RunOptions":

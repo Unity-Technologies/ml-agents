@@ -18,12 +18,20 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         ///  Construct a new PhysicsBodySensor
         /// </summary>
-        /// <param name="rootBody"></param>
+        /// <param name="rootBody">The root Rigidbody. This has no Joints on it (but other Joints may connect to it).</param>
+        /// <param name="rootGameObject">Optional GameObject used to find Rigidbodies in the hierarchy.</param>
+        /// <param name="virtualRoot">Optional GameObject used to determine the root of the poses,
         /// <param name="settings"></param>
         /// <param name="sensorName"></param>
-        public PhysicsBodySensor(Rigidbody rootBody, GameObject rootGameObject, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(
+            Rigidbody rootBody,
+            GameObject rootGameObject,
+            GameObject virtualRoot,
+            PhysicsSensorSettings settings,
+            string sensorName=null
+        )
         {
-            var poseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject);
+            var poseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject, virtualRoot);
             m_PoseExtractor = poseExtractor;
             m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
             m_Settings = settings;

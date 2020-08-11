@@ -91,17 +91,8 @@ public class CrawlerAgent : Agent
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
 
-        //Get velocities in the context of our orientation cube's space
-        //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.velocity));
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
-
-        //Get position relative to hips in the context of our orientation cube's space
-        sensor.AddObservation(orientationCube.transform.InverseTransformDirection(bp.rb.position - body.position));
-
         if (bp.rb.transform != body)
         {
-            sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
     }
@@ -111,9 +102,6 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        //Add body rotation delta relative to orientation cube
-        sensor.AddObservation(Quaternion.FromToRotation(body.forward, orientationCube.transform.forward));
-
         //Add pos of target relative to orientation cube
         sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
 

@@ -4,6 +4,7 @@ import torch
 from torch import nn
 import numpy as np
 import math
+from mlagents.trainers.torch.layers import linear_layer, Initialization
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -66,7 +67,7 @@ class GaussianDistInstance(DistInstance):
         return torch.exp(log_prob)
 
     def entropy(self):
-        return torch.log(2 * math.pi * math.e * self.std + EPSILON)
+        return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -100,7 +101,12 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.multinomial(self.probs, 1)
 
     def pdf(self, value):
-        return torch.diag(self.probs.T[value.flatten().long()])
+        # This function is equivalent to torch.diag(self.probs.T[value.flatten().long()]),
+        # but torch.diag is not supported by ONNX export.
+        idx = torch.arange(start=0, end=len(value)).unsqueeze(-1)
+        return torch.gather(
+            self.probs.permute(1, 0)[value.flatten().long()], -1, idx
+        ).squeeze(-1)
 
     def log_prob(self, value):
         return torch.log(self.pdf(value))
@@ -109,7 +115,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         return torch.log(self.probs)
 
     def entropy(self):
-        return torch.sum(self.probs * torch.log(self.probs), dim=-1)
+        return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
 
 class GaussianDistribution(nn.Module):
@@ -122,12 +128,22 @@ class GaussianDistribution(nn.Module):
     ):
         super().__init__()
         self.conditional_sigma = conditional_sigma
-        self.mu = nn.Linear(hidden_size, num_outputs)
+        self.mu = linear_layer(
+            hidden_size,
+            num_outputs,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=0.1,
+            bias_init=Initialization.Zero,
+        )
         self.tanh_squash = tanh_squash
-        nn.init.xavier_uniform_(self.mu.weight, gain=0.01)
         if conditional_sigma:
-            self.log_sigma = nn.Linear(hidden_size, num_outputs)
-            nn.init.xavier_uniform(self.log_sigma.weight, gain=0.01)
+            self.log_sigma = linear_layer(
+                hidden_size,
+                num_outputs,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.1,
+                bias_init=Initialization.Zero,
+            )
         else:
             self.log_sigma = nn.Parameter(
                 torch.zeros(1, num_outputs, requires_grad=True)
@@ -154,8 +170,13 @@ class MultiCategoricalDistribution(nn.Module):
     def _create_policy_branches(self, hidden_size: int) -> nn.ModuleList:
         branches = []
         for size in self.act_sizes:
-            branch_output_layer = nn.Linear(hidden_size, size)
-            nn.init.xavier_uniform_(branch_output_layer.weight, gain=0.01)
+            branch_output_layer = linear_layer(
+                hidden_size,
+                size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.1,
+                bias_init=Initialization.Zero,
+            )
             branches.append(branch_output_layer)
         return nn.ModuleList(branches)
 

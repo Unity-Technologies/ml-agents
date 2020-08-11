@@ -105,14 +105,14 @@ def test_gaussian_dist_instance():
         assert log_prob == pytest.approx(-0.919, abs=0.01)
 
     for ent in dist_instance.entropy().flatten():
-        # entropy of standard normal at 0
-        assert ent == pytest.approx(2.83, abs=0.01)
+        # entropy of standard normal at 0, based on 1/2 + ln(sqrt(2pi)sigma)
+        assert ent == pytest.approx(1.42, abs=0.01)
 
 
 def test_tanh_gaussian_dist_instance():
     torch.manual_seed(0)
     act_size = 4
-    dist_instance = GaussianDistInstance(
+    dist_instance = TanhGaussianDistInstance(
         torch.zeros(1, act_size), torch.ones(1, act_size)
     )
     for _ in range(10):
@@ -125,13 +125,13 @@ def test_categorical_dist_instance():
     torch.manual_seed(0)
     act_size = 4
     test_prob = torch.tensor(
-        [1.0 - 0.1 * (act_size - 1)] + [0.1] * (act_size - 1)
+        [[1.0 - 0.1 * (act_size - 1)] + [0.1] * (act_size - 1)]
     )  # High prob for first action
     dist_instance = CategoricalDistInstance(test_prob)
 
     for _ in range(10):
         action = dist_instance.sample()
-        assert action.shape == (1,)
+        assert action.shape == (1, 1)
         assert action < act_size
 
     # Make sure the first action as higher probability than the others.

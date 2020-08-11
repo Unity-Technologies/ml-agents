@@ -17,16 +17,17 @@ from mlagents.trainers.torch.distributions import (
 
 
 def test_networkbody_vector():
+    torch.manual_seed(0)
     obs_size = 4
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,)]
 
     networkbody = NetworkBody(obs_shapes, network_settings, encoded_act_size=2)
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
-    sample_obs = torch.ones((1, obs_size))
-    sample_act = torch.ones((1, 2))
+    sample_obs = 0.1 * torch.ones((1, obs_size))
+    sample_act = 0.1 * torch.ones((1, 2))
 
-    for _ in range(100):
+    for _ in range(300):
         encoded, _ = networkbody([sample_obs], [], sample_act)
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
@@ -40,6 +41,7 @@ def test_networkbody_vector():
 
 
 def test_networkbody_lstm():
+    torch.manual_seed(0)
     obs_size = 4
     seq_len = 16
     network_settings = NetworkSettings(
@@ -64,6 +66,7 @@ def test_networkbody_lstm():
 
 
 def test_networkbody_visual():
+    torch.manual_seed(0)
     vec_obs_size = 4
     obs_size = (84, 84, 3)
     network_settings = NetworkSettings()
@@ -75,7 +78,7 @@ def test_networkbody_visual():
     sample_obs = torch.ones((1, 84, 84, 3))
     sample_vec_obs = torch.ones((1, vec_obs_size))
 
-    for _ in range(100):
+    for _ in range(150):
         encoded, _ = networkbody([sample_vec_obs], [sample_obs])
         assert encoded.shape == (1, network_settings.hidden_units)
         # Try to force output to 1
@@ -89,6 +92,7 @@ def test_networkbody_visual():
 
 
 def test_valuenetwork():
+    torch.manual_seed(0)
     obs_size = 4
     num_outputs = 2
     network_settings = NetworkSettings()
