@@ -11,7 +11,6 @@ public class WormAgent : Agent
     public Transform target;
 
     public Transform ground;
-    public bool detectTargets;
     public bool targetIsStatic;
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
@@ -164,16 +163,6 @@ public class WormAgent : Agent
 
     void FixedUpdate()
     {
-        if (detectTargets)
-        {
-            foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
-            {
-                if (bodyPart.targetContact && bodyPart.targetContact.touchingTarget)
-                {
-                    TouchedTarget();
-                }
-            }
-        }
 
         // Set reward for this step according to mixture of the following elements.
         if (rewardMovingTowardsTarget)
