@@ -54,17 +54,17 @@ namespace Unity.MLAgents.Extensions.Sensors
                 parentIndices[i] = bodyToIndex[parentArticBody];
             }
 
-            Setup(parentIndices);
+            SetParentIndices(parentIndices);
         }
 
         /// <inheritdoc/>
-        protected internal override Vector3 GetLinearVelocityAt(int index)
+        protected override Vector3 GetLinearVelocityAt(int index)
         {
             return m_Bodies[index].velocity;
         }
 
         /// <inheritdoc/>
-        protected internal override Pose GetPoseAt(int index)
+        protected override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];
             var go = body.gameObject;
