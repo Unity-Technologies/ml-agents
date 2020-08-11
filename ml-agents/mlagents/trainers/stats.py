@@ -10,6 +10,7 @@ from threading import RLock
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
+from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
@@ -84,32 +85,51 @@ class ConsoleWriter(StatsWriter):
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
+        self.rank = get_rank()
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
         is_training = "Not Training."
         if "Is Training" in values:
-            stats_summary = stats_summary = values["Is Training"]
+            stats_summary = values["Is Training"]
             if stats_summary.mean > 0.0:
                 is_training = "Training."
 
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
-            logger.info(
-                "{}: Step: {}. "
-                "Time Elapsed: {:0.3f} s "
-                "Mean "
-                "Reward: {:0.3f}"
-                ". Std of Reward: {:0.3f}. {}".format(
-                    category,
-                    step,
-                    time.time() - self.training_start_time,
-                    stats_summary.mean,
-                    stats_summary.std,
-                    is_training,
+            if self.rank is not None:
+                logger.info(
+                    "Rank: {}."
+                    "{}: Step: {}. "
+                    "Time Elapsed: {:0.3f} s "
+                    "Mean "
+                    "Reward: {:0.3f}"
+                    ". Std of Reward: {:0.3f}. {}".format(
+                        self.rank(),
+                        category,
+                        step,
+                        time.time() - self.training_start_time,
+                        stats_summary.mean,
+                        stats_summary.std,
+                        is_training,
+                    )
                 )
-            )
+            else:
+                logger.info(
+                    "{}: Step: {}. "
+                    "Time Elapsed: {:0.3f} s "
+                    "Mean "
+                    "Reward: {:0.3f}"
+                    ". Std of Reward: {:0.3f}. {}".format(
+                        category,
+                        step,
+                        time.time() - self.training_start_time,
+                        stats_summary.mean,
+                        stats_summary.std,
+                        is_training,
+                    )
+                )
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
                 logger.info(f"{category} ELO: {elo_stats.mean:0.3f}. ")
