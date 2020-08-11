@@ -1,7 +1,6 @@
 # # Unity ML-Agents Toolkit
 import abc
 from typing import Any
-from mlagents.trainers.policy import Policy
 
 
 class BaseSaver(abc.ABC):
@@ -36,5 +35,10 @@ class BaseSaver(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def initialize_or_load(self, policy: Policy) -> None:
+    def initialize_or_load(self, policy):
+        """
+        If there is an initialize path, load from that. Else, load from the set model path.
+        If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
+        e.g., resume from an initialize path.
+        """
         pass

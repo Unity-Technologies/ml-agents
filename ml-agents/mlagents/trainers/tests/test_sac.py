@@ -224,6 +224,7 @@ def test_advance(dummy_config):
     policy = trainer.create_policy(behavior_id, specs)
     policy.get_current_step = lambda: 200
     trainer.add_policy(behavior_id, policy)
+    trainer.saver.initialize_or_load(policy)
     trainer.optimizer.update = mock.Mock()
     trainer.optimizer.update_reward_signals = mock.Mock()
     trainer.optimizer.update_reward_signals.return_value = {}

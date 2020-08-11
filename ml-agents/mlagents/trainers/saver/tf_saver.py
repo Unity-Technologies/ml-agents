@@ -1,6 +1,6 @@
 import os
 import shutil
-from typing import Optional
+from typing import Optional, Union, cast
 from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
 from mlagents.tf_utils import tf
@@ -8,6 +8,7 @@ from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.tf.model_serialization import export_policy_model
 from mlagents.trainers.settings import TrainerSettings, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
+from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers import __version__
 
 
@@ -34,13 +35,13 @@ class TFSaver(BaseSaver):
         self.sess = None
         self.tf_saver = None
 
-    def register(self, module):
+    def register(self, module: Union[TFPolicy, TFOptimizer]) -> None:
         if isinstance(module, TFPolicy):
             if self.policy is None:
                 self.policy = module
                 self.graph = self.policy.graph
                 self.sess = self.policy.sess
-                with self.graph.as_default():
+                with self.policy.graph.as_default():
                     self.tf_saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
 
     def save_checkpoint(self, brain_name: str, step: int) -> str:
@@ -62,10 +63,11 @@ class TFSaver(BaseSaver):
             self.model_path, output_filepath, brain_name, self.graph, self.sess
         )
 
-    def initialize_or_load(self, policy):
-        # If there is an initialize path, load from that. Else, load from the set model path.
-        # If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
-        # e.g., resume from an initialize path.
+    def initialize_or_load(self, policy: Optional[TFPolicy] = None) -> None:
+        # If given input policy, load the input policy. Otherwise, load the registered policy.
+        if policy is None:
+            policy = self.policy
+        policy = cast(TFPolicy, policy)
         reset_steps = not self.load
         if self.initialize_path is not None:
             self._load_graph(

@@ -234,7 +234,7 @@ class PPOTrainer(RLTrainer):
         if register_saver:
             self.saver.register(self.policy)
             self.saver.register(self.optimizer)
-            self.saver.initialize_or_load(self.policy)
+            self.saver.initialize_or_load()
 
         # Needed to resume loads properly
         self.step = policy.get_current_step()
