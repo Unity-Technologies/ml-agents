@@ -300,9 +300,9 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    step_size = 0.2
+    step_size = 0.5 if use_discrete else 0.2
     env = MemoryEnvironment(
-        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size,
+        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
     )
     new_networksettings = attr.evolve(
         SAC_CONFIG.network_settings,

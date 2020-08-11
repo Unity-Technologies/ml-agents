@@ -59,7 +59,11 @@ VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
 
 def export_policy_model(
-    model_path:str, output_filepath: str, brain_name: str, graph: tf.Graph, sess: tf.Session
+    model_path: str,
+    output_filepath: str,
+    brain_name: str,
+    graph: tf.Graph,
+    sess: tf.Session,
 ) -> None:
     """
     Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
