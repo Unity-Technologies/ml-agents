@@ -456,13 +456,13 @@ class TFPolicy(Policy):
         if self.use_vec_obs and self.normalize:
             if self.first_normalization_update:
                 self.sess.run(
-                    self.init_normalization_op,
-                    feed_dict={self.initial_mean: np.mean(vector_obs, axis=0)},
+                    self.init_normalization_op, feed_dict={self.vector_in: vector_obs}
                 )
                 self.first_normalization_update = False
-            self.sess.run(
-                self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
-            )
+            else:
+                self.sess.run(
+                    self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
+                )
 
     @property
     def use_vis_obs(self):
@@ -477,6 +477,7 @@ class TFPolicy(Policy):
         self.normalization_steps: Optional[tf.Variable] = None
         self.running_mean: Optional[tf.Variable] = None
         self.running_variance: Optional[tf.Variable] = None
+        self.init_normalization_op: Optional[tf.Operation] = None
         self.update_normalization_op: Optional[tf.Operation] = None
         self.value: Optional[tf.Tensor] = None
         self.all_log_probs: tf.Tensor = None
@@ -507,7 +508,6 @@ class TFPolicy(Policy):
                 self.update_normalization_op = normalization_tensors.update_op
                 self.init_normalization_op = normalization_tensors.init_op
                 self.normalization_steps = normalization_tensors.steps
-                self.initial_mean = normalization_tensors.initial_mean
                 self.running_mean = normalization_tensors.running_mean
                 self.running_variance = normalization_tensors.running_variance
                 self.processed_vector_in = ModelUtils.normalize_vector_obs(
