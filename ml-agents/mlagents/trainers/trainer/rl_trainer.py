@@ -5,7 +5,7 @@ from collections import defaultdict
 import abc
 import time
 import attr
-from mlagents.model_serialization import SerializationSettings
+from mlagents.model_serialization import SerializationSettings, copy_model_files
 from mlagents.trainers.policy.checkpoint_manager import (
     NNCheckpoint,
     NNCheckpointManager,
@@ -15,7 +15,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.components.reward_signals import RewardSignalResult
+from mlagents.trainers.components.reward_signals import RewardSignalResult, RewardSignal
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
@@ -57,6 +57,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         )
         self.framework = self.trainer_settings.framework
         logger.debug(f"Using framework {self.framework.value}")
+
         if TestingConfiguration.max_steps > 0:
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
@@ -83,9 +84,16 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                self.stats_reporter.add_stat(
-                    optimizer.reward_signals[name].stat_name, rewards.get(agent_id, 0)
-                )
+                if isinstance(optimizer.reward_signals[name], RewardSignal):
+                    self.stats_reporter.add_stat(
+                        optimizer.reward_signals[name].stat_name,
+                        rewards.get(agent_id, 0),
+                    )
+                else:
+                    self.stats_reporter.add_stat(
+                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
+                        rewards.get(agent_id, 0),
+                    )
                 rewards[agent_id] = 0
 
     def _clear_update_buffer(self) -> None:
@@ -179,12 +187,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning("Trainer has no policies, not saving anything.")
             return
         policy = list(self.policies.values())[0]
-        settings = SerializationSettings(policy.model_path, self.brain_name)
         model_checkpoint = self._checkpoint()
+
+        # Copy the checkpointed model files to the final output location
+        copy_model_files(model_checkpoint.file_path, f"{policy.model_path}.nn")
+
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{policy.model_path}.nn"
         )
-        policy.save(policy.model_path, settings)
         NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
     @abc.abstractmethod

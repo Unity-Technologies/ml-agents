@@ -5,12 +5,11 @@ from mlagents_envs.base_env import DecisionSteps
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.bc.module import BCModule
-from mlagents.trainers.components.reward_signals.extrinsic.signal import (
-    ExtrinsicRewardSignal,
-)
+from mlagents.trainers.torch.components.reward_providers import create_reward_provider
+
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer import Optimizer
-from mlagents.trainers.settings import TrainerSettings, RewardSignalType
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.torch.utils import ModelUtils
 
@@ -43,16 +42,11 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
-        extrinsic_signal = ExtrinsicRewardSignal(
-            self.policy, reward_signal_configs[RewardSignalType.EXTRINSIC]
-        )
-        self.reward_signals = {RewardSignalType.EXTRINSIC.value: extrinsic_signal}
-        # Create reward signals
-        # for reward_signal, config in reward_signal_configs.items():
-        #    self.reward_signals[reward_signal] = create_reward_signal(
-        #        self.policy, reward_signal, config
-        #    )
-        #    self.update_dict.update(self.reward_signals[reward_signal].update_dict)
+        for reward_signal, settings in reward_signal_configs.items():
+            # Name reward signals by string in case we have duplicates later
+            self.reward_signals[reward_signal.value] = create_reward_provider(
+                reward_signal, self.policy.behavior_spec, settings
+            )
 
     def get_value_estimates(
         self, decision_requests: DecisionSteps, idx: int, done: bool
@@ -78,7 +72,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         # If we're done, reassign all of the value estimates that need terminal states.
         if done:
             for k in value_estimates:
-                if self.reward_signals[k].use_terminal_states:
+                if not self.reward_signals[k].ignore_done:
                     value_estimates[k] = 0.0
 
         return value_estimates
@@ -117,7 +111,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
 
         if done:
             for k in next_value_estimate:
-                if self.reward_signals[k].use_terminal_states:
+                if not self.reward_signals[k].ignore_done:
                     next_value_estimate[k] = 0.0
 
         return value_estimates, next_value_estimate

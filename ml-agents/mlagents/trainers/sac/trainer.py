@@ -19,6 +19,7 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
+from mlagents.trainers.components.reward_signals import RewardSignal
 
 try:
     from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -143,9 +144,15 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            evaluate_result = reward_signal.evaluate_batch(
-                agent_buffer_trajectory
-            ).scaled_reward
+            if isinstance(reward_signal, RewardSignal):
+                evaluate_result = reward_signal.evaluate_batch(
+                    agent_buffer_trajectory
+                ).scaled_reward
+            else:
+                evaluate_result = (
+                    reward_signal.evaluate(agent_buffer_trajectory)
+                    * reward_signal.strength
+                )
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
 
@@ -154,9 +161,15 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
-            self._stats_reporter.add_stat(
-                self.optimizer.reward_signals[name].value_name, np.mean(v)
-            )
+            if isinstance(self.optimizer.reward_signals[name], RewardSignal):
+                self._stats_reporter.add_stat(
+                    self.optimizer.reward_signals[name].value_name, np.mean(v)
+                )
+            else:
+                self._stats_reporter.add_stat(
+                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
+                    np.mean(v),
+                )
 
         # Bootstrap using the last step rather than the bootstrap step if max step is reached.
         # Set last element to duplicate obs and remove dones.
@@ -277,9 +290,14 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
-                    sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
-                        sampled_minibatch
-                    ).scaled_reward
+                    if isinstance(signal, RewardSignal):
+                        sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
+                            sampled_minibatch
+                        ).scaled_reward
+                    else:
+                        sampled_minibatch[f"{name}_rewards"] = (
+                            signal.evaluate(sampled_minibatch) * signal.strength
+                        )
 
                 update_stats = self.optimizer.update(sampled_minibatch, n_sequences)
                 for stat_name, value in update_stats.items():
@@ -326,12 +344,13 @@ class SACTrainer(RLTrainer):
             reward_signal_minibatches = {}
             for name, signal in self.optimizer.reward_signals.items():
                 logger.debug(f"Updating {name} at step {self.step}")
-                # Some signals don't need a minibatch to be sampled - so we don't!
-                if signal.update_dict:
-                    reward_signal_minibatches[name] = buffer.sample_mini_batch(
-                        self.hyperparameters.batch_size,
-                        sequence_length=self.policy.sequence_length,
-                    )
+                if isinstance(signal, RewardSignal):
+                    # Some signals don't need a minibatch to be sampled - so we don't!
+                    if signal.update_dict:
+                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                            self.hyperparameters.batch_size,
+                            sequence_length=self.policy.sequence_length,
+                        )
             update_stats = self.optimizer.update_reward_signals(
                 reward_signal_minibatches, n_sequences
             )

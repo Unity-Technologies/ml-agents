@@ -2,7 +2,7 @@ import pytest
 import yaml
 
 
-from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.exception import TrainerConfigError, TrainerConfigWarning
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.settings import (
     RunOptions,
@@ -154,11 +154,73 @@ environment_parameters:
 """
 
 
+test_bad_curriculum_all_competion_criteria_config_yaml = """
+environment_parameters:
+    param_1:
+      curriculum:
+          - name: Lesson1
+            completion_criteria:
+                measure: reward
+                behavior: fake_behavior
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value: 1
+          - name: Lesson2
+            completion_criteria:
+                measure: reward
+                behavior: fake_behavior
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value: 2
+          - name: Lesson3
+            completion_criteria:
+                measure: reward
+                behavior: fake_behavior
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value:
+                sampler_type: uniform
+                sampler_parameters:
+                    min_value: 1
+                    max_value: 3
+"""
+
+
 def test_curriculum_raises_no_completion_criteria_conversion():
     with pytest.raises(TrainerConfigError):
         RunOptions.from_dict(
             yaml.safe_load(test_bad_curriculum_no_competion_criteria_config_yaml)
         )
+
+
+def test_curriculum_raises_all_completion_criteria_conversion():
+    with pytest.warns(TrainerConfigWarning):
+        run_options = RunOptions.from_dict(
+            yaml.safe_load(test_bad_curriculum_all_competion_criteria_config_yaml)
+        )
+
+        param_manager = EnvironmentParameterManager(
+            run_options.environment_parameters, 1337, False
+        )
+        assert param_manager.update_lessons(
+            trainer_steps={"fake_behavior": 500},
+            trainer_max_steps={"fake_behavior": 1000},
+            trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        ) == (True, True)
+        assert param_manager.update_lessons(
+            trainer_steps={"fake_behavior": 500},
+            trainer_max_steps={"fake_behavior": 1000},
+            trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        ) == (True, True)
+        assert param_manager.update_lessons(
+            trainer_steps={"fake_behavior": 500},
+            trainer_max_steps={"fake_behavior": 1000},
+            trainer_reward_buffer={"fake_behavior": [1000] * 101},
+        ) == (False, False)
+        assert param_manager.get_current_lesson_number() == {"param_1": 2}
 
 
 test_everything_config_yaml = """

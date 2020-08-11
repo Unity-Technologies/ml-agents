@@ -176,4 +176,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Policy/Beta": decay_bet,
         }
 
+        for reward_provider in self.reward_signals.values():
+            update_stats.update(reward_provider.update(batch))
+
         return update_stats

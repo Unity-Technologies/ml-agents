@@ -152,9 +152,9 @@ def test_actions_to_onehot():
     action_size = [2, 1, 3]
     oh_actions = ModelUtils.actions_to_onehot(all_actions, action_size)
     expected_result = [
-        torch.tensor([[0, 1], [0, 1]]),
-        torch.tensor([[1], [1]]),
-        torch.tensor([[0, 0, 1], [0, 0, 1]]),
+        torch.tensor([[0, 1], [0, 1]], dtype=torch.float),
+        torch.tensor([[1], [1]], dtype=torch.float),
+        torch.tensor([[0, 0, 1], [0, 0, 1]], dtype=torch.float),
     ]
     for res, exp in zip(oh_actions, expected_result):
         assert torch.equal(res, exp)
@@ -187,14 +187,14 @@ def test_get_probs_and_entropy():
     # Add two dists to the list.
     act_size = 2
     test_prob = torch.tensor(
-        [1.0 - 0.1 * (act_size - 1)] + [0.1] * (act_size - 1)
+        [[1.0 - 0.1 * (act_size - 1)] + [0.1] * (act_size - 1)]
     )  # High prob for first action
     dist_list = [CategoricalDistInstance(test_prob), CategoricalDistInstance(test_prob)]
     action_list = [torch.tensor([0]), torch.tensor([1])]
     log_probs, entropies, all_probs = ModelUtils.get_probs_and_entropy(
         action_list, dist_list
     )
-    assert all_probs.shape == (len(dist_list * act_size),)
-    assert entropies.shape == (len(dist_list),)
+    assert all_probs.shape == (1, len(dist_list * act_size))
+    assert entropies.shape == (1, len(dist_list))
     # Make sure the first action has high probability than the others.
     assert log_probs.flatten()[0] > log_probs.flatten()[1]

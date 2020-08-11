@@ -100,17 +100,12 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
                 // Local space
                 0f, 0f, 0f, // Root pos
+                13.37f, 0f, 0f, // Attached pos
+                4.2f, 0f, 0f, // Leaf pos
+
 #if UNITY_2020_2_OR_NEWER
                 0f, 0f, 0f, // Root vel
-#endif
-
-                13.37f, 0f, 0f, // Attached pos
-#if UNITY_2020_2_OR_NEWER
                 -1f, 1f, 0f, // Attached vel
-#endif
-
-                4.2f, 0f, 0f, // Leaf pos
-#if UNITY_2020_2_OR_NEWER
                 0f, -1f, 1f // Leaf vel
 #endif
             };
