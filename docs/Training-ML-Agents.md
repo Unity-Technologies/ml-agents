@@ -433,7 +433,86 @@ if we wanted to train the 3D ball agent with parameter randomization, we would r
 mlagents-learn config/ppo/3DBall_randomize.yaml --run-id=3D-Ball-randomize
 ```
 
-We can observe progress and metrics via Tensorboard.
+We can observe progress and metrics via TensorBoard.
+
+#### Curriculum
+
+To enable curriculum learning, you need to add a `curriculum` sub-section to your environment
+parameter. Here is one example with the environment parameter `my_environment_parameter` :
+
+```yml
+behaviors:
+  BehaviorY:
+    # < Same as above >
+
+# Add this section
+environment_parameters:
+  my_environment_parameter:
+    curriculum:
+      - name: MyFirstLesson # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: my_behavior
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.2
+        value: 0.0
+      - name: MySecondLesson # This is the start of the second lesson
+        completion_criteria:
+          measure: progress
+          behavior: my_behavior
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.6
+          require_reset: true
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 4.0
+            max_value: 7.0
+      - name: MyLastLesson
+        value: 8.0
+```
+
+Note that this curriculum __only__ applies to `my_environment_parameter`. The `curriculum` section
+contains a list of `Lessons`. In the example, the lessons are named `MyFirstLesson`, `MySecondLesson`
+and `MyLastLesson`.
+Each `Lesson` has 3 fields :
+
+ - `name` which is a user defined name for the lesson (The name of the lesson will be displayed in
+ the console when the lesson changes)
+ - `completion_criteria` which determines what needs to happen in the simulation before the lesson
+ can be considered complete. When that condition is met, the curriculum moves on to the next
+ `Lesson`. Note that you do not need to specify a `completion_criteria` for the last `Lesson`
+ - `value` which is the value the environment parameter will take during the lesson. Note that this
+ can be a float or a sampler.
+
+ There are the different settings of the `completion_criteria` :
+
+
+| **Setting**         | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `behavior`        | Specifies which behavior is being tracked. There can be multiple behaviors with different names, each at different points of training. This setting allows the curriculum to track only one of them.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `threshold`        | Determines at what point in value of `measure` the lesson should be increased.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> **Important**: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |
+| `signal_smoothing`  | Whether to weight the current progress measure by previous values.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `require_reset`  | Whether changing lesson requires the environment to reset (default: false)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+##### Training with a Curriculum
+
+Once we have specified our metacurriculum and curricula, we can launch
+`mlagents-learn` to point to the config file containing
+our curricula and PPO will train using Curriculum Learning. For example, to
+train agents in the Wall Jump environment with curriculum learning, we can run:
+
+```sh
+mlagents-learn config/ppo/WallJump_curriculum.yaml --run-id=wall-jump-curriculum
+```
+
+We can then keep track of the current lessons and progresses via TensorBoard. If you've terminated
+the run, you can resume it using `--resume` and lesson progress will start off where it
+ended.
+
 
 #### Curriculum
 
