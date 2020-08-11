@@ -37,12 +37,23 @@ class TFSaver(BaseSaver):
 
     def register(self, module: Union[TFPolicy, TFOptimizer]) -> None:
         if isinstance(module, TFPolicy):
-            if self.policy is None:
-                self.policy = module
-                self.graph = self.policy.graph
-                self.sess = self.policy.sess
-                with self.policy.graph.as_default():
-                    self.tf_saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
+            self._register_policy(module)
+        elif isinstance(module, TFOptimizer):
+            self._register_optimizer(module)
+        else:
+            raise UnityPolicyException(
+                "Registering Object of unsupported type {} to Saver ".format(
+                    type(module)
+                )
+            )
+
+    def _register_policy(self, policy: TFPolicy) -> None:
+        if self.policy is None:
+            self.policy = policy
+            self.graph = self.policy.graph
+            self.sess = self.policy.sess
+            with self.policy.graph.as_default():
+                self.tf_saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
 
     def save_checkpoint(self, brain_name: str, step: int) -> str:
         checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{step}")
@@ -64,7 +75,9 @@ class TFSaver(BaseSaver):
         )
 
     def initialize_or_load(self, policy: Optional[TFPolicy] = None) -> None:
-        # If given input policy, load the input policy. Otherwise, load the registered policy.
+        # If there is an initialize path, load from that. Else, load from the set model path.
+        # If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
+        # e.g., resume from an initialize path.
         if policy is None:
             policy = self.policy
         policy = cast(TFPolicy, policy)
