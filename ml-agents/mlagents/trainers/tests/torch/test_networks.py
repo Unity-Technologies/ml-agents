@@ -203,7 +203,11 @@ def test_actor_critic(ac_type, lstm):
             assert value_out[stream].shape == (1,)
 
     # Test get_dist_and_value
-    dists, value_out, _ = actor.get_dist_and_value([sample_obs], [], memories=memories)
+    dists, value_out, mem_out = actor.get_dist_and_value(
+        [sample_obs], [], memories=memories
+    )
+    if mem_out is not None:
+        assert mem_out.shape == memories.shape
     for dist in dists:
         assert isinstance(dist, GaussianDistInstance)
     for stream in stream_names:

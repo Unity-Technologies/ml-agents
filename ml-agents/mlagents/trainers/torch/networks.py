@@ -463,7 +463,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
         if self.use_lstm:
-            mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=1)
+            mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
         else:
             mem_out = None
         return dists, value_outputs, mem_out
