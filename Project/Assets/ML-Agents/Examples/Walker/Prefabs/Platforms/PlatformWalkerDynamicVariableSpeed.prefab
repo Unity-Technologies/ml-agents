@@ -65,7 +65,7 @@ PrefabInstance:
     - target: {fileID: 6907740118844148851, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
       propertyPath: m_Name
-      value: PlatformWalkerDynamicVariableSpeed
+      value: PlatformDynamicTarget
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0d7741d9e06247f6843b921a206b978, type: 3}
@@ -86,7 +86,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 1a6e4a4e15a5d49a7acac1f78bc1f514,
+      objectReference: {fileID: 11400000, guid: dc2e1982748f3474383cc108ef2f7f26,
         type: 3}
     - target: {fileID: 1077752704035527914, guid: 90f3321ab5beb43e28bc651909d99e39,
         type: 3}

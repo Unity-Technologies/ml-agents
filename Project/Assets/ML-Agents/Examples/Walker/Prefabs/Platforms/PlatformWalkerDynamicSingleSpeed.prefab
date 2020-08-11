@@ -66,7 +66,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 11400000, guid: 2c37bf93cad864ba5a91689aa40eba6d,
+      objectReference: {fileID: 11400000, guid: e3bbf8676df3c415dac2a116b343b9f1,
         type: 3}
     - target: {fileID: 8228205183255163001, guid: 095e843732bad4a02b273c01eaff4b26,
         type: 3}
@@ -140,7 +140,7 @@ PrefabInstance:
     - target: {fileID: 6907740118844148851, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
       propertyPath: m_Name
-      value: PlatformWalkerDynamicSingleSpeed
+      value: PlatformDynamicTarget
       objectReference: {fileID: 0}
     - target: {fileID: 6907845698621467345, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}

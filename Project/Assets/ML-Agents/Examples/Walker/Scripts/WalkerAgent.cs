@@ -1,5 +1,4 @@
 using System;
-using MLAgentsExamples;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
@@ -9,7 +8,9 @@ using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
-    [Header("Walk Speed")] [Range(0.1f, 10)] public float targetWalkingSpeed = 10; //The walking speed to try and achieve
+    [Header("Walk Speed")] [Range(0.1f, 10)]
+    public float targetWalkingSpeed = 10; //The walking speed to try and achieve
+
     const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
@@ -17,22 +18,10 @@ public class WalkerAgent : Agent
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
 
-    //The method the agent will use during training to determine walk direction
-    //If UseWorldDirection is selected, the agent will be rewarded for facing worldDirToWalk during training
-    //If UseTarget is selected, the agent will be rewarded for facing target during training
-    //The purpose of this is to be able to give a target to chase OR a direction to walk. This could be useful when...
-    //...making behaviors for player controllers OR NPC behaviors
-    public enum WalkDirectionMethod
-    {
-        UseWorldDirection,
-        UseTarget
-    }
+    //The direction an agent will walk during training.
+    public Vector3 worldDirToWalk = Vector3.right;
 
-    [Header("Walk Direction")] public WalkDirectionMethod walkDirectionMethod;
-    //The direction an agent will walk during training. Only used if UseWorldDirection is selected.
-    public Vector3 worldDirToWalk = Vector3.right; 
-    public Vector3 worldPosToWalkTo; //The position the agent will walk towards.
-    public Transform target; //Target the agent will walk towards.
+    [Header("Target To Walk Towards")] public Transform target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] public Transform hips;
     public Transform chest;
@@ -54,6 +43,7 @@ public class WalkerAgent : Agent
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     OrientationCubeController m_OrientationCube;
+
     //The indicator graphic gameobject that points towards the target
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
@@ -104,12 +94,6 @@ public class WalkerAgent : Agent
 
         UpdateOrientationObjects();
 
-        //Set the initial position to walk to
-        if (walkDirectionMethod == WalkDirectionMethod.UseWorldDirection)
-        {
-            worldPosToWalkTo = hips.position + (worldDirToWalk * 1000);
-        }
-
         //Set our goal walking speed
         targetWalkingSpeed =
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : targetWalkingSpeed;
@@ -147,36 +131,24 @@ public class WalkerAgent : Agent
     {
         var cubeForward = m_OrientationCube.transform.forward;
 
-        //ragdoll's avg vel
+        //velocity we want to match
         var velGoal = cubeForward * targetWalkingSpeed;
+        //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
-        
+
         //current ragdoll velocity. normalized 
         sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
-//        sensor.AddObservation(GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity()));
-
-        //actual vel relative to cube
+        //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
         //vel goal relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
-
-//        sensor.AddObservation(avgVel);
-//        //current speed goal
-//        sensor.AddObservation(targetWalkingSpeed);
 
         //rotation deltas
         sensor.AddObservation(Quaternion.FromToRotation(hips.forward, cubeForward));
         sensor.AddObservation(Quaternion.FromToRotation(head.forward, cubeForward));
 
-        if (walkDirectionMethod == WalkDirectionMethod.UseTarget)
-        {
-            worldPosToWalkTo = target.transform.position;
-        }
-
         //Position of target position relative to cube
-        Vector3 relPos =
-            Vector3.ClampMagnitude(m_OrientationCube.transform.InverseTransformPoint(worldPosToWalkTo), 100);
-        sensor.AddObservation(relPos);
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -224,11 +196,9 @@ public class WalkerAgent : Agent
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-        worldDirToWalk = walkDirectionMethod == WalkDirectionMethod.UseTarget
-            ? target.position - hips.position
-            : worldDirToWalk;
-        m_OrientationCube.UpdateOrientation(hips.position, worldDirToWalk);
-        if(m_DirectionIndicator)
+        worldDirToWalk = target.position - hips.position;
+        m_OrientationCube.UpdateOrientation(hips, target);
+        if (m_DirectionIndicator)
         {
             m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
         }
@@ -243,16 +213,15 @@ public class WalkerAgent : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-//        var matchSpeedReward = GetMatchingVelocityInverseLerp(cubeForward * targetWalkingSpeed, GetAvgVelocity());
         var matchSpeedReward = GetMatchingVelocityReward(cubeForward * targetWalkingSpeed, GetAvgVelocity());
-        
+
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
         {
             throw new ArgumentException(
                 "NaN in moveTowardsTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n"+
-                $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n"+
+                $" cubeForward: {cubeForward}\n" +
+                $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n" +
                 $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
             );
         }
@@ -266,17 +235,17 @@ public class WalkerAgent : Agent
         {
             throw new ArgumentException(
                 "NaN in lookAtTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n"+
+                $" cubeForward: {cubeForward}\n" +
                 $" head.forward: {head.forward}"
             );
         }
-        
+
         AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
     //Returns the average velocity of all of the body parts
     //Using the velocity of the hips only has shown to result in more erratic movement from the limbs, so...
-    //...using the average helps prevent this erratic movment
+    //...using the average helps prevent this erratic movement
     Vector3 GetAvgVelocity()
     {
         Vector3 velSum = Vector3.zero;
