@@ -119,9 +119,15 @@ The ML-Agents training program saves the following statistics:
   skill level between two players. In a proper training run, the ELO of the
   agent should steadily increase.
 
+## Exporting Data from TensorBoard
+To export timeseries data in CSV or JSON format, check the "Show data download
+links" in the upper left. This will enable download links below each chart.
+
+![Example TensorBoard Run](images/TensorBoard-download.png)
+
 ## Custom Metrics from Unity
 
-To get custom metrics from a C# environment into Tensorboard, you can use the
+To get custom metrics from a C# environment into TensorBoard, you can use the
 `StatsRecorder`:
 
 ```csharp
