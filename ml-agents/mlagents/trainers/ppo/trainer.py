@@ -254,7 +254,7 @@ class PPOTrainer(RLTrainer):
         self,
         parsed_behavior_id: BehaviorIdentifiers,
         policy: Policy,
-        create_saver: bool = True,
+        register_saver: bool = True,
     ) -> None:
         """
         Adds policy to trainer.
@@ -281,17 +281,10 @@ class PPOTrainer(RLTrainer):
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-        if self.saver is None and create_saver:
-            self.saver = self.create_saver(
-                self.framework,
-                policy,
-                self.trainer_settings,
-                self.artifact_path,
-                self.load,
-            )
+        if register_saver:
             self.saver.register(self.policy)
             self.saver.register(self.optimizer)
-            self.saver.maybe_load()
+            self.saver.initialize_or_load(self.policy)
 
         # Needed to resume loads properly
         self.step = policy.get_current_step()

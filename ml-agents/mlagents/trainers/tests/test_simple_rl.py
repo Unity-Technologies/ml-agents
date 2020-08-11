@@ -300,7 +300,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    step_size = 0.2 if use_discrete else 1.0
+    step_size = 0.5 if use_discrete else 0.2
     env = MemoryEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
     )
@@ -389,7 +389,7 @@ def test_simple_asymm_ghost_fails(use_discrete):
         swap_steps=5000,
         team_change=2000,
     )
-    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2000)
+    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=3000)
     _check_environment_trains(
         env, {BRAIN_NAME: config, brain_name_opp: config}, success_threshold=None
     )

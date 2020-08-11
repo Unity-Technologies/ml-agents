@@ -23,7 +23,7 @@ class FakeTrainer(RLTrainer):
     def _update_policy(self):
         return self.update_policy
 
-    def add_policy(self, mock_behavior_id, mock_policy, create_saver=True):
+    def add_policy(self, mock_behavior_id, mock_policy):
         def checkpoint_path(brain_name, step):
             return os.path.join(self.saver.model_path, f"{brain_name}-{step}")
 
@@ -33,20 +33,14 @@ class FakeTrainer(RLTrainer):
         mock_saver.save_checkpoint.side_effect = checkpoint_path
         self.saver = mock_saver
 
-    def create_tf_policy(self):
+    def create_tf_policy(self, parsed_behavior_id, behavior_spec):
         return mock.Mock()
-
-    def create_torch_policy(self):
-        return mock.Mock()
-
-    def _process_trajectory(self, trajectory):
-        super()._process_trajectory(trajectory)
 
     def create_torch_policy(self, parsed_behavior_id, behavior_spec):
         return mock.Mock()
 
-    def create_tf_policy(self, parsed_behavior_id, behavior_spec):
-        return mock.Mock()
+    def _process_trajectory(self, trajectory):
+        super()._process_trajectory(trajectory)
 
 
 def create_rl_trainer():

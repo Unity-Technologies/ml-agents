@@ -70,4 +70,4 @@ class ModelSerializer:
             output_names=self.output_names,
             dynamic_axes=self.dynamic_axes,
         )
-        logger.info(f"Exported {onnx_output_path}.onnx")
+        logger.info(f"Exported {onnx_output_path}")

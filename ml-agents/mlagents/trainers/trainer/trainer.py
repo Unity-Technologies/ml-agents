@@ -137,7 +137,7 @@ class Trainer(abc.ABC):
         self,
         parsed_behavior_id: BehaviorIdentifiers,
         policy: Policy,
-        create_saver: bool = True,
+        register_saver: bool = True,
     ) -> None:
         """
         Adds policy to trainer.

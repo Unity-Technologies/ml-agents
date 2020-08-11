@@ -4,7 +4,6 @@ from collections import defaultdict
 import abc
 import time
 import attr
-from mlagents.model_serialization import copy_model_files
 from mlagents.trainers.policy.checkpoint_manager import (
     NNCheckpoint,
     NNCheckpointManager,
@@ -22,7 +21,11 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.settings import TestingConfiguration, TrainerSettings, FrameworkType
+from mlagents.trainers.settings import (
+    TestingConfiguration,
+    TrainerSettings,
+    FrameworkType,
+)
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.saver.torch_saver import TorchSaver
@@ -64,7 +67,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
         self._next_summary_step = 0
-        self.saver = None
+        self.saver = self.create_saver(
+            self.framework, self.trainer_settings, self.artifact_path, self.load
+        )
 
     def end_episode(self) -> None:
         """
@@ -145,25 +150,15 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
     @staticmethod
     def create_saver(
-        framework: str,
-        policy: Policy,
-        trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool,
+        framework: str, trainer_settings: TrainerSettings, model_path: str, load: bool
     ) -> BaseSaver:
         if framework == "torch":
             saver = TorchSaver(  # type: ignore
-                policy,  # type: ignore
-                trainer_settings,
-                model_path,
-                load,
+                trainer_settings, model_path, load
             )
         else:
             saver = TFSaver(  # type: ignore
-                policy,  # type: ignore
-                trainer_settings,
-                model_path,
-                load,
+                trainer_settings, model_path, load
             )
         return saver
 
@@ -211,10 +206,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             return
 
         model_checkpoint = self._checkpoint()
-
-        # Copy the checkpointed model files to the final output location
-        copy_model_files(model_checkpoint.file_path, f"{policy.model_path}.nn")
-
+        self.saver.copy_final_model(model_checkpoint.file_path)
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{self.saver.model_path}.nn"
         )
