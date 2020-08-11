@@ -389,7 +389,7 @@ def test_simple_asymm_ghost_fails(use_discrete):
         swap_steps=5000,
         team_change=2000,
     )
-    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2000)
+    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=3000)
     _check_environment_trains(
         env, {BRAIN_NAME: config, brain_name_opp: config}, success_threshold=None
     )
