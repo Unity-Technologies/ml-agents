@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Sensors;
@@ -61,7 +62,13 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
 
             // Getting a parent index should throw an index exception
+            Assert.Throws <NullReferenceException>(
+                () => poseExtractor.GetParentIndex(0)
+            );
 
+            // DisplayNodes should be empty
+            var displayNodes = poseExtractor.GetDisplayNodes();
+            Assert.AreEqual(0, displayNodes.Count);
         }
 
         [Test]
