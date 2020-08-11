@@ -1,4 +1,5 @@
 using System;
+
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
@@ -94,26 +95,25 @@ namespace Unity.MLAgents.Extensions.Sensors
             var offset = baseOffset;
             if (settings.UseModelSpace)
             {
-                foreach (var pose in poseExtractor.GetEnabledModelSpacePoses())
+                var poses = poseExtractor.ModelSpacePoses;
+                var vels = poseExtractor.ModelSpaceVelocities;
+
+                for(var i=0; i<poseExtractor.NumPoses; i++)
                 {
-                    if (settings.UseModelSpaceTranslations)
+                    var pose = poses[i];
+                    if(settings.UseModelSpaceTranslations)
                     {
                         writer.Add(pose.position, offset);
                         offset += 3;
                     }
-
                     if (settings.UseModelSpaceRotations)
                     {
                         writer.Add(pose.rotation, offset);
                         offset += 4;
                     }
-                }
-
-                foreach(var vel in poseExtractor.GetEnabledModelSpaceVelocities())
-                {
                     if (settings.UseModelSpaceLinearVelocity)
                     {
-                        writer.Add(vel, offset);
+                        writer.Add(vels[i], offset);
                         offset += 3;
                     }
                 }
@@ -121,26 +121,25 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             if (settings.UseLocalSpace)
             {
-                foreach (var pose in poseExtractor.GetEnabledLocalSpacePoses())
+                var poses = poseExtractor.LocalSpacePoses;
+                var vels = poseExtractor.LocalSpaceVelocities;
+
+                for(var i=0; i<poseExtractor.NumPoses; i++)
                 {
-                    if (settings.UseLocalSpaceTranslations)
+                    var pose = poses[i];
+                    if(settings.UseLocalSpaceTranslations)
                     {
                         writer.Add(pose.position, offset);
                         offset += 3;
                     }
-
                     if (settings.UseLocalSpaceRotations)
                     {
                         writer.Add(pose.rotation, offset);
                         offset += 4;
                     }
-                }
-
-                foreach(var vel in poseExtractor.GetEnabledLocalSpaceVelocities())
-                {
                     if (settings.UseLocalSpaceLinearVelocity)
                     {
-                        writer.Add(vel, offset);
+                        writer.Add(vels[i], offset);
                         offset += 3;
                     }
                 }

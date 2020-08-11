@@ -44,12 +44,7 @@ repos:
     hooks:
     -   id: pyupgrade
         args: [--py3-plus, --py36-plus]
-        exclude: >
-            (?x)^(
-                .*barracuda.py|
-                .*_pb2.py|
-                .*_pb2_grpc.py
-            )$
+        exclude: .*barracuda.py
 
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
