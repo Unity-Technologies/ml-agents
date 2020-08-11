@@ -442,12 +442,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 33
+    VectorObservationSize: 64
     NumStackedVectorObservations: 1
     VectorActionSize: 04000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: d7bdb6a78154f4cf99437d67e4a569a8, type: 3}
+  m_Model: {fileID: 11400000, guid: 66e38dc39b8474661869e59a21ed2837, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Reacher
@@ -474,6 +474,10 @@ MonoBehaviour:
   pendulumB: {fileID: 1053261483945176}
   hand: {fileID: 1654288206095398}
   goal: {fileID: 1986879271678326}
+  ballType: {fileID: 5201734347965269897, guid: e8c6f72829ec74637bd6a43f963ff9f8,
+    type: 3}
+  ballRange: 10
+  ballNumber: 10
 --- !u!114 &6226801880261327134
 MonoBehaviour:
   m_ObjectHideFlags: 0
