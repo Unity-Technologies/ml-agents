@@ -303,9 +303,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var localUp = localPose[i].rotation * Vector3.up;
                 var localFwd = localPose[i].rotation * Vector3.forward;
                 var localRight = localPose[i].rotation * Vector3.right;
-                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localUp, Color.red);
-                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localFwd, Color.green);
-                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localRight, Color.blue);
+                Debug.DrawLine(current.position + offset, current.position + offset + .1f * localUp, Color.red);
+                Debug.DrawLine(current.position + offset, current.position + offset + .1f * localFwd, Color.green);
+                Debug.DrawLine(current.position + offset, current.position + offset + .1f * localRight, Color.blue);
             }
         }
     }

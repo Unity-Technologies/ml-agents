@@ -17,6 +17,7 @@ namespace Unity.MLAgents.Tests.Actuators
             var segment = new ActionSegment<float>(Array.Empty<float>(), 0, 0);
             Assert.AreEqual(segment, ActionSegment<float>.Empty);
         }
+
         [Test]
         public void TestIndexing()
         {
@@ -49,7 +50,5 @@ namespace Unity.MLAgents.Tests.Actuators
                 }
             }
         }
-
     }
-
 }

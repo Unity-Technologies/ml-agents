@@ -61,7 +61,7 @@ namespace Unity.MLAgents.Tests
         }
 
         public void Update() {}
-        public void Reset() { }
+        public void Reset() {}
 
         public SensorCompressionType GetCompressionType()
         {

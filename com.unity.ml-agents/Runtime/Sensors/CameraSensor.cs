@@ -110,7 +110,7 @@ namespace Unity.MLAgents.Sensors
         public void Update() {}
 
         /// <inheritdoc/>
-        public void Reset() { }
+        public void Reset() {}
 
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()

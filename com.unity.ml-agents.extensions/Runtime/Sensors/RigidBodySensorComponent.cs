@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Editor component that creates a PhysicsBodySensor for the Agent.
     /// </summary>
-    public class RigidBodySensorComponent  : SensorComponent
+    public class RigidBodySensorComponent : SensorComponent
     {
         /// <summary>
         /// The root Rigidbody of the system.
@@ -62,5 +62,4 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new[] { numPoseObservations + numJointObservations };
         }
     }
-
 }

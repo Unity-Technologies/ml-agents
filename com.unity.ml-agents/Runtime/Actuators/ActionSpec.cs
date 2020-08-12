@@ -10,7 +10,6 @@ namespace Unity.MLAgents.Actuators
     /// </summary>
     internal readonly struct ActionSpec
     {
-
         /// <summary>
         /// An array of branch sizes for our action space.
         ///

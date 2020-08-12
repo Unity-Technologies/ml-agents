@@ -123,7 +123,6 @@ namespace Unity.MLAgents.Demonstrations
             agentProto.WriteDelimitedTo(m_Writer);
         }
 
-
         /// <summary>
         /// Performs all clean-up necessary.
         /// </summary>

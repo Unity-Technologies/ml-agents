@@ -46,8 +46,8 @@ namespace Unity.MLAgents.Tests
             return this.ObservationSize();
         }
 
-        public void Update() { }
-        public void Reset() { }
+        public void Update() {}
+        public void Reset() {}
 
         public SensorCompressionType GetCompressionType()
         {
@@ -57,7 +57,6 @@ namespace Unity.MLAgents.Tests
 
     public class SensorShapeValidatorTests
     {
-
         [Test]
         public void TestShapesAgree()
         {
@@ -86,6 +85,7 @@ namespace Unity.MLAgents.Tests
             LogAssert.Expect(LogType.Assert, "Number of Sensors must match. 2 != 3");
             validator.ValidateSensors(sensorList1);
         }
+
         [Test]
         public void TestDimensionMismatch()
         {

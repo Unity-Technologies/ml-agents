@@ -210,7 +210,6 @@ namespace Unity.MLAgents.Actuators
             }
         }
 
-
         /// <summary>
         /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.GetName"/> value.
         /// </summary>

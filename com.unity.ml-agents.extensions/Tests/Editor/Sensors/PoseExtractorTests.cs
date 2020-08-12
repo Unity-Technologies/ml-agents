@@ -45,7 +45,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(2, poseExtractor.NumPoses);
         }
 
-
         /// <summary>
         /// A simple "chain" hierarchy, where each object is parented to the one before it.
         ///   0 <- 1 <- 2 <- ...
@@ -78,7 +77,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             {
                 return Vector3.zero;
             }
-
         }
 
         [Test]
@@ -104,7 +102,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 {
                     var expectedModelTranslation = new Vector3(modelPoseIndex, modelPoseIndex, modelPoseIndex);
                     Assert.IsTrue(expectedModelTranslation == modelSpace.position);
-
                 }
                 modelPoseIndex++;
             }
@@ -182,6 +179,5 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             Assert.IsTrue(Pose.identity == product);
         }
-
     }
 }

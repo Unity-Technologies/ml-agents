@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-
     /// <summary>
     /// Utility class to track a hierarchy of RigidBodies. These are assumed to have a root node,
     /// and child nodes are connect to their parents via Joints.
@@ -49,7 +48,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return;
             }
 
-                if (rbs[0] != rootBody)
+            if (rbs[0] != rootBody)
             {
                 Debug.Log("Expected root body at index 0");
                 return;
@@ -74,13 +73,13 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             for (var i = 0; i < rbs.Length; i++)
             {
-                if(rbs[i] != null)
+                if (rbs[i] != null)
                 {
                     bodyToIndex[rbs[i]] = i;
                 }
             }
 
-            var joints = rootBody.GetComponentsInChildren <Joint>();
+            var joints = rootBody.GetComponentsInChildren<Joint>();
 
 
             foreach (var j in joints)
@@ -137,5 +136,4 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         internal Rigidbody[] Bodies => m_Bodies;
     }
-
 }

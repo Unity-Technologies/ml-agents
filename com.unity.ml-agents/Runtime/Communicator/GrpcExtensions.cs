@@ -27,7 +27,7 @@ namespace Unity.MLAgents
             var agentInfoProto = ai.ToAgentInfoProto();
 
             var agentActionProto = new AgentActionProto();
-            if(ai.storedVectorActions != null)
+            if (ai.storedVectorActions != null)
             {
                 agentActionProto.VectorActions.AddRange(ai.storedVectorActions);
             }
@@ -80,7 +80,6 @@ namespace Unity.MLAgents
             return summariesOut;
         }
 
-
         #endregion
 
         #region BrainParameters
@@ -96,11 +95,11 @@ namespace Unity.MLAgents
             var brainParametersProto = new BrainParametersProto
             {
                 VectorActionSize = { bp.VectorActionSize },
-                VectorActionSpaceType = (SpaceTypeProto) bp.VectorActionSpaceType,
+                VectorActionSpaceType = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
-            if(bp.VectorActionDescriptions != null)
+            if (bp.VectorActionDescriptions != null)
             {
                 brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
             }
@@ -161,6 +160,7 @@ namespace Unity.MLAgents
             }
             return dm;
         }
+
         #endregion
 
         public static UnityRLInitParameters ToUnityRLInitParameters(this UnityRLInitializationInputProto inputProto)
@@ -192,6 +192,7 @@ namespace Unity.MLAgents
             }
             return agentActions;
         }
+
         #endregion
 
         #region Observations
@@ -272,7 +273,7 @@ namespace Unity.MLAgents
                         $"GetCompressedObservation() returned null data for sensor named {sensor.GetName()}. " +
                         "You must return a byte[]. If you don't want to use compressed observations, " +
                         "return SensorCompressionType.None from GetCompressionType()."
-                        );
+                    );
                 }
 
                 observationProto = new ObservationProto
@@ -284,6 +285,7 @@ namespace Unity.MLAgents
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }
+
         #endregion
 
         public static UnityRLCapabilities ToRLCapabilities(this UnityRLCapabilitiesProto proto)

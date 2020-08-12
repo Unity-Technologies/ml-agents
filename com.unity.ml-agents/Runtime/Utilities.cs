@@ -78,7 +78,6 @@ namespace Unity.MLAgents
 #if DEBUG
         internal static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
         {
-
             if (float.IsNaN(value))
             {
                 throw new ArgumentException($"NaN {valueCategory} passed to {caller}.");
@@ -88,7 +87,7 @@ namespace Unity.MLAgents
                 throw new ArgumentException($"Inifinity {valueCategory} passed to {caller}.");
             }
         }
+
 #endif
     }
-
 }

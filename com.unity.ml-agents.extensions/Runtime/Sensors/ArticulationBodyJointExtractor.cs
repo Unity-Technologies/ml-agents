@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 for (var dofIndex = 0; dofIndex < m_Body.dofCount; dofIndex++)
                 {
                     // take tanh to keep in [-1, 1]
-                    writer[currentOffset++] = (float) System.Math.Tanh(m_Body.jointForce[dofIndex]);
+                    writer[currentOffset++] = (float)System.Math.Tanh(m_Body.jointForce[dofIndex]);
                 }
             }
 
@@ -140,7 +140,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return normalized;
             }
             // take tanh() to keep in [-1, 1]
-            return (float) System.Math.Tanh(jointPos);
+            return (float)System.Math.Tanh(jointPos);
         }
     }
 }

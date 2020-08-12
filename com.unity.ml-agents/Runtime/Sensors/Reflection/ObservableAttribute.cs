@@ -217,8 +217,8 @@ namespace Unity.MLAgents.Sensors.Reflection
             }
             else
             {
-                var (_, sensorType) = s_TypeToSensorInfo[memberType];
-                sensor = (ISensor) Activator.CreateInstance(sensorType, reflectionSensorInfo);
+                var(_, sensorType) = s_TypeToSensorInfo[memberType];
+                sensor = (ISensor)Activator.CreateInstance(sensorType, reflectionSensorInfo);
             }
 
             // Wrap the base sensor in a StackingSensor if we're using stacking.
@@ -245,7 +245,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             {
                 if (s_TypeToSensorInfo.ContainsKey(field.FieldType))
                 {
-                    var (obsSize, _) = s_TypeToSensorInfo[field.FieldType];
+                    var(obsSize, _) = s_TypeToSensorInfo[field.FieldType];
                     sizeOut += obsSize * attr.m_NumStackedObservations;
                 }
                 else if (field.FieldType.IsEnum)
@@ -266,7 +266,7 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
                 else if (s_TypeToSensorInfo.ContainsKey(prop.PropertyType))
                 {
-                    var (obsSize, _) = s_TypeToSensorInfo[prop.PropertyType];
+                    var(obsSize, _) = s_TypeToSensorInfo[prop.PropertyType];
                     sizeOut += obsSize * attr.m_NumStackedObservations;
                 }
                 else if (prop.PropertyType.IsEnum)

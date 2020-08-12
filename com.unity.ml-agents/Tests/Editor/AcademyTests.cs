@@ -53,7 +53,5 @@ namespace Unity.MLAgents.Tests
             // Make sure the Academy reset to a good state and is still steppable.
             Academy.Instance.EnvironmentStep();
         }
-
-
     }
 }

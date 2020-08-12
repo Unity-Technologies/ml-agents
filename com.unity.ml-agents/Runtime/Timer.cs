@@ -223,7 +223,7 @@ namespace Unity.MLAgents
         [DataMember(Name = "gauges", EmitDefaultValue = false)]
         Dictionary<string, GaugeNode> m_Gauges = new Dictionary<string, GaugeNode>();
 
-        public RootNode(string name="root") : base(name, true)
+        public RootNode(string name = "root") : base(name, true)
         {
             m_Metadata.Add("timer_format_version", k_TimerFormatVersion);
             m_Metadata.Add("start_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");

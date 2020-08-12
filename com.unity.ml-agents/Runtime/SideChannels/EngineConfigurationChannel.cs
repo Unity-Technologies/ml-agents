@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.SideChannels
 {
-
     /// <summary>
     /// Side channel that supports modifying attributes specific to the Unity Engine.
     /// </summary>

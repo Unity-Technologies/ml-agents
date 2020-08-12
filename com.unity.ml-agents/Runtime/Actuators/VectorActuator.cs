@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Actuators
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-                m_ActionReceiver.WriteDiscreteActionMask(actionMask);
+            m_ActionReceiver.WriteDiscreteActionMask(actionMask);
         }
 
         /// <summary>

@@ -32,7 +32,6 @@ namespace Unity.MLAgents.SideChannels
         /// Samples a reset parameter from a MultiRangeUniform distribution.
         /// </summary>
         MultiRangeUniform = 2
-
     }
 
     /// <summary>
@@ -94,7 +93,8 @@ namespace Unity.MLAgents.SideChannels
                     IList<float> intervals = msg.ReadFloatList();
                     sampler = SamplerFactory.CreateMultiRangeUniformSampler(intervals, seed);
                 }
-                else{
+                else
+                {
                     Debug.LogWarning("EnvironmentParametersChannel received an unknown data type.");
                 }
                 m_Parameters[key] = sampler;

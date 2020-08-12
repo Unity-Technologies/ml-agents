@@ -74,7 +74,6 @@ namespace Unity.MLAgents
                 {
                     return false;
                 }
-
             }
             else if (unityVersion.Major != pythonVersion.Major)
             {

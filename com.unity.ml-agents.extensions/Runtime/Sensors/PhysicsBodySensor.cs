@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             GameObject rootGameObject,
             GameObject virtualRoot,
             PhysicsSensorSettings settings,
-            string sensorName=null
+            string sensorName = null
         )
         {
             var poseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject, virtualRoot);
@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
 #if UNITY_2020_1_OR_NEWER
-        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
+        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName = null)
         {
             var poseExtractor = new ArticulationBodyPoseExtractor(rootBody);
             m_PoseExtractor = poseExtractor;
@@ -85,6 +85,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
             m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
         }
+
 #endif
 
         /// <inheritdoc/>

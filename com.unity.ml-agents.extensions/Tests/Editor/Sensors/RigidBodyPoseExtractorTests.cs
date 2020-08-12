@@ -97,7 +97,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             // body 1 has parent 0
             Assert.AreEqual(0, poseExtractor.GetParentIndex(1));
 
-            var virtualRootPos = new Vector3(0,2,0);
+            var virtualRootPos = new Vector3(0, 2, 0);
             var virtualRootRot = Quaternion.Euler(0, 42, 0);
             virtualRoot.transform.position = virtualRootPos;
             virtualRoot.transform.rotation = virtualRootRot;

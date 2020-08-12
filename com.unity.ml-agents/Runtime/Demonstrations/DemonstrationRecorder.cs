@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Demonstrations
         /// </summary>
         [FormerlySerializedAs("demonstrationName")]
         [Tooltip("Base demonstration file name. If multiple files are saved, the additional " +
-                 "filenames will have a unique number appended.")]
+            "filenames will have a unique number appended.")]
         public string DemonstrationName;
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Demonstrations
         /// </summary>
         [FormerlySerializedAs("demonstrationDirectory")]
         [Tooltip("Directory to save the demo files. Will default to " +
-                 "{Application.dataPath}/Demonstrations if not specified.")]
+            "{Application.dataPath}/Demonstrations if not specified.")]
         public string DemonstrationDirectory;
 
         DemonstrationWriter m_DemoWriter;

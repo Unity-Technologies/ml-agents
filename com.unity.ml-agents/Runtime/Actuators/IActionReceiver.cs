@@ -64,7 +64,6 @@ namespace Unity.MLAgents.Actuators
     /// </summary>
     internal interface IActionReceiver
     {
-
         /// <summary>
         /// The specification of the Action space for this IActionReceiver.
         /// </summary>

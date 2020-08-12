@@ -4,7 +4,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-    public class ArticulationBodySensorComponent  : SensorComponent
+    public class ArticulationBodySensorComponent : SensorComponent
     {
         public ArticulationBody RootBody;
 
@@ -44,6 +44,5 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new[] { numPoseObservations + numJointObservations };
         }
     }
-
 }
 #endif // UNITY_2020_1_OR_NEWER
