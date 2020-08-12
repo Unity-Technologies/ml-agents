@@ -21,6 +21,7 @@ class Tensor3DShape(NamedTuple):
 
 
 class NormalizerTensors(NamedTuple):
+    init_op: tf.Operation
     update_op: tf.Operation
     steps: tf.Tensor
     running_mean: tf.Tensor
@@ -187,8 +188,8 @@ class ModelUtils:
         :return: A NormalizerTensors tuple that holds running mean, running variance, number of steps,
             and the update operation.
         """
-
         vec_obs_size = vector_obs.shape[1]
+
         steps = tf.get_variable(
             "normalization_steps",
             [],
@@ -210,11 +211,15 @@ class ModelUtils:
             dtype=tf.float32,
             initializer=tf.ones_initializer(),
         )
-        update_normalization = ModelUtils.create_normalizer_update(
+        initialize_normalization, update_normalization = ModelUtils.create_normalizer_update(
             vector_obs, steps, running_mean, running_variance
         )
         return NormalizerTensors(
-            update_normalization, steps, running_mean, running_variance
+            initialize_normalization,
+            update_normalization,
+            steps,
+            running_mean,
+            running_variance,
         )
 
     @staticmethod
@@ -223,7 +228,7 @@ class ModelUtils:
         steps: tf.Tensor,
         running_mean: tf.Tensor,
         running_variance: tf.Tensor,
-    ) -> tf.Operation:
+    ) -> Tuple[tf.Operation, tf.Operation]:
         """
         Creates the update operation for the normalizer.
         :param vector_input: Vector observation to use for updating the running mean and variance.
@@ -250,7 +255,18 @@ class ModelUtils:
         update_mean = tf.assign(running_mean, new_mean)
         update_variance = tf.assign(running_variance, new_variance)
         update_norm_step = tf.assign(steps, total_new_steps)
-        return tf.group([update_mean, update_variance, update_norm_step])
+        # First mean and variance calculated normally
+        initial_mean, initial_variance = tf.nn.moments(vector_input, axes=[0])
+        initialize_mean = tf.assign(running_mean, initial_mean)
+        # Multiplied by total_new_step because it is divided by total_new_step in the normalization
+        initialize_variance = tf.assign(
+            running_variance,
+            (initial_variance + EPSILON) * tf.cast(total_new_steps, dtype=tf.float32),
+        )
+        return (
+            tf.group([initialize_mean, initialize_variance, update_norm_step]),
+            tf.group([update_mean, update_variance, update_norm_step]),
+        )
 
     @staticmethod
     def create_vector_observation_encoder(
