@@ -25,8 +25,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="rootGameObject">Optional GameObject used to find Rigidbodies in the hierarchy.</param>
         /// <param name="virtualRoot">Optional GameObject used to determine the root of the poses,
         /// separate from the actual Rigidbodies in the hierarchy. For locomotion tasks, with ragdolls, this provides
-        /// a stabilized refernece frame, which can improve learning.</param>
-        public RigidBodyPoseExtractor(Rigidbody rootBody, GameObject rootGameObject = null, GameObject virtualRoot = null)
+        /// a stabilized reference frame, which can improve learning.</param>
+        /// <param name="enableBodyPoses">Optional mapping of whether a body's psoe should be enabled or not.</param>
+        public RigidBodyPoseExtractor(Rigidbody rootBody, GameObject rootGameObject = null,
+            GameObject virtualRoot = null, Dictionary<Rigidbody, bool> enableBodyPoses = null)
         {
             if (rootBody == null)
             {
@@ -34,13 +36,16 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
 
             Rigidbody[] rbs;
+            Joint[] joints;
             if (rootGameObject == null)
             {
                 rbs = rootBody.GetComponentsInChildren<Rigidbody>();
+                joints = rootBody.GetComponentsInChildren <Joint>();
             }
             else
             {
                 rbs = rootGameObject.GetComponentsInChildren<Rigidbody>();
+                joints = rootGameObject.GetComponentsInChildren<Joint>();
             }
 
             if (rbs == null || rbs.Length == 0)
@@ -49,7 +54,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return;
             }
 
-                if (rbs[0] != rootBody)
+            if (rbs[0] != rootBody)
             {
                 Debug.Log("Expected root body at index 0");
                 return;
@@ -80,9 +85,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
             }
 
-            var joints = rootBody.GetComponentsInChildren <Joint>();
-
-
             foreach (var j in joints)
             {
                 var parent = j.connectedBody;
@@ -105,6 +107,18 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             // By default, ignore the root
             SetPoseEnabled(0, false);
+
+            if (enableBodyPoses != null)
+            {
+                foreach (var pair in enableBodyPoses)
+                {
+                    var rb = pair.Key;
+                    if (bodyToIndex.TryGetValue(rb, out var index))
+                    {
+                        SetPoseEnabled(index, pair.Value);
+                    }
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -135,7 +149,61 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new Pose { rotation = body.rotation, position = body.position };
         }
 
+        /// <inheritdoc/>
+        protected internal override Object GetObjectAt(int index)
+        {
+            if (index == 0 && m_VirtualRoot != null)
+            {
+                return m_VirtualRoot;
+            }
+            return m_Bodies[index];
+        }
+
         internal Rigidbody[] Bodies => m_Bodies;
+
+        /// <summary>
+        /// Get a dictionary indicating which Rigidbodies' poses are enabled or disabled.
+        /// </summary>
+        /// <returns></returns>
+        internal Dictionary<Rigidbody, bool> GetBodyPosesEnabled()
+        {
+            var bodyPosesEnabled = new Dictionary<Rigidbody, bool>(m_Bodies.Length);
+            for (var i = 0; i < m_Bodies.Length; i++)
+            {
+                var rb = m_Bodies[i];
+                if (rb == null)
+                {
+                    continue; // skip virtual root
+                }
+
+                bodyPosesEnabled[rb] = IsPoseEnabled(i);
+            }
+
+            return bodyPosesEnabled;
+        }
+
+        internal IEnumerable<Rigidbody> GetEnabledRigidbodies()
+        {
+            if (m_Bodies == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_Bodies.Length; i++)
+            {
+                var rb = m_Bodies[i];
+                if (rb == null)
+                {
+                    // Ignore a virtual root.
+                    continue;
+                }
+
+                if (IsPoseEnabled(i))
+                {
+                    yield return rb;
+                }
+            }
+        }
     }
 
 }
