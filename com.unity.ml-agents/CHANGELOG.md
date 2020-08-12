@@ -20,7 +20,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
-## [1.3.0-preview] 2020-08-12
+## [1.3.0-preview] - 2020-08-12
 
 ### Major Changes
 #### com.unity.ml-agents (C#)
