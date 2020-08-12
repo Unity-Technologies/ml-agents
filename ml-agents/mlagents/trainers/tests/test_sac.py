@@ -5,6 +5,7 @@ import copy
 from mlagents.tf_utils import tf
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -128,8 +129,9 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 
+@mock.patch.object(RLTrainer, "create_saver")
 @mock.patch("mlagents.trainers.sac.trainer.SACOptimizer")
-def test_add_get_policy(sac_optimizer, dummy_config):
+def test_add_get_policy(sac_optimizer, mock_create_saver, dummy_config):
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     sac_optimizer.return_value = mock_optimizer
@@ -138,7 +140,7 @@ def test_add_get_policy(sac_optimizer, dummy_config):
     policy = mock.Mock(spec=TFPolicy)
     policy.get_current_step.return_value = 2000
     behavior_id = BehaviorIdentifiers.from_name_behavior_id(trainer.brain_name)
-    trainer.add_policy(behavior_id, policy, register_saver=False)
+    trainer.add_policy(behavior_id, policy)
     assert trainer.get_policy(behavior_id.behavior_id) == policy
 
     # Make sure the summary steps were loaded properly

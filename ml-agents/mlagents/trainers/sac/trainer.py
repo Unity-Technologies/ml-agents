@@ -310,10 +310,7 @@ class SACTrainer(RLTrainer):
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
     def add_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        policy: Policy,
-        register_saver: bool = True,
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to trainer.
@@ -333,10 +330,9 @@ class SACTrainer(RLTrainer):
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-        if register_saver:
-            self.saver.register(self.policy)
-            self.saver.register(self.optimizer)
-            self.saver.initialize_or_load()
+        self.saver.register(self.policy)
+        self.saver.register(self.optimizer)
+        self.saver.initialize_or_load()
 
         # Needed to resume loads properly
         self.step = policy.get_current_step()
