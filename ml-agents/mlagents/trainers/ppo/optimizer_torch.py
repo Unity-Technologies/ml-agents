@@ -138,7 +138,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if self.policy.use_continuous_act:
             actions = ModelUtils.list_to_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.bool)
+            actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.long)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
