@@ -61,12 +61,15 @@ class TorchPPOOptimizer(TorchOptimizer):
         old_values: Dict[str, torch.Tensor],
         returns: Dict[str, torch.Tensor],
         epsilon: float,
+        loss_masks: torch.Tensor,
     ) -> torch.Tensor:
         """
-        Creates training-specific Tensorflow ops for PPO models.
-        :param returns:
-        :param old_values:
-        :param values:
+        Evaluates value loss for PPO.
+        :param values: Value output of the current network.
+        :param old_values: Value stored with experiences in buffer.
+        :param returns: Computed returns.
+        :param epsilon: Clipping value for value estimate.
+        :param loss_mask: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
         """
         value_losses = []
         for name, head in values.items():
@@ -77,18 +80,25 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             v_opt_a = (returns_tensor - head) ** 2
             v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            value_loss = torch.mean(torch.max(v_opt_a, v_opt_b))
+            masked_loss = torch.max(v_opt_a, v_opt_b) * loss_masks
+            value_loss = torch.mean(masked_loss)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
 
-    def ppo_policy_loss(self, advantages, log_probs, old_log_probs, masks):
+    def ppo_policy_loss(
+        self,
+        advantages: torch.Tensor,
+        log_probs: torch.Tensor,
+        old_log_probs: torch.Tensor,
+        loss_masks: torch.Tensor,
+    ) -> torch.Tensor:
         """
-        Creates training-specific Tensorflow ops for PPO models.
-        :param masks:
-        :param advantages:
+        Evaluate PPO policy loss.
+        :param advantages: Computed advantages.
         :param log_probs: Current policy probabilities
         :param old_log_probs: Past policy probabilities
+        :param loss_masks: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
         """
         advantage = advantages.unsqueeze(-1)
 
@@ -99,7 +109,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         p_opt_b = (
             torch.clamp(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * advantage
         )
-        policy_loss = -torch.mean(torch.min(p_opt_a, p_opt_b))
+        masked_loss = torch.min(p_opt_a, p_opt_b) * loss_masks
+        policy_loss = -torch.mean(masked_loss)
         return policy_loss
 
     @timed
@@ -153,14 +164,21 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        value_loss = self.ppo_value_loss(values, old_values, returns, decay_eps)
+        loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.int32)
+        value_loss = self.ppo_value_loss(
+            values, old_values, returns, decay_eps, loss_masks
+        )
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
             ModelUtils.list_to_tensor(batch["action_probs"]),
-            ModelUtils.list_to_tensor(batch["masks"], dtype=torch.int32),
+            loss_masks,
         )
-        loss = policy_loss + 0.5 * value_loss - decay_bet * torch.mean(entropy)
+        loss = (
+            policy_loss
+            + 0.5 * value_loss
+            - decay_bet * torch.mean(entropy * loss_masks)
+        )
 
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)
