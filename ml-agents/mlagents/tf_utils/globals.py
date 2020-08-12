@@ -1,13 +1,8 @@
-try:
-    import horovod.tensorflow as hvd
-except ImportError:
-    hvd = None
+from typing import Optional
+
+_rank: Optional[int] = None
+_local_rank: Optional[int] = None
 
 
-def get_hvd():
-    return hvd
-
-
-def get_rank():
-    rank = hvd.rank() if hvd else None
-    return rank
+def get_rank() -> Optional[int]:
+    return _rank
