@@ -14,6 +14,7 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
+from mlagents.trainers.torch.layers import lstm_layer
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -50,7 +51,7 @@ class NetworkBody(nn.Module):
         )
 
         if self.use_lstm:
-            self.lstm = nn.LSTM(self.h_size, self.m_size // 2, 1)
+            self.lstm = lstm_layer(self.h_size, self.m_size // 2, batch_first=True)
         else:
             self.lstm = None
 
@@ -101,13 +102,11 @@ class NetworkBody(nn.Module):
             raise Exception("No valid inputs to network.")
 
         if self.use_lstm:
-            encoding = encoding.view([sequence_length, -1, self.h_size])
+            # Resize to (batch, sequence length, encoding size)
+            encoding = encoding.reshape([-1, sequence_length, self.h_size])
             memories = torch.split(memories, self.m_size // 2, dim=-1)
-            encoding, memories = self.lstm(
-                encoding.contiguous(),
-                (memories[0].contiguous(), memories[1].contiguous()),
-            )
-            encoding = encoding.view([-1, self.m_size // 2])
+            encoding, memories = self.lstm(encoding, (memories[0], memories[1]))
+            encoding = encoding.reshape([-1, self.m_size // 2])
             memories = torch.cat(memories, dim=-1)
         return encoding, memories
 
