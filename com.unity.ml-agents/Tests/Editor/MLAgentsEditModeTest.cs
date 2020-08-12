@@ -154,6 +154,11 @@ namespace Unity.MLAgents.Tests
         {
             numResetCalls++;
         }
+
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
     }
 
     [TestFixture]

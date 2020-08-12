@@ -106,6 +106,12 @@ namespace Unity.MLAgents.Sensors
             return SensorCompressionType.None;
         }
 
+        /// <inheritdoc/>
+        public virtual SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         void Clear()
         {
             m_Observations.Clear();

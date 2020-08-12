@@ -322,6 +322,7 @@ namespace Unity.MLAgents
         }
 
         EnvironmentParameters m_EnvironmentParameters;
+        AgentParameters m_AgentParameters;
         StatsRecorder m_StatsRecorder;
 
         /// <summary>
@@ -334,6 +335,11 @@ namespace Unity.MLAgents
         public EnvironmentParameters EnvironmentParameters
         {
             get { return m_EnvironmentParameters; }
+        }
+
+        public AgentParameters AgentParameters
+        {
+            get { return m_AgentParameters; }
         }
 
         /// <summary>
@@ -358,6 +364,7 @@ namespace Unity.MLAgents
 
             SideChannelManager.RegisterSideChannel(new EngineConfigurationChannel());
             m_EnvironmentParameters = new EnvironmentParameters();
+            m_AgentParameters = new AgentParameters();
             m_StatsRecorder = new StatsRecorder();
 
             // Try to launch the communicator by using the arguments passed at launch

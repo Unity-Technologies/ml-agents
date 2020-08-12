@@ -366,6 +366,12 @@ namespace Unity.MLAgents.Sensors
             return SensorCompressionType.None;
         }
 
+        /// <inheritdoc/>
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         /// <summary>
         /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>

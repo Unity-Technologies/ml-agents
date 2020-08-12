@@ -249,6 +249,12 @@ class ActionType(Enum):
     CONTINUOUS = 1
 
 
+class SensorType(Enum):
+    OBSERVATION = 0
+    PARAMETERIZATION = 1
+    REWARD = 2
+
+
 class BehaviorSpec(NamedTuple):
     """
     A NamedTuple to containing information about the observations and actions
@@ -267,6 +273,7 @@ class BehaviorSpec(NamedTuple):
     """
 
     observation_shapes: List[Tuple]
+    sensor_types: List[SensorType]
     action_type: ActionType
     action_shape: Union[int, Tuple[int, ...]]
 

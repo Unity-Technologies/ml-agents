@@ -1,6 +1,7 @@
 from mlagents_envs.base_env import (
     BehaviorSpec,
     ActionType,
+    SensorType,
     DecisionSteps,
     TerminalSteps,
 )
@@ -28,6 +29,7 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
+    sensor_type = [SensorType(obs.sensor_type) for obs in agent_info.observations]
     action_type = (
         ActionType.DISCRETE
         if brain_param_proto.vector_action_space_type == 0
@@ -39,7 +41,7 @@ def behavior_spec_from_proto(
         ] = brain_param_proto.vector_action_size[0]
     else:
         action_shape = tuple(brain_param_proto.vector_action_size)
-    return BehaviorSpec(observation_shape, action_type, action_shape)
+    return BehaviorSpec(observation_shape, sensor_type, action_type, action_shape)
 
 
 @timed

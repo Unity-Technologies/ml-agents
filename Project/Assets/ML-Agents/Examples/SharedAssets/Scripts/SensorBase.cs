@@ -55,5 +55,11 @@ namespace Unity.MLAgentsExamples
         {
             return SensorCompressionType.None;
         }
+
+        /// <inheritdoc/>
+        public virtual SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
     }
 }

@@ -17,6 +17,27 @@ namespace Unity.MLAgents.Sensors
     }
 
     /// <summary>
+    /// The compression setting for visual/camera observations.
+    /// </summary>
+    public enum SensorType
+    {
+        /// <summary>
+        /// Sensor represents an agent's observation.
+        /// </summary>
+        Observation,
+
+        /// <summary>
+        /// Sensor represents an agent's task/goal parameterization.
+        /// </summary>
+        Parameterization,
+
+        /// <summary>
+        /// Sensor represents one or more reward signals.
+        /// </summary>
+        Reward
+    }
+
+    /// <summary>
     /// Sensor interface for generating observations.
     /// </summary>
     public interface ISensor
@@ -70,6 +91,14 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <returns>The name of the sensor.</returns>
         string GetName();
+
+
+        /// <summary>
+        /// Get the semantic meaning of the sensor, i.e. whether it is an observation or other type
+        /// of data to be sent to the Agent.
+        /// </summary>
+        /// <returns>The type of the sensor.</returns>
+        SensorType GetSensorType();
     }
 
 

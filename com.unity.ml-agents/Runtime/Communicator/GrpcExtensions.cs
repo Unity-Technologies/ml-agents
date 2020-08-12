@@ -226,7 +226,6 @@ namespace Unity.MLAgents
                     CompressionType = (CompressionTypeProto)obs.CompressionType,
                 };
             }
-
             obsProto.Shape.AddRange(obs.Shape);
             return obsProto;
         }
@@ -281,6 +280,7 @@ namespace Unity.MLAgents
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
                 };
             }
+            observationProto.SensorType = (SensorTypeProto)sensor.GetSensorType();
             observationProto.Shape.AddRange(shape);
             return observationProto;
         }

@@ -65,6 +65,11 @@ namespace Unity.MLAgents.Tests
             return SensorCompressionType.None;
         }
 
+        public SensorType GetSensorType()
+        {
+            return SensorType.Observation;
+        }
+
         public string GetName()
         {
             return m_Name;
