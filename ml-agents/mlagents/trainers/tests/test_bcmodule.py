@@ -49,7 +49,7 @@ def test_bcmodule_defaults():
     )
     bc_module = create_bc_module(mock_specs, bc_settings, False, False)
     assert bc_module.num_epoch == 3
-    assert bc_module.batch_size == TrainerSettings().hyperparameters.batch_size
+    assert bc_module.batch_size == 1024
     # Assign strange values and see if it overrides properly
     bc_settings = BehavioralCloningSettings(
         demo_path=os.path.dirname(os.path.abspath(__file__)) + "/" + "test.demo",
