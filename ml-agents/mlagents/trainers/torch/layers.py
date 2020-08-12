@@ -70,3 +70,42 @@ def lstm_layer(
             _init_methods[bias_init](param.data)
             param.data[hidden_size : 2 * hidden_size].add_(forget_bias)
     return lstm
+
+
+class AMRLMax(torch.nn.Module):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        batch_first: bool = True,
+        forget_bias: float = 1.0,
+        kernel_init: Initialization = Initialization.XavierGlorotUniform,
+        bias_init: Initialization = Initialization.Zero,
+    ):
+        super().__init__()
+        self.lstm = lstm_layer(
+            input_size,
+            hidden_size,
+            num_layers,
+            batch_first,
+            forget_bias,
+            kernel_init,
+            bias_init,
+        )
+        self.hidden_size = hidden_size
+
+    def forward(self, input_tensor, h0_c0):
+        hidden = h0_c0
+        all_out = []
+        m = None
+        for t in range(input_tensor.shape[1]):
+            out, hidden = self.lstm(input_tensor[:, t : t + 1, :], hidden)
+            h_half, other_half = torch.split(out, self.hidden_size // 2, dim=-1)
+            if m is None:
+                m = h_half
+            else:
+                m = torch.max(m, h_half)
+            out = torch.cat([m, other_half])
+            all_out.append(out)
+        return torch.cat(all_out, dim=1), hidden
