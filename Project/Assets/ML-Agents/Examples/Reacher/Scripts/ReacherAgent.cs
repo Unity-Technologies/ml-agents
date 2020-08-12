@@ -90,7 +90,7 @@ public class ReacherAgent : Agent
         // {
         //     AddReward(-0.002f);
         // }
-        // AddReward( - 0.001f * (goal.transform.position - hand.transform.position).magnitude);
+        AddReward( - 0.001f * (goal.transform.position - hand.transform.position).magnitude);
         // Debug.Log((goal.transform.position - hand.transform.position).magnitude);
         var radians = m_GoalDegree * Mathf.PI / 180f;
         var goalX = 8f * Mathf.Cos(radians);
