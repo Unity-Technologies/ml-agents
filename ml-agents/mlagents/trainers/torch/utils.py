@@ -25,15 +25,6 @@ class ModelUtils:
         EncoderType.RESNET: 15,
     }
 
-    @staticmethod
-    def swish(input_activation: torch.Tensor) -> torch.Tensor:
-        """Swish activation function. For more info: https://arxiv.org/abs/1710.05941"""
-        return torch.mul(input_activation, torch.sigmoid(input_activation))
-
-    class SwishLayer(torch.nn.Module):
-        def forward(self, data: torch.Tensor) -> torch.Tensor:
-            return torch.mul(data, torch.sigmoid(data))
-
     class ActionFlattener:
         def __init__(self, behavior_spec: BehaviorSpec):
             self._specs = behavior_spec

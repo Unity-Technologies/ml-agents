@@ -10,6 +10,7 @@ from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
+from mlagents.trainers.torch.layers import linear_layer, Swish, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.demo_loader import demo_to_buffer
 
@@ -98,15 +99,11 @@ class DiscriminatorNetwork(torch.nn.Module):
             )  # + 1 is for done
 
         self.encoder = torch.nn.Sequential(
-            torch.nn.Linear(encoder_input_size, settings.encoding_size),
-            ModelUtils.SwishLayer(),
-            torch.nn.Linear(settings.encoding_size, settings.encoding_size),
-            ModelUtils.SwishLayer(),
+            linear_layer(encoder_input_size, settings.encoding_size),
+            Swish(),
+            linear_layer(settings.encoding_size, settings.encoding_size),
+            Swish(),
         )
-        torch.nn.init.xavier_normal_(self.encoder[0].weight.data)
-        torch.nn.init.xavier_normal_(self.encoder[2].weight.data)
-        self.encoder[0].bias.data.zero_()
-        self.encoder[2].bias.data.zero_()
 
         estimator_input_size = settings.encoding_size
         if settings.use_vail:
@@ -114,19 +111,19 @@ class DiscriminatorNetwork(torch.nn.Module):
             self.z_sigma = torch.nn.Parameter(
                 torch.ones((self.z_size), dtype=torch.float), requires_grad=True
             )
-            self.z_mu_layer = torch.nn.Linear(settings.encoding_size, self.z_size)
-            # self.z_mu_layer.weight.data Needs a variance scale initializer
-            torch.nn.init.xavier_normal_(self.z_mu_layer.weight.data)
-            self.z_mu_layer.bias.data.zero_()
+            self.z_mu_layer = linear_layer(
+                settings.encoding_size,
+                self.z_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=0.1,
+            )
             self.beta = torch.nn.Parameter(
                 torch.tensor(self.initial_beta, dtype=torch.float), requires_grad=False
             )
 
         self.estimator = torch.nn.Sequential(
-            torch.nn.Linear(estimator_input_size, 1), torch.nn.Sigmoid()
+            linear_layer(estimator_input_size, 1), torch.nn.Sigmoid()
         )
-        torch.nn.init.xavier_normal_(self.estimator[0].weight.data)
-        self.estimator[0].bias.data.zero_()
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
         """
