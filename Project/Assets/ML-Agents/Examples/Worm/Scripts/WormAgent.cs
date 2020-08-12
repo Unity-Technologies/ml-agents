@@ -6,29 +6,21 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
-    [Header("Target To Walk Towards")]
-    [Space(10)]
+    [Header("Target To Walk Towards")] [Space(10)]
     public Transform target;
-
     public Transform ground;
-    public bool targetIsStatic;
-    public bool respawnTargetWhenTouched;
-    public float targetSpawnRadius;
 
-    [Header("Body Parts")] [Space(10)]
-    public Transform bodySegment0;
+    [Header("Body Parts")] [Space(10)] public Transform bodySegment0;
     public Transform bodySegment1;
     public Transform bodySegment2;
     public Transform bodySegment3;
 
-    [Header("Joint Settings")] [Space(10)]
-    JointDriveController m_JdController;
+    [Header("Joint Settings")] [Space(10)] JointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
     float m_FacingDot;
 
-    [Header("Reward Functions To Use")]
-    [Space(10)]
+    [Header("Reward Functions To Use")] [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
 
     public bool rewardFacingTarget; // Agent should face the target
@@ -49,13 +41,6 @@ public class WormAgent : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
-
-        //We only want the head to detect the target
-        //So we need to remove TargetContact from everything else
-        //This is a temp fix till we can redesign
-        DestroyImmediate(bodySegment1.GetComponent<TargetContact>());
-        DestroyImmediate(bodySegment2.GetComponent<TargetContact>());
-        DestroyImmediate(bodySegment3.GetComponent<TargetContact>());
     }
 
 
@@ -63,7 +48,7 @@ public class WormAgent : Agent
     //We want to collect this info because it is the actual rotation, not the "target rotation"
     public Quaternion GetJointRotation(ConfigurableJoint joint)
     {
-        return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
+        return (Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
     }
 
     /// <summary>
@@ -77,7 +62,8 @@ public class WormAgent : Agent
         var velocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.velocity);
         sensor.AddObservation(velocityRelativeToLookRotationToTarget);
 
-        var angularVelocityRelativeToLookRotationToTarget = m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
+        var angularVelocityRelativeToLookRotationToTarget =
+            m_TargetDirMatrix.inverse.MultiplyVector(rb.angularVelocity);
         sensor.AddObservation(angularVelocityRelativeToLookRotationToTarget);
 
         if (bp.rb.transform != bodySegment0)
@@ -102,18 +88,19 @@ public class WormAgent : Agent
         float maxDist = 10;
         if (Physics.Raycast(bodySegment0.position, Vector3.down, out hit, maxDist))
         {
-            sensor.AddObservation(hit.distance/maxDist);
+            sensor.AddObservation(hit.distance / maxDist);
         }
         else
             sensor.AddObservation(1);
 
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in m_JdController.bodyPartsList)
         {
             CollectObservationBodyPart(bodyPart, sensor);
         }
 
         //Rotation delta between the matrix and the head
-        Quaternion headRotationDeltaFromMatrixRot = Quaternion.Inverse(m_TargetDirMatrix.rotation) * bodySegment0.rotation;
+        Quaternion headRotationDeltaFromMatrixRot =
+            Quaternion.Inverse(m_TargetDirMatrix.rotation) * bodySegment0.rotation;
         sensor.AddObservation(headRotationDeltaFromMatrixRot);
     }
 
@@ -123,20 +110,6 @@ public class WormAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        if (respawnTargetWhenTouched)
-        {
-            GetRandomTargetPos();
-        }
-    }
-
-    /// <summary>
-    /// Moves target to a random position within specified radius.
-    /// </summary>
-    public void GetRandomTargetPos()
-    {
-        var newTargetPos = Random.insideUnitSphere * targetSpawnRadius;
-        newTargetPos.y = 5;
-        target.position = newTargetPos + ground.position;
     }
 
     public override void OnActionReceived(float[] vectorAction)
@@ -155,7 +128,8 @@ public class WormAgent : Agent
         bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
         bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
 
-        if (bodySegment0.position.y < ground.position.y -2)
+        // Detect if worm fell off/through platform
+        if (bodySegment0.position.y < ground.position.y - 2)
         {
             EndEpisode();
         }
@@ -163,7 +137,6 @@ public class WormAgent : Agent
 
     void FixedUpdate()
     {
-
         // Set reward for this step according to mixture of the following elements.
         if (rewardMovingTowardsTarget)
         {
@@ -186,7 +159,8 @@ public class WormAgent : Agent
     /// </summary>
     void RewardFunctionMovingTowards()
     {
-        m_MovingTowardsDot = Vector3.Dot(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, m_DirToTarget.normalized);
+        m_MovingTowardsDot =
+            Vector3.Dot(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, m_DirToTarget.normalized);
         AddReward(0.01f * m_MovingTowardsDot);
     }
 
@@ -200,7 +174,7 @@ public class WormAgent : Agent
     }
 
     /// <summary>
-    /// Existential penalty for time-contrained tasks.
+    /// Existential penalty for time-constrained tasks.
     /// </summary>
     void RewardFunctionTimePenalty()
     {
@@ -216,15 +190,12 @@ public class WormAgent : Agent
         {
             bodyPart.Reset(bodyPart);
         }
+
         if (m_DirToTarget != Vector3.zero)
         {
             transform.rotation = Quaternion.LookRotation(m_DirToTarget);
         }
-        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
 
-        if (!targetIsStatic)
-        {
-            GetRandomTargetPos();
-        }
+        transform.Rotate(Vector3.up, Random.Range(0.0f, 360.0f));
     }
 }
