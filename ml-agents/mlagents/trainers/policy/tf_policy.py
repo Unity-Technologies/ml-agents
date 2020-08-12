@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Callable
 import numpy as np
 from distutils.version import LooseVersion
 
@@ -22,7 +22,7 @@ from mlagents.trainers.tf.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-from mlagents.tf_utils.globals import get_rank, broadcast_variables
+from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
@@ -48,6 +48,8 @@ class TFPolicy(Policy):
     Contains a learning model, and the necessary
     functions to save/load models and create the input placeholders.
     """
+
+    broadcast_global_variables: Callable[[int], None] = lambda x: None
 
     def __init__(
         self,
@@ -258,8 +260,7 @@ class TFPolicy(Policy):
         else:
             self._initialize_graph()
         # broadcast initial weights from worker-0
-        if broadcast_variables():
-            self.sess.run(hvd.broadcast_global_variables(0))
+        TFPolicy.broadcast_global_variables(0)
 
     def get_weights(self):
         with self.graph.as_default():
