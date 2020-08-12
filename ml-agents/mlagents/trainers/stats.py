@@ -96,49 +96,26 @@ class ConsoleWriter(StatsWriter):
             if stats_summary.mean > 0.0:
                 is_training = "Training."
 
+        elapsed_time = time.time() - self.training_start_time
+        log_info: List[str] = [category]
+        log_info.append(f"Step: {step}")
+        log_info.append(f"Time Elapsed: {elapsed_time:0.3f} s")
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
             if self.rank is not None:
-                logger.info(
-                    "Rank: {}."
-                    "{}: Step: {}. "
-                    "Time Elapsed: {:0.3f} s "
-                    "Mean "
-                    "Reward: {:0.3f}"
-                    ". Std of Reward: {:0.3f}. {}".format(
-                        self.rank(),
-                        category,
-                        step,
-                        time.time() - self.training_start_time,
-                        stats_summary.mean,
-                        stats_summary.std,
-                        is_training,
-                    )
-                )
-            else:
-                logger.info(
-                    "{}: Step: {}. "
-                    "Time Elapsed: {:0.3f} s "
-                    "Mean "
-                    "Reward: {:0.3f}"
-                    ". Std of Reward: {:0.3f}. {}".format(
-                        category,
-                        step,
-                        time.time() - self.training_start_time,
-                        stats_summary.mean,
-                        stats_summary.std,
-                        is_training,
-                    )
-                )
+                log_info.append(f"Rank: {self.rank}")
+
+            log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
+            log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
+            log_info.append(is_training)
+
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                logger.info(f"{category} ELO: {elo_stats.mean:0.3f}. ")
+                log_info.append(f"ELO: {elo_stats.mean:0.3f}")
         else:
-            logger.info(
-                "{}: Step: {}. No episode was completed since last summary. {}".format(
-                    category, step, is_training
-                )
-            )
+            log_info.append("No episode was completed since last summary")
+            log_info.append(is_training)
+        logger.info(". ".join(log_info))
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any
