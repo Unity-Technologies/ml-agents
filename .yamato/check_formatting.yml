@@ -13,5 +13,5 @@ validate_format_win:
       (pull_request.target eq "master" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
-      (pull_request.changes.any match ""**/*.cs OR
+      (pull_request.changes.any match "**/*.cs" OR
       pull_request.changes.any match ".yamato/check_formatting.yml")
