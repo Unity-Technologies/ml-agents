@@ -130,7 +130,8 @@ public class NewReacherAgent : Agent
             var radians = m_BallDegrees[i] * Mathf.PI / 180f;
             var ballX = 8f * Mathf.Cos(radians);
             var ballY = 8f * Mathf.Sin(radians);
-            var ballZ = m_Deviation * Mathf.Cos(m_DeviationFreq * radians);
+            // var ballZ = m_Deviation * Mathf.Cos(m_DeviationFreq * radians);
+            var ballZ = 10f;
             m_balls[i].transform.position = new Vector3(ballY, ballZ, ballX) + transform.position;
         }
         

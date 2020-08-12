@@ -443,11 +443,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     VectorObservationSize: 33
-    NumStackedVectorObservations: 3
+    NumStackedVectorObservations: 1
     VectorActionSize: 04000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: d7bdb6a78154f4cf99437d67e4a569a8, type: 3}
+  m_Model: {fileID: 11400000, guid: 66e38dc39b8474661869e59a21ed2837, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Reacher
