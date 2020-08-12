@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;
-            foreach(var rb in poseExtractor.GetEnabledRigidbodies())
+            foreach (var rb in poseExtractor.GetEnabledRigidbodies())
             {
                 var joint = rb.GetComponent<Joint>();
                 numJointObservations += RigidBodyJointExtractor.NumObservations(rb, joint, Settings);

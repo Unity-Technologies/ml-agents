@@ -7,7 +7,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
     public class PoseExtractorTests
     {
-
         class BasicPoseExtractor : PoseExtractor
         {
             protected internal override Pose GetPoseAt(int index)
@@ -62,7 +61,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
 
             // Getting a parent index should throw an index exception
-            Assert.Throws <NullReferenceException>(
+            Assert.Throws<NullReferenceException>(
                 () => poseExtractor.GetParentIndex(0)
             );
 
@@ -220,7 +219,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 var bad = new BadPoseExtractor();
             });
         }
-
     }
 
     public class PoseExtensionTests

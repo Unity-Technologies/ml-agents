@@ -216,7 +216,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             return null;
         }
 
-
         /// <summary>
         /// Update the internal model space transform storage based on the underlying system.
         /// </summary>
@@ -388,7 +387,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             while (stack.Count != 0)
             {
-                var (current, depth) = stack.Pop();
+                var(current, depth) = stack.Pop();
                 var obj = GetObjectAt(current);
 
                 var node = new DisplayNode
@@ -405,9 +404,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     // Push to the stack in reverse order
                     var children = tree[current];
-                    for (var childIdx = children.Count-1; childIdx >= 0; childIdx--)
+                    for (var childIdx = children.Count - 1; childIdx >= 0; childIdx--)
                     {
-                        stack.Push((children[childIdx], depth+1));
+                        stack.Push((children[childIdx], depth + 1));
                     }
                 }
 
@@ -422,7 +421,6 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             return nodesOut;
         }
-
     }
 
     /// <summary>

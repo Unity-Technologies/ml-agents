@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
             var numJointObservations = 0;
 
-            foreach(var articBody in poseExtractor.GetEnabledArticulationBodies())
+            foreach (var articBody in poseExtractor.GetEnabledArticulationBodies())
             {
                 numJointObservations += ArticulationBodyJointExtractor.NumObservations(articBody, Settings);
             }

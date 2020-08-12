@@ -60,7 +60,5 @@ namespace Unity.MLAgents.Extensions.Editor
                 rbSensorComp.ResetPoseExtractor();
             }
         }
-
-
     }
 }
