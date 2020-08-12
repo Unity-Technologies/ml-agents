@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Sensors;
@@ -6,18 +7,22 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
     public class PoseExtractorTests
     {
-        class UselessPoseExtractor : PoseExtractor
+
+        class BasicPoseExtractor : PoseExtractor
         {
             protected internal override Pose GetPoseAt(int index)
             {
                 return Pose.identity;
             }
 
-            protected internal override Vector3 GetLinearVelocityAt(int index)
+            protected  internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
+        }
 
+        class UselessPoseExtractor : BasicPoseExtractor
+        {
             public void Init(int[] parentIndices)
             {
                 Setup(parentIndices);
@@ -34,6 +39,36 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             poseExtractor.UpdateModelSpacePoses();
 
             Assert.AreEqual(0, poseExtractor.NumPoses);
+
+            // Iterating through poses and velocities should be an empty loop
+            foreach (var pose in poseExtractor.GetEnabledModelSpacePoses())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            foreach (var pose in poseExtractor.GetEnabledLocalSpacePoses())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            foreach (var vel in poseExtractor.GetEnabledModelSpaceVelocities())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            foreach (var vel in poseExtractor.GetEnabledLocalSpaceVelocities())
+            {
+                throw new UnityAgentsException("This shouldn't happen");
+            }
+
+            // Getting a parent index should throw an index exception
+            Assert.Throws <NullReferenceException>(
+                () => poseExtractor.GetParentIndex(0)
+            );
+
+            // DisplayNodes should be empty
+            var displayNodes = poseExtractor.GetDisplayNodes();
+            Assert.AreEqual(0, displayNodes.Count);
         }
 
         [Test]
@@ -126,7 +161,43 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             Assert.AreEqual(size, localPoseIndex);
         }
 
-        class BadPoseExtractor : PoseExtractor
+        [Test]
+        public void TestChainDisplayNodes()
+        {
+            var size = 4;
+            var chain = new ChainPoseExtractor(size);
+
+            var displayNodes = chain.GetDisplayNodes();
+            Assert.AreEqual(size, displayNodes.Count);
+
+            for (var i = 0; i < size; i++)
+            {
+                var displayNode = displayNodes[i];
+                Assert.AreEqual(i, displayNode.OriginalIndex);
+                Assert.AreEqual(null, displayNode.NodeObject);
+                Assert.AreEqual(i, displayNode.Depth);
+                Assert.AreEqual(true, displayNode.Enabled);
+            }
+        }
+
+        [Test]
+        public void TestDisplayNodesLoop()
+        {
+            // Degenerate case with a loop
+            var poseExtractor = new UselessPoseExtractor();
+            poseExtractor.Init(new[] {-1, 2, 1});
+
+            // This just shouldn't blow up
+            poseExtractor.GetDisplayNodes();
+
+            // Self-loop
+            poseExtractor.Init(new[] {-1, 1});
+
+            // This just shouldn't blow up
+            poseExtractor.GetDisplayNodes();
+        }
+
+        class BadPoseExtractor : BasicPoseExtractor
         {
             public BadPoseExtractor()
             {
@@ -139,16 +210,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 }
                 Setup(parents);
             }
-
-            protected internal override Pose GetPoseAt(int index)
-            {
-                return Pose.identity;
-            }
-
-            protected  internal override Vector3 GetLinearVelocityAt(int index)
-            {
-                return Vector3.zero;
-            }
         }
 
         [Test]
@@ -159,6 +220,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 var bad = new BadPoseExtractor();
             });
         }
+
     }
 
     public class PoseExtensionTests

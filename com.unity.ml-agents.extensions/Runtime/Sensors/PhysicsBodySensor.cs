@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
@@ -12,45 +13,32 @@ namespace Unity.MLAgents.Extensions.Sensors
         string m_SensorName;
 
         PoseExtractor m_PoseExtractor;
-        IJointExtractor[] m_JointExtractors;
+        List<IJointExtractor> m_JointExtractors;
         PhysicsSensorSettings m_Settings;
 
         /// <summary>
-        ///  Construct a new PhysicsBodySensor
+        /// Construct a new PhysicsBodySensor
         /// </summary>
-        /// <param name="rootBody">The root Rigidbody. This has no Joints on it (but other Joints may connect to it).</param>
-        /// <param name="rootGameObject">Optional GameObject used to find Rigidbodies in the hierarchy.</param>
-        /// <param name="virtualRoot">Optional GameObject used to determine the root of the poses,
+        /// <param name="poseExtractor"></param>
         /// <param name="settings"></param>
         /// <param name="sensorName"></param>
         public PhysicsBodySensor(
-            Rigidbody rootBody,
-            GameObject rootGameObject,
-            GameObject virtualRoot,
+            RigidBodyPoseExtractor poseExtractor,
             PhysicsSensorSettings settings,
-            string sensorName = null
+            string sensorName
         )
         {
-            var poseExtractor = new RigidBodyPoseExtractor(rootBody, rootGameObject, virtualRoot);
             m_PoseExtractor = poseExtractor;
-            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{rootBody?.name}" : sensorName;
+            m_SensorName = sensorName;
             m_Settings = settings;
 
             var numJointExtractorObservations = 0;
-            var rigidBodies = poseExtractor.Bodies;
-            if (rigidBodies != null)
+            m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
+            foreach(var rb in poseExtractor.GetEnabledRigidbodies())
             {
-                m_JointExtractors = new IJointExtractor[rigidBodies.Length - 1]; // skip the root
-                for (var i = 1; i < rigidBodies.Length; i++)
-                {
-                    var jointExtractor = new RigidBodyJointExtractor(rigidBodies[i]);
-                    numJointExtractorObservations += jointExtractor.NumObservations(settings);
-                    m_JointExtractors[i - 1] = jointExtractor;
-                }
-            }
-            else
-            {
-                m_JointExtractors = new IJointExtractor[0];
+                var jointExtractor = new RigidBodyJointExtractor(rb);
+                numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                m_JointExtractors.Add(jointExtractor);
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
@@ -58,7 +46,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
 #if UNITY_2020_1_OR_NEWER
-        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName = null)
+        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName=null)
         {
             var poseExtractor = new ArticulationBodyPoseExtractor(rootBody);
             m_PoseExtractor = poseExtractor;
@@ -66,26 +54,17 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_Settings = settings;
 
             var numJointExtractorObservations = 0;
-            var articBodies = poseExtractor.Bodies;
-            if (articBodies != null)
+            m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
+            foreach(var articBody in poseExtractor.GetEnabledArticulationBodies())
             {
-                m_JointExtractors = new IJointExtractor[articBodies.Length - 1]; // skip the root
-                for (var i = 1; i < articBodies.Length; i++)
-                {
-                    var jointExtractor = new ArticulationBodyJointExtractor(articBodies[i]);
-                    numJointExtractorObservations += jointExtractor.NumObservations(settings);
-                    m_JointExtractors[i - 1] = jointExtractor;
-                }
-            }
-            else
-            {
-                m_JointExtractors = new IJointExtractor[0];
+                var jointExtractor = new ArticulationBodyJointExtractor(articBody);
+                numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                m_JointExtractors.Add(jointExtractor);
             }
 
             var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
             m_Shape = new[] { numTransformObservations + numJointExtractorObservations };
         }
-
 #endif
 
         /// <inheritdoc/>

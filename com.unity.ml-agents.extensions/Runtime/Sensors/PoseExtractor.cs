@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
@@ -139,7 +141,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             if (m_ParentIndices == null)
             {
-                return -1;
+                throw new NullReferenceException("No parent indices set");
             }
 
             return m_ParentIndices[index];
@@ -153,6 +155,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         public void SetPoseEnabled(int index, bool val)
         {
             m_PoseEnabled[index] = val;
+        }
+
+        public bool IsPoseEnabled(int index)
+        {
+            return m_PoseEnabled[index];
         }
 
         /// <summary>
@@ -197,6 +204,17 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="index"></param>
         /// <returns></returns>
         protected internal abstract Vector3 GetLinearVelocityAt(int index);
+
+        /// <summary>
+        /// Return the underlying object at the given index. This is only
+        /// used for display in the inspector.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        protected internal virtual Object GetObjectAt(int index)
+        {
+            return null;
+        }
 
 
         /// <summary>
@@ -308,6 +326,103 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Debug.DrawLine(current.position + offset, current.position + offset + .1f * localRight, Color.blue);
             }
         }
+
+        /// <summary>
+        /// Simplified representation of the a node in the hierarchy for display.
+        /// </summary>
+        internal struct DisplayNode
+        {
+            /// <summary>
+            /// Underlying object in the hierarchy. Pass to EditorGUIUtility.ObjectContent() for display.
+            /// </summary>
+            public Object NodeObject;
+
+            /// <summary>
+            /// Whether the poses for the object are enabled.
+            /// </summary>
+            public bool Enabled;
+
+            /// <summary>
+            /// Depth in the hierarchy, used for adjusting the indent level.
+            /// </summary>
+            public int Depth;
+
+            /// <summary>
+            /// The index of the corresponding object in the PoseExtractor.
+            /// </summary>
+            public int OriginalIndex;
+        }
+
+        /// <summary>
+        /// Get a list of display nodes in depth-first order.
+        /// </summary>
+        /// <returns></returns>
+        internal IList<DisplayNode> GetDisplayNodes()
+        {
+            if (NumPoses == 0)
+            {
+                return Array.Empty<DisplayNode>();
+            }
+            var nodesOut = new List<DisplayNode>(NumPoses);
+
+            // List of children for each node
+            var tree = new Dictionary<int, List<int>>();
+            for (var i = 0; i < NumPoses; i++)
+            {
+                var parent = GetParentIndex(i);
+                if (i == -1)
+                {
+                    continue;
+                }
+
+                if (!tree.ContainsKey(parent))
+                {
+                    tree[parent] = new List<int>();
+                }
+                tree[parent].Add(i);
+            }
+
+            // Store (index, depth) in the stack
+            var stack = new Stack<(int, int)>();
+            stack.Push((0, 0));
+
+            while (stack.Count != 0)
+            {
+                var (current, depth) = stack.Pop();
+                var obj = GetObjectAt(current);
+
+                var node = new DisplayNode
+                {
+                    NodeObject = obj,
+                    Enabled = IsPoseEnabled(current),
+                    OriginalIndex = current,
+                    Depth = depth
+                };
+                nodesOut.Add(node);
+
+                // Add children
+                if (tree.ContainsKey(current))
+                {
+                    // Push to the stack in reverse order
+                    var children = tree[current];
+                    for (var childIdx = children.Count-1; childIdx >= 0; childIdx--)
+                    {
+                        stack.Push((children[childIdx], depth+1));
+                    }
+                }
+
+                // Safety check
+                // This shouldn't even happen, but in case we have a cycle in the graph
+                // exit instead of looping forever and eating up all the memory.
+                if (nodesOut.Count > NumPoses)
+                {
+                    return nodesOut;
+                }
+            }
+
+            return nodesOut;
+        }
+
     }
 
     /// <summary>
