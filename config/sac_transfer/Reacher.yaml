@@ -15,11 +15,11 @@ behaviors:
       reward_signal_steps_per_update: 20.0
       encoder_layers: 1
       policy_layers: 2
-      forward_layers: 2
+      forward_layers: 0
       value_layers: 2
       action_layers: 1
-      feature_size: 64
-      action_feature_size: 16
+      feature_size: 128
+      action_feature_size: 32
       separate_policy_train: true
       separate_policy_net: true
       separate_model_train: true

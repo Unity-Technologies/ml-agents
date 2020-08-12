@@ -213,7 +213,7 @@ class SACTransferOptimizer(TFOptimizer):
                 )
                 self.model_learning_rate = ModelUtils.create_schedule(
                     hyperparameters.model_schedule,
-                    lr,
+                    lr * 10,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
