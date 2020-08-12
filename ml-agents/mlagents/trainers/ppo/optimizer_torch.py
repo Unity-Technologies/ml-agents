@@ -80,8 +80,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             )
             v_opt_a = (returns_tensor - head) ** 2
             v_opt_b = (returns_tensor - clipped_value_estimate) ** 2
-            masked_loss = torch.max(v_opt_a, v_opt_b) * loss_masks
-            value_loss = torch.mean(masked_loss)
+            value_loss = ModelUtils.masked_mean(torch.max(v_opt_a, v_opt_b), loss_masks)
             value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
         return value_loss
@@ -109,8 +108,9 @@ class TorchPPOOptimizer(TorchOptimizer):
         p_opt_b = (
             torch.clamp(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * advantage
         )
-        masked_loss = torch.min(p_opt_a, p_opt_b).flatten() * loss_masks
-        policy_loss = -torch.mean(masked_loss)
+        policy_loss = -1 * ModelUtils.masked_mean(
+            torch.min(p_opt_a, p_opt_b).flatten(), loss_masks
+        )
         return policy_loss
 
     @timed
@@ -138,7 +138,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if self.policy.use_continuous_act:
             actions = ModelUtils.list_to_tensor(batch["actions"]).unsqueeze(-1)
         else:
-            actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.long)
+            actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.bool)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -164,7 +164,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.float32)
+        loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
         )
@@ -177,7 +177,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss = (
             policy_loss
             + 0.5 * value_loss
-            - decay_bet * torch.mean(entropy.flatten() * loss_masks)
+            - decay_bet * ModelUtils.masked_mean(entropy.flatten(), loss_masks)
         )
 
         # Set optimizer learning rate
