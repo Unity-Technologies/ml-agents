@@ -253,7 +253,7 @@ class TrainerController:
         ) in self.param_manager.get_current_lesson_number().items():
             for trainer in self.trainers.values():
                 trainer.stats_reporter.set_stat(
-                    f"Environment/Lesson/{param_name}", lesson_number
+                    f"Environment/Lesson Number/{param_name}", lesson_number
                 )
 
         for trainer in self.trainers.values():
