@@ -76,6 +76,7 @@ class TFPolicy(Policy):
         self.assign_ops: List[tf.Operation] = []
         self.update_dict: Dict[str, tf.Tensor] = {}
         self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.first_normalization_update: bool = False
 
         self.graph = tf.Graph()
         self.sess = tf.Session(
@@ -353,9 +354,15 @@ class TFPolicy(Policy):
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
         if self.use_vec_obs and self.normalize:
-            self.sess.run(
-                self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
-            )
+            if self.first_normalization_update:
+                self.sess.run(
+                    self.init_normalization_op, feed_dict={self.vector_in: vector_obs}
+                )
+                self.first_normalization_update = False
+            else:
+                self.sess.run(
+                    self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
+                )
 
     @property
     def use_vis_obs(self):
@@ -370,6 +377,7 @@ class TFPolicy(Policy):
         self.normalization_steps: Optional[tf.Variable] = None
         self.running_mean: Optional[tf.Variable] = None
         self.running_variance: Optional[tf.Variable] = None
+        self.init_normalization_op: Optional[tf.Operation] = None
         self.update_normalization_op: Optional[tf.Operation] = None
         self.value: Optional[tf.Tensor] = None
         self.all_log_probs: tf.Tensor = None
@@ -395,8 +403,10 @@ class TFPolicy(Policy):
                 self.behavior_spec.observation_shapes
             )
             if self.normalize:
+                self.first_normalization_update = True
                 normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
+                self.init_normalization_op = normalization_tensors.init_op
                 self.normalization_steps = normalization_tensors.steps
                 self.running_mean = normalization_tensors.running_mean
                 self.running_variance = normalization_tensors.running_variance
