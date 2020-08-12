@@ -147,14 +147,11 @@ class BCModule:
                 )
             )
 
-        memories = [
-            ModelUtils.list_to_tensor(mini_batch_demo["memory"][i])
-            for i in range(
-                0, len(mini_batch_demo["memory"]), self.policy.sequence_length
+        memories = []
+        if self.policy.actor_critic.use_lstm:
+            memories = torch.zeros(
+                1, self.n_sequences, self.policy.actor_critic.half_mem_size * 2
             )
-        ]
-        if len(memories) > 0:
-            memories = torch.stack(memories).unsqueeze(0)
 
         if self.policy.use_vis_obs:
             vis_obs = []
