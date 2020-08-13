@@ -1,5 +1,4 @@
 using System;
-using Google.Protobuf.WellKnownTypes;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
@@ -13,12 +12,12 @@ public class WalkerAgent : Agent
     [Range(0.1f, 10)]
     [SerializeField]
     //The walking speed to try and achieve
-    private float targetWalkingSpeed = 10;
+    private float m_TargetWalkingSpeed = 10;
 
-    public float TargetWalkingSpeed // property
+    public float MTargetWalkingSpeed // property
     {
-        get { return targetWalkingSpeed; }
-        set { targetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
+        get { return m_TargetWalkingSpeed; }
+        set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
     }
 
     const float m_maxWalkingSpeed = 10; //The max walking speed
@@ -29,7 +28,7 @@ public class WalkerAgent : Agent
     public bool randomizeWalkSpeedEachEpisode;
 
     //The direction an agent will walk during training.
-    public Vector3 worldDirToWalk = Vector3.right;
+    private Vector3 m_WorldDirToWalk = Vector3.right;
 
     [Header("Target To Walk Towards")] public Transform target; //Target the agent will walk towards during training.
 
@@ -105,8 +104,8 @@ public class WalkerAgent : Agent
         UpdateOrientationObjects();
 
         //Set our goal walking speed
-        TargetWalkingSpeed =
-            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : TargetWalkingSpeed;
+        MTargetWalkingSpeed =
+            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
 
         SetResetParameters();
     }
@@ -142,7 +141,7 @@ public class WalkerAgent : Agent
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
-        var velGoal = cubeForward * TargetWalkingSpeed;
+        var velGoal = cubeForward * MTargetWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
@@ -206,7 +205,7 @@ public class WalkerAgent : Agent
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-        worldDirToWalk = target.position - hips.position;
+        m_WorldDirToWalk = target.position - hips.position;
         m_OrientationCube.UpdateOrientation(hips, target);
         if (m_DirectionIndicator)
         {
@@ -223,7 +222,7 @@ public class WalkerAgent : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * TargetWalkingSpeed, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * MTargetWalkingSpeed, GetAvgVelocity());
 
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
@@ -277,11 +276,11 @@ public class WalkerAgent : Agent
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
-        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, TargetWalkingSpeed);
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, MTargetWalkingSpeed);
 
         //return the value on a declining sigmoid shaped curve that decays from 1 to 0
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / TargetWalkingSpeed, 2), 2);
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / MTargetWalkingSpeed, 2), 2);
     }
 
     /// <summary>
