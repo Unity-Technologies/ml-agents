@@ -9,6 +9,7 @@ class BaseSaver(abc.ABC):
     def __init__(self):
         pass
 
+    @abc.abstractmethod
     def register(self, module: Any) -> None:
         """
         Register the modules to the Saver.
