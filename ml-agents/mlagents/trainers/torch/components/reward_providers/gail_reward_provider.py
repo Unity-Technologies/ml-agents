@@ -185,7 +185,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             torch.log(expert_estimate + self.EPSILON)
             + torch.log(1.0 - policy_estimate + self.EPSILON)
         ).mean()
-        stats_dict["Losses/GAIL Discriminator Loss"] = (
+        stats_dict["Losses/GAIL Loss"] = (
             discriminator_loss.detach().cpu().numpy()
         )
         total_loss += discriminator_loss
