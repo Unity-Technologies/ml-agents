@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 using Unity.MLAgents.Policies;
 
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class BehaviorParameterTests
     {
-        static void DummyHeuristic(float[] actionsOut)
+        static void DummyHeuristic(in ActionBuffers actionsOut)
         {
             // No-op
         }

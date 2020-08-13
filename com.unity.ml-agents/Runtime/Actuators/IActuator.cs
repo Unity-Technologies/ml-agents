@@ -6,7 +6,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// Abstraction that facilitates the execution of actions.
     /// </summary>
-    internal interface IActuator : IActionReceiver
+    public interface IActuator : IActionReceiver
     {
         int TotalNumberOfActions { get; }
 

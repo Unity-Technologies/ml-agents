@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
@@ -26,6 +27,6 @@ namespace Unity.MLAgents.Policies
         /// it must be taken now. The Brain is expected to update the actions
         /// of the Agents at this point the latest.
         /// </summary>
-        float[] DecideAction();
+        ref readonly ActionBuffers DecideAction();
     }
 }
