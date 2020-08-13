@@ -3,6 +3,7 @@ import torch
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
@@ -56,15 +57,21 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 
-        next_obs = np.concatenate(next_obs, axis=-1)
-        next_obs = [ModelUtils.list_to_tensor(next_obs).unsqueeze(0)]
+        vec_vis_obs = SplitObservations.from_observations(next_obs)
+        next_vec_obs = [
+            ModelUtils.list_to_tensor(vec_vis_obs.vector_observations).unsqueeze(0)
+        ]
+        next_vis_obs = [
+            ModelUtils.list_to_tensor(_vis_ob).unsqueeze(0)
+            for _vis_ob in vec_vis_obs.visual_observations
+        ]
 
         value_estimates, next_memory = self.policy.actor_critic.critic_pass(
             vector_obs, visual_obs, memory, sequence_length=batch.num_experiences
         )
 
         next_value_estimate, _ = self.policy.actor_critic.critic_pass(
-            next_obs, next_obs, next_memory, sequence_length=1
+            next_vec_obs, next_vis_obs, next_memory, sequence_length=1
         )
 
         for name, estimate in value_estimates.items():
