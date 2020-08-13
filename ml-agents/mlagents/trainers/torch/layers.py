@@ -124,10 +124,19 @@ class AMRLMax(torch.nn.Module):
             if m is None:
                 m = h_half_subt
             else:
-                m = torch.max(m, h_half_subt)
+                m = AMRLMax.PassthroughMax.apply(m, h_half_subt)
             all_c.append(m)
         concat_c = torch.cat(all_c, dim=1)
         concat_out = torch.cat([concat_c, other_half], dim=-1)
         full_out = self.seq_layers(concat_out.reshape([-1, self.hidden_size]))
         full_out = full_out.reshape([-1, input_tensor.shape[1], self.hidden_size])
         return concat_out, hidden
+
+    class PassthroughMax(torch.autograd.Function):
+        @staticmethod
+        def forward(ctx, tensor1, tensor2):
+            return torch.max(tensor1, tensor2)
+
+        @staticmethod
+        def backward(ctx, grad_output):
+            return grad_output.clone(), grad_output.clone()
