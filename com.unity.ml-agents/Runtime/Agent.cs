@@ -836,22 +836,17 @@ namespace Unity.MLAgents
             switch (m_PolicyFactory.BrainParameters.VectorActionSpaceType)
             {
                 case SpaceType.Continuous:
-                    #pragma warning disable CS0618
                     Heuristic(actionsOut.ContinuousActions.Array);
-                    #pragma warning restore CS0618
                     actionsOut.DiscreteActions.Clear();
                     break;
                 case SpaceType.Discrete:
                     var convertedOut = Array.ConvertAll(actionsOut.DiscreteActions.Array, x => (float)x);
-#pragma warning disable CS0618
                     Heuristic(convertedOut);
-#pragma warning restore CS0618
-                    var backToInt = Array.ConvertAll(convertedOut, x => (int)x);
-                    Array.Copy(backToInt,
-                        0,
-                        actionsOut.DiscreteActions.Array,
-                        actionsOut.DiscreteActions.Offset,
-                        actionsOut.DiscreteActions.Length);
+                    var discreteActionSegment = actionsOut.DiscreteActions;
+                    for (var i = 0; i < actionsOut.DiscreteActions.Length; i++)
+                    {
+                        discreteActionSegment[i] = (int)convertedOut[i];
+                    }
                     actionsOut.ContinuousActions.Clear();
                     break;
             }
@@ -1098,9 +1093,7 @@ namespace Unity.MLAgents
             {
                 m_ActionMasker = new DiscreteActionMasker(actionMask);
             }
-            #pragma warning disable 618
             CollectDiscreteActionMasks(m_ActionMasker);
-            #pragma warning restore 618
         }
 
         ActionSpec IActionReceiver.ActionSpec { get; }
@@ -1176,9 +1169,7 @@ namespace Unity.MLAgents
         public virtual void OnActionReceived(ActionBuffers actions)
         {
             actions.PackActions(m_LegacyActionCache);
-            #pragma warning disable CS0618
             OnActionReceived(m_LegacyActionCache);
-            #pragma warning restore CS0618
         }
 
         /// <summary>
