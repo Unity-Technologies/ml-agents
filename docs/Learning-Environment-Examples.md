@@ -473,7 +473,7 @@ you would like to contribute environments, please see our
   - Body velocity matches goal velocity. (normalized between (0,1))
   - Head direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 238 variables corresponding to position, rotation,
+  - Vector Observation space: 243 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb, along with goal direction.
   - Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations and strength applicable to the joints.
@@ -496,9 +496,9 @@ you would like to contribute environments, please see our
     - Recommended Minimum: 3
     - Recommended Maximum: 20
 - Benchmark Mean Reward for `WalkerDynamic`: 2500
-- Benchmark Mean Reward for `WalkerDynamicVariableSpeed`: 1200
+- Benchmark Mean Reward for `WalkerDynamicVariableSpeed`: 2500
 - Benchmark Mean Reward for `WalkerStatic`: 3500
-- Benchmark Mean Reward for `WalkerStaticVariableSpeed`: 3000
+- Benchmark Mean Reward for `WalkerStaticVariableSpeed`: 3500
 
 
 
