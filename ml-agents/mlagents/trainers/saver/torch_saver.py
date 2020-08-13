@@ -2,6 +2,7 @@ import os
 import shutil
 import torch
 from typing import Dict, Union, Optional, cast
+from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.settings import TrainerSettings, SerializationSettings
@@ -32,7 +33,14 @@ class TorchSaver(BaseSaver):
         self.modules: Dict[str, torch.nn.Modules] = {}
 
     def register(self, module: Union[TorchPolicy, TorchOptimizer]) -> None:
-        self.modules.update(module.get_modules())  # type: ignore
+        if isinstance(module, TorchPolicy) or isinstance(module, TorchOptimizer):
+            self.modules.update(module.get_modules())  # type: ignore
+        else:
+            raise UnityPolicyException(
+                "Registering Object of unsupported type {} to Saver ".format(
+                    type(module)
+                )
+            )
         if self.policy is None and isinstance(module, TorchPolicy):
             self.policy = module
             self.exporter = ModelSerializer(self.policy)
@@ -57,7 +65,6 @@ class TorchSaver(BaseSaver):
         # Initialize/Load registered self.policy by default.
         # If given input argument policy, use the input policy instead.
         # This argument is mainly for initialization of the ghost trainer's fixed policy.
-
         reset_steps = not self.load
         if self.initialize_path is not None:
             self._load_model(
@@ -100,12 +107,6 @@ class TorchSaver(BaseSaver):
         Also copies the corresponding .onnx file if it exists.
         """
         final_model_name = os.path.splitext(source_nn_path)[0]
-
-        if SerializationSettings.convert_to_barracuda:
-            source_path = f"{final_model_name}.nn"
-            destination_path = f"{self.model_path}.nn"
-            shutil.copyfile(source_path, destination_path)
-            logger.info(f"Copied {source_path} to {destination_path}.")
 
         if SerializationSettings.convert_to_onnx:
             try:
