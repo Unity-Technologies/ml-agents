@@ -209,7 +209,8 @@ class ActorCritic(Actor):
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
-    ) -> Dict[str, torch.Tensor]:
+        sequence_length: int = 1,
+    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         """
         Get value outputs for the given obs.
         :param vec_inputs: List of vector inputs as tensors.
@@ -359,9 +360,12 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
-    ) -> Dict[str, torch.Tensor]:
-        encoding, _ = self.network_body(vec_inputs, vis_inputs, memories=memories)
-        return self.value_heads(encoding)
+        sequence_length: int = 1,
+    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
+        encoding, memories_out = self.network_body(
+            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        )
+        return self.value_heads(encoding), memories_out
 
     def get_dist_and_value(
         self,
@@ -426,16 +430,19 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
         memories: Optional[torch.Tensor] = None,
-    ) -> Dict[str, torch.Tensor]:
+        sequence_length: int = 1,
+    ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
         if self.use_lstm:
             # Use only the back half of memories for critic
-            _, critic_mem = torch.split(memories, self.half_mem_size, -1)
+            actor_mem, critic_mem = torch.split(memories, self.half_mem_size, -1)
         else:
             critic_mem = None
-        value_outputs, _memories = self.critic(
-            vec_inputs, vis_inputs, memories=critic_mem
+        value_outputs, critic_mem_out = self.critic(
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
-        return value_outputs
+        # Make memories with the actor mem unchanged
+        memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
+        return value_outputs, memories_out
 
     def get_dist_and_value(
         self,
