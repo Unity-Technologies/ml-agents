@@ -46,3 +46,39 @@ def linear_layer(
     layer.weight.data *= kernel_gain
     _init_methods[bias_init](layer.bias.data)
     return layer
+
+
+def lstm_layer(
+    input_size: int,
+    hidden_size: int,
+    num_layers: int = 1,
+    batch_first: bool = True,
+    forget_bias: float = 1.0,
+    kernel_init: Initialization = Initialization.XavierGlorotUniform,
+    bias_init: Initialization = Initialization.Zero,
+) -> torch.nn.Module:
+    """
+    Creates a torch.nn.LSTM and initializes its weights and biases. Provides a
+    forget_bias offset like is done in TensorFlow.
+    """
+    lstm = torch.nn.LSTM(input_size, hidden_size, num_layers, batch_first=batch_first)
+    # Add forget_bias to forget gate bias
+    for name, param in lstm.named_parameters():
+        # Each weight and bias is a concatenation of 4 matrices
+        if "weight" in name:
+            for idx in range(4):
+                block_size = param.shape[0] // 4
+                _init_methods[kernel_init](
+                    param.data[idx * block_size : (idx + 1) * block_size]
+                )
+        if "bias" in name:
+            for idx in range(4):
+                block_size = param.shape[0] // 4
+                _init_methods[bias_init](
+                    param.data[idx * block_size : (idx + 1) * block_size]
+                )
+                if idx == 1:
+                    param.data[idx * block_size : (idx + 1) * block_size].add_(
+                        forget_bias
+                    )
+    return lstm
