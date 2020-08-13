@@ -4,7 +4,7 @@ import numpy as np
 from mlagents_envs.base_env import DecisionSteps
 
 from mlagents.trainers.buffer import AgentBuffer
-from mlagents.trainers.components.bc.module import BCModule
+from mlagents.trainers.torch.components.bc.module import BCModule
 from mlagents.trainers.torch.components.reward_providers import create_reward_provider
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -27,6 +27,14 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         self.global_step = torch.tensor(0)
         self.bc_module: Optional[BCModule] = None
         self.create_reward_signals(trainer_settings.reward_signals)
+        if trainer_settings.behavioral_cloning is not None:
+            self.bc_module = BCModule(
+                self.policy,
+                trainer_settings.behavioral_cloning,
+                policy_learning_rate=trainer_settings.hyperparameters.learning_rate,
+                default_batch_size=trainer_settings.hyperparameters.batch_size,
+                default_num_epoch=3,
+            )
 
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         pass
