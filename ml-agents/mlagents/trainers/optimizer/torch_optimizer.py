@@ -32,6 +32,8 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
                 self.policy,
                 trainer_settings.behavioral_cloning,
                 policy_learning_rate=trainer_settings.hyperparameters.learning_rate,
+                default_batch_size=trainer_settings.hyperparameters.batch_size,
+                default_num_epoch=3,
             )
 
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:

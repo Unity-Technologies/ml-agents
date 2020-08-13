@@ -14,6 +14,8 @@ class BCModule:
         policy: TorchPolicy,
         settings: BehavioralCloningSettings,
         policy_learning_rate: float,
+        default_batch_size: int,
+        default_num_epoch: int,
     ):
         """
         A BC trainer that can be used inline with RL.
@@ -33,13 +35,14 @@ class BCModule:
         )
         params = self.policy.actor_critic.parameters()
         self.optimizer = torch.optim.Adam(params, lr=self.current_lr)
-
         _, self.demonstration_buffer = demo_to_buffer(
             settings.demo_path, policy.sequence_length, policy.behavior_spec
         )
 
-        self.batch_size = settings.batch_size
-        self.num_epoch = settings.num_epoch
+        self.batch_size = (
+            settings.batch_size if settings.batch_size else default_batch_size
+        )
+        self.num_epoch = settings.num_epoch if settings.num_epoch else default_num_epoch
         self.n_sequences = max(
             min(self.batch_size, self.demonstration_buffer.num_experiences)
             // policy.sequence_length,

@@ -33,6 +33,8 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
         policy,
         settings=bc_settings,
         policy_learning_rate=trainer_config.hyperparameters.learning_rate,
+        default_batch_size=trainer_config.hyperparameters.batch_size,
+        default_num_epoch=3,
     )
     return bc_module
 
