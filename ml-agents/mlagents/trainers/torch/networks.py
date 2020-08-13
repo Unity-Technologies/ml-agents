@@ -432,16 +432,18 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[Dict[str, torch.Tensor], torch.Tensor]:
+        actor_mem, critic_mem = None, None
         if self.use_lstm:
             # Use only the back half of memories for critic
             actor_mem, critic_mem = torch.split(memories, self.half_mem_size, -1)
-        else:
-            critic_mem = None
         value_outputs, critic_mem_out = self.critic(
             vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
-        # Make memories with the actor mem unchanged
-        memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
+        if actor_mem is not None:
+            # Make memories with the actor mem unchanged
+            memories_out = torch.cat([actor_mem, critic_mem_out], dim=-1)
+        else:
+            memories_out = None
         return value_outputs, memories_out
 
     def get_dist_and_value(
