@@ -1,4 +1,5 @@
 using System;
+using Google.Protobuf.WellKnownTypes;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgentsExamples;
@@ -8,8 +9,17 @@ using Random = UnityEngine.Random;
 
 public class WalkerAgent : Agent
 {
-    [Header("Walk Speed")] [Range(0.1f, 10)]
-    public float targetWalkingSpeed = 10; //The walking speed to try and achieve
+    [Header("Walk Speed")]
+    [Range(0.1f, 10)]
+    [SerializeField]
+    //The walking speed to try and achieve
+    private float targetWalkingSpeed = 10;
+
+    public float TargetWalkingSpeed // property
+    {
+        get { return targetWalkingSpeed; }
+        set { targetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
+    }
 
     const float m_maxWalkingSpeed = 10; //The max walking speed
 
@@ -95,8 +105,8 @@ public class WalkerAgent : Agent
         UpdateOrientationObjects();
 
         //Set our goal walking speed
-        targetWalkingSpeed =
-            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : targetWalkingSpeed;
+        TargetWalkingSpeed =
+            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : TargetWalkingSpeed;
 
         SetResetParameters();
     }
@@ -132,7 +142,7 @@ public class WalkerAgent : Agent
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
-        var velGoal = cubeForward * targetWalkingSpeed;
+        var velGoal = cubeForward * TargetWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
@@ -213,7 +223,7 @@ public class WalkerAgent : Agent
         // Set reward for this step according to mixture of the following elements.
         // a. Match target speed
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * targetWalkingSpeed, GetAvgVelocity());
+        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * TargetWalkingSpeed, GetAvgVelocity());
 
         //Check for NaNs
         if (float.IsNaN(matchSpeedReward))
@@ -267,11 +277,11 @@ public class WalkerAgent : Agent
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
-        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, targetWalkingSpeed);
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, TargetWalkingSpeed);
 
         //return the value on a declining sigmoid shaped curve that decays from 1 to 0
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / targetWalkingSpeed, 2), 2);
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / TargetWalkingSpeed, 2), 2);
     }
 
     /// <summary>
