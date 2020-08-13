@@ -26,7 +26,7 @@ class ModelSerializer:
         self.input_names = [
             "vector_observation",
             "visual_observation",
-            "action_mask",
+            "action_masks",
             "memories",
         ]
         self.output_names = [
@@ -40,7 +40,7 @@ class ModelSerializer:
         self.dynamic_axes = {
             "vector_observation": [0],
             "visual_observation": [0],
-            "action_mask": [0],
+            "action_masks": [0],
             "memories": [0],
             "action": [0],
             "action_probs": [0],

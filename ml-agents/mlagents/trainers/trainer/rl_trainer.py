@@ -152,7 +152,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     def create_saver(
         framework: str, trainer_settings: TrainerSettings, model_path: str, load: bool
     ) -> BaseSaver:
-        if framework == "torch":
+        if framework == FrameworkType.PYTORCH:
             saver = TorchSaver(  # type: ignore
                 trainer_settings, model_path, load
             )
