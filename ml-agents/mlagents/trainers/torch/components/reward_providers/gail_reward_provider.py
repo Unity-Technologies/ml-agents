@@ -185,9 +185,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             torch.log(expert_estimate + self.EPSILON)
             + torch.log(1.0 - policy_estimate + self.EPSILON)
         ).mean()
-        stats_dict["Losses/GAIL Loss"] = (
-            discriminator_loss.detach().cpu().numpy()
-        )
+        stats_dict["Losses/GAIL Loss"] = discriminator_loss.detach().cpu().numpy()
         total_loss += discriminator_loss
         if self._settings.use_vail:
             # KL divergence loss (encourage latent representation to be normal)
