@@ -2,9 +2,10 @@ behaviors:
   Reacher:
     trainer_type: sac_transfer
     hyperparameters:
-      learning_rate: 0.0003
+      learning_rate: 0.003
       learning_rate_schedule: linear
       model_schedule: constant
+      model_weight: 0.05
       batch_size: 256
       buffer_size: 6000000
       buffer_init_steps: 0
@@ -15,10 +16,10 @@ behaviors:
       reward_signal_steps_per_update: 20.0
       encoder_layers: 1
       policy_layers: 2
-      forward_layers: 1
+      forward_layers: 2
       value_layers: 2
       action_layers: 1
-      feature_size: 32
+      feature_size: 64
       action_feature_size: 16
       separate_policy_train: true
       separate_policy_net: true
@@ -35,7 +36,7 @@ behaviors:
       train_model: false
       load_action: true
       train_action: false
-      transfer_path: "results/reacher-f32/Reacher"
+      transfer_path: "results/reacher-lr/Reacher"
     network_settings:
       normalize: true
       hidden_units: 128

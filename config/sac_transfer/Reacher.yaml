@@ -6,7 +6,7 @@ behaviors:
       learning_rate_schedule: linear
       model_schedule: constant
       batch_size: 256
-      buffer_size: 10000000
+      buffer_size: 6000000
       buffer_init_steps: 0
       tau: 0.005
       steps_per_update: 20.0
@@ -15,10 +15,10 @@ behaviors:
       reward_signal_steps_per_update: 20.0
       encoder_layers: 1
       policy_layers: 2
-      forward_layers: 1
+      forward_layers: 2
       value_layers: 2
       action_layers: 1
-      feature_size: 32
+      feature_size: 64
       action_feature_size: 16
       separate_policy_train: true
       separate_policy_net: true
@@ -41,7 +41,7 @@ behaviors:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 10000000
+    max_steps: 6000000
     time_horizon: 1000
     summary_freq: 60000
     threaded: true

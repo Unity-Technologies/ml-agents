@@ -68,6 +68,7 @@ class SACTransferOptimizer(TFOptimizer):
         self.train_model = hyperparameters.train_model
         self.train_policy = hyperparameters.train_policy
         self.train_value = hyperparameters.train_value
+        self.model_weight = hyperparameters.model_weight
 
         # Transfer
         self.use_transfer = hyperparameters.use_transfer
@@ -213,7 +214,7 @@ class SACTransferOptimizer(TFOptimizer):
                 )
                 self.model_learning_rate = ModelUtils.create_schedule(
                     hyperparameters.model_schedule,
-                    lr,
+                    hyperparameters.model_learning_rate,
                     self.policy.global_step,
                     int(max_step),
                     min_value=1e-10,
@@ -687,7 +688,7 @@ class SACTransferOptimizer(TFOptimizer):
 
         # Make sure policy is updated first, then value, then entropy.
         if self.use_transfer:
-            value_loss = self.total_value_loss + self.model_loss
+            value_loss = self.total_value_loss + self.model_weight * self.model_loss
         else:
             value_loss = self.total_value_loss
         with tf.control_dependencies([self.update_batch_policy]):

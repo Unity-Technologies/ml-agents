@@ -161,6 +161,8 @@ class SACSettings(HyperparamSettings):
 @attr.s(auto_attribs=True)
 class SACTransferSettings(SACSettings):
     model_schedule: ScheduleType = ScheduleType.LINEAR
+    model_learning_rate: float = 3.0e-4
+    model_weight: float = 0.5
 
     separate_value_train: bool = False
     separate_policy_train: bool = False

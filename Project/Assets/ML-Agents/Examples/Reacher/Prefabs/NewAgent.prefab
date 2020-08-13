@@ -447,7 +447,7 @@ MonoBehaviour:
     VectorActionSize: 04000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
-  m_Model: {fileID: 11400000, guid: 79166d8db14004ba0aa1ffdce3f62667, type: 3}
+  m_Model: {fileID: 11400000, guid: fccf649e8d1dc4ad1b7d28f21b572cbe, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Reacher
