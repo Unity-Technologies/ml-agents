@@ -338,10 +338,7 @@ class GhostTrainer(Trainer):
         return policy
 
     def add_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        policy: Policy,
-        register_saver: bool = True,
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to GhostTrainer.

@@ -9,8 +9,27 @@ class BaseSaver(abc.ABC):
     def __init__(self):
         pass
 
-    @abc.abstractmethod
     def register(self, module: Any) -> None:
+        """
+        Register the modules to the Saver.
+        The Saver will store the module and include it in the saved files
+        when saving checkpoint/exporting graph.
+        :param module: the module to be registered
+        """
+        pass
+
+    def _register_policy(self, policy):
+        """
+        Helper function for registering policy to the Saver.
+        :param policy: the policy to be registered
+        """
+        pass
+
+    def _register_optimizer(self, optimizer):
+        """
+        Helper function for registering optimizer to the Saver.
+        :param optimizer: the optimizer to be registered
+        """
         pass
 
     @abc.abstractmethod
@@ -37,8 +56,10 @@ class BaseSaver(abc.ABC):
     @abc.abstractmethod
     def initialize_or_load(self, policy):
         """
-        If there is an initialize path, load from that. Else, load from the set model path.
-        If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
-        e.g., resume from an initialize path.
+        Initialize/Load registered modules by default.
+        If given input argument policy, do with the input policy instead.
+        This argument is mainly for the initialization of the ghost trainer's fixed policy.
+        :param policy (optional): if given, perform the initializing/loading on this input policy.
+                                  Otherwise, do with the registered policy
         """
         pass
