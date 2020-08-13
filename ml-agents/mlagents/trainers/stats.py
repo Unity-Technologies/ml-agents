@@ -10,6 +10,7 @@ from threading import RLock
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
+from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
@@ -84,6 +85,7 @@ class ConsoleWriter(StatsWriter):
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
+        self.rank = get_rank()
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -100,9 +102,13 @@ class ConsoleWriter(StatsWriter):
         log_info.append(f"Time Elapsed: {elapsed_time:0.3f} s")
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
+            if self.rank is not None:
+                log_info.append(f"Rank: {self.rank}")
+
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
             log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
             log_info.append(is_training)
+
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
                 log_info.append(f"ELO: {elo_stats.mean:0.3f}")
