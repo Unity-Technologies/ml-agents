@@ -49,7 +49,10 @@ class TFPolicy(Policy):
     functions to save/load models and create the input placeholders.
     """
 
-    broadcast_global_variables: Callable[[int], None] = lambda x: None
+    # Callback function used at the start of training to synchronize weights.
+    # By default, this nothing.
+    # If this needs to be used, it should be done from outside ml-agents.
+    broadcast_global_variables: Callable[[int], None] = lambda root_rank: None
 
     def __init__(
         self,
