@@ -288,7 +288,7 @@ namespace Unity.MLAgents
 
         /// <summary>
         /// VectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
-        /// delegate its actions to <see cref="IActionReceiver.OnActionReceived"/> by default in order to keep backward compatibility
+        /// delegate its actions to <see cref="OnActionReceived(float[])"/> by default in order to keep backward compatibility
         /// with the current behavior of Agent.
         /// </summary>
         IActuator m_VectorActuator;
@@ -1175,25 +1175,7 @@ namespace Unity.MLAgents
         /// </param>
         public virtual void OnActionReceived(ActionBuffers actions)
         {
-            // Copy the actions into our local array and call the original method for
-            // backward compatibility.
-            // For now we need to check which array has the actions in them in order to pass it back to the old method.
-            if (actions.ContinuousActions.Length > 0)
-            {
-                Array.Copy(actions.ContinuousActions.Array,
-                    actions.ContinuousActions.Offset,
-                    m_LegacyActionCache,
-                    0,
-                    actions.ContinuousActions.Length);
-            }
-            else if (actions.DiscreteActions.Length > 0)
-            {
-                Array.Copy(actions.DiscreteActions.Array,
-                    actions.DiscreteActions.Offset,
-                    m_LegacyActionCache,
-                    0,
-                    actions.DiscreteActions.Length);
-            }
+            actions.PackActions(m_LegacyActionCache);
             #pragma warning disable CS0618
             OnActionReceived(m_LegacyActionCache);
             #pragma warning restore CS0618

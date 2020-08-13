@@ -5,20 +5,20 @@ namespace Unity.MLAgents
 {
     public partial class Agent
     {
-        // [Obsolete("CollectDiscreteActionMasks has been deprecated. Please use WriteDiscreteActionMask instead.", false)]
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
         {
         }
 
-        // [Obsolete("The Heuristic(float[]) method has been deprecated.  Please use Heuristic(float[], int[]) instead.")]
-        public virtual void Heuristic(float[] continuousActionsOut)
+        /// <summary>
+        /// This method passes in a float array that is to be populated with actions.  The actions
+        /// </summary>
+        /// <param name="actionsOut"></param>
+        public virtual void Heuristic(float[] actionsOut)
         {
             Debug.LogWarning("Heuristic method called but not implemented. Returning placeholder actions.");
-            Array.Clear(continuousActionsOut, 0, continuousActionsOut.Length);
+            Array.Clear(actionsOut, 0, actionsOut.Length);
         }
 
-        // [Obsolete("The OnActionReceived(float[]) method has been deprecated" +
-            // " Please use OnActionReceived(ActionSegment<float>, ActionSegment<int>).", false)]
         public virtual void OnActionReceived(float[] vectorAction) {}
 
         /// <summary>

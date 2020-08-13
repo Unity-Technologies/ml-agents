@@ -30,14 +30,14 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public static ActionSegment<T> Empty = new ActionSegment<T>(System.Array.Empty<T>(), 0, 0);
 
-        static void CheckParameters(T[] actionArray, int offset, int length)
+        static void CheckParameters(IReadOnlyCollection<T> actionArray, int offset, int length)
         {
 #if DEBUG
-            if (offset + length > actionArray.Length)
+            if (offset + length > actionArray.Count)
             {
                 throw new ArgumentOutOfRangeException(nameof(offset),
                     $"Arguments offset: {offset} and length: {length} " +
-                    $"are out of bounds of actionArray: {actionArray.Length}.");
+                    $"are out of bounds of actionArray: {actionArray.Count}.");
             }
 #endif
         }
@@ -47,7 +47,7 @@ namespace Unity.MLAgents.Actuators
         /// be set to 0 and the <see cref="Length"/> will be set to `actionArray.Length`.
         /// </summary>
         /// <param name="actionArray">The action array to use for the this segment.</param>
-        public ActionSegment(T[] actionArray) : this(actionArray, 0, actionArray.Length) {}
+        public ActionSegment(T[] actionArray) : this(actionArray, 0, actionArray.Length) { }
 
         /// <summary>
         /// Construct an <see cref="ActionSegment{T}"/> with an underlying array
@@ -58,7 +58,9 @@ namespace Unity.MLAgents.Actuators
         /// <param name="length">The length of the segment.</param>
         public ActionSegment(T[] actionArray, int offset, int length)
         {
+#if DEBUG
             CheckParameters(actionArray, offset, length);
+#endif
             Array = actionArray;
             Offset = offset;
             Length = length;

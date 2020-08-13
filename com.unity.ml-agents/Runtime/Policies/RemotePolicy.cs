@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Policies
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
         SpaceType m_SpaceType;
-        ActionBuffers m_LasActionBuffer;
+        ActionBuffers m_LastActionBuffer;
 
         internal ICommunicator m_Communicator;
 
@@ -44,11 +44,11 @@ namespace Unity.MLAgents.Policies
             var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
             if (m_SpaceType == SpaceType.Continuous)
             {
-                m_LasActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
-                return ref m_LasActionBuffer;
+                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
+                return ref m_LastActionBuffer;
             }
-            m_LasActionBuffer = new ActionBuffers(Array.Empty<float>(), Array.ConvertAll(actions ?? Array.Empty<float>(), x => (int)x));
-            return ref m_LasActionBuffer;
+            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
+            return ref m_LastActionBuffer;
         }
 
         public void Dispose()

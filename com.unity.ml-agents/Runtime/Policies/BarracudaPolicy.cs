@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Policies
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
         /// </summary>
         List<int[]> m_SensorShapes;
-        SpaceType m_SapceType;
+        SpaceType m_SpaceType;
 
         /// <inheritdoc />
         public BarracudaPolicy(
@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Policies
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_ModelRunner = modelRunner;
-            m_SapceType = brainParameters.VectorActionSpaceType;
+            m_SpaceType = brainParameters.VectorActionSpaceType;
         }
 
         /// <inheritdoc />
@@ -64,16 +64,13 @@ namespace Unity.MLAgents.Policies
         {
             m_ModelRunner?.DecideBatch();
             var actions = m_ModelRunner?.GetAction(m_AgentId);
-            if (m_SapceType == SpaceType.Continuous)
+            if (m_SpaceType == SpaceType.Continuous)
             {
                 m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
                 return ref m_LastActionBuffer;
             }
 
-            // Need to use ConvertAll since you cannot copy a float[] int an int[].
-            m_LastActionBuffer = new ActionBuffers(ActionSegment<float>.Empty, actions == null ? ActionSegment<int>.Empty
-                    : new ActionSegment<int>(Array.ConvertAll(actions,
-                        x => (int)x)));
+            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
             return ref m_LastActionBuffer;
         }
 

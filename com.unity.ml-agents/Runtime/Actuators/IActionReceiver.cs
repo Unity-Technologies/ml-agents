@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Unity.MLAgents.Actuators
 {
@@ -24,6 +25,21 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public ActionSegment<int> DiscreteActions { get; }
 
+        /// <summary>
+        /// Create an <see cref="ActionBuffers"/> instance with discrete actions stored as a float array.  This exists
+        /// to achieve backward compatibility with the former Agent methods which used a float array for both continuous
+        /// and discrete actions.
+        /// </summary>
+        /// <param name="discreteActions">The float array of discrete actions.</param>
+        /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="DiscreteActions"/>
+        /// <see cref="ActionSegment{T}"/> initialized from a float array.</returns>
+        public static ActionBuffers FromDiscreteActions(float[] discreteActions)
+        {
+           return new ActionBuffers(ActionSegment<float>.Empty, discreteActions == null ? ActionSegment<int>.Empty
+                               : new ActionSegment<int>(Array.ConvertAll(discreteActions,
+                                   x => (int)x)));
+        }
+
         public ActionBuffers(float[] continuousActions, int[] discreteActions)
             : this(new ActionSegment<float>(continuousActions), new ActionSegment<int>(discreteActions)) { }
 
@@ -39,6 +55,15 @@ namespace Unity.MLAgents.Actuators
             DiscreteActions = discreteActions;
         }
 
+        /// <summary>
+        /// Clear the <see cref="ContinuousActions"/> and <see cref="DiscreteActions"/> segments to be all zeros.
+        /// </summary>
+        public void Clear()
+        {
+            ContinuousActions.Clear();
+            DiscreteActions.Clear();
+        }
+
         /// <inheritdoc cref="ValueType.Equals(object)"/>
         public override bool Equals(object obj)
         {
@@ -50,12 +75,6 @@ namespace Unity.MLAgents.Actuators
             var ab = (ActionBuffers)obj;
             return ab.ContinuousActions.SequenceEqual(ContinuousActions) &&
                 ab.DiscreteActions.SequenceEqual(DiscreteActions);
-        }
-
-        public void Clear()
-        {
-            ContinuousActions.Clear();
-            DiscreteActions.Clear();
         }
 
         /// <inheritdoc cref="ValueType.GetHashCode"/>
@@ -77,11 +96,19 @@ namespace Unity.MLAgents.Actuators
         /// <see cref="DiscreteActions"/> segments.</param>
         public void PackActions(in float[] destination)
         {
+            Debug.Assert(destination.Length >= ContinuousActions.Length + DiscreteActions.Length,
+                $"argument '{nameof(destination)}' is not large enough to pack the actions into.\n" +
+                $"{nameof(destination)}.Length: {destination.Length}\n" +
+                $"{nameof(ContinuousActions)}.Length + {nameof(DiscreteActions)}.Length: {ContinuousActions.Length + DiscreteActions.Length}");
 
             var start = 0;
             if (ContinuousActions.Length > 0)
             {
-                Array.Copy(ContinuousActions.Array, ContinuousActions.Offset, destination, start, ContinuousActions.Length);
+                Array.Copy(ContinuousActions.Array,
+                    ContinuousActions.Offset,
+                    destination,
+                    start,
+                    ContinuousActions.Length);
                 start = ContinuousActions.Length;
             }
             if (start >= destination.Length)
@@ -91,7 +118,11 @@ namespace Unity.MLAgents.Actuators
 
             if (DiscreteActions.Length > 0)
             {
-                Array.Copy(DiscreteActions.Array, DiscreteActions.Offset, destination, start, DiscreteActions.Length);
+                Array.Copy(DiscreteActions.Array,
+                    DiscreteActions.Offset,
+                    destination,
+                    start,
+                    DiscreteActions.Length);
             }
         }
     }
