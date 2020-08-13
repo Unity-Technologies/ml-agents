@@ -1,7 +1,8 @@
 import numpy as np
-from typing import Dict, List, Mapping, cast, Tuple
+from typing import Dict, List, Mapping, cast, Tuple, Optional
 import torch
 from torch import nn
+import attr
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import ActionType
@@ -56,10 +57,24 @@ class TorchSACOptimizer(TorchOptimizer):
             self,
             vec_inputs: List[torch.Tensor],
             vis_inputs: List[torch.Tensor],
-            actions: torch.Tensor = None,
+            actions: Optional[torch.Tensor] = None,
+            memories: Optional[torch.Tensor] = None,
+            sequence_length: int = 1,
         ) -> Tuple[Dict[str, torch.Tensor], Dict[str, torch.Tensor]]:
-            q1_out, _ = self.q1_network(vec_inputs, vis_inputs, actions=actions)
-            q2_out, _ = self.q2_network(vec_inputs, vis_inputs, actions=actions)
+            q1_out, _ = self.q1_network(
+                vec_inputs,
+                vis_inputs,
+                actions=actions,
+                memories=memories,
+                sequence_length=sequence_length,
+            )
+            q2_out, _ = self.q2_network(
+                vec_inputs,
+                vis_inputs,
+                actions=actions,
+                memories=memories,
+                sequence_length=sequence_length,
+            )
             return q1_out, q2_out
 
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
@@ -87,17 +102,28 @@ class TorchSACOptimizer(TorchOptimizer):
             for name in self.stream_names
         }
 
+        # Critics should have 1/2 of the memory of the policy
+        critic_memory = policy_network_settings.memory
+        if critic_memory is not None:
+            critic_memory = attr.evolve(
+                critic_memory, memory_size=critic_memory.memory_size // 2
+            )
+        value_network_settings = attr.evolve(
+            policy_network_settings, memory=critic_memory
+        )
+
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
-            policy_network_settings,
+            value_network_settings,
             self.policy.behavior_spec.action_type,
             self.act_size,
         )
+
         self.target_network = ValueNetwork(
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
-            policy_network_settings,
+            value_network_settings,
         )
         self.soft_update(self.policy.actor_critic.critic, self.target_network, 1.0)
 
@@ -168,11 +194,11 @@ class TorchSACOptimizer(TorchOptimizer):
                     * self.gammas[i]
                     * target_values[name]
                 )
-            _q1_loss = 0.5 * torch.mean(
-                loss_masks * torch.nn.functional.mse_loss(q_backup, q1_stream)
+            _q1_loss = 0.5 * ModelUtils.masked_mean(
+                torch.nn.functional.mse_loss(q_backup, q1_stream), loss_masks
             )
-            _q2_loss = 0.5 * torch.mean(
-                loss_masks * torch.nn.functional.mse_loss(q_backup, q2_stream)
+            _q2_loss = 0.5 * ModelUtils.masked_mean(
+                torch.nn.functional.mse_loss(q_backup, q2_stream), loss_masks
             )
 
             q1_losses.append(_q1_loss)
@@ -232,9 +258,8 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.sum(
                         _ent_coef * log_probs, dim=1
                     )
-                # print(log_probs, v_backup, _ent_coef, loss_masks)
-                value_loss = 0.5 * torch.mean(
-                    loss_masks * torch.nn.functional.mse_loss(values[name], v_backup)
+                value_loss = 0.5 * ModelUtils.masked_mean(
+                    torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
                 value_losses.append(value_loss)
         else:
@@ -253,9 +278,9 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.mean(
                         branched_ent_bonus, axis=0
                     )
-                value_loss = 0.5 * torch.mean(
-                    loss_masks
-                    * torch.nn.functional.mse_loss(values[name], v_backup.squeeze())
+                value_loss = 0.5 * ModelUtils.masked_mean(
+                    torch.nn.functional.mse_loss(values[name], v_backup.squeeze()),
+                    loss_masks,
                 )
                 value_losses.append(value_loss)
         value_loss = torch.mean(torch.stack(value_losses))
@@ -275,7 +300,7 @@ class TorchSACOptimizer(TorchOptimizer):
         if not discrete:
             mean_q1 = mean_q1.unsqueeze(1)
             batch_policy_loss = torch.mean(_ent_coef * log_probs - mean_q1, dim=1)
-            policy_loss = torch.mean(loss_masks * batch_policy_loss)
+            policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
         else:
             action_probs = log_probs.exp()
             branched_per_action_ent = ModelUtils.break_into_branches(
@@ -322,9 +347,8 @@ class TorchSACOptimizer(TorchOptimizer):
                 target_current_diff = torch.squeeze(
                     target_current_diff_branched, axis=2
                 )
-            entropy_loss = -torch.mean(
-                loss_masks
-                * torch.mean(self._log_ent_coef * target_current_diff, axis=1)
+            entropy_loss = -1 * ModelUtils.masked_mean(
+                torch.mean(self._log_ent_coef * target_current_diff, axis=1), loss_masks
             )
 
         return entropy_loss
@@ -369,12 +393,28 @@ class TorchSACOptimizer(TorchOptimizer):
         else:
             actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.long)
 
-        memories = [
+        memories_list = [
             ModelUtils.list_to_tensor(batch["memory"][i])
             for i in range(0, len(batch["memory"]), self.policy.sequence_length)
         ]
-        if len(memories) > 0:
-            memories = torch.stack(memories).unsqueeze(0)
+        # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
+        offset = 1 if self.policy.sequence_length > 1 else 0
+        next_memories_list = [
+            ModelUtils.list_to_tensor(
+                batch["memory"][i][self.policy.m_size // 2 :]
+            )  # only pass value part of memory to target network
+            for i in range(offset, len(batch["memory"]), self.policy.sequence_length)
+        ]
+
+        if len(memories_list) > 0:
+            memories = torch.stack(memories_list).unsqueeze(0)
+            next_memories = torch.stack(next_memories_list).unsqueeze(0)
+        else:
+            memories = None
+            next_memories = None
+        # Q network memories are 0'ed out, since we don't have them during inference.
+        q_memories = torch.zeros_like(next_memories)
+
         vis_obs: List[torch.Tensor] = []
         next_vis_obs: List[torch.Tensor] = []
         if self.policy.use_vis_obs:
@@ -415,19 +455,46 @@ class TorchSACOptimizer(TorchOptimizer):
         )
         if self.policy.use_continuous_act:
             squeezed_actions = actions.squeeze(-1)
-            q1p_out, q2p_out = self.value_network(vec_obs, vis_obs, sampled_actions)
-            q1_out, q2_out = self.value_network(vec_obs, vis_obs, squeezed_actions)
+            q1p_out, q2p_out = self.value_network(
+                vec_obs,
+                vis_obs,
+                sampled_actions,
+                memories=q_memories,
+                sequence_length=self.policy.sequence_length,
+            )
+            q1_out, q2_out = self.value_network(
+                vec_obs,
+                vis_obs,
+                squeezed_actions,
+                memories=q_memories,
+                sequence_length=self.policy.sequence_length,
+            )
             q1_stream, q2_stream = q1_out, q2_out
         else:
             with torch.no_grad():
-                q1p_out, q2p_out = self.value_network(vec_obs, vis_obs)
-            q1_out, q2_out = self.value_network(vec_obs, vis_obs)
+                q1p_out, q2p_out = self.value_network(
+                    vec_obs,
+                    vis_obs,
+                    memories=q_memories,
+                    sequence_length=self.policy.sequence_length,
+                )
+            q1_out, q2_out = self.value_network(
+                vec_obs,
+                vis_obs,
+                memories=q_memories,
+                sequence_length=self.policy.sequence_length,
+            )
             q1_stream = self._condense_q_streams(q1_out, actions)
             q2_stream = self._condense_q_streams(q2_out, actions)
 
         with torch.no_grad():
-            target_values, _ = self.target_network(next_vec_obs, next_vis_obs)
-        masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.int32)
+            target_values, _ = self.target_network(
+                next_vec_obs,
+                next_vis_obs,
+                memories=next_memories,
+                sequence_length=self.policy.sequence_length,
+            )
+        masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         use_discrete = not self.policy.use_continuous_act
         dones = ModelUtils.list_to_tensor(batch["done"])
 
