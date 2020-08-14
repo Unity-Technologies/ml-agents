@@ -109,7 +109,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             torch.clamp(r_theta, 1.0 - decay_epsilon, 1.0 + decay_epsilon) * advantage
         )
         policy_loss = -1 * ModelUtils.masked_mean(
-            torch.min(p_opt_a, p_opt_b).flatten(), loss_masks
+            torch.min(p_opt_a, p_opt_b), loss_masks
         )
         return policy_loss
 
@@ -177,7 +177,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss = (
             policy_loss
             + 0.5 * value_loss
-            - decay_bet * ModelUtils.masked_mean(entropy.flatten(), loss_masks)
+            - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
         # Set optimizer learning rate
