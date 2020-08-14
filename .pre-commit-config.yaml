@@ -132,5 +132,9 @@ repos:
         name: validate release links
         language: script
         entry: utils/validate_release_links.py
-
+    -   id: dotnet-format
+        name: dotnet-format
+        language: script
+        entry: utils/run_dotnet_format.py
+        types: [c#]
 
