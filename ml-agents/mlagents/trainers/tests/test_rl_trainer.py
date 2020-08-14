@@ -1,5 +1,5 @@
-from unittest import mock
 import os
+from unittest import mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint

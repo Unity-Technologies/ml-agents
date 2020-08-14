@@ -1,4 +1,5 @@
 import pytest
+
 import numpy as np
 from mlagents.tf_utils import tf
 
@@ -15,6 +16,7 @@ VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 32
 NUM_AGENTS = 12
+EPSILON = 1e-7
 
 
 def create_policy_mock(
@@ -75,11 +77,112 @@ def test_policy_evaluate(rnn, visual, discrete):
         assert run_out["action"].shape == (NUM_AGENTS, VECTOR_ACTION_SPACE)
 
 
+def test_large_normalization():
+    behavior_spec = mb.setup_test_behavior_specs(
+        use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
+    )
+    # Taken from Walker seed 3713 which causes NaN without proper initialization
+    large_obs1 = [
+        1800.00036621,
+        1799.96972656,
+        1800.01245117,
+        1800.07214355,
+        1800.02758789,
+        1799.98303223,
+        1799.88647461,
+        1799.89575195,
+        1800.03479004,
+        1800.14025879,
+        1800.17675781,
+        1800.20581055,
+        1800.33740234,
+        1800.36450195,
+        1800.43457031,
+        1800.45544434,
+        1800.44604492,
+        1800.56713867,
+        1800.73901367,
+    ]
+    large_obs2 = [
+        1799.99975586,
+        1799.96679688,
+        1799.92980957,
+        1799.89550781,
+        1799.93774414,
+        1799.95300293,
+        1799.94067383,
+        1799.92993164,
+        1799.84057617,
+        1799.69873047,
+        1799.70605469,
+        1799.82849121,
+        1799.85095215,
+        1799.76977539,
+        1799.78283691,
+        1799.76708984,
+        1799.67163086,
+        1799.59191895,
+        1799.5135498,
+        1799.45556641,
+        1799.3717041,
+    ]
+    policy = TFPolicy(
+        0,
+        behavior_spec,
+        TrainerSettings(network_settings=NetworkSettings(normalize=True)),
+        "testdir",
+        False,
+    )
+    time_horizon = len(large_obs1)
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        observation_shapes=[(1,)],
+        action_space=[2],
+    )
+    for i in range(time_horizon):
+        trajectory.steps[i].obs[0] = np.array([large_obs1[i]], dtype=np.float32)
+    trajectory_buffer = trajectory.to_agentbuffer()
+    policy.update_normalization(trajectory_buffer["vector_obs"])
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = policy.sess.run(
+        [policy.normalization_steps, policy.running_mean, policy.running_variance]
+    )
+    assert mean[0] == pytest.approx(np.mean(large_obs1, dtype=np.float32), abs=0.01)
+    assert variance[0] / steps == pytest.approx(
+        np.var(large_obs1, dtype=np.float32), abs=0.01
+    )
+
+    time_horizon = len(large_obs2)
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        observation_shapes=[(1,)],
+        action_space=[2],
+    )
+    for i in range(time_horizon):
+        trajectory.steps[i].obs[0] = np.array([large_obs2[i]], dtype=np.float32)
+
+    trajectory_buffer = trajectory.to_agentbuffer()
+    policy.update_normalization(trajectory_buffer["vector_obs"])
+
+    steps, mean, variance = policy.sess.run(
+        [policy.normalization_steps, policy.running_mean, policy.running_variance]
+    )
+
+    assert mean[0] == pytest.approx(
+        np.mean(large_obs1 + large_obs2, dtype=np.float32), abs=0.01
+    )
+    assert variance[0] / steps == pytest.approx(
+        np.var(large_obs1 + large_obs2, dtype=np.float32), abs=0.01
+    )
+
+
 def test_normalization():
     behavior_spec = mb.setup_test_behavior_specs(
         use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
     )
-
     time_horizon = 6
     trajectory = make_fake_trajectory(
         length=time_horizon,
@@ -108,10 +211,9 @@ def test_normalization():
 
     assert steps == 6
     assert mean[0] == 0.5
-    # Note: variance is divided by number of steps, and initialized to 1 to avoid
-    # divide by 0. The right answer is 0.25
-    assert (variance[0] - 1) / steps == 0.25
-
+    # Note: variance is initalized to the variance of the initial trajectory + EPSILON
+    # (to avoid divide by 0) and multiplied by the number of steps. The correct answer is 0.25
+    assert variance[0] / steps == pytest.approx(0.25, abs=0.01)
     # Make another update, this time with all 1's
     time_horizon = 10
     trajectory = make_fake_trajectory(
@@ -130,7 +232,7 @@ def test_normalization():
 
     assert steps == 16
     assert mean[0] == 0.8125
-    assert (variance[0] - 1) / steps == pytest.approx(0.152, abs=0.01)
+    assert variance[0] / steps == pytest.approx(0.152, abs=0.01)
 
 
 def test_min_visual_size():

@@ -3,6 +3,7 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 using Unity.MLAgents.Policies;
@@ -14,6 +15,7 @@ namespace Unity.MLAgents.Tests
     {
         public Action OnRequestDecision;
         ObservationWriter m_ObsWriter = new ObservationWriter();
+        static ActionBuffers s_EmptyActionBuffers = new ActionBuffers(Array.Empty<float>(), Array.Empty<int>());
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
             foreach (var sensor in sensors)
@@ -23,7 +25,7 @@ namespace Unity.MLAgents.Tests
             OnRequestDecision?.Invoke();
         }
 
-        public float[] DecideAction() { return new float[0]; }
+        public ref readonly ActionBuffers DecideAction() { return ref s_EmptyActionBuffers; }
 
         public void Dispose() {}
     }

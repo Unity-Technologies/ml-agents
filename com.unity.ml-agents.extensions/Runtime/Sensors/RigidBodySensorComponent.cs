@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
@@ -27,7 +28,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Optional sensor name. This must be unique for each Agent.
         /// </summary>
+        [SerializeField]
         public string sensorName;
+
+        [SerializeField]
+        [HideInInspector]
+        RigidBodyPoseExtractor m_PoseExtractor;
 
         /// <summary>
         /// Creates a PhysicsBodySensor.
@@ -35,7 +41,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns></returns>
         public override ISensor CreateSensor()
         {
-            return new PhysicsBodySensor(RootBody, gameObject, VirtualRoot, Settings, sensorName);
+            var _sensorName = string.IsNullOrEmpty(sensorName) ? $"PhysicsBodySensor:{RootBody?.name}" : sensorName;
+            return new PhysicsBodySensor(GetPoseExtractor(), Settings, _sensorName);
         }
 
         /// <inheritdoc/>
@@ -46,20 +53,63 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return new[] { 0 };
             }
 
-            // TODO static method in PhysicsBodySensor?
-            // TODO only update PoseExtractor when body changes?
-            var poseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot);
+            var poseExtractor = GetPoseExtractor();
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;
-            // Start from i=1 to ignore the root
-            for (var i = 1; i < poseExtractor.Bodies.Length; i++)
+            foreach(var rb in poseExtractor.GetEnabledRigidbodies())
             {
-                var body = poseExtractor.Bodies[i];
-                var joint = body?.GetComponent<Joint>();
-                numJointObservations += RigidBodyJointExtractor.NumObservations(body, joint, Settings);
+                var joint = rb.GetComponent<Joint>();
+                numJointObservations += RigidBodyJointExtractor.NumObservations(rb, joint, Settings);
             }
             return new[] { numPoseObservations + numJointObservations };
+        }
+
+        /// <summary>
+        /// Get the DisplayNodes of the hierarchy.
+        /// </summary>
+        /// <returns></returns>
+        internal IList<PoseExtractor.DisplayNode> GetDisplayNodes()
+        {
+            return GetPoseExtractor().GetDisplayNodes();
+        }
+
+        /// <summary>
+        /// Lazy construction of the PoseExtractor.
+        /// </summary>
+        /// <returns></returns>
+        RigidBodyPoseExtractor GetPoseExtractor()
+        {
+            if (m_PoseExtractor == null)
+            {
+                ResetPoseExtractor();
+            }
+
+            return m_PoseExtractor;
+        }
+
+        /// <summary>
+        /// Reset the pose extractor, trying to keep the enabled state of the corresponding poses the same.
+        /// </summary>
+        internal void ResetPoseExtractor()
+        {
+            // Get the current enabled state of each body, so that we can reinitialize with them.
+            Dictionary<Rigidbody, bool> bodyPosesEnabled = null;
+            if (m_PoseExtractor != null)
+            {
+                bodyPosesEnabled = m_PoseExtractor.GetBodyPosesEnabled();
+            }
+            m_PoseExtractor = new RigidBodyPoseExtractor(RootBody, gameObject, VirtualRoot, bodyPosesEnabled);
+        }
+
+        /// <summary>
+        /// Toggle the pose at the given index.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <param name="enabled"></param>
+        internal void SetPoseEnabled(int index, bool enabled)
+        {
+            GetPoseExtractor().SetPoseEnabled(index, enabled);
         }
     }
 

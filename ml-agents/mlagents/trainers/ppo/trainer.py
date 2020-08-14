@@ -250,6 +250,16 @@ class PPOTrainer(RLTrainer):
         )
         return policy
 
+    def create_ppo_optimizer(self) -> PPOOptimizer:
+        if self.framework == FrameworkType.PYTORCH:
+            return TorchPPOOptimizer(  # type: ignore
+                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+        else:
+            return PPOOptimizer(  # type: ignore
+                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
@@ -267,14 +277,8 @@ class PPOTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        if self.framework == FrameworkType.PYTORCH:
-            self.optimizer = TorchPPOOptimizer(  # type: ignore
-                self.policy, self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            self.optimizer = PPOOptimizer(  # type: ignore
-                self.policy, self.trainer_settings  # type: ignore
-            )  # type: ignore
+
+        self.optimizer = self.create_ppo_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 

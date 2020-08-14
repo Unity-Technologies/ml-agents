@@ -412,7 +412,7 @@ namespace Unity.MLAgents
                     var agentId = m_OrderedAgentsRequestingDecisions[brainName][i];
                     if (m_LastActionsReceived[brainName].ContainsKey(agentId))
                     {
-                        m_LastActionsReceived[brainName][agentId] = agentAction.vectorActions;
+                        m_LastActionsReceived[brainName][agentId] = agentAction;
                     }
                 }
             }

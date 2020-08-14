@@ -123,6 +123,9 @@ def make_fake_trajectory(
             memory=memory,
         )
         steps_list.append(experience)
+    obs = []
+    for _shape in observation_shapes:
+        obs.append(np.ones(_shape, dtype=np.float32))
     last_experience = AgentExperience(
         obs=obs,
         reward=reward,

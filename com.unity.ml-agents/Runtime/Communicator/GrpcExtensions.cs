@@ -175,20 +175,12 @@ namespace Unity.MLAgents
         }
 
         #region AgentAction
-        public static AgentAction ToAgentAction(this AgentActionProto aap)
+        public static List<float[]> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
         {
-            return new AgentAction
-            {
-                vectorActions = aap.VectorActions.ToArray()
-            };
-        }
-
-        public static List<AgentAction> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
-        {
-            var agentActions = new List<AgentAction>(proto.Value.Count);
+            var agentActions = new List<float[]>(proto.Value.Count);
             foreach (var ap in proto.Value)
             {
-                agentActions.Add(ap.ToAgentAction());
+                agentActions.Add(ap.VectorActions.ToArray());
             }
             return agentActions;
         }

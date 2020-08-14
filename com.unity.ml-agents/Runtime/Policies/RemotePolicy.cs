@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
@@ -13,6 +14,8 @@ namespace Unity.MLAgents.Policies
     {
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
+        SpaceType m_SpaceType;
+        ActionBuffers m_LastActionBuffer;
 
         internal ICommunicator m_Communicator;
 
@@ -23,6 +26,7 @@ namespace Unity.MLAgents.Policies
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
+            m_SpaceType = brainParameters.VectorActionSpaceType;
             m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
         }
 
@@ -34,10 +38,17 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public float[] DecideAction()
+        public ref readonly ActionBuffers DecideAction()
         {
             m_Communicator?.DecideBatch();
-            return m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+            var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+            if (m_SpaceType == SpaceType.Continuous)
+            {
+                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
+                return ref m_LastActionBuffer;
+            }
+            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
+            return ref m_LastActionBuffer;
         }
 
         public void Dispose()

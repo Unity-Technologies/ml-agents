@@ -381,8 +381,8 @@ class CompletionCriteriaSettings:
         PROGRESS: str = "progress"
         REWARD: str = "reward"
 
+    behavior: str
     measure: MeasureType = attr.ib(default=MeasureType.REWARD)
-    behavior: str = attr.ib(default="")
     min_lesson_length: int = 0
     signal_smoothing: bool = True
     threshold: float = attr.ib(default=0.0)

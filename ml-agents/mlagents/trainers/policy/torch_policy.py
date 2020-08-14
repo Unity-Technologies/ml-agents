@@ -56,6 +56,7 @@ class TorchPolicy(Policy):
             GlobalSteps()
         )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
+
         if TestingConfiguration.device != "cpu":
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
         else:

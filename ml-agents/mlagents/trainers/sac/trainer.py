@@ -356,6 +356,16 @@ class SACTrainer(RLTrainer):
             for stat, stat_list in batch_update_stats.items():
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
+    def create_sac_optimizer(self) -> SACOptimizer:
+        if self.framework == FrameworkType.PYTORCH:
+            return TorchSACOptimizer(  # type: ignore
+                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+        else:
+            return SACOptimizer(  # type: ignore
+                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
@@ -371,14 +381,7 @@ class SACTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        if self.framework == FrameworkType.PYTORCH:
-            self.optimizer = TorchSACOptimizer(  # type: ignore
-                self.policy, self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            self.optimizer = SACOptimizer(  # type: ignore
-                self.policy, self.trainer_settings  # type: ignore
-            )  # type: ignore
+        self.optimizer = self.create_sac_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
