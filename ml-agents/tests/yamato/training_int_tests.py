@@ -125,6 +125,10 @@ def run_training(python_version: str, csharp_version: str) -> bool:
 def run_inference(env_path: str, output_path: str, model_extension: str) -> bool:
     start_time = time.time()
     exes = find_executables(env_path)
+    exe_name = os.path.basename(os.path.splitext(env_path)[0])
+	# see if the name of the app has an executable
+	if exes.contains(exe_name):
+		exes = list(exe_name)
     if len(exes) != 1:
         print(f"Can't determine the player executable in {env_path}. Found {exes}.")
         return False
