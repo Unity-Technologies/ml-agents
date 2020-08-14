@@ -21,13 +21,7 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
         NetworkSettings.MemorySettings() if use_rnn else None
     )
     policy = TorchPolicy(
-        0,
-        mock_behavior_specs,
-        trainer_config,
-        "test",
-        False,
-        tanhresample,
-        tanhresample,
+        0, mock_behavior_specs, trainer_config, tanhresample, tanhresample
     )
     bc_module = BCModule(
         policy,
