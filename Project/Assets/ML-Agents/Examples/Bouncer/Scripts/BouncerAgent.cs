@@ -36,11 +36,11 @@ public class BouncerAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
-        // for (var i = 0; i < vectorAction.Length; i++)
-        // {
-        //     vectorAction[i] = Mathf.Clamp(vectorAction[i], -1f, 1f);
-        // }
         var continuousActions = actionBuffers.ContinuousActions;
+        for (var i = 0; i < continuousActions.Length; i++)
+        {
+            continuousActions[i] = Mathf.Clamp(continuousActions[i], -1f, 1f);
+        }
         var x = continuousActions[0];
         var y = ScaleAction(continuousActions[1], 0, 1);
         var z = continuousActions[2];

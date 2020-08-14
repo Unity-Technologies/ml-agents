@@ -23,19 +23,18 @@ public class Ball3DAgent : Agent
     {
         sensor.AddObservation(gameObject.transform.rotation.z);
     }
-
     
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var actionX = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
-    
+
         if ((gameObject.transform.rotation.z < 0.25f && actionZ > 0f) ||
             (gameObject.transform.rotation.z > -0.25f && actionZ < 0f))
         {
             gameObject.transform.Rotate(new Vector3(0, 0, 1), actionZ);
         }
-    
+
         if ((gameObject.transform.rotation.x < 0.25f && actionX > 0f) ||
             (gameObject.transform.rotation.x > -0.25f && actionX < 0f))
         {

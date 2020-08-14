@@ -35,9 +35,7 @@ public class GridAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
-#pragma warning disable 672
-    public override void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
-#pragma warning restore 672
+    public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
         // Mask the necessary actions if selected by the user.
         if (maskActions)
@@ -49,22 +47,22 @@ public class GridAgent : Agent
 
             if (positionX == 0)
             {
-                actionMasker.SetMask(0, new []{ k_Left});
+                actionMask.WriteMask(0, new []{ k_Left});
             }
 
             if (positionX == maxPosition)
             {
-                actionMasker.SetMask(0, new []{k_Right});
+                actionMask.WriteMask(0, new []{k_Right});
             }
 
             if (positionZ == 0)
             {
-                actionMasker.SetMask(0, new []{k_Down});
+                actionMask.WriteMask(0, new []{k_Down});
             }
 
             if (positionZ == maxPosition)
             {
-                actionMasker.SetMask(0, new []{k_Up});
+                actionMask.WriteMask(0, new []{k_Up});
             }
         }
     }
