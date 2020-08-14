@@ -106,7 +106,7 @@ namespace Unity.MLAgents.Sensors
             var startPositionWorld = Transform.TransformPoint(startPositionLocal);
             var endPositionWorld = Transform.TransformPoint(endPositionLocal);
 
-            return (StartPositionWorld : startPositionWorld, EndPositionWorld : endPositionWorld);
+            return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
         }
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public int[] GetObservationShape()

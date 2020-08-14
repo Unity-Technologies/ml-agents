@@ -61,7 +61,7 @@ namespace Unity.MLAgents.Policies
         /// For the discrete action space: the number of branches in the action space.
         /// </value>
         [FormerlySerializedAs("vectorActionSize")]
-        public int[] VectorActionSize = new[] {1};
+        public int[] VectorActionSize = new[] { 1 };
 
         /// <summary>
         /// The list of strings describing what the actions correspond to.

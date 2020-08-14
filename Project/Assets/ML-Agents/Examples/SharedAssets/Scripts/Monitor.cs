@@ -419,7 +419,7 @@ namespace Unity.MLAgents
                 var displayValues = s_DisplayTransformValues[target];
 
                 var index = 0;
-                var orderedKeys = displayValues.Keys.OrderBy(x => - displayValues[x].time);
+                var orderedKeys = displayValues.Keys.OrderBy(x => -displayValues[x].time);
                 foreach (var key in orderedKeys)
                 {
                     s_KeyStyle.alignment = TextAnchor.MiddleRight;

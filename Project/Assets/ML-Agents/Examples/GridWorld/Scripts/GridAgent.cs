@@ -39,29 +39,29 @@ public class GridAgent : Agent
         // Mask the necessary actions if selected by the user.
         if (maskActions)
         {
-           // Prevents the agent from picking an action that would make it collide with a wall
+            // Prevents the agent from picking an action that would make it collide with a wall
             var positionX = (int)transform.position.x;
             var positionZ = (int)transform.position.z;
             var maxPosition = (int)m_ResetParams.GetWithDefault("gridSize", 5f) - 1;
 
             if (positionX == 0)
             {
-                actionMasker.SetMask(0, new []{ k_Left});
+                actionMasker.SetMask(0, new[] { k_Left });
             }
 
             if (positionX == maxPosition)
             {
-                actionMasker.SetMask(0, new []{k_Right});
+                actionMasker.SetMask(0, new[] { k_Right });
             }
 
             if (positionZ == 0)
             {
-                actionMasker.SetMask(0, new []{k_Down});
+                actionMasker.SetMask(0, new[] { k_Down });
             }
 
             if (positionZ == maxPosition)
             {
-                actionMasker.SetMask(0, new []{k_Up});
+                actionMasker.SetMask(0, new[] { k_Up });
             }
         }
     }

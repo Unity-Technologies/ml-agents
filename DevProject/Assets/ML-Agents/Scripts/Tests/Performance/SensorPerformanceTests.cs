@@ -160,7 +160,7 @@ namespace MLAgentsExamples.Tests.Performance
         {
             using (Measure.ProfilerMarkers(s_Markers))
             {
-                for(var i=0; i<k_MarkerTestSteps; i++)
+                for (var i = 0; i < k_MarkerTestSteps; i++)
                 {
                     RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7, ObservableAttributeOptions.Ignore);
                 }

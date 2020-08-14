@@ -113,6 +113,10 @@ jobs:
             # Need ruby for search-and-replace
             sudo apt-get update
             sudo apt-get install ruby-full
+            # install dotnet and the formatter
+            sudo apt-get install dotnet-sdk-3.1
+            dotnet tool install -g dotnet-format --version 4.1.131201
+
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
