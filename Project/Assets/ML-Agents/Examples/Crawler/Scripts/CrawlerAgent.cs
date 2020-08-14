@@ -8,12 +8,28 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
 {
-    public float maximumWalkingSpeed = 999; //The max walk velocity magnitude an agent will be rewarded for
-    Vector3 m_WalkDir; //Direction to the target
-    Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
+    [Header("Walk Speed")]
+    [Range(0.1f, 10)]
+    [SerializeField]
+    //The walking speed to try and achieve
+    private float m_TargetWalkingSpeed = 10;
 
-    [Header("Target To Walk Towards")] [Space(10)]
-    public TargetController target; //Target the agent will walk towards.
+    public float TargetWalkingSpeed // property
+    {
+        get { return m_TargetWalkingSpeed; }
+        set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
+    }
+
+    const float m_maxWalkingSpeed = 10; //The max walking speed
+
+    //Should the agent sample a new goal velocity each episode?
+    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
+    //If false, the goal velocity will be walkingSpeed
+    public bool randomizeWalkSpeedEachEpisode;
+
+    //The direction an agent will walk during training.
+    private Vector3 m_WorldDirToWalk = Vector3.right;
+    [Header("Target To Walk Towards")] public Transform target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -26,18 +42,13 @@ public class CrawlerAgent : Agent
     public Transform leg3Lower;
 
 
-    [Header("Orientation")] [Space(10)]
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
-    public OrientationCubeController orientationCube;
+    public OrientationCubeController m_OrientationCube;
 
+    //The indicator graphic gameobject that points towards the target
+    public DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
-
-    [Header("Reward Functions To Use")] [Space(10)]
-    public bool rewardMovingTowardsTarget; // Agent should move towards target
-
-    public bool rewardFacingTarget; // Agent should face the target
-    public bool rewardUseTimePenalty; // Hurry up
 
     [Header("Foot Grounded Visualization")] [Space(10)]
     public bool useFootGroundedVisualization;
@@ -51,8 +62,8 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
-        orientationCube.UpdateOrientation(body, target.transform);
-
+        m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
+        m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
         m_JdController = GetComponent<JointDriveController>();
 
         //Setup each body part
@@ -78,9 +89,14 @@ public class CrawlerAgent : Agent
         }
 
         //Random start rotation to help generalize
-        transform.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
-        orientationCube.UpdateOrientation(body, target.transform);
+        UpdateOrientationObjects();
+
+        //Set our goal walking speed
+        TargetWalkingSpeed =
+            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : TargetWalkingSpeed;
+
     }
 
     /// <summary>
@@ -102,8 +118,24 @@ public class CrawlerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        var cubeForward = m_OrientationCube.transform.forward;
+
+        //velocity we want to match
+        var velGoal = cubeForward * TargetWalkingSpeed;
+        //ragdoll's avg vel
+        var avgVel = GetAvgVelocity();
+
+        //current ragdoll velocity. normalized 
+        sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
+        //avg body vel relative to cube
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
+        //vel goal relative to cube
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+        //rotation delta
+        sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
+        
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(orientationCube.transform.InverseTransformPoint(target.transform.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
 
         RaycastHit hit;
         float maxRaycastDist = 10;
@@ -119,15 +151,31 @@ public class CrawlerAgent : Agent
             CollectObservationBodyPart(bodyPart, sensor);
         }
     }
-
-    /// <summary>
-    /// Agent touched the target
-    /// </summary>
-    public void TouchedTarget()
-    {
-        AddReward(1f);
-    }
-
+    
+    
+//    /// <summary>
+//    /// Loop over body parts to add them to observation.
+//    /// </summary>
+//    public override void CollectObservations(VectorSensor sensor)
+//    {
+//        //Add pos of target relative to orientation cube
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+//
+//        RaycastHit hit;
+//        float maxRaycastDist = 10;
+//        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
+//        {
+//            sensor.AddObservation(hit.distance / maxRaycastDist);
+//        }
+//        else
+//            sensor.AddObservation(1);
+//
+//        foreach (var bodyPart in m_JdController.bodyPartsList)
+//        {
+//            CollectObservationBodyPart(bodyPart, sensor);
+//        }
+//    }
+    
     public override void OnActionReceived(float[] vectorAction)
     {
         // The dictionary with all the body parts in it are in the jdController
@@ -157,7 +205,7 @@ public class CrawlerAgent : Agent
 
     void FixedUpdate()
     {
-        orientationCube.UpdateOrientation(body, target.transform);
+        UpdateOrientationObjects();
 
         // If enabled the feet will light up green when the foot is grounded.
         // This is just a visualization and isn't necessary for function
@@ -176,65 +224,90 @@ public class CrawlerAgent : Agent
                 ? groundedMaterial
                 : unGroundedMaterial;
         }
+        
+        var cubeForward = m_OrientationCube.transform.forward;
 
         // Set reward for this step according to mixture of the following elements.
-        if (rewardMovingTowardsTarget)
-        {
-            RewardFunctionMovingTowards();
-        }
+        // a. Match target speed
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        var matchSpeedReward = GetMatchingVelocityReward(cubeForward * TargetWalkingSpeed, GetAvgVelocity());
 
-        if (rewardFacingTarget)
-        {
-            RewardFunctionFacingTarget();
-        }
-
-        if (rewardUseTimePenalty)
-        {
-            RewardFunctionTimePenalty();
-        }
-    }
-
-    /// <summary>
-    /// Reward moving towards target & Penalize moving away from target.
-    /// </summary>
-    void RewardFunctionMovingTowards()
-    {
-        var movingTowardsDot = Vector3.Dot(orientationCube.transform.forward,
-            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[body].rb.velocity, maximumWalkingSpeed));
-        if (float.IsNaN(movingTowardsDot))
+        //Check for NaNs
+        if (float.IsNaN(matchSpeedReward))
         {
             throw new ArgumentException(
-                "NaN in movingTowardsDot.\n" +
-                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
-                $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n"+
-                $" maximumWalkingSpeed: {maximumWalkingSpeed}"
+                "NaN in moveTowardsTargetReward.\n" +
+                $" cubeForward: {cubeForward}\n" +
+                $" hips.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n" +
+                $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
             );
         }
-        AddReward(0.03f * movingTowardsDot);
-    }
 
-    /// <summary>
-    /// Reward facing target & Penalize facing away from target
-    /// </summary>
-    void RewardFunctionFacingTarget()
-    {
-        var facingReward = Vector3.Dot(orientationCube.transform.forward, body.forward);
-        if (float.IsNaN(facingReward))
+        // b. Rotation alignment with target direction.
+        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
+
+        //Check for NaNs
+        if (float.IsNaN(lookAtTargetReward))
         {
             throw new ArgumentException(
-                "NaN in movingTowardsDot.\n" +
-                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+                "NaN in lookAtTargetReward.\n" +
+                $" cubeForward: {cubeForward}\n" +
                 $" body.forward: {body.forward}"
             );
         }
-        AddReward(0.01f * facingReward);
+
+        AddReward(matchSpeedReward * lookAtTargetReward);
+
+    }
+
+    //Update OrientationCube and DirectionIndicator
+    void UpdateOrientationObjects()
+    {
+        m_WorldDirToWalk = target.position - body.position;
+        m_OrientationCube.UpdateOrientation(body, target);
+        if (m_DirectionIndicator)
+        {
+            m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
+        }
+    }
+
+    //Returns the average velocity of all of the body parts
+    //Using the velocity of the hips only has shown to result in more erratic movement from the limbs, so...
+    //...using the average helps prevent this erratic movement
+    Vector3 GetAvgVelocity()
+    {
+        Vector3 velSum = Vector3.zero;
+        Vector3 avgVel = Vector3.zero;
+
+        //ALL RBS
+        int numOfRB = 0;
+        foreach (var item in m_JdController.bodyPartsList)
+        {
+            numOfRB++;
+            velSum += item.rb.velocity;
+        }
+
+        avgVel = velSum / numOfRB;
+        return avgVel;
+    }
+
+    //normalized value of the difference in avg speed vs goal walking speed.
+    public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
+    {
+        //distance between our actual velocity and goal velocity
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, TargetWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / TargetWalkingSpeed, 2), 2);
     }
 
     /// <summary>
-    /// Existential penalty for time-contrained tasks.
+    /// Agent touched the target
     /// </summary>
-    void RewardFunctionTimePenalty()
+    public void TouchedTarget()
     {
-        AddReward(-0.001f);
+        AddReward(1f);
     }
 }

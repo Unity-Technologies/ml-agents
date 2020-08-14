@@ -540,6 +540,11 @@ PrefabInstance:
       propertyPath: targetToLookAt
       value: 
       objectReference: {fileID: 7802320107249901494}
+    - target: {fileID: 2864902974773876700, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
+        type: 3}
+      propertyPath: updatedByAgent
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4845971000000621469, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -611,11 +616,16 @@ PrefabInstance:
       propertyPath: m_BehaviorName
       value: CrawlerDynamic
       objectReference: {fileID: 0}
+    - target: {fileID: 4845971001715176648, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 4845971001715176649, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
         type: 3}
       propertyPath: target
       value: 
-      objectReference: {fileID: 7738248088303878723}
+      objectReference: {fileID: 7802320107249901494}
     - target: {fileID: 4845971001715176649, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
         type: 3}
       propertyPath: ground
@@ -809,15 +819,3 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6413179990576818696}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7738248088303878723 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3631016866778687563, guid: 46734abd0de454192b407379c6a4ab8d,
-    type: 3}
-  m_PrefabInstance: {fileID: 6413179990576818696}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8f113a8b8d94967b1b1782c549be81, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
