@@ -126,8 +126,8 @@ jobs:
 
             sudo apt-get install -y apt-transport-https && \
               sudo apt-get update && \
-              sudo apt-get install -y dotnet-sdk-3.1
-            dotnet tool install -g dotnet-format --version 4.1.131201
+              sudo apt-get install -y dotnet-sdk-3.1 && \
+              dotnet tool install -g dotnet-format --version 4.1.131201
 
             python3 -m venv venv
             . venv/bin/activate
