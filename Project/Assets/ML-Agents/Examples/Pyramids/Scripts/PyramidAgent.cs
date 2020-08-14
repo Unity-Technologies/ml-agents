@@ -63,8 +63,9 @@ public class PyramidAgent : Agent
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
-    public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
+        var discreteActionsOut = actionsOut.DiscreteActions;
         discreteActionsOut[0] = 0;
         if (Input.GetKey(KeyCode.D))
         {

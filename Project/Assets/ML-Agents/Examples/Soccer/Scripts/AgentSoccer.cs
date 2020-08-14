@@ -166,9 +166,10 @@ public class AgentSoccer : Agent
         MoveAgent(actionBuffers.DiscreteActions);
     }
 
-    public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        Array.Clear(discreteActionsOut, 0, discreteActionsOut.Length);
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut.Clear();
         //forward
         if (Input.GetKey(KeyCode.W))
         {

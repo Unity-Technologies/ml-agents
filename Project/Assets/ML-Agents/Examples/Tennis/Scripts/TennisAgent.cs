@@ -88,8 +88,9 @@ public class TennisAgent : Agent
         m_TextComponent.text = score.ToString();
     }
 
-    public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
+        var continuousActionsOut = actionsOut.ContinuousActions;
         continuousActionsOut[0] = Input.GetAxis("Horizontal");    // Racket Movement
         continuousActionsOut[1] = Input.GetKey(KeyCode.Space) ? 1f : 0f;   // Racket Jumping
         continuousActionsOut[2] = Input.GetAxis("Vertical");   // Racket Rotation

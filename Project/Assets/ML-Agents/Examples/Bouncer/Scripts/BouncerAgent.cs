@@ -104,8 +104,9 @@ public class BouncerAgent : Agent
         }
     }
 
-    public override void Heuristic(float[] continuousActionsOut, int[] discreteActionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
+        var continuousActionsOut = actionsOut.ContinuousActions;
         continuousActionsOut[0] = Input.GetAxis("Horizontal");
         continuousActionsOut[1] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
         continuousActionsOut[2] = Input.GetAxis("Vertical");

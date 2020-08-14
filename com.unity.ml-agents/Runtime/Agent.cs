@@ -50,7 +50,6 @@ namespace Unity.MLAgents
         /// to separate between different agents in the environment.
         /// </summary>
         public int episodeId;
-<<<<<<< HEAD
 
         public void ClearActions()
         {
@@ -61,20 +60,6 @@ namespace Unity.MLAgents
         {
             actionBuffers.PackActions(storedVectorActions);
         }
-||||||| constructed merge base
-=======
-
-        public void ClearActions()
-        {
-            Array.Clear(storedVectorActions, 0, storedVectorActions.Length);
-        }
-
-        public void CopyActions(float[] continuousActions, int[] discreteActions)
-        {
-            Array.Copy(continuousActions, 0, storedVectorActions, 0, continuousActions.Length);
-            Array.Copy(discreteActions, 0, storedVectorActions, continuousActions.Length, discreteActions.Length);
-        }
->>>>>>> Get discrete action mask working and backward compatible.
     }
 
     /// <summary>
@@ -299,25 +284,11 @@ namespace Unity.MLAgents
         /// <summary>
         /// List of IActuators that this Agent will delegate actions to if any exist.
         /// </summary>
-<<<<<<< HEAD
         ActuatorManager m_ActuatorManager;
-||||||| constructed merge base
-        internal ActuatorList actuators;
-=======
-        ActuatorManager m_Actuators;
->>>>>>> Get discrete action mask working and backward compatible.
 
         /// <summary>
-<<<<<<< HEAD
         /// VectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
         /// delegate its actions to <see cref="OnActionReceived(float[])"/> by default in order to keep backward compatibility
-||||||| constructed merge base
-        /// DiscreteVectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
-        /// delegate its actions to <see cref="OnActionReceived"/> by default in order to keep backward compatibility
-=======
-        /// DiscreteVectorActuator which is used by default if no other sensors exist on this Agent. This VectorSensor will
-        /// delegate its actions to <see cref="IActionReceiver.OnActionReceived"/> by default in order to keep backward compatibility
->>>>>>> Get discrete action mask working and backward compatible.
         /// with the current behavior of Agent.
         /// </summary>
         IActuator m_VectorActuator;
@@ -453,14 +424,8 @@ namespace Unity.MLAgents
                 InitializeActuators();
             }
 
-<<<<<<< HEAD
             m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
 
-||||||| constructed merge base
-=======
-            m_Info.storedVectorActions = new float[m_Actuators.TotalNumberOfActions];
-
->>>>>>> Get discrete action mask working and backward compatible.
             // The first time the Academy resets, all Agents in the scene will be
             // forced to reset through the <see cref="AgentForceReset"/> event.
             // To avoid the Agent resetting twice, the Agents will not begin their
@@ -787,21 +752,7 @@ namespace Unity.MLAgents
         /// at the end of an episode.
         void ResetData()
         {
-<<<<<<< HEAD
             m_ActuatorManager?.ResetData();
-||||||| constructed merge base
-            var param = m_PolicyFactory.BrainParameters;
-            m_ActionMasker = new DiscreteActionMasker(param);
-
-            if (actuators == null)
-            {
-                return;
-            }
-
-            actuators.ResetData();
-=======
-            m_Actuators?.ResetData();
->>>>>>> Get discrete action mask working and backward compatible.
         }
 
         /// <summary>
@@ -981,64 +932,16 @@ namespace Unity.MLAgents
 
             // Support legacy OnActionReceived
             var param = m_PolicyFactory.BrainParameters;
-<<<<<<< HEAD
             m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
             m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions];
-||||||| constructed merge base
-            vectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
-            actuators = new ActuatorList(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[vectorActuator.TotalNumberOfActions];
-=======
-            m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
-            m_Actuators = new ActuatorManager(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions];
->>>>>>> Get discrete action mask working and backward compatible.
 
-<<<<<<< HEAD
             m_ActuatorManager.Add(m_VectorActuator);
-||||||| constructed merge base
-            actuators.Add(vectorActuator);
-=======
-            m_Actuators.Add(m_VectorActuator);
->>>>>>> Get discrete action mask working and backward compatible.
 
             foreach (var actuatorComponent in attachedActuators)
             {
-<<<<<<< HEAD
                 m_ActuatorManager.Add(actuatorComponent.CreateActuator());
             }
-||||||| constructed merge base
-                actuators.Add(actuatorComponent.CreateActuator());
-            }
-
-            actuators.EnsureActionBufferSize();
-            // Sort the Actuators by name to ensure determinism
-            actuators.SortActuators();
-#if DEBUG
-            // Make sure the names are actually unique
-            for (var i = 0; i < actuators.Count - 1; i++)
-            {
-                Debug.Assert(
-                    !actuators[i].GetName().Equals(actuators[i + 1].GetName()),
-                    "Actuator names must be unique.");
-            }
-#endif
-=======
-                m_Actuators.Add(actuatorComponent.CreateActuator());
-            }
-
-#if DEBUG
-            // Make sure the names are actually unique
-            // Make sure all Actuators have the same SpaceType
-            m_Actuators.ValidateActuators();
-#endif
-
-            m_Actuators.EnsureActionBufferSize();
-            // Sort the Actuators by name to ensure determinism
-            m_Actuators.SortActuators();
-
->>>>>>> Get discrete action mask working and backward compatible.
         }
 
         /// <summary>
@@ -1061,28 +964,11 @@ namespace Unity.MLAgents
             {
                 m_Info.ClearActions();
             }
-<<<<<<< HEAD
             else
-||||||| constructed merge base
-            else if (actuators.StoredContinuousActions != null)
-=======
-            else if (m_Actuators.TotalNumberOfActions > 0)
->>>>>>> Get discrete action mask working and backward compatible.
             {
-<<<<<<< HEAD
                 m_ActuatorManager.StoredActions.PackActions(m_Info.storedVectorActions);
-||||||| constructed merge base
-                Array.Copy(actuators.StoredContinuousActions, m_Info.storedVectorActions, actuators.StoredContinuousActions.Length);
-=======
-                m_Info.CopyActions(m_Actuators.StoredContinuousActions, m_Actuators.StoredDiscreteActions);
->>>>>>> Get discrete action mask working and backward compatible.
             }
-<<<<<<< HEAD
 
-||||||| constructed merge base
-            m_ActionMasker.ResetMask();
-=======
->>>>>>> Get discrete action mask working and backward compatible.
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
@@ -1090,27 +976,10 @@ namespace Unity.MLAgents
             }
             using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
             {
-<<<<<<< HEAD
                 m_ActuatorManager.WriteActionMask();
-||||||| constructed merge base
-                if (m_PolicyFactory.BrainParameters.VectorActionSpaceType == SpaceType.Discrete)
-                {
-                    CollectDiscreteActionMasks(m_ActionMasker);
-                }
-=======
-                if (m_PolicyFactory.BrainParameters.VectorActionSpaceType == SpaceType.Discrete)
-                {
-                    m_Actuators.WriteActionMask();
-                }
->>>>>>> Get discrete action mask working and backward compatible.
             }
 
-<<<<<<< HEAD
             m_Info.discreteActionMasks = m_ActuatorManager.DiscreteActionMask?.GetMask();
-||||||| constructed merge base
-=======
-            m_Info.discreteActionMasks = m_Actuators.DiscreteActionMask.GetMask();
->>>>>>> Get discrete action mask working and backward compatible.
             m_Info.reward = m_Reward;
             m_Info.done = false;
             m_Info.maxStepReached = false;
@@ -1220,31 +1089,14 @@ namespace Unity.MLAgents
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-<<<<<<< HEAD
             if (m_ActionMasker == null)
             {
                 m_ActionMasker = new DiscreteActionMasker(actionMask);
             }
             CollectDiscreteActionMasks(m_ActionMasker);
-||||||| constructed merge base
-=======
-            if (m_ActionMasker == null)
-            {
-                m_ActionMasker = new DiscreteActionMasker(actionMask);
-            }
-            #pragma warning disable 618
-            CollectDiscreteActionMasks(m_ActionMasker);
-            #pragma warning restore 618
->>>>>>> Get discrete action mask working and backward compatible.
         }
 
-<<<<<<< HEAD
         ActionSpec IActionReceiver.ActionSpec { get; }
-||||||| constructed merge base
-        [Obsolete("The OnActionReceived(float[]) method has been deprecated.  Please use OnActionReceived(ActionSegment) instead.")]
-        public virtual void OnActionReceived(float[] vectorAction) {}
-=======
->>>>>>> Get discrete action mask working and backward compatible.
 
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based
@@ -1311,68 +1163,12 @@ namespace Unity.MLAgents
         ///
         /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_5_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
-<<<<<<< HEAD
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.
         /// </param>
         public virtual void OnActionReceived(ActionBuffers actions)
-||||||| constructed merge base
-        /// <param name="continuousActions">
-        /// An array containing the continuous action vector. The length of the array is specified
-        /// by the <see cref="BrainParameters"/> of the agent's associated
-        /// <see cref="BehaviorParameters"/> component.
-        /// </param>
-        /// <param name="discreteActions">
-        /// An array containing the discrete action vector. The length of the array is specified
-        /// by the <see cref="BrainParameters"/> of the agent's associated
-        /// <see cref="BehaviorParameters"/> component.
-        /// </param>
-        public virtual void OnActionReceived(ActionSegment<float> continuousActions, ActionSegment<int> discreteActions)
-=======
-        /// <param name="actions">
-        /// Struct containing the buffers of actions to be executed at this step.
-        /// </param>
-        public virtual void OnActionReceived(ActionBuffers actions)
->>>>>>> Get discrete action mask working and backward compatible.
         {
-<<<<<<< HEAD
             actions.PackActions(m_LegacyActionCache);
-||||||| constructed merge base
-            #pragma warning disable CS0618
-            // Copy the actions into our local array and call the original method for
-            // backward compatibility.
-            // For now we need to check which array has the actions in them in order to pass it back to the old method.
-            if (continuousActions.Length > 0)
-            {
-                Array.Copy(continuousActions.Array, continuousActions.Offset, m_LegacyActionCache, 0, continuousActions.Length);
-            }
-            else if (discreteActions.Length > 0)
-            {
-                Array.Copy(discreteActions.Array, discreteActions.Offset, m_LegacyActionCache, 0, discreteActions.Length);
-            }
-
-=======
-            // Copy the actions into our local array and call the original method for
-            // backward compatibility.
-            // For now we need to check which array has the actions in them in order to pass it back to the old method.
-            if (actions.ContinuousActions.Length > 0)
-            {
-                Array.Copy(actions.ContinuousActions.Array,
-                    actions.ContinuousActions.Offset,
-                    m_LegacyActionCache,
-                    0,
-                    actions.ContinuousActions.Length);
-            }
-            else if (actions.DiscreteActions.Length > 0)
-            {
-                Array.Copy(actions.DiscreteActions.Array,
-                    actions.DiscreteActions.Offset,
-                    m_LegacyActionCache,
-                    0,
-                    actions.DiscreteActions.Length);
-            }
-            #pragma warning disable CS0618
->>>>>>> Get discrete action mask working and backward compatible.
             OnActionReceived(m_LegacyActionCache);
         }
 
@@ -1384,46 +1180,12 @@ namespace Unity.MLAgents
         /// <seealso cref="EndEpisode"/>
         public virtual void OnEpisodeBegin() {}
 
-<<<<<<< HEAD
         /// <summary>
         /// Gets the last ActionBuffer for this agent.
         /// </summary>
-        public ActionBuffers GetStoredContinuousActions()
-||||||| constructed merge base
-        /// <summary>
-        /// Returns the last action that was decided on by the Agent.
-        /// </summary>
-        /// <returns>
-        /// The last action that was decided by the Agent (or null if no decision has been made).
-        /// </returns>
-        /// <seealso cref="OnActionReceived(ActionSegment)"/>
-        public float[] GetAction()
+        public ActionBuffers GetStoredActionBuffers()
         {
-            return actuators.StoredContinuousActions;
-        }
-
-        public float[] GetStoredContinuousActions()
-        {
-            return actuators.StoredContinuousActions;
-        }
-
-        public int[] GetStoredDiscreteActions()
-=======
-        public float[] GetStoredContinuousActions()
-        {
-            return m_Actuators.StoredContinuousActions;
-        }
-
-        public int[] GetStoredDiscreteActions()
->>>>>>> Get discrete action mask working and backward compatible.
-        {
-<<<<<<< HEAD
             return m_ActuatorManager.StoredActions;
-||||||| constructed merge base
-            return actuators.StoredDiscreteActions;
-=======
-            return m_Actuators.StoredDiscreteActions;
->>>>>>> Get discrete action mask working and backward compatible.
         }
 
         /// <summary>
@@ -1477,13 +1239,7 @@ namespace Unity.MLAgents
             if ((m_RequestAction) && (m_Brain != null))
             {
                 m_RequestAction = false;
-<<<<<<< HEAD
                 m_ActuatorManager.ExecuteActions();
-||||||| constructed merge base
-                actuators.ExecuteActions();
-=======
-                m_Actuators.ExecuteActions();
->>>>>>> Get discrete action mask working and backward compatible.
             }
 
             if ((m_StepCount >= MaxStep) && (MaxStep > 0))
@@ -1495,27 +1251,13 @@ namespace Unity.MLAgents
 
         void DecideAction()
         {
-<<<<<<< HEAD
             if (m_ActuatorManager.StoredActions.ContinuousActions.Array == null)
-||||||| constructed merge base
-            if (actuators.StoredContinuousActions == null)
-=======
-            if (m_Actuators.StoredContinuousActions == null)
->>>>>>> Get discrete action mask working and backward compatible.
             {
                 ResetData();
             }
-<<<<<<< HEAD
             var actions = m_Brain?.DecideAction() ?? new ActionBuffers();
             m_Info.CopyActions(actions);
             m_ActuatorManager.UpdateActions(actions);
-||||||| constructed merge base
-            var action = m_Brain?.DecideAction() ?? (continuousActions : Array.Empty<float>(), discreteActions : Array.Empty<int>());
-            actuators.UpdateActions(action.continuousActions, action.discreteActions);
-=======
-            var action = m_Brain?.DecideAction() ?? (continuousActions : Array.Empty<float>(), discreteActions : Array.Empty<int>());
-            m_Actuators.UpdateActions(action.continuousActions, action.discreteActions);
->>>>>>> Get discrete action mask working and backward compatible.
         }
     }
 }
