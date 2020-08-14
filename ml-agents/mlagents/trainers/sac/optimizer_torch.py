@@ -413,7 +413,9 @@ class TorchSACOptimizer(TorchOptimizer):
             memories = None
             next_memories = None
         # Q network memories are 0'ed out, since we don't have them during inference.
-        q_memories = torch.zeros_like(next_memories)
+        q_memories = (
+            torch.zeros_like(next_memories) if next_memories is not None else None
+        )
 
         vis_obs: List[torch.Tensor] = []
         next_vis_obs: List[torch.Tensor] = []

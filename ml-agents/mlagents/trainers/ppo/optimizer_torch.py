@@ -177,7 +177,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         loss = (
             policy_loss
             + 0.5 * value_loss
-            - decay_bet * ModelUtils.masked_mean(entropy.flatten(), loss_masks)
+            - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
         # Set optimizer learning rate
