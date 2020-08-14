@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Random = UnityEngine.Random;
 using Unity.MLAgents;
 using UnityEngine.Events;
