@@ -20,7 +20,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
-## [1.3.0-preview] 2020-08-12
+## [1.3.0-preview] - 2020-08-12
 
 ### Major Changes
 #### com.unity.ml-agents (C#)
@@ -49,6 +49,9 @@ recursively (for example, by an Agent's CollectObservations method).
 Previously, this would result in an infinite loop and cause the editor to hang.
 (#4226)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- The algorithm used to normalize observations was introducing NaNs if the initial observations were too large
+due to incorrect initialization. The initialization was fixed and is now the observation means from the
+first trajectory processed. (#4299)
 
 ## [1.2.0-preview] - 2020-07-15
 

@@ -1,11 +1,9 @@
 # # Unity ML-Agents Toolkit
-import os
 from typing import Dict, List, Optional
 from collections import defaultdict
 import abc
 import time
 import attr
-from mlagents.model_serialization import SerializationSettings, copy_model_files
 from mlagents.trainers.policy.checkpoint_manager import (
     NNCheckpoint,
     NNCheckpointManager,
@@ -23,9 +21,15 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.settings import TestingConfiguration, FrameworkType
+from mlagents.trainers.settings import (
+    TestingConfiguration,
+    FrameworkType,
+    TrainerSettings,
+)
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents.trainers.saver.saver import BaseSaver
+from mlagents.trainers.saver.tf_saver import TFSaver
 
 try:
     from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -62,6 +66,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
         self._next_summary_step = 0
+        self.saver = self.create_saver(
+            self.trainer_settings, self.artifact_path, self.load
+        )
 
     def end_episode(self) -> None:
         """
@@ -71,6 +78,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         for rewards in self.collected_rewards.values():
             for agent_id in rewards:
                 rewards[agent_id] = 0
+
+    @staticmethod
+    def create_saver(
+        trainer_settings: TrainerSettings, model_path: str, load: bool
+    ) -> BaseSaver:
+        saver = TFSaver(trainer_settings, model_path, load)
+        return saver
 
     def _update_end_episode_stats(self, agent_id: str, optimizer: Optimizer) -> None:
         for name, rewards in self.collected_rewards.items():
@@ -158,11 +172,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        policy = list(self.policies.values())[0]
-        model_path = policy.model_path
-        settings = SerializationSettings(model_path, self.brain_name)
-        checkpoint_path = os.path.join(model_path, f"{self.brain_name}-{self.step}")
-        policy.checkpoint(checkpoint_path, settings)
+        checkpoint_path = self.saver.save_checkpoint(self.brain_name, self.step)
         new_checkpoint = NNCheckpoint(
             int(self.step),
             f"{checkpoint_path}.nn",
@@ -186,14 +196,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         elif n_policies == 0:
             logger.warning("Trainer has no policies, not saving anything.")
             return
-        policy = list(self.policies.values())[0]
         model_checkpoint = self._checkpoint()
 
         # Copy the checkpointed model files to the final output location
-        copy_model_files(model_checkpoint.file_path, f"{policy.model_path}.nn")
+        self.saver.copy_final_model(model_checkpoint.file_path)
 
         final_checkpoint = attr.evolve(
-            model_checkpoint, file_path=f"{policy.model_path}.nn"
+            model_checkpoint, file_path=f"{self.saver.model_path}.nn"
         )
         NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 

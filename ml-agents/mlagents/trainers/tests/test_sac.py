@@ -5,6 +5,7 @@ import copy
 from mlagents.tf_utils import tf
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.sac.optimizer import SACOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -50,6 +51,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         0, mock_brain, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = SACOptimizer(policy, trainer_settings)
+    policy.initialize()
     return optimizer
 
 
@@ -127,8 +129,9 @@ def test_sac_save_load_buffer(tmpdir, dummy_config):
     assert trainer2.update_buffer.num_experiences == buffer_len
 
 
+@mock.patch.object(RLTrainer, "create_saver")
 @mock.patch("mlagents.trainers.sac.trainer.SACOptimizer")
-def test_add_get_policy(sac_optimizer, dummy_config):
+def test_add_get_policy(sac_optimizer, mock_create_saver, dummy_config):
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     sac_optimizer.return_value = mock_optimizer
@@ -223,6 +226,7 @@ def test_advance(dummy_config):
     policy = trainer.create_policy(behavior_id, specs)
     policy.get_current_step = lambda: 200
     trainer.add_policy(behavior_id, policy)
+    trainer.saver.initialize_or_load(policy)
     trainer.optimizer.update = mock.Mock()
     trainer.optimizer.update_reward_signals = mock.Mock()
     trainer.optimizer.update_reward_signals.return_value = {}

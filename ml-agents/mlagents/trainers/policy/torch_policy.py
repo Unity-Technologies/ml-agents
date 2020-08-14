@@ -4,7 +4,6 @@ import torch
 
 import os
 from torch import onnx
-from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 
@@ -12,7 +11,11 @@ from mlagents.trainers.policy import Policy
 from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
-from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
+from mlagents.trainers.settings import (
+    TrainerSettings,
+    TestingConfiguration,
+    SerializationSettings,
+)
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.torch.networks import SharedActorCritic, SeparateActorCritic
 from mlagents.trainers.torch.utils import ModelUtils
@@ -50,14 +53,13 @@ class TorchPolicy(Policy):
             seed,
             behavior_spec,
             trainer_settings,
-            model_path,
-            load,
             tanh_squash,
             reparameterize,
             condition_sigma_on_obs,
         )
         self.global_step = 0
         self.grads = None
+        self.model_path = model_path
         if TestingConfiguration.device != "cpu":
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
         else:

@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// Interface for writing a mask to disable discrete actions for agents for the next decision.
     /// </summary>
-    internal interface IDiscreteActionMask
+    public interface IDiscreteActionMask
     {
         /// <summary>
         /// Modifies an action mask for discrete control agents.

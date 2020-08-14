@@ -7,6 +7,7 @@ import copy
 import attr
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
 from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -53,6 +54,7 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         0, mock_specs, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = PPOOptimizer(policy, trainer_settings)
+    policy.initialize()
     return optimizer
 
 
@@ -195,8 +197,9 @@ def test_rl_functions():
     )
 
 
+@mock.patch.object(RLTrainer, "create_saver")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
-def test_trainer_increment_step(ppo_optimizer):
+def test_trainer_increment_step(ppo_optimizer, mock_create_saver):
     trainer_params = PPO_CONFIG
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
@@ -312,8 +315,9 @@ def test_process_trajectory(dummy_config):
     assert trainer.stats_reporter.get_stats_summaries("Policy/Extrinsic Reward").num > 0
 
 
+@mock.patch.object(RLTrainer, "create_saver")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
-def test_add_get_policy(ppo_optimizer, dummy_config):
+def test_add_get_policy(ppo_optimizer, mock_create_saver, dummy_config):
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer

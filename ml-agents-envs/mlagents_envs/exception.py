@@ -76,3 +76,11 @@ class UnityWorkerInUseException(UnityException):
     def __init__(self, worker_id):
         message = self.MESSAGE_TEMPLATE.format(str(worker_id))
         super().__init__(message)
+
+
+class UnityPolicyException(UnityException):
+    """
+    Related to errors with the Trainer.
+    """
+
+    pass
