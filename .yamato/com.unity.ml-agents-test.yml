@@ -34,7 +34,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_try{{ i }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --type package-tests --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
   artifacts:
     logs:
       paths:
