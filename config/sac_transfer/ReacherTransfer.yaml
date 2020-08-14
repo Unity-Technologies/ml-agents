@@ -2,7 +2,7 @@ behaviors:
   Reacher:
     trainer_type: sac_transfer
     hyperparameters:
-      learning_rate: 0.003
+      learning_rate: 0.0003
       learning_rate_schedule: linear
       model_schedule: linear
       model_weight: 0.05
@@ -37,7 +37,7 @@ behaviors:
       train_model: false
       load_action: true
       train_action: false
-      transfer_path: "results/reacher-lr/Reacher"
+      transfer_path: "results/reacher/Reacher"
     network_settings:
       normalize: true
       hidden_units: 128
