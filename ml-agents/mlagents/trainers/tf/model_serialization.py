@@ -1,7 +1,6 @@
 from distutils.util import strtobool
 import os
-import shutil
-from typing import Any, List, Set, NamedTuple
+from typing import Any, List, Set
 from distutils.version import LooseVersion
 
 try:
@@ -20,6 +19,7 @@ from tensorflow.python.platform import gfile
 from tensorflow.python.framework import graph_util
 
 from mlagents_envs.logging_util import get_logger
+from mlagents.trainers.settings import SerializationSettings
 from mlagents.trainers.tf import tensorflow_to_barracuda as tf2bc
 
 if LooseVersion(tf.__version__) < LooseVersion("1.12.0"):
@@ -58,17 +58,10 @@ MODEL_CONSTANTS = frozenset(
 VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 
 
-class SerializationSettings(NamedTuple):
-    model_path: str
-    brain_name: str
-    convert_to_barracuda: bool = True
-    convert_to_onnx: bool = True
-    onnx_opset: int = 9
-
-
 def export_policy_model(
+    model_path: str,
     output_filepath: str,
-    settings: SerializationSettings,
+    brain_name: str,
     graph: tf.Graph,
     sess: tf.Session,
 ) -> None:
@@ -76,28 +69,28 @@ def export_policy_model(
     Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
 
     :param output_filepath: file path to output the model (without file suffix)
-    :param settings: SerializationSettings describing how to export the model
+    :param brain_name: brain name of the trained model
     :param graph: Tensorflow Graph for the policy
     :param sess: Tensorflow session for the policy
     """
-    frozen_graph_def = _make_frozen_graph(settings, graph, sess)
-    if not os.path.exists(settings.model_path):
-        os.makedirs(settings.model_path)
+    frozen_graph_def = _make_frozen_graph(brain_name, graph, sess)
+    if not os.path.exists(output_filepath):
+        os.makedirs(output_filepath)
     # Save frozen graph
-    frozen_graph_def_path = settings.model_path + "/frozen_graph_def.pb"
+    frozen_graph_def_path = model_path + "/frozen_graph_def.pb"
     with gfile.GFile(frozen_graph_def_path, "wb") as f:
         f.write(frozen_graph_def.SerializeToString())
 
     # Convert to barracuda
-    if settings.convert_to_barracuda:
+    if SerializationSettings.convert_to_barracuda:
         tf2bc.convert(frozen_graph_def_path, f"{output_filepath}.nn")
         logger.info(f"Exported {output_filepath}.nn")
 
     # Save to onnx too (if we were able to import it)
     if ONNX_EXPORT_ENABLED:
-        if settings.convert_to_onnx:
+        if SerializationSettings.convert_to_onnx:
             try:
-                onnx_graph = convert_frozen_to_onnx(settings, frozen_graph_def)
+                onnx_graph = convert_frozen_to_onnx(brain_name, frozen_graph_def)
                 onnx_output_path = f"{output_filepath}.onnx"
                 with open(onnx_output_path, "wb") as f:
                     f.write(onnx_graph.SerializeToString())
@@ -120,10 +113,10 @@ def export_policy_model(
 
 
 def _make_frozen_graph(
-    settings: SerializationSettings, graph: tf.Graph, sess: tf.Session
+    brain_name: str, graph: tf.Graph, sess: tf.Session
 ) -> tf.GraphDef:
     with graph.as_default():
-        target_nodes = ",".join(_process_graph(settings, graph))
+        target_nodes = ",".join(_process_graph(brain_name, graph))
         graph_def = graph.as_graph_def()
         output_graph_def = graph_util.convert_variables_to_constants(
             sess, graph_def, target_nodes.replace(" ", "").split(",")
@@ -131,9 +124,7 @@ def _make_frozen_graph(
     return output_graph_def
 
 
-def convert_frozen_to_onnx(
-    settings: SerializationSettings, frozen_graph_def: tf.GraphDef
-) -> Any:
+def convert_frozen_to_onnx(brain_name: str, frozen_graph_def: tf.GraphDef) -> Any:
     # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
     inputs = _get_input_node_names(frozen_graph_def)
@@ -151,11 +142,11 @@ def convert_frozen_to_onnx(
             tf_graph,
             input_names=inputs,
             output_names=outputs,
-            opset=settings.onnx_opset,
+            opset=SerializationSettings.onnx_opset,
         )
 
     onnx_graph = optimizer.optimize_graph(g)
-    model_proto = onnx_graph.make_model(settings.brain_name)
+    model_proto = onnx_graph.make_model(brain_name)
 
     return model_proto
 
@@ -204,14 +195,14 @@ def _get_frozen_graph_node_names(frozen_graph_def: Any) -> Set[str]:
     return names
 
 
-def _process_graph(settings: SerializationSettings, graph: tf.Graph) -> List[str]:
+def _process_graph(brain_name: str, graph: tf.Graph) -> List[str]:
     """
     Gets the list of the output nodes present in the graph for inference
     :return: list of node names
     """
     all_nodes = [x.name for x in graph.as_graph_def().node]
     nodes = [x for x in all_nodes if x in POSSIBLE_OUTPUT_NODES | MODEL_CONSTANTS]
-    logger.info("List of nodes to export for brain :" + settings.brain_name)
+    logger.info("List of nodes to export for brain :" + brain_name)
     for n in nodes:
         logger.info("\t" + n)
     return nodes
@@ -228,20 +219,3 @@ def _enforce_onnx_conversion() -> bool:
         return strtobool(val)
     except Exception:
         return False
-
-
-def copy_model_files(source_nn_path: str, destination_nn_path: str) -> None:
-    """
-    Copy the .nn file at the given source to the destination.
-    Also copies the corresponding .onnx file if it exists.
-    """
-    shutil.copyfile(source_nn_path, destination_nn_path)
-    logger.info(f"Copied {source_nn_path} to {destination_nn_path}.")
-    # Copy the onnx file if it exists
-    source_onnx_path = os.path.splitext(source_nn_path)[0] + ".onnx"
-    destination_onnx_path = os.path.splitext(destination_nn_path)[0] + ".onnx"
-    try:
-        shutil.copyfile(source_onnx_path, destination_onnx_path)
-        logger.info(f"Copied {source_onnx_path} to {destination_onnx_path}.")
-    except OSError:
-        pass

@@ -46,6 +46,12 @@ def defaultdict_to_dict(d: DefaultDict) -> Dict:
     return {key: cattr.unstructure(val) for key, val in d.items()}
 
 
+class SerializationSettings:
+    convert_to_barracuda = True
+    convert_to_onnx = True
+    onnx_opset = 9
+
+
 @attr.s(auto_attribs=True)
 class ExportableSettings:
     def as_dict(self):

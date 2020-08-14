@@ -76,6 +76,7 @@ def create_optimizer_mock(
         optimizer = SACOptimizer(policy, trainer_settings)
     else:
         optimizer = PPOOptimizer(policy, trainer_settings)
+    optimizer.policy.initialize()
     return optimizer
 
 
