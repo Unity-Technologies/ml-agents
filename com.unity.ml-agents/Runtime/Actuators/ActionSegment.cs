@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Unity.MLAgents.Actuators
 {
@@ -48,7 +49,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         /// <param name="actionArray">The action array to use for the this segment.</param>
         public ActionSegment(T[] actionArray)
-            : this(actionArray ?? System.Array.Empty<T>(), 0, actionArray?.Length ?? 0) { }
+            : this(actionArray ?? System.Array.Empty<T>(), 0, actionArray?.Length ?? 0) {}
 
         /// <summary>
         /// Construct an <see cref="ActionSegment{T}"/> with an underlying array
@@ -131,7 +132,7 @@ namespace Unity.MLAgents.Actuators
         /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
         public bool Equals(ActionSegment<T> other)
         {
-            return Offset == other.Offset && Length == other.Length && Equals(Array, other.Array);
+            return Offset == other.Offset && Length == other.Length && Array.SequenceEqual(other.Array);
         }
 
         /// <inheritdoc cref="ValueType.GetHashCode"/>
