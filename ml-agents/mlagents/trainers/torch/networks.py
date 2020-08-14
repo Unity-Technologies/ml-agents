@@ -14,7 +14,7 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import lstm_layer
+from mlagents.trainers.torch.layers import AMRLMax
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -51,7 +51,7 @@ class NetworkBody(nn.Module):
         )
 
         if self.use_lstm:
-            self.lstm = lstm_layer(self.h_size, self.m_size // 2, batch_first=True)
+            self.lstm = AMRLMax(self.h_size, self.m_size // 2, batch_first=True)
         else:
             self.lstm = None  # type: ignore
 
@@ -104,10 +104,10 @@ class NetworkBody(nn.Module):
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
-            memories = torch.split(memories, self.m_size // 2, dim=-1)
+            # memories = torch.split(memories, self.m_size // 2, dim=-1)
             encoding, memories = self.lstm(encoding, memories)
             encoding = encoding.reshape([-1, self.m_size // 2])
-            memories = torch.cat(memories, dim=-1)
+            # memories = torch.cat(memories, dim=-1)
         return encoding, memories
 
 
@@ -257,7 +257,7 @@ class SimpleActor(nn.Module, Actor):
         self.act_type = act_type
         self.act_size = act_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        self.memory_size = torch.nn.Parameter(torch.Tensor([0]))
+        self.memory_size_param = torch.nn.Parameter(torch.Tensor([0]))
         self.is_continuous_int = torch.nn.Parameter(
             torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
         )
@@ -278,6 +278,13 @@ class SimpleActor(nn.Module, Actor):
             self.distribution = MultiCategoricalDistribution(
                 self.encoding_size, act_size
             )
+
+    @property
+    def memory_size(self) -> int:
+        if self.network_body.lstm is not None:
+            return self.network_body.lstm.memory_size
+        else:
+            return 0
 
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
         self.network_body.update_normalization(vector_obs)
@@ -327,7 +334,7 @@ class SimpleActor(nn.Module, Actor):
             sampled_actions,
             dists[0].pdf(sampled_actions),
             self.version_number,
-            self.memory_size,
+            self.memory_size_param,
             self.is_continuous_int,
             self.act_size_vector,
         )
@@ -424,6 +431,13 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self.critic = ValueNetwork(
             stream_names, observation_shapes, use_network_settings
         )
+
+    @property
+    def memory_size(self) -> int:
+        if self.network_body.lstm is not None:
+            return 2 * self.network_body.lstm.memory_size
+        else:
+            return 0
 
     def critic_pass(
         self,

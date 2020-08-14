@@ -125,24 +125,32 @@ class AMRLMax(torch.nn.Module):
             self.layers.append(Swish())
         self.seq_layers = torch.nn.Sequential(*self.layers)
 
-    def forward(self, input_tensor, h0_c0):
-        hidden = h0_c0
+    @property
+    def memory_size(self) -> int:
+        return self.hidden_size // 2 + 2 * self.hidden_size
+
+    def forward(self, input_tensor, memories):
+        # memories is 1/2 * hidden_size (accumulant) + hidden_size/2 (h0) + hidden_size/2 (c0)
+        acc, h0, c0 = torch.split(
+            memories,
+            [self.hidden_size // 2, self.hidden_size, self.hidden_size],
+            dim=-1,
+        )
+        hidden = (h0, c0)
         all_c = []
-        m = None
-        lstm_out, hidden = self.lstm(input_tensor, hidden)
+        m = acc.permute([1, 0, 2])
+        lstm_out, (h0_out, c0_out) = self.lstm(input_tensor, hidden)
         h_half, other_half = torch.split(lstm_out, self.hidden_size // 2, dim=-1)
         for t in range(h_half.shape[1]):
             h_half_subt = h_half[:, t : t + 1, :]
-            if m is None:
-                m = h_half_subt
-            else:
-                m = AMRLMax.PassthroughMax.apply(m, h_half_subt)
+            m = AMRLMax.PassthroughMax.apply(m, h_half_subt)
             all_c.append(m)
         concat_c = torch.cat(all_c, dim=1)
         concat_out = torch.cat([concat_c, other_half], dim=-1)
         full_out = self.seq_layers(concat_out.reshape([-1, self.hidden_size]))
         full_out = full_out.reshape([-1, input_tensor.shape[1], self.hidden_size])
-        return concat_out, hidden
+        output_mem = torch.cat([m.permute([1, 0, 2]), h0_out, c0_out], dim=-1)
+        return concat_out, output_mem
 
     class PassthroughMax(torch.autograd.Function):
         @staticmethod

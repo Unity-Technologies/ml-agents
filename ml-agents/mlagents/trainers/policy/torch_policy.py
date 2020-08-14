@@ -83,6 +83,7 @@ class TorchPolicy(Policy):
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
+        self.m_size = self.actor_critic.memory_size
 
         self.actor_critic.to(TestingConfiguration.device)
 
