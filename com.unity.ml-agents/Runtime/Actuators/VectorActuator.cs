@@ -4,7 +4,7 @@ using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Actuators
 {
-    internal class VectorActuator : IActuator
+    public class VectorActuator : IActuator
     {
         IActionReceiver m_ActionReceiver;
 

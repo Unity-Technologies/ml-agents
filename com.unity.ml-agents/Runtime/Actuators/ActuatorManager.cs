@@ -50,12 +50,14 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Returns the previously stored actions for the actuators in this list.
         /// </summary>
-        public float[] StoredContinuousActions { get; private set; }
+        // public float[] StoredContinuousActions { get; private set; }
 
         /// <summary>
         /// Returns the previously stored actions for the actuators in this list.
         /// </summary>
-        public int[] StoredDiscreteActions { get; private set; }
+        // public int[] StoredDiscreteActions { get; private set; }
+
+        public ActionBuffers StoredActions { get; private set; }
 
         /// <summary>
         /// Create an ActuatorList with a preset capacity.
@@ -99,8 +101,11 @@ namespace Unity.MLAgents.Actuators
 
             // Sort the Actuators by name to ensure determinism
             SortActuators();
-            StoredContinuousActions = numContinuousActions == 0 ? Array.Empty<float>() : new float[numContinuousActions];
-            StoredDiscreteActions = numDiscreteBranches == 0 ? Array.Empty<int>() : new int[numDiscreteBranches];
+            var continuousActions = numContinuousActions == 0 ? ActionSegment<float>.Empty :
+                new ActionSegment<float>(new float[numContinuousActions]);
+            var discreteActions = numDiscreteBranches == 0 ? ActionSegment<int>.Empty : new ActionSegment<int>(new int[numDiscreteBranches]);
+
+            StoredActions = new ActionBuffers(continuousActions, discreteActions);
             m_DiscreteActionMask = new ActuatorDiscreteActionMask(actuators, sumOfDiscreteBranches, numDiscreteBranches);
             m_ReadyForExecution = true;
         }
@@ -113,18 +118,19 @@ namespace Unity.MLAgents.Actuators
         /// continuous actions for the IActuators in this list.</param>
         /// <param name="discreteActionBuffer">The action buffer which contains all of the
         /// discrete actions for the IActuators in this list.</param>
-        public void UpdateActions(float[] continuousActionBuffer, int[] discreteActionBuffer)
+        public void UpdateActions(ActionBuffers actions)
         {
             ReadyActuatorsForExecution();
-            UpdateActionArray(continuousActionBuffer, StoredContinuousActions);
-            UpdateActionArray(discreteActionBuffer, StoredDiscreteActions);
+            UpdateActionArray(actions.ContinuousActions, StoredActions.ContinuousActions);
+            UpdateActionArray(actions.DiscreteActions, StoredActions.DiscreteActions);
         }
 
-        static void UpdateActionArray<T>(T[] sourceActionBuffer, T[] destination)
+        static void UpdateActionArray<T>(ActionSegment<T> sourceActionBuffer, ActionSegment<T> destination)
+            where T : struct
         {
-            if (sourceActionBuffer == null || sourceActionBuffer.Length == 0)
+            if (sourceActionBuffer.Length <= 0)
             {
-                Array.Clear(destination, 0, destination.Length);
+                destination.Clear();
             }
             else
             {
@@ -132,7 +138,11 @@ namespace Unity.MLAgents.Actuators
                     $"sourceActionBuffer:{sourceActionBuffer.Length} is a different" +
                     $" size than destination: {destination.Length}.");
 
-                Array.Copy(sourceActionBuffer, destination, destination.Length);
+                Array.Copy(sourceActionBuffer.Array,
+                    sourceActionBuffer.Offset,
+                    destination.Array,
+                    destination.Offset,
+                    destination.Length);
             }
         }
 
@@ -148,9 +158,12 @@ namespace Unity.MLAgents.Actuators
             for (var i = 0; i < m_Actuators.Count; i++)
             {
                 var actuator = m_Actuators[i];
-                m_DiscreteActionMask.CurrentBranchOffset = offset;
-                actuator.WriteDiscreteActionMask(m_DiscreteActionMask);
-                offset += actuator.ActionSpec.NumDiscreteActions;
+                if (actuator.ActionSpec.NumDiscreteActions > 0)
+                {
+                    m_DiscreteActionMask.CurrentBranchOffset = offset;
+                    actuator.WriteDiscreteActionMask(m_DiscreteActionMask);
+                    offset += actuator.ActionSpec.NumDiscreteActions;
+                }
             }
         }
 
@@ -173,7 +186,7 @@ namespace Unity.MLAgents.Actuators
                 var continuousActions = ActionSegment<float>.Empty;
                 if (numContinuousActions > 0)
                 {
-                    continuousActions = new ActionSegment<float>(StoredContinuousActions,
+                    continuousActions = new ActionSegment<float>(StoredActions.ContinuousActions.Array,
                         continuousStart,
                         numContinuousActions);
                 }
@@ -181,7 +194,7 @@ namespace Unity.MLAgents.Actuators
                 var discreteActions = ActionSegment<int>.Empty;
                 if (numDiscreteActions > 0)
                 {
-                    discreteActions = new ActionSegment<int>(StoredDiscreteActions,
+                    discreteActions = new ActionSegment<int>(StoredActions.DiscreteActions.Array,
                         discreteStart,
                         numDiscreteActions);
                 }
@@ -193,7 +206,7 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// Resets the <see cref="StoredContinuousActions"/> and <see cref="StoredDiscreteActions"/> buffers to be all
+        /// Resets the <see cref="ActionBuffers"/> to be all
         /// zeros and calls <see cref="IActuator.ResetData"/> on each <see cref="IActuator"/> managed by this object.
         /// </summary>
         public void ResetData()
@@ -202,12 +215,12 @@ namespace Unity.MLAgents.Actuators
             {
                 return;
             }
-            Array.Clear(StoredContinuousActions, 0, StoredContinuousActions.Length);
-            Array.Clear(StoredDiscreteActions, 0, StoredDiscreteActions.Length);
+            StoredActions.Clear();
             for (var i = 0; i < m_Actuators.Count; i++)
             {
                 m_Actuators[i].ResetData();
             }
+            m_DiscreteActionMask.ResetMask();
         }
 
 

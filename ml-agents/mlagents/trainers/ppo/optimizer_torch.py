@@ -198,3 +198,6 @@ class TorchPPOOptimizer(TorchOptimizer):
             update_stats.update(reward_provider.update(batch))
 
         return update_stats
+
+    def get_modules(self):
+        return {"Optimizer": self.optimizer}
