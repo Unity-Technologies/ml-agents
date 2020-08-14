@@ -293,4 +293,4 @@ class ModelUtils:
         :param tensor: Tensor which needs mean computation.
         :param masks: Boolean tensor of masks with same dimension as tensor.
         """
-        return (tensor * masks).sum() / masks.float().sum()
+        return (tensor * masks).sum() / torch.clamp(masks.float().sum(), min=1.0)
