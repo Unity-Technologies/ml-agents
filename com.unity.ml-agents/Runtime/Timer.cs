@@ -461,7 +461,7 @@ namespace Unity.MLAgents
         /// <param name="filename"></param>
         public void SaveJsonTimers(string filename = null)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             try
             {
                 if (filename == null)
