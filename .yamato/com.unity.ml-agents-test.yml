@@ -39,6 +39,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_try{{ i }}:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
+        - "Project/Library/BurstCache/**/*
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
