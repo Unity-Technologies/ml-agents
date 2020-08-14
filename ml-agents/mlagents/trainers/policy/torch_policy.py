@@ -184,7 +184,7 @@ class TorchPolicy(Policy):
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
-            run_out["memories"] = memories.detach().cpu().numpy()
+            run_out["memory_out"] = memories.detach().cpu().numpy().squeeze(0)
         return run_out
 
     def get_action(

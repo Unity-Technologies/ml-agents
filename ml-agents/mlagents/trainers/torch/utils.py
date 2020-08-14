@@ -284,3 +284,13 @@ class ModelUtils:
         else:
             all_probs = torch.cat(all_probs_list, dim=-1)
         return log_probs, entropies, all_probs
+
+    @staticmethod
+    def masked_mean(tensor: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
+        """
+        Returns the mean of the tensor but ignoring the values specified by masks.
+        Used for masking out loss functions.
+        :param tensor: Tensor which needs mean computation.
+        :param masks: Boolean tensor of masks with same dimension as tensor.
+        """
+        return (tensor * masks).sum() / torch.clamp(masks.float().sum(), min=1.0)
