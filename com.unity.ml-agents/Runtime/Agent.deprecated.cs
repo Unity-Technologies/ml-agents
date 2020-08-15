@@ -28,7 +28,7 @@ namespace Unity.MLAgents
         /// The last action that was decided by the Agent (or null if no decision has been made).
         /// </returns>
         /// <seealso cref="OnActionReceived(float[])"/>
-        // [Obsolete("GetAction has been deprecated, please use GetStoredContinuousActions, Or GetStoredDiscreteActions.")]
+        // [Obsolete("GetAction has been deprecated, please use GetStoredActionBuffers, Or GetStoredDiscreteActions.")]
         public float[] GetAction()
         {
             return m_Info.storedVectorActions;

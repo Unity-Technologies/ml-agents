@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using UnityEngine.Serialization;
 
 /// <summary>
@@ -39,9 +40,9 @@ public class BasicController : MonoBehaviour
     /// Controls the movement of the GameObject based on the actions received.
     /// </summary>
     /// <param name="vectorAction"></param>
-    public void ApplyAction(float[] vectorAction)
+    public void ApplyAction(ActionSegment<int> vectorAction)
     {
-        var movement = (int)vectorAction[0];
+        var movement = vectorAction[0];
 
         var direction = 0;
 
@@ -100,7 +101,7 @@ public class BasicController : MonoBehaviour
         if (Academy.Instance.IsCommunicatorOn)
         {
             // Apply the previous step's actions
-            ApplyAction(m_Agent.GetAction());
+            ApplyAction(m_Agent.GetStoredActionBuffers().DiscreteActions);
             m_Agent?.RequestDecision();
         }
         else
@@ -108,7 +109,7 @@ public class BasicController : MonoBehaviour
             if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
             {
                 // Apply the previous step's actions
-                ApplyAction(m_Agent.GetAction());
+                ApplyAction(m_Agent.GetStoredActionBuffers().DiscreteActions);
 
                 m_TimeSinceDecision = 0f;
                 m_Agent?.RequestDecision();

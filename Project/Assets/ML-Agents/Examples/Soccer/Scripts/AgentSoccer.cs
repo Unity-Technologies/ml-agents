@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 
 public class AgentSoccer : Agent
@@ -96,16 +97,16 @@ public class AgentSoccer : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
 
-    public void MoveAgent(float[] act)
+    public void MoveAgent(ActionSegment<int> act)
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
         m_KickPower = 0f;
 
-        var forwardAxis = (int)act[0];
-        var rightAxis = (int)act[1];
-        var rotateAxis = (int)act[2];
+        var forwardAxis = act[0];
+        var rightAxis = act[1];
+        var rotateAxis = act[2];
 
         switch (forwardAxis)
         {
@@ -143,7 +144,8 @@ public class AgentSoccer : Agent
             ForceMode.VelocityChange);
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
     {
 
         if (position == Position.Goalie)
@@ -161,38 +163,39 @@ public class AgentSoccer : Agent
             // Existential penalty cumulant for Generic
             timePenalty -= m_Existential;
         }
-        MoveAgent(vectorAction);
+        MoveAgent(actionBuffers.DiscreteActions);
     }
 
-    public override void Heuristic(float[] actionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        Array.Clear(actionsOut, 0, actionsOut.Length);
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut.Clear();
         //forward
         if (Input.GetKey(KeyCode.W))
         {
-            actionsOut[0] = 1f;
+            discreteActionsOut[0] = 1;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            actionsOut[0] = 2f;
+            discreteActionsOut[0] = 2;
         }
         //rotate
         if (Input.GetKey(KeyCode.A))
         {
-            actionsOut[2] = 1f;
+            discreteActionsOut[2] = 1;
         }
         if (Input.GetKey(KeyCode.D))
         {
-            actionsOut[2] = 2f;
+            discreteActionsOut[2] = 2;
         }
         //right
         if (Input.GetKey(KeyCode.E))
         {
-            actionsOut[1] = 1f;
+            discreteActionsOut[1] = 1;
         }
         if (Input.GetKey(KeyCode.Q))
         {
-            actionsOut[1] = 2f;
+            discreteActionsOut[1] = 2;
         }
     }
     /// <summary>
