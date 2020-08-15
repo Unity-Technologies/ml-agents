@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.MLAgents.Actuators;
 
 namespace Unity.MLAgents.Policies
 {
@@ -109,5 +110,18 @@ namespace Unity.MLAgents.Policies
                 VectorActionSpaceType = VectorActionSpaceType
             };
         }
+
+        public ActionSpec AsActionSpec()
+        {
+            if (VectorActionSpaceType == SpaceType.Continuous)
+            {
+                return ActionSpec.MakeContinuous(NumActions);
+            }
+            else
+            {
+                return ActionSpec.MakeDiscrete(VectorActionSize);
+            }
+        }
+
     }
 }
