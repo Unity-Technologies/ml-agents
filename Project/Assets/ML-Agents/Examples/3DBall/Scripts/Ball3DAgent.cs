@@ -22,8 +22,11 @@ public class Ball3DAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(gameObject.transform.rotation.z);
+        sensor.AddObservation(gameObject.transform.rotation.x);
+        sensor.AddObservation(ball.transform.position - gameObject.transform.position);
+        sensor.AddObservation(m_BallRb.velocity);
     }
-    
+
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         var actionZ = 2f * Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
