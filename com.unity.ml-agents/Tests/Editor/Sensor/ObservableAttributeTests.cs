@@ -354,7 +354,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual("derived", sensorsDerivedOnly[0].GetName());
 
             var b = new BaseClass();
-            var baseSensors =  ObservableAttribute.CreateObservableSensors(b, false);
+            var baseSensors = ObservableAttribute.CreateObservableSensors(b, false);
             Assert.AreEqual(2, baseSensors.Count);
         }
     }

@@ -25,6 +25,22 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Update Barracuda to 1.0.2.
+- Enabled C# formatting using `dotnet-format`.
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.3.0-preview] - 2020-08-12
+
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
 - The minimum supported Python version for ml-agents-envs was changed to 3.6.1. (#4244)
 - The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
 and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up

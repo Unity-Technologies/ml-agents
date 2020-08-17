@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Tests
 
             var src = new TensorProxy
             {
-                data = new Tensor(1, 3, new[] {0.1f, 0.2f, 0.7f}),
+                data = new Tensor(1, 3, new[] { 0.1f, 0.2f, 0.7f }),
                 valueType = TensorProxy.TensorType.FloatingPoint
             };
 
@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Tests
 
             DiscreteActionOutputApplier.Eval(src, dst, m);
 
-            float[] reference = {2, 2, 1};
+            float[] reference = { 2, 2, 1 };
             for (var i = 0; i < dst.data.length; i++)
             {
                 Assert.AreEqual(reference[i], dst.data[i]);
@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Tests
 
             DiscreteActionOutputApplier.Eval(src, dst, m);
 
-            float[] reference = {2, 2, 2};
+            float[] reference = { 2, 2, 2 };
             for (var i = 0; i < dst.data.length; i++)
             {
                 Assert.AreEqual(reference[i], dst.data[i]);
@@ -89,7 +89,7 @@ namespace Unity.MLAgents.Tests
 
             DiscreteActionOutputApplier.Eval(src, dst, m);
 
-            float[] reference = {2, 2, 2, 0, 1, 0};
+            float[] reference = { 2, 2, 2, 0, 1, 0 };
             for (var i = 0; i < dst.data.length; i++)
             {
                 Assert.AreEqual(reference[i], dst.data[i]);

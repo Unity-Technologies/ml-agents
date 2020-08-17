@@ -24,8 +24,8 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public RenderTexture RenderTexture
         {
-            get { return m_RenderTexture;  }
-            set { m_RenderTexture = value;  }
+            get { return m_RenderTexture; }
+            set { m_RenderTexture = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("sensorName")]
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public string SensorName
         {
-            get { return m_SensorName;  }
+            get { return m_SensorName; }
             set { m_SensorName = value; }
         }
 
@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public bool Grayscale
         {
-            get { return m_Grayscale;  }
+            get { return m_Grayscale; }
             set { m_Grayscale = value; }
         }
 
@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public SensorCompressionType CompressionType
         {
-            get { return m_Compression;  }
+            get { return m_Compression; }
             set { m_Compression = value; UpdateSensor(); }
         }
 

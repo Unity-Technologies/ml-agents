@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using UnityEngine.Serialization;
 
 /// <summary>
@@ -41,7 +42,6 @@ public class BasicController : MonoBehaviour
     /// <param name="direction"></param>
     public void MoveDirection(int direction)
     {
-
         position += direction;
         if (position < k_MinPosition) { position = k_MinPosition; }
         if (position > k_MaxPosition) { position = k_MaxPosition; }
@@ -86,12 +86,23 @@ public class BasicController : MonoBehaviour
         }
         if (Academy.Instance.IsCommunicatorOn)
         {
+<<<<<<< HEAD
+=======
+            // Apply the previous step's actions
+            ApplyAction(m_Agent.GetStoredActionBuffers().DiscreteActions);
+>>>>>>> origin/master
             m_Agent?.RequestDecision();
         }
         else
         {
             if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
             {
+<<<<<<< HEAD
+=======
+                // Apply the previous step's actions
+                ApplyAction(m_Agent.GetStoredActionBuffers().DiscreteActions);
+
+>>>>>>> origin/master
                 m_TimeSinceDecision = 0f;
                 m_Agent?.RequestDecision();
             }

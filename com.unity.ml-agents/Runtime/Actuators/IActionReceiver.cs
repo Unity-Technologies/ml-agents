@@ -35,9 +35,9 @@ namespace Unity.MLAgents.Actuators
         /// <see cref="ActionSegment{T}"/> initialized from a float array.</returns>
         public static ActionBuffers FromDiscreteActions(float[] discreteActions)
         {
-           return new ActionBuffers(ActionSegment<float>.Empty, discreteActions == null ? ActionSegment<int>.Empty
-                               : new ActionSegment<int>(Array.ConvertAll(discreteActions,
-                                   x => (int)x)));
+            return new ActionBuffers(ActionSegment<float>.Empty, discreteActions == null ? ActionSegment<int>.Empty
+                                : new ActionSegment<int>(Array.ConvertAll(discreteActions,
+                                    x => (int)x)));
         }
 
         public ActionBuffers(float[] continuousActions, int[] discreteActions)

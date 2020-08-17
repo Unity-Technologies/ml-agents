@@ -321,9 +321,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var localUp = localPose[i].rotation * Vector3.up;
                 var localFwd = localPose[i].rotation * Vector3.forward;
                 var localRight = localPose[i].rotation * Vector3.right;
-                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localUp, Color.red);
-                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localFwd, Color.green);
-                Debug.DrawLine(current.position+offset, current.position+offset+.1f*localRight, Color.blue);
+                Debug.DrawLine(current.position + offset, current.position + offset + .1f * localUp, Color.red);
+                Debug.DrawLine(current.position + offset, current.position + offset + .1f * localFwd, Color.green);
+                Debug.DrawLine(current.position + offset, current.position + offset + .1f * localRight, Color.blue);
             }
         }
 
@@ -405,9 +405,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     // Push to the stack in reverse order
                     var children = tree[current];
-                    for (var childIdx = children.Count-1; childIdx >= 0; childIdx--)
+                    for (var childIdx = children.Count - 1; childIdx >= 0; childIdx--)
                     {
-                        stack.Push((children[childIdx], depth+1));
+                        stack.Push((children[childIdx], depth + 1));
                     }
                 }
 

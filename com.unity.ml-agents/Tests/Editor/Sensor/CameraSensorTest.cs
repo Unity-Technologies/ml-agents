@@ -1,7 +1,7 @@
- using System;
- using NUnit.Framework;
- using UnityEngine;
- using Unity.MLAgents.Sensors;
+using System;
+using NUnit.Framework;
+using UnityEngine;
+using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
 {
@@ -24,7 +24,7 @@ namespace Unity.MLAgents.Tests
                     var obsWriter = new ObservationWriter();
                     var obs = sensor.GetObservationProto(obsWriter);
 
-                    Assert.AreEqual((int) compression, (int) obs.CompressionType);
+                    Assert.AreEqual((int)compression, (int)obs.CompressionType);
                     var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
                     Assert.AreEqual(expectedShape, obs.Shape);
                 }
