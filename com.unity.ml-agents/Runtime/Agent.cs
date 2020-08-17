@@ -938,7 +938,7 @@ namespace Unity.MLAgents
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions];
+            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
 
             m_ActuatorManager.Add(m_VectorActuator);
 

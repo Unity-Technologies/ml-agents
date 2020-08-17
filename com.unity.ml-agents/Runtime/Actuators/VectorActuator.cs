@@ -57,12 +57,6 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
-        /// Returns the number of discrete branches + the number of continuous actions.
-        /// </summary>
-        public int TotalNumberOfActions => ActionSpec.NumContinuousActions +
-        ActionSpec.NumDiscreteActions;
-
-        /// <summary>
         /// <inheritdoc cref="IActionReceiver.ActionSpec"/>
         /// </summary>
         public ActionSpec ActionSpec { get; }

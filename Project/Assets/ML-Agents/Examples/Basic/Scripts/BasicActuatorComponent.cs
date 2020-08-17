@@ -41,12 +41,6 @@ namespace Unity.MLAgentsExamples
             m_ActionSpec = ActionSpec.MakeDiscrete(3);
         }
 
-        // TODO do we even need this?
-        public int TotalNumberOfActions
-        {
-            get { return m_ActionSpec.NumContinuousActions + m_ActionSpec.NumDiscreteActions; }
-        }
-
         public ActionSpec ActionSpec
         {
             get { return m_ActionSpec; }
