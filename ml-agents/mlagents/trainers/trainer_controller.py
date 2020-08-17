@@ -109,7 +109,7 @@ class TrainerController:
             A Data structure corresponding to the initial reset state of the
             environment.
         """
-        new_config = self.param_manager.get_current_samplers()
+        new_config = self.param_manager.get_current_samplers()  # TODO add parameter sample
         env_manager.reset(config=new_config)
         # Register any new behavior ids that were generated on the reset.
         self._register_new_behaviors(env_manager, env_manager.first_step_infos)
@@ -214,6 +214,12 @@ class TrainerController:
         reward_buff = {k: list(t.reward_buffer) for (k, t) in self.trainers.items()}
         curr_step = {k: int(t.step) for (k, t) in self.trainers.items()}
         max_step = {k: int(t.get_max_steps) for (k, t) in self.trainers.items()}
+        task_perf = {} 
+        for k, v in env.agent_managers.items():
+            perfs = v.task_perf_queue
+            v.task_perf_queue.empty()
+            task_perf[k] = perfs
+            
         # Attempt to increment the lessons of the brains who
         # were ready.
         updated, param_must_reset = self.param_manager.update_lessons(

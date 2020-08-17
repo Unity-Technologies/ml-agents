@@ -3,6 +3,8 @@ from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
 
+import numpy as np
+
 from mlagents_envs.base_env import (
     DecisionSteps,
     DecisionStep,
@@ -54,10 +56,14 @@ class AgentProcessor:
         self.policy = policy
         self.episode_steps: Counter = Counter()
         self.episode_rewards: Dict[str, float] = defaultdict(float)
+        self.episode_tasks: Dict[str, Dict[str, float]] = {}
         self.stats_reporter = stats_reporter
         self.max_trajectory_length = max_trajectory_length
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
         self.behavior_id = behavior_id
+        self.task_queue: List[Dict[str, float]] = []
+        self.task_perf_queue: List[Tuple[Dict[str, float],float]] = []
+        self.task_to_set: Dict[str, List] = defaultdict([])
 
     def add_experiences(
         self,
@@ -109,6 +115,20 @@ class AgentProcessor:
                         [_gid], take_action_outputs["action"]
                     )
 
+    def _assign_task(self, worker_id:str, global_id: str, local_id: int):
+        task = self.task_queue.pop(0)
+        
+        if len(self.task_queue) == 0  # if task queue is empty put a copy of this task on the queue so other agents don't miss out
+            self.task_queue.append(task)
+        
+        self.episode_tasks[global_id] = task
+        self.task_to_set[worker_id].append((local_id, task))
+        # agent_params = AgentParametersChannel()
+        # for param, value in task.items():
+            # self.task_params_channel.set_float_parameter(local_id, param, value)
+
+
+
     def _process_step(
         self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
     ) -> None:
@@ -152,6 +172,7 @@ class AgentProcessor:
             # Add the value outputs if needed
             self.experience_buffers[global_id].append(experience)
             self.episode_rewards[global_id] += step.reward
+            
             if not terminated:
                 self.episode_steps[global_id] += 1
 
@@ -171,6 +192,7 @@ class AgentProcessor:
                 for traj_queue in self.trajectory_queues:
                     traj_queue.put(trajectory)
                 self.experience_buffers[global_id] = []
+                self.publish_task_performance_queue(self.episode_tasks[global_id], self.episode_rewards[global_id])
             if terminated:
                 # Record episode length.
                 self.stats_reporter.add_stat(
@@ -187,6 +209,7 @@ class AgentProcessor:
         self._safe_delete(self.last_step_result, global_id)
         self._safe_delete(self.episode_steps, global_id)
         self._safe_delete(self.episode_rewards, global_id)
+        self._safe_delete(self.episode_tasks, global_id)
         self.policy.remove_previous_action([global_id])
         self.policy.remove_memories([global_id])
 
@@ -207,6 +230,14 @@ class AgentProcessor:
         :param trajectory_queue: Trajectory queue to publish to.
         """
         self.trajectory_queues.append(trajectory_queue)
+
+    def publish_task_performance_queue(self, task: Dict[str, float], performance: float):
+        """
+        Adds the performance of a given task to the queue to be processed by the task manager
+        :param task: Dictionary of the mapping of task parameter name to its value
+        :param performance: scalar value representing the performance (return) of the agent while executing this task
+        """
+        self.task_perf_queue.append((task, performance))
 
     def end_episode(self) -> None:
         """

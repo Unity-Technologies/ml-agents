@@ -431,6 +431,31 @@ class Lesson:
     name: str
     completion_criteria: Optional[CompletionCriteriaSettings] = attr.ib(default=None)
 
+@attr.s(auto_attribs=True)
+class AgentParameterSettings:
+    
+    parameters: Dict[str, UniformSettings]
+
+    @staticmethod
+    def structure(d: Mapping, t: type) -> AgentParameterSettings:
+        """
+        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant
+        to be registered with cattr.register_structure_hook() and called with
+        cattr.structure().
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported agent environment parameter settings {d}."
+            )
+        d_final: Dict[str, ] = {}
+        for agent_parameter, agent_parameter_config in d.items():
+            sampler = ParameterRandomizationSettings.structure(
+                agent_parameter_config, ParameterRandomizationSettings
+            )
+            d_final[agent_parameter] = sampler
+            print(agent_parameter)
+        settings = AgentParameterSettings(parameters=d_final)
+        return settings
 
 @attr.s(auto_attribs=True)
 class EnvironmentParameterSettings:

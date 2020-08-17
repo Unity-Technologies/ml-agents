@@ -95,8 +95,8 @@ public class WalkerAgent : Agent
         UpdateOrientationObjects();
 
         //Set our goal walking speed
-        targetWalkingSpeed =
-            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : targetWalkingSpeed;
+        // targetWalkingSpeed =
+        //     randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : targetWalkingSpeed;
 
         SetResetParameters();
     }
@@ -291,6 +291,8 @@ public class WalkerAgent : Agent
 
     public void SetResetParameters()
     {
+        targetWalkingSpeed = GetParameterWithDefault("target_walkingspeed", 10.0f);
+        // target_headheight = GetParameterWithDefault("target_height", 0.5497f);
         SetTorsoMass();
     }
 }

@@ -27,6 +27,7 @@ from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
+from mlagents_envs.side_channel.agent_parameters_channel import AgentParametersChannel
 from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfigurationChannel,
     EngineConfig,
@@ -48,6 +49,7 @@ class EnvironmentCommand(enum.Enum):
     RESET = 4
     CLOSE = 5
     ENV_EXITED = 6
+    AGENT_PARAMETERS = 7
 
 
 class EnvironmentRequest(NamedTuple):
@@ -117,6 +119,7 @@ def worker(
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
     env_parameters = EnvironmentParametersChannel()
+    agent_parameters = AgentParametersChannel()
     engine_configuration_channel = EngineConfigurationChannel()
     engine_configuration_channel.set_configuration(engine_configuration)
     stats_channel = StatsSideChannel()
@@ -136,7 +139,7 @@ def worker(
 
     try:
         env = env_factory(
-            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
+            worker_id, [env_parameters, agent_parameters, engine_configuration_channel, stats_channel]
         )
         while True:
             req: EnvironmentRequest = parent_conn.recv()
@@ -168,6 +171,12 @@ def worker(
                 for k, v in req.payload.items():
                     if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
+            elif req.cmd == EnvironmentCommand.AGENT_PARAMETERS:
+                to_assign = req.payload
+                if isinstance(to_assign, List):
+                    for local_id, task in to_assign:
+                        for param, value in task.items():
+                            agent_parameters.set_float_parameter(local_id, param, value)
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()
                 all_step_result = _generate_all_results()
@@ -298,6 +307,18 @@ class SubprocessEnvManager(EnvManager):
         """
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
+    
+    def set_agent_parameters(self) -> None:
+        """
+        Sends environment parameter settings to C# via the
+        AgentParametersSidehannel for each worker.
+        :param config: Dict of environment parameter keys and values
+        """
+        for worker_id, ew in enumerate(self.env_workers):
+            for brain_name in self.agent_managers.keys():
+                tasks = self.agent_managers[brain_name].task_to_set[worker_id]
+                ew.send(EnvironmentCommand.AGENT_PARAMETERS, tasks)
+                self.agent_managers[brain_name].task_to_set[worker_id].empty()
 
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
