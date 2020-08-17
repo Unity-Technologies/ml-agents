@@ -7,7 +7,13 @@ using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
-{
+{    
+    public enum CrawlerAgentBehaviorType
+    {
+        CrawlerDynamic, CrawlerDynamicVariableSpeed, CrawlerStatic, CrawlerStaticVariableSpeed
+    }
+
+    public CrawlerAgentBehaviorType typeOfCrawler;
     [Header("Walk Speed")]
     [Range(0.1f, 10)]
     [SerializeField]
@@ -44,10 +50,10 @@ public class CrawlerAgent : Agent
 
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
-    public OrientationCubeController m_OrientationCube;
+    OrientationCubeController m_OrientationCube;
 
     //The indicator graphic gameobject that points towards the target
-    public DirectionIndicator m_DirectionIndicator;
+    DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
 
     [Header("Foot Grounded Visualization")] [Space(10)]
@@ -59,13 +65,45 @@ public class CrawlerAgent : Agent
     public MeshRenderer foot3;
     public Material groundedMaterial;
     public Material unGroundedMaterial;
+    private Unity.MLAgents.Policies.BehaviorParameters m_BehaviorParams;
+
 
     public override void Initialize()
     {
+        
+        m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
+        switch (typeOfCrawler)
+        {
+            case CrawlerAgentBehaviorType.CrawlerDynamic :
+            {
+                m_BehaviorParams.BehaviorName = "CrawlerDynamic";
+                randomizeWalkSpeedEachEpisode = false;
+                break;
+            }
+            case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed :
+            {
+                m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
+                randomizeWalkSpeedEachEpisode = true;
+                break;
+            }
+            case CrawlerAgentBehaviorType.CrawlerStatic :
+            {
+                m_BehaviorParams.BehaviorName = "CrawlerStatic";
+                randomizeWalkSpeedEachEpisode = false;
+                break;
+            }
+            case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed :
+            {
+                m_BehaviorParams.BehaviorName = "CrawlerStaticVariableSpeed";
+                randomizeWalkSpeedEachEpisode = true;
+                break;
+            }
+        }
+        
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
         m_JdController = GetComponent<JointDriveController>();
-
+        
         //Setup each body part
         m_JdController.SetupBodyPart(body);
         m_JdController.SetupBodyPart(leg0Upper);

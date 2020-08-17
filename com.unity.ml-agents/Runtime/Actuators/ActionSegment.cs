@@ -47,7 +47,8 @@ namespace Unity.MLAgents.Actuators
         /// be set to 0 and the <see cref="Length"/> will be set to `actionArray.Length`.
         /// </summary>
         /// <param name="actionArray">The action array to use for the this segment.</param>
-        public ActionSegment(T[] actionArray) : this(actionArray, 0, actionArray.Length) { }
+        public ActionSegment(T[] actionArray)
+            : this(actionArray ?? System.Array.Empty<T>(), 0, actionArray?.Length ?? 0) { }
 
         /// <summary>
         /// Construct an <see cref="ActionSegment{T}"/> with an underlying array
@@ -59,9 +60,9 @@ namespace Unity.MLAgents.Actuators
         public ActionSegment(T[] actionArray, int offset, int length)
         {
 #if DEBUG
-            CheckParameters(actionArray, offset, length);
+            CheckParameters(actionArray ?? System.Array.Empty<T>(), offset, length);
 #endif
-            Array = actionArray;
+            Array = actionArray ?? System.Array.Empty<T>();
             Offset = offset;
             Length = length;
         }
