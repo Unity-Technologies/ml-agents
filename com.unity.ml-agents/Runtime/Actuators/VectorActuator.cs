@@ -40,17 +40,20 @@ namespace Unity.MLAgents.Actuators
             Name = name + suffix;
         }
 
+        /// <inheritdoc />
         public void ResetData()
         {
             m_ActionBuffers = ActionBuffers.Empty;
         }
 
+        /// <inheritdoc />
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
             ActionBuffers = actionBuffers;
             m_ActionReceiver.OnActionReceived(ActionBuffers);
         }
 
+        /// <inheritdoc />
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
             m_ActionReceiver.WriteDiscreteActionMask(actionMask);
@@ -61,6 +64,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public ActionSpec ActionSpec { get; }
 
+        /// <inheritdoc />
         public string Name { get; }
     }
 }

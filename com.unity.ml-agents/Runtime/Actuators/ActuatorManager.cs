@@ -129,6 +129,10 @@ namespace Unity.MLAgents.Actuators
             return new ActionSpec(numContinuousActions, numDiscreteActions, combinedBranchSizes);
         }
 
+        /// <summary>
+        /// Returns an ActionSpec representing the concatenation of all IActuator's ActionSpecs
+        /// </summary>
+        /// <returns></returns>
         public ActionSpec GetCombinedActionSpec()
         {
             ReadyActuatorsForExecution();

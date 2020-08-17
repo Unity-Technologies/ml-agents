@@ -5,12 +5,16 @@ namespace Unity.MLAgents
 {
     public partial class Agent
     {
+        /// <summary>
+        /// Deprecated, use <see cref="WriteDiscreteActionMask"/> instead.
+        /// </summary>
+        /// <param name="actionMasker"></param>
         public virtual void CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)
         {
         }
 
         /// <summary>
-        /// This method passes in a float array that is to be populated with actions.  The actions
+        /// This method passes in a float array that is to be populated with actions.
         /// </summary>
         /// <param name="actionsOut"></param>
         public virtual void Heuristic(float[] actionsOut)
@@ -19,6 +23,10 @@ namespace Unity.MLAgents
             Array.Clear(actionsOut, 0, actionsOut.Length);
         }
 
+        /// <summary>
+        /// Deprecated, use <see cref="OnActionReceived(ActionBuffers)"/> instead.
+        /// </summary>
+        /// <param name="vectorAction"></param>
         public virtual void OnActionReceived(float[] vectorAction) { }
 
         /// <summary>
@@ -33,6 +41,5 @@ namespace Unity.MLAgents
         {
             return m_Info.storedVectorActions;
         }
-
     }
 }

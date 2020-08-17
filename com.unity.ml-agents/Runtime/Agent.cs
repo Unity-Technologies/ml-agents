@@ -1079,8 +1079,8 @@ namespace Unity.MLAgents
         /// actions. When using discrete actions, the agent will not perform the masked
         /// action.
         /// </summary>
-        /// <param name="actionMasker">
-        /// The action masker for the agent.
+        /// <param name="actionMask">
+        /// The action mask for the agent.
         /// </param>
         /// <remarks>
         /// When using Discrete Control, you can prevent the Agent from using a certain
@@ -1185,8 +1185,9 @@ namespace Unity.MLAgents
         public virtual void OnEpisodeBegin() { }
 
         /// <summary>
-        /// Gets the last ActionBuffer for this agent.
+        /// Gets the most recent ActionBuffer for this agent.
         /// </summary>
+        /// <returns>The most recent ActionBuffer for this agent</returns>
         public ActionBuffers GetStoredActionBuffers()
         {
             return m_ActuatorManager.StoredActions;
