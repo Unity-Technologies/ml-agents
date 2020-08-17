@@ -8,6 +8,7 @@ namespace Unity.MLAgentsExamples
     public class BasicActuatorComponent : ActuatorComponent
     {
         public BasicController basicController;
+        ActionSpec m_ActionSpec = ActionSpec.MakeDiscrete(3);
 
         /// <summary>
         /// Creates a BasicActuator.
@@ -17,7 +18,11 @@ namespace Unity.MLAgentsExamples
         {
             return new BasicActuator(basicController);
         }
-        // TOOD action spec
+
+        public override ActionSpec ActionSpec
+        {
+            get { return m_ActionSpec; }
+        }
     }
 
     /// <summary>
