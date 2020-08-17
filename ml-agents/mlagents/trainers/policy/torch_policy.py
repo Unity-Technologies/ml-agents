@@ -249,7 +249,7 @@ class TorchPolicy(Policy):
         return self.get_current_step()
 
     def load_weights(self, values: List[np.ndarray]) -> None:
-        pass
+        self.actor_critic.load_state_dict(values)
 
     def init_load_weights(self) -> None:
         pass
