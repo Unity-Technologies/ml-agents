@@ -225,6 +225,7 @@ class PPOTrainer(RLTrainer):
         """
         Creates a PPO policy to trainers list of policies.
         :param behavior_spec: specifications for policy construction
+        :param create_graph: whether to create the graph when policy is constructed
         :return policy
         """
         policy = TFPolicy(
