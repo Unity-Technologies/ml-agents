@@ -4,6 +4,8 @@ using Unity.MLAgents.Actuators;
 namespace Unity.MLAgentsExamples
 {
     /// <summary>
+    /// A simple example of a ActuatorComponent.
+    /// This should be added to the same GameObject as the BasicController
     /// </summary>
     public class BasicActuatorComponent : ActuatorComponent
     {
@@ -26,6 +28,7 @@ namespace Unity.MLAgentsExamples
     }
 
     /// <summary>
+    /// Simple actuator that converts the action into a {-1, 0, 1} direction
     /// </summary>
     public class BasicActuator : IActuator
     {
