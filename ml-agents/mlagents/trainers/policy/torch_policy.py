@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 import numpy as np
 import torch
 
@@ -85,7 +85,9 @@ class TorchPolicy(Policy):
 
         self.actor_critic.to(TestingConfiguration.device)
 
-    def split_decision_step(self, decision_requests):
+    def _split_decision_step(
+        self, decision_requests: DecisionSteps
+    ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
         if not self.use_continuous_act:
@@ -94,7 +96,7 @@ class TorchPolicy(Policy):
                 mask = torch.as_tensor(
                     1 - np.concatenate(decision_requests.action_mask, axis=1)
                 )
-        return vec_vis_obs.vector_observations, vec_vis_obs.visual_observations, mask
+        return vec_vis_obs, mask
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
@@ -145,9 +147,7 @@ class TorchPolicy(Policy):
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        if len(actions.shape) <= 2:
-            actions = actions.unsqueeze(-1)
-        action_list = [actions[..., i] for i in range(actions.shape[2])]
+        action_list = [actions[..., i] for i in range(actions.shape[-1])]
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
 
         return log_probs, entropies, value_heads
@@ -162,9 +162,11 @@ class TorchPolicy(Policy):
         :param decision_requests: DecisionStep object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
-        vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
-        vec_obs = [torch.as_tensor(vec_obs)]
-        vis_obs = [torch.as_tensor(vis_ob) for vis_ob in vis_obs]
+        vec_vis_obs, masks = self._split_decision_step(decision_requests)
+        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
+        vis_obs = [
+            torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations
+        ]
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
