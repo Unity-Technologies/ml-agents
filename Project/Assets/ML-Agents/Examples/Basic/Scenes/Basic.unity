@@ -153,53 +153,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5889392e3f05b448a8a06c5def6c2dec, type: 3}
---- !u!1 &1335907378 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1263463520136984, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
-    type: 3}
-  m_PrefabInstance: {fileID: 1783603361}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1335907380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335907378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agentParameters:
-    maxStep: 0
-  hasUpgradedFromAgentParameters: 1
-  maxStep: 0
---- !u!114 &1335907381 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 114827551040495112, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
-    type: 3}
-  m_PrefabInstance: {fileID: 1783603361}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335907378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 624480a72e46148118ab2e2d89b537de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1335907384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335907378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ee410d6d45349218d5e69bb2a347c63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  basicController: {fileID: 1335907381}
 --- !u!1001 &1502457254
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -438,6 +391,11 @@ PrefabInstance:
       propertyPath: m_BrainParameters.vectorObservationSize
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 114502619508238574, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5eb289873aca4f5a8cc59c7464ab7c1, type: 3}
 --- !u!1 &1889211226
@@ -474,6 +432,7 @@ MonoBehaviour:
   maximumDeltaTime: 0.33333334
   solverIterations: 6
   solverVelocityIterations: 1
+  reuseCollisionCallbacks: 1
 --- !u!4 &1889211228
 Transform:
   m_ObjectHideFlags: 0
