@@ -129,9 +129,6 @@ jobs:
               sudo apt-get install -y dotnet-sdk-3.1 && \
               dotnet tool install -g dotnet-format --version 4.1.131201
 
-            echo "Updating PATH"
-            export PATH="$PATH:~/.dotnet/tools"
-
             echo "Setting up venv"
             python3 -m venv venv
             . venv/bin/activate
@@ -151,6 +148,7 @@ jobs:
           name: Check Code Style using pre-commit
           command: |
             . venv/bin/activate
+            export PATH="$PATH:~/.dotnet/tools"
             pre-commit run --show-diff-on-failure --all-files
 
   markdown_link_check:
