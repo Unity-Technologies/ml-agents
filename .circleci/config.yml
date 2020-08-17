@@ -129,6 +129,9 @@ jobs:
               sudo apt-get install -y dotnet-sdk-3.1 && \
               dotnet tool install -g dotnet-format --version 4.1.131201
 
+            # The install path for "dotnet tool install" isn't in the PATH by default
+            export PATH="$PATH:~/.dotnet/tools"
+
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
