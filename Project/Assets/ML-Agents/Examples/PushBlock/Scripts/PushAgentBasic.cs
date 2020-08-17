@@ -3,6 +3,7 @@
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 
 public class PushAgentBasic : Agent
 {
@@ -127,12 +128,12 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Moves the agent according to the selected action.
     /// </summary>
-    public void MoveAgent(float[] act)
+    public void MoveAgent(ActionSegment<int> act)
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        var action = Mathf.FloorToInt(act[0]);
+        var action = act[0];
 
         switch (action)
         {
@@ -163,33 +164,35 @@ public class PushAgentBasic : Agent
     /// <summary>
     /// Called every step of the engine. Here the agent takes an action.
     /// </summary>
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
     {
         // Move the agent using the action.
-        MoveAgent(vectorAction);
+        MoveAgent(actionBuffers.DiscreteActions);
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
     }
 
-    public override void Heuristic(float[] actionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        actionsOut[0] = 0;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = 0;
         if (Input.GetKey(KeyCode.D))
         {
-            actionsOut[0] = 3;
+            discreteActionsOut[0] = 3;
         }
         else if (Input.GetKey(KeyCode.W))
         {
-            actionsOut[0] = 1;
+            discreteActionsOut[0] = 1;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            actionsOut[0] = 4;
+            discreteActionsOut[0] = 4;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            actionsOut[0] = 2;
+            discreteActionsOut[0] = 2;
         }
     }
 

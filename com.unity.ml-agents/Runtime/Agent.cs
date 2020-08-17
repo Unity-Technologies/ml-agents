@@ -1185,7 +1185,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Gets the last ActionBuffer for this agent.
         /// </summary>
-        public ActionBuffers GetStoredContinuousActions()
+        public ActionBuffers GetStoredActionBuffers()
         {
             return m_ActuatorManager.StoredActions;
         }

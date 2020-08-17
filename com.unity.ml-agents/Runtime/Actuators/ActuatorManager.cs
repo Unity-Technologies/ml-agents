@@ -48,15 +48,8 @@ namespace Unity.MLAgents.Actuators
         public ActuatorDiscreteActionMask DiscreteActionMask => m_DiscreteActionMask;
 
         /// <summary>
-        /// Returns the previously stored actions for the actuators in this list.
+        /// The currently stored <see cref="ActionBuffers"/> object for the <see cref="IActuator"/>s managed by this class.
         /// </summary>
-        // public float[] StoredContinuousActions { get; private set; }
-
-        /// <summary>
-        /// Returns the previously stored actions for the actuators in this list.
-        /// </summary>
-        // public int[] StoredDiscreteActions { get; private set; }
-
         public ActionBuffers StoredActions { get; private set; }
 
         /// <summary>
@@ -114,10 +107,8 @@ namespace Unity.MLAgents.Actuators
         /// Updates the local action buffer with the action buffer passed in.  If the buffer
         /// passed in is null, the local action buffer will be cleared.
         /// </summary>
-        /// <param name="continuousActionBuffer">The action buffer which contains all of the
-        /// continuous actions for the IActuators in this list.</param>
-        /// <param name="discreteActionBuffer">The action buffer which contains all of the
-        /// discrete actions for the IActuators in this list.</param>
+        /// <param name="actions">The <see cref="ActionBuffers"/> object which contains all of the
+        /// actions for the IActuators in this list.</param>
         public void UpdateActions(ActionBuffers actions)
         {
             ReadyActuatorsForExecution();
@@ -225,7 +216,7 @@ namespace Unity.MLAgents.Actuators
 
 
         /// <summary>
-        /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.GetName"/> value.
+        /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.Name"/> value.
         /// </summary>
         void SortActuators()
         {
