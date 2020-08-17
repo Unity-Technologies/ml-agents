@@ -174,7 +174,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  maxStep: 0
 --- !u!114 &1335907381 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114827551040495112, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
@@ -187,19 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 624480a72e46148118ab2e2d89b537de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1335907382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1335907378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ce4e199dabb494e8764b09f4c378098, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  basicController: {fileID: 1335907381}
 --- !u!114 &1335907384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -448,17 +435,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114502619508238574, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
         type: 3}
-      propertyPath: m_BrainParameters.VectorActionSize.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114502619508238574, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
-        type: 3}
       propertyPath: m_BrainParameters.vectorObservationSize
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 114502619508238574, guid: c5eb289873aca4f5a8cc59c7464ab7c1,
-        type: 3}
-      propertyPath: m_BrainParameters.VectorObservationSize
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -497,7 +474,6 @@ MonoBehaviour:
   maximumDeltaTime: 0.33333334
   solverIterations: 6
   solverVelocityIterations: 1
-  reuseCollisionCallbacks: 1
 --- !u!4 &1889211228
 Transform:
   m_ObjectHideFlags: 0

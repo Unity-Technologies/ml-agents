@@ -86,23 +86,12 @@ public class BasicController : MonoBehaviour
         }
         if (Academy.Instance.IsCommunicatorOn)
         {
-<<<<<<< HEAD
-=======
-            // Apply the previous step's actions
-            ApplyAction(m_Agent.GetStoredActionBuffers().DiscreteActions);
->>>>>>> origin/master
             m_Agent?.RequestDecision();
         }
         else
         {
             if (m_TimeSinceDecision >= timeBetweenDecisionsAtInference)
             {
-<<<<<<< HEAD
-=======
-                // Apply the previous step's actions
-                ApplyAction(m_Agent.GetStoredActionBuffers().DiscreteActions);
-
->>>>>>> origin/master
                 m_TimeSinceDecision = 0f;
                 m_Agent?.RequestDecision();
             }

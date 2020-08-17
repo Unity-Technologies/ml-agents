@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Inference
         {
             actionSpec.CheckNotHybrid();
 
-            if (actionSpec.NumContinuousActions > 0 )
+            if (actionSpec.NumContinuousActions > 0)
             {
                 m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
