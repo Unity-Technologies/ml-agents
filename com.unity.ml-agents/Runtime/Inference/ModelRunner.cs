@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
 using UnityEngine.Profiling;
-using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Inference
 {
@@ -40,8 +41,7 @@ namespace Unity.MLAgents.Inference
         /// the agents
         /// </summary>
         /// <param name="model"> The Barracuda model to load </param>
-        /// <param name="brainParameters"> The parameters of the Brain used to generate the
-        /// placeholder tensors </param>
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
         /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
         /// option for most of ML Agents models. </param>
         /// <param name="seed"> The seed that will be used to initialize the RandomNormal
@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Inference
         /// </exception>
         public ModelRunner(
             NNModel model,
-            BrainParameters brainParameters,
+            ActionSpec actionSpec,
             InferenceDevice inferenceDevice = InferenceDevice.CPU,
             int seed = 0)
         {
@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Inference
             m_TensorGenerator = new TensorGenerator(
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TensorApplier = new TensorApplier(
-                brainParameters, seed, m_TensorAllocator, m_Memories, barracudaModel);
+                actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel);
         }
 
         static Dictionary<string, Tensor> PrepareBarracudaInputs(IEnumerable<TensorProxy> infInputs)
