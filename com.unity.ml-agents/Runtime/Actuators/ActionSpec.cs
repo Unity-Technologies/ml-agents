@@ -68,7 +68,7 @@ namespace Unity.MLAgents.Actuators
         {
             NumContinuousActions = numContinuousActions;
             NumDiscreteActions = numDiscreteActions;
-            BranchSizes =  branchSizes;
+            BranchSizes = branchSizes;
             SumOfDiscreteBranchSizes = branchSizes?.Sum() ?? 0;
         }
     }

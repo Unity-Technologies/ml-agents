@@ -43,7 +43,7 @@ namespace Unity.MLAgents
         Dictionary<string, BrainParameters> m_UnsentBrainKeys = new Dictionary<string, BrainParameters>();
 
 
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
 #endif
@@ -206,7 +206,7 @@ namespace Unity.MLAgents
         UnityInputProto Initialize(UnityOutputProto unityOutput,
             out UnityInputProto unityInput)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
             var channel = new Channel(
                 "localhost:" + m_CommunicatorInitParameters.port,
@@ -240,7 +240,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void Dispose()
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return;
@@ -270,23 +270,23 @@ namespace Unity.MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    QuitCommandReceived?.Invoke();
-                    return;
-                }
-                case CommandProto.Reset:
-                {
-                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
+                        QuitCommandReceived?.Invoke();
+                        return;
                     }
-                    ResetCommandReceived?.Invoke();
-                    return;
-                }
+                case CommandProto.Reset:
+                    {
+                        foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
+                        {
+                            m_OrderedAgentsRequestingDecisions[brainName].Clear();
+                        }
+                        ResetCommandReceived?.Invoke();
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 
@@ -313,7 +313,7 @@ namespace Unity.MLAgents
         /// <param name="sensors">Sensors that will produce the observations</param>
         public void PutObservations(string behaviorName, AgentInfo info, List<ISensor> sensors)
         {
-# if DEBUG
+#if DEBUG
             if (!m_SensorShapeValidators.ContainsKey(behaviorName))
             {
                 m_SensorShapeValidators[behaviorName] = new SensorShapeValidator();
@@ -441,7 +441,7 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return null;

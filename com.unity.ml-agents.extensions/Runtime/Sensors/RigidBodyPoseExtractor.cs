@@ -40,7 +40,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             if (rootGameObject == null)
             {
                 rbs = rootBody.GetComponentsInChildren<Rigidbody>();
-                joints = rootBody.GetComponentsInChildren <Joint>();
+                joints = rootBody.GetComponentsInChildren<Joint>();
             }
             else
             {
@@ -79,7 +79,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             for (var i = 0; i < rbs.Length; i++)
             {
-                if(rbs[i] != null)
+                if (rbs[i] != null)
                 {
                     bodyToIndex[rbs[i]] = i;
                 }

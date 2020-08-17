@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Sensors
         {
             get { return m_RaysPerDirection; }
             // Note: can't change at runtime
-            set { m_RaysPerDirection = value;}
+            set { m_RaysPerDirection = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]

@@ -7,7 +7,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Editor component that creates a PhysicsBodySensor for the Agent.
     /// </summary>
-    public class RigidBodySensorComponent  : SensorComponent
+    public class RigidBodySensorComponent : SensorComponent
     {
         /// <summary>
         /// The root Rigidbody of the system.
@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             var numPoseObservations = poseExtractor.GetNumPoseObservations(Settings);
 
             var numJointObservations = 0;
-            foreach(var rb in poseExtractor.GetEnabledRigidbodies())
+            foreach (var rb in poseExtractor.GetEnabledRigidbodies())
             {
                 var joint = rb.GetComponent<Joint>();
                 numJointObservations += RigidBodyJointExtractor.NumObservations(rb, joint, Settings);

@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Unity.MLAgentsExamples
 {
     public class DirectionIndicator : MonoBehaviour
     {
-       
+
         public bool updatedByAgent; //should this be updated by the agent? If not, it will use local settings
         public Transform transformToFollow; //ex: hips or body
         public Transform targetToLookAt; //target in the scene the indicator will point to

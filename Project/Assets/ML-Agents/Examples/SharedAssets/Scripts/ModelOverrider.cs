@@ -23,7 +23,7 @@ namespace Unity.MLAgentsExamples
     /// </summary>
     public class ModelOverrider : MonoBehaviour
     {
-        HashSet<string> k_SupportedExtensions = new HashSet<string>{"nn", "onnx"};
+        HashSet<string> k_SupportedExtensions = new HashSet<string> { "nn", "onnx" };
         const string k_CommandLineModelOverrideFlag = "--mlagents-override-model";
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
@@ -63,7 +63,7 @@ namespace Unity.MLAgentsExamples
 
         int TotalCompletedEpisodes
         {
-            get { return m_PreviousAgentCompletedEpisodes + (m_Agent == null ? 0 : m_Agent.CompletedEpisodes);  }
+            get { return m_PreviousAgentCompletedEpisodes + (m_Agent == null ? 0 : m_Agent.CompletedEpisodes); }
         }
 
         int TotalNumSteps
@@ -73,7 +73,7 @@ namespace Unity.MLAgentsExamples
 
         public bool HasOverrides
         {
-            get { return m_BehaviorNameOverrides.Count > 0 || !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory);  }
+            get { return m_BehaviorNameOverrides.Count > 0 || !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory); }
         }
 
         public static string GetOverrideBehaviorName(string originalBehaviorName)
@@ -99,17 +99,17 @@ namespace Unity.MLAgentsExamples
             var args = commandLineArgsOverride ?? Environment.GetCommandLineArgs();
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == k_CommandLineModelOverrideFlag && i < args.Length-2)
+                if (args[i] == k_CommandLineModelOverrideFlag && i < args.Length - 2)
                 {
                     var key = args[i + 1].Trim();
                     var value = args[i + 2].Trim();
                     m_BehaviorNameOverrides[key] = value;
                 }
-                else if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length-1)
+                else if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length - 1)
                 {
                     m_BehaviorNameOverrideDirectory = args[i + 1].Trim();
                 }
-                else if (args[i] == k_CommandLineModelOverrideExtensionFlag && i < args.Length-1)
+                else if (args[i] == k_CommandLineModelOverrideExtensionFlag && i < args.Length - 1)
                 {
                     m_OverrideExtension = args[i + 1].Trim().ToLower();
                     var isKnownExtension = k_SupportedExtensions.Contains(m_OverrideExtension);
@@ -124,7 +124,7 @@ namespace Unity.MLAgentsExamples
 #endif
                     }
                 }
-                else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length-1)
+                else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length - 1)
                 {
                     Int32.TryParse(args[i + 1], out maxEpisodes);
                 }
@@ -198,7 +198,7 @@ namespace Unity.MLAgentsExamples
             {
                 assetPath = m_BehaviorNameOverrides[behaviorName];
             }
-            else if(!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
+            else if (!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
             {
                 assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.{m_OverrideExtension}");
             }
@@ -214,7 +214,7 @@ namespace Unity.MLAgentsExamples
             {
                 model = File.ReadAllBytes(assetPath);
             }
-            catch(IOException)
+            catch (IOException)
             {
                 Debug.Log($"Couldn't load file {assetPath} at full path {Path.GetFullPath(assetPath)}", this);
                 // Cache the null so we don't repeatedly try to load a missing file
@@ -270,7 +270,7 @@ namespace Unity.MLAgentsExamples
 
             if (!overrideOk && m_QuitOnLoadFailure)
             {
-                if(!string.IsNullOrEmpty(overrideError))
+                if (!string.IsNullOrEmpty(overrideError))
                 {
                     Debug.LogWarning(overrideError);
                 }

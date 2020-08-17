@@ -13,7 +13,8 @@ public class CrawlerAgent : Agent
     Vector3 m_WalkDir; //Direction to the target
     Quaternion m_WalkDirLookRot; //Will hold the rotation to our target
 
-    [Header("Target To Walk Towards")] [Space(10)]
+    [Header("Target To Walk Towards")]
+    [Space(10)]
     public TargetController target; //Target the agent will walk towards.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
@@ -27,20 +28,23 @@ public class CrawlerAgent : Agent
     public Transform leg3Lower;
 
 
-    [Header("Orientation")] [Space(10)]
+    [Header("Orientation")]
+    [Space(10)]
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
     public OrientationCubeController orientationCube;
 
     JointDriveController m_JdController;
 
-    [Header("Reward Functions To Use")] [Space(10)]
+    [Header("Reward Functions To Use")]
+    [Space(10)]
     public bool rewardMovingTowardsTarget; // Agent should move towards target
 
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
-    [Header("Foot Grounded Visualization")] [Space(10)]
+    [Header("Foot Grounded Visualization")]
+    [Space(10)]
     public bool useFootGroundedVisualization;
 
     public MeshRenderer foot0;
@@ -208,8 +212,8 @@ public class CrawlerAgent : Agent
         {
             throw new ArgumentException(
                 "NaN in movingTowardsDot.\n" +
-                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
-                $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n"+
+                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n" +
+                $" body.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n" +
                 $" maximumWalkingSpeed: {maximumWalkingSpeed}"
             );
         }
@@ -226,7 +230,7 @@ public class CrawlerAgent : Agent
         {
             throw new ArgumentException(
                 "NaN in movingTowardsDot.\n" +
-                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n"+
+                $" orientationCube.transform.forward: {orientationCube.transform.forward}\n" +
                 $" body.forward: {body.forward}"
             );
         }

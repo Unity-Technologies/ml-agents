@@ -172,9 +172,11 @@ namespace Unity.MLAgents
             public int maxStep;
         }
 
-        [SerializeField][HideInInspector]
+        [SerializeField]
+        [HideInInspector]
         internal AgentParameters agentParameters;
-        [SerializeField][HideInInspector]
+        [SerializeField]
+        [HideInInspector]
         internal bool hasUpgradedFromAgentParameters;
 
         /// <summary>
@@ -770,7 +772,7 @@ namespace Unity.MLAgents
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
-        public virtual void Initialize() {}
+        public virtual void Initialize() { }
 
         /// <summary>
         /// Implement `Heuristic()` to choose an action for this agent using a custom heuristic.
@@ -1178,7 +1180,7 @@ namespace Unity.MLAgents
         /// </summary>
         /// <seealso cref="Initialize"/>
         /// <seealso cref="EndEpisode"/>
-        public virtual void OnEpisodeBegin() {}
+        public virtual void OnEpisodeBegin() { }
 
         /// <summary>
         /// Gets the last ActionBuffer for this agent.

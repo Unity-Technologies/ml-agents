@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 8;
-            validBrainParameters.VectorActionSize = new [] { 2 };
+            validBrainParameters.VectorActionSize = new[] { 2 };
             validBrainParameters.NumStackedVectorObservations = 1;
             validBrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             return validBrainParameters;
@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 0;
-            validBrainParameters.VectorActionSize = new [] { 2, 3 };
+            validBrainParameters.VectorActionSize = new[] { 2, 3 };
             validBrainParameters.NumStackedVectorObservations = 1;
             validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
@@ -84,10 +84,10 @@ namespace Unity.MLAgents.Tests
             var modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, brainParameters);
             var info1 = new AgentInfo();
             info1.episodeId = 1;
-            modelRunner.PutObservations(info1, new [] { sensor_21_20_3.CreateSensor() }.ToList());
+            modelRunner.PutObservations(info1, new[] { sensor_21_20_3.CreateSensor() }.ToList());
             var info2 = new AgentInfo();
             info2.episodeId = 2;
-            modelRunner.PutObservations(info2, new [] { sensor_21_20_3.CreateSensor() }.ToList());
+            modelRunner.PutObservations(info2, new[] { sensor_21_20_3.CreateSensor() }.ToList());
 
             modelRunner.DecideBatch();
 

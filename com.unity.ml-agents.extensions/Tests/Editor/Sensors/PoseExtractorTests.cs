@@ -15,7 +15,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 return Pose.identity;
             }
 
-            protected  internal override Vector3 GetLinearVelocityAt(int index)
+            protected internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
@@ -62,7 +62,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             }
 
             // Getting a parent index should throw an index exception
-            Assert.Throws <NullReferenceException>(
+            Assert.Throws<NullReferenceException>(
                 () => poseExtractor.GetParentIndex(0)
             );
 
@@ -109,7 +109,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 };
             }
 
-            protected  internal override Vector3 GetLinearVelocityAt(int index)
+            protected internal override Vector3 GetLinearVelocityAt(int index)
             {
                 return Vector3.zero;
             }
@@ -188,13 +188,13 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         {
             // Degenerate case with a loop
             var poseExtractor = new UselessPoseExtractor();
-            poseExtractor.Init(new[] {-1, 2, 1});
+            poseExtractor.Init(new[] { -1, 2, 1 });
 
             // This just shouldn't blow up
             poseExtractor.GetDisplayNodes();
 
             // Self-loop
-            poseExtractor.Init(new[] {-1, 1});
+            poseExtractor.Init(new[] { -1, 1 });
 
             // This just shouldn't blow up
             poseExtractor.GetDisplayNodes();
