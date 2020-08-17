@@ -110,18 +110,5 @@ namespace Unity.MLAgents.Policies
                 VectorActionSpaceType = VectorActionSpaceType
             };
         }
-
-        public ActionSpec AsActionSpec()
-        {
-            if (VectorActionSpaceType == SpaceType.Continuous)
-            {
-                return ActionSpec.MakeContinuous(NumActions);
-            }
-            else
-            {
-                return ActionSpec.MakeDiscrete(VectorActionSize);
-            }
-        }
-
     }
 }

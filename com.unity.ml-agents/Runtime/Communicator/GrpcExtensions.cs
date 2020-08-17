@@ -86,7 +86,7 @@ namespace Unity.MLAgents
 
         #region BrainParameters
         /// <summary>
-        /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
+        /// Converts a BrainParameters into to a BrainParametersProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="bp">The instance of BrainParameter to extend.</param>
@@ -109,7 +109,7 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
-        /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
+        /// Converts an ActionSpec into to a Protobuf BrainInfoProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
