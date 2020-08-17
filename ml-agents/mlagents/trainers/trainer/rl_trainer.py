@@ -24,14 +24,15 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.settings import TrainerSettings, FrameworkType
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.saver.saver import BaseSaver
-from mlagents.trainers.saver.torch_saver import TorchSaver
 from mlagents.trainers.saver.tf_saver import TFSaver
 from mlagents.trainers.exception import UnityTrainerException
 
 try:
+    from mlagents.trainers.saver.torch_saver import TorchSaver
     from mlagents.trainers.policy.torch_policy import TorchPolicy
 except ModuleNotFoundError:
     TorchPolicy = None  # type: ignore
+    TorchSaver = None  # type: ignore
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
