@@ -343,6 +343,31 @@ public override void OnActionReceived(float[] vectorAction)
 Note the `forceMultiplier` class variable is defined before the function. Since `forceMultiplier` is
 public, you can set the value from the Inspector window.
 
+## Final Editor Setup
+
+Now, that all the GameObjects and ML-Agent components are in place, it is time
+to connect everything together in the Unity Editor. This involves changing some
+of the Agent Component's properties so that they are compatible with our Agent
+code.
+
+1. Select the **RollerAgent** GameObject to show its properties in the Inspector
+   window.
+1. Drag the Target GameObject in the Hierarchy into the `Target` field in RollerAgent Script.
+1. Add the `Decision Requester` script with the Add Component button from the
+   RollerAgent Inspector.
+1. Change **Decision Period** to `10`. For more information on decisions, see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
+1. Drag the Target GameObject from the Hierarchy window to the RollerAgent
+   Target field.
+1. Add the `Behavior Parameters` script with the Add Component button from the
+   RollerAgent Inspector.
+1. Modify the Behavior Parameters of the Agent :
+   - `Behavior Name` to _RollerBall_
+   - `Vector Observation` > `Space Size` = 8
+   - `Vector Action` > `Space Type` = **Continuous**
+   - `Vector Action` > `Space Size` = 2
+
+Now you are ready to test the environment before training.
+
 ## Testing the Environment
 
 It is always a good idea to first test your environment by controlling the Agent
@@ -368,30 +393,6 @@ the platform. Make sure that there are no errors displayed in the Unity Editor
 Console window and that the Agent resets when it reaches its target or falls
 from the platform.
 
-## Final Editor Setup
-
-Now, that all the GameObjects and ML-Agent components are in place, it is time
-to connect everything together in the Unity Editor. This involves changing some
-of the Agent Component's properties so that they are compatible with our Agent
-code.
-
-1. Select the **RollerAgent** GameObject to show its properties in the Inspector
-   window.
-1. Add the `Decision Requester` script with the Add Component button from the
-   RollerAgent Inspector.
-1. Change **Decision Period** to `10`. For more information on decisions, see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
-1. Drag the Target GameObject from the Hierarchy window to the RollerAgent
-   Target field.
-1. Add the `Behavior Parameters` script with the Add Component button from the
-   RollerAgent Inspector.
-1. Modify the Behavior Parameters of the Agent :
-   - `Behavior Name` to _RollerBall_
-   - `Vector Observation` > `Space Size` = 8
-   - `Vector Action` > `Space Type` = **Continuous**
-   - `Vector Action` > `Space Size` = 2
-
-Now you are ready to test the environment before training.
-
 ## Training the Environment
 
 The process is the same as described in the
@@ -399,7 +400,7 @@ The process is the same as described in the
 
 The hyperparameters for training are specified in a configuration file that you
 pass to the `mlagents-learn` program. Create a new `rollerball_config.yaml` file
-and include the following hyperparameter values:
+under `config/` and include the following hyperparameter values:
 
 ```yml
 behaviors:

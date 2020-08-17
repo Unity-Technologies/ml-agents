@@ -10,6 +10,7 @@ from threading import RLock
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
+from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
@@ -58,7 +59,7 @@ class StatsWriter(abc.ABC):
 
 class GaugeWriter(StatsWriter):
     """
-    Write all stats that we recieve to the timer gauges, so we can track them offline easily
+    Write all stats that we receive to the timer gauges, so we can track them offline easily
     """
 
     @staticmethod
@@ -84,41 +85,37 @@ class ConsoleWriter(StatsWriter):
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
+        self.rank = get_rank()
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
     ) -> None:
         is_training = "Not Training."
         if "Is Training" in values:
-            stats_summary = stats_summary = values["Is Training"]
+            stats_summary = values["Is Training"]
             if stats_summary.mean > 0.0:
                 is_training = "Training."
 
+        elapsed_time = time.time() - self.training_start_time
+        log_info: List[str] = [category]
+        log_info.append(f"Step: {step}")
+        log_info.append(f"Time Elapsed: {elapsed_time:0.3f} s")
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
-            logger.info(
-                "{}: Step: {}. "
-                "Time Elapsed: {:0.3f} s "
-                "Mean "
-                "Reward: {:0.3f}"
-                ". Std of Reward: {:0.3f}. {}".format(
-                    category,
-                    step,
-                    time.time() - self.training_start_time,
-                    stats_summary.mean,
-                    stats_summary.std,
-                    is_training,
-                )
-            )
+            if self.rank is not None:
+                log_info.append(f"Rank: {self.rank}")
+
+            log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
+            log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")
+            log_info.append(is_training)
+
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                logger.info(f"{category} ELO: {elo_stats.mean:0.3f}. ")
+                log_info.append(f"ELO: {elo_stats.mean:0.3f}")
         else:
-            logger.info(
-                "{}: Step: {}. No episode was completed since last summary. {}".format(
-                    category, step, is_training
-                )
-            )
+            log_info.append("No episode was completed since last summary")
+            log_info.append(is_training)
+        logger.info(". ".join(log_info))
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any

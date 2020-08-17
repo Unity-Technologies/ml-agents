@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.MLAgents.Policies;
+using Unity.MLAgents.Actuators;
 
 namespace Unity.MLAgents
 {
@@ -15,19 +14,13 @@ namespace Unity.MLAgents
     /// may be illegal. For example, if an agent is adjacent to a wall or other obstacle
     /// you could mask any actions that direct the agent to move into the blocked space.
     /// </remarks>
-    public class DiscreteActionMasker
+    public class DiscreteActionMasker : IDiscreteActionMask
     {
-        /// When using discrete control, is the starting indices of the actions
-        /// when all the branches are concatenated with each other.
-        int[] m_StartingActionIndices;
+        IDiscreteActionMask m_Delegate;
 
-        bool[] m_CurrentMask;
-
-        readonly BrainParameters m_BrainParameters;
-
-        internal DiscreteActionMasker(BrainParameters brainParameters)
+        internal DiscreteActionMasker(IDiscreteActionMask actionMask)
         {
-            m_BrainParameters = brainParameters;
+            m_Delegate = actionMask;
         }
 
         /// <summary>
@@ -46,109 +39,22 @@ namespace Unity.MLAgents
         /// <param name="actionIndices">The indices of the masked actions.</param>
         public void SetMask(int branch, IEnumerable<int> actionIndices)
         {
-            // If the branch does not exist, raise an error
-            if (branch >= m_BrainParameters.VectorActionSize.Length)
-                throw new UnityAgentsException(
-                    "Invalid Action Masking : Branch " + branch + " does not exist.");
-
-            var totalNumberActions = m_BrainParameters.VectorActionSize.Sum();
-
-            // By default, the masks are null. If we want to specify a new mask, we initialize
-            // the actionMasks with trues.
-            if (m_CurrentMask == null)
-            {
-                m_CurrentMask = new bool[totalNumberActions];
-            }
-
-            // If this is the first time the masked actions are used, we generate the starting
-            // indices for each branch.
-            if (m_StartingActionIndices == null)
-            {
-                m_StartingActionIndices = Utilities.CumSum(m_BrainParameters.VectorActionSize);
-            }
-
-            // Perform the masking
-            foreach (var actionIndex in actionIndices)
-            {
-                if (actionIndex >= m_BrainParameters.VectorActionSize[branch])
-                {
-                    throw new UnityAgentsException(
-                        "Invalid Action Masking: Action Mask is too large for specified branch.");
-                }
-                m_CurrentMask[actionIndex + m_StartingActionIndices[branch]] = true;
-            }
+            m_Delegate.WriteMask(branch, actionIndices);
         }
 
-        /// <summary>
-        /// Get the current mask for an agent.
-        /// </summary>
-        /// <returns>A mask for the agent. A boolean array of length equal to the total number of
-        /// actions.</returns>
-        internal bool[] GetMask()
+        public void WriteMask(int branch, IEnumerable<int> actionIndices)
         {
-            if (m_CurrentMask != null)
-            {
-                AssertMask();
-            }
-            return m_CurrentMask;
+            m_Delegate.WriteMask(branch, actionIndices);
         }
 
-        /// <summary>
-        /// Makes sure that the current mask is usable.
-        /// </summary>
-        void AssertMask()
+        public bool[] GetMask()
         {
-            // Action Masks can only be used in Discrete Control.
-            if (m_BrainParameters.VectorActionSpaceType != SpaceType.Discrete)
-            {
-                throw new UnityAgentsException(
-                    "Invalid Action Masking : Can only set action mask for Discrete Control.");
-            }
-
-            var numBranches = m_BrainParameters.VectorActionSize.Length;
-            for (var branchIndex = 0; branchIndex < numBranches; branchIndex++)
-            {
-                if (AreAllActionsMasked(branchIndex))
-                {
-                    throw new UnityAgentsException(
-                        "Invalid Action Masking : All the actions of branch " + branchIndex +
-                        " are masked.");
-                }
-            }
+            return m_Delegate.GetMask();
         }
 
-        /// <summary>
-        /// Resets the current mask for an agent.
-        /// </summary>
-        internal void ResetMask()
+        public void ResetMask()
         {
-            if (m_CurrentMask != null)
-            {
-                Array.Clear(m_CurrentMask, 0, m_CurrentMask.Length);
-            }
-        }
-
-        /// <summary>
-        /// Checks if all the actions in the input branch are masked.
-        /// </summary>
-        /// <param name="branch"> The index of the branch to check.</param>
-        /// <returns> True if all the actions of the branch are masked.</returns>
-        bool AreAllActionsMasked(int branch)
-        {
-            if (m_CurrentMask == null)
-            {
-                return false;
-            }
-            var start = m_StartingActionIndices[branch];
-            var end = m_StartingActionIndices[branch + 1];
-            for (var i = start; i < end; i++)
-            {
-                if (!m_CurrentMask[i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            m_Delegate.ResetMask();
         }
     }
 }

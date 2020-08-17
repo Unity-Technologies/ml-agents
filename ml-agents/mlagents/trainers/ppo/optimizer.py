@@ -40,7 +40,7 @@ class PPOOptimizer(TFOptimizer):
 
                 self.stream_names = list(self.reward_signals.keys())
 
-                self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
+                self.tf_optimizer_op: Optional[tf.train.Optimizer] = None
                 self.grads = None
                 self.update_batch: Optional[tf.Operation] = None
 
@@ -95,8 +95,6 @@ class PPOOptimizer(TFOptimizer):
                     "decay_beta": self.decay_beta,
                 }
             )
-
-            self.policy.initialize_or_load()
 
     def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
@@ -291,9 +289,9 @@ class PPOOptimizer(TFOptimizer):
         )
 
     def _create_ppo_optimizer_ops(self):
-        self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
-        self.grads = self.tf_optimizer.compute_gradients(self.loss)
-        self.update_batch = self.tf_optimizer.minimize(self.loss)
+        self.tf_optimizer_op = self.create_optimizer_op(self.learning_rate)
+        self.grads = self.tf_optimizer_op.compute_gradients(self.loss)
+        self.update_batch = self.tf_optimizer_op.minimize(self.loss)
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:

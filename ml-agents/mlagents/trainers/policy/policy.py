@@ -5,7 +5,6 @@ import numpy as np
 from mlagents_envs.base_env import DecisionSteps
 from mlagents_envs.exception import UnityException
 
-from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
@@ -25,8 +24,6 @@ class Policy:
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         condition_sigma_on_obs: bool = True,
@@ -46,16 +43,12 @@ class Policy:
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
-        self.model_path = model_path
-        self.initialize_path = self.trainer_settings.init_path
-        self._keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.use_continuous_act = behavior_spec.is_action_continuous()
         self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
         self.use_recurrent = self.network_settings.memory is not None
-        self.load = load
         self.h_size = self.network_settings.hidden_units
         num_layers = self.network_settings.num_layers
         if num_layers < 1:
@@ -149,14 +142,6 @@ class Policy:
 
     @abstractmethod
     def get_current_step(self):
-        pass
-
-    @abstractmethod
-    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
-        pass
-
-    @abstractmethod
-    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
         pass
 
     @abstractmethod
