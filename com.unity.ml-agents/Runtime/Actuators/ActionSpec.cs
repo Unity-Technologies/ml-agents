@@ -40,6 +40,11 @@ namespace Unity.MLAgents.Actuators
         public int SumOfDiscreteBranchSizes { get; }
 
         /// <summary>
+        /// Optional string descriptions of the actions.
+        /// </summary>
+        public readonly string[] ActionDescriptions;
+
+        /// <summary>
         /// Creates a Continuous <see cref="ActionSpec"/> with the number of actions available.
         /// </summary>
         /// <param name="numActions">The number of actions available.</param>
@@ -57,19 +62,33 @@ namespace Unity.MLAgents.Actuators
         /// <param name="branchSizes">The array of branch sizes for the discrete action space.  Each index
         /// contains the number of actions available for that branch.</param>
         /// <returns>An Discrete ActionSpec initialized with the array of branch sizes.</returns>
-        public static ActionSpec MakeDiscrete(int[] branchSizes)
+        public static ActionSpec MakeDiscrete(params int[] branchSizes)
         {
             var numActions = branchSizes.Length;
             var actuatorSpace = new ActionSpec(0, numActions, branchSizes);
             return actuatorSpace;
         }
 
-        ActionSpec(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
+        ActionSpec(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null, string[] actionDescriptions = null)
         {
             NumContinuousActions = numContinuousActions;
             NumDiscreteActions = numDiscreteActions;
             BranchSizes =  branchSizes;
             SumOfDiscreteBranchSizes = branchSizes?.Sum() ?? 0;
+            ActionDescriptions = actionDescriptions;
+        }
+
+        /// <summary>
+        /// Temporary check that the ActionSpec uses either all continuous or all discrete actions.
+        /// This should be removed once the trainer supports them.
+        /// </summary>
+        /// <exception cref="UnityAgentsException"></exception>
+        internal void CheckNotHybrid()
+        {
+            if (NumContinuousActions > 0 && NumDiscreteActions > 0)
+            {
+                throw new UnityAgentsException("ActionSpecs must be all continuous or all discrete.");
+            }
         }
     }
 }

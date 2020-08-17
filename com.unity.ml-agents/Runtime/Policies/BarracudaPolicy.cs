@@ -49,11 +49,7 @@ namespace Unity.MLAgents.Policies
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
             m_ModelRunner = modelRunner;
-            // TODO
-            if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
-            {
-                throw new UnityAgentsException("ActionSpecs must be all continuous or all discrete.");
-            }
+            actionSpec.CheckNotHybrid();
             m_SpaceType = actionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
         }
 

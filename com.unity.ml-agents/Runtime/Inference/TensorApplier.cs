@@ -52,10 +52,7 @@ namespace Unity.MLAgents.Inference
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            if (actionSpec.NumContinuousActions > 0 && actionSpec.NumDiscreteActions > 0)
-            {
-                throw new UnityAgentsException("ActionSpecs must be all continuous or all discrete.");
-            }
+            actionSpec.CheckNotHybrid();
 
             if (actionSpec.NumContinuousActions > 0 )
             {

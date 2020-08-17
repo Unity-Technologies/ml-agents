@@ -30,8 +30,7 @@ namespace Unity.MLAgentsExamples
         public BasicActuator(BasicController controller)
         {
             basicController = controller;
-            // TODO add params version of MakeDiscrete?
-            m_ActionSpec = ActionSpec.MakeDiscrete(new[] {3} );
+            m_ActionSpec = ActionSpec.MakeDiscrete(3);
         }
 
         // TODO do we even need this?

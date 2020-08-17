@@ -110,6 +110,20 @@ namespace Unity.MLAgents.Actuators
             m_ReadyForExecution = true;
         }
 
+        public ActionSpec GetCombinedActionSpec()
+        {
+            // TODO placeholder - biggest actuator
+            var biggestSpec = m_Actuators[0].ActionSpec;
+            foreach (var actuator in m_Actuators)
+            {
+                if (actuator.ActionSpec.NumContinuousActions + actuator.ActionSpec.NumDiscreteActions > biggestSpec.NumContinuousActions + biggestSpec.NumDiscreteActions)
+                {
+                    biggestSpec = actuator.ActionSpec;
+                }
+            }
+            return biggestSpec;
+        }
+
         /// <summary>
         /// Updates the local action buffer with the action buffer passed in.  If the buffer
         /// passed in is null, the local action buffer will be cleared.

@@ -410,18 +410,19 @@ namespace Unity.MLAgents
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
             Academy.Instance.AgentForceReset += _AgentReset;
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+
+            using (TimerStack.Instance.Scoped("InitializeActuators"))
+            {
+                InitializeActuators();
+            }
+
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
             ResetData();
             Initialize();
 
             using (TimerStack.Instance.Scoped("InitializeSensors"))
             {
                 InitializeSensors();
-            }
-
-            using (TimerStack.Instance.Scoped("InitializeActuators"))
-            {
-                InitializeActuators();
             }
 
             m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
@@ -583,7 +584,7 @@ namespace Unity.MLAgents
                 return;
             }
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
         }
 
         /// <summary>

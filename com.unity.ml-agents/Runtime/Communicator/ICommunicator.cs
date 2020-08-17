@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 
@@ -138,8 +139,8 @@ namespace Unity.MLAgents
         /// Registers a new Brain to the Communicator.
         /// </summary>
         /// <param name="name">The name or key uniquely identifying the Brain.</param>
-        /// <param name="brainParameters">The Parameters for the Brain being registered.</param>
-        void SubscribeBrain(string name, BrainParameters brainParameters);
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        void SubscribeBrain(string name, ActionSpec actionSpec);
 
         /// <summary>
         /// Sends the observations of one Agent.

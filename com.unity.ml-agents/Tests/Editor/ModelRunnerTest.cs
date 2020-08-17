@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 using Unity.Barracuda;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
@@ -29,6 +30,11 @@ namespace Unity.MLAgents.Tests
             return validBrainParameters;
         }
 
+        ActionSpec GetContinuous2vis8vec2actionActionSpec()
+        {
+            return ActionSpec.MakeContinuous(2);
+        }
+
         BrainParameters GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters()
         {
             var validBrainParameters = new BrainParameters();
@@ -37,6 +43,11 @@ namespace Unity.MLAgents.Tests
             validBrainParameters.NumStackedVectorObservations = 1;
             validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
+        }
+
+        ActionSpec GetDiscrete1vis0vec_2_3action_recurrModelActionSpec()
+        {
+            return ActionSpec.MakeDiscrete(2, 3);
         }
 
         [SetUp]
@@ -61,16 +72,16 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestCreation()
         {
-            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionBrainParameters());
+            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionActionSpec());
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters());
+            modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec());
             modelRunner.Dispose();
         }
 
         [Test]
         public void TestHasModel()
         {
-            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionBrainParameters(), InferenceDevice.CPU);
+            var modelRunner = new ModelRunner(continuous2vis8vec2actionModel, GetContinuous2vis8vec2actionActionSpec(), InferenceDevice.CPU);
             Assert.True(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.CPU));
             Assert.False(modelRunner.HasModel(continuous2vis8vec2actionModel, InferenceDevice.GPU));
             Assert.False(modelRunner.HasModel(discrete1vis0vec_2_3action_recurrModel, InferenceDevice.CPU));
@@ -80,8 +91,8 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestRunModel()
         {
-            var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
-            var modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, brainParameters);
+            var actionSpec = GetDiscrete1vis0vec_2_3action_recurrModelActionSpec();
+            var modelRunner = new ModelRunner(discrete1vis0vec_2_3action_recurrModel, actionSpec);
             var info1 = new AgentInfo();
             info1.episodeId = 1;
             modelRunner.PutObservations(info1, new [] { sensor_21_20_3.CreateSensor() }.ToList());
@@ -94,7 +105,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(modelRunner.GetAction(1));
             Assert.IsNotNull(modelRunner.GetAction(2));
             Assert.IsNull(modelRunner.GetAction(3));
-            Assert.AreEqual(brainParameters.VectorActionSize.Count(), modelRunner.GetAction(1).Count());
+            Assert.AreEqual(actionSpec.NumDiscreteActions, modelRunner.GetAction(1).Count());
             modelRunner.Dispose();
         }
     }
