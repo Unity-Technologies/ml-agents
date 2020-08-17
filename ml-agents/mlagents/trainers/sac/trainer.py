@@ -228,7 +228,10 @@ class SACTrainer(RLTrainer):
             )
 
     def create_tf_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
     ) -> TFPolicy:
         policy = TFPolicy(
             self.seed,
@@ -236,7 +239,7 @@ class SACTrainer(RLTrainer):
             self.trainer_settings,
             tanh_squash=True,
             reparameterize=True,
-            create_tf_graph=False,
+            create_tf_graph=create_graph,
         )
         self.maybe_load_replay_buffer()
         return policy
