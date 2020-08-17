@@ -72,34 +72,29 @@ class NetworkBody(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        vec_encodes = []
+        encodes = []
         for idx, encoder in enumerate(self.vector_encoders):
             vec_input = vec_inputs[idx]
             if actions is not None:
                 hidden = encoder(vec_input, actions)
             else:
                 hidden = encoder(vec_input)
-            vec_encodes.append(hidden)
+            encodes.append(hidden)
 
-        vis_encodes = []
         for idx, encoder in enumerate(self.visual_encoders):
             vis_input = vis_inputs[idx]
             vis_input = vis_input.permute([0, 3, 1, 2])
             hidden = encoder(vis_input)
-            vis_encodes.append(hidden)
+            encodes.append(hidden)
 
-        if len(vec_encodes) > 0 and len(vis_encodes) > 0:
-            vec_encodes_tensor = torch.stack(vec_encodes, dim=-1).sum(dim=-1)
-            vis_encodes_tensor = torch.stack(vis_encodes, dim=-1).sum(dim=-1)
-            encoding = torch.stack(
-                [vec_encodes_tensor, vis_encodes_tensor], dim=-1
-            ).sum(dim=-1)
-        elif len(vec_encodes) > 0:
-            encoding = torch.stack(vec_encodes, dim=-1).sum(dim=-1)
-        elif len(vis_encodes) > 0:
-            encoding = torch.stack(vis_encodes, dim=-1).sum(dim=-1)
-        else:
+        if len(encodes) == 0:
             raise Exception("No valid inputs to network.")
+
+        # Constants don't work in Barracuda
+        encoding = encodes[0]
+        if len(encodes) > 1:
+            for _enc in encodes[1:]:
+                encoding += _enc
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
@@ -323,9 +318,13 @@ class SimpleActor(nn.Module, Actor):
         )
         action_list = self.sample_action(dists)
         sampled_actions = torch.stack(action_list, dim=-1)
+        if self.act_type == ActionType.CONTINUOUS:
+            log_probs = dists[0].log_prob(sampled_actions)
+        else:
+            log_probs = dists[0].all_log_prob()
         return (
             sampled_actions,
-            dists[0].pdf(sampled_actions),
+            log_probs,
             self.version_number,
             self.memory_size,
             self.is_continuous_int,
@@ -480,10 +479,18 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
 class GlobalSteps(nn.Module):
     def __init__(self):
         super().__init__()
-        self.global_step = torch.Tensor([0])
+        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+
+    @property
+    def current_step(self):
+        return int(self.__global_step.item())
+
+    @current_step.setter
+    def current_step(self, value):
+        self.__global_step[:] = value
 
     def increment(self, value):
-        self.global_step += value
+        self.__global_step += value
 
 
 class LearningRate(nn.Module):

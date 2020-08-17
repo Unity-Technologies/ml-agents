@@ -51,7 +51,7 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
         0, mock_brain, trainer_settings, "test", False, create_tf_graph=False
     )
     optimizer = SACOptimizer(policy, trainer_settings)
-    policy.initialize()
+    optimizer.policy.initialize()
     return optimizer
 
 
@@ -228,6 +228,7 @@ def test_advance(dummy_config):
     trainer.add_policy(behavior_id, policy)
     trainer.saver.initialize_or_load(policy)
     trainer.optimizer.update = mock.Mock()
+    trainer.saver.initialize_or_load(policy)
     trainer.optimizer.update_reward_signals = mock.Mock()
     trainer.optimizer.update_reward_signals.return_value = {}
     trainer.optimizer.update.return_value = {}

@@ -43,6 +43,11 @@ class Policy:
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
+        self.vis_obs_shape = (
+            [shape for shape in behavior_spec.observation_shapes if len(shape) == 3][0]
+            if self.vis_obs_size > 0
+            else None
+        )
         self.use_continuous_act = behavior_spec.is_action_continuous()
         self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}

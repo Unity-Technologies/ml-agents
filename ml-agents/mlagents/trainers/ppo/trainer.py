@@ -15,7 +15,15 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import TrainerSettings, PPOSettings
+from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
+from mlagents.trainers.components.reward_signals import RewardSignal
+
+try:
+    from mlagents.trainers.policy.torch_policy import TorchPolicy
+    from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
+except ModuleNotFoundError:
+    TorchPolicy = None  # type: ignore
+    TorchPPOOptimizer = None  # type: ignore
 
 
 logger = get_logger(__name__)
@@ -75,18 +83,30 @@ class PPOTrainer(RLTrainer):
         )
         for name, v in value_estimates.items():
             agent_buffer_trajectory[f"{name}_value_estimates"].extend(v)
-            self._stats_reporter.add_stat(
-                self.optimizer.reward_signals[name].value_name, np.mean(v)
-            )
+            if isinstance(self.optimizer.reward_signals[name], RewardSignal):
+                self._stats_reporter.add_stat(
+                    self.optimizer.reward_signals[name].value_name, np.mean(v)
+                )
+            else:
+                self._stats_reporter.add_stat(
+                    f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value Estimate",
+                    np.mean(v),
+                )
 
         # Evaluate all reward functions
         self.collected_rewards["environment"][agent_id] += np.sum(
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
-            evaluate_result = reward_signal.evaluate_batch(
-                agent_buffer_trajectory
-            ).scaled_reward
+            if isinstance(reward_signal, RewardSignal):
+                evaluate_result = reward_signal.evaluate_batch(
+                    agent_buffer_trajectory
+                ).scaled_reward
+            else:
+                evaluate_result = (
+                    reward_signal.evaluate(agent_buffer_trajectory)
+                    * reward_signal.strength
+                )
             agent_buffer_trajectory[f"{name}_rewards"].extend(evaluate_result)
             # Report the reward signals
             self.collected_rewards[name][agent_id] += np.sum(evaluate_result)
@@ -187,7 +207,7 @@ class PPOTrainer(RLTrainer):
         self._clear_update_buffer()
         return True
 
-    def create_policy(
+    def create_tf_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TFPolicy:
         """
@@ -200,13 +220,36 @@ class PPOTrainer(RLTrainer):
             behavior_spec,
             self.trainer_settings,
             condition_sigma_on_obs=False,  # Faster training for PPO
-            create_tf_graph=False,  # We will create the TF graph in the Optimizer
         )
+        return policy
 
+    def create_torch_policy(
+        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+    ) -> TorchPolicy:
+        """
+        Creates a PPO policy to trainers list of policies.
+        :param parsed_behavior_id:
+        :param brain_parameters: specifications for policy construction
+        :return policy
+        """
+        policy = TorchPolicy(
+            self.seed,
+            behavior_spec,
+            self.trainer_settings,
+            condition_sigma_on_obs=False,  # Faster training for PPO
+            separate_critic=behavior_spec.is_action_continuous(),
+        )
         return policy
 
     def create_ppo_optimizer(self) -> PPOOptimizer:
-        return PPOOptimizer(cast(TFPolicy, self.policy), self.trainer_settings)
+        if self.framework == FrameworkType.PYTORCH:
+            return TorchPPOOptimizer(  # type: ignore
+                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+        else:
+            return PPOOptimizer(  # type: ignore
+                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
 
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy

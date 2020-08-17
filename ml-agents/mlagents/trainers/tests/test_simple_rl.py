@@ -247,7 +247,7 @@ def test_2d_sac(use_discrete):
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
     new_hyperparams = attr.evolve(SAC_CONFIG.hyperparameters, buffer_init_steps=2000)
-    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=5000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 
 
