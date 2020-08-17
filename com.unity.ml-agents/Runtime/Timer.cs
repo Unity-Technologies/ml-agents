@@ -75,7 +75,7 @@ namespace Unity.MLAgents
         public double TotalSeconds
         {
             get { return CurrentTicks * s_TicksToSeconds; }
-            set {}  // Serialization needs this, but unused.
+            set { }  // Serialization needs this, but unused.
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Unity.MLAgents
                 var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
-            set {}  // Serialization needs this, but unused.
+            set { }  // Serialization needs this, but unused.
         }
 
         public IReadOnlyDictionary<string, TimerNode> Children
@@ -223,7 +223,7 @@ namespace Unity.MLAgents
         [DataMember(Name = "gauges", EmitDefaultValue = false)]
         Dictionary<string, GaugeNode> m_Gauges = new Dictionary<string, GaugeNode>();
 
-        public RootNode(string name="root") : base(name, true)
+        public RootNode(string name = "root") : base(name, true)
         {
             m_Metadata.Add("timer_format_version", k_TimerFormatVersion);
             m_Metadata.Add("start_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
@@ -461,7 +461,7 @@ namespace Unity.MLAgents
         /// <param name="filename"></param>
         public void SaveJsonTimers(string filename = null)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             try
             {
                 if (filename == null)

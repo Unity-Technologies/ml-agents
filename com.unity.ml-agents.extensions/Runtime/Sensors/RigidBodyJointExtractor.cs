@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         public static int NumObservations(Rigidbody body, Joint joint, PhysicsSensorSettings settings)
         {
-            if(body == null || joint == null)
+            if (body == null || joint == null)
             {
                 return 0;
             }

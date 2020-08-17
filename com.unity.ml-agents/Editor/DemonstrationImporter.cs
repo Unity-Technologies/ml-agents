@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Editor
     /// <summary>
     /// Asset Importer used to parse demonstration files.
     /// </summary>
-    [ScriptedImporter(1, new[] {"demo"})]
+    [ScriptedImporter(1, new[] { "demo" })]
     internal class DemonstrationImporter : ScriptedImporter
     {
         const string k_IconPath = "Packages/com.unity.ml-agents/Editor/Icons/DemoIcon.png";

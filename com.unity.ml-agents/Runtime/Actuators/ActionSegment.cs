@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Unity.MLAgents.Actuators
 {
@@ -131,7 +132,7 @@ namespace Unity.MLAgents.Actuators
         /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
         public bool Equals(ActionSegment<T> other)
         {
-            return Offset == other.Offset && Length == other.Length && Equals(Array, other.Array);
+            return Offset == other.Offset && Length == other.Length && Array.SequenceEqual(other.Array);
         }
 
         /// <inheritdoc cref="ValueType.GetHashCode"/>

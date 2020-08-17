@@ -34,7 +34,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             var numJointExtractorObservations = 0;
             m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
-            foreach(var rb in poseExtractor.GetEnabledRigidbodies())
+            foreach (var rb in poseExtractor.GetEnabledRigidbodies())
             {
                 var jointExtractor = new RigidBodyJointExtractor(rb);
                 numJointExtractorObservations += jointExtractor.NumObservations(settings);
@@ -105,7 +105,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()

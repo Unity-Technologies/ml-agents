@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
@@ -219,26 +220,27 @@ public class CrawlerAgent : Agent
         // The dictionary with all the body parts in it are in the jdController
         var bpDict = m_JdController.bodyPartsDict;
 
+        var continuousActions = actionBuffers.ContinuousActions;
         var i = -1;
         // Pick a new target joint rotation
-        bpDict[leg0Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[leg1Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[leg2Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[leg3Upper].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[leg0Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-        bpDict[leg1Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-        bpDict[leg2Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
-        bpDict[leg3Lower].SetJointTargetRotation(vectorAction[++i], 0, 0);
+        bpDict[leg0Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[leg1Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[leg2Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[leg3Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[leg0Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+        bpDict[leg1Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+        bpDict[leg2Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+        bpDict[leg3Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
 
         // Update joint strength
-        bpDict[leg0Upper].SetJointStrength(vectorAction[++i]);
-        bpDict[leg1Upper].SetJointStrength(vectorAction[++i]);
-        bpDict[leg2Upper].SetJointStrength(vectorAction[++i]);
-        bpDict[leg3Upper].SetJointStrength(vectorAction[++i]);
-        bpDict[leg0Lower].SetJointStrength(vectorAction[++i]);
-        bpDict[leg1Lower].SetJointStrength(vectorAction[++i]);
-        bpDict[leg2Lower].SetJointStrength(vectorAction[++i]);
-        bpDict[leg3Lower].SetJointStrength(vectorAction[++i]);
+        bpDict[leg0Upper].SetJointStrength(continuousActions[++i]);
+        bpDict[leg1Upper].SetJointStrength(continuousActions[++i]);
+        bpDict[leg2Upper].SetJointStrength(continuousActions[++i]);
+        bpDict[leg3Upper].SetJointStrength(continuousActions[++i]);
+        bpDict[leg0Lower].SetJointStrength(continuousActions[++i]);
+        bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
+        bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
+        bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
     }
 
     void FixedUpdate()

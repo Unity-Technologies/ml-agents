@@ -42,7 +42,7 @@ namespace Unity.MLAgentsExamples
             m_OriginalMaximumDeltaTime = Time.maximumDeltaTime;
             m_OriginalSolverIterations = Physics.defaultSolverIterations;
             m_OriginalSolverVelocityIterations = Physics.defaultSolverVelocityIterations;
-            m_OriginalReuseCollisionCallbacks = Physics.reuseCollisionCallbacks ;
+            m_OriginalReuseCollisionCallbacks = Physics.reuseCollisionCallbacks;
 
             // Override
             Physics.gravity *= gravityMultiplier;

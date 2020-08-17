@@ -50,7 +50,7 @@ public class FoodCollectorSettings : MonoBehaviour
         // Send stats via SideChannel so that they'll appear in TensorBoard.
         // These values get averaged every summary_frequency steps, so we don't
         // need to send every Update() call.
-        if ((Time.frameCount % 100)== 0)
+        if ((Time.frameCount % 100) == 0)
         {
             m_Recorder.Add("TotalScore", totalScore);
         }
