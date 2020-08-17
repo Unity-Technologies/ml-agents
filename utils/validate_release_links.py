@@ -15,8 +15,6 @@ TRAINER_INIT_FILE = "ml-agents/mlagents/trainers/__init__.py"
 ALLOW_LIST = {
     # Previous release table
     "README.md": re.compile(r"\*\*Release [0-9]+\*\*"),
-    "com.unity.ml-agents/Runtime/Actuators/IActionReceiver.cs": RELEASE_PATTERN,
-    "com.unity.ml-agents/Runtime/Actuators/IDiscreteActionMask.cs": RELEASE_PATTERN,
     "docs/Versioning.md": None,
     "com.unity.ml-agents/CHANGELOG.md": None,
     "utils/make_readme_table.py": None,
