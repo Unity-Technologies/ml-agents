@@ -255,7 +255,7 @@ class TorchPolicy(Policy):
         pass
 
     def get_weights(self) -> List[np.ndarray]:
-        return []
+        return self.actor_critic.state_dict()
 
     def get_modules(self):
         return {"Policy": self.actor_critic, "global_step": self.global_step}

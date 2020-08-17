@@ -138,6 +138,8 @@ class TFPolicy(Policy):
             self.trainable_variables += tf.get_collection(
                 tf.GraphKeys.TRAINABLE_VARIABLES, scope="lstm"
             )  # LSTMs need to be root scope for Barracuda export
+            # Create assignment ops for Ghost Trainer
+            self.init_load_weights()
 
         self.inference_dict = {
             "action": self.output,

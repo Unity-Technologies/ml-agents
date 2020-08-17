@@ -217,7 +217,10 @@ class PPOTrainer(RLTrainer):
         return True
 
     def create_tf_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
     ) -> TFPolicy:
         """
         Creates a PPO policy to trainers list of policies.
@@ -229,6 +232,7 @@ class PPOTrainer(RLTrainer):
             behavior_spec,
             self.trainer_settings,
             condition_sigma_on_obs=False,  # Faster training for PPO
+            create_tf_graph=create_graph,
         )
         return policy
 
