@@ -57,7 +57,7 @@ class TorchPolicy(Policy):
         )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
 
-        torch.set_default_tensor_type(torch.cuda.FloatTensor)
+        torch.set_default_tensor_type(torch.FloatTensor)
 
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
