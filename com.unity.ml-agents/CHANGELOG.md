@@ -15,6 +15,7 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Update Barracuda to 1.0.2.
+- Enabled C# formatting using `dotnet-format`.
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes

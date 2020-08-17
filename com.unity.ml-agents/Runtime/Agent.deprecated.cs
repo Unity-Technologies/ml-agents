@@ -19,7 +19,7 @@ namespace Unity.MLAgents
             Array.Clear(actionsOut, 0, actionsOut.Length);
         }
 
-        public virtual void OnActionReceived(float[] vectorAction) {}
+        public virtual void OnActionReceived(float[] vectorAction) { }
 
         /// <summary>
         /// Returns the last action that was decided on by the Agent.

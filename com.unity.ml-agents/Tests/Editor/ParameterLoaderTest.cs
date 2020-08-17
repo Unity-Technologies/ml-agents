@@ -40,7 +40,7 @@ namespace Unity.MLAgents.Tests
 
         public int[] GetObservationShape()
         {
-            return new [] {m_Height, m_Width, m_Channels };
+            return new[] { m_Height, m_Width, m_Channels };
         }
 
         public int Write(ObservationWriter writer)
@@ -57,7 +57,7 @@ namespace Unity.MLAgents.Tests
             return new byte[0];
         }
 
-        public void Update() {}
+        public void Update() { }
         public void Reset() { }
 
         public SensorCompressionType GetCompressionType()
@@ -85,7 +85,7 @@ namespace Unity.MLAgents.Tests
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 8;
-            validBrainParameters.VectorActionSize = new [] { 2 };
+            validBrainParameters.VectorActionSize = new[] { 2 };
             validBrainParameters.NumStackedVectorObservations = 1;
             validBrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             return validBrainParameters;
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Tests
         {
             var validBrainParameters = new BrainParameters();
             validBrainParameters.VectorObservationSize = 0;
-            validBrainParameters.VectorActionSize = new [] { 2, 3 };
+            validBrainParameters.VectorActionSize = new[] { 2, 3 };
             validBrainParameters.NumStackedVectorObservations = 1;
             validBrainParameters.VectorActionSpaceType = SpaceType.Discrete;
             return validBrainParameters;
@@ -224,7 +224,7 @@ namespace Unity.MLAgents.Tests
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            brainParameters.VectorActionSize = new [] { 3 }; // Invalid action
+            brainParameters.VectorActionSize = new[] { 3 }; // Invalid action
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
             Assert.Greater(errors.Count(), 0);
 
@@ -240,7 +240,7 @@ namespace Unity.MLAgents.Tests
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
-            brainParameters.VectorActionSize = new [] { 3, 3 }; // Invalid action
+            brainParameters.VectorActionSize = new[] { 3, 3 }; // Invalid action
             var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
             Assert.Greater(errors.Count(), 0);
 

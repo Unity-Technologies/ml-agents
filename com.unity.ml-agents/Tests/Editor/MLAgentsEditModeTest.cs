@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Tests
 
         public ref readonly ActionBuffers DecideAction() { return ref s_EmptyActionBuffers; }
 
-        public void Dispose() {}
+        public void Dispose() { }
     }
 
     public class TestAgent : Agent
@@ -152,7 +152,7 @@ namespace Unity.MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() {}
+        public void Update() { }
 
         public void Reset()
         {
@@ -551,7 +551,7 @@ namespace Unity.MLAgents.Tests
             StackingSensor sensor = null;
             foreach (ISensor s in agent1.sensors)
             {
-                if (s is  StackingSensor)
+                if (s is StackingSensor)
                 {
                     sensor = s as StackingSensor;
                 }
@@ -565,9 +565,9 @@ namespace Unity.MLAgents.Tests
                 aca.EnvironmentStep();
             }
 
-            policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 21f});
+            policy.OnRequestDecision = () => SensorTestHelper.CompareObservation(sensor, new[] { 18f, 19f, 21f });
             agent1.EndEpisode();
-            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f});
+            SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f });
         }
     }
 
@@ -811,7 +811,7 @@ namespace Unity.MLAgents.Tests
                 (ObservableAttributeOptions.ExamineAll, 2)
             };
 
-            foreach (var(behavior, expectedNumSensors) in variants)
+            foreach (var (behavior, expectedNumSensors) in variants)
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();

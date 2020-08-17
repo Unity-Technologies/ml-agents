@@ -27,7 +27,7 @@ namespace Unity.MLAgents
             var agentInfoProto = ai.ToAgentInfoProto();
 
             var agentActionProto = new AgentActionProto();
-            if(ai.storedVectorActions != null)
+            if (ai.storedVectorActions != null)
             {
                 agentActionProto.VectorActions.AddRange(ai.storedVectorActions);
             }
@@ -96,11 +96,11 @@ namespace Unity.MLAgents
             var brainParametersProto = new BrainParametersProto
             {
                 VectorActionSize = { bp.VectorActionSize },
-                VectorActionSpaceType = (SpaceTypeProto) bp.VectorActionSpaceType,
+                VectorActionSpaceType = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
-            if(bp.VectorActionDescriptions != null)
+            if (bp.VectorActionDescriptions != null)
             {
                 brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
             }

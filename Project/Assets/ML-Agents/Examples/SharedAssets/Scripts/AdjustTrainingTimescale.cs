@@ -2,7 +2,7 @@
 
 using UnityEngine;
 
-namespace  MLAgentsExamples
+namespace MLAgentsExamples
 {
     public class AdjustTrainingTimescale : MonoBehaviour
     {
