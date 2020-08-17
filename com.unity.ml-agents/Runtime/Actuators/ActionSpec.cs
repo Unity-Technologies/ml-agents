@@ -40,11 +40,6 @@ namespace Unity.MLAgents.Actuators
         public int SumOfDiscreteBranchSizes { get; }
 
         /// <summary>
-        /// Optional string descriptions of the actions.
-        /// </summary>
-        public readonly string[] ActionDescriptions;
-
-        /// <summary>
         /// Creates a Continuous <see cref="ActionSpec"/> with the number of actions available.
         /// </summary>
         /// <param name="numActions">The number of actions available.</param>
@@ -69,13 +64,12 @@ namespace Unity.MLAgents.Actuators
             return actuatorSpace;
         }
 
-        ActionSpec(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null, string[] actionDescriptions = null)
+        internal ActionSpec(int numContinuousActions, int numDiscreteActions, int[] branchSizes = null)
         {
             NumContinuousActions = numContinuousActions;
             NumDiscreteActions = numDiscreteActions;
             BranchSizes =  branchSizes;
             SumOfDiscreteBranchSizes = branchSizes?.Sum() ?? 0;
-            ActionDescriptions = actionDescriptions;
         }
 
         /// <summary>

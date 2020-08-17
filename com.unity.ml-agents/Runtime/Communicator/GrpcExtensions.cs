@@ -136,10 +136,7 @@ namespace Unity.MLAgents
                 brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Discrete;
             }
 
-            if(actionSpec.ActionDescriptions != null)
-            {
-                brainParametersProto.VectorActionDescriptions.AddRange(actionSpec.ActionDescriptions);
-            }
+            // TODO handle ActionDescriptions?
             return brainParametersProto;
         }
 
