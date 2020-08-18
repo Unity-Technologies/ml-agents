@@ -119,7 +119,6 @@ namespace Unity.MLAgents
         {
             actionSpec.CheckNotHybrid();
 
-
             var brainParametersProto = new BrainParametersProto
             {
                 BrainName = name,
@@ -130,7 +129,7 @@ namespace Unity.MLAgents
                 brainParametersProto.VectorActionSize.Add(actionSpec.NumContinuousActions);
                 brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Continuous;
             }
-            else
+            else if (actionSpec.NumDiscreteActions > 0)
             {
                 brainParametersProto.VectorActionSize.AddRange(actionSpec.BranchSizes);
                 brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Discrete;

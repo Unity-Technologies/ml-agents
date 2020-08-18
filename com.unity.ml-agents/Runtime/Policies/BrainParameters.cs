@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Unity.MLAgents.Actuators;
 
 namespace Unity.MLAgents.Policies
 {

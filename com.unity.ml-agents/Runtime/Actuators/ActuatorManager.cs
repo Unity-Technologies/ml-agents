@@ -117,15 +117,23 @@ namespace Unity.MLAgents.Actuators
                 numDiscreteActions += actuator.ActionSpec.NumDiscreteActions;
             }
 
-            var combinedBranchSizes = new int[numDiscreteActions];
-            var start = 0;
-            for (var i = 0; i < actuators.Count; i++)
+            int[] combinedBranchSizes;
+            if (numDiscreteActions == 0)
             {
-                var branchSizes = actuators[i].ActionSpec.BranchSizes;
-                if (branchSizes != null)
+                combinedBranchSizes = Array.Empty<int>();
+            }
+            else
+            {
+                combinedBranchSizes = new int[numDiscreteActions];
+                var start = 0;
+                for (var i = 0; i < actuators.Count; i++)
                 {
-                    Array.Copy(branchSizes, 0, combinedBranchSizes, start, branchSizes.Length);
-                    start += branchSizes.Length;
+                    var branchSizes = actuators[i].ActionSpec.BranchSizes;
+                    if (branchSizes != null)
+                    {
+                        Array.Copy(branchSizes, 0, combinedBranchSizes, start, branchSizes.Length);
+                        start += branchSizes.Length;
+                    }
                 }
             }
 
