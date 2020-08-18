@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
@@ -15,11 +16,21 @@ public class CrawlerAgent : Agent
     }
 
     public CrawlerAgentBehaviorType typeOfCrawler;
+
+    //Crawler Brains
+    //A different brain will be used depending on the CrawlerAgentBehaviorType selected
+    [Header("NN Models")]
+    public NNModel crawlerDyBrain;
+    public NNModel crawlerDyVSBrain;
+    public NNModel crawlerStBrain;
+    public NNModel crawlerStVSBrain;
+
     [Header("Walk Speed")]
     [Range(0.1f, 10)]
     [SerializeField]
     //The walking speed to try and achieve
     private float m_TargetWalkingSpeed = 10;
+
 
     public float TargetWalkingSpeed // property
     {
@@ -87,18 +98,23 @@ public class CrawlerAgent : Agent
             case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
+                target = Instantiate(targetPrefab, transform.position, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
             }
             case CrawlerAgentBehaviorType.CrawlerStatic :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerStatic";
+                var targetSpawnPos = transform.TransformDirection(new Vector3(0, 0, 1800));
+                target = Instantiate(targetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = false;
                 break;
             }
             case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerStaticVariableSpeed";
+                var targetSpawnPos = transform.TransformDirection(new Vector3(0, 0, 1800));
+                target = Instantiate(targetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
             }
