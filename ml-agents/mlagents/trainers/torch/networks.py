@@ -265,7 +265,6 @@ class SimpleActor(nn.Module, Actor):
         self.act_type = act_type
         self.act_size = act_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        self.memory_size_param = torch.nn.Parameter(torch.Tensor([0]))
         self.is_continuous_int = torch.nn.Parameter(
             torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
         )
@@ -275,6 +274,8 @@ class SimpleActor(nn.Module, Actor):
             self.encoding_size = network_settings.memory.memory_size // 2
         else:
             self.encoding_size = network_settings.hidden_units
+        self.memory_size_param = torch.nn.Parameter(torch.Tensor([self.memory_size]))
+
         if self.act_type == ActionType.CONTINUOUS:
             self.distribution = GaussianDistribution(
                 self.encoding_size,
