@@ -177,7 +177,7 @@ def test_2d_ppo(use_discrete):
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
-@pytest.mark.parametrize("num_visual", [2])
+@pytest.mark.parametrize("num_visual", [1, 2])
 def test_visual_ppo(num_visual, use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME],
