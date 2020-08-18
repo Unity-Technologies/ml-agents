@@ -274,29 +274,26 @@ class ResNetVisualEncoder(nn.Module):
         super().__init__()
         n_channels = [16, 32, 32]  # channel for each stack
         n_blocks = 2  # number of residual blocks
-        self.layers = []
+        layers = []
         last_channel = initial_channels
         for _, channel in enumerate(n_channels):
-            self.layers.append(
-                nn.Conv2d(last_channel, channel, [3, 3], [1, 1], padding=1)
-            )
-            self.layers.append(nn.MaxPool2d([3, 3], [2, 2]))
+            layers.append(nn.Conv2d(last_channel, channel, [3, 3], [1, 1], padding=1))
+            layers.append(nn.MaxPool2d([3, 3], [2, 2]))
             height, width = pool_out_shape((height, width), 3)
             for _ in range(n_blocks):
-                self.layers.append(ResNetBlock(channel))
+                layers.append(ResNetBlock(channel))
             last_channel = channel
-        self.layers.append(Swish())
+        layers.append(Swish())
         self.dense = linear_layer(
             n_channels[-1] * height * width,
             final_hidden,
             kernel_init=Initialization.KaimingHeNormal,
             kernel_gain=1.0,
         )
+        self.sequential = nn.Sequential(*self.layers)
 
     def forward(self, visual_obs):
         batch_size = visual_obs.shape[0]
-        hidden = visual_obs
-        for layer in self.layers:
-            hidden = layer(hidden)
+        hidden = self.sequential(visual_obs)
         before_out = hidden.view(batch_size, -1)
         return torch.relu(self.dense(before_out))
