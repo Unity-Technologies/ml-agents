@@ -235,6 +235,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000547
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -474,6 +485,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000547
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -643,6 +665,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000672
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -833,6 +866,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000672
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -940,6 +984,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b9d167a4e71146a883212e4f08bda88, type: 3}
 --- !u!1001 &680193204
@@ -1039,6 +1094,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000672
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1463,6 +1529,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000547
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -1632,6 +1709,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000672
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.x
@@ -1846,6 +1934,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000547
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.z
@@ -2129,6 +2228,17 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000547
       objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: typeOfCrawler
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3386028169429758299, guid: 1b9d167a4e71146a883212e4f08bda88,
+        type: 3}
+      propertyPath: crawlerStVSBrain
+      value: 
+      objectReference: {fileID: 11400000, guid: f30160db27295406792cb2c245436596,
+        type: 3}
     - target: {fileID: 3386028169665032405, guid: 1b9d167a4e71146a883212e4f08bda88,
         type: 3}
       propertyPath: m_ConnectedAnchor.z

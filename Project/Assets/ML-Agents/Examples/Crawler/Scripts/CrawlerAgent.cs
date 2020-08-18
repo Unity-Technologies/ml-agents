@@ -91,6 +91,8 @@ public class CrawlerAgent : Agent
             case CrawlerAgentBehaviorType.CrawlerDynamic :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerDynamic";
+                if(crawlerDyBrain)
+                    m_BehaviorParams.Model = crawlerDyBrain;
                 randomizeWalkSpeedEachEpisode = false;
                 target = Instantiate(targetPrefab, transform.position, Quaternion.identity, transform);
                 break;
@@ -98,6 +100,9 @@ public class CrawlerAgent : Agent
             case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
+                if(crawlerDyVSBrain)
+                    m_BehaviorParams.Model = crawlerDyVSBrain;
+//                    SetModel("CrawlerDynamicVariableSpeed", crawlerDyVSBrain);
                 target = Instantiate(targetPrefab, transform.position, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
@@ -105,7 +110,9 @@ public class CrawlerAgent : Agent
             case CrawlerAgentBehaviorType.CrawlerStatic :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerStatic";
-                var targetSpawnPos = transform.TransformDirection(new Vector3(0, 0, 1800));
+                if(crawlerStBrain)
+                    m_BehaviorParams.Model = crawlerStBrain;
+                var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
                 target = Instantiate(targetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = false;
                 break;
@@ -113,7 +120,9 @@ public class CrawlerAgent : Agent
             case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed :
             {
                 m_BehaviorParams.BehaviorName = "CrawlerStaticVariableSpeed";
-                var targetSpawnPos = transform.TransformDirection(new Vector3(0, 0, 1800));
+                if(crawlerStVSBrain)
+                    m_BehaviorParams.Model = crawlerStVSBrain;
+                var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
                 target = Instantiate(targetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
