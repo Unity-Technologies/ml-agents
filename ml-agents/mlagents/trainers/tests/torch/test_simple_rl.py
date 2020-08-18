@@ -54,7 +54,7 @@ PPO_CONFIG = TrainerSettings(
     summary_freq=500,
     max_steps=3000,
     threaded=False,
-    framework=FrameworkType.TENSORFLOW,
+    framework=FrameworkType.PYTORCH,
 )
 
 SAC_CONFIG = TrainerSettings(
