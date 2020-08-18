@@ -412,17 +412,6 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         # Give the Actor only half the memories. Note we previously validate
         # that memory_size must be a multiple of 4.
         self.use_lstm = network_settings.memory is not None
-        # if network_settings.memory is not None:
-        #     self.half_mem_size = network_settings.memory.memory_size // 2
-        #     new_memory_settings = attr.evolve(
-        #         network_settings.memory, memory_size=self.half_mem_size
-        #     )
-        #     use_network_settings = attr.evolve(
-        #         network_settings, memory=new_memory_settings
-        #     )
-        # else:
-        #     use_network_settings = network_settings
-        #     self.half_mem_size = 0
         super().__init__(
             observation_shapes,
             network_settings,
