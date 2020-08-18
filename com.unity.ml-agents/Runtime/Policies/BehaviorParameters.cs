@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Policies
         public InferenceDevice InferenceDevice
         {
             get { return m_InferenceDevice; }
-            set { m_InferenceDevice = value; UpdateAgentPolicy();}
+            set { m_InferenceDevice = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -202,17 +202,17 @@ namespace Unity.MLAgents.Policies
                 case BehaviorType.HeuristicOnly:
                     return GenerateHeuristicPolicy(heuristic);
                 case BehaviorType.InferenceOnly:
-                {
-                    if (m_Model == null)
                     {
-                        var behaviorType = BehaviorType.InferenceOnly.ToString();
-                        throw new UnityAgentsException(
-                            $"Can't use Behavior Type {behaviorType} without a model. " +
-                            "Either assign a model, or change to a different Behavior Type."
-                        );
+                        if (m_Model == null)
+                        {
+                            var behaviorType = BehaviorType.InferenceOnly.ToString();
+                            throw new UnityAgentsException(
+                                $"Can't use Behavior Type {behaviorType} without a model. " +
+                                "Either assign a model, or change to a different Behavior Type."
+                            );
+                        }
+                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
                     }
-                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
-                }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {

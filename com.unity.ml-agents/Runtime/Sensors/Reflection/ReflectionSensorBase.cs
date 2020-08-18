@@ -46,7 +46,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             m_PropertyInfo = reflectionSensorInfo.PropertyInfo;
             m_ObservableAttribute = reflectionSensorInfo.ObservableAttribute;
             m_SensorName = reflectionSensorInfo.SensorName;
-            m_Shape = new[] {size};
+            m_Shape = new[] { size };
         }
 
         /// <inheritdoc/>
@@ -83,10 +83,10 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         /// <inheritdoc/>
-        public void Update() {}
+        public void Update() { }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()

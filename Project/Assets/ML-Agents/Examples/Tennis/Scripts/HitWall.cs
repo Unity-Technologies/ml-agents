@@ -7,12 +7,12 @@ public class HitWall : MonoBehaviour
     public bool net;
 
     public enum FloorHit
-        {
-            Service,
-            FloorHitUnset,
-            FloorAHit,
-            FloorBHit
-        }
+    {
+        Service,
+        FloorHitUnset,
+        FloorAHit,
+        FloorBHit
+    }
 
     public FloorHit lastFloorHit;
 
@@ -36,7 +36,7 @@ public class HitWall : MonoBehaviour
         lastFloorHit = FloorHit.Service;
         net = false;
     }
-    
+
     void AgentAWins()
     {
         m_AgentA.SetReward(1);

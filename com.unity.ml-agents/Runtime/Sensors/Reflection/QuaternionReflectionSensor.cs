@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Sensors.Reflection
     {
         public QuaternionReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
             : base(reflectionSensorInfo, 4)
-        {}
+        { }
 
         internal override void WriteReflectedField(ObservationWriter writer)
         {

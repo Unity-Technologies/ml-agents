@@ -17,8 +17,10 @@ namespace Unity.MLAgentsExamples
             // no scene environment variable is found.
             var args = Environment.GetCommandLineArgs();
             Console.WriteLine("Command line arguments passed: " + String.Join(" ", args));
-            for (int i = 0; i < args.Length; i++) {
-                if (args [i] == k_SceneCommandLineFlag && i < args.Length - 1) {
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] == k_SceneCommandLineFlag && i < args.Length - 1)
+                {
                     sceneName = args[i + 1];
                 }
             }

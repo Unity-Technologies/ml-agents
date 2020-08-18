@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
@@ -38,7 +39,7 @@ namespace MLAgentsExamples.Tests.Performance
             {
             }
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(in ActionBuffers actionsOut)
             {
             }
         }
@@ -54,7 +55,7 @@ namespace MLAgentsExamples.Tests.Performance
                 sensor.AddObservation(new Quaternion(1, 2, 3, 4));
             }
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(in ActionBuffers actionsOut)
             {
             }
         }
@@ -70,7 +71,7 @@ namespace MLAgentsExamples.Tests.Performance
             [Observable]
             public Quaternion QuaternionField = new Quaternion(1, 2, 3, 4);
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(in ActionBuffers actionsOut)
             {
             }
         }
@@ -96,7 +97,7 @@ namespace MLAgentsExamples.Tests.Performance
                 get { return m_QuaternionField; }
             }
 
-            public override void Heuristic(float[] actionsOut)
+            public override void Heuristic(in ActionBuffers actionsOut)
             {
             }
         }
@@ -160,7 +161,7 @@ namespace MLAgentsExamples.Tests.Performance
         {
             using (Measure.ProfilerMarkers(s_Markers))
             {
-                for(var i=0; i<k_MarkerTestSteps; i++)
+                for (var i = 0; i < k_MarkerTestSteps; i++)
                 {
                     RunAgent<CollectObservationsAgent>(k_NumAgentSteps, 7, ObservableAttributeOptions.Ignore);
                 }

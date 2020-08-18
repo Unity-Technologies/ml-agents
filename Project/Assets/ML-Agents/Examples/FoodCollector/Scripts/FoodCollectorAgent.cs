@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using Random = UnityEngine.Random;
 
 public class FoodCollectorAgent : Agent
 {
@@ -59,7 +62,7 @@ public class FoodCollectorAgent : Agent
         return new Color32(r, g, b, 255);
     }
 
-    public void MoveAgent(float[] act)
+    public void MoveAgent(ActionSegment<int> act)
     {
         m_Shoot = false;
 
@@ -202,33 +205,35 @@ public class FoodCollectorAgent : Agent
         gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
     {
-        MoveAgent(vectorAction);
+        MoveAgent(actionBuffers.DiscreteActions);
     }
 
-    public override void Heuristic(float[] actionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        actionsOut[0] = 0f;
-        actionsOut[1] = 0f;
-        actionsOut[2] = 0f;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = 0;
+        discreteActionsOut[1] = 0;
+        discreteActionsOut[2] = 0;
         if (Input.GetKey(KeyCode.D))
         {
-            actionsOut[2] = 2f;
+            discreteActionsOut[2] = 2;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            actionsOut[0] = 1f;
+            discreteActionsOut[0] = 1;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            actionsOut[2] = 1f;
+            discreteActionsOut[2] = 1;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            actionsOut[0] = 2f;
+            discreteActionsOut[0] = 2;
         }
-        actionsOut[3] = Input.GetKey(KeyCode.Space) ? 1.0f : 0.0f;
+        discreteActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0;
     }
 
     public override void OnEpisodeBegin()

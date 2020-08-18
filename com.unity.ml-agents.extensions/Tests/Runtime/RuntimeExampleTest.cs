@@ -7,7 +7,8 @@ using System.Collections;
 namespace Unity.MLAgents.Extensions.Tests
 {
 
-    internal class RuntimeExampleTest {
+    internal class RuntimeExampleTest
+    {
 
         [Test]
         public void RuntimeTestMath()

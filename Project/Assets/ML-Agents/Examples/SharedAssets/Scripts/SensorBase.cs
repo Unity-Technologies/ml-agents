@@ -39,7 +39,7 @@ namespace Unity.MLAgentsExamples
         }
 
         /// <inheritdoc/>
-        public void Update() {}
+        public void Update() { }
 
         /// <inheritdoc/>
         public void Reset() { }

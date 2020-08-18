@@ -460,7 +460,7 @@ you would like to contribute environments, please see our
   head, thighs, shins, feet, arms, forearms and hands.
 - Goal: The agents must move its body toward the goal direction without falling.
   - `WalkerDynamic`- Goal direction is randomized.
-  - `WalkerDynamicVariableSpeed`- Goal direction and walking speed are randomized. 
+  - `WalkerDynamicVariableSpeed`- Goal direction and walking speed are randomized.
   - `WalkerStatic` - Goal direction is always forward.
   - `WalkerStaticVariableSpeed` - Goal direction is always forward. Walking
      speed is randomized
