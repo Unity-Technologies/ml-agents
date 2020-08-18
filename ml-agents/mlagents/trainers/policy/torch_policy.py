@@ -8,7 +8,7 @@ from mlagents.trainers.policy import Policy
 from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
-from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.torch.networks import (
     SharedActorCritic,
@@ -57,10 +57,7 @@ class TorchPolicy(Policy):
         )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
 
-        if TestingConfiguration.device != "cpu":
-            torch.set_default_tensor_type(torch.cuda.FloatTensor)
-        else:
-            torch.set_default_tensor_type(torch.FloatTensor)
+        torch.set_default_tensor_type(torch.FloatTensor)
 
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
@@ -83,7 +80,7 @@ class TorchPolicy(Policy):
             tanh_squash=tanh_squash,
         )
 
-        self.actor_critic.to(TestingConfiguration.device)
+        self.actor_critic.to("cpu")
 
     def split_decision_step(self, decision_requests):
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)

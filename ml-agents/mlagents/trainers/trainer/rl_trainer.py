@@ -21,19 +21,15 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.settings import (
-    TestingConfiguration,
-    TrainerSettings,
-    FrameworkType,
-)
+from mlagents.trainers.settings import TrainerSettings, FrameworkType
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.saver.saver import BaseSaver
-from mlagents.trainers.saver.torch_saver import TorchSaver
 from mlagents.trainers.saver.tf_saver import TFSaver
 from mlagents.trainers.exception import UnityTrainerException
 
 try:
     from mlagents.trainers.policy.torch_policy import TorchPolicy
+    from mlagents.trainers.saver.torch_saver import TorchSaver
 except ModuleNotFoundError:
     TorchPolicy = None  # type: ignore
 
@@ -63,8 +59,6 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self.framework = self.trainer_settings.framework
         logger.debug(f"Using framework {self.framework.value}")
 
-        if TestingConfiguration.max_steps > 0:
-            self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self._next_save_step = 0
         self._next_summary_step = 0
         self.saver = self.create_saver(

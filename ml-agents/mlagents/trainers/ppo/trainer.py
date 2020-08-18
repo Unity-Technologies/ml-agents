@@ -15,12 +15,7 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.settings import (
-    TrainerSettings,
-    PPOSettings,
-    TestingConfiguration,
-    FrameworkType,
-)
+from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
 from mlagents.trainers.components.reward_signals import RewardSignal
 
 try:
@@ -64,8 +59,6 @@ class PPOTrainer(RLTrainer):
             PPOSettings, self.trainer_settings.hyperparameters
         )
         self.seed = seed
-        if TestingConfiguration.max_steps > 0:
-            self.trainer_settings.max_steps = TestingConfiguration.max_steps
         self.policy: Policy = None  # type: ignore
 
     def _process_trajectory(self, trajectory: Trajectory) -> None:

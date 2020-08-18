@@ -46,13 +46,6 @@ def defaultdict_to_dict(d: DefaultDict) -> Dict:
     return {key: cattr.unstructure(val) for key, val in d.items()}
 
 
-class TestingConfiguration:
-    use_torch = True
-    max_steps = 0
-    env_name = ""
-    device = "cpu"
-
-
 class SerializationSettings:
     convert_to_barracuda = True
     convert_to_onnx = True
