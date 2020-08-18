@@ -122,6 +122,8 @@ class LSTM(MemoryModule):
         bias_init: Initialization = Initialization.Zero,
     ):
         super().__init__()
+        # We set hidden size to half of memory_size since the initial memory
+        # will be divided between the hidden state and initial cell state.
         self.hidden_size = memory_size // 2
         self.lstm = lstm_layer(
             input_size,
@@ -137,7 +139,9 @@ class LSTM(MemoryModule):
     def memory_size(self) -> int:
         return 2 * self.hidden_size
 
-    def forward(self, input_tensor, memories):
+    def forward(
+        self, input_tensor: torch.Tensor, memories: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         h0, c0 = torch.split(memories, self.hidden_size, dim=-1)
         hidden = (h0, c0)
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
