@@ -166,4 +166,20 @@ namespace Unity.MLAgents.Actuators
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);
     }
+
+    /// <summary>
+    /// Helper methods to be shared by all classes that implement <see cref="IActionReceiver"/>.
+    /// </summary>
+    public static class ActionReceiverExtensions
+    {
+        /// <summary>
+        /// Returns the number of discrete branches + the number of continuous actions.
+        /// </summary>
+        /// <param name="actionReceiver"></param>
+        /// <returns></returns>
+        public static int TotalNumberOfActions(this IActionReceiver actionReceiver)
+        {
+            return actionReceiver.ActionSpec.NumContinuousActions + actionReceiver.ActionSpec.NumDiscreteActions;
+        }
+    }
 }

@@ -42,16 +42,19 @@ namespace Unity.MLAgents
             m_Delegate.WriteMask(branch, actionIndices);
         }
 
+        /// <inheritdoc />
         public void WriteMask(int branch, IEnumerable<int> actionIndices)
         {
             m_Delegate.WriteMask(branch, actionIndices);
         }
 
+        /// <inheritdoc />
         public bool[] GetMask()
         {
             return m_Delegate.GetMask();
         }
 
+        /// <inheritdoc />
         public void ResetMask()
         {
             m_Delegate.ResetMask();

@@ -2,6 +2,7 @@ using Unity.Barracuda;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Policies
@@ -195,12 +196,12 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(HeuristicPolicy.ActionGenerator heuristic)
+        internal IPolicy GeneratePolicy(ActionSpec actionSpec, HeuristicPolicy.ActionGenerator heuristic)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return GenerateHeuristicPolicy(heuristic);
+                    return new HeuristicPolicy(heuristic, actionSpec);
                 case BehaviorType.InferenceOnly:
                     {
                         if (m_Model == null)
@@ -211,40 +212,24 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, FullyQualifiedBehaviorName);
+                        return new RemotePolicy(actionSpec, FullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
                     }
                     else
                     {
-                        return GenerateHeuristicPolicy(heuristic);
+                        return new HeuristicPolicy(heuristic, actionSpec);
                     }
                 default:
-                    return GenerateHeuristicPolicy(heuristic);
+                    return new HeuristicPolicy(heuristic, actionSpec);
             }
-        }
-
-        internal IPolicy GenerateHeuristicPolicy(HeuristicPolicy.ActionGenerator heuristic)
-        {
-            var numContinuousActions = 0;
-            var numDiscreteActions = 0;
-            if (m_BrainParameters.VectorActionSpaceType == SpaceType.Continuous)
-            {
-                numContinuousActions = m_BrainParameters.NumActions;
-            }
-            else if (m_BrainParameters.VectorActionSpaceType == SpaceType.Discrete)
-            {
-                numDiscreteActions = m_BrainParameters.NumActions;
-            }
-
-            return new HeuristicPolicy(heuristic, numContinuousActions, numDiscreteActions);
         }
 
         internal void UpdateAgentPolicy()

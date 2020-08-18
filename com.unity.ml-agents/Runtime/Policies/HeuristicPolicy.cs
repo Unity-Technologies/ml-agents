@@ -24,9 +24,11 @@ namespace Unity.MLAgents.Policies
 
 
         /// <inheritdoc />
-        public HeuristicPolicy(ActionGenerator heuristic, int numContinuousActions, int numDiscreteActions)
+        public HeuristicPolicy(ActionGenerator heuristic, ActionSpec actionSpec)
         {
             m_Heuristic = heuristic;
+            var numContinuousActions = actionSpec.NumContinuousActions;
+            var numDiscreteActions = actionSpec.NumDiscreteActions;
             var continuousDecision = new ActionSegment<float>(new float[numContinuousActions], 0, numContinuousActions);
             var discreteDecision = new ActionSegment<int>(new int[numDiscreteActions], 0, numDiscreteActions);
             m_ActionBuffers = new ActionBuffers(continuousDecision, discreteDecision);
