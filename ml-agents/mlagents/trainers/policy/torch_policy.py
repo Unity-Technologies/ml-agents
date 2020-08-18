@@ -2,19 +2,19 @@ from typing import Any, Dict, List
 import numpy as np
 import torch
 
-import os
-from torch import onnx
-from mlagents.model_serialization import SerializationSettings
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
-
 from mlagents.trainers.policy import Policy
 from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings, TestingConfiguration
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.torch.networks import SharedActorCritic, SeparateActorCritic
+from mlagents.trainers.torch.networks import (
+    SharedActorCritic,
+    SeparateActorCritic,
+    GlobalSteps,
+)
 from mlagents.trainers.torch.utils import ModelUtils
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
@@ -26,8 +26,6 @@ class TorchPolicy(Policy):
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool = False,
         tanh_squash: bool = False,
         reparameterize: bool = False,
         separate_critic: bool = True,
@@ -50,14 +48,15 @@ class TorchPolicy(Policy):
             seed,
             behavior_spec,
             trainer_settings,
-            model_path,
-            load,
             tanh_squash,
             reparameterize,
             condition_sigma_on_obs,
         )
-        self.global_step = 0
+        self.global_step = (
+            GlobalSteps()
+        )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
+
         if TestingConfiguration.device != "cpu":
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
         else:
@@ -219,44 +218,6 @@ class TorchPolicy(Policy):
             agent_ids=list(decision_requests.agent_id),
         )
 
-    def checkpoint(self, checkpoint_path: str, settings: SerializationSettings) -> None:
-        """
-        Checkpoints the policy on disk.
-
-        :param checkpoint_path: filepath to write the checkpoint
-        :param settings: SerializationSettings for exporting the model.
-        """
-        if not os.path.exists(self.model_path):
-            os.makedirs(self.model_path)
-        torch.save(self.actor_critic.state_dict(), f"{checkpoint_path}.pt")
-
-    def save(self, output_filepath: str, settings: SerializationSettings) -> None:
-        self.export_model(self.global_step)
-
-    def load_model(self, step=0):  # TODO: this doesn't work
-        load_path = self.model_path + "/model-" + str(step) + ".pt"
-        self.actor_critic.load_state_dict(torch.load(load_path))
-
-    def export_model(self, step=0):
-        fake_vec_obs = [torch.zeros([1] + [self.vec_obs_size])]
-        fake_vis_obs = [torch.zeros([1] + [84, 84, 3])]
-        fake_masks = torch.ones([1] + self.actor_critic.act_size)
-        # fake_memories = torch.zeros([1] + [self.m_size])
-        export_path = "./model-" + str(step) + ".onnx"
-        output_names = ["action", "action_probs"]
-        input_names = ["vector_observation", "action_mask"]
-        dynamic_axes = {"vector_observation": [0], "action": [0], "action_probs": [0]}
-        onnx.export(
-            self.actor_critic,
-            (fake_vec_obs, fake_vis_obs, fake_masks),
-            export_path,
-            verbose=True,
-            opset_version=12,
-            input_names=input_names,
-            output_names=output_names,
-            dynamic_axes=dynamic_axes,
-        )
-
     @property
     def use_vis_obs(self):
         return self.vis_obs_size > 0
@@ -270,14 +231,22 @@ class TorchPolicy(Policy):
         Gets current model step.
         :return: current model step.
         """
-        step = self.global_step
+        return self.global_step.current_step
+
+    def set_step(self, step: int) -> int:
+        """
+        Sets current model step to step without creating additional ops.
+        :param step: Step to set the current model step to.
+        :return: The step the model was set to.
+        """
+        self.global_step.current_step = step
         return step
 
     def increment_step(self, n_steps):
         """
         Increments model step.
         """
-        self.global_step += n_steps
+        self.global_step.increment(n_steps)
         return self.get_current_step()
 
     def load_weights(self, values: List[np.ndarray]) -> None:
@@ -288,3 +257,6 @@ class TorchPolicy(Policy):
 
     def get_weights(self) -> List[np.ndarray]:
         return []
+
+    def get_modules(self):
+        return {"Policy": self.actor_critic, "global_step": self.global_step}

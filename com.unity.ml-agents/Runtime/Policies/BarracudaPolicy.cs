@@ -1,5 +1,7 @@
+using System;
 using Unity.Barracuda;
 using System.Collections.Generic;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
 
@@ -29,6 +31,7 @@ namespace Unity.MLAgents.Policies
     internal class BarracudaPolicy : IPolicy
     {
         protected ModelRunner m_ModelRunner;
+        ActionBuffers m_LastActionBuffer;
 
         int m_AgentId;
 
@@ -36,6 +39,7 @@ namespace Unity.MLAgents.Policies
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
         /// </summary>
         List<int[]> m_SensorShapes;
+        SpaceType m_SpaceType;
 
         /// <inheritdoc />
         public BarracudaPolicy(
@@ -45,6 +49,7 @@ namespace Unity.MLAgents.Policies
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
             m_ModelRunner = modelRunner;
+            m_SpaceType = brainParameters.VectorActionSpaceType;
         }
 
         /// <inheritdoc />
@@ -55,10 +60,18 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public float[] DecideAction()
+        public ref readonly ActionBuffers DecideAction()
         {
             m_ModelRunner?.DecideBatch();
-            return m_ModelRunner?.GetAction(m_AgentId);
+            var actions = m_ModelRunner?.GetAction(m_AgentId);
+            if (m_SpaceType == SpaceType.Continuous)
+            {
+                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
+                return ref m_LastActionBuffer;
+            }
+
+            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
+            return ref m_LastActionBuffer;
         }
 
         public void Dispose()

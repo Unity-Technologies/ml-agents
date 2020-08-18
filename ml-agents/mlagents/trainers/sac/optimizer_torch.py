@@ -413,7 +413,9 @@ class TorchSACOptimizer(TorchOptimizer):
             memories = None
             next_memories = None
         # Q network memories are 0'ed out, since we don't have them during inference.
-        q_memories = torch.zeros_like(next_memories)
+        q_memories = (
+            torch.zeros_like(next_memories) if next_memories is not None else None
+        )
 
         vis_obs: List[torch.Tensor] = []
         next_vis_obs: List[torch.Tensor] = []
@@ -548,3 +550,12 @@ class TorchSACOptimizer(TorchOptimizer):
         self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
     ) -> Dict[str, float]:
         return {}
+
+    def get_modules(self):
+        return {
+            "Optimizer:value_network": self.value_network,
+            "Optimizer:target_network": self.target_network,
+            "Optimizer:policy_optimizer": self.policy_optimizer,
+            "Optimizer:value_optimizer": self.value_optimizer,
+            "Optimizer:entropy_optimizer": self.entropy_optimizer,
+        }

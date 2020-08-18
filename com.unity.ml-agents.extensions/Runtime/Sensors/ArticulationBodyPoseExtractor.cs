@@ -72,7 +72,36 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new Pose { rotation = t.rotation, position = t.position };
         }
 
+        /// <inheritdoc/>
+        protected internal override Object GetObjectAt(int index)
+        {
+            return m_Bodies[index];
+        }
+
         internal ArticulationBody[] Bodies => m_Bodies;
+
+        internal IEnumerable<ArticulationBody> GetEnabledArticulationBodies()
+        {
+            if (m_Bodies == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_Bodies.Length; i++)
+            {
+                var articBody = m_Bodies[i];
+                if (articBody == null)
+                {
+                    // Ignore a virtual root.
+                    continue;
+                }
+
+                if (IsPoseEnabled(i))
+                {
+                    yield return articBody;
+                }
+            }
+        }
     }
 }
 #endif // UNITY_2020_1_OR_NEWER

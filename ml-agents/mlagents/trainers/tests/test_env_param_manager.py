@@ -202,25 +202,25 @@ def test_curriculum_raises_all_completion_criteria_conversion():
             yaml.safe_load(test_bad_curriculum_all_competion_criteria_config_yaml)
         )
 
-        param_manager = EnvironmentParameterManager(
-            run_options.environment_parameters, 1337, False
-        )
-        assert param_manager.update_lessons(
-            trainer_steps={"fake_behavior": 500},
-            trainer_max_steps={"fake_behavior": 1000},
-            trainer_reward_buffer={"fake_behavior": [1000] * 101},
-        ) == (True, True)
-        assert param_manager.update_lessons(
-            trainer_steps={"fake_behavior": 500},
-            trainer_max_steps={"fake_behavior": 1000},
-            trainer_reward_buffer={"fake_behavior": [1000] * 101},
-        ) == (True, True)
-        assert param_manager.update_lessons(
-            trainer_steps={"fake_behavior": 500},
-            trainer_max_steps={"fake_behavior": 1000},
-            trainer_reward_buffer={"fake_behavior": [1000] * 101},
-        ) == (False, False)
-        assert param_manager.get_current_lesson_number() == {"param_1": 2}
+    param_manager = EnvironmentParameterManager(
+        run_options.environment_parameters, 1337, False
+    )
+    assert param_manager.update_lessons(
+        trainer_steps={"fake_behavior": 500},
+        trainer_max_steps={"fake_behavior": 1000},
+        trainer_reward_buffer={"fake_behavior": [1000] * 101},
+    ) == (True, True)
+    assert param_manager.update_lessons(
+        trainer_steps={"fake_behavior": 500},
+        trainer_max_steps={"fake_behavior": 1000},
+        trainer_reward_buffer={"fake_behavior": [1000] * 101},
+    ) == (True, True)
+    assert param_manager.update_lessons(
+        trainer_steps={"fake_behavior": 500},
+        trainer_max_steps={"fake_behavior": 1000},
+        trainer_reward_buffer={"fake_behavior": [1000] * 101},
+    ) == (False, False)
+    assert param_manager.get_current_lesson_number() == {"param_1": 2}
 
 
 test_everything_config_yaml = """
@@ -316,3 +316,27 @@ def test_create_manager():
         "param_2": GaussianSettings(seed=1337 + 3, mean=4, st_dev=5),
         "param_3": ConstantSettings(seed=1337 + 3 + 1, value=20),
     }
+
+
+test_curriculum_no_behavior_yaml = """
+environment_parameters:
+    param_1:
+      curriculum:
+          - name: Lesson1
+            completion_criteria:
+                measure: reward
+                threshold: 30
+                min_lesson_length: 100
+                require_reset: true
+            value: 1
+          - name: Lesson2
+            value: 2
+"""
+
+
+def test_curriculum_no_behavior():
+    with pytest.raises(TypeError):
+        run_options = RunOptions.from_dict(
+            yaml.safe_load(test_curriculum_no_behavior_yaml)
+        )
+        EnvironmentParameterManager(run_options.environment_parameters, 1337, False)

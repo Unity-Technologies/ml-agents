@@ -60,10 +60,9 @@ class SACTrainer(RLTrainer):
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, artifact_path, reward_buff_cap
+            brain_name, trainer_settings, training, load, artifact_path, reward_buff_cap
         )
 
-        self.load = load
         self.seed = seed
         self.policy: Policy = None  # type: ignore
         self.optimizer: SACOptimizer = None  # type: ignore
@@ -235,8 +234,6 @@ class SACTrainer(RLTrainer):
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            self.artifact_path,
-            self.load,
             tanh_squash=True,
             reparameterize=True,
             create_tf_graph=False,
@@ -257,8 +254,6 @@ class SACTrainer(RLTrainer):
             self.seed,
             behavior_spec,
             self.trainer_settings,
-            self.artifact_path,
-            self.load,
             condition_sigma_on_obs=True,
             tanh_squash=True,
             separate_critic=True,
@@ -361,6 +356,16 @@ class SACTrainer(RLTrainer):
             for stat, stat_list in batch_update_stats.items():
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
+    def create_sac_optimizer(self) -> SACOptimizer:
+        if self.framework == FrameworkType.PYTORCH:
+            return TorchSACOptimizer(  # type: ignore
+                cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+        else:
+            return SACOptimizer(  # type: ignore
+                cast(TFPolicy, self.policy), self.trainer_settings  # type: ignore
+            )  # type: ignore
+
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
@@ -376,16 +381,14 @@ class SACTrainer(RLTrainer):
             )
         self.policy = policy
         self.policies[parsed_behavior_id.behavior_id] = policy
-        if self.framework == FrameworkType.PYTORCH:
-            self.optimizer = TorchSACOptimizer(  # type: ignore
-                self.policy, self.trainer_settings  # type: ignore
-            )  # type: ignore
-        else:
-            self.optimizer = SACOptimizer(  # type: ignore
-                self.policy, self.trainer_settings  # type: ignore
-            )  # type: ignore
+        self.optimizer = self.create_sac_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
+
+        self.saver.register(self.policy)
+        self.saver.register(self.optimizer)
+        self.saver.initialize_or_load()
+
         # Needed to resume loads properly
         self.step = policy.get_current_step()
         # Assume steps were updated at the correct ratio before

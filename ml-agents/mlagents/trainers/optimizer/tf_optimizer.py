@@ -140,8 +140,9 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
                 self.reward_signals[reward_signal.value].update_dict
             )
 
+    @classmethod
     def create_optimizer_op(
-        self, learning_rate: tf.Tensor, name: str = "Adam"
+        cls, learning_rate: tf.Tensor, name: str = "Adam"
     ) -> tf.train.Optimizer:
         return tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
 
