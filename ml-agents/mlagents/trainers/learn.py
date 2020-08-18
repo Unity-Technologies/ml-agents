@@ -21,7 +21,7 @@ from mlagents.trainers.stats import (
 )
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
-from mlagents.trainers.settings import RunOptions, TestingConfiguration
+from mlagents.trainers.settings import RunOptions
 
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
@@ -34,8 +34,6 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
-
-from mlagents_envs.registry import default_registry
 
 logger = logging_util.get_logger(__name__)
 
@@ -198,27 +196,16 @@ def create_environment_factory(
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
-        if TestingConfiguration.env_name == "":
-            return UnityEnvironment(
-                file_name=env_path,
-                worker_id=worker_id,
-                seed=env_seed,
-                no_graphics=no_graphics,
-                base_port=start_port,
-                additional_args=env_args,
-                side_channels=side_channels,
-                log_folder=log_folder,
-            )
-        else:
-            return default_registry[TestingConfiguration.env_name].make(
-                seed=env_seed,
-                no_graphics=no_graphics,
-                base_port=start_port,
-                worker_id=worker_id,
-                additional_args=env_args,
-                side_channels=side_channels,
-                log_folder=log_folder,
-            )
+        return UnityEnvironment(
+            file_name=env_path,
+            worker_id=worker_id,
+            seed=env_seed,
+            no_graphics=no_graphics,
+            base_port=start_port,
+            additional_args=env_args,
+            side_channels=side_channels,
+            log_folder=log_folder,
+        )
 
     return create_unity_environment
 
