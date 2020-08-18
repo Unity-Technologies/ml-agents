@@ -1,6 +1,7 @@
 from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
 import torch
+import copy
 
 from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
@@ -256,13 +257,13 @@ class TorchPolicy(Policy):
         return self.get_current_step()
 
     def load_weights(self, values: List[np.ndarray]) -> None:
-        pass
+        self.actor_critic.load_state_dict(values)
 
     def init_load_weights(self) -> None:
         pass
 
     def get_weights(self) -> List[np.ndarray]:
-        return []
+        return copy.deepcopy(self.actor_critic.state_dict())
 
     def get_modules(self):
         return {"Policy": self.actor_critic, "global_step": self.global_step}

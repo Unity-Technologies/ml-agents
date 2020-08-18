@@ -304,7 +304,10 @@ class GhostTrainer(Trainer):
         self.trainer.save_model()
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
     ) -> Policy:
         """
         Creates policy with the wrapped trainer's create_policy function
@@ -313,10 +316,10 @@ class GhostTrainer(Trainer):
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
         """
-        policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
-        policy.create_tf_graph()
+        policy = self.trainer.create_policy(
+            parsed_behavior_id, behavior_spec, create_graph=True
+        )
         self.trainer.saver.initialize_or_load(policy)
-        policy.init_load_weights()
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
 
@@ -326,7 +329,6 @@ class GhostTrainer(Trainer):
                 parsed_behavior_id, behavior_spec
             )
             self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
-            internal_trainer_policy.init_load_weights()
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
             ] = internal_trainer_policy.get_weights()

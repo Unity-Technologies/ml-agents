@@ -125,7 +125,10 @@ class Trainer(abc.ABC):
 
     @abc.abstractmethod
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
     ) -> Policy:
         """
         Creates policy

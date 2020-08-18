@@ -113,7 +113,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         return False
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
     ) -> Policy:
         if self.framework == FrameworkType.PYTORCH and TorchPolicy is None:
             raise UnityTrainerException(
@@ -122,7 +125,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         elif self.framework == FrameworkType.PYTORCH:
             return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
-            return self.create_tf_policy(parsed_behavior_id, behavior_spec)
+            return self.create_tf_policy(
+                parsed_behavior_id, behavior_spec, create_graph=create_graph
+            )
 
     @abc.abstractmethod
     def create_torch_policy(
@@ -135,7 +140,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
     @abc.abstractmethod
     def create_tf_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
     ) -> TFPolicy:
         """
         Create a Policy object that uses the TensorFlow backend.
