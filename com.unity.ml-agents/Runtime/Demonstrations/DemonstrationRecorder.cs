@@ -33,6 +33,11 @@ namespace Unity.MLAgents.Demonstrations
         public bool Record;
 
         /// <summary>
+        /// Number of steps to record. Editor will stop playing when it hits this threshold.
+        /// </summary>
+        public int numStepsToRecord = 5000;
+
+        /// <summary>
         /// Base demonstration file name. If multiple files are saved, the additional filenames
         /// will have a sequence of unique numbers appended.
         /// </summary>
@@ -69,6 +74,11 @@ namespace Unity.MLAgents.Demonstrations
             if (Record)
             {
                 LazyInitialize();
+            }
+
+            if (m_DemoWriter.NumSteps >= numStepsToRecord)
+            {
+                UnityEditor.EditorApplication.isPlaying = false;
             }
         }
 
