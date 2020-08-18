@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
 import torch
 
@@ -82,7 +82,9 @@ class TorchPolicy(Policy):
 
         self.actor_critic.to("cpu")
 
-    def split_decision_step(self, decision_requests):
+    def _split_decision_step(
+        self, decision_requests: DecisionSteps
+    ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
         if not self.use_continuous_act:
@@ -91,7 +93,7 @@ class TorchPolicy(Policy):
                 mask = torch.as_tensor(
                     1 - np.concatenate(decision_requests.action_mask, axis=1)
                 )
-        return vec_vis_obs.vector_observations, vec_vis_obs.visual_observations, mask
+        return vec_vis_obs, mask
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
@@ -105,13 +107,15 @@ class TorchPolicy(Policy):
     @timed
     def sample_actions(
         self,
-        vec_obs,
-        vis_obs,
-        masks=None,
-        memories=None,
-        seq_len=1,
-        all_log_probs=False,
-    ):
+        vec_obs: List[torch.Tensor],
+        vis_obs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        seq_len: int = 1,
+        all_log_probs: bool = False,
+    ) -> Tuple[
+        torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
         """
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         """
@@ -137,14 +141,18 @@ class TorchPolicy(Policy):
         )
 
     def evaluate_actions(
-        self, vec_obs, vis_obs, actions, masks=None, memories=None, seq_len=1
-    ):
+        self,
+        vec_obs: torch.Tensor,
+        vis_obs: torch.Tensor,
+        actions: torch.Tensor,
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        seq_len: int = 1,
+    ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        if len(actions.shape) <= 2:
-            actions = actions.unsqueeze(-1)
-        action_list = [actions[..., i] for i in range(actions.shape[2])]
+        action_list = [actions[..., i] for i in range(actions.shape[-1])]
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
 
         return log_probs, entropies, value_heads
@@ -159,9 +167,11 @@ class TorchPolicy(Policy):
         :param decision_requests: DecisionStep object containing inputs.
         :return: Outputs from network as defined by self.inference_dict.
         """
-        vec_obs, vis_obs, masks = self.split_decision_step(decision_requests)
-        vec_obs = [torch.as_tensor(vec_obs)]
-        vis_obs = [torch.as_tensor(vis_ob) for vis_ob in vis_obs]
+        vec_vis_obs, masks = self._split_decision_step(decision_requests)
+        vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
+        vis_obs = [
+            torch.as_tensor(vis_ob) for vis_ob in vec_vis_obs.visual_observations
+        ]
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
             0
         )
