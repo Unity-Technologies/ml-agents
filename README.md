@@ -48,7 +48,7 @@ descriptions of all these features.
 
 ## Releases & Documentation
 
-**Our latest, stable release is `Release 5`. Click
+**Our latest, stable release is `Release 6`. Click
 [here](https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/Readme.md)
 to get started with the latest release of ML-Agents.**
 
