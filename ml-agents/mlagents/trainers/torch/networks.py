@@ -14,7 +14,7 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import AMRLMax
+from mlagents.trainers.torch.layers import LSTM
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -51,7 +51,7 @@ class NetworkBody(nn.Module):
         )
 
         if self.use_lstm:
-            self.lstm = AMRLMax(self.h_size, self.m_size // 2, batch_first=True)
+            self.lstm = LSTM(self.h_size, self.m_size)
         else:
             self.lstm = None  # type: ignore
 
