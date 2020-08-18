@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
-{    
+{
     public enum CrawlerAgentBehaviorType
     {
         CrawlerDynamic, CrawlerDynamicVariableSpeed, CrawlerStatic, CrawlerStaticVariableSpeed
@@ -30,13 +30,15 @@ public class CrawlerAgent : Agent
     const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
-    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
+    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
 
     //The direction an agent will walk during training.
     private Vector3 m_WorldDirToWalk = Vector3.right;
-    [Header("Target To Walk Towards")] public Transform target; //Target the agent will walk towards during training.
+    [Header("Target To Walk Towards")]
+    public Transform targetPrefab; //Target prefab
+    public Transform target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -71,7 +73,7 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
-        
+
         m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
         switch (typeOfCrawler)
         {
@@ -79,6 +81,7 @@ public class CrawlerAgent : Agent
             {
                 m_BehaviorParams.BehaviorName = "CrawlerDynamic";
                 randomizeWalkSpeedEachEpisode = false;
+                target = Instantiate(targetPrefab, transform.position, Quaternion.identity, transform);
                 break;
             }
             case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed :
@@ -100,11 +103,11 @@ public class CrawlerAgent : Agent
                 break;
             }
         }
-        
+
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
         m_JdController = GetComponent<JointDriveController>();
-        
+
         //Setup each body part
         m_JdController.SetupBodyPart(body);
         m_JdController.SetupBodyPart(leg0Upper);
@@ -164,7 +167,7 @@ public class CrawlerAgent : Agent
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
-        //current ragdoll velocity. normalized 
+        //current ragdoll velocity. normalized
         sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
@@ -172,7 +175,7 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
         //rotation delta
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
-        
+
         //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
 
@@ -190,8 +193,8 @@ public class CrawlerAgent : Agent
             CollectObservationBodyPart(bodyPart, sensor);
         }
     }
-    
-    
+
+
 //    /// <summary>
 //    /// Loop over body parts to add them to observation.
 //    /// </summary>
@@ -214,8 +217,8 @@ public class CrawlerAgent : Agent
 //            CollectObservationBodyPart(bodyPart, sensor);
 //        }
 //    }
-    
-    public override void OnActionReceived(float[] vectorAction)
+
+    public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         // The dictionary with all the body parts in it are in the jdController
         var bpDict = m_JdController.bodyPartsDict;
@@ -264,7 +267,7 @@ public class CrawlerAgent : Agent
                 ? groundedMaterial
                 : unGroundedMaterial;
         }
-        
+
         var cubeForward = m_OrientationCube.transform.forward;
 
         // Set reward for this step according to mixture of the following elements.

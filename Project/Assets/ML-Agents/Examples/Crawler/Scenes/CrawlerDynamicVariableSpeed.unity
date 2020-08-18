@@ -3158,9 +3158,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0058b366f9d6d44a3ba35beb06b0174b, type: 3}
---- !u!4 &794511373 stripped
+--- !u!4 &1018218737 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 2467802541724839399, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+  m_CorrespondingSourceObject: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
     type: 3}
   m_PrefabInstance: {fileID: 6815147847201213989}
   m_PrefabAsset: {fileID: 0}
@@ -4436,7 +4436,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec40c70d5160b47cd8deaab79e24892c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 794511373}
+  target: {fileID: 1018218737}
 --- !u!1001 &1481808307
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5189,26 +5189,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2467802541598158122, guid: 0058b366f9d6d44a3ba35beb06b0174b,
-        type: 3}
-      propertyPath: typeOfCrawler
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2467802541598158122, guid: 0058b366f9d6d44a3ba35beb06b0174b,
-        type: 3}
-      propertyPath: useFootGroundedVisualization
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2467802541598158123, guid: 0058b366f9d6d44a3ba35beb06b0174b,
-        type: 3}
-      propertyPath: m_BehaviorName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
-        type: 3}
-      propertyPath: typeOfCrawler
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6810587057221831324, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: m_LocalPosition.x
