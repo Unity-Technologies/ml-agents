@@ -1,5 +1,4 @@
 import pytest
-from typing import Tuple
 
 import torch
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -21,7 +20,7 @@ def create_policy_mock(
     use_discrete: bool = True,
     use_visual: bool = False,
     seed: int = 0,
-) -> Tuple[TorchPolicy, TrainerSettings]:
+) -> TorchPolicy:
     mock_spec = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
