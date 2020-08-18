@@ -234,6 +234,14 @@ class ActorCritic(Actor):
         """
         pass
 
+    @abc.abstractproperty
+    def memory_size(self):
+        """
+        Returns the size of the memory (same size used as input and output in the other
+        methods) used by this Actor.
+        """
+        pass
+
 
 class SimpleActor(nn.Module, Actor):
     def __init__(
