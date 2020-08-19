@@ -32,16 +32,8 @@ class ModelSerializer:
             + ["action_masks", "memories"]
         )
 
-        if self.policy.use_continuous_act:
-            action_name = "action"
-            action_prob_name = "action_probs"
-        else:
-            action_name = "action_unused"
-            action_prob_name = "action"
-
         self.output_names = [
-            action_name,
-            action_prob_name,
+            "action",
             "version_number",
             "memory_size",
             "is_continuous_control",
@@ -49,7 +41,7 @@ class ModelSerializer:
         ]
 
         self.dynamic_axes = {name: {0: "batch"} for name in self.input_names}
-        self.dynamic_axes.update({"action": {0: "batch"}, "action_probs": {0: "batch"}})
+        self.dynamic_axes.update({"action": {0: "batch"}})
 
     def export_policy_model(self, output_filepath: str) -> None:
         """
