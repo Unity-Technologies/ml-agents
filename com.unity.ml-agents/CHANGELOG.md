@@ -9,7 +9,7 @@ and this project adheres to
 ## [1.0.3] - 2020-07-07
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-- Update Barracuda to 1.0.2.
+- Update Barracuda to 1.0.2. (#4385)
 - Explicitly call out dependencies in package.json.
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
