@@ -693,6 +693,7 @@ class RunOptions(ExportableSettings):
         :param args: collection of command-line parameters passed to mlagents-learn
         :return: RunOptions representing the passed in arguments, with trainer config, curriculum and sampler
           configs loaded from files.
+          configs loaded from files.
         """
         argparse_args = vars(args)
         config_path = StoreConfigFile.trainer_config_path

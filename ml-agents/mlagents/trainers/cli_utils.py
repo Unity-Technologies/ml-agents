@@ -155,8 +155,10 @@ def _create_parser() -> argparse.ArgumentParser:
     argparser.add_argument(
         "--plugins",
         default="",
-        nargs="*",
-        help="Absolute paths of plugins to be added to the trainers.",
+        type=str,
+        nargs=3,
+        help="Absolute paths of plugins to be loaded",
+        required=False
     )
     argparser.add_argument(
         "--env-args",
