@@ -15,7 +15,7 @@ class ModelSerializer:
         seq_len_dim = [1]
         dummy_vec_obs = [torch.zeros(batch_dim + [self.policy.vec_obs_size])]
         dummy_vis_obs = [
-            torch.zeros(batch_dim + list(shape))
+            torch.zeros(batch_dim + [shape[2], shape[0], shape[1]])
             for shape in self.policy.behavior_spec.observation_shapes
             if len(shape) == 3
         ]

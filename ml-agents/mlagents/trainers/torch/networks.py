@@ -83,7 +83,8 @@ class NetworkBody(nn.Module):
 
         for idx, encoder in enumerate(self.visual_encoders):
             vis_input = vis_inputs[idx]
-            vis_input = vis_input.permute([0, 3, 1, 2])
+            if not torch.onnx.is_in_onnx_export():
+                vis_input = vis_input.permute([0, 3, 1, 2])
             hidden = encoder(vis_input)
             encodes.append(hidden)
 
