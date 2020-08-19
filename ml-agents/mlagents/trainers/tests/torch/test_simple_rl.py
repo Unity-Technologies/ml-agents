@@ -2,6 +2,7 @@ import math
 import tempfile
 import pytest
 import numpy as np
+import torch
 import attr
 from typing import Dict
 
@@ -114,7 +115,10 @@ def _check_environment_trains(
     env_parameter_manager=None,
     success_threshold=0.9,
     env_manager=None,
+    seed=1337,
 ):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
     if env_parameter_manager is None:
         env_parameter_manager = EnvironmentParameterManager()
     # Create controller and begin training.
@@ -210,7 +214,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=500,
+        max_steps=1000,
         summary_freq=100,
     )
     # The number of steps is pretty small for these encoders
