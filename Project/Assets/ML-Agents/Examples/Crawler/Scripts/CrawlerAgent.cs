@@ -17,6 +17,8 @@ public class CrawlerAgent : Agent
 
     public CrawlerAgentBehaviorType typeOfCrawler;
 
+    const float m_maxWalkingSpeed = 15; //The max walking speed
+
     //Crawler Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
     [Header("NN Models")]
@@ -26,10 +28,10 @@ public class CrawlerAgent : Agent
     public NNModel crawlerStVSBrain;
 
     [Header("Walk Speed")]
-    [Range(0.1f, 10)]
+    [Range(0.1f, m_maxWalkingSpeed)]
     [SerializeField]
     //The walking speed to try and achieve
-    private float m_TargetWalkingSpeed = 10;
+    private float m_TargetWalkingSpeed = m_maxWalkingSpeed;
 
 
     public float TargetWalkingSpeed // property
@@ -38,7 +40,6 @@ public class CrawlerAgent : Agent
         set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
     }
 
-    const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
