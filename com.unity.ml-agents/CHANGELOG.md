@@ -9,6 +9,15 @@ and this project adheres to
 ## [1.0.3] - 2020-07-07
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- Update Barracuda to 1.0.2.
+- Explicitly call out dependencies in package.json.
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+## [1.0.3] - 2020-07-07
+### Minor Changes
+#### com.unity.ml-agents (C#)
 - Update Barracuda to 1.0.1. (#4187)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
