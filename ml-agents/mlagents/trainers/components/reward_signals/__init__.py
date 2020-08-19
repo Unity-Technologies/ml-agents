@@ -78,7 +78,7 @@ class RewardSignal(abc.ABC):
         for k in param_keys:
             if k not in config_dict:
                 raise UnityTrainerException(
-                    "The hyper-parameter {0} could not be found for {1}.".format(
+                    "The hyper-parameter {} could not be found for {}.".format(
                         k, cls.__name__
                     )
                 )

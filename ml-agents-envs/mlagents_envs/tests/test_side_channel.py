@@ -68,8 +68,8 @@ def test_raw_bytes():
     sender = RawBytesChannel(guid)
     receiver = RawBytesChannel(guid)
 
-    sender.send_raw_data("foo".encode("ascii"))
-    sender.send_raw_data("bar".encode("ascii"))
+    sender.send_raw_data(b"foo")
+    sender.send_raw_data(b"bar")
 
     data = UnityEnvironment._generate_side_channel_data({sender.channel_id: sender})
     UnityEnvironment._parse_side_channel_message({receiver.channel_id: receiver}, data)

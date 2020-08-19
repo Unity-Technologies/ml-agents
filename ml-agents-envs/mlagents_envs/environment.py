@@ -180,7 +180,7 @@ class UnityEnvironment(BaseEnv):
             for _sc in side_channels:
                 if _sc.channel_id in self.side_channels:
                     raise UnityEnvironmentException(
-                        "There cannot be two side channels with the same channel id {0}.".format(
+                        "There cannot be two side channels with the same channel id {}.".format(
                             _sc.channel_id
                         )
                     )
@@ -251,7 +251,7 @@ class UnityEnvironment(BaseEnv):
             .replace(".x86", "")
         )
         true_filename = os.path.basename(os.path.normpath(env_path))
-        logger.debug("The true file name is {}".format(true_filename))
+        logger.debug(f"The true file name is {true_filename}")
 
         if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
             return None
@@ -304,7 +304,7 @@ class UnityEnvironment(BaseEnv):
                 f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
             )
         else:
-            logger.debug("This is the launch string {}".format(launch_string))
+            logger.debug(f"This is the launch string {launch_string}")
             # Launch Unity environment
             subprocess_args = [launch_string]
             if no_graphics:
@@ -402,7 +402,7 @@ class UnityEnvironment(BaseEnv):
     def _assert_behavior_exists(self, behavior_name: str) -> None:
         if behavior_name not in self._env_specs:
             raise UnityActionException(
-                "The group {0} does not correspond to an existing agent group "
+                "The group {} does not correspond to an existing agent group "
                 "in the environment".format(behavior_name)
             )
 
@@ -415,9 +415,9 @@ class UnityEnvironment(BaseEnv):
         expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
         if action.shape != expected_shape:
             raise UnityActionException(
-                "The behavior {0} needs an input of dimension {1} for "
+                "The behavior {} needs an input of dimension {} for "
                 "(<number of agents>, <action size>) but received input of "
-                "dimension {2}".format(behavior_name, expected_shape, action.shape)
+                "dimension {}".format(behavior_name, expected_shape, action.shape)
             )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
@@ -433,10 +433,8 @@ class UnityEnvironment(BaseEnv):
         expected_shape = (spec.action_size,)
         if action.shape != expected_shape:
             raise UnityActionException(
-                f"The Agent {0} with BehaviorName {1} needs an input of dimension "
-                f"{2} but received input of dimension {3}".format(
-                    agent_id, behavior_name, expected_shape, action.shape
-                )
+                f"The Agent {agent_id} with BehaviorName {behavior_name} needs an input of dimension "
+                f"{expected_shape} but received input of dimension {action.shape}"
             )
         expected_type = np.float32 if spec.is_action_continuous() else np.int32
         if action.dtype != expected_type:
@@ -545,7 +543,7 @@ class UnityEnvironment(BaseEnv):
                 )
             if len(message_data) != message_len:
                 raise UnityEnvironmentException(
-                    "The message received by the side channel {0} was "
+                    "The message received by the side channel {} was "
                     "unexpectedly short. Make sure your Unity Environment "
                     "sending side channel data properly.".format(channel_id)
                 )
@@ -555,7 +553,7 @@ class UnityEnvironment(BaseEnv):
             else:
                 logger.warning(
                     "Unknown side channel data received. Channel type "
-                    ": {0}.".format(channel_id)
+                    ": {}.".format(channel_id)
                 )
 
     @staticmethod

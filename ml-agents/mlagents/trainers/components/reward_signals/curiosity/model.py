@@ -5,7 +5,7 @@ from mlagents.trainers.models import ModelUtils
 from mlagents.trainers.policy.tf_policy import TFPolicy
 
 
-class CuriosityModel(object):
+class CuriosityModel:
     def __init__(
         self, policy: TFPolicy, encoding_size: int = 128, learning_rate: float = 3e-4
     ):
@@ -52,7 +52,7 @@ class CuriosityModel(object):
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "curiosity_stream_{}_visual_obs_encoder".format(i),
+                    f"curiosity_stream_{i}_visual_obs_encoder",
                     False,
                 )
 
@@ -61,7 +61,7 @@ class CuriosityModel(object):
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "curiosity_stream_{}_visual_obs_encoder".format(i),
+                    f"curiosity_stream_{i}_visual_obs_encoder",
                     True,
                 )
                 visual_encoders.append(encoded_visual)

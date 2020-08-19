@@ -69,7 +69,7 @@ class BCModule:
         for k in param_keys:
             if k not in config_dict:
                 raise UnityTrainerException(
-                    "The required pre-training hyper-parameter {0} was not defined. Please check your \
+                    "The required pre-training hyper-parameter {} was not defined. Please check your \
                     trainer YAML file.".format(
                         k
                     )

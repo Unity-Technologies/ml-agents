@@ -1,4 +1,3 @@
-from io import open
 import os
 import sys
 
@@ -25,7 +24,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv("CIRCLE_TAG")
 
         if tag != EXPECTED_TAG:
-            info = "Git tag: {0} does not match the expected tag of this app: {1}".format(
+            info = "Git tag: {} does not match the expected tag of this app: {}".format(
                 tag, EXPECTED_TAG
             )
             sys.exit(info)
@@ -59,7 +58,7 @@ setup(
         # Test-only dependencies should go in test_requirements.txt, not here.
         "grpcio>=1.11.0",
         "h5py>=2.9.0",
-        "mlagents_envs=={}".format(VERSION),
+        f"mlagents_envs=={VERSION}",
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",

@@ -23,7 +23,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
     """
 
     def __init__(self, *args, **kwargs):
-        super(RLTrainer, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         # Make sure we have at least one reward_signal
         if not self.trainer_parameters["reward_signals"]:
             raise UnityTrainerException(

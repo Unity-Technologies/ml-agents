@@ -58,7 +58,7 @@ class GhostTrainer(Trainer):
         :param run_id: The identifier of the current run
         """
 
-        super(GhostTrainer, self).__init__(
+        super().__init__(
             brain_name, trainer_parameters, training, run_id, reward_buff_cap
         )
 

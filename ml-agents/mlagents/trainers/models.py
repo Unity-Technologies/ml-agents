@@ -77,7 +77,7 @@ class ModelUtils:
             )
         else:
             raise UnityTrainerException(
-                "The learning rate schedule {} is invalid.".format(lr_schedule)
+                f"The learning rate schedule {lr_schedule} is invalid."
             )
         return learning_rate
 
@@ -270,7 +270,7 @@ class ModelUtils:
                     h_size,
                     activation=activation,
                     reuse=reuse,
-                    name="hidden_{}".format(i),
+                    name=f"hidden_{i}",
                     kernel_initializer=tf.initializers.variance_scaling(1.0),
                 )
         return hidden
@@ -635,7 +635,7 @@ class ModelUtils:
         """
         value_heads = {}
         for name in stream_names:
-            value = tf.layers.dense(hidden_input, 1, name="{}_value".format(name))
+            value = tf.layers.dense(hidden_input, 1, name=f"{name}_value")
             value_heads[name] = value
         value = tf.reduce_mean(list(value_heads.values()), 0)
         return value_heads, value

@@ -90,7 +90,7 @@ def set_version(
 
 
 def set_package_version(new_version: str) -> None:
-    with open(UNITY_PACKAGE_JSON_PATH, "r") as f:
+    with open(UNITY_PACKAGE_JSON_PATH) as f:
         package_json = json.load(f)
     if "version" in package_json:
         package_json["version"] = new_version
