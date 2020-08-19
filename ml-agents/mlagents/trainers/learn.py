@@ -77,15 +77,15 @@ def find_initializer_trainer(paths):
     }
     print(f"plugins available {discovered_plugins}")
 
-    all_initializers = set(get_all_subclasses(Initializer))
+    all_initializers = list(get_all_subclasses(Initializer))
     all_trainers = set(get_all_subclasses(RLTrainer))
+    print("Registering new initializer")
+    print(f"Found {len(all_initializers)} new initializers")
+    distributed_init = all_initializers[0]()
+    distributed_init.load()
 
-    new_initializers = all_initializers - original_initializers
     new_trainers = all_trainers - original_trainers
-    print(f"Found {len(new_initializers)} new initializers")
     print(f"Found {len(new_trainers)} new trainers")
-    print(all_initializers)
-    print(new_initializers)
     print(all_trainers)
     print(new_trainers)
 
