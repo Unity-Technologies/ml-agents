@@ -2813,7 +2813,7 @@ MonoBehaviour:
   crawlerDyVSBrain: {fileID: 11400000, guid: da8f1c85e82404cab8589620d180010f, type: 3}
   crawlerStBrain: {fileID: 11400000, guid: e4a120cf5c6c048a99d60cd948f08870, type: 3}
   crawlerStVSBrain: {fileID: 11400000, guid: b409c2ae05d2e454ca8dbd8dbbfc15da, type: 3}
-  m_TargetWalkingSpeed: 10
+  m_TargetWalkingSpeed: 15
   randomizeWalkSpeedEachEpisode: 0
   targetPrefab: {fileID: 3839136118347789758, guid: 1a2a52e48911845a8a189e0891357ea2,
     type: 3}
