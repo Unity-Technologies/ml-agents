@@ -32,9 +32,16 @@ class ModelSerializer:
             + ["action_masks", "memories"]
         )
 
+        if self.policy.use_continuous_act:
+            action_name = "action"
+            action_prob_name = "action_probs"
+        else:
+            action_name = "action_unused"
+            action_prob_name = "action"
+
         self.output_names = [
-            "action",
-            "action_probs",
+            action_name,
+            action_prob_name,
             "version_number",
             "memory_size",
             "is_continuous_control",
