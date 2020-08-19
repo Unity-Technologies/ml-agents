@@ -12,7 +12,7 @@ from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_nn_policy import create_policy_mock
-from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
+from mlagents.trainers.ppo.optimizer import PPOOptimizer
 
 
 def test_register(tmp_path):
