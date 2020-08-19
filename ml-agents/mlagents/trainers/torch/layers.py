@@ -142,7 +142,9 @@ class LSTM(MemoryModule):
     def forward(
         self, input_tensor: torch.Tensor, memories: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        h0, c0 = torch.split(memories, self.hidden_size, dim=-1)
+        # We don't use torch.split here since it is not supported by Barracuda
+        h0 = memories[:, :, : self.hidden_size]
+        c0 = memories[:, :, self.hidden_size :]
         hidden = (h0, c0)
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
         output_mem = torch.cat(hidden_out, dim=-1)
