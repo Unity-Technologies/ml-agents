@@ -19,7 +19,7 @@ class ModelSerializer:
             else []
         )
         dummy_masks = torch.ones(batch_dim + [sum(self.policy.actor_critic.act_size)])
-        dummy_memories = torch.zeros(batch_dim + [1] + [self.policy.m_size])
+        dummy_memories = torch.zeros(batch_dim + [1] + [self.policy.export_memory_size])
 
         # Need to pass all posslible inputs since currently keyword arguments is not
         # supported by torch.nn.export()

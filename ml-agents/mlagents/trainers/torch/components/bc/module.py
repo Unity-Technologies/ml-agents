@@ -150,9 +150,7 @@ class BCModule:
 
         memories = []
         if self.policy.use_recurrent:
-            memories = torch.zeros(
-                1, self.n_sequences, self.policy.actor_critic.half_mem_size * 2
-            )
+            memories = torch.zeros(1, self.n_sequences, self.policy.m_size)
 
         if self.policy.use_vis_obs:
             vis_obs = []

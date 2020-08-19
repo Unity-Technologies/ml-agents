@@ -80,8 +80,20 @@ class TorchPolicy(Policy):
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
+        # Save the m_size needed for export
+        self._export_m_size = self.m_size
+        # m_size needed for training is determined by network, not trainer settings
+        self.m_size = self.actor_critic.memory_size
 
         self.actor_critic.to("cpu")
+
+    @property
+    def export_memory_size(self) -> int:
+        """
+        Returns the memory size of the exported ONNX policy. This only includes the memory
+        of the Actor and not any auxillary networks.
+        """
+        return self._export_m_size
 
     def _split_decision_step(
         self, decision_requests: DecisionSteps
