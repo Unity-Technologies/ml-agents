@@ -291,7 +291,7 @@ public class WalkerAgent : Agent
 
     public void SetResetParameters()
     {
-        targetWalkingSpeed = GetParameterWithDefault("target_walkingspeed", 10.0f);
+        targetWalkingSpeed = GetParameterWithDefault("targetWalkingSpeed", 10.0f);
         // target_headheight = GetParameterWithDefault("target_height", 0.5497f);
         SetTorsoMass();
     }

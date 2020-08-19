@@ -308,17 +308,14 @@ class SubprocessEnvManager(EnvManager):
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
     
-    def set_agent_parameters(self) -> None:
+    def set_agent_parameters(self, worker_id, local_id, task) -> None:
         """
         Sends environment parameter settings to C# via the
         AgentParametersSidehannel for each worker.
         :param config: Dict of environment parameter keys and values
         """
-        for worker_id, ew in enumerate(self.env_workers):
-            for brain_name in self.agent_managers.keys():
-                tasks = self.agent_managers[brain_name].task_to_set[worker_id]
-                ew.send(EnvironmentCommand.AGENT_PARAMETERS, tasks)
-                self.agent_managers[brain_name].task_to_set[worker_id].empty()
+        self.env_workers[worker_id].send(EnvironmentCommand.AGENT_PARAMETERS, (local_id, task))
+                
 
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:

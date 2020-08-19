@@ -437,7 +437,7 @@ class AgentParameterSettings:
     parameters: Dict[str, UniformSettings]
 
     @staticmethod
-    def structure(d: Mapping, t: type) -> AgentParameterSettings:
+    def structure(d: Mapping, t: type):# -> Dict[str, AgentParameterSettings]:
         """
         Helper method to structure a Dict of EnvironmentParameterSettings class. Meant
         to be registered with cattr.register_structure_hook() and called with
@@ -447,15 +447,18 @@ class AgentParameterSettings:
             raise TrainerConfigError(
                 f"Unsupported agent environment parameter settings {d}."
             )
-        d_final: Dict[str, ] = {}
-        for agent_parameter, agent_parameter_config in d.items():
-            sampler = ParameterRandomizationSettings.structure(
-                agent_parameter_config, ParameterRandomizationSettings
-            )
-            d_final[agent_parameter] = sampler
-            print(agent_parameter)
-        settings = AgentParameterSettings(parameters=d_final)
-        return settings
+        d_final: Dict[str, AgentParameterSettings] = {}
+        for behavior_name, behavior_config in d.items():
+            tmp_settings: Dict[str, UniformSettings] = {}
+            for agent_parameter, agent_parameter_config in behavior_config.items():
+                sampler = ParameterRandomizationSettings.structure(
+                    agent_parameter_config, ParameterRandomizationSettings
+                )
+                tmp_settings[agent_parameter] = sampler
+            d_final[behavior_name] = AgentParameterSettings(parameters=tmp_settings)
+            
+        # settings = AgentParameterSettings(parameters=d_final)
+        return d_final
 
 @attr.s(auto_attribs=True)
 class EnvironmentParameterSettings:
@@ -671,6 +674,7 @@ class RunOptions(ExportableSettings):
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
     environment_parameters: Optional[Dict[str, EnvironmentParameterSettings]] = None
+    agent_parameters: Optional[Dict[str, AgentParameterSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
@@ -682,6 +686,9 @@ class RunOptions(ExportableSettings):
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(
         Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
+    )
+    cattr.register_structure_hook(
+        Dict[str, AgentParameterSettings], AgentParameterSettings.structure
     )
     cattr.register_structure_hook(Lesson, strict_to_cls)
     cattr.register_structure_hook(

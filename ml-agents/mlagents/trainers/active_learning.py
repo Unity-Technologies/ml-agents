@@ -177,6 +177,9 @@ class ActiveLearningTaskSampler(object):
             self.X = self.X[-T:, :]
             self.Y = self.Y[-T:, :]
 
+        if self.X.shape[0] < 5:  # TODO seems to throw an error if only one sample is present. Refitting should probably only happen every N data points anyways
+            return None
+
         if refit:
             model = StandardActiveLearningGP(self.X, self.Y, bounds=self.bounds)
             mll = ExactMarginalLogLikelihood(model.likelihood, model)
@@ -187,7 +190,7 @@ class ActiveLearningTaskSampler(object):
             fit_gpytorch_model(mll)
         else:
             self.model.set_train_data(self.X, self.Y)
-            # self.model = self.model.condition_on_observations(new_X, new_Y)
+            # self.model = self.model.condition_on_observations(new_X, new_Y)  # TODO: might be faster than setting the data need to test
 
     def get_design_points(self, num_points:int=1, time=None):
         if not self.model or time < 30:

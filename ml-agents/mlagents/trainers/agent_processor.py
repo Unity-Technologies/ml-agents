@@ -37,6 +37,7 @@ class AgentProcessor:
         behavior_id: str,
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
+        set_task_params_fn = None
     ):
         """
         Create an AgentProcessor.
@@ -63,7 +64,8 @@ class AgentProcessor:
         self.behavior_id = behavior_id
         self.task_queue: List[Dict[str, float]] = []
         self.task_perf_queue: List[Tuple[Dict[str, float],float]] = []
-        self.task_to_set: Dict[str, List] = defaultdict([])
+        self.set_task_params_fn = set_task_params_fn
+        self.tasks_needed: Dict[str, Tuple[str, str]] = {}
 
     def add_experiences(
         self,
@@ -87,9 +89,12 @@ class AgentProcessor:
         action_global_agent_ids = [
             get_global_agent_id(worker_id, ag_id) for ag_id in previous_action.agent_ids
         ]
-        for global_id in action_global_agent_ids:
+        
+        for global_id, local_id in zip(action_global_agent_ids, previous_action.agent_ids):
             if global_id in self.last_step_result:  # Don't store if agent just reset
                 self.last_take_action_outputs[global_id] = take_action_outputs
+            if global_id not in self.episode_tasks.keys():
+                self._assign_task(worker_id, global_id, local_id)
 
         # Iterate over all the terminal steps
         for terminal_step in terminal_steps.values():
@@ -98,6 +103,8 @@ class AgentProcessor:
             self._process_step(
                 terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
             )
+            if global_id not in self.episode_tasks.keys():
+                self._assign_task(worker_id, global_id, local_id)
         # Iterate over all the decision steps
         for ongoing_step in decision_steps.values():
             local_id = ongoing_step.agent_id
@@ -105,6 +112,8 @@ class AgentProcessor:
             self._process_step(
                 ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
             )
+            if global_id not in self.episode_tasks.keys():
+                self._assign_task(worker_id, global_id, local_id)
 
         for _gid in action_global_agent_ids:
             # If the ID doesn't have a last step result, the agent just reset,
@@ -114,20 +123,32 @@ class AgentProcessor:
                     self.policy.save_previous_action(
                         [_gid], take_action_outputs["action"]
                     )
+            
 
     def _assign_task(self, worker_id:str, global_id: str, local_id: int):
-        task = self.task_queue.pop(0)
+        if len(self.task_queue) > 0:
+            task = self.task_queue.pop(0)
+            self.episode_tasks[global_id] = task
+            self.set_task_params_fn(worker_id, local_id, task)
+        else:
+            if global_id not in self.tasks_needed.keys():
+                self.tasks_needed[global_id] = (worker_id, local_id)
         
-        if len(self.task_queue) == 0  # if task queue is empty put a copy of this task on the queue so other agents don't miss out
-            self.task_queue.append(task)
         
-        self.episode_tasks[global_id] = task
-        self.task_to_set[worker_id].append((local_id, task))
-        # agent_params = AgentParametersChannel()
-        # for param, value in task.items():
-            # self.task_params_channel.set_float_parameter(local_id, param, value)
+        
 
+    def get_num_tasks_needed(self):
+        return len(self.tasks_needed)
 
+    def add_new_tasks(self, tasks):
+        self.task_queue.extend(tasks)
+        to_del = []
+        for global_id, (worker_id, local_id) in self.tasks_needed.items():
+            if len(self.task_queue) > 0:
+                self._assign_task(worker_id, global_id, local_id)
+                to_del.append(global_id)
+        for key in to_del:
+            self._safe_delete(self.tasks_needed, key)
 
     def _process_step(
         self, step: Union[TerminalStep, DecisionStep], global_id: str, index: int
@@ -169,6 +190,7 @@ class AgentProcessor:
                 interrupted=interrupted,
                 memory=memory,
             )
+
             # Add the value outputs if needed
             self.experience_buffers[global_id].append(experience)
             self.episode_rewards[global_id] += step.reward
@@ -312,6 +334,8 @@ class AgentManagerQueue(Generic[T]):
         self._queue.put(item)
 
 
+# TODO: Callback new agent, callback episode end
+
 class AgentManager(AgentProcessor):
     """
     An AgentManager is an AgentProcessor that also holds a single trajectory and policy queue.
@@ -325,8 +349,9 @@ class AgentManager(AgentProcessor):
         stats_reporter: StatsReporter,
         max_trajectory_length: int = sys.maxsize,
         threaded: bool = True,
+        **kwargs
     ):
-        super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length)
+        super().__init__(policy, behavior_id, stats_reporter, max_trajectory_length, **kwargs)
         trajectory_queue_len = 20 if threaded else 0
         self.trajectory_queue: AgentManagerQueue[Trajectory] = AgentManagerQueue(
             self.behavior_id, maxlen=trajectory_queue_len

@@ -3,6 +3,7 @@ from typing import Dict
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
+from mlagents.trainers.active_learning_manager import ActiveLearningTaskManager
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException

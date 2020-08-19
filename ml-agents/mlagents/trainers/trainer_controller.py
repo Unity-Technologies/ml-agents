@@ -25,6 +25,7 @@ from mlagents_envs.timers import (
 )
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
+from mlagents.trainers.active_learning_manager import ActiveLearningTaskManager
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
@@ -37,6 +38,7 @@ class TrainerController:
         output_path: str,
         run_id: str,
         param_manager: EnvironmentParameterManager,
+        task_manager: ActiveLearningTaskManager,
         train: bool,
         training_seed: int,
     ):
@@ -58,6 +60,7 @@ class TrainerController:
         self.run_id = run_id
         self.train_model = train
         self.param_manager = param_manager
+        self.task_manager = task_manager
         self.ghost_controller = self.trainer_factory.ghost_controller
         self.registered_behavior_ids: Set[str] = set()
 
@@ -150,6 +153,7 @@ class TrainerController:
             trainer.stats_reporter,
             trainer.parameters.time_horizon,
             threaded=trainer.threaded,
+            set_task_params_fn = lambda worker_id, local_id, task: env_manager.set_agent_parameters(worker_id, local_id, task)
         )
         env_manager.set_agent_manager(name_behavior_id, agent_manager)
         env_manager.set_policy(name_behavior_id, policy)
@@ -217,9 +221,9 @@ class TrainerController:
         task_perf = {} 
         for k, v in env.agent_managers.items():
             perfs = v.task_perf_queue
-            v.task_perf_queue.empty()
+            v.task_perf_queue.clear()
             task_perf[k] = perfs
-            
+
         # Attempt to increment the lessons of the brains who
         # were ready.
         updated, param_must_reset = self.param_manager.update_lessons(
@@ -253,6 +257,16 @@ class TrainerController:
                 trainer.stats_reporter.set_stat(
                     f"Environment/Lesson Number/{param_name}", lesson_number
                 )
+        for behavior_name, manager in env_manager.agent_managers.items():
+            task_perf = manager.task_perf_queue
+            manager.task_perf_queue = []
+            N = len(task_perf) # TODO get info about how many are active if no tasks are completed
+            if N > 0:
+                self.task_manager.update(behavior_name, task_perf)
+            K = manager.get_num_tasks_needed()
+            if K > 0:
+                new_tasks = self.task_manager.get_tasks(behavior_name, K)
+                manager.add_new_tasks(new_tasks)
 
         for trainer in self.trainers.values():
             if not trainer.threaded:

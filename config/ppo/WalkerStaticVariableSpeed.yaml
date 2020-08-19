@@ -24,3 +24,10 @@ behaviors:
     time_horizon: 1000
     summary_freq: 30000
     threaded: true
+agent_parameters:
+  WalkerStaticVariableSpeed:
+    targetWalkingSpeed:
+      sampler_type: uniform
+      sampler_parameters:
+        min_value: 0.0
+        max_value: 10
