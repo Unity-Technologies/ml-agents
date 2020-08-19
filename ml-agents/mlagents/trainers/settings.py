@@ -525,9 +525,16 @@ class SelfPlaySettings:
 class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
+    DistributedPPO: str = "distributed-ppo"
+    DistributedSAC: str = "distributed-sac"
 
     def to_settings(self) -> type:
-        _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings}
+        _mapping = {
+            TrainerType.PPO: PPOSettings,
+            TrainerType.SAC: SACSettings,
+            TrainerType.DistributedPPO: PPOSettings,
+            TrainerType.DistributedSAC: SACSettings,
+        }
         return _mapping[self]
 
 
@@ -657,6 +664,7 @@ class RunOptions(ExportableSettings):
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
+    plugins: List[str] = parser.get_default("plugins")
     # Strict conversion
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)

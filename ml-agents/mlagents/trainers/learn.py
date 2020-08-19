@@ -22,7 +22,7 @@ from mlagents.trainers.stats import (
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
-
+from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
@@ -34,10 +34,60 @@ from mlagents_envs.timers import (
     add_metadata as add_timer_metadata,
 )
 from mlagents_envs import logging_util
+import sys
+import importlib
+import pkgutil
 
 logger = logging_util.get_logger(__name__)
 
 TRAINING_STATUS_FILE_NAME = "training_status.json"
+
+
+class Initializer:
+    def __init__(self):
+        pass
+
+    def load(self):
+        pass
+
+
+def get_all_subclasses(cls):
+    all_subclasses = []
+
+    for subclass in cls.__subclasses__():
+        all_subclasses.append(subclass)
+        all_subclasses.extend(get_all_subclasses(subclass))
+
+    return all_subclasses
+
+
+def find_initializer_trainer(paths):
+    original_initializers = set(Initializer.__subclasses__())
+    original_trainers = set(RLTrainer.__subclasses__())
+
+    print(original_initializers)
+    print(original_trainers)
+
+    for p in paths:
+        sys.path.append(p)
+
+    discovered_plugins = {
+        name: importlib.import_module(name)
+        for finder, name, ispkg in pkgutil.iter_modules(paths)
+    }
+    print(f"plugins available {discovered_plugins}")
+
+    all_initializers = set(get_all_subclasses(Initializer))
+    all_trainers = set(get_all_subclasses(RLTrainer))
+
+    new_initializers = all_initializers - original_initializers
+    new_trainers = all_trainers - original_trainers
+    print(f"Found %s new initializers" % len(new_initializers))
+    print(f"Found %s new trainers" % len(new_trainers))
+    print(all_initializers)
+    print(new_initializers)
+    print(all_trainers)
+    print(new_trainers)
 
 
 def get_version_string() -> str:
@@ -124,6 +174,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
 
+        find_initializer_trainer(options.plugins)
         trainer_factory = TrainerFactory(
             options.behaviors,
             write_path,

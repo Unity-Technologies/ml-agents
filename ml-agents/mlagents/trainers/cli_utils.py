@@ -153,6 +153,12 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Whether to enable debug-level logging for some parts of the code",
     )
     argparser.add_argument(
+        "--plugins",
+        default="",
+        nargs="*",
+        help="Absolute paths of plugins to be added to the trainers.",
+    )
+    argparser.add_argument(
         "--env-args",
         default=None,
         nargs=argparse.REMAINDER,
