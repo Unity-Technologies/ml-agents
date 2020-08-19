@@ -71,7 +71,7 @@ class TrainerController:
         self.kill_trainers = False
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
-        if torch:
+        if torch is not None:
             torch.manual_seed(training_seed)
         self.rank = get_rank()
 
