@@ -187,7 +187,6 @@ class Actor(abc.ABC):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor, int, int, int, int]:
         """
         Forward pass of the Actor for inference. This is required for export to ONNX, and
@@ -308,14 +307,11 @@ class SimpleActor(nn.Module, Actor):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-        sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor, int, int, int, int]:
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
         """
-        dists, _ = self.get_dists(
-            vec_inputs, vis_inputs, masks, memories, sequence_length
-        )
+        dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
         action_list = self.sample_action(dists)
         sampled_actions = torch.stack(action_list, dim=-1)
         if self.act_type == ActionType.CONTINUOUS:
