@@ -4,7 +4,7 @@ import grpc
 from mlagents_envs.communicator_objects import unity_message_pb2 as mlagents__envs_dot_communicator__objects_dot_unity__message__pb2
 
 
-class UnityToExternalProtoStub:
+class UnityToExternalProtoStub(object):
   # missing associated documentation comment in .proto file
   pass
 
@@ -21,7 +21,7 @@ class UnityToExternalProtoStub:
         )
 
 
-class UnityToExternalProtoServicer:
+class UnityToExternalProtoServicer(object):
   # missing associated documentation comment in .proto file
   pass
 
