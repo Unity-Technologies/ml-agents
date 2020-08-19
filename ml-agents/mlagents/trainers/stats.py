@@ -58,7 +58,7 @@ class StatsWriter(abc.ABC):
 
 class GaugeWriter(StatsWriter):
     """
-    Write all stats that we recieve to the timer gauges, so we can track them offline easily
+    Write all stats that we receive to the timer gauges, so we can track them offline easily
     """
 
     @staticmethod
