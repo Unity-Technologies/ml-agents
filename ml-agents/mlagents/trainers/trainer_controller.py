@@ -30,6 +30,11 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 from mlagents.tf_utils.globals import get_rank
 
+try:
+    import torch
+except ModuleNotFoundError:
+    torch = None  # type: ignore
+
 
 class TrainerController:
     def __init__(
@@ -66,6 +71,8 @@ class TrainerController:
         self.kill_trainers = False
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
+        if torch:
+            torch.manual_seed(training_seed)
         self.rank = get_rank()
 
     @timed

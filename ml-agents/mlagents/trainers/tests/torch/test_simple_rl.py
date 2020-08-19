@@ -2,7 +2,6 @@ import math
 import tempfile
 import pytest
 import numpy as np
-import torch
 import attr
 from typing import Dict
 
@@ -115,10 +114,7 @@ def _check_environment_trains(
     env_parameter_manager=None,
     success_threshold=0.9,
     env_manager=None,
-    seed=1337,
 ):
-    np.random.seed(seed)
-    torch.manual_seed(seed)
     if env_parameter_manager is None:
         env_parameter_manager = EnvironmentParameterManager()
     # Create controller and begin training.
