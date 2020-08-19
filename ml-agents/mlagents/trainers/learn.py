@@ -82,8 +82,8 @@ def find_initializer_trainer(paths):
 
     new_initializers = all_initializers - original_initializers
     new_trainers = all_trainers - original_trainers
-    print(f"Found %s new initializers" % len(new_initializers))
-    print(f"Found %s new trainers" % len(new_trainers))
+    print(f"Found {len(new_initializers)} new initializers")
+    print(f"Found {len(new_trainers)} new trainers")
     print(all_initializers)
     print(new_initializers)
     print(all_trainers)
