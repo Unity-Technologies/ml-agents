@@ -193,7 +193,7 @@ class Actor(abc.ABC):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor, int, int, int, int]:
+    ) -> Tuple[torch.Tensor, int, int, int, int]:
         """
         Forward pass of the Actor for inference. This is required for export to ONNX, and
         the inputs and outputs of this method should not be changed without a respective change
@@ -325,7 +325,7 @@ class SimpleActor(nn.Module, Actor):
         vis_inputs: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor, int, int, int, int]:
+    ) -> Tuple[torch.Tensor, int, int, int, int]:
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
         """
@@ -333,12 +333,11 @@ class SimpleActor(nn.Module, Actor):
         action_list = self.sample_action(dists)
         sampled_actions = torch.stack(action_list, dim=-1)
         if self.act_type == ActionType.CONTINUOUS:
-            log_probs = dists[0].log_prob(sampled_actions)
+            action_out = sampled_actions
         else:
-            log_probs = dists[0].all_log_prob()
+            action_out = dists[0].all_log_prob()
         return (
-            sampled_actions,
-            log_probs,
+            action_out,
             self.version_number,
             torch.Tensor([self.network_body.memory_size]),
             self.is_continuous_int,
