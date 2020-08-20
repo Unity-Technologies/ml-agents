@@ -138,7 +138,7 @@ public class WormAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-        EndEpisode();
+//        EndEpisode();
     }
 
     public override void OnActionReceived(float[] vectorAction)
