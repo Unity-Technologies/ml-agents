@@ -2815,9 +2815,10 @@ MonoBehaviour:
   crawlerStVSBrain: {fileID: 11400000, guid: db9d60279f76f44858fbaf03edf5648f, type: 3}
   m_TargetWalkingSpeed: 15
   randomizeWalkSpeedEachEpisode: 0
-  targetPrefab: {fileID: 3839136118347789758, guid: 1a2a52e48911845a8a189e0891357ea2,
+  dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
     type: 3}
-  target: {fileID: 0}
+  staticTargetPrefab: {fileID: 3839136118347789758, guid: 2173d15c0b5fc49e5870c9d1c7f7ee8e,
+    type: 3}
   body: {fileID: 4845971001588102148}
   leg0Upper: {fileID: 4845971001327157979}
   leg0Lower: {fileID: 4845971000000621467}

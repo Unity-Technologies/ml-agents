@@ -49,8 +49,9 @@ public class CrawlerAgent : Agent
     //The direction an agent will walk during training.
     private Vector3 m_WorldDirToWalk = Vector3.right;
     [Header("Target To Walk Towards")]
-    public Transform targetPrefab; //Target prefab
-    public Transform target; //Target the agent will walk towards during training.
+    public Transform dynamicTargetPrefab; //Target prefab
+    public Transform staticTargetPrefab; //Target prefab
+    private Transform m_Target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
     public Transform leg0Upper;
@@ -95,7 +96,7 @@ public class CrawlerAgent : Agent
                 if(crawlerDyBrain)
                     m_BehaviorParams.Model = crawlerDyBrain;
                 randomizeWalkSpeedEachEpisode = false;
-                target = Instantiate(targetPrefab, transform.position, Quaternion.identity, transform);
+                m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
                 break;
             }
             case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed :
@@ -103,8 +104,7 @@ public class CrawlerAgent : Agent
                 m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
                 if(crawlerDyVSBrain)
                     m_BehaviorParams.Model = crawlerDyVSBrain;
-//                    SetModel("CrawlerDynamicVariableSpeed", crawlerDyVSBrain);
-                target = Instantiate(targetPrefab, transform.position, Quaternion.identity, transform);
+                m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
             }
@@ -114,7 +114,7 @@ public class CrawlerAgent : Agent
                 if(crawlerStBrain)
                     m_BehaviorParams.Model = crawlerStBrain;
                 var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
-                target = Instantiate(targetPrefab, targetSpawnPos, Quaternion.identity, transform);
+                m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = false;
                 break;
             }
@@ -124,7 +124,7 @@ public class CrawlerAgent : Agent
                 if(crawlerStVSBrain)
                     m_BehaviorParams.Model = crawlerStVSBrain;
                 var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
-                target = Instantiate(targetPrefab, targetSpawnPos, Quaternion.identity, transform);
+                m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
             }
@@ -203,7 +203,7 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
 
         RaycastHit hit;
         float maxRaycastDist = 10;
@@ -219,30 +219,6 @@ public class CrawlerAgent : Agent
             CollectObservationBodyPart(bodyPart, sensor);
         }
     }
-
-
-//    /// <summary>
-//    /// Loop over body parts to add them to observation.
-//    /// </summary>
-//    public override void CollectObservations(VectorSensor sensor)
-//    {
-//        //Add pos of target relative to orientation cube
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
-//
-//        RaycastHit hit;
-//        float maxRaycastDist = 10;
-//        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
-//        {
-//            sensor.AddObservation(hit.distance / maxRaycastDist);
-//        }
-//        else
-//            sensor.AddObservation(1);
-//
-//        foreach (var bodyPart in m_JdController.bodyPartsList)
-//        {
-//            CollectObservationBodyPart(bodyPart, sensor);
-//        }
-//    }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
@@ -333,8 +309,8 @@ public class CrawlerAgent : Agent
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-        m_WorldDirToWalk = target.position - body.position;
-        m_OrientationCube.UpdateOrientation(body, target);
+        m_WorldDirToWalk = m_Target.position - body.position;
+        m_OrientationCube.UpdateOrientation(body, m_Target);
         if (m_DirectionIndicator)
         {
             m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
