@@ -2,7 +2,7 @@
 
 # Unity ML-Agents Toolkit
 
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/)
 
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
 
@@ -48,8 +48,8 @@ descriptions of all these features.
 
 ## Releases & Documentation
 
-**Our latest, stable release is `Release 5`. Click
-[here](https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/Readme.md)
+**Our latest, stable release is `Release 6`. Click
+[here](https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/Readme.md)
 to get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `master` branch which is
@@ -67,6 +67,7 @@ under active development and may be unstable. A few helpful guidelines:
 | **Version** | **Release Date** | **Source** | **Documentation** | **Download** |
 |:-------:|:------:|:-------------:|:-------:|:------------:|
 | **master (unstable)** | -- | [source](https://github.com/Unity-Technologies/ml-agents/tree/master) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/master/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/master.zip) |
+| **Release 6** | **August 12, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_6)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_6.zip)** |
 | **Release 5** | **July 31, 2020** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_5)** | **[docs](https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/Readme.md)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_5.zip)** |
 | **Release 4** | July 15, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_4) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_4_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_4.zip) |
 | **Release 3** | June 10, 2020 | [source](https://github.com/Unity-Technologies/ml-agents/tree/release_3) | [docs](https://github.com/Unity-Technologies/ml-agents/tree/release_3_docs/docs/Readme.md) | [download](https://github.com/Unity-Technologies/ml-agents/archive/release_3.zip) |

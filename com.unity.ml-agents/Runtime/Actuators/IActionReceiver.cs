@@ -35,9 +35,9 @@ namespace Unity.MLAgents.Actuators
         /// <see cref="ActionSegment{T}"/> initialized from a float array.</returns>
         public static ActionBuffers FromDiscreteActions(float[] discreteActions)
         {
-           return new ActionBuffers(ActionSegment<float>.Empty, discreteActions == null ? ActionSegment<int>.Empty
-                               : new ActionSegment<int>(Array.ConvertAll(discreteActions,
-                                   x => (int)x)));
+            return new ActionBuffers(ActionSegment<float>.Empty, discreteActions == null ? ActionSegment<int>.Empty
+                                : new ActionSegment<int>(Array.ConvertAll(discreteActions,
+                                    x => (int)x)));
         }
 
         public ActionBuffers(float[] continuousActions, int[] discreteActions)
@@ -165,5 +165,21 @@ namespace Unity.MLAgents.Actuators
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);
+    }
+
+    /// <summary>
+    /// Helper methods to be shared by all classes that implement <see cref="IActionReceiver"/>.
+    /// </summary>
+    public static class ActionReceiverExtensions
+    {
+        /// <summary>
+        /// Returns the number of discrete branches + the number of continuous actions.
+        /// </summary>
+        /// <param name="actionReceiver"></param>
+        /// <returns></returns>
+        public static int TotalNumberOfActions(this IActionReceiver actionReceiver)
+        {
+            return actionReceiver.ActionSpec.NumContinuousActions + actionReceiver.ActionSpec.NumDiscreteActions;
+        }
     }
 }

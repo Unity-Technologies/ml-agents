@@ -16,6 +16,8 @@ namespace Unity.MLAgents.Actuators
         // An implementation of IDiscreteActionMask that allows for writing to it based on an offset.
         ActuatorDiscreteActionMask m_DiscreteActionMask;
 
+        ActionSpec m_CombinedActionSpec;
+
         /// <summary>
         /// Flag used to check if our IActuators are ready for execution.
         /// </summary>
@@ -48,15 +50,8 @@ namespace Unity.MLAgents.Actuators
         public ActuatorDiscreteActionMask DiscreteActionMask => m_DiscreteActionMask;
 
         /// <summary>
-        /// Returns the previously stored actions for the actuators in this list.
+        /// The currently stored <see cref="ActionBuffers"/> object for the <see cref="IActuator"/>s managed by this class.
         /// </summary>
-        // public float[] StoredContinuousActions { get; private set; }
-
-        /// <summary>
-        /// Returns the previously stored actions for the actuators in this list.
-        /// </summary>
-        // public int[] StoredDiscreteActions { get; private set; }
-
         public ActionBuffers StoredActions { get; private set; }
 
         /// <summary>
@@ -106,18 +101,61 @@ namespace Unity.MLAgents.Actuators
             var discreteActions = numDiscreteBranches == 0 ? ActionSegment<int>.Empty : new ActionSegment<int>(new int[numDiscreteBranches]);
 
             StoredActions = new ActionBuffers(continuousActions, discreteActions);
-            m_DiscreteActionMask = new ActuatorDiscreteActionMask(actuators, sumOfDiscreteBranches, numDiscreteBranches);
+            m_CombinedActionSpec = CombineActionSpecs(actuators);
+            m_DiscreteActionMask = new ActuatorDiscreteActionMask(actuators, sumOfDiscreteBranches, numDiscreteBranches, m_CombinedActionSpec.BranchSizes);
             m_ReadyForExecution = true;
+        }
+
+        internal static ActionSpec CombineActionSpecs(IList<IActuator> actuators)
+        {
+            int numContinuousActions = 0;
+            int numDiscreteActions = 0;
+
+            foreach (var actuator in actuators)
+            {
+                numContinuousActions += actuator.ActionSpec.NumContinuousActions;
+                numDiscreteActions += actuator.ActionSpec.NumDiscreteActions;
+            }
+
+            int[] combinedBranchSizes;
+            if (numDiscreteActions == 0)
+            {
+                combinedBranchSizes = Array.Empty<int>();
+            }
+            else
+            {
+                combinedBranchSizes = new int[numDiscreteActions];
+                var start = 0;
+                for (var i = 0; i < actuators.Count; i++)
+                {
+                    var branchSizes = actuators[i].ActionSpec.BranchSizes;
+                    if (branchSizes != null)
+                    {
+                        Array.Copy(branchSizes, 0, combinedBranchSizes, start, branchSizes.Length);
+                        start += branchSizes.Length;
+                    }
+                }
+            }
+
+            return new ActionSpec(numContinuousActions, numDiscreteActions, combinedBranchSizes);
+        }
+
+        /// <summary>
+        /// Returns an ActionSpec representing the concatenation of all IActuator's ActionSpecs
+        /// </summary>
+        /// <returns></returns>
+        public ActionSpec GetCombinedActionSpec()
+        {
+            ReadyActuatorsForExecution();
+            return m_CombinedActionSpec;
         }
 
         /// <summary>
         /// Updates the local action buffer with the action buffer passed in.  If the buffer
         /// passed in is null, the local action buffer will be cleared.
         /// </summary>
-        /// <param name="continuousActionBuffer">The action buffer which contains all of the
-        /// continuous actions for the IActuators in this list.</param>
-        /// <param name="discreteActionBuffer">The action buffer which contains all of the
-        /// discrete actions for the IActuators in this list.</param>
+        /// <param name="actions">The <see cref="ActionBuffers"/> object which contains all of the
+        /// actions for the IActuators in this list.</param>
         public void UpdateActions(ActionBuffers actions)
         {
             ReadyActuatorsForExecution();
@@ -225,7 +263,7 @@ namespace Unity.MLAgents.Actuators
 
 
         /// <summary>
-        /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.GetName"/> value.
+        /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.Name"/> value.
         /// </summary>
         void SortActuators()
         {

@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Tests
 
         public DummySensor(int dim1, int dim2, int dim3)
         {
-            m_Shape = new[] { dim1, dim2, dim3};
+            m_Shape = new[] { dim1, dim2, dim3 };
         }
 
         public string GetName()

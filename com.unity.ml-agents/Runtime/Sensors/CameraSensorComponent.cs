@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public Camera Camera
         {
-            get { return m_Camera;  }
+            get { return m_Camera; }
             set { m_Camera = value; UpdateSensor(); }
         }
 
@@ -32,7 +32,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public string SensorName
         {
-            get { return m_SensorName;  }
+            get { return m_SensorName; }
             set { m_SensorName = value; }
         }
 
@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public int Width
         {
-            get { return m_Width;  }
+            get { return m_Width; }
             set { m_Width = value; }
         }
 
@@ -58,8 +58,8 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public int Height
         {
-            get { return m_Height;  }
-            set { m_Height = value;  }
+            get { return m_Height; }
+            set { m_Height = value; }
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("grayscale")]
@@ -71,7 +71,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public bool Grayscale
         {
-            get { return m_Grayscale;  }
+            get { return m_Grayscale; }
             set { m_Grayscale = value; }
         }
 
@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public SensorCompressionType CompressionType
         {
-            get { return m_Compression;  }
+            get { return m_Compression; }
             set { m_Compression = value; UpdateSensor(); }
         }
 

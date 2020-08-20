@@ -43,13 +43,14 @@ namespace Unity.MLAgents.Policies
 
         /// <inheritdoc />
         public BarracudaPolicy(
-            BrainParameters brainParameters,
+            ActionSpec actionSpec,
             NNModel model,
             InferenceDevice inferenceDevice)
         {
-            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, brainParameters, inferenceDevice);
+            var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
             m_ModelRunner = modelRunner;
-            m_SpaceType = brainParameters.VectorActionSpaceType;
+            actionSpec.CheckNotHybrid();
+            m_SpaceType = actionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
         }
 
         /// <inheritdoc />

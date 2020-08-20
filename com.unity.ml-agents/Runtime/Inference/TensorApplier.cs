@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
+
 
 namespace Unity.MLAgents.Inference
 {
@@ -38,27 +40,28 @@ namespace Unity.MLAgents.Inference
         /// <summary>
         /// Returns a new TensorAppliers object.
         /// </summary>
-        /// <param name="bp"> The BrainParameters used to determine what Appliers will be
-        /// used</param>
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
         public TensorApplier(
-            BrainParameters bp,
+            ActionSpec actionSpec,
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            if (bp.VectorActionSpaceType == SpaceType.Continuous)
+            actionSpec.CheckNotHybrid();
+
+            if (actionSpec.NumContinuousActions > 0)
             {
                 m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
             }
             else
             {
                 m_Dict[TensorNames.ActionOutput] =
-                    new DiscreteActionOutputApplier(bp.VectorActionSize, seed, allocator);
+                    new DiscreteActionOutputApplier(actionSpec.BranchSizes, seed, allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 

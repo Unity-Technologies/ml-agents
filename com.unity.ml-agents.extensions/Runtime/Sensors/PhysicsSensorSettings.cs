@@ -109,7 +109,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                 }
 
-                foreach(var vel in poseExtractor.GetEnabledModelSpaceVelocities())
+                foreach (var vel in poseExtractor.GetEnabledModelSpaceVelocities())
                 {
                     if (settings.UseModelSpaceLinearVelocity)
                     {
@@ -136,7 +136,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                 }
 
-                foreach(var vel in poseExtractor.GetEnabledLocalSpaceVelocities())
+                foreach (var vel in poseExtractor.GetEnabledLocalSpaceVelocities())
                 {
                     if (settings.UseLocalSpaceLinearVelocity)
                     {

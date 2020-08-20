@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 
@@ -16,13 +17,15 @@ public class WormAgent : Agent
     public bool respawnTargetWhenTouched;
     public float targetSpawnRadius;
 
-    [Header("Body Parts")] [Space(10)]
+    [Header("Body Parts")]
+    [Space(10)]
     public Transform bodySegment0;
     public Transform bodySegment1;
     public Transform bodySegment2;
     public Transform bodySegment3;
 
-    [Header("Joint Settings")] [Space(10)]
+    [Header("Joint Settings")]
+    [Space(10)]
     JointDriveController m_JdController;
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
@@ -64,7 +67,7 @@ public class WormAgent : Agent
     //We want to collect this info because it is the actual rotation, not the "target rotation"
     public Quaternion GetJointRotation(ConfigurableJoint joint)
     {
-        return(Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
+        return (Quaternion.FromToRotation(joint.axis, joint.connectedBody.transform.rotation.eulerAngles));
     }
 
     /// <summary>
@@ -103,7 +106,7 @@ public class WormAgent : Agent
         float maxDist = 10;
         if (Physics.Raycast(bodySegment0.position, Vector3.down, out hit, maxDist))
         {
-            sensor.AddObservation(hit.distance/maxDist);
+            sensor.AddObservation(hit.distance / maxDist);
         }
         else
             sensor.AddObservation(1);
@@ -140,23 +143,25 @@ public class WormAgent : Agent
         target.position = newTargetPos + ground.position;
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
     {
         // The dictionary with all the body parts in it are in the jdController
         var bpDict = m_JdController.bodyPartsDict;
 
         var i = -1;
+        var continuousActions = actionBuffers.ContinuousActions;
         // Pick a new target joint rotation
-        bpDict[bodySegment1].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[bodySegment2].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
-        bpDict[bodySegment3].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
+        bpDict[bodySegment1].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[bodySegment2].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[bodySegment3].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
 
         // Update joint strength
-        bpDict[bodySegment1].SetJointStrength(vectorAction[++i]);
-        bpDict[bodySegment2].SetJointStrength(vectorAction[++i]);
-        bpDict[bodySegment3].SetJointStrength(vectorAction[++i]);
+        bpDict[bodySegment1].SetJointStrength(continuousActions[++i]);
+        bpDict[bodySegment2].SetJointStrength(continuousActions[++i]);
+        bpDict[bodySegment3].SetJointStrength(continuousActions[++i]);
 
-        if (bodySegment0.position.y < ground.position.y -2)
+        if (bodySegment0.position.y < ground.position.y - 2)
         {
             EndEpisode();
         }

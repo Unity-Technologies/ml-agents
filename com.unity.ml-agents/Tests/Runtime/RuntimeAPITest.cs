@@ -6,6 +6,7 @@ using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 using NUnit.Framework;
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -18,7 +19,7 @@ namespace Tests
         [Observable]
         public float ObservableFloat;
 
-        public override void Heuristic(float[] actionsOut)
+        public override void Heuristic(in ActionBuffers actionsOut)
         {
             numHeuristicCalls++;
             base.Heuristic(actionsOut);
@@ -120,9 +121,9 @@ namespace Tests
 
             Academy.Instance.EnvironmentStep();
 
-            var actions = agent.GetAction();
+            var actions = agent.GetStoredActionBuffers().DiscreteActions;
             // default Heuristic implementation should return zero actions.
-            Assert.AreEqual(new[] {0.0f, 0.0f}, actions);
+            Assert.AreEqual(new ActionSegment<int>(new[] {0, 0}), actions);
             Assert.AreEqual(1, agent.numHeuristicCalls);
 
             Academy.Instance.EnvironmentStep();

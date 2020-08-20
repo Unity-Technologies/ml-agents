@@ -18,7 +18,7 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public SensorCompressionType CompressionType
         {
-            get { return m_CompressionType;  }
+            get { return m_CompressionType; }
             set { m_CompressionType = value; }
         }
 
@@ -82,10 +82,10 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public void Update() {}
+        public void Update() { }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()

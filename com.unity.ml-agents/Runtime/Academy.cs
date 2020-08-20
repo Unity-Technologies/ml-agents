@@ -4,6 +4,7 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
@@ -19,7 +20,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -51,7 +52,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_5_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_6_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -244,7 +245,7 @@ namespace Unity.MLAgents
                 // This try-catch is because DontDestroyOnLoad cannot be used in Editor Tests
                 GameObject.DontDestroyOnLoad(m_StepperObject);
             }
-            catch {}
+            catch { }
         }
 
         /// <summary>
@@ -417,13 +418,13 @@ namespace Unity.MLAgents
 
         void ResetActions()
         {
-            DecideAction = () => {};
-            DestroyAction = () => {};
-            AgentPreStep = i => {};
-            AgentSendState = () => {};
-            AgentAct = () => {};
-            AgentForceReset = () => {};
-            OnEnvironmentReset = () => {};
+            DecideAction = () => { };
+            DestroyAction = () => { };
+            AgentPreStep = i => { };
+            AgentSendState = () => { };
+            AgentAct = () => { };
+            AgentForceReset = () => { };
+            OnEnvironmentReset = () => { };
         }
 
         static void OnQuitCommandReceived()
@@ -561,18 +562,18 @@ namespace Unity.MLAgents
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
         /// <param name="model">The NNModel the ModelRunner must use.</param>
-        /// <param name="brainParameters">The BrainParameters used to create the ModelRunner.</param>
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
         /// </param>
         /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
-            NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
+            NNModel model, ActionSpec actionSpec, InferenceDevice inferenceDevice)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
             {
-                modelRunner = new ModelRunner(model, brainParameters, inferenceDevice, m_InferenceSeed);
+                modelRunner = new ModelRunner(model, actionSpec, inferenceDevice, m_InferenceSeed);
                 m_ModelRunners.Add(modelRunner);
                 m_InferenceSeed++;
             }

@@ -50,6 +50,14 @@ namespace Unity.MLAgents.Tests.Actuators
             }
         }
 
+        [Test]
+        public void TestNullConstructor()
+        {
+            var actionSegment = new ActionSegment<float>(null);
+            Assert.IsTrue(actionSegment.Length == 0);
+            Assert.IsTrue(actionSegment.Array == Array.Empty<float>());
+        }
+
     }
 
 }

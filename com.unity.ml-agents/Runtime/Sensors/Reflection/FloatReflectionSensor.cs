@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Sensors.Reflection
     {
         public FloatReflectionSensor(ReflectionSensorInfo reflectionSensorInfo)
             : base(reflectionSensorInfo, 1)
-        {}
+        { }
 
         internal override void WriteReflectedField(ObservationWriter writer)
         {

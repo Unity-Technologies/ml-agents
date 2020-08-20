@@ -33,7 +33,7 @@ namespace Unity.MLAgents
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_5_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="branch">The branch for which the actions will be masked.</param>
         /// <param name="actionIndices">The indices of the masked actions.</param>
@@ -42,16 +42,19 @@ namespace Unity.MLAgents
             m_Delegate.WriteMask(branch, actionIndices);
         }
 
+        /// <inheritdoc />
         public void WriteMask(int branch, IEnumerable<int> actionIndices)
         {
             m_Delegate.WriteMask(branch, actionIndices);
         }
 
+        /// <inheritdoc />
         public bool[] GetMask()
         {
             return m_Delegate.GetMask();
         }
 
+        /// <inheritdoc />
         public void ResetMask()
         {
             m_Delegate.ResetMask();

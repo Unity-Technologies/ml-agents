@@ -89,11 +89,12 @@ def find_executables(root_dir: str) -> List[str]:
     Try to find the player executable. This seems to vary between Unity versions.
     """
     ignored_extension = frozenset([".dll", ".dylib", ".bundle"])
+    ignored_files = frozenset(["macblas"])
     exes = []
     for root, _, files in os.walk(root_dir):
         for filename in files:
             file_root, ext = os.path.splitext(filename)
-            if ext in ignored_extension:
+            if ext in ignored_extension or filename in ignored_files:
                 continue
             file_path = os.path.join(root, filename)
             if os.access(file_path, os.X_OK):
