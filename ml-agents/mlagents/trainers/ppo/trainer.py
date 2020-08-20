@@ -216,9 +216,10 @@ class PPOTrainer(RLTrainer):
         create_graph: bool = False,
     ) -> TFPolicy:
         """
-        Creates a PPO policy to trainers list of policies.
+        Creates a policy with a Tensorflow backend and PPO hyperparameters
+        :param parsed_behavior_id:
         :param behavior_spec: specifications for policy construction
-        :param create_graph: whether to create the graph when policy is constructed
+        :param create_graph: whether to create the tensorflow graph on construction
         :return policy
         """
         policy = TFPolicy(
@@ -234,9 +235,9 @@ class PPOTrainer(RLTrainer):
         self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
     ) -> TorchPolicy:
         """
-        Creates a PPO policy to trainers list of policies.
+        Creates a policy with a PyTorch backend and PPO hyperparameters
         :param parsed_behavior_id:
-        :param brain_parameters: specifications for policy construction
+        :param behavior_spec: specifications for policy construction
         :return policy
         """
         policy = TorchPolicy(
