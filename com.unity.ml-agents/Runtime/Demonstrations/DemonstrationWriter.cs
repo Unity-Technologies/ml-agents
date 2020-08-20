@@ -33,6 +33,14 @@ namespace Unity.MLAgents.Demonstrations
         }
 
         /// <summary>
+        /// Number of steps written so far.
+        /// </summary>
+        internal int NumSteps
+        {
+            get { return m_MetaData.numberSteps; }
+        }
+
+        /// <summary>
         /// Writes the initial data to the stream.
         /// </summary>
         /// <param name="demonstrationName">Base name of the demonstration file(s).</param>
