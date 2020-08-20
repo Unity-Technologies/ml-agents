@@ -12,9 +12,7 @@ from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings, TrainerType
 from mlagents_distributed.trainers.ppo.trainer import DistributedPPOTrainer
-from mlagents_distributed.distributed_trainers.sac.distributed_sac_trainer import (
-    DistributedSACTrainer,
-)
+from mlagents_distributed.trainers.sac.trainer import DistributedSACTrainer
 
 logger = get_logger(__name__)
 
