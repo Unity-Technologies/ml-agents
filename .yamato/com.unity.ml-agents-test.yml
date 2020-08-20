@@ -90,10 +90,14 @@ test_{{ platform.name }}_trunk:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/unity-pypi-local/simple --upgrade
-    - unity-downloader-cli -u trunk -c editor --wait --fast
+    - python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
+    - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    {% if platform.name == "win" %}
+    - upm-ci package test -u "C:\build\output\Unity-Technologies\ml-agents\.Editor" --package-path com.unity.ml-agents {{ editor.coverageOptions }}
+    {% else %}
     - upm-ci package test -u {{ editor.version }} --package-path com.unity.ml-agents {{ editor.coverageOptions }}
+    {% endif %}
     - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
   artifacts:
     logs:
