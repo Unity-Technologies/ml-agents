@@ -3,8 +3,8 @@ import abc
 from typing import Any
 
 
-class BaseSaver(abc.ABC):
-    """This class is the base class for the Saver"""
+class BaseModelSaver(abc.ABC):
+    """This class is the base class for the ModelSaver"""
 
     def __init__(self):
         pass
@@ -12,8 +12,8 @@ class BaseSaver(abc.ABC):
     @abc.abstractmethod
     def register(self, module: Any) -> None:
         """
-        Register the modules to the Saver.
-        The Saver will store the module and include it in the saved files
+        Register the modules to the ModelSaver.
+        The ModelSaver will store the module and include it in the saved files
         when saving checkpoint/exporting graph.
         :param module: the module to be registered
         """
@@ -21,14 +21,14 @@ class BaseSaver(abc.ABC):
 
     def _register_policy(self, policy):
         """
-        Helper function for registering policy to the Saver.
+        Helper function for registering policy to the ModelSaver.
         :param policy: the policy to be registered
         """
         pass
 
     def _register_optimizer(self, optimizer):
         """
-        Helper function for registering optimizer to the Saver.
+        Helper function for registering optimizer to the ModelSaver.
         :param optimizer: the optimizer to be registered
         """
         pass
