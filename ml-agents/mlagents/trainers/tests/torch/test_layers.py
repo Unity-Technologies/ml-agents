@@ -5,6 +5,7 @@ from mlagents.trainers.torch.layers import (
     linear_layer,
     lstm_layer,
     Initialization,
+    LSTM,
 )
 
 
@@ -38,3 +39,21 @@ def test_lstm_layer():
             assert torch.all(
                 torch.eq(param.data[4:8], torch.ones_like(param.data[4:8]))
             )
+
+
+def test_lstm_class():
+    torch.manual_seed(0)
+    input_size = 12
+    memory_size = 64
+    batch_size = 8
+    seq_len = 16
+    lstm = LSTM(input_size, memory_size)
+
+    assert lstm.memory_size == memory_size
+
+    sample_input = torch.ones((batch_size, seq_len, input_size))
+    sample_memories = torch.ones((1, batch_size, memory_size))
+    out, mem = lstm(sample_input, sample_memories)
+    # Hidden size should be half of memory_size
+    assert out.shape == (batch_size, seq_len, memory_size // 2)
+    assert mem.shape == (1, batch_size, memory_size)

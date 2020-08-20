@@ -32,6 +32,10 @@ and this project adheres to
 - The interaction between EnvManager and TrainerController was changed; EnvManager.advance() was split into to stages,
 and TrainerController now uses the results from the first stage to handle new behavior names. This change speeds up
 Python training by approximately 5-10%. (#4259)
+- Experimental PyTorch support has been added. Use `--torch` when running `mlagents-learn`, or add
+`framework: pytorch` to your trainer configuration (under the behavior name) to enable it.
+Note that PyTorch 1.6.0 or greater should be installed to use this feature; see
+[the PyTorch website](https://pytorch.org/) for installation instructions. (#4335)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
