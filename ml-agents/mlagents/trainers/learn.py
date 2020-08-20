@@ -37,18 +37,11 @@ from mlagents_envs import logging_util
 import sys
 import importlib
 import pkgutil
+from mlagents.trainers.initializer import Initializer
 
 logger = logging_util.get_logger(__name__)
 
 TRAINING_STATUS_FILE_NAME = "training_status.json"
-
-
-class Initializer:
-    def __init__(self):
-        pass
-
-    def load(self):
-        pass
 
 
 def get_all_subclasses(cls):
@@ -70,6 +63,7 @@ def find_initializer_trainer(paths):
 
     for p in paths:
         sys.path.append(p)
+    print(sys.path)
 
     discovered_plugins = {
         name: importlib.import_module(name)

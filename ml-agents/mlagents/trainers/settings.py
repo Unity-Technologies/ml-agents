@@ -652,6 +652,11 @@ class EngineSettings:
 
 
 @attr.s(auto_attribs=True)
+class PluginSettings:
+    plugins: Optional[List[str]] = parser.get_default("plugins")
+
+
+@attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
         factory=lambda: collections.defaultdict(TrainerSettings)
@@ -660,13 +665,14 @@ class RunOptions(ExportableSettings):
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
     environment_parameters: Optional[Dict[str, EnvironmentParameterSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
+    plugin_settings: PluginSettings = attr.ib(factory=PluginSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
-    plugins: List[str] = parser.get_default("plugins")
     # Strict conversion
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
+    cattr.register_structure_hook(PluginSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
     cattr.register_structure_hook(

@@ -156,7 +156,7 @@ def _create_parser() -> argparse.ArgumentParser:
         "--plugins",
         default="",
         type=str,
-        nargs=3,
+        nargs="*",
         help="Absolute paths of plugins to be loaded",
         required=False
     )
