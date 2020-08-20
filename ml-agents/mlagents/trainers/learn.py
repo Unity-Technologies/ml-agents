@@ -70,11 +70,12 @@ def get_initializer_trainer(paths: List[str]) -> List:
         name: importlib.import_module(name)
         for finder, name, ispkg in pkgutil.iter_modules(paths)
     }
-    logger.info(f"The following plugins are available {discovered_plugins}")
+    if discovered_plugins:
+        logger.info(f"The following plugins are available {discovered_plugins}")
 
     new_initializers = set(get_all_subclasses(Initializer))
-    if len(new_initializers) <= 0:
-        return
+    if len(new_initializers) == 0:
+        return []
     elif len(new_initializers) == 1:
         # load the initializer
         logger.info("Registering new initializer")
@@ -88,7 +89,7 @@ def get_initializer_trainer(paths: List[str]) -> List:
         return new_trainers
     else:
         raise ValueError(
-            "there should be exactly one initializer passed through plugins option"
+            "There should be exactly one initializer passed through plugins option."
         )
 
 
