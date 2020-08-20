@@ -45,7 +45,7 @@ class TrainerFactory:
         the EnvironmentParameters must change.
         :param init_path: Path from which to load model.
         :param multi_gpu: If True, multi-gpu will be used. (currently not available)
-        :param use_torch: If True, the Trainers will all use the Pytorch framework
+        :param use_torch: If True, the Trainers will all use the PyTorch framework
         instead of the TensorFlow framewrok.
         """
         self.trainer_config = trainer_config
