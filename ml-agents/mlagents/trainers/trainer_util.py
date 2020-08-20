@@ -11,7 +11,9 @@ from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings, TrainerType
-
+from mlagents_distributed.trainers.ppo.trainer import DistributedPPOTrainer
+from mlagents_distributed.distributed_trainers.sac.distributed_sac_trainer import \
+    DistributedSACTrainer
 
 logger = get_logger(__name__)
 
@@ -107,6 +109,26 @@ def initialize_trainer(
         )
     elif trainer_type == TrainerType.SAC:
         trainer = SACTrainer(
+            brain_name,
+            min_lesson_length,
+            trainer_settings,
+            train_model,
+            load_model,
+            seed,
+            trainer_artifact_path,
+        )
+    elif trainer_type == TrainerType.DistributedPPO:
+        trainer = DistributedPPOTrainer(
+            brain_name,
+            min_lesson_length,
+            trainer_settings,
+            train_model,
+            load_model,
+            seed,
+            trainer_artifact_path,
+        )
+    elif trainer_type == TrainerType.DistributedSAC:
+        trainer = DistributedSACTrainer(
             brain_name,
             min_lesson_length,
             trainer_settings,

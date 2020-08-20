@@ -54,34 +54,36 @@ def get_all_subclasses(cls):
     return all_subclasses
 
 
-def find_initializer_trainer(paths):
+def get_initializer_trainer(paths) -> List:
     original_initializers = set(Initializer.__subclasses__())
     original_trainers = set(RLTrainer.__subclasses__())
+    logger.info(f"Found {len(original_initializers)} initializers and {len(original_trainers)} "
+                f"trainers.")
 
-    print(original_initializers)
-    print(original_trainers)
-
+    # add all plugin paths to system path
     for p in paths:
         sys.path.append(p)
-    print(sys.path)
 
     discovered_plugins = {
         name: importlib.import_module(name)
         for finder, name, ispkg in pkgutil.iter_modules(paths)
     }
-    print(f"plugins available {discovered_plugins}")
+    logger.info(f"The following plugins are available {discovered_plugins}")
 
-    all_initializers = list(get_all_subclasses(Initializer))
-    all_trainers = set(get_all_subclasses(RLTrainer))
-    print("Registering new initializer")
-    print(f"Found {len(all_initializers)} new initializers")
-    distributed_init = all_initializers[0]()
-    distributed_init.load()
+    new_initializers = set(get_all_subclasses(Initializer))
+    if len(new_initializers) == 1:
+        # load the initializer
+        logger.info("Registering new initializer")
+        distributed_init = list(new_initializers)[0]()
+        distributed_init.load()
 
-    new_trainers = all_trainers - original_trainers
-    print(f"Found {len(new_trainers)} new trainers")
-    print(all_trainers)
-    print(new_trainers)
+        # construct a list of new trainers
+        all_trainers = set(get_all_subclasses(RLTrainer))
+        new_trainers = list(all_trainers - original_trainers)
+        logger.info(f"Found {len(new_trainers)} new trainers")
+        return new_trainers
+    else:
+        raise ValueError("there should be exactly one initializer passed through plugins option")
 
 
 def get_version_string() -> str:
@@ -168,7 +170,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
 
-        find_initializer_trainer(options.plugins)
+        new_trainers = get_initializer_trainer(options.plugins)
         trainer_factory = TrainerFactory(
             options.behaviors,
             write_path,
