@@ -10,7 +10,7 @@ from threading import RLock
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
-from mlagents.tf_utils.globals import get_rank
+from mlagents.tf_utils import global_values
 
 
 logger = get_logger(__name__)
@@ -85,7 +85,7 @@ class ConsoleWriter(StatsWriter):
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
-        self.rank = get_rank()
+        self.rank = global_values.get_rank()
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int

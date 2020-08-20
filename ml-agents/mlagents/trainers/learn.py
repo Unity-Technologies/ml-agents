@@ -73,7 +73,9 @@ def get_initializer_trainer(paths: List[str]) -> List:
     logger.info(f"The following plugins are available {discovered_plugins}")
 
     new_initializers = set(get_all_subclasses(Initializer))
-    if len(new_initializers) == 1:
+    if len(new_initializers) <= 0:
+        return
+    elif len(new_initializers) == 1:
         # load the initializer
         logger.info("Registering new initializer")
         distributed_init = list(new_initializers)[0]()

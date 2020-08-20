@@ -21,7 +21,7 @@ from mlagents.trainers.tf.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-from mlagents.tf_utils.globals import get_rank
+from mlagents.tf_utils.global_values import get_rank
 
 
 logger = get_logger(__name__)
