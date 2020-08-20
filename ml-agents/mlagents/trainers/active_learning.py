@@ -146,8 +146,14 @@ class StandardActiveLearningGP(ExactGP, GPyTorchModel):
         return MultivariateNormal(mean_x, covar_x)
 
 class ActiveLearningTaskSampler(object):
-    def __init__(self,ranges):
+    def __init__(self,ranges, warmup_steps=30, capacity=600, num_mc=500, beta=1.96, raw_samples=128, num_restarts=1):
         self.ranges = ranges
+        self.warmup_steps = warmup_steps
+        self.capacity = capacity
+        self.num_mc = num_mc
+        self.beta = beta
+        self.raw_samples = raw_samples
+        self.num_restarts = num_restarts
         self.xdim = ranges.shape[0] + 1
         self.model = None
         self.mll = None
@@ -172,12 +178,12 @@ class ActiveLearningTaskSampler(object):
             self.Y = new_Y.float()
             state_dict = None
         
-        T = 12*50
+        T = self.capacity
         if self.X.shape[0] >= T:
             self.X = self.X[-T:, :]
             self.Y = self.Y[-T:, :]
 
-        if self.X.shape[0] < 5:  # TODO seems to throw an error if only one sample is present. Refitting should probably only happen every N data points anyways
+        if self.X.shape[0] < self.warmup_steps:  # TODO seems to throw an error if only one sample is present. Refitting should probably only happen every N data points anyways
             return None
 
         if refit:
@@ -193,7 +199,7 @@ class ActiveLearningTaskSampler(object):
             # self.model = self.model.condition_on_observations(new_X, new_Y)  # TODO: might be faster than setting the data need to test
 
     def get_design_points(self, num_points:int=1, time=None):
-        if not self.model or time < 30:
+        if not self.model or time < self.warmup_steps:
             return sample_random_points(self.bounds, num_points)
         
         if not time:
@@ -201,18 +207,18 @@ class ActiveLearningTaskSampler(object):
 
         bounds = self.bounds
         bounds[:, -1] = time
-        num_mc = 500
+        num_mc = self.num_mc
         mc_points = torch.rand(num_mc, bounds.size(1), device=self.X.device, dtype=self.X.dtype)
         mc_points = bounds[0] + (bounds[1] - bounds[0]) * mc_points
         
-        qeisp = qEISP(self.model, mc_points=mc_points, beta=1.96)
+        qeisp = qEISP(self.model, mc_points=mc_points, beta=self.beta)
         try:
             candidates, acq_value = optimize_acqf(
                 acq_function=qeisp,
                 bounds=bounds,
-                raw_samples=128,
+                raw_samples=self.raw_samples,
                 q=num_points,
-                num_restarts=1,
+                num_restarts=self.num_restarts,
                 return_best_only=True,
             )
             return candidates

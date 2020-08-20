@@ -76,6 +76,7 @@ public class WalkerAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
         SetResetParameters();
+        SetTaskParameters();
     }
 
     /// <summary>
@@ -97,8 +98,8 @@ public class WalkerAgent : Agent
         //Set our goal walking speed
         // targetWalkingSpeed =
         //     randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : targetWalkingSpeed;
-
         SetResetParameters();
+        SetTaskParameters();
     }
 
     /// <summary>
@@ -206,6 +207,7 @@ public class WalkerAgent : Agent
 
     void FixedUpdate()
     {
+        SetTaskParameters();
         UpdateOrientationObjects();
 
         var cubeForward = m_OrientationCube.transform.forward;
@@ -289,10 +291,12 @@ public class WalkerAgent : Agent
         m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
     }
 
+    public void SetTaskParameters()
+    {
+        targetWalkingSpeed = GetParameterWithDefault("targetWalkingSpeed", targetWalkingSpeed);
+    }
     public void SetResetParameters()
     {
-        targetWalkingSpeed = GetParameterWithDefault("targetWalkingSpeed", 10.0f);
-        // target_headheight = GetParameterWithDefault("target_height", 0.5497f);
         SetTorsoMass();
     }
 }

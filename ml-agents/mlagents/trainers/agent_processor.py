@@ -214,12 +214,13 @@ class AgentProcessor:
                 for traj_queue in self.trajectory_queues:
                     traj_queue.put(trajectory)
                 self.experience_buffers[global_id] = []
-                self.publish_task_performance_queue(self.episode_tasks[global_id], self.episode_rewards[global_id])
+                
             if terminated:
                 # Record episode length.
                 self.stats_reporter.add_stat(
                     "Environment/Episode Length", self.episode_steps.get(global_id, 0)
                 )
+                self.publish_task_performance_queue(self.episode_tasks[global_id], self.episode_rewards[global_id])
                 self._clean_agent_data(global_id)
 
     def _clean_agent_data(self, global_id: str) -> None:

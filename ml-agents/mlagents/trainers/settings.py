@@ -417,6 +417,49 @@ class CompletionCriteriaSettings:
                 return True, smoothing
         return False, smoothing
 
+@attr.s(auto_attribs=True)
+class ActiveLearnerSettings:
+    warmup_steps:int=30
+    capacity:int=600
+    num_mc:int=50
+    beta:float=1.96
+    raw_samples:int=128
+    num_restarts:int=1
+
+@attr.s(auto_attribs=True)
+class TaskParameterSettings:
+    
+    parameters: Dict[str, UniformSettings]
+    active_learning: Optional[ActiveLearnerSettings] = None
+
+    @staticmethod
+    def structure(d: Mapping, t: type) -> Dict[str, "TaskParameterSettings"]:
+        """
+        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant
+        to be registered with cattr.register_structure_hook() and called with
+        cattr.structure().
+        """
+        if not isinstance(d, Mapping):
+            raise TrainerConfigError(
+                f"Unsupported agent environment parameter settings {d}."
+            )
+        d_final: Dict[str, TaskParameterSettings] = {}
+        
+        for behavior_name, behavior_config in d.items():
+            activelearner_settings = None
+            tmp_settings: Dict[str, UniformSettings] = {}
+            for agent_parameter, agent_parameter_config in behavior_config.items():
+                if agent_parameter == "active_learner":
+                    activelearner_settings = ActiveLearnerSettings(**agent_parameter_config)
+                else:
+                    sampler = ParameterRandomizationSettings.structure(
+                        agent_parameter_config, ParameterRandomizationSettings
+                    )
+                    tmp_settings[agent_parameter] = sampler
+            d_final[behavior_name] = TaskParameterSettings(parameters=tmp_settings, active_learning=activelearner_settings)
+            
+        
+        return d_final
 
 @attr.s(auto_attribs=True)
 class Lesson:
@@ -431,34 +474,6 @@ class Lesson:
     name: str
     completion_criteria: Optional[CompletionCriteriaSettings] = attr.ib(default=None)
 
-@attr.s(auto_attribs=True)
-class AgentParameterSettings:
-    
-    parameters: Dict[str, UniformSettings]
-
-    @staticmethod
-    def structure(d: Mapping, t: type):# -> Dict[str, AgentParameterSettings]:
-        """
-        Helper method to structure a Dict of EnvironmentParameterSettings class. Meant
-        to be registered with cattr.register_structure_hook() and called with
-        cattr.structure().
-        """
-        if not isinstance(d, Mapping):
-            raise TrainerConfigError(
-                f"Unsupported agent environment parameter settings {d}."
-            )
-        d_final: Dict[str, AgentParameterSettings] = {}
-        for behavior_name, behavior_config in d.items():
-            tmp_settings: Dict[str, UniformSettings] = {}
-            for agent_parameter, agent_parameter_config in behavior_config.items():
-                sampler = ParameterRandomizationSettings.structure(
-                    agent_parameter_config, ParameterRandomizationSettings
-                )
-                tmp_settings[agent_parameter] = sampler
-            d_final[behavior_name] = AgentParameterSettings(parameters=tmp_settings)
-            
-        # settings = AgentParameterSettings(parameters=d_final)
-        return d_final
 
 @attr.s(auto_attribs=True)
 class EnvironmentParameterSettings:
@@ -674,7 +689,7 @@ class RunOptions(ExportableSettings):
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
     environment_parameters: Optional[Dict[str, EnvironmentParameterSettings]] = None
-    agent_parameters: Optional[Dict[str, AgentParameterSettings]] = None
+    agent_parameters: Optional[Dict[str, TaskParameterSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
@@ -688,7 +703,7 @@ class RunOptions(ExportableSettings):
         Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
     )
     cattr.register_structure_hook(
-        Dict[str, AgentParameterSettings], AgentParameterSettings.structure
+        Dict[str, TaskParameterSettings], TaskParameterSettings.structure
     )
     cattr.register_structure_hook(Lesson, strict_to_cls)
     cattr.register_structure_hook(

@@ -12,7 +12,7 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.active_learning_manager import ActiveLearningTaskManager
+from mlagents.trainers.task_manager import TaskManager
 from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
@@ -125,7 +125,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
 
-        task_parameter_manager = ActiveLearningTaskManager(
+        task_parameter_manager = TaskManager(
             options.agent_parameters, restore=checkpoint_settings.resume
         )
 

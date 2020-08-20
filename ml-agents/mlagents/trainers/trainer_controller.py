@@ -25,7 +25,7 @@ from mlagents_envs.timers import (
 )
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.active_learning_manager import ActiveLearningTaskManager
+from mlagents.trainers.task_manager import TaskManager
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
@@ -38,7 +38,7 @@ class TrainerController:
         output_path: str,
         run_id: str,
         param_manager: EnvironmentParameterManager,
-        task_manager: ActiveLearningTaskManager,
+        task_manager: TaskManager,
         train: bool,
         training_seed: int,
     ):
