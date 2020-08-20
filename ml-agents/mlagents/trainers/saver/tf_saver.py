@@ -35,7 +35,6 @@ class TFSaver(BaseSaver):
         self.graph = None
         self.sess = None
         self.tf_saver = None
-        self.rank = global_values.get_rank()
 
     def register(self, module: Union[TFPolicy, TFOptimizer]) -> None:
         if isinstance(module, TFPolicy):
@@ -74,7 +73,11 @@ class TFSaver(BaseSaver):
     def export(self, output_filepath: str, brain_name: str) -> None:
         # save model if there is only one worker or
         # only on worker-0 if there are multiple workers
-        if self.policy and self.rank is not None and self.rank != 0:
+        if (
+            self.policy
+            and global_values.get_rank() is not None
+            and global_values.get_rank() != 0
+        ):
             return
         export_policy_model(
             self.model_path, output_filepath, brain_name, self.graph, self.sess

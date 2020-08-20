@@ -21,7 +21,6 @@ from mlagents.trainers.tf.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-from mlagents.tf_utils import global_values
 
 
 logger = get_logger(__name__)
@@ -92,7 +91,6 @@ class TFPolicy(Policy):
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         self.trainable_variables: List[tf.Variable] = []
-        self.rank = global_values.get_rank()
         if create_tf_graph:
             self.create_tf_graph()
 

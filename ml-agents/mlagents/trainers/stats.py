@@ -85,7 +85,6 @@ class ConsoleWriter(StatsWriter):
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
-        self.rank = global_values.get_rank()
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -102,8 +101,8 @@ class ConsoleWriter(StatsWriter):
         log_info.append(f"Time Elapsed: {elapsed_time:0.3f} s")
         if "Environment/Cumulative Reward" in values:
             stats_summary = values["Environment/Cumulative Reward"]
-            if self.rank is not None:
-                log_info.append(f"Rank: {self.rank}")
+            if global_values.get_rank() is not None:
+                log_info.append(f"Rank: {global_values.get_rank()}")
 
             log_info.append(f"Mean Reward: {stats_summary.mean:0.3f}")
             log_info.append(f"Std of Reward: {stats_summary.std:0.3f}")

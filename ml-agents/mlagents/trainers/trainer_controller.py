@@ -66,14 +66,13 @@ class TrainerController:
         self.kill_trainers = False
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
-        self.rank = global_values.get_rank()
 
     @timed
     def _save_models(self):
         """
         Saves current model to checkpoint folder.
         """
-        if self.rank is not None and self.rank != 0:
+        if global_values.get_rank() is not None and global_values.get_rank() != 0:
             return
 
         for brain_name in self.trainers.keys():
@@ -90,7 +89,7 @@ class TrainerController:
         """
         Saves models for all trainers.
         """
-        if self.rank is not None and self.rank != 0:
+        if global_values.get_rank() is not None and global_values.get_rank() != 0:
             return
 
         for brain_name in self.trainers.keys():
