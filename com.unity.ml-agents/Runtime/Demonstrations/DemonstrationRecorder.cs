@@ -33,11 +33,11 @@ namespace Unity.MLAgents.Demonstrations
         public bool Record;
 
         /// <summary>
-        /// Number of steps to record. If this number is higher than zero, the editor will stop
-        /// playing when it reaches this threshold.
+        /// Number of steps to record. The editor will stop playing when it reaches this threshold.
+        /// Set to zero to record indefinitely.
         /// </summary>
-        [Tooltip("Number of steps to record. If this number is higher than zero, the editor will stop " +
-                 "playing when it reaches this threshold.")]
+        [Tooltip("Number of steps to record. The editor will stop playing when it reaches this threshold. " +
+                 "Set to zero to record indefinitely.")]
         public int NumStepsToRecord = 0;
 
         /// <summary>
