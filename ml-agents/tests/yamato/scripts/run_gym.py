@@ -21,7 +21,7 @@ def test_run_environment(env_name):
 
         if len(env.observation_space.shape) == 1:
             # Examine the initial vector observation
-            print("Agent observations look like: \n{}".format(initial_observations))
+            print(f"Agent observations look like: \n{initial_observations}")
 
         for _episode in range(10):
             env.reset()
@@ -31,7 +31,7 @@ def test_run_environment(env_name):
                 actions = env.action_space.sample()
                 obs, reward, done, _ = env.step(actions)
                 episode_rewards += reward
-            print("Total reward this episode: {}".format(episode_rewards))
+            print(f"Total reward this episode: {episode_rewards}")
     finally:
         env.close()
 

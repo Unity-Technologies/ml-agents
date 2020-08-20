@@ -64,8 +64,8 @@ class Trainer(abc.ABC):
         for k in self.param_keys:
             if k not in self.trainer_parameters:
                 raise UnityTrainerException(
-                    "The hyper-parameter {0} could not be found for the {1} trainer of "
-                    "brain {2}.".format(k, self.__class__, self.brain_name)
+                    "The hyper-parameter {} could not be found for the {} trainer of "
+                    "brain {}.".format(k, self.__class__, self.brain_name)
                 )
 
     @property

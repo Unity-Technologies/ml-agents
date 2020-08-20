@@ -13,9 +13,8 @@ test_mac_protobuf_generation:
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m venv venv
       . venv/bin/activate
-      pip install --upgrade pip
-      pip install grpcio-tools==1.13.0  --progress-bar=off
-      pip install mypy-protobuf==1.16.0 --progress-bar=off
+      pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       cd protobuf-definitions
       chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/protoc
       chmod +x Grpc.Tools.$GRPC_VERSION/tools/macosx_x64/grpc_csharp_plugin

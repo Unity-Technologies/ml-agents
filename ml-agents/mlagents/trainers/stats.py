@@ -113,7 +113,7 @@ class ConsoleWriter(StatsWriter):
             )
             if self.self_play and "Self-play/ELO" in values:
                 elo_stats = values["Self-play/ELO"]
-                logger.info("{} ELO: {:0.3f}. ".format(category, elo_stats.mean))
+                logger.info(f"{category} ELO: {elo_stats.mean:0.3f}. ")
         else:
             logger.info(
                 "{}: Step: {}. No episode was completed since last summary. {}".format(
@@ -126,7 +126,7 @@ class ConsoleWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             logger.info(
-                """Hyperparameters for behavior name {0}: \n{1}""".format(
+                """Hyperparameters for behavior name {}: \n{}""".format(
                     category, self._dict_to_str(value, 0)
                 )
             )
@@ -149,7 +149,7 @@ class ConsoleWriter(StatsWriter):
                 [
                     "\t"
                     + "  " * num_tabs
-                    + "{0}:\t{1}".format(
+                    + "{}:\t{}".format(
                         x, self._dict_to_str(param_dict[x], num_tabs + 1)
                     )
                     for x in param_dict
@@ -176,7 +176,7 @@ class TensorboardWriter(StatsWriter):
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
             summary = tf.Summary()
-            summary.value.add(tag="{}".format(key), simple_value=value.mean)
+            summary.value.add(tag=f"{key}", simple_value=value.mean)
             self.summary_writers[category].add_summary(summary, step)
             self.summary_writers[category].flush()
 
@@ -194,7 +194,7 @@ class TensorboardWriter(StatsWriter):
         for file_name in os.listdir(directory_name):
             if file_name.startswith("events.out"):
                 logger.warning(
-                    "{} was left over from a previous run. Deleting.".format(file_name)
+                    f"{file_name} was left over from a previous run. Deleting."
                 )
                 full_fname = os.path.join(directory_name, file_name)
                 try:
@@ -225,7 +225,7 @@ class TensorboardWriter(StatsWriter):
                 s_op = tf.summary.text(
                     name,
                     tf.convert_to_tensor(
-                        ([[str(x), str(input_dict[x])] for x in input_dict])
+                        [[str(x), str(input_dict[x])] for x in input_dict]
                     ),
                 )
                 s = sess.run(s_op)

@@ -8,7 +8,7 @@ from mlagents.trainers.models import ModelUtils
 EPSILON = 1e-7
 
 
-class GAILModel(object):
+class GAILModel:
     def __init__(
         self,
         policy: TFPolicy,
@@ -126,7 +126,7 @@ class GAILModel(object):
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "gail_stream_{}_visual_obs_encoder".format(i),
+                    f"gail_stream_{i}_visual_obs_encoder",
                     False,
                 )
 
@@ -135,7 +135,7 @@ class GAILModel(object):
                     self.encoding_size,
                     ModelUtils.swish,
                     1,
-                    "gail_stream_{}_visual_obs_encoder".format(i),
+                    f"gail_stream_{i}_visual_obs_encoder",
                     True,
                 )
                 visual_policy_encoders.append(encoded_policy_visual)

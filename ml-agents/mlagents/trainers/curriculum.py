@@ -75,7 +75,7 @@ class Curriculum:
                 for key in parameters:
                     config[key] = parameters[key][self.lesson_num]
                 logger.info(
-                    "{0} lesson changed. Now in lesson {1}: {2}".format(
+                    "{} lesson changed. Now in lesson {}: {}".format(
                         self.brain_name,
                         self.lesson_num,
                         ", ".join([str(x) + " -> " + str(config[x]) for x in config]),
@@ -107,14 +107,10 @@ class Curriculum:
         try:
             with open(config_path) as data_file:
                 return Curriculum._load_curriculum(data_file)
-        except IOError:
-            raise CurriculumLoadingError(
-                "The file {0} could not be found.".format(config_path)
-            )
+        except OSError:
+            raise CurriculumLoadingError(f"The file {config_path} could not be found.")
         except UnicodeDecodeError:
-            raise CurriculumLoadingError(
-                "There was an error decoding {}".format(config_path)
-            )
+            raise CurriculumLoadingError(f"There was an error decoding {config_path}")
 
     @staticmethod
     def _load_curriculum(fp: TextIO) -> Dict:

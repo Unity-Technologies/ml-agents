@@ -165,7 +165,7 @@ class SamplerManager:
         for param_name, cur_param_dict in self.reset_param_dict.items():
             if "sampler-type" not in cur_param_dict:
                 raise SamplerException(
-                    "'sampler_type' argument hasn't been supplied for the {0} parameter".format(
+                    "'sampler_type' argument hasn't been supplied for the {} parameter".format(
                         param_name
                     )
                 )

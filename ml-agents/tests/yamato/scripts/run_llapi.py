@@ -82,7 +82,7 @@ def test_run_environment(env_name):
                 if tracked_agent in terminal_steps:
                     episode_rewards += terminal_steps[tracked_agent].reward
                     done = True
-            print("Total reward this episode: {}".format(episode_rewards))
+            print(f"Total reward this episode: {episode_rewards}")
     finally:
         env.close()
 

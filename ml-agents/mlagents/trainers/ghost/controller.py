@@ -69,9 +69,7 @@ class GhostController:
         """
         self._queue.append(self._learning_team)
         self._learning_team = self._queue.popleft()
-        logger.debug(
-            "Learning team {} swapped on step {}".format(self._learning_team, step)
-        )
+        logger.debug(f"Learning team {self._learning_team} swapped on step {step}")
         self._changed_training_team = True
 
     # Adapted from https://github.com/Unity-Technologies/ml-agents/pull/1975 and
