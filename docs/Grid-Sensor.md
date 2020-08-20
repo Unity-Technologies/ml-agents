@@ -220,5 +220,4 @@ The core idea behind how a Grid Observation is encoded is the following:
 3. concatenate all byte[] and send the combined array to python
 4. reconstruct the Grid Observation by splitting up the array and decoding the sections
 
-One cavet is that the encoded PNG byte[] has a different number of bytes depending on what is contained in the image. To properly decode the combined result, the lengths of the bytes also need to be sent. Additionally, if there are 7 channels in the Grid Observation, the number of PNG images (3) and the number of channels on the last image (1) also need to be passed.
 Once the bytes are sent to python, they are then decoded and used as a tensor of the correct shape within the mlagents python codebase. 
