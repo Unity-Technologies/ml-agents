@@ -10,10 +10,16 @@ logger = get_logger(__name__)
 
 class ModelSerializer:
     def __init__(self, policy):
+        # ONNX only support input in NCHW (channel first) format.
+        # Barracuda also expect to get data in NCHW.
+        # Any multi-dimentional input should follow that otherwise will
+        # cause problem to barracuda import.
         self.policy = policy
         batch_dim = [1]
         seq_len_dim = [1]
         dummy_vec_obs = [torch.zeros(batch_dim + [self.policy.vec_obs_size])]
+        # create input shape of NCHW
+        # (It's NHWC in self.policy.behavior_spec.observation_shapes)
         dummy_vis_obs = [
             torch.zeros(batch_dim + [shape[2], shape[0], shape[1]])
             for shape in self.policy.behavior_spec.observation_shapes
