@@ -237,7 +237,7 @@ class SACTrainer(RLTrainer):
         Creates a policy with a Tensorflow backend and SAC hyperparameters
         :param parsed_behavior_id:
         :param behavior_spec: specifications for policy construction
-        :param create_graph: whether to create the tensorflow graph on construction
+        :param create_graph: whether to create the Tensorflow graph on construction
         :return policy
         """
         policy = TFPolicy(
