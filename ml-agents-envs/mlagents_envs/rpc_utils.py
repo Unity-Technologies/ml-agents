@@ -51,16 +51,23 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
     :param image_bytes: input byte array corresponding to image
     :return: processed numpy array of observation from environment
     """
+    png_header = b"\x89PNG\r\n\x1a\n"
+    images = []
+    s = None
+
     with hierarchical_timer("image_decompress"):
         image_bytearray = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(image_bytearray))
-        # Normally Image loads lazily, this forces it to do loading in the timer scope.
-        image.load()
-    s = np.array(image, dtype=np.float32) / 255.0
-    if gray_scale:
-        s = np.mean(s, axis=2)
-        s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-    return s
+        image_byte_splits = image_bytearray.split(png_header)
+        for image_bytes in image_byte_splits:
+            if len(image_bytes) > 0:
+                # add back the header
+                image = Image.open(io.BytesIO(png_header + image_bytes))
+                # Normally Image loads lazily, this forces it to do loading in the timer scope.
+                image.load()
+                images.append(image)
+
+    arrs = list(map(lambda i: np.array(i, dtype=np.float32) / 255.0, images))
+    return np.concatenate(arrs, axis=2)
 
 
 @timed
@@ -85,6 +92,12 @@ def observation_to_np_array(
         return img
     else:
         img = process_pixels(obs.compressed_data, gray_scale)
+        # We can drop additional channels since they may need to be added to include
+        # numbers of observation channels not divisible by 3.
+        expected_channels = list(obs.shape)[2]
+        actual_channels = list(img.shape)[2]
+        if actual_channels > expected_channels:
+            img = img[..., 0:expected_channels]
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(
@@ -92,7 +105,6 @@ def observation_to_np_array(
                 f"decompressed had {img.shape} but expected {obs.shape}"
             )
         return img
-
 
 @timed
 def _process_visual_observation(
