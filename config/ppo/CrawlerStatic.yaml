@@ -2,8 +2,8 @@ behaviors:
   CrawlerStatic:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 2024
-      buffer_size: 20240
+      batch_size: 2048
+      buffer_size: 20480
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
