@@ -54,11 +54,13 @@ def get_all_subclasses(cls):
     return all_subclasses
 
 
-def get_initializer_trainer(paths) -> List:
+def get_initializer_trainer(paths: List[str]) -> List:
     original_initializers = set(Initializer.__subclasses__())
     original_trainers = set(RLTrainer.__subclasses__())
-    logger.info(f"Found {len(original_initializers)} initializers and {len(original_trainers)} "
-                f"trainers.")
+    logger.info(
+        f"Found {len(original_initializers)} initializers and {len(original_trainers)} "
+        f"trainers."
+    )
 
     # add all plugin paths to system path
     for p in paths:
@@ -83,7 +85,9 @@ def get_initializer_trainer(paths) -> List:
         logger.info(f"Found {len(new_trainers)} new trainers")
         return new_trainers
     else:
-        raise ValueError("there should be exactly one initializer passed through plugins option")
+        raise ValueError(
+            "there should be exactly one initializer passed through plugins option"
+        )
 
 
 def get_version_string() -> str:
@@ -171,6 +175,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
 
         new_trainers = get_initializer_trainer(options.plugins)
+        print(new_trainers)
         trainer_factory = TrainerFactory(
             options.behaviors,
             write_path,

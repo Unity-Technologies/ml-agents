@@ -159,7 +159,7 @@ def _create_parser() -> argparse.ArgumentParser:
         nargs="*",
         help="Absolute paths of plugins to be loaded",
         required=False,
-        action=DetectDefault
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--env-args",

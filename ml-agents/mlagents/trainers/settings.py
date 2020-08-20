@@ -664,7 +664,7 @@ class RunOptions(ExportableSettings):
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
-    plugins = parser.get_default("plugins")
+    plugins: List[str] = parser.get_default("plugins")
     # Strict conversion
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
