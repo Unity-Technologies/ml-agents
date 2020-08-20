@@ -552,10 +552,13 @@ class TorchSACOptimizer(TorchOptimizer):
         return {}
 
     def get_modules(self):
-        return {
+        modules = {
             "Optimizer:value_network": self.value_network,
             "Optimizer:target_network": self.target_network,
             "Optimizer:policy_optimizer": self.policy_optimizer,
             "Optimizer:value_optimizer": self.value_optimizer,
             "Optimizer:entropy_optimizer": self.entropy_optimizer,
         }
+        for reward_provider in self.reward_signals.values():
+            modules.update(reward_provider.get_modules())
+        return modules

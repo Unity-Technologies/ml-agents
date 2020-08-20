@@ -54,6 +54,9 @@ class GAILRewardProvider(BaseRewardProvider):
         self.optimizer.step()
         return stats_dict
 
+    def get_modules(self):
+        return {f"Optimizer:{self.name}": self._discriminator_network}
+
 
 class DiscriminatorNetwork(torch.nn.Module):
     gradient_penalty_weight = 10.0
