@@ -4,6 +4,7 @@ using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
@@ -561,18 +562,18 @@ namespace Unity.MLAgents
         /// NNModel and the InferenceDevice as provided.
         /// </summary>
         /// <param name="model">The NNModel the ModelRunner must use.</param>
-        /// <param name="brainParameters">The BrainParameters used to create the ModelRunner.</param>
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
         /// </param>
         /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
-            NNModel model, BrainParameters brainParameters, InferenceDevice inferenceDevice)
+            NNModel model, ActionSpec actionSpec, InferenceDevice inferenceDevice)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
             {
-                modelRunner = new ModelRunner(model, brainParameters, inferenceDevice, m_InferenceSeed);
+                modelRunner = new ModelRunner(model, actionSpec, inferenceDevice, m_InferenceSeed);
                 m_ModelRunners.Add(modelRunner);
                 m_InferenceSeed++;
             }

@@ -385,6 +385,9 @@ GameObject:
   - component: {fileID: 114502619508238574}
   - component: {fileID: 114827551040495112}
   - component: {fileID: 6790639061807687247}
+  - component: {fileID: 748290217173149218}
+  - component: {fileID: 4562193454555387360}
+  - component: {fileID: 2066777822704547994}
   m_Layer: 0
   m_Name: BasicAgent
   m_TagString: Untagged
@@ -433,17 +436,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 20
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
+    VectorObservationSize: 0
+    NumStackedVectorObservations: 1
+    VectorActionSize: 
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
   m_Model: {fileID: 11400000, guid: 468c183196f1844f69e125c99dd135a1, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Basic
   TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114827551040495112
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,7 +462,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeBetweenDecisionsAtInference: 0.15
-  m_Position: 0
+  position: 0
   largeGoal: {fileID: 1445405232822318}
   smallGoal: {fileID: 1054019269138802}
 --- !u!114 &6790639061807687247
@@ -472,6 +477,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugCommandLineOverride: 
+--- !u!114 &748290217173149218
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263463520136984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88b6042bc9a5d4aa58d931eae49442e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 0
+--- !u!114 &4562193454555387360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263463520136984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ce4e199dabb494e8764b09f4c378098, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basicController: {fileID: 114827551040495112}
+--- !u!114 &2066777822704547994
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1263463520136984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ee410d6d45349218d5e69bb2a347c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  basicController: {fileID: 114827551040495112}
 --- !u!1 &1284220331185348
 GameObject:
   m_ObjectHideFlags: 0

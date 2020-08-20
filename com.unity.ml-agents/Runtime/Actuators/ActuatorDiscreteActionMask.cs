@@ -27,11 +27,12 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         public int CurrentBranchOffset { get; set; }
 
-        internal ActuatorDiscreteActionMask(IList<IActuator> actuators, int sumOfDiscreteBranchSizes, int numBranches)
+        internal ActuatorDiscreteActionMask(IList<IActuator> actuators, int sumOfDiscreteBranchSizes, int numBranches, int[] branchSizes = null)
         {
             m_Actuators = actuators;
             m_SumOfDiscreteBranchSizes = sumOfDiscreteBranchSizes;
             m_NumBranches = numBranches;
+            m_BranchSizes = branchSizes;
         }
 
         /// <inheritdoc cref="IDiscreteActionMask.WriteMask"/>

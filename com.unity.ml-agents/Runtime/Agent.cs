@@ -412,18 +412,19 @@ namespace Unity.MLAgents
             Academy.Instance.DecideAction += DecideAction;
             Academy.Instance.AgentAct += AgentStep;
             Academy.Instance.AgentForceReset += _AgentReset;
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+
+            using (TimerStack.Instance.Scoped("InitializeActuators"))
+            {
+                InitializeActuators();
+            }
+
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
             ResetData();
             Initialize();
 
             using (TimerStack.Instance.Scoped("InitializeSensors"))
             {
                 InitializeSensors();
-            }
-
-            using (TimerStack.Instance.Scoped("InitializeActuators"))
-            {
-                InitializeActuators();
             }
 
             m_Info.storedVectorActions = new float[m_ActuatorManager.TotalNumberOfActions];
@@ -585,7 +586,7 @@ namespace Unity.MLAgents
                 return;
             }
             m_Brain?.Dispose();
-            m_Brain = m_PolicyFactory.GeneratePolicy(Heuristic);
+            m_Brain = m_PolicyFactory.GeneratePolicy(m_ActuatorManager.GetCombinedActionSpec(), Heuristic);
         }
 
         /// <summary>
@@ -933,10 +934,11 @@ namespace Unity.MLAgents
             }
 
             // Support legacy OnActionReceived
+            // TODO don't set this up if the sizes are 0?
             var param = m_PolicyFactory.BrainParameters;
             m_VectorActuator = new VectorActuator(this, param.VectorActionSize, param.VectorActionSpaceType);
             m_ActuatorManager = new ActuatorManager(attachedActuators.Length + 1);
-            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions];
+            m_LegacyActionCache = new float[m_VectorActuator.TotalNumberOfActions()];
 
             m_ActuatorManager.Add(m_VectorActuator);
 
@@ -1077,8 +1079,8 @@ namespace Unity.MLAgents
         /// actions. When using discrete actions, the agent will not perform the masked
         /// action.
         /// </summary>
-        /// <param name="actionMasker">
-        /// The action masker for the agent.
+        /// <param name="actionMask">
+        /// The action mask for the agent.
         /// </param>
         /// <remarks>
         /// When using Discrete Control, you can prevent the Agent from using a certain
@@ -1183,8 +1185,9 @@ namespace Unity.MLAgents
         public virtual void OnEpisodeBegin() { }
 
         /// <summary>
-        /// Gets the last ActionBuffer for this agent.
+        /// Gets the most recent ActionBuffer for this agent.
         /// </summary>
+        /// <returns>The most recent ActionBuffer for this agent</returns>
         public ActionBuffers GetStoredActionBuffers()
         {
             return m_ActuatorManager.StoredActions;

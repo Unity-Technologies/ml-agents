@@ -5,6 +5,7 @@ using Google.Protobuf;
 using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
@@ -85,7 +86,7 @@ namespace Unity.MLAgents
 
         #region BrainParameters
         /// <summary>
-        /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
+        /// Converts a BrainParameters into to a BrainParametersProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="bp">The instance of BrainParameter to extend.</param>
@@ -104,6 +105,37 @@ namespace Unity.MLAgents
             {
                 brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
             }
+            return brainParametersProto;
+        }
+
+        /// <summary>
+        /// Converts an ActionSpec into to a Protobuf BrainInfoProto so it can be sent.
+        /// </summary>
+        /// <returns>The BrainInfoProto generated.</returns>
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="name">The name of the brain.</param>
+        /// <param name="isTraining">Whether or not the Brain is training.</param>
+        public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
+        {
+            actionSpec.CheckNotHybrid();
+
+            var brainParametersProto = new BrainParametersProto
+            {
+                BrainName = name,
+                IsTraining = isTraining
+            };
+            if (actionSpec.NumContinuousActions > 0)
+            {
+                brainParametersProto.VectorActionSize.Add(actionSpec.NumContinuousActions);
+                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Continuous;
+            }
+            else if (actionSpec.NumDiscreteActions > 0)
+            {
+                brainParametersProto.VectorActionSize.AddRange(actionSpec.BranchSizes);
+                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Discrete;
+            }
+
+            // TODO handle ActionDescriptions?
             return brainParametersProto;
         }
 

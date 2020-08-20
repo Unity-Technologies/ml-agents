@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.Barracuda;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 
@@ -15,10 +16,10 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void Construction()
         {
-            var bp = new BrainParameters();
+            var actionSpec = new ActionSpec();
             var alloc = new TensorCachingAllocator();
             var mem = new Dictionary<int, List<float>>();
-            var tensorGenerator = new TensorApplier(bp, 0, alloc, mem);
+            var tensorGenerator = new TensorApplier(actionSpec, 0, alloc, mem);
             Assert.IsNotNull(tensorGenerator);
             alloc.Dispose();
         }
