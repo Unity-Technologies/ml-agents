@@ -17,7 +17,7 @@ public class WormAgent : Agent
 
     [Range(0, 15)]
 //    private float m_TargetWalkingSpeed = 10;
-    const float m_maxWalkingSpeed = 15; //The max walking speed
+    const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
@@ -69,7 +69,7 @@ public class WormAgent : Agent
         {
             case WormAgentBehaviorType.WormDynamic:
             {
-                m_BehaviorParams.BehaviorName = "CrawlerDynamic";
+                m_BehaviorParams.BehaviorName = "WormDynamic";
                 if (wormDyBrain)
                     m_BehaviorParams.Model = wormDyBrain;
                 m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
@@ -77,7 +77,7 @@ public class WormAgent : Agent
             }
             case WormAgentBehaviorType.WormStatic:
             {
-                m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
+                m_BehaviorParams.BehaviorName = "WormStatic";
                 if (wormStBrain)
                     m_BehaviorParams.Model = wormStBrain;
                 m_Target = Instantiate(staticTargetPrefab, transform.position, Quaternion.identity, transform);
@@ -89,7 +89,8 @@ public class WormAgent : Agent
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
 
-        m_OrientationCube.UpdateOrientation(bodySegment0, m_Target.transform);
+//        m_OrientationCube.UpdateOrientation(bodySegment0, m_Target.transform);
+        UpdateOrientationObjects();
 
         m_JdController = GetComponent<JointDriveController>();
 
@@ -166,12 +167,13 @@ public class WormAgent : Agent
         //velocity we want to match
         var velGoal = cubeForward * m_maxWalkingSpeed;
         //ragdoll's avg vel
-        var avgVel = GetAvgVelocity();
+//        var avgVel = GetAvgVelocity();
 
         //current ragdoll velocity. normalized
-        sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
+        sensor.AddObservation(Vector3.Distance(velGoal, m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
         //avg body vel relative to cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
         //vel goal relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
 
@@ -263,18 +265,38 @@ public class WormAgent : Agent
 //            RewardFunctionTimePenalty();
 //        }
 
+//        var velReward =
+//            Mathf.Exp(-0.1f * (m_OrientationCube.transform.forward * m_maxWalkingSpeed -
+//                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
+//        var velReward =
+//            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed, GetAvgVelocity());
         var velReward =
-            Mathf.Exp(-0.1f * (m_OrientationCube.transform.forward * m_maxWalkingSpeed -
-                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
+            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,  m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
         var lookDotForward = (Vector3.Dot(m_OrientationCube.transform.forward, bodySegment0.forward) + 1) * .5F;
         var lookDotUp = (Vector3.Dot(m_OrientationCube.transform.up, bodySegment0.up) + 1) * .5F;
-        rewardManager.UpdateReward("velFacingComboReward", velReward * (lookDotForward + lookDotUp));
+//        var facingRew = ((lookDotForward + lookDotUp) * .5f);
+        var facingRew = (lookDotForward * lookDotUp);
+        rewardManager.rewardsDict["velReward"].rewardThisStep = velReward;
+        rewardManager.rewardsDict["facingReward"].rewardThisStep = facingRew;
+
+        rewardManager.UpdateReward("velFacingComboReward", velReward * facingRew);
 
 
 //        facingReward = 0.5f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward) +
 //                       0.5f * Vector3.Dot(orientationCube.transform.up, bodySegment0.up);
 //        rewardManager.UpdateReward("velFacingComboReward", velReward * facingReward);
 
+    }
+
+    //normalized value of the difference in avg speed vs goal walking speed.
+    public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
+    {
+        //distance between our actual velocity and goal velocity
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_maxWalkingSpeed);
+
+        //return the value on a declining sigmoid shaped curve that decays from 1 to 0
+        //This reward will approach 1 if it matches perfectly and approach zero as it deviates
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
     }
 
     //Update OrientationCube and DirectionIndicator
