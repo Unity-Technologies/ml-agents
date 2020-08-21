@@ -42,7 +42,7 @@ def test_reward_provider_save(tmp_path, optimizer):
     saver = TorchSaver(trainer_settings, path1)
     saver.register(policy)
     saver.register(optimizer)
-    saver.initialize_or_load(policy)
+    saver.initialize_or_load()
     policy.set_step(2000)
     saver.save_checkpoint("MockBrain", 2000)
 
