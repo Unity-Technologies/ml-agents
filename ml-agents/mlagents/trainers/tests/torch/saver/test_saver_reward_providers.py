@@ -54,7 +54,6 @@ def test_reward_provider_save(tmp_path, optimizer):
     saver2 = TorchSaver(trainer_settings, path1, load=True)
     saver2.register(policy2)
     saver2.register(optimizer2)
-    saver2.initialize_or_load(policy2)
     saver2.initialize_or_load()  # This is to load the optimizers
 
     # assert the models have the same weights
