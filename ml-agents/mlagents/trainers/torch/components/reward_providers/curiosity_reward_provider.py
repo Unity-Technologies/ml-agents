@@ -30,7 +30,7 @@ class CuriosityRewardProvider(BaseRewardProvider):
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
-            rewards = self._network.compute_reward(mini_batch).detach().cpu().numpy()
+            rewards = ModelUtils.to_numpy(self._network.compute_reward(mini_batch))
         rewards = np.minimum(rewards, 1.0 / self.strength)
         return rewards * self._has_updated_once
 
@@ -46,8 +46,8 @@ class CuriosityRewardProvider(BaseRewardProvider):
         loss.backward()
         self.optimizer.step()
         return {
-            "Losses/Curiosity Forward Loss": forward_loss.detach().cpu().numpy(),
-            "Losses/Curiosity Inverse Loss": inverse_loss.detach().cpu().numpy(),
+            "Losses/Curiosity Forward Loss": ModelUtils.to_numpy(forward_loss),
+            "Losses/Curiosity Inverse Loss": ModelUtils.to_numpy(inverse_loss),
         }
 
 

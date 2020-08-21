@@ -10,6 +10,7 @@ from mlagents.trainers.settings import CuriositySettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
 )
+from mlagents.trainers.torch.utils import ModelUtils
 
 SEED = [42]
 
@@ -82,7 +83,7 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     buffer = create_agent_buffer(behavior_spec, 5)
     for _ in range(200):
         curiosity_rp.update(buffer)
-    prediction = curiosity_rp._network.predict_action(buffer)[0].detach()
+    prediction = ModelUtils.to_numpy(curiosity_rp._network.predict_action(buffer)[0])
     target = buffer["actions"][0]
     error = float(torch.mean((prediction - target) ** 2))
     assert error < 0.001
@@ -107,5 +108,5 @@ def test_next_state_prediction(behavior_spec: BehaviorSpec, seed: int) -> None:
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_next_state(buffer)[0]
     target = curiosity_rp._network.get_next_state(buffer)[0]
-    error = float(torch.mean((prediction - target) ** 2).detach())
+    error = float(ModelUtils.to_numpy(torch.mean((prediction - target) ** 2)))
     assert error < 0.001

@@ -31,15 +31,12 @@ class GAILRewardProvider(BaseRewardProvider):
             estimates, _ = self._discriminator_network.compute_estimate(
                 mini_batch, use_vail_noise=False
             )
-            return (
+            return ModelUtils.to_numpy(
                 -torch.log(
                     1.0
                     - estimates.squeeze(dim=1)
                     * (1.0 - self._discriminator_network.EPSILON)
                 )
-                .detach()
-                .cpu()
-                .numpy()
             )
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
@@ -175,17 +172,17 @@ class DiscriminatorNetwork(torch.nn.Module):
         expert_estimate, expert_mu = self.compute_estimate(
             expert_batch, use_vail_noise=True
         )
-        stats_dict["Policy/GAIL Policy Estimate"] = (
-            policy_estimate.mean().detach().cpu().numpy()
+        stats_dict["Policy/GAIL Policy Estimate"] = ModelUtils.to_numpy(
+            policy_estimate.mean()
         )
-        stats_dict["Policy/GAIL Expert Estimate"] = (
-            expert_estimate.mean().detach().cpu().numpy()
+        stats_dict["Policy/GAIL Expert Estimate"] = ModelUtils.to_numpy(
+            expert_estimate.mean()
         )
         discriminator_loss = -(
             torch.log(expert_estimate + self.EPSILON)
             + torch.log(1.0 - policy_estimate + self.EPSILON)
         ).mean()
-        stats_dict["Losses/GAIL Loss"] = discriminator_loss.detach().cpu().numpy()
+        stats_dict["Losses/GAIL Loss"] = ModelUtils.to_numpy(discriminator_loss)
         total_loss += discriminator_loss
         if self._settings.use_vail:
             # KL divergence loss (encourage latent representation to be normal)
@@ -206,8 +203,8 @@ class DiscriminatorNetwork(torch.nn.Module):
                     torch.tensor(0.0),
                 )
             total_loss += vail_loss
-            stats_dict["Policy/GAIL Beta"] = self._beta.detach().cpu().numpy()
-            stats_dict["Losses/GAIL KL Loss"] = kl_loss.detach().cpu().numpy()
+            stats_dict["Policy/GAIL Beta"] = ModelUtils.to_numpy(self._beta)
+            stats_dict["Losses/GAIL KL Loss"] = ModelUtils.to_numpy(kl_loss)
         if self.gradient_penalty_weight > 0.0:
             total_loss += (
                 self.gradient_penalty_weight
