@@ -50,6 +50,9 @@ class CuriosityRewardProvider(BaseRewardProvider):
             "Losses/Curiosity Inverse Loss": inverse_loss.detach().cpu().numpy(),
         }
 
+    def get_modules(self):
+        return {f"Module:{self.name}": self._network}
+
 
 class CuriosityNetwork(torch.nn.Module):
     EPSILON = 1e-10
