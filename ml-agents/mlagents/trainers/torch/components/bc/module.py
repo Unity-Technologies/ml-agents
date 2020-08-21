@@ -179,5 +179,5 @@ class BCModule:
         bc_loss.backward()
 
         self.optimizer.step()
-        run_out = {"loss": ModelUtils.to_numpy(bc_loss)}
+        run_out = {"loss": bc_loss.item()}
         return run_out

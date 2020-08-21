@@ -530,11 +530,11 @@ class TorchSACOptimizer(TorchOptimizer):
         # Update target network
         self.soft_update(self.policy.actor_critic.critic, self.target_network, self.tau)
         update_stats = {
-            "Losses/Policy Loss": abs(ModelUtils.to_numpy(policy_loss)),
+            "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": ModelUtils.to_numpy(value_loss),
             "Losses/Q1 Loss": ModelUtils.to_numpy(q1_loss),
             "Losses/Q2 Loss": ModelUtils.to_numpy(q2_loss),
-            "Policy/Entropy Coeff": ModelUtils.to_numpy(torch.exp(self._log_ent_coef)),
+            "Policy/Entropy Coeff": torch.exp(self._log_ent_coef).item(),
             "Policy/Learning Rate": decay_lr,
         }
 
