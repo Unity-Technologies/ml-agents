@@ -1,3 +1,5 @@
+# Detect availability of torch package here.
+# NOTE: this try/except is temporary until torch is required for ML-Agents.
 try:
     # This should be the only place that we import torch directly.
     # Everywhere else is caught by the banned-modules setting for flake8
