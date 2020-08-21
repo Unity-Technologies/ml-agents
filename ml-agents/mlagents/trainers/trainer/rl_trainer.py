@@ -59,6 +59,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
         self.framework = self.trainer_settings.framework
+        if self.framework == FrameworkType.PYTORCH and not torch_utils.is_available():
+            raise UnityTrainerException(
+                "To use the experimental PyTorch backend, install the PyTorch Python package first."
+            )
+
         logger.debug(f"Using framework {self.framework.value}")
 
         self._next_save_step = 0
@@ -120,11 +125,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         behavior_spec: BehaviorSpec,
         create_graph: bool = False,
     ) -> Policy:
-        if self.framework == FrameworkType.PYTORCH and TorchPolicy is None:
-            raise UnityTrainerException(
-                "To use the experimental PyTorch backend, install the PyTorch Python package first."
-            )
-        elif self.framework == FrameworkType.PYTORCH:
+        if self.framework == FrameworkType.PYTORCH:
             return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
             return self.create_tf_policy(
