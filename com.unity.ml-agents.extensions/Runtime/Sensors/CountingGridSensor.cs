@@ -6,6 +6,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 {
     public class CountingGridSensor : GridSensor
     {
+        /// <inheritdoc/>
         [ExecuteInEditMode]
         public override void InitDepthType()
         {
@@ -22,20 +23,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_ChannelHotDefaultPerceptionBuffer = new float[ObservationPerCell];
         }
 
-
-        /// <summary>
-        /// Sets the parameters of the grid sensor
-        /// </summary>
-        /// <param name="detectableObjects">array of strings representing the tags to be detected by the sensor</param>
-        /// <param name="channelDepth">array of ints representing the depth of each channel</param>
-        /// <param name="gridDepthTypeParam">enum representing the GridDepthType of the sensor</param>
-        /// <param name="cellScaleX">float representing the X scaling of each cell</param>
-        /// <param name="cellScaleZ">float representing the Z scaling of each cell</param>
-        /// <param name="gridWidth">int representing the number of cells in the X direction. Width of the Grid</param>
-        /// <param name="gridHeight">int representing the number of cells in the Z direction. Height of the Grid</param>
-        /// <param name="observeMaskInt">int representing the layer mask to observe</param>
-        /// <param name="rotateToAgent">bool if true then the grid is rotated to the rotation of the transform the rootReference</param>
-        /// <param name="debugColors">array of colors cooresponding the the tags in the detectableObjects array</param>
+        /// <inheritdoc/>
         [ExecuteInEditMode]
         public override void SetParameters(string[] detectableObjects, int[] channelDepth, GridDepthType gridDepthType,
             float cellScaleX, float cellScaleZ, int gridWidth, int gridHeight, int observeMaskInt, bool rotateToAgent, Color[] debugColors)

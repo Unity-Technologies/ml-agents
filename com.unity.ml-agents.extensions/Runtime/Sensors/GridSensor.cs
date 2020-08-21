@@ -6,145 +6,249 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
+    /// <summary>
+    /// Grid-based sensor.
+    /// </summary>
     public class GridSensor : SensorComponent, ISensor
     {
-
-        // Name of this grid sensor
+        /// <summary>
+        /// Name of this grid sensor.
+        /// </summary>
         public string Name;
 
+        //
         // Main Parameters
-        [Header("Grid Sensor Settings")]
+        //
 
+        /// <summary>
+        /// The width of each grid cell.
+        /// </summary>
+        [Header("Grid Sensor Settings")]
         [Tooltip("The width of each grid cell")]
         [Range(0.05f, 1000f)]
         public float CellScaleX = 1f;
 
+        /// <summary>
+        /// The depth of each grid cell.
+        /// </summary>
         [Tooltip("The depth of each grid cell")]
         [Range(0.05f, 1000f)]
         public float CellScaleZ = 1f;
 
+        /// <summary>
+        /// The width of the grid .
+        /// </summary>
         [Tooltip("The width of the grid")]
         [Range(2, 2000)]
         public int GridNumSideX = 16;
 
+        /// <summary>
+        /// The depth of the grid .
+        /// </summary>
         [Tooltip("The depth of the grid")]
         [Range(2, 2000)]
         public int GridNumSideZ = 16;
 
+        /// <summary>
+        /// The height of each grid cell. Changes how much of the vertical axis is observed by a cell.
+        /// </summary>
         [Tooltip("The height of each grid cell. Changes how much of the vertical axis is observed by a cell")]
         [Range(0.01f, 1000f)]
         public float CellScaleY = 0.01f;
 
+        /// <summary>
+        /// Rotate the grid based on the direction the agent is facing.
+        /// </summary>
         [Tooltip("Rotate the grid based on the direction the agent is facing")]
-        public bool RotateToAgent = false;
+        public bool RotateToAgent;
 
+        /// <summary>
+        /// Array holding the depth of each channel.
+        /// </summary>
         [Tooltip("Array holding the depth of each channel")]
         public int[] ChannelDepth;
 
+        /// <summary>
+        /// List of tags that are detected.
+        /// </summary>
         [Tooltip("List of tags that are detected")]
         public string[] DetectableObjects;
 
+        /// <summary>
+        /// The layer mask.
+        /// </summary>
         [Tooltip("The layer mask")]
         public LayerMask ObserveMask;
 
-        // Enum describing what kind of depth type the data should be organized as
+        /// <summary>
+        /// Enum describing what kind of depth type the data should be organized as
+        /// </summary>
         public enum GridDepthType { Channel, ChannelHot };
 
+        /// <summary>
+        /// The data layout that the grid should output.
+        /// </summary>
         [Tooltip("The data layout that the grid should output")]
         public GridDepthType gridDepthType = GridDepthType.Channel;
 
-        [Tooltip("The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current gameobject")]
+        /// <summary>
+        /// The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current GameObject.
+        /// </summary>
+        [Tooltip("The reference of the root of the agent. This is used to disambiguate objects with the same tag as the agent. Defaults to current GameObject")]
         public GameObject rootReference;
 
+        //
         // Hidden Parameters
-        // The total number of observations per cell of the grid. Its equivilent to the "channel" on the outgoing tensor
+        //
+
+        /// <summary>
+        /// The total number of observations per cell of the grid. Its equivalent to the "channel" on the outgoing tensor.
+        /// </summary>
         [HideInInspector]
         public int ObservationPerCell;
 
-        // The total number of observations that this GridSensor provides. It is the length of m_PerceptionBuffer
+        /// <summary>
+        /// The total number of observations that this GridSensor provides. It is the length of m_PerceptionBuffer.
+        /// </summary>
         [HideInInspector]
         public int NumberOfObservations;
 
-        // The offsets used to specify where within a cell's alloted data, certain observations will be inserted
+        /// <summary>
+        /// The offsets used to specify where within a cell's allotted data, certain observations will be inserted.
+        /// </summary>
         [HideInInspector]
         public int[] ChannelOffsets;
 
-        // The main storage of perceptual information
+        /// <summary>
+        /// The main storage of perceptual information.
+        /// </summary>
         protected float[] m_PerceptionBuffer;
 
-        // The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array
+        /// <summary>
+        ///  The default value of the perceptionBuffer when using the ChannelHot DepthType. Used to reset the array/
+        /// </summary>
         protected float[] m_ChannelHotDefaultPerceptionBuffer;
 
-        // Array of Colors needed in order to load the values of the perception buffer to a texture
+        /// <summary>
+        /// Array of Colors needed in order to load the values of the perception buffer to a texture.
+        /// </summary>
         protected Color[] m_PerceptionColors;
 
-        // Texture where the colors are written to so that they can be compressed in PNG format
+        /// <summary>
+        /// Texture where the colors are written to so that they can be compressed in PNG format.
+        /// </summary>
         protected Texture2D m_perceptionTexture2D;
 
+        //
         // Utility Constants Calculated on Init
+        //
 
-        // Number of PNG formated images that are sent to python during training
+        /// <summary>
+        /// Number of PNG formated images that are sent to python during training.
+        /// </summary>
         private int NumImages;
 
-        // Number of relevent channels on the last image that is sent
+        /// <summary>
+        /// Number of relevant channels on the last image that is sent/
+        /// </summary>
         private int NumChannelsOnLastImage;
 
-        // Radius of grid, used for normalizing the distance
+        /// <summary>
+        /// Radius of grid, used for normalizing the distance.
+        /// </summary>
         protected float SphereRadius;
 
-        // Total Number of cells (width*height)
+        /// <summary>
+        /// Total Number of cells (width*height)
+        /// </summary>
         private int NumCells;
 
-        // Difference between GridNumSideZ and gridNumSideX
+        /// <summary>
+        /// Difference between GridNumSideZ and gridNumSideX.
+        /// </summary>
         protected int DiffNumSideZX = 0;
 
-        // Offset used for calculating CellToPoint
+        /// <summary>
+        /// Offset used for calculating CellToPoint
+        /// </summary>
         protected float OffsetGridNumSide = 7.5f; //  (gridNumSideZ - 1) / 2;
 
-        // Half of the grid in the X direction
+        /// <summary>
+        /// Half of the grid in the X direction
+        /// </summary>
         private float HalfOfGridX;
 
-        // Half of the grid in the z direction
+        /// <summary>
+        /// Half of the grid in the z direction
+        /// </summary>
         private float HalfOfGridZ;
 
-        // Used in the PointToCell method to scale the x value to land in the calculated cell
+        /// <summary>
+        /// Used in the PointToCell method to scale the x value to land in the calculated cell.
+        /// </summary>
         private float PointToCellScalingX;
 
-        // Used in the PointToCell method to scale the y value to land in the calculated cell
+        /// <summary>
+        /// Used in the PointToCell method to scale the y value to land in the calculated cell.
+        /// </summary>
         private float PointToCellScalingZ;
 
-        // Bool if initialized or not
+        /// <summary>
+        /// Bool if initialized or not.
+        /// </summary>
         protected bool Initialized = false;
 
-        // Array holding the dimensions of the resulting tensor
+        /// <summary>
+        /// Array holding the dimensions of the resulting tensor
+        /// </summary>
         private int[] m_Shape;
 
+        //
         // Debug Parameters
+        //
+
+        /// <summary>
+        /// Array of Colors used for the grid gizmos.
+        /// </summary>
         [Header("Debug Options")]
         [Tooltip("Array of Colors used for the grid gizmos")]
         public Color[] DebugColors;
 
+        /// <summary>
+        /// The height of the gizmos grid.
+        /// </summary>
         [Tooltip("The height of the gizmos grid")]
         public float GizmoYOffset = 0f;
 
+        /// <summary>
+        /// Whether to show gizmos or not.
+        /// </summary>
         [Tooltip("Whether to show gizmos or not")]
         public bool ShowGizmos = false;
 
-        // Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos
+        /// <summary>
+        /// Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
+        /// </summary>
         protected Color[] CellActivity;
 
-        // Array of positions where each position is the center of a cell
+        /// <summary>
+        /// Array of positions where each position is the center of a cell.
+        /// </summary>
         private Vector3[] CellPoints;
 
-        // List representing the multiple compressed images of all of the grids
+        /// <summary>
+        /// List representing the multiple compressed images of all of the grids
+        /// </summary>
         private List<byte[]> compressedImgs;
 
-        // Lilst representing the sizes of the multiple images so they can be properly reconstructed on the python side
+        /// <summary>
+        /// List representing the sizes of the multiple images so they can be properly reconstructed on the python side
+        /// </summary>
         private List<byte[]> byteSizesBytesList;
 
         private Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
 
-        /// <summary>Returns the component itself</summary>
+        /// <inheritdoc/>
         public override ISensor CreateSensor()
         {
             return this;
@@ -210,7 +314,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         {
             switch (gridDepthType)
             {
-
                 case GridDepthType.Channel:
                     ObservationPerCell = ChannelDepth.Length;
                     break;
@@ -247,7 +350,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 CellPoints[i] = CellToPoint(i, false);
             }
-
         }
 
         /// <summary>
@@ -267,7 +369,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Initializes the m_PerceptionBuffer as the main data storage property 
+        /// Initializes the m_PerceptionBuffer as the main data storage property
         /// Calculates the NumImages and NumChannelsOnLastImage that are used for serializing m_PerceptionBuffer
         /// </summary>
         [ExecuteInEditMode]
@@ -297,11 +399,10 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         /// <summary>
         /// Calls the initialization methods. Creates the data storing properties used to send the data
-        /// Establishes 
+        /// Establishes
         /// </summary>
         public virtual void Start()
         {
-
             InitGridParameters();
             InitDepthType();
             InitCellPoints();
@@ -318,12 +419,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <summary>
-        /// Clears the perception buffer before loading in new data. If the gridDepthType is ChannelHot, then it initializes the 
+        /// Clears the perception buffer before loading in new data. If the gridDepthType is ChannelHot, then it initializes the
         /// Reset() also reinits the cell activity array (for debug)
         /// </summary>
         public void Reset()
         {
-
             if (m_PerceptionBuffer != null)
             {
                 if (gridDepthType == GridDepthType.ChannelHot)
@@ -356,7 +456,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                     CellActivity[i] = DebugDefaultColor;
                 }
             }
-
         }
 
         /// <summary>Gets the shape of the grid observation</summary>
@@ -367,15 +466,13 @@ namespace Unity.MLAgents.Extensions.Sensors
             return m_Shape;
         }
 
-        /// <summary>Gets the name of the gridsensor</summary>
-        /// <returns>string containing the name of the grid sensor</returns>
+        /// <inheritdoc/>
         public string GetName()
         {
             return Name;
         }
 
-        /// <summary>Gets SensorCompressionType of the gridsensor (always GRIDOBS)</summary>
-        /// <returns>The SensorCompressionType of the gridsensor</returns>
+        /// <inheritdoc/>
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.PNG;
@@ -399,7 +496,6 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     ChannelsToTexture(3 * i, 3);
                     allBytes.AddRange(m_perceptionTexture2D.EncodeToPNG());
-
                 }
 
                 ChannelsToTexture(3 * (NumImages - 1), NumChannelsOnLastImage);
@@ -407,7 +503,6 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                 return allBytes.ToArray();
             }
-
         }
 
         /// <summary>
@@ -417,6 +512,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// m_perceptionTexture2D can then be read as an image as it now contains all of the information that was
         /// stored in the channels
         /// </summary>
+        /// <param name="channelIndex"></param>
+        /// <param name="numChannelsToAdd"></param>
         protected void ChannelsToTexture(int channelIndex, int numChannelsToAdd)
         {
             for (int i = 0; i < NumCells; i++)
@@ -525,7 +622,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         ///     {
         ///         float[] channelValues = new float[ChannelDepth.Length]; // ChannelDepth.Length = 4 in this example
         ///         channelValues[0] = type_index;
-        ///         Rigidbody goRb = currentColliderGo.GetComponent<Rigidbody>();
+        ///         Rigidbody goRb = currentColliderGo.GetComponent&lt;Rigidbody&gt;();
         ///         if (goRb != null)
         ///         {
         ///             channelValues[1] = goRb.velocity.x;
@@ -566,7 +663,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Further documetation on the GridDepthType can be found below
         /// </summary>
         /// <param name="currentColliderGo">The game object that was found colliding with a certain cell</param>
-        /// <param name="cell_id">The index of the current cell</param>
+        /// <param name="cellIndex">The index of the current cell</param>
         /// <param name="normalized_distance">A float between 0 and 1 describing the ratio of
         ///            the distance currentColliderGo is compared to the edge of the gridsensor</param>
         protected virtual void LoadObjectData(GameObject currentColliderGo, int cellIndex, float normalized_distance)
@@ -593,7 +690,6 @@ namespace Unity.MLAgents.Extensions.Sensors
 
                     switch (gridDepthType)
                     {
-
                         case GridDepthType.Channel:
                             /// <remarks>
                             /// The observations are "channel based" so each grid is WxHxC where C is the number of channels
@@ -619,7 +715,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                             /// The observations are "channel hot" so each grid is WxHxD where D is the sum of all of the channel depths
                             /// The opposite of the "channel based" case, the channel values are represented as one hot vector per channel and then concatenated together
                             /// Thus channelDepth is assumed to be greater than 1.
-                            /// For example, if a cell contains the 3rd type of 5 possible on the 2nd team of 3 possible teams, 
+                            /// For example, if a cell contains the 3rd type of 5 possible on the 2nd team of 3 possible teams,
                             /// channelValues = {2, 1}
                             /// channelOffsets = {5, 3}
                             /// ObservationPerCell = 5 + 3 = 8
@@ -687,10 +783,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         protected void CopyCellData(int fromCellID, int toCellID)
         {
             Array.Copy(m_PerceptionBuffer,
-                       fromCellID * ObservationPerCell,
-                       m_PerceptionBuffer,
-                       toCellID * ObservationPerCell,
-                       ObservationPerCell);
+                fromCellID * ObservationPerCell,
+                m_PerceptionBuffer,
+                toCellID * ObservationPerCell,
+                ObservationPerCell);
             if (ShowGizmos)
                 CellActivity[toCellID] = CellActivity[fromCellID];
         }
@@ -713,7 +809,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             return Array.IndexOf(DetectableObjects, tag);
         }
 
-        public void OnDrawGizmos()
+        void OnDrawGizmos()
         {
             if (ShowGizmos)
             {
@@ -748,10 +844,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
 
-        /// <summary>
-        /// Need to implement this so as to implement the ISensor interface
-        /// </summary>
-        public void Update() { }
+        /// <inheritdoc/>
+        void ISensor.Update() { }
 
         /// <summary>Gets the observation shape</summary>
         /// <returns>int[] of the observation shape</returns>
@@ -761,8 +855,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             return m_Shape;
         }
 
-        /// <summary>Writes the percieved data to the adapter to be used in inference</summary>
-        /// <returns>int of the number of values that have been written</returns>
+        /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
             // Timer stack is in accessable due to its protection level
