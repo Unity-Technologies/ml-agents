@@ -10,9 +10,14 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class CrawlerAgent : Agent
 {
+    //The type of crawler behavior we want to use.
+    //This setting will determine how the agent is set up during initialization.
     public enum CrawlerAgentBehaviorType
     {
-        CrawlerDynamic, CrawlerDynamicVariableSpeed, CrawlerStatic, CrawlerStaticVariableSpeed
+        CrawlerDynamic,
+        CrawlerDynamicVariableSpeed,
+        CrawlerStatic,
+        CrawlerStaticVariableSpeed
     }
 
     public CrawlerAgentBehaviorType typeOfCrawler;
@@ -21,25 +26,21 @@ public class CrawlerAgent : Agent
 
     //Crawler Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
-    [Header("NN Models")]
-    public NNModel crawlerDyBrain;
+    [Header("NN Models")] public NNModel crawlerDyBrain;
     public NNModel crawlerDyVSBrain;
     public NNModel crawlerStBrain;
     public NNModel crawlerStVSBrain;
 
-    [Header("Walk Speed")]
-    [Range(0.1f, m_maxWalkingSpeed)]
-    [SerializeField]
+    [Header("Walk Speed")] [Range(0.1f, m_maxWalkingSpeed)] [SerializeField]
     //The walking speed to try and achieve
     private float m_TargetWalkingSpeed = m_maxWalkingSpeed;
 
-
-    public float TargetWalkingSpeed // property
+    //The current target walking speed. Clamped because a value of zero will cause NaNs
+    public float TargetWalkingSpeed
     {
         get { return m_TargetWalkingSpeed; }
         set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
     }
-
 
     //Should the agent sample a new goal velocity each episode?
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
@@ -47,9 +48,7 @@ public class CrawlerAgent : Agent
     public bool randomizeWalkSpeedEachEpisode;
 
     //The direction an agent will walk during training.
-    private Vector3 m_WorldDirToWalk = Vector3.right;
-    [Header("Target To Walk Towards")]
-    public Transform dynamicTargetPrefab; //Target prefab
+    [Header("Target To Walk Towards")] public Transform dynamicTargetPrefab; //Target prefab
     public Transform staticTargetPrefab; //Target prefab
     private Transform m_Target; //Target the agent will walk towards during training.
 
@@ -62,7 +61,6 @@ public class CrawlerAgent : Agent
     public Transform leg2Lower;
     public Transform leg3Upper;
     public Transform leg3Lower;
-
 
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
@@ -86,42 +84,41 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
-
         m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
         switch (typeOfCrawler)
         {
-            case CrawlerAgentBehaviorType.CrawlerDynamic :
+            case CrawlerAgentBehaviorType.CrawlerDynamic:
             {
                 m_BehaviorParams.BehaviorName = "CrawlerDynamic";
-                if(crawlerDyBrain)
+                if (crawlerDyBrain)
                     m_BehaviorParams.Model = crawlerDyBrain;
                 randomizeWalkSpeedEachEpisode = false;
                 m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
                 break;
             }
-            case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed :
+            case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed:
             {
                 m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
-                if(crawlerDyVSBrain)
+                if (crawlerDyVSBrain)
                     m_BehaviorParams.Model = crawlerDyVSBrain;
                 m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = true;
                 break;
             }
-            case CrawlerAgentBehaviorType.CrawlerStatic :
+            case CrawlerAgentBehaviorType.CrawlerStatic:
             {
                 m_BehaviorParams.BehaviorName = "CrawlerStatic";
-                if(crawlerStBrain)
+                if (crawlerStBrain)
                     m_BehaviorParams.Model = crawlerStBrain;
                 var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
                 m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 randomizeWalkSpeedEachEpisode = false;
                 break;
             }
-            case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed :
+            case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed:
             {
                 m_BehaviorParams.BehaviorName = "CrawlerStaticVariableSpeed";
-                if(crawlerStVSBrain)
+                if (crawlerStVSBrain)
                     m_BehaviorParams.Model = crawlerStVSBrain;
                 var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
                 m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
@@ -164,7 +161,6 @@ public class CrawlerAgent : Agent
         //Set our goal walking speed
         TargetWalkingSpeed =
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : TargetWalkingSpeed;
-
     }
 
     /// <summary>
@@ -303,13 +299,11 @@ public class CrawlerAgent : Agent
         }
 
         AddReward(matchSpeedReward * lookAtTargetReward);
-
     }
 
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-        m_WorldDirToWalk = m_Target.position - body.position;
         m_OrientationCube.UpdateOrientation(body, m_Target);
         if (m_DirectionIndicator)
         {
