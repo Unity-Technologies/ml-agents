@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Random = UnityEngine.Random;
 using Unity.MLAgents;
 using UnityEngine.Events;
@@ -12,14 +12,14 @@ namespace Unity.MLAgentsExamples
     /// </summary>
     public class TargetController : MonoBehaviour
     {
-        
+
         [Header("Collider Tag To Detect")]
         public string tagToDetect = "agent"; //collider tag to detect 
-        
+
         [Header("Target Placement")]
         public float spawnRadius; //The radius in which a target can be randomly spawned.
         public bool respawnIfTouched; //Should the target respawn to a different position when touched
-        
+
         [Header("Target Fell Protection")]
         public bool respawnIfFallsOffPlatform = true; //If the target falls off the platform, reset the position.
         public float fallDistance = 5; //distance below the starting height that will trigger a respawn 

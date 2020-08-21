@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
@@ -40,10 +41,10 @@ namespace Unity.MLAgents
 
         // Brains that we have sent over the communicator with agents.
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
-        Dictionary<string, BrainParameters> m_UnsentBrainKeys = new Dictionary<string, BrainParameters>();
+        Dictionary<string, ActionSpec> m_UnsentBrainKeys = new Dictionary<string, ActionSpec>();
 
 
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
 #endif
@@ -181,8 +182,8 @@ namespace Unity.MLAgents
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
-        /// <param name="brainParameters">Brain parameters needed to send to the trainer.</param>
-        public void SubscribeBrain(string brainKey, BrainParameters brainParameters)
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        public void SubscribeBrain(string brainKey, ActionSpec actionSpec)
         {
             if (m_BehaviorNames.Contains(brainKey))
             {
@@ -194,7 +195,7 @@ namespace Unity.MLAgents
                 new UnityRLOutputProto.Types.ListAgentInfoProto()
             );
 
-            CacheBrainParameters(brainKey, brainParameters);
+            CacheActionSpec(brainKey, actionSpec);
         }
 
         void UpdateEnvironmentWithInput(UnityRLInputProto rlInput)
@@ -206,7 +207,7 @@ namespace Unity.MLAgents
         UnityInputProto Initialize(UnityOutputProto unityOutput,
             out UnityInputProto unityInput)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
             var channel = new Channel(
                 "localhost:" + m_CommunicatorInitParameters.port,
@@ -240,7 +241,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void Dispose()
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return;
@@ -270,23 +271,23 @@ namespace Unity.MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    QuitCommandReceived?.Invoke();
-                    return;
-                }
-                case CommandProto.Reset:
-                {
-                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
+                        QuitCommandReceived?.Invoke();
+                        return;
                     }
-                    ResetCommandReceived?.Invoke();
-                    return;
-                }
+                case CommandProto.Reset:
+                    {
+                        foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
+                        {
+                            m_OrderedAgentsRequestingDecisions[brainName].Clear();
+                        }
+                        ResetCommandReceived?.Invoke();
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 
@@ -313,7 +314,7 @@ namespace Unity.MLAgents
         /// <param name="sensors">Sensors that will produce the observations</param>
         public void PutObservations(string behaviorName, AgentInfo info, List<ISensor> sensors)
         {
-# if DEBUG
+#if DEBUG
             if (!m_SensorShapeValidators.ContainsKey(behaviorName))
             {
                 m_SensorShapeValidators[behaviorName] = new SensorShapeValidator();
@@ -376,7 +377,7 @@ namespace Unity.MLAgents
             message.RlOutput.SideChannel = ByteString.CopyFrom(messageAggregated);
 
             var input = Exchange(message);
-            UpdateSentBrainParameters(tempUnityRlInitializationOutput);
+            UpdateSentActionSpec(tempUnityRlInitializationOutput);
 
             foreach (var k in m_CurrentUnityRlOutput.AgentInfos.Keys)
             {
@@ -412,7 +413,7 @@ namespace Unity.MLAgents
                     var agentId = m_OrderedAgentsRequestingDecisions[brainName][i];
                     if (m_LastActionsReceived[brainName].ContainsKey(agentId))
                     {
-                        m_LastActionsReceived[brainName][agentId] = agentAction.vectorActions;
+                        m_LastActionsReceived[brainName][agentId] = agentAction;
                     }
                 }
             }
@@ -441,7 +442,7 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return null;
@@ -488,15 +489,15 @@ namespace Unity.MLAgents
             };
         }
 
-        void CacheBrainParameters(string behaviorName, BrainParameters brainParameters)
+        void CacheActionSpec(string behaviorName, ActionSpec actionSpec)
         {
             if (m_SentBrainKeys.Contains(behaviorName))
             {
                 return;
             }
 
-            // TODO We should check that if m_unsentBrainKeys has brainKey, it equals brainParameters
-            m_UnsentBrainKeys[behaviorName] = brainParameters;
+            // TODO We should check that if m_unsentBrainKeys has brainKey, it equals actionSpec
+            m_UnsentBrainKeys[behaviorName] = actionSpec;
         }
 
         UnityRLInitializationOutputProto GetTempUnityRlInitializationOutput()
@@ -508,17 +509,17 @@ namespace Unity.MLAgents
                 {
                     if (m_CurrentUnityRlOutput.AgentInfos[behaviorName].CalculateSize() > 0)
                     {
-                        // Only send the BrainParameters if there is a non empty list of
+                        // Only send the actionSpec if there is a non empty list of
                         // AgentInfos ready to be sent.
                         // This is to ensure that The Python side will always have a first
-                        // observation when receiving the BrainParameters
+                        // observation when receiving the ActionSpec
                         if (output == null)
                         {
                             output = new UnityRLInitializationOutputProto();
                         }
 
-                        var brainParameters = m_UnsentBrainKeys[behaviorName];
-                        output.BrainParameters.Add(brainParameters.ToProto(behaviorName, true));
+                        var actionSpec = m_UnsentBrainKeys[behaviorName];
+                        output.BrainParameters.Add(actionSpec.ToBrainParametersProto(behaviorName, true));
                     }
                 }
             }
@@ -526,7 +527,7 @@ namespace Unity.MLAgents
             return output;
         }
 
-        void UpdateSentBrainParameters(UnityRLInitializationOutputProto output)
+        void UpdateSentActionSpec(UnityRLInitializationOutputProto output)
         {
             if (output == null)
             {

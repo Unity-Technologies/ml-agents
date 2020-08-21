@@ -59,8 +59,11 @@ others (like `mypy`) may require more effort to fix.
 ### Code style
 
 All python code should be formatted with
-[`black`](https://github.com/ambv/black). Style and formatting for C# may be
-enforced later.
+[`black`](https://github.com/ambv/black).
+
+C# code is formatted using [`dotnet-format`](https://github.com/dotnet/format).
+You must have [dotnet](https://dotnet.microsoft.com/download) and
+`dotnet-format` installed first.
 
 ### Python type annotations
 

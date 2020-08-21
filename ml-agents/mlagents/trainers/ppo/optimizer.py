@@ -2,7 +2,7 @@ from typing import Optional, Any, Dict, cast
 import numpy as np
 from mlagents.tf_utils import tf
 from mlagents_envs.timers import timed
-from mlagents.trainers.models import ModelUtils, EncoderType
+from mlagents.trainers.tf.models import ModelUtils, EncoderType
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer.tf_optimizer import TFOptimizer
 from mlagents.trainers.buffer import AgentBuffer
@@ -40,7 +40,7 @@ class PPOOptimizer(TFOptimizer):
 
                 self.stream_names = list(self.reward_signals.keys())
 
-                self.tf_optimizer: Optional[tf.train.AdamOptimizer] = None
+                self.tf_optimizer_op: Optional[tf.train.Optimizer] = None
                 self.grads = None
                 self.update_batch: Optional[tf.Operation] = None
 
@@ -95,8 +95,6 @@ class PPOOptimizer(TFOptimizer):
                     "decay_beta": self.decay_beta,
                 }
             )
-
-            self.policy.initialize_or_load()
 
     def _create_cc_critic(
         self, h_size: int, num_layers: int, vis_encode_type: EncoderType
@@ -229,10 +227,10 @@ class PPOOptimizer(TFOptimizer):
         self.old_values = {}
         for name in value_heads.keys():
             returns_holder = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_returns".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_returns"
             )
             old_value = tf.placeholder(
-                shape=[None], dtype=tf.float32, name="{}_value_estimate".format(name)
+                shape=[None], dtype=tf.float32, name=f"{name}_value_estimate"
             )
             self.returns_holders[name] = returns_holder
             self.old_values[name] = old_value
@@ -291,9 +289,9 @@ class PPOOptimizer(TFOptimizer):
         )
 
     def _create_ppo_optimizer_ops(self):
-        self.tf_optimizer = self.create_optimizer_op(self.learning_rate)
-        self.grads = self.tf_optimizer.compute_gradients(self.loss)
-        self.update_batch = self.tf_optimizer.minimize(self.loss)
+        self.tf_optimizer_op = self.create_optimizer_op(self.learning_rate)
+        self.grads = self.tf_optimizer_op.compute_gradients(self.loss)
+        self.update_batch = self.tf_optimizer_op.minimize(self.loss)
 
     @timed
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
@@ -334,12 +332,8 @@ class PPOOptimizer(TFOptimizer):
             self.all_old_log_probs: mini_batch["action_probs"],
         }
         for name in self.reward_signals:
-            feed_dict[self.returns_holders[name]] = mini_batch[
-                "{}_returns".format(name)
-            ]
-            feed_dict[self.old_values[name]] = mini_batch[
-                "{}_value_estimates".format(name)
-            ]
+            feed_dict[self.returns_holders[name]] = mini_batch[f"{name}_returns"]
+            feed_dict[self.old_values[name]] = mini_batch[f"{name}_value_estimates"]
 
         if self.policy.output_pre is not None and "actions_pre" in mini_batch:
             feed_dict[self.policy.output_pre] = mini_batch["actions_pre"]

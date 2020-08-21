@@ -39,6 +39,7 @@ enable you to manage multiple Unity versions.
 ### Install **Python 3.6.1** or Higher
 
 We recommend [installing](https://www.python.org/downloads/) Python 3.6 or 3.7.
+If you are using Windows, please install the x86-64 version and not x86.
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
@@ -57,10 +58,10 @@ example environments and training configurations to experiment with them (some
 of our tutorials / guides assume you have access to our example environments).
 
 ```sh
-git clone --branch release_3 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_6 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_3` option will switch to the tag of the latest stable
+The `--branch release_6` option will switch to the tag of the latest stable
 release. Omitting that will get the `master` branch which is potentially
 unstable.
 
@@ -68,7 +69,7 @@ unstable.
 
 You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `master` branch (by omitting `--branch release_3`
+back, make sure to clone the `master` branch (by omitting `--branch release_6`
 from the command above). See our
 [Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.

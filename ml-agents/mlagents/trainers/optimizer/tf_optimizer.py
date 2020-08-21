@@ -15,6 +15,7 @@ from mlagents.trainers.components.bc.module import BCModule
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
     def __init__(self, policy: TFPolicy, trainer_params: TrainerSettings):
+        super().__init__()
         self.sess = policy.sess
         self.policy = policy
         self.update_dict: Dict[str, tf.Tensor] = {}
@@ -129,7 +130,6 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
         Create reward signals
         :param reward_signal_configs: Reward signal config.
         """
-        self.reward_signals = {}
         # Create reward signals
         for reward_signal, settings in reward_signal_configs.items():
             # Name reward signals by string in case we have duplicates later
@@ -140,8 +140,9 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
                 self.reward_signals[reward_signal.value].update_dict
             )
 
+    @classmethod
     def create_optimizer_op(
-        self, learning_rate: tf.Tensor, name: str = "Adam"
+        cls, learning_rate: tf.Tensor, name: str = "Adam"
     ) -> tf.train.Optimizer:
         return tf.train.AdamOptimizer(learning_rate=learning_rate, name=name)
 

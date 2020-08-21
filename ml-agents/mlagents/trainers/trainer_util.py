@@ -2,7 +2,7 @@ import os
 from typing import Dict
 
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.exception import UnityTrainerException
@@ -24,8 +24,8 @@ class TrainerFactory:
         train_model: bool,
         load_model: bool,
         seed: int,
+        param_manager: EnvironmentParameterManager,
         init_path: str = None,
-        meta_curriculum: MetaCurriculum = None,
         multi_gpu: bool = False,
     ):
         self.trainer_config = trainer_config
@@ -34,11 +34,16 @@ class TrainerFactory:
         self.train_model = train_model
         self.load_model = load_model
         self.seed = seed
-        self.meta_curriculum = meta_curriculum
+        self.param_manager = param_manager
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
 
     def generate(self, brain_name: str) -> Trainer:
+        if brain_name not in self.trainer_config.keys():
+            logger.warning(
+                f"Behavior name {brain_name} does not match any behaviors specified in the trainer configuration file:"
+                f"{sorted(self.trainer_config.keys())}"
+            )
         return initialize_trainer(
             self.trainer_config[brain_name],
             brain_name,
@@ -47,8 +52,8 @@ class TrainerFactory:
             self.load_model,
             self.ghost_controller,
             self.seed,
+            self.param_manager,
             self.init_path,
-            self.meta_curriculum,
             self.multi_gpu,
         )
 
@@ -61,8 +66,8 @@ def initialize_trainer(
     load_model: bool,
     ghost_controller: GhostController,
     seed: int,
+    param_manager: EnvironmentParameterManager,
     init_path: str = None,
-    meta_curriculum: MetaCurriculum = None,
     multi_gpu: bool = False,
 ) -> Trainer:
     """
@@ -77,25 +82,15 @@ def initialize_trainer(
     :param load_model: Whether to load the model or randomly initialize
     :param ghost_controller: The object that coordinates ghost trainers
     :param seed: The random seed to use
+    :param param_manager: EnvironmentParameterManager, used to determine a reward buffer length for PPOTrainer
     :param init_path: Path from which to load model, if different from model_path.
-    :param meta_curriculum: Optional meta_curriculum, used to determine a reward buffer length for PPOTrainer
     :return:
     """
     trainer_artifact_path = os.path.join(output_path, brain_name)
     if init_path is not None:
         trainer_settings.init_path = os.path.join(init_path, brain_name)
 
-    min_lesson_length = 1
-    if meta_curriculum:
-        if brain_name in meta_curriculum.brains_to_curricula:
-            min_lesson_length = meta_curriculum.brains_to_curricula[
-                brain_name
-            ].min_lesson_length
-        else:
-            logger.warning(
-                f"Metacurriculum enabled, but no curriculum for brain {brain_name}. "
-                f"Brains with curricula: {meta_curriculum.brains_to_curricula.keys()}. "
-            )
+    min_lesson_length = param_manager.get_minimum_reward_buffer_size(brain_name)
 
     trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
     trainer_type = trainer_settings.trainer_type

@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Tests
         const int k_Seed = 1337;
         const double k_Epsilon = 0.0001;
         EnvironmentParametersChannel m_Channel;
-    
+
         public SamplerTests()
         {
             m_Channel = SideChannelManager.GetSideChannel<EnvironmentParametersChannel>();
@@ -102,7 +102,7 @@ namespace Unity.MLAgents.Tests
                     binaryWriter.Write(message.Length);
                     binaryWriter.Write(message);
                 }
-            return memStream.ToArray();
+                return memStream.ToArray();
             }
         }
     }

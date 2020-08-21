@@ -1,21 +1,16 @@
 test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
-    coverageOptions:
-    minCoveragePct: 0
+    enableCodeCoverage: !!bool false
   - version: 2019.3
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
   - version: 2020.1
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
   - version: 2020.2
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
 trunk_editor:
   - version: trunk
-    coverageOptions: --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+Unity.ML-Agents'
-    minCoveragePct: 72
+    enableCodeCoverage: !!bool true
 test_platforms:
   - name: win
     type: Unity::VM
@@ -31,7 +26,11 @@ test_platforms:
     flavor: b1.medium
 packages:
   - name: com.unity.ml-agents
+    assembly: Unity.ML-Agents
+    minCoveragePct: 72
   - name: com.unity.ml-agents.extensions
+    assembly: Unity.ML-Agents.Extensions
+    minCoveragePct: 75
 ---
 
 all_package_tests:
@@ -39,13 +38,13 @@ all_package_tests:
   dependencies:
   {% for editor in test_editors %}
     {% for platform in test_platforms %}
-  - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
+  - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
   {% endfor %}
 
   {% for editor in trunk_editor %}
     {% for platform in test_platforms %}
-  - .yamato/com.unity.ml-agents-test.yml#test_{{ platform.name }}_{{ editor.version }}
+  - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
   {% endfor %}
   triggers:
@@ -57,6 +56,12 @@ all_package_tests:
 {% for package in packages %}
   {% for editor in test_editors %}
     {% for platform in test_platforms %}
+
+{% if editor.enableCodeCoverage %}
+  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+{% else %}
+  {% assign coverageOptions = "" %}
+{% endif %}
 test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
   name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
   agent:
@@ -65,17 +70,16 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ editor.coverageOptions }}
-    {% if package.name == "com.unity.ml-agents" %}
-    # TODO get coverage tests running for extensions too
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    {% if editor.enableCodeCoverage %}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
+    - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
@@ -84,7 +88,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
-      {% if package.name == "com.unity.ml-agents" %}
+      {% if package.name == "com.unity.ml-agents.extensions" %}
         pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       {% endif %}
       pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
@@ -96,6 +100,12 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
 {% for package in packages %}
   {% for editor in trunk_editor %}
     {% for platform in test_platforms %}
+
+{% if editor.enableCodeCoverage %}
+  {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+{% else %}
+  {% assign coverageOptions = "" %}
+{% endif %}
 test_{{ package.name }}_{{ platform.name }}_trunk:
   name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
   agent:
@@ -103,20 +113,19 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
   commands:
-    - python -m pip install unity-downloader-cli --extra-index-url https://artifactory.eu-cph-1.unityops.net/api/pypi/common-python/simple
+    - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ editor.coverageOptions }}
-    {% if package.name == "com.unity.ml-agents" %}
-    # TODO get coverage tests running for extensions too
-    - python ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ editor.minCoveragePct }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    {% if editor.enableCodeCoverage %}
+    - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/com.unity.ml-agents-pack.yml#pack_{{ package.name }}
+    - .yamato/com.unity.ml-agents-pack.yml#pack
   triggers:
     cancel_old_ci: true
     {% endfor %}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Barracuda;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
 
@@ -126,11 +127,13 @@ namespace Unity.MLAgents.Inference
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
         /// <param name="sensorComponents">Attached sensor components</param>
+        /// <param name="actuatorComponents">Attached actuator components</param>
         /// <param name="observableAttributeTotalSize">Sum of the sizes of all ObservableAttributes.</param>
         /// <param name="behaviorType">BehaviorType or the Agent to check.</param>
         /// <returns>The list the error messages of the checks that failed</returns>
         public static IEnumerable<string> CheckModel(Model model, BrainParameters brainParameters,
-            SensorComponent[] sensorComponents, int observableAttributeTotalSize = 0,
+            SensorComponent[] sensorComponents, ActuatorComponent[] actuatorComponents,
+            int observableAttributeTotalSize = 0,
             BehaviorType behaviorType = BehaviorType.Default)
         {
             List<string> failedModelChecks = new List<string>();
@@ -179,6 +182,9 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
+            var modelDiscreteActionSize = isContinuous == ModelActionType.Discrete ? actionSize : 0;
+            var modelContinuousActionSize = isContinuous == ModelActionType.Continuous ? actionSize : 0;
+
             failedModelChecks.AddRange(
                 CheckIntScalarPresenceHelper(new Dictionary<string, int>()
                 {
@@ -197,7 +203,7 @@ namespace Unity.MLAgents.Inference
                 CheckInputTensorShape(model, brainParameters, sensorComponents, observableAttributeTotalSize)
             );
             failedModelChecks.AddRange(
-                CheckOutputTensorShape(model, brainParameters, isContinuous, actionSize)
+                CheckOutputTensorShape(model, brainParameters, actuatorComponents, isContinuous, modelContinuousActionSize, modelDiscreteActionSize)
             );
             return failedModelChecks;
         }
@@ -575,11 +581,15 @@ namespace Unity.MLAgents.Inference
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
+        /// <param name="actuatorComponents">Array of attached actuator components.</param>
         /// <param name="isContinuous">
         /// Whether the model is expecting continuous or discrete control.
         /// </param>
-        /// <param name="modelActionSize">
-        /// The size of the action output that is expected by the model.
+        /// <param name="modelContinuousActionSize">
+        /// The size of the continuous action output that is expected by the model.
+        /// </param>
+        /// <param name="modelSumDiscreteBranchSizes">
+        /// The size of the discrete action output that is expected by the model.
         /// </param>
         /// <returns>
         /// A IEnumerable of string corresponding to the incompatible shapes between model
@@ -588,8 +598,9 @@ namespace Unity.MLAgents.Inference
         static IEnumerable<string> CheckOutputTensorShape(
             Model model,
             BrainParameters brainParameters,
+            ActuatorComponent[] actuatorComponents,
             ModelActionType isContinuous,
-            int modelActionSize)
+            int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
         {
             var failedModelChecks = new List<string>();
             if (isContinuous == ModelActionType.Unknown)
@@ -613,8 +624,10 @@ namespace Unity.MLAgents.Inference
                     "suggest Continuous Control.");
                 return failedModelChecks;
             }
-            var tensorTester = new Dictionary<string, Func<BrainParameters, TensorShape?, int, string>>();
-            if (brainParameters.VectorActionSpaceType == SpaceType.Continuous)
+            var tensorTester = new Dictionary<string, Func<BrainParameters, ActuatorComponent[], TensorShape?, int, int, string>>();
+
+            // This will need to change a bit for hybrid action spaces.
+            if (isContinuous == ModelActionType.Continuous)
             {
                 tensorTester[TensorNames.ActionOutput] = CheckContinuousActionOutputShape;
             }
@@ -622,13 +635,14 @@ namespace Unity.MLAgents.Inference
             {
                 tensorTester[TensorNames.ActionOutput] = CheckDiscreteActionOutputShape;
             }
+
             // If the model expects an output but it is not in this list
             foreach (var name in model.outputs)
             {
                 if (tensorTester.ContainsKey(name))
                 {
-                    Func<BrainParameters, TensorShape?, int, string> tester = tensorTester[name];
-                    var error = tester.Invoke(brainParameters, model.GetShapeByName(name), modelActionSize);
+                    var tester = tensorTester[name];
+                    var error = tester.Invoke(brainParameters, actuatorComponents, model.GetShapeByName(name), modelContinuousActionSize, modelSumDiscreteBranchSizes);
                     if (error != null)
                     {
                         failedModelChecks.Add(error);
@@ -645,22 +659,37 @@ namespace Unity.MLAgents.Inference
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
+        /// <param name="actuatorComponents">Array of attached actuator components.</param>
         /// <param name="shape"> The tensor shape that is expected by the model</param>
-        /// <param name="modelActionSize">
-        /// The size of the action output that is expected by the model.
+        /// <param name="modelContinuousActionSize">
+        /// The size of the continuous action output that is expected by the model.
+        /// </param>
+        /// <param name="modelSumDiscreteBranchSizes">
+        /// The size of the discrete action output that is expected by the model.
         /// </param>
         /// <returns>
         /// If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.
         /// </returns>
         static string CheckDiscreteActionOutputShape(
-            BrainParameters brainParameters, TensorShape? shape, int modelActionSize)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorShape? shape, int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
         {
-            var bpActionSize = brainParameters.VectorActionSize.Sum();
-            if (modelActionSize != bpActionSize)
+            var sumOfDiscreteBranchSizes = 0;
+            if (brainParameters.VectorActionSpaceType == SpaceType.Discrete)
             {
-                return "Action Size of the model does not match. The BrainParameters expect " +
-                    $"{bpActionSize} but the model contains {modelActionSize}.";
+                sumOfDiscreteBranchSizes += brainParameters.VectorActionSize.Sum();
+            }
+
+            foreach (var actuatorComponent in actuatorComponents)
+            {
+                var actionSpec = actuatorComponent.ActionSpec;
+                sumOfDiscreteBranchSizes += actionSpec.SumOfDiscreteBranchSizes;
+            }
+
+            if (modelSumDiscreteBranchSizes != sumOfDiscreteBranchSizes)
+            {
+                return "Discrete Action Size of the model does not match. The BrainParameters expect " +
+                    $"{sumOfDiscreteBranchSizes} but the model contains {modelSumDiscreteBranchSizes}.";
             }
             return null;
         }
@@ -672,20 +701,35 @@ namespace Unity.MLAgents.Inference
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
         /// </param>
+        /// <param name="actuatorComponents">Array of attached actuator components.</param>
         /// <param name="shape"> The tensor shape that is expected by the model</param>
-        /// <param name="modelActionSize">
-        /// The size of the action output that is expected by the model.
+        /// <param name="modelContinuousActionSize">
+        /// The size of the continuous action output that is expected by the model.
+        /// </param>
+        /// <param name="modelSumDiscreteBranchSizes">
+        /// The size of the discrete action output that is expected by the model.
         /// </param>
         /// <returns>If the Check failed, returns a string containing information about why the
         /// check failed. If the check passed, returns null.</returns>
         static string CheckContinuousActionOutputShape(
-            BrainParameters brainParameters, TensorShape? shape, int modelActionSize)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorShape? shape, int modelContinuousActionSize, int modelSumDiscreteBranchSizes)
         {
-            var bpActionSize = brainParameters.VectorActionSize[0];
-            if (modelActionSize != bpActionSize)
+            var numContinuousActions = 0;
+            if (brainParameters.VectorActionSpaceType == SpaceType.Continuous)
             {
-                return "Action Size of the model does not match. The BrainParameters expect " +
-                    $"{bpActionSize} but the model contains {modelActionSize}.";
+                numContinuousActions += brainParameters.NumActions;
+            }
+
+            foreach (var actuatorComponent in actuatorComponents)
+            {
+                var actionSpec = actuatorComponent.ActionSpec;
+                numContinuousActions += actionSpec.NumContinuousActions;
+            }
+
+            if (modelContinuousActionSize != numContinuousActions)
+            {
+                return "Continuous Action Size of the model does not match. The BrainParameters and ActuatorComponents expect " +
+                    $"{numContinuousActions} but the model contains {modelContinuousActionSize}.";
             }
             return null;
         }

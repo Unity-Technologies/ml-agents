@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 using Unity.MLAgents.Policies;
 
@@ -7,7 +8,7 @@ namespace Unity.MLAgents.Tests
     [TestFixture]
     public class BehaviorParameterTests
     {
-        static void DummyHeuristic(float[] actionsOut)
+        static void DummyHeuristic(in ActionBuffers actionsOut)
         {
             // No-op
         }
@@ -18,10 +19,11 @@ namespace Unity.MLAgents.Tests
             var gameObj = new GameObject();
             var bp = gameObj.AddComponent<BehaviorParameters>();
             bp.BehaviorType = BehaviorType.InferenceOnly;
+            var actionSpec = new ActionSpec();
 
             Assert.Throws<UnityAgentsException>(() =>
             {
-                bp.GeneratePolicy(DummyHeuristic);
+                bp.GeneratePolicy(actionSpec, DummyHeuristic);
             });
         }
     }

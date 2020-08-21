@@ -5,13 +5,20 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-
+    /// <summary>
+    /// Utility class to track a hierarchy of ArticulationBodies.
+    /// </summary>
     public class ArticulationBodyPoseExtractor : PoseExtractor
     {
         ArticulationBody[] m_Bodies;
 
         public ArticulationBodyPoseExtractor(ArticulationBody rootBody)
         {
+            if (rootBody == null)
+            {
+                return;
+            }
+
             if (!rootBody.isRoot)
             {
                 Debug.Log("Must pass ArticulationBody.isRoot");
@@ -38,15 +45,26 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             for (var i = 1; i < numBodies; i++)
             {
-                var body = m_Bodies[i];
-                var parent = body.GetComponentInParent<ArticulationBody>();
-                parentIndices[i] = bodyToIndex[parent];
+                var currentArticBody = m_Bodies[i];
+                // Component.GetComponentInParent will consider the provided object as well.
+                // So start looking from the parent.
+                var currentGameObject = currentArticBody.gameObject;
+                var parentGameObject = currentGameObject.transform.parent;
+                var parentArticBody = parentGameObject.GetComponentInParent<ArticulationBody>();
+                parentIndices[i] = bodyToIndex[parentArticBody];
             }
 
-            SetParentIndices(parentIndices);
+            Setup(parentIndices);
         }
 
-        protected override Pose GetPoseAt(int index)
+        /// <inheritdoc/>
+        protected internal override Vector3 GetLinearVelocityAt(int index)
+        {
+            return m_Bodies[index].velocity;
+        }
+
+        /// <inheritdoc/>
+        protected internal override Pose GetPoseAt(int index)
         {
             var body = m_Bodies[index];
             var go = body.gameObject;
@@ -54,7 +72,36 @@ namespace Unity.MLAgents.Extensions.Sensors
             return new Pose { rotation = t.rotation, position = t.position };
         }
 
+        /// <inheritdoc/>
+        protected internal override Object GetObjectAt(int index)
+        {
+            return m_Bodies[index];
+        }
 
+        internal ArticulationBody[] Bodies => m_Bodies;
+
+        internal IEnumerable<ArticulationBody> GetEnabledArticulationBodies()
+        {
+            if (m_Bodies == null)
+            {
+                yield break;
+            }
+
+            for (var i = 0; i < m_Bodies.Length; i++)
+            {
+                var articBody = m_Bodies[i];
+                if (articBody == null)
+                {
+                    // Ignore a virtual root.
+                    continue;
+                }
+
+                if (IsPoseEnabled(i))
+                {
+                    yield return articBody;
+                }
+            }
+        }
     }
 }
 #endif // UNITY_2020_1_OR_NEWER

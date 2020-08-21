@@ -2,6 +2,7 @@ using Unity.Barracuda;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors.Reflection;
 
 namespace Unity.MLAgents.Policies
@@ -107,7 +108,7 @@ namespace Unity.MLAgents.Policies
         public InferenceDevice InferenceDevice
         {
             get { return m_InferenceDevice; }
-            set { m_InferenceDevice = value; UpdateAgentPolicy();}
+            set { m_InferenceDevice = value; UpdateAgentPolicy(); }
         }
 
         [HideInInspector, SerializeField]
@@ -150,6 +151,11 @@ namespace Unity.MLAgents.Policies
         [Tooltip("Use all Sensor components attached to child GameObjects of this Agent.")]
         bool m_UseChildSensors = true;
 
+        [HideInInspector]
+        [SerializeField]
+        [Tooltip("Use all Actuator components attached to child GameObjects of this Agent.")]
+        bool m_UseChildActuators = true;
+
         /// <summary>
         /// Whether or not to use all the sensor components attached to child GameObjects of the agent.
         /// Note that changing this after the Agent has been initialized will not have any effect.
@@ -158,6 +164,16 @@ namespace Unity.MLAgents.Policies
         {
             get { return m_UseChildSensors; }
             set { m_UseChildSensors = value; }
+        }
+
+        /// <summary>
+        /// Whether or not to use all the actuator components attached to child GameObjects of the agent.
+        /// Note that changing this after the Agent has been initialized will not have any effect.
+        /// </summary>
+        public bool UseChildActuators
+        {
+            get { return m_UseChildActuators; }
+            set { m_UseChildActuators = value; }
         }
 
         [HideInInspector, SerializeField]
@@ -180,39 +196,39 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(HeuristicPolicy.ActionGenerator heuristic)
+        internal IPolicy GeneratePolicy(ActionSpec actionSpec, HeuristicPolicy.ActionGenerator heuristic)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return new HeuristicPolicy(heuristic, m_BrainParameters.NumActions);
+                    return new HeuristicPolicy(heuristic, actionSpec);
                 case BehaviorType.InferenceOnly:
-                {
-                    if (m_Model == null)
                     {
-                        var behaviorType = BehaviorType.InferenceOnly.ToString();
-                        throw new UnityAgentsException(
-                            $"Can't use Behavior Type {behaviorType} without a model. " +
-                            "Either assign a model, or change to a different Behavior Type."
-                        );
+                        if (m_Model == null)
+                        {
+                            var behaviorType = BehaviorType.InferenceOnly.ToString();
+                            throw new UnityAgentsException(
+                                $"Can't use Behavior Type {behaviorType} without a model. " +
+                                "Either assign a model, or change to a different Behavior Type."
+                            );
+                        }
+                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
                     }
-                    return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
-                }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(m_BrainParameters, FullyQualifiedBehaviorName);
+                        return new RemotePolicy(actionSpec, FullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(m_BrainParameters, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
                     }
                     else
                     {
-                        return new HeuristicPolicy(heuristic, m_BrainParameters.NumActions);
+                        return new HeuristicPolicy(heuristic, actionSpec);
                     }
                 default:
-                    return new HeuristicPolicy(heuristic, m_BrainParameters.NumActions);
+                    return new HeuristicPolicy(heuristic, actionSpec);
             }
         }
 

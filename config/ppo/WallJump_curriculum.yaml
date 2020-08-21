@@ -49,20 +49,72 @@ behaviors:
     time_horizon: 128
     summary_freq: 20000
     threaded: true
-
-curriculum:
-  BigWallJump:
-    measure: progress
-    thresholds: [0.1, 0.3, 0.5]
-    min_lesson_length: 100
-    signal_smoothing: true
-    parameters:
-      big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
-      big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
-  SmallWallJump:
-    measure: progress
-    thresholds: [0.1, 0.3, 0.5]
-    min_lesson_length: 100
-    signal_smoothing: true
-    parameters:
-      small_wall_height: [1.5, 2.0, 2.5, 4.0]
+environment_parameters:
+  big_wall_height:
+    curriculum:
+      - name: Lesson0 # The '-' is important as this is a list
+        completion_criteria:
+          measure: progress
+          behavior: BigWallJump
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.1
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 0.0
+            max_value: 4.0
+      - name: Lesson1 # This is the start of the second lesson
+        completion_criteria:
+          measure: progress
+          behavior: BigWallJump
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.3
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 4.0
+            max_value: 7.0
+      - name: Lesson2
+        completion_criteria:
+          measure: progress
+          behavior: BigWallJump
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.5
+        value:
+          sampler_type: uniform
+          sampler_parameters:
+            min_value: 6.0
+            max_value: 8.0
+      - name: Lesson3
+        value: 8.0
+  small_wall_height:
+    curriculum:
+      - name: Lesson0
+        completion_criteria:
+          measure: progress
+          behavior: SmallWallJump
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.1
+        value: 1.5
+      - name: Lesson1
+        completion_criteria:
+          measure: progress
+          behavior: SmallWallJump
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.3
+        value: 2.0
+      - name: Lesson2
+        completion_criteria:
+          measure: progress
+          behavior: SmallWallJump
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.5
+        value: 2.5
+      - name: Lesson3
+        value: 4.0

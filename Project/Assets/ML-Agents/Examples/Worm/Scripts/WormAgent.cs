@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
 
@@ -138,6 +139,7 @@ public class WormAgent : Agent
         var bpDict = m_JdController.bodyPartsDict;
 
         var i = -1;
+        var continuousActions = actionBuffers.ContinuousActions;
         // Pick a new target joint rotation
         bpDict[bodySegment0].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);
         bpDict[bodySegment1].SetJointTargetRotation(vectorAction[++i], vectorAction[++i], 0);

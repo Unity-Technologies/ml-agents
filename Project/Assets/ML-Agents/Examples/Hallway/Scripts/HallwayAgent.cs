@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 public class HallwayAgent : Agent
@@ -41,12 +42,12 @@ public class HallwayAgent : Agent
         m_GroundRenderer.material = m_GroundMaterial;
     }
 
-    public void MoveAgent(float[] act)
+    public void MoveAgent(ActionSegment<int> act)
     {
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
-        var action = Mathf.FloorToInt(act[0]);
+        var action = act[0];
         switch (action)
         {
             case 1:
@@ -66,10 +67,11 @@ public class HallwayAgent : Agent
         m_AgentRb.AddForce(dirToGo * m_HallwaySettings.agentRunSpeed, ForceMode.VelocityChange);
     }
 
-    public override void OnActionReceived(float[] vectorAction)
+    public override void OnActionReceived(ActionBuffers actionBuffers)
+
     {
         AddReward(-1f / MaxStep);
-        MoveAgent(vectorAction);
+        MoveAgent(actionBuffers.DiscreteActions);
     }
 
     void OnCollisionEnter(Collision col)
@@ -91,24 +93,25 @@ public class HallwayAgent : Agent
         }
     }
 
-    public override void Heuristic(float[] actionsOut)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        actionsOut[0] = 0;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = 0;
         if (Input.GetKey(KeyCode.D))
         {
-            actionsOut[0] = 3;
+            discreteActionsOut[0] = 3;
         }
         else if (Input.GetKey(KeyCode.W))
         {
-            actionsOut[0] = 1;
+            discreteActionsOut[0] = 1;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            actionsOut[0] = 4;
+            discreteActionsOut[0] = 4;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            actionsOut[0] = 2;
+            discreteActionsOut[0] = 2;
         }
     }
 

@@ -1,9 +1,7 @@
 import yaml
 import pytest
-from unittest import mock
-from argparse import Namespace
 
-from mlagents.trainers.upgrade_config import convert_behaviors, main, remove_nones
+from mlagents.trainers.upgrade_config import convert_behaviors, remove_nones, convert
 from mlagents.trainers.settings import (
     TrainerType,
     PPOSettings,
@@ -125,6 +123,41 @@ SAC_CONFIG = f"""
                 encoding_size: 128
     """
 
+CURRICULUM = """
+
+  BigWallJump:
+    measure: progress
+    thresholds: [0.1, 0.3, 0.5]
+    min_lesson_length: 200
+    signal_smoothing: true
+    parameters:
+      big_wall_min_height: [0.0, 4.0, 6.0, 8.0]
+      big_wall_max_height: [4.0, 7.0, 8.0, 8.0]
+  SmallWallJump:
+    measure: progress
+    thresholds: [0.1, 0.3, 0.5]
+    min_lesson_length: 100
+    signal_smoothing: true
+    parameters:
+      small_wall_height: [1.5, 2.0, 2.5, 4.0]
+      """
+
+RANDOMIZATION = """
+  resampling-interval: 5000
+  mass:
+    sampler-type: uniform
+    min_value: 0.5
+    max_value: 10
+  gravity:
+    sampler-type: uniform
+    min_value: 7
+    max_value: 12
+  scale:
+    sampler-type: uniform
+    min_value: 0.75
+    max_value: 3
+    """
+
 
 @pytest.mark.parametrize("use_recurrent", [True, False])
 @pytest.mark.parametrize("trainer_type", [TrainerType.PPO, TrainerType.SAC])
@@ -132,11 +165,11 @@ def test_convert_behaviors(trainer_type, use_recurrent):
     if trainer_type == TrainerType.PPO:
         trainer_config = PPO_CONFIG
         trainer_settings_type = PPOSettings
-    elif trainer_type == TrainerType.SAC:
+    else:
         trainer_config = SAC_CONFIG
         trainer_settings_type = SACSettings
 
-    old_config = yaml.load(trainer_config)
+    old_config = yaml.safe_load(trainer_config)
     old_config[BRAIN_NAME]["use_recurrent"] = use_recurrent
     new_config = convert_behaviors(old_config)
 
@@ -152,45 +185,31 @@ def test_convert_behaviors(trainer_type, use_recurrent):
     assert RewardSignalType.CURIOSITY in trainer_settings.reward_signals
 
 
-@mock.patch("mlagents.trainers.upgrade_config.convert_samplers")
-@mock.patch("mlagents.trainers.upgrade_config.convert_behaviors")
-@mock.patch("mlagents.trainers.upgrade_config.remove_nones")
-@mock.patch("mlagents.trainers.upgrade_config.write_to_yaml_file")
-@mock.patch("mlagents.trainers.upgrade_config.parse_args")
-@mock.patch("mlagents.trainers.upgrade_config.load_config")
-def test_main(
-    mock_load,
-    mock_parse,
-    yaml_write_mock,
-    remove_none_mock,
-    mock_convert_behaviors,
-    mock_convert_samplers,
-):
-    test_output_file = "test.yaml"
-    mock_load.side_effect = [
-        yaml.safe_load(PPO_CONFIG),
-        "test_curriculum_config",
-        "test_sampler_config",
-    ]
-    mock_args = Namespace(
-        trainer_config_path="mock",
-        output_config_path=test_output_file,
-        curriculum="test",
-        sampler="test",
-    )
-    mock_parse.return_value = mock_args
-    mock_convert_behaviors.return_value = "test_converted_config"
-    mock_convert_samplers.return_value = "test_converted_sampler_config"
-    dict_without_nones = mock.Mock(name="nonones")
-    remove_none_mock.return_value = dict_without_nones
+def test_convert():
+    old_behaviors = yaml.safe_load(PPO_CONFIG)
+    old_curriculum = yaml.safe_load(CURRICULUM)
+    old_sampler = yaml.safe_load(RANDOMIZATION)
+    config = convert(old_behaviors, old_curriculum, old_sampler)
+    assert BRAIN_NAME in config["behaviors"]
+    assert "big_wall_min_height" in config["environment_parameters"]
 
-    main()
-    saved_dict = remove_none_mock.call_args[0][0]
-    # Check that the output of the remove_none call is here
-    yaml_write_mock.assert_called_with(dict_without_nones, test_output_file)
-    assert saved_dict["behaviors"] == "test_converted_config"
-    assert saved_dict["curriculum"] == "test_curriculum_config"
-    assert saved_dict["parameter_randomization"] == "test_converted_sampler_config"
+    curriculum = config["environment_parameters"]["big_wall_min_height"]["curriculum"]
+    assert len(curriculum) == 4
+    for i, expected_value in enumerate([0.0, 4.0, 6.0, 8.0]):
+        assert curriculum[i][f"Lesson{i}"]["value"] == expected_value
+    for i, threshold in enumerate([0.1, 0.3, 0.5]):
+        criteria = curriculum[i][f"Lesson{i}"]["completion_criteria"]
+        assert criteria["threshold"] == threshold
+        assert criteria["behavior"] == "BigWallJump"
+        assert criteria["signal_smoothing"]
+        assert criteria["min_lesson_length"] == 200
+        assert criteria["measure"] == "progress"
+
+    assert "gravity" in config["environment_parameters"]
+    gravity = config["environment_parameters"]["gravity"]
+    assert gravity["sampler_type"] == "uniform"
+    assert gravity["sampler_parameters"]["min_value"] == 7
+    assert gravity["sampler_parameters"]["max_value"] == 12
 
 
 def test_remove_nones():

@@ -5,17 +5,16 @@ import os
 import numpy as np
 import json
 
-from typing import Callable, Optional, List, Dict
+from typing import Callable, Optional, List
 
 import mlagents.trainers
 import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.meta_curriculum import MetaCurriculum
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
-    CSVWriter,
     StatsReporter,
     GaugeWriter,
     ConsoleWriter,
@@ -23,6 +22,7 @@ from mlagents.trainers.stats import (
 from mlagents.trainers.cli_utils import parser
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
+
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
@@ -88,22 +88,14 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
-        # Configure CSV, Tensorboard Writers and StatsReporter
-        # We assume reward and episode length are needed in the CSV.
-        csv_writer = CSVWriter(
-            write_path,
-            required_fields=[
-                "Environment/Cumulative Reward",
-                "Environment/Episode Length",
-            ],
-        )
+
+        # Configure Tensorboard Writers and StatsReporter
         tb_writer = TensorboardWriter(
             write_path, clear_past_data=not checkpoint_settings.resume
         )
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
-        StatsReporter.add_writer(csv_writer)
         StatsReporter.add_writer(gauge_write)
         StatsReporter.add_writer(console_writer)
 
@@ -128,18 +120,18 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         env_manager = SubprocessEnvManager(
             env_factory, engine_config, env_settings.num_envs
         )
-        maybe_meta_curriculum = try_create_meta_curriculum(
-            options.curriculum, env_manager, restore=checkpoint_settings.resume
+        env_parameter_manager = EnvironmentParameterManager(
+            options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
-        maybe_add_samplers(options.parameter_randomization, env_manager, run_seed)
+
         trainer_factory = TrainerFactory(
             options.behaviors,
             write_path,
             not checkpoint_settings.inference,
             checkpoint_settings.resume,
             run_seed,
+            env_parameter_manager,
             maybe_init_path,
-            maybe_meta_curriculum,
             False,
         )
         # Create controller and begin training.
@@ -147,7 +139,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             trainer_factory,
             write_path,
             checkpoint_settings.run_id,
-            maybe_meta_curriculum,
+            env_parameter_manager,
             not checkpoint_settings.inference,
             run_seed,
         )
@@ -189,35 +181,6 @@ def write_timing_tree(output_dir: str) -> None:
         logger.warning(
             f"Unable to save to {timing_path}. Make sure the directory exists"
         )
-
-
-def maybe_add_samplers(
-    sampler_config: Optional[Dict], env: SubprocessEnvManager, run_seed: int
-) -> None:
-    """
-    Adds samplers to env if sampler config provided and sets seed if not configured.
-    :param sampler_config: validated dict of sampler configs. None if not included.
-    :param env: env manager to pass samplers via reset
-    :param run_seed: Random seed used for training.
-    """
-    if sampler_config is not None:
-        # If the seed is not specified in yaml, this will grab the run seed
-        for offset, v in enumerate(sampler_config.values()):
-            if v.seed == -1:
-                v.seed = run_seed + offset
-        env.set_env_parameters(config=sampler_config)
-
-
-def try_create_meta_curriculum(
-    curriculum_config: Optional[Dict], env: SubprocessEnvManager, restore: bool = False
-) -> Optional[MetaCurriculum]:
-    if curriculum_config is None or len(curriculum_config) <= 0:
-        return None
-    else:
-        meta_curriculum = MetaCurriculum(curriculum_config)
-        if restore:
-            meta_curriculum.try_restore_all_curriculum()
-        return meta_curriculum
 
 
 def create_environment_factory(
@@ -301,9 +264,11 @@ def run_cli(options: RunOptions) -> None:
     add_timer_metadata("mlagents_envs_version", mlagents_envs.__version__)
     add_timer_metadata("communication_protocol_version", UnityEnvironment.API_VERSION)
     add_timer_metadata("tensorflow_version", tf_utils.tf.__version__)
+    add_timer_metadata("numpy_version", np.__version__)
 
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
+        logger.info(f"run_seed set to {run_seed}")
     run_training(run_seed, options)
 
 

@@ -9,7 +9,6 @@ namespace Unity.MLAgents
     {
         /// <summary>
         /// Values within the summary period are averaged before reporting.
-        /// Note that values from the same C# environment in the same step may replace each other.
         /// </summary>
         Average = 0,
 
