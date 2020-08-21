@@ -57,6 +57,15 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
 
     with hierarchical_timer("image_decompress"):
         image_bytearray = bytearray(image_bytes)
+
+        if gray_scale:
+            image = Image.open(io.BytesIO(image_bytearray))
+            image.load()
+            s = np.array(image, dtype=np.float32) / 255.0
+            s = np.mean(s, axis=2)
+            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
+            return s
+
         image_byte_splits = image_bytearray.split(png_header)
         for image_bytes in image_byte_splits:
             if len(image_bytes) > 0:
@@ -67,6 +76,7 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
                 images.append(image)
 
     arrs = list(map(lambda i: np.array(i, dtype=np.float32) / 255.0, images))
+
     return np.concatenate(arrs, axis=2)
 
 
@@ -105,6 +115,7 @@ def observation_to_np_array(
                 f"decompressed had {img.shape} but expected {obs.shape}"
             )
         return img
+
 
 @timed
 def _process_visual_observation(
