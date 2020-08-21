@@ -19,7 +19,7 @@
 
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
-[ML-Agents Toolkit Overview](ML-Aaagents-Overview.md).
+[ML-Agents Toolkit Overview](ML-Agents-Overview.md).
 
 Once your learning environment has been created and is ready for training, the
 next step is to initiate a training run. Training in the ML-Agents Toolkit is
