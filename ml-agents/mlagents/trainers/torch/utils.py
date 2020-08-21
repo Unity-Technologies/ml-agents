@@ -1,7 +1,6 @@
 from typing import List, Optional, Tuple
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, nn
 import numpy as np
-from torch import nn
 
 from mlagents.trainers.torch.encoders import (
     SimpleVisualEncoder,

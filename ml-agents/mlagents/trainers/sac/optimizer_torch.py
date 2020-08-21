@@ -1,7 +1,6 @@
 import numpy as np
 from typing import Dict, List, Mapping, cast, Tuple, Optional
-from mlagents.torch_utils import torch
-from torch import nn
+from mlagents.torch_utils import torch, nn
 import attr
 
 from mlagents_envs.logging_util import get_logger
