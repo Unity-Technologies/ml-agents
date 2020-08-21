@@ -727,11 +727,7 @@ class RunOptions(ExportableSettings):
                 else:  # Base options
                     configured_dict[key] = val
 
-        # Apply --torch retroactively
         final_runoptions = RunOptions.from_dict(configured_dict)
-        if "torch" in DetectDefault.non_default_args:
-            for trainer_set in final_runoptions.behaviors.values():
-                trainer_set.framework = FrameworkType.PYTORCH
         return final_runoptions
 
     @staticmethod
