@@ -27,7 +27,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
-        use_torch: bool = False,
+        force_torch: bool = False,
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -45,7 +45,7 @@ class TrainerFactory:
         the EnvironmentParameters must change.
         :param init_path: Path from which to load model.
         :param multi_gpu: If True, multi-gpu will be used. (currently not available)
-        :param use_torch: If True, the Trainers will all use the PyTorch framework
+        :param force_torch: If True, the Trainers will all use the PyTorch framework
         instead of the TensorFlow framework.
         """
         self.trainer_config = trainer_config
@@ -57,7 +57,7 @@ class TrainerFactory:
         self.param_manager = param_manager
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
-        self._use_torch = use_torch
+        self._force_torch = force_torch
 
     def generate(self, behavior_name: str) -> Trainer:
         if behavior_name not in self.trainer_config.keys():
@@ -66,7 +66,7 @@ class TrainerFactory:
                 f"in the trainer configuration file: {sorted(self.trainer_config.keys())}"
             )
         trainer_settings = self.trainer_config[behavior_name]
-        if self._use_torch:
+        if self._force_torch:
             trainer_settings.framework = FrameworkType.PYTORCH
         return initialize_trainer(
             trainer_settings,

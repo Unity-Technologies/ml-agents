@@ -133,7 +133,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             param_manager=env_parameter_manager,
             init_path=maybe_init_path,
             multi_gpu=False,
-            use_torch="torch" in DetectDefault.non_default_args,
+            force_torch="torch" in DetectDefault.non_default_args,
         )
         # Create controller and begin training.
         tc = TrainerController(
