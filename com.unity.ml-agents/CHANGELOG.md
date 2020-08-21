@@ -21,7 +21,7 @@ and this project adheres to
 `framework: pytorch` to your trainer configuration (under the behavior name) to enable it.
 Note that PyTorch 1.6.0 or greater should be installed to use this feature; see
 [the PyTorch website](https://pytorch.org/) for installation instructions. (#4335)
-- The minimum supported version of TensorFlow was increased to 1.14.0 (#???)
+- The minimum supported version of TensorFlow was increased to 1.14.0. (#4411)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
