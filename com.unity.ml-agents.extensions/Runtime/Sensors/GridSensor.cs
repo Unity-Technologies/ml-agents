@@ -267,7 +267,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="observeMaskInt">int representing the layer mask to observe</param>
         /// <param name="rotateToAgent">bool if true then the grid is rotated to the rotation of the transform the rootReference</param>
         /// <param name="debugColors">array of colors corresponding the the tags in the detectableObjects array</param>
-        [ExecuteInEditMode]
         public virtual void SetParameters(string[] detectableObjects, int[] channelDepth, GridDepthType gridDepthType,
             float cellScaleX, float cellScaleZ, int gridWidth, int gridHeight, int observeMaskInt, bool rotateToAgent, Color[] debugColors)
         {
@@ -288,7 +287,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Initializes the constant parameters used within the perceive method call
         /// </summary>
-        [ExecuteInEditMode]
         public void InitGridParameters()
         {
             NumCells = GridNumSideX * GridNumSideZ;
@@ -309,7 +307,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Initializes the constant parameters that are based on the Grid Depth Type
         /// Sets the ObservationPerCell and the ChannelOffsets properties
         /// </summary>
-        [ExecuteInEditMode]
         public virtual void InitDepthType()
         {
             switch (gridDepthType)
@@ -341,7 +338,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Initializes the location of the CellPoints property
         /// </summary>
-        [ExecuteInEditMode]
         private void InitCellPoints()
         {
             CellPoints = new Vector3[NumCells];
@@ -355,7 +351,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Initializes the m_ChannelHotDefaultPerceptionBuffer with default data in the case that the grid depth type is ChannelHot
         /// </summary>
-        [ExecuteInEditMode]
         public virtual void InitChannelHotDefaultPerceptionBuffer()
         {
             m_ChannelHotDefaultPerceptionBuffer = new float[ObservationPerCell];
@@ -372,7 +367,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Initializes the m_PerceptionBuffer as the main data storage property
         /// Calculates the NumImages and NumChannelsOnLastImage that are used for serializing m_PerceptionBuffer
         /// </summary>
-        [ExecuteInEditMode]
         public void InitPerceptionBuffer()
         {
             if (Application.isPlaying)

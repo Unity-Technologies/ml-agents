@@ -7,7 +7,6 @@ namespace Unity.MLAgents.Extensions.Sensors
     public class CountingGridSensor : GridSensor
     {
         /// <inheritdoc/>
-        [ExecuteInEditMode]
         public override void InitDepthType()
         {
             ObservationPerCell = ChannelDepth.Length;
@@ -17,14 +16,12 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// Overrides the initialization ofthe m_ChannelHotDefaultPerceptionBuffer with 0s
         /// as the counting grid sensor starts within its initialization equal to 0
         /// </summary>
-        [ExecuteInEditMode]
         public override void InitChannelHotDefaultPerceptionBuffer()
         {
             m_ChannelHotDefaultPerceptionBuffer = new float[ObservationPerCell];
         }
 
         /// <inheritdoc/>
-        [ExecuteInEditMode]
         public override void SetParameters(string[] detectableObjects, int[] channelDepth, GridDepthType gridDepthType,
             float cellScaleX, float cellScaleZ, int gridWidth, int gridHeight, int observeMaskInt, bool rotateToAgent, Color[] debugColors)
         {
