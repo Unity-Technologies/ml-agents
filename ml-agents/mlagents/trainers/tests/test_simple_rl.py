@@ -27,6 +27,7 @@ from mlagents.trainers.settings import (
     RewardSignalType,
     EncoderType,
     ScheduleType,
+    FrameworkType,
 )
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents_envs.side_channel.environment_parameters_channel import (
@@ -53,6 +54,7 @@ PPO_CONFIG = TrainerSettings(
     summary_freq=500,
     max_steps=3000,
     threaded=False,
+    framework=FrameworkType.TENSORFLOW,
 )
 
 SAC_CONFIG = TrainerSettings(

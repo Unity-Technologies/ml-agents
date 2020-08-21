@@ -8,8 +8,6 @@ namespace Unity.MLAgents.Actuators
     /// </summary>
     public interface IActuator : IActionReceiver
     {
-        int TotalNumberOfActions { get; }
-
         /// <summary>
         /// Gets the name of this IActuator which will be used to sort it.
         /// </summary>

@@ -21,13 +21,15 @@ namespace Unity.MLAgents.Policies
 
         /// <inheritdoc />
         public RemotePolicy(
-            BrainParameters brainParameters,
+            ActionSpec actionSpec,
             string fullyQualifiedBehaviorName)
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_SpaceType = brainParameters.VectorActionSpaceType;
-            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
+            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
+
+            actionSpec.CheckNotHybrid();
+            m_SpaceType = actionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
         }
 
         /// <inheritdoc />
@@ -42,6 +44,7 @@ namespace Unity.MLAgents.Policies
         {
             m_Communicator?.DecideBatch();
             var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+            // TODO figure out how to handle this with multiple space types.
             if (m_SpaceType == SpaceType.Continuous)
             {
                 m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());

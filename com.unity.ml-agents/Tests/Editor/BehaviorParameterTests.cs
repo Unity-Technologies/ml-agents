@@ -19,10 +19,11 @@ namespace Unity.MLAgents.Tests
             var gameObj = new GameObject();
             var bp = gameObj.AddComponent<BehaviorParameters>();
             bp.BehaviorType = BehaviorType.InferenceOnly;
+            var actionSpec = new ActionSpec();
 
             Assert.Throws<UnityAgentsException>(() =>
             {
-                bp.GeneratePolicy(DummyHeuristic);
+                bp.GeneratePolicy(actionSpec, DummyHeuristic);
             });
         }
     }

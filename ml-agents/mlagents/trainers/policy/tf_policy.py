@@ -150,6 +150,8 @@ class TFPolicy(Policy):
         # We do an initialize to make the Policy usable out of the box. If an optimizer is needed,
         # it will re-load the full graph
         self.initialize()
+        # Create assignment ops for Ghost Trainer
+        self.init_load_weights()
 
     def _create_encoder(
         self,

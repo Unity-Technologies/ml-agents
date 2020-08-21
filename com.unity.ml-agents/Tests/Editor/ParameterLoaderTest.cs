@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 using Unity.Barracuda;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
@@ -177,7 +178,10 @@ namespace Unity.MLAgents.Tests
             var model = ModelLoader.Load(continuous2vis8vec2actionModel);
             var validBrainParameters = GetContinuous2vis8vec2actionBrainParameters();
 
-            var errors = BarracudaModelParamLoader.CheckModel(model, validBrainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(
+                model, validBrainParameters,
+                new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]
+            );
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
@@ -187,7 +191,10 @@ namespace Unity.MLAgents.Tests
             var model = ModelLoader.Load(discrete1vis0vec_2_3action_recurrModel);
             var validBrainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
 
-            var errors = BarracudaModelParamLoader.CheckModel(model, validBrainParameters, new SensorComponent[] { sensor_21_20_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(
+                model, validBrainParameters,
+                new SensorComponent[] { sensor_21_20_3 }, new ActuatorComponent[0]
+            );
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
@@ -198,12 +205,18 @@ namespace Unity.MLAgents.Tests
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.VectorObservationSize = 9; // Invalid observation
-            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(
+                model, brainParameters,
+                new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]
+            );
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.NumStackedVectorObservations = 2;// Invalid stacking
-            errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
+            errors = BarracudaModelParamLoader.CheckModel(
+                model, brainParameters,
+                new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]
+            );
             Assert.Greater(errors.Count(), 0);
         }
 
@@ -214,7 +227,7 @@ namespace Unity.MLAgents.Tests
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
             brainParameters.VectorObservationSize = 1; // Invalid observation
-            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }
 
@@ -225,12 +238,12 @@ namespace Unity.MLAgents.Tests
 
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.VectorActionSize = new[] { 3 }; // Invalid action
-            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.VectorActionSpaceType = SpaceType.Discrete;// Invalid SpaceType
-            errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
+            errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }
 
@@ -241,12 +254,12 @@ namespace Unity.MLAgents.Tests
 
             var brainParameters = GetDiscrete1vis0vec_2_3action_recurrModelBrainParameters();
             brainParameters.VectorActionSize = new[] { 3, 3 }; // Invalid action
-            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
 
             brainParameters = GetContinuous2vis8vec2actionBrainParameters();
             brainParameters.VectorActionSpaceType = SpaceType.Continuous;// Invalid SpaceType
-            errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 });
+            errors = BarracudaModelParamLoader.CheckModel(model, brainParameters, new SensorComponent[] { sensor_21_20_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }
 
@@ -254,7 +267,7 @@ namespace Unity.MLAgents.Tests
         public void TestCheckModelThrowsNoModel()
         {
             var brainParameters = GetContinuous2vis8vec2actionBrainParameters();
-            var errors = BarracudaModelParamLoader.CheckModel(null, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 });
+            var errors = BarracudaModelParamLoader.CheckModel(null, brainParameters, new SensorComponent[] { sensor_21_20_3, sensor_20_22_3 }, new ActuatorComponent[0]);
             Assert.Greater(errors.Count(), 0);
         }
     }

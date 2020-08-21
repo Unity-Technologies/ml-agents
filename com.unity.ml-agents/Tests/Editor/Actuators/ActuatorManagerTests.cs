@@ -72,8 +72,8 @@ namespace Unity.MLAgents.Tests.Actuators
             var actuator2 = new TestActuator(ActionSpec.MakeContinuous(3), "actuator2");
             manager.Add(actuator1);
             manager.Add(actuator2);
-            manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 }, 3, 10, 4);
             LogAssert.Expect(LogType.Assert, "Actuators on the same Agent must have the same action SpaceType.");
+            manager.ReadyActuatorsForExecution(new[] { actuator1, actuator2 }, 3, 10, 4);
         }
 
         [Test]
