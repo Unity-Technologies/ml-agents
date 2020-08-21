@@ -14,6 +14,11 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         GameObject boxGoThree;
         CountingGridSensor gridSensor;
 
+        // Use built-in tags
+        const string k_Tag1 = "Player";
+        const string k_Tag2 = "Respawn";
+
+
         public GameObject CreateBlock(Vector3 postion, string tag, string name)
         {
             GameObject boxGo = new GameObject(name);
@@ -30,7 +35,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             testGo.transform.position = Vector3.zero;
             gridSensor = testGo.AddComponent<CountingGridSensor>();
 
-            boxGo = CreateBlock(new Vector3(3f, 0f, 3f), "block", "box1");
+            boxGo = CreateBlock(new Vector3(3f, 0f, 3f), k_Tag1, "box1");
 
             yield return null;
         }
@@ -47,7 +52,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthOneCount()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
@@ -69,15 +74,14 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthOneCountMax()
         {
-
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            boxGoTwo = CreateBlock(new Vector3(3.1f, 0f, 3.1f), "block", "box2");
+            boxGoTwo = CreateBlock(new Vector3(3.1f, 0f, 3.1f), k_Tag1, "box2");
 
             yield return null;
 
@@ -94,15 +98,14 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthFourCount()
         {
-
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 4 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            boxGoTwo = CreateBlock(new Vector3(3.1f, 0f, 3.1f), "block", "box2");
+            boxGoTwo = CreateBlock(new Vector3(3.1f, 0f, 3.1f), k_Tag1, "box2");
 
             yield return null;
 
@@ -119,16 +122,15 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthFourCount()
         {
-
-            string[] tags = { "block", "food" };
+            string[] tags = { k_Tag1, k_Tag2 };
             int[] depths = { 4, 1 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
                 1f, 1f, 10, 10, LayerMask.GetMask("Default"), false, colors);
             gridSensor.Start();
 
-            boxGoTwo = CreateBlock(new Vector3(3.1f, 0f, 3.1f), "block", "box2");
-            boxGoThree = CreateBlock(new Vector3(2.9f, 0f, 2.9f), "food", "box2");
+            boxGoTwo = CreateBlock(new Vector3(3.1f, 0f, 3.1f), k_Tag1, "box2");
+            boxGoThree = CreateBlock(new Vector3(2.9f, 0f, 2.9f), k_Tag2, "box2");
 
             yield return null;
 

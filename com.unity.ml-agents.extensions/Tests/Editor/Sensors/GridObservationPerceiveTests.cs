@@ -13,6 +13,10 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         GameObject boxGo;
         GridSensor gridSensor;
 
+        // Use built-in tags
+        const string k_Tag1 = "Player";
+        const string k_Tag2 = "Respawn";
+
         [UnitySetUp]
         public IEnumerator SetupScene()
         {
@@ -21,7 +25,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridSensor = testGo.AddComponent<GridSensor>();
 
             boxGo = new GameObject("block");
-            boxGo.tag = "block";
+            boxGo.tag = k_Tag1;
             boxGo.transform.position = new Vector3(3f, 0f, 3f);
             boxGo.AddComponent<BoxCollider>();
             yield return null;
@@ -37,9 +41,9 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator PerceiveNotSelfChannelHot()
         {
-            testGo.tag = "block";
+            testGo.tag = k_Tag1;
 
-            string[] tags = { "food", "block" };
+            string[] tags = { k_Tag2, k_Tag1 };
             int[] depths = { 3 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.ChannelHot,
@@ -61,9 +65,9 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator PerceiveNotSelfChannel()
         {
-            testGo.tag = "block";
+            testGo.tag = k_Tag1;
 
-            string[] tags = { "food", "block" };
+            string[] tags = { k_Tag2, k_Tag1 };
             int[] depths = { 3 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,
@@ -85,9 +89,9 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator PerceiveNotSelfChannelCount()
         {
-            testGo.tag = "block";
+            testGo.tag = k_Tag1;
 
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3 };
             Color[] colors = { Color.red, Color.magenta };
             gridSensor.SetParameters(tags, depths, GridSensor.GridDepthType.Channel,

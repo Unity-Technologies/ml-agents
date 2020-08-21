@@ -9,11 +9,13 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
     public class ChannelPerceiveTests
     {
-
         GameObject testGo;
         GameObject boxGo;
         SimpleTestGridSensor gridSensor;
         GridSensorDummyData dummyData;
+
+        // Use built-in tags
+        const string k_Tag1 = "Player";
 
         [UnitySetUp]
         public IEnumerator SetupScene()
@@ -23,7 +25,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             gridSensor = testGo.AddComponent<SimpleTestGridSensor>();
 
             boxGo = new GameObject("block");
-            boxGo.tag = "block";
+            boxGo.tag = k_Tag1;
             boxGo.transform.position = new Vector3(3f, 0f, 3f);
             boxGo.AddComponent<BoxCollider>();
             dummyData = boxGo.AddComponent<GridSensorDummyData>();
@@ -40,7 +42,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthOneBelowZeroException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1 };
             dummyData.Data = new float[] { -0.1f };
             Color[] colors = { Color.red, Color.magenta };
@@ -59,7 +61,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthOneAboveDepthException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1 };
             dummyData.Data = new float[] { 1.1f };
             Color[] colors = { Color.red, Color.magenta };
@@ -78,7 +80,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthOneGoodValue()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1 };
             dummyData.Data = new float[] { .2f };
             Color[] colors = { Color.red, Color.magenta };
@@ -101,7 +103,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthThreeBelowZeroException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3 };
             dummyData.Data = new float[] { -1f };
             Color[] colors = { Color.red, Color.magenta };
@@ -120,7 +122,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthThreeAboveDepthException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3 };
             dummyData.Data = new float[] { 4f };
             Color[] colors = { Color.red, Color.magenta };
@@ -139,7 +141,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthThreeGoodValueInt()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3 };
             dummyData.Data = new float[] { 2f };
             Color[] colors = { Color.red, Color.magenta };
@@ -162,7 +164,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator OneChannelDepthThreeGoodValueFloat()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3 };
             dummyData.Data = new float[] { 2.4f };
             Color[] colors = { Color.red, Color.magenta };
@@ -185,7 +187,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthOneOneBelowZeroException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1, 1 };
             dummyData.Data = new float[] { -1, 1 };
             Color[] colors = { Color.red, Color.magenta };
@@ -204,7 +206,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthOneOneAboveDepthException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1, 1 };
             dummyData.Data = new float[] { 1, 3 };
             Color[] colors = { Color.red, Color.magenta };
@@ -223,7 +225,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthOneOneGoodValues()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1, 1 };
             dummyData.Data = new float[] { .4f, .3f };
             Color[] colors = { Color.red, Color.magenta };
@@ -243,11 +245,10 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
         }
 
-
         [UnityTest]
         public IEnumerator TwoChannelDepthOneThreeAboveDepthException()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1, 3 };
             dummyData.Data = new float[] { .4f, 4f };
             Color[] colors = { Color.red, Color.magenta };
@@ -266,7 +267,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthOneThreeGoodValues()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 1, 3 };
             dummyData.Data = new float[] { .4f, 1f };
             Color[] colors = { Color.red, Color.magenta };
@@ -289,7 +290,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthThreeOneGoodValues()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3, 1 };
             dummyData.Data = new float[] { 1f, .4f };
             Color[] colors = { Color.red, Color.magenta };
@@ -312,7 +313,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator TwoChannelDepthThreeThreeGoodValues()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 3, 3 };
             dummyData.Data = new float[] { 1f, 2.2f };
             Color[] colors = { Color.red, Color.magenta };
@@ -335,7 +336,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator ThreeChannelDepthFiveOneThreeGoodValues()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 5, 1, 3 };
             dummyData.Data = new float[] { 3f, .6f, 2.2f };
             Color[] colors = { Color.red, Color.magenta };
@@ -358,7 +359,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [UnityTest]
         public IEnumerator ProperReset()
         {
-            string[] tags = { "block" };
+            string[] tags = { k_Tag1 };
             int[] depths = { 5, 1, 3 };
             dummyData.Data = new float[] { 3f, .6f, 2.2f };
             Color[] colors = { Color.red, Color.magenta };
@@ -388,9 +389,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             subarrayIndicies = new int[0];
             expectedSubarrays = new float[0][];
             GridObsTestUtils.AssertSubarraysAtIndex(output, subarrayIndicies, expectedSubarrays, expectedDefault);
-
         }
-
-
     }
 }
