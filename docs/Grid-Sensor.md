@@ -5,7 +5,7 @@ The Grid Sensor combines the generality of data extraction from Raycasts with th
 
 # Motivation
 
-In MLAgents there are 2 main sensors for observing information that is "physically" around the agent. 
+In MLAgents there are 2 main sensors for observing information that is "physically" around the agent.
 
 **Raycasts**
 
@@ -33,7 +33,7 @@ These limitations provided the motivation towards the development of the Grid Se
 
 # Contribution
 
-An image can be thought of as a matrix of a predefined width (W) and a height (H) and each pixel can be thought of as simply an array of length 3 (in the case of RGB), `[Red, Green, Blue]` holding the different channel information of the color (channel) intensities at that pixel location. Thus an image is just a 3 dimensional matrix of size WxHx3. A Grid Observation can be thought of as a generalization of this setup where in place of a pixel there is a "cell" which is an array of length N representing different channel intensities at that cell position. From a Convolutional Neural Network point of view, the introduction of multiple channels in an "image" isn't a new concept. One such example is using an RGB-Depth image which is used in several robotics applications. The distinction of Grid Observations is what the data within the channels represents. Instead of limiting the channels to color intensities, the channels within a cell of a Grid Observation generalize to any data that can be represented by a single number (float or int). 
+An image can be thought of as a matrix of a predefined width (W) and a height (H) and each pixel can be thought of as simply an array of length 3 (in the case of RGB), `[Red, Green, Blue]` holding the different channel information of the color (channel) intensities at that pixel location. Thus an image is just a 3 dimensional matrix of size WxHx3. A Grid Observation can be thought of as a generalization of this setup where in place of a pixel there is a "cell" which is an array of length N representing different channel intensities at that cell position. From a Convolutional Neural Network point of view, the introduction of multiple channels in an "image" isn't a new concept. One such example is using an RGB-Depth image which is used in several robotics applications. The distinction of Grid Observations is what the data within the channels represents. Instead of limiting the channels to color intensities, the channels within a cell of a Grid Observation generalize to any data that can be represented by a single number (float or int).
 
 Before jumping into the details of the Grid Sensor, an important thing to note is the agent performance and qualitatively different behavior over raycasts. Unity MLAgent's comes with a suite of example environments. One in particular, the [Food Collector](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#food-collector), has been the focus of the Grid Sensor development.
 
@@ -64,10 +64,10 @@ A Grid Sensor is the Grid Observation analog of a Unity Camera but with some not
 
 In practice it has been useful to center the Grid Sensor on the agent in such a way that it is equivalent to having a "top-down" orthographic view of the agent.
 
-Just like the Raycasts mentioned earlier, the Grid Sensor can extract any kind of data from a detected object and just like the Camera, the Grid Sensor maintains the spacial relationship between nearby cells that allows one to take advantage of the CNN literature. Thus the Grid Sensor tries to take the best of both sensors and combines them to something that is more expressive. 
+Just like the Raycasts mentioned earlier, the Grid Sensor can extract any kind of data from a detected object and just like the Camera, the Grid Sensor maintains the spacial relationship between nearby cells that allows one to take advantage of the CNN literature. Thus the Grid Sensor tries to take the best of both sensors and combines them to something that is more expressive.
 
 ### Example of Grid Observations
-A Grid Observation is best described using an example and a side by side comparison with the Raycasts and the Camera. 
+A Grid Observation is best described using an example and a side by side comparison with the Raycasts and the Camera.
 
 Lets imagine a scenario where an agent is faced with 2 enemies and there are 2 "equipable" weapons somewhat behind the agent. Lets also keep in mind some important properties of the enemies and weapons that would be useful for the agent to know. For simplicity, lets assume enemies represent their health as a percentage (0-100%). Lets also assume that enemies and weapons are the only 2 kind of objects that the agent would see in the entire game.
 
@@ -84,7 +84,7 @@ raycastData = [isWeapon, isEnemy, health, normalizedDistance]
 For example, if the raycast hit nothing then this would be represented by `[0, 0, 0, 1]`.
 If instead the raycast hit an enemy with 60% health that is 50% of the maximum raycast distance, the data would be represented by `[0, 1, .6, .5]`.
 
-The limitations of raycasts which were presented above are easy to visualize in the the below image. The agent is unable to see where the weapons are and only sees one of the enemies. Typically in the MLAgents examples, this situation is mitigated by including previous frames of data so that the agent observes changes through time. However, in more complex games, it is not difficult to imagine scenarios where an agent would not be able to observe important information using only Raycasts.
+The limitations of raycasts which were presented above are easy to visualize in the below image. The agent is unable to see where the weapons are and only sees one of the enemies. Typically in the MLAgents examples, this situation is mitigated by including previous frames of data so that the agent observes changes through time. However, in more complex games, it is not difficult to imagine scenarios where an agent would not be able to observe important information using only Raycasts.
 
 <img src="images/gridsensor-example-raycast.png" align="middle" width="3000"/>
 
@@ -119,7 +119,7 @@ An example of the CountingGridSensor can be found below.
 
 In order to support different ways of representing the data extracted from an object, multiple "depth types" were implemented. Each has pros and cons and, depending on the use-case of the Grid Sensor, one may be more beneficial than the others.
 
-The data stored that is extracted during the *Collection* phase, and stored in `channelValues`, may come from different sources. For instance, going back the Enemy/Weapon example in the previous section, an enemy's health is continuous whereas the object type (enemy or weapon) is categorical data. This distinction is important as categorical data requires a different encoding mechanism than continuous data. 
+The data stored that is extracted during the *Collection* phase, and stored in `channelValues`, may come from different sources. For instance, going back the Enemy/Weapon example in the previous section, an enemy's health is continuous whereas the object type (enemy or weapon) is categorical data. This distinction is important as categorical data requires a different encoding mechanism than continuous data.
 
 The Grid Sensor handles this distinction with 4 properties that define how this data is to be encoded:
 * DepthType - Enum signifying the encoding mode: Channel, ChannelHot
@@ -175,7 +175,7 @@ Like in the previous example, the "enemy" in the example is encoded as `[0, 0, 1
 
 This encoding would then be concatenated together with the "enemy" encoding resulting in:
 ```
-enemy encoding => [0, 0, 1] 
+enemy encoding => [0, 0, 1]
 health encoding => [0, 0, 0, 1, 0]
 final encoding => [0, 0, 1, 0, 0, 0, 1, 0]
 ```
@@ -206,7 +206,7 @@ encoding = [0 weapons/ 50 weapons, 1 enemy / 10 enemies] = [0, .1]
 
 At the end of the Encoding phase, all of the data for a Grid Observation is placed into a float[] referred to as the perception buffer. Now the data is ready to be sent to either the python side for training or to be used by a trained model within Unity. This is where the Grid Sensor takes advantage of 2D textures and the PNG encoding schema to reduce the number of bytes that are being sent.
 
-The 2D texture is a Unity class that encodes the colors of an image. It is used for many ways through out Unity but it has 2 specific methods that the Grid Sensor takes advantage of: 
+The 2D texture is a Unity class that encodes the colors of an image. It is used for many ways through out Unity but it has 2 specific methods that the Grid Sensor takes advantage of:
 
 `SetPixels` takes a 2D array of Colors and assigns the color values to the texture.
 
@@ -220,4 +220,4 @@ The core idea behind how a Grid Observation is encoded is the following:
 3. concatenate all byte[] and send the combined array to python
 4. reconstruct the Grid Observation by splitting up the array and decoding the sections
 
-Once the bytes are sent to python, they are then decoded and used as a tensor of the correct shape within the mlagents python codebase. 
+Once the bytes are sent to python, they are then decoded and used as a tensor of the correct shape within the mlagents python codebase.
