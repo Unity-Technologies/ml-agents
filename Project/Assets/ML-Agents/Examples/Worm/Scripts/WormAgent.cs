@@ -8,10 +8,16 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
+    public enum WormAgentBehaviorType
+    {
+        WormDynamic, WormStatic
+    }
+
+    public WormAgentBehaviorType typeOfWorm;
+
     [Range(0, 15)]
 //    private float m_TargetWalkingSpeed = 10;
     const float m_maxWalkingSpeed = 15; //The max walking speed
-
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
@@ -52,15 +58,10 @@ public class WormAgent : Agent
     public bool rewardFacingTarget; // Agent should face the target
     public bool rewardUseTimePenalty; // Hurry up
 
-    Quaternion m_LookRotation; //LookRotation from m_TargetDirMatrix to Target
+//    Quaternion m_LookRotation; //LookRotation from m_TargetDirMatrix to Target
 //    Matrix4x4 m_TargetDirMatrix; //Matrix used by agent as orientation reference
 
-    public enum WormAgentBehaviorType
-    {
-        WormDynamic, WormStatic
-    }
 
-    public WormAgentBehaviorType typeOfWorm;
     public override void Initialize()
     {
         var m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
