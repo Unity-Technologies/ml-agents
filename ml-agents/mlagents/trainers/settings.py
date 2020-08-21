@@ -558,7 +558,7 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
-    framework: FrameworkType = FrameworkType.TENSORFLOW
+    framework: FrameworkType = FrameworkType.PYTORCH
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
