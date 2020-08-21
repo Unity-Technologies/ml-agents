@@ -1,0 +1,19 @@
+name: nightly
+
+on:
+  schedule:
+    - cron: '0 7 * * *' # run at 7 AM UTC == midnight PST
+
+jobs:
+  markdown-link-check-full:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: '12'
+    - run: sudo npm install -g markdown-link-check
+    - uses: pre-commit/action@v2.0.0
+      with:
+          extra_args: --hook-stage manual markdown-link-check-full --all-files
