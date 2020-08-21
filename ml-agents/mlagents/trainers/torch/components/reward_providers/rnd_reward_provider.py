@@ -6,20 +6,26 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
-from mlagents.trainers.settings import CuriositySettings
+from mlagents.trainers.settings import RNDSettings
 
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
+from mlagents.trainers.torch.encoders import Normalizer
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 
 
 class RNDRewardProvider(BaseRewardProvider):
-    def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
+    """
+    https://arxiv.org/pdf/1810.12894.pdf
+    """
+
+    def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
         super().__init__(specs, settings)
         self._ignore_done = True
         self._random_network = RNDNetwork(specs, settings)
         self._training_network = RNDNetwork(specs, settings)
+        self._reward_normalizer = Normalizer(1)
         self.optimizer = torch.optim.Adam(
             self._training_network.parameters(), lr=settings.learning_rate
         )
@@ -29,17 +35,17 @@ class RNDRewardProvider(BaseRewardProvider):
         with torch.no_grad():
             target = self._random_network(mini_batch)
             prediction = self._training_network(mini_batch)
-            rewards = (
-                torch.sum((prediction - target) ** 2, dim=1).detach().cpu().numpy()
-            )
-        return rewards * self._has_updated_once
+            unnormalized_rewards = torch.sum((prediction - target) ** 2, dim=1)
+            rewards = self._reward_normalizer(unnormalized_rewards)
+        self._reward_normalizer.update(unnormalized_rewards)
+        return rewards.detach().cpu().numpy() * self._has_updated_once
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
         self._has_updated_once = True
         with torch.no_grad():
             target = self._random_network(mini_batch)
         prediction = self._training_network(mini_batch)
-        loss = torch.sum((prediction - target) ** 2, dim=1)
+        loss = torch.mean(torch.sum((prediction - target) ** 2, dim=1))
         self.optimizer.zero_grad()
         loss.backward()
         self.optimizer.step()
@@ -49,7 +55,7 @@ class RNDRewardProvider(BaseRewardProvider):
 class RNDNetwork(torch.nn.Module):
     EPSILON = 1e-10
 
-    def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
+    def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
         super().__init__()
         self._policy_specs = specs
         state_encoder_settings = NetworkSettings(
@@ -77,5 +83,5 @@ class RNDNetwork(torch.nn.Module):
                 for i in range(n_vis)
             ],
         )
-        self._encoder.update_normalization(mini_batch["vector_obs"])
+        self._encoder.update_normalization(torch.tensor(mini_batch["vector_obs"]))
         return hidden
