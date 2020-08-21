@@ -1,6 +1,6 @@
 import os
 import shutil
-import torch
+from mlagents.torch_utils import torch
 from typing import Dict, Union, Optional, cast
 from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger

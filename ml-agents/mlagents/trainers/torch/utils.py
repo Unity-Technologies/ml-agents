@@ -1,5 +1,5 @@
 from typing import List, Optional, Tuple
-import torch
+from mlagents.torch_utils import torch
 import numpy as np
 from torch import nn
 

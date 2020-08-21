@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
-import torch
+from mlagents.torch_utils import torch
 import copy
 
 from mlagents.trainers.action_info import ActionInfo

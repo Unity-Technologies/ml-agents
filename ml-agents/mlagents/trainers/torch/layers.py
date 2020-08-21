@@ -1,4 +1,4 @@
-import torch
+from mlagents.torch_utils import torch
 import abc
 from typing import Tuple
 from enum import Enum

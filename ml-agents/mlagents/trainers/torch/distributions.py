@@ -1,6 +1,6 @@
 import abc
 from typing import List
-import torch
+from mlagents.torch_utils import torch
 from torch import nn
 import numpy as np
 import math

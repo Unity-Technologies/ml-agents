@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (

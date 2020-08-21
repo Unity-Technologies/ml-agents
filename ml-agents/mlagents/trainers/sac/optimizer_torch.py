@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict, List, Mapping, cast, Tuple, Optional
-import torch
+from mlagents.torch_utils import torch
 from torch import nn
 import attr
 

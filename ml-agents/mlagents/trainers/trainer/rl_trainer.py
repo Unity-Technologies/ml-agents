@@ -26,12 +26,14 @@ from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.saver.saver import BaseSaver
 from mlagents.trainers.saver.tf_saver import TFSaver
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents import torch_utils
 
-try:
+if torch_utils.is_available():
     from mlagents.trainers.policy.torch_policy import TorchPolicy
     from mlagents.trainers.saver.torch_saver import TorchSaver
-except ModuleNotFoundError:
+else:
     TorchPolicy = None  # type: ignore
+    TorchSaver = None  # type: ignore
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 

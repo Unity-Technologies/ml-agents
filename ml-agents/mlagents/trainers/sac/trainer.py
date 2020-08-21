@@ -20,11 +20,12 @@ from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
 from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents import torch_utils
 
-try:
+if torch_utils.is_available():
     from mlagents.trainers.policy.torch_policy import TorchPolicy
     from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-except ModuleNotFoundError:
+else:
     TorchPolicy = None  # type: ignore
     TorchSACOptimizer = None  # type: ignore
 

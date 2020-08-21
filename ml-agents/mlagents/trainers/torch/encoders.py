@@ -3,7 +3,7 @@ from typing import Tuple, Optional, Union
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
 
-import torch
+from mlagents.torch_utils import torch
 from torch import nn
 
 

@@ -1,6 +1,6 @@
 from typing import List, Dict
 
-import torch
+from mlagents.torch_utils import torch
 from torch import nn
 from mlagents.trainers.torch.layers import linear_layer
 

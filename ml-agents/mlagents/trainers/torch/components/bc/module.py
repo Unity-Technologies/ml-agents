@@ -1,6 +1,6 @@
 from typing import Dict
 import numpy as np
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer

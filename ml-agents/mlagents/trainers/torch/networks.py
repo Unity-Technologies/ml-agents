@@ -1,7 +1,7 @@
 from typing import Callable, List, Dict, Tuple, Optional
 import abc
 
-import torch
+from mlagents.torch_utils import torch
 from torch import nn
 
 from mlagents_envs.base_env import ActionType

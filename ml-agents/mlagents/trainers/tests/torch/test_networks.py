@@ -1,6 +1,6 @@
 import pytest
 
-import torch
+from mlagents.torch_utils import torch
 from mlagents.trainers.torch.networks import (
     NetworkBody,
     ValueNetwork,
