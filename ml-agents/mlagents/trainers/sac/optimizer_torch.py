@@ -2,7 +2,6 @@ import numpy as np
 from typing import Dict, List, Mapping, cast, Tuple, Optional
 import torch
 from torch import nn
-import attr
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import ActionType
@@ -102,20 +101,10 @@ class TorchSACOptimizer(TorchOptimizer):
             for name in self.stream_names
         }
 
-        # Critics should have 1/2 of the memory of the policy
-        critic_memory = policy_network_settings.memory
-        if critic_memory is not None:
-            critic_memory = attr.evolve(
-                critic_memory, memory_size=critic_memory.memory_size // 2
-            )
-        value_network_settings = attr.evolve(
-            policy_network_settings, memory=critic_memory
-        )
-
         self.value_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
-            value_network_settings,
+            policy_network_settings,
             self.policy.behavior_spec.action_type,
             self.act_size,
         )
@@ -123,7 +112,7 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network = ValueNetwork(
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
-            value_network_settings,
+            policy_network_settings,
         )
         self.soft_update(self.policy.actor_critic.critic, self.target_network, 1.0)
 
@@ -541,15 +530,15 @@ class TorchSACOptimizer(TorchOptimizer):
             "Policy/Learning Rate": decay_lr,
         }
 
-        for signal in self.reward_signals.values():
-            signal.update(batch)
-
         return update_stats
 
     def update_reward_signals(
         self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
     ) -> Dict[str, float]:
-        return {}
+        update_stats: Dict[str, float] = {}
+        for name, update_buffer in reward_signal_minibatches.items():
+            update_stats.update(self.reward_signals[name].update(update_buffer))
+        return update_stats
 
     def get_modules(self):
         return {
