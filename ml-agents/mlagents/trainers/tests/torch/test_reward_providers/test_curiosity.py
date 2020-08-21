@@ -83,9 +83,9 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     buffer = create_agent_buffer(behavior_spec, 5)
     for _ in range(200):
         curiosity_rp.update(buffer)
-    prediction = ModelUtils.to_numpy(curiosity_rp._network.predict_action(buffer)[0])
-    target = buffer["actions"][0]
-    error = float(torch.mean((prediction - target) ** 2))
+    prediction = curiosity_rp._network.predict_action(buffer)[0]
+    target = torch.tensor(buffer["actions"][0])
+    error = torch.mean((prediction - target) ** 2).item()
     assert error < 0.001
 
 
