@@ -120,7 +120,7 @@ def initialize_trainer(
             trainer_artifact_path,
         )
     elif trainer_type == TrainerType.DistributedPPO:
-        trainer = new_trainer_map[TrainerType.DistributedPPO](
+        trainer = new_trainer_map['distributed_ppo'](
             brain_name,
             min_lesson_length,
             trainer_settings,
@@ -130,7 +130,7 @@ def initialize_trainer(
             trainer_artifact_path,
         )
     elif trainer_type == TrainerType.DistributedSAC:
-        trainer = new_trainer_map[TrainerType.DistributedSAC](
+        trainer = new_trainer_map['distributed_sac'](
             brain_name,
             min_lesson_length,
             trainer_settings,
