@@ -11,8 +11,6 @@ from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings, TrainerType
-from mlagents_distributed.trainers.ppo.ppo_trainer import DistributedPPOTrainer
-from mlagents_distributed.trainers.sac.sac_trainer import DistributedSACTrainer
 
 logger = get_logger(__name__)
 
@@ -26,16 +24,18 @@ class TrainerFactory:
         load_model: bool,
         seed: int,
         param_manager: EnvironmentParameterManager,
+        new_trainer_map: dict,
         init_path: str = None,
         multi_gpu: bool = False,
     ):
         self.trainer_config = trainer_config
         self.output_path = output_path
-        self.init_path = init_path
         self.train_model = train_model
         self.load_model = load_model
         self.seed = seed
         self.param_manager = param_manager
+        self.new_trainer_map = new_trainer_map
+        self.init_path = init_path
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
 
@@ -54,6 +54,7 @@ class TrainerFactory:
             self.ghost_controller,
             self.seed,
             self.param_manager,
+            self.new_trainer_map,
             self.init_path,
             self.multi_gpu,
         )
@@ -68,6 +69,7 @@ def initialize_trainer(
     ghost_controller: GhostController,
     seed: int,
     param_manager: EnvironmentParameterManager,
+    new_trainer_map: dict,
     init_path: str = None,
     multi_gpu: bool = False,
 ) -> Trainer:
@@ -84,6 +86,7 @@ def initialize_trainer(
     :param ghost_controller: The object that coordinates ghost trainers
     :param seed: The random seed to use
     :param param_manager: EnvironmentParameterManager, used to determine a reward buffer length for PPOTrainer
+    :param new_trainer_map: a mapping from trainer name to trainer class; to be used with the plugin
     :param init_path: Path from which to load model, if different from model_path.
     :return:
     """
@@ -117,7 +120,7 @@ def initialize_trainer(
             trainer_artifact_path,
         )
     elif trainer_type == TrainerType.DistributedPPO:
-        trainer = DistributedPPOTrainer(
+        trainer = new_trainer_map[TrainerType.DistributedPPO](
             brain_name,
             min_lesson_length,
             trainer_settings,
@@ -127,7 +130,7 @@ def initialize_trainer(
             trainer_artifact_path,
         )
     elif trainer_type == TrainerType.DistributedSAC:
-        trainer = DistributedSACTrainer(
+        trainer = new_trainer_map[TrainerType.DistributedSAC](
             brain_name,
             min_lesson_length,
             trainer_settings,

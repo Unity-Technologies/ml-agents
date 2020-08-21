@@ -525,8 +525,8 @@ class SelfPlaySettings:
 class TrainerType(Enum):
     PPO: str = "ppo"
     SAC: str = "sac"
-    DistributedPPO: str = "distributed-ppo"
-    DistributedSAC: str = "distributed-sac"
+    DistributedPPO: str = "distributed_ppo"
+    DistributedSAC: str = "distributed_sac"
 
     def to_settings(self) -> type:
         _mapping = {
