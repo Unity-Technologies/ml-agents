@@ -66,5 +66,4 @@ def test_reward_provider_save(tmp_path, optimizer):
         module2 = module_dict_2[name]
         if hasattr(module1, "parameters"):
             for param1, param2 in zip(module1.parameters(), module2.parameters()):
-                print(param2.data)
                 assert param1.data.ne(param2.data).sum() == 0
