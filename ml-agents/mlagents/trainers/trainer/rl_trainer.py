@@ -183,9 +183,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
         checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self.step)
+        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
         new_checkpoint = NNCheckpoint(
             int(self.step),
-            f"{checkpoint_path}.nn",
+            f"{checkpoint_path}.{export_ext}",
             self._policy_mean_reward(),
             time.time(),
         )
@@ -209,8 +210,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
         model_checkpoint = self._checkpoint()
         self.model_saver.copy_final_model(model_checkpoint.file_path)
+        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
         final_checkpoint = attr.evolve(
-            model_checkpoint, file_path=f"{self.model_saver.model_path}.nn"
+            model_checkpoint, file_path=f"{self.model_saver.model_path}.{export_ext}"
         )
         NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
