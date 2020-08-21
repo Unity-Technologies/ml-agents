@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
 using Unity.MLAgents.Sensors;
@@ -11,12 +12,21 @@ public class WormAgent : Agent
 //    private float m_TargetWalkingSpeed = 10;
     const float m_maxWalkingSpeed = 15; //The max walking speed
 
+
+    //Brains
+    //A different brain will be used depending on the CrawlerAgentBehaviorType selected
+    [Header("NN Models")]
+    public NNModel wormDyBrain;
+    public NNModel wormStBrain;
+
 //    public float walkingSpeedGoal = 15; //The walking speed to try and achieve
 //    float m_maxWalkingSpeed = 15; //The max walking speed
 //    public bool randomizeWalkSpeedEachEpisode; //should the walking speed randomize each episode?
 
-    [Header("Target To Walk Towards")] [Space(10)]
-    public Transform target; //Target the agent will walk towards.
+    [Header("Target Prefabs")]
+    public Transform dynamicTargetPrefab;
+    public Transform staticTargetPrefab;
+    private Transform m_Target; //Target the agent will walk towards.
 
     [Header("Body Parts")] [Space(10)] public Transform bodySegment0;
     public Transform bodySegment1;
@@ -45,13 +55,40 @@ public class WormAgent : Agent
     Quaternion m_LookRotation; //LookRotation from m_TargetDirMatrix to Target
 //    Matrix4x4 m_TargetDirMatrix; //Matrix used by agent as orientation reference
 
+    public enum WormAgentBehaviorType
+    {
+        WormDynamic, WormStatic
+    }
+
+    public WormAgentBehaviorType typeOfWorm;
     public override void Initialize()
     {
+        var m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
+        switch (typeOfWorm)
+        {
+            case WormAgentBehaviorType.WormDynamic:
+            {
+                m_BehaviorParams.BehaviorName = "CrawlerDynamic";
+                if (wormDyBrain)
+                    m_BehaviorParams.Model = wormDyBrain;
+                m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
+                break;
+            }
+            case WormAgentBehaviorType.WormStatic:
+            {
+                m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed";
+                if (wormStBrain)
+                    m_BehaviorParams.Model = wormStBrain;
+                m_Target = Instantiate(staticTargetPrefab, transform.position, Quaternion.identity, transform);
+                break;
+            }
+        }
+
         m_startingPos = bodySegment0.position;
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
 
-        m_OrientationCube.UpdateOrientation(bodySegment0, target.transform);
+        m_OrientationCube.UpdateOrientation(bodySegment0, m_Target.transform);
 
         m_JdController = GetComponent<JointDriveController>();
 
@@ -144,7 +181,7 @@ public class WormAgent : Agent
         sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(target.transform.position));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -243,7 +280,7 @@ public class WormAgent : Agent
     void UpdateOrientationObjects()
     {
 //        m_WorldDirToWalk = target.position - hips.position;
-        m_OrientationCube.UpdateOrientation(bodySegment0, target);
+        m_OrientationCube.UpdateOrientation(bodySegment0, m_Target);
         if (m_DirectionIndicator)
         {
             m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
