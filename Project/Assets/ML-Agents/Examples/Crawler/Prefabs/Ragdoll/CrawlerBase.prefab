@@ -2809,10 +2809,10 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   typeOfCrawler: 0
-  crawlerDyBrain: {fileID: 11400000, guid: abc53438e5d034b0887bbf270347b642, type: 3}
-  crawlerDyVSBrain: {fileID: 11400000, guid: 359903e913a9f40c2b9cba9a03e42676, type: 3}
-  crawlerStBrain: {fileID: 11400000, guid: 8cec9108971ed41f8a239d7023085278, type: 3}
-  crawlerStVSBrain: {fileID: 11400000, guid: db9d60279f76f44858fbaf03edf5648f, type: 3}
+  crawlerDyBrain: {fileID: 11400000, guid: 53b79c6f40aeb46e693e7c1822ff1047, type: 3}
+  crawlerDyVSBrain: {fileID: 11400000, guid: e77594c44930c402f8852c7efa8e3dd1, type: 3}
+  crawlerStBrain: {fileID: 11400000, guid: ed47ea041cd354cab91424ce98724880, type: 3}
+  crawlerStVSBrain: {fileID: 11400000, guid: 32a2c0080046f452dbe701cbf27cc9a4, type: 3}
   m_TargetWalkingSpeed: 15
   randomizeWalkSpeedEachEpisode: 0
   dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
