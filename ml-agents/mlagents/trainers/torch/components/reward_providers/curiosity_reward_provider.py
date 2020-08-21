@@ -51,7 +51,7 @@ class CuriosityRewardProvider(BaseRewardProvider):
         }
 
     def get_modules(self):
-        return {f"Optimizer:{self.name}": self._network}
+        return {f"Module:{self.name}": self._network}
 
 
 class CuriosityNetwork(torch.nn.Module):

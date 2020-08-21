@@ -55,7 +55,7 @@ class GAILRewardProvider(BaseRewardProvider):
         return stats_dict
 
     def get_modules(self):
-        return {f"Optimizer:{self.name}": self._discriminator_network}
+        return {f"Module:{self.name}": self._discriminator_network}
 
 
 class DiscriminatorNetwork(torch.nn.Module):
