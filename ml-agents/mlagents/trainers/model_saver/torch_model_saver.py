@@ -4,7 +4,7 @@ import torch
 from typing import Dict, Union, Optional, cast
 from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
-from mlagents.trainers.saver.saver import BaseSaver
+from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 from mlagents.trainers.settings import TrainerSettings, SerializationSettings
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
@@ -14,9 +14,9 @@ from mlagents.trainers.torch.model_serialization import ModelSerializer
 logger = get_logger(__name__)
 
 
-class TorchSaver(BaseSaver):
+class TorchModelSaver(BaseModelSaver):
     """
-    Saver class for PyTorch
+    ModelSaver class for PyTorch
     """
 
     def __init__(
@@ -37,7 +37,7 @@ class TorchSaver(BaseSaver):
             self.modules.update(module.get_modules())  # type: ignore
         else:
             raise UnityPolicyException(
-                "Registering Object of unsupported type {} to Saver ".format(
+                "Registering Object of unsupported type {} to ModelSaver ".format(
                     type(module)
                 )
             )
