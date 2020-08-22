@@ -61,7 +61,7 @@ VISUAL_OBSERVATION_PREFIX = "visual_observation_"
 def export_policy_model(
     model_path: str,
     output_filepath: str,
-    brain_name: str,
+    behavior_name: str,
     graph: tf.Graph,
     sess: tf.Session,
 ) -> None:
@@ -69,11 +69,11 @@ def export_policy_model(
     Exports a TF graph for a Policy to .nn and/or .onnx format for Unity embedding.
 
     :param output_filepath: file path to output the model (without file suffix)
-    :param brain_name: brain name of the trained model
+    :param behavior_name: behavior name of the trained model
     :param graph: Tensorflow Graph for the policy
     :param sess: Tensorflow session for the policy
     """
-    frozen_graph_def = _make_frozen_graph(brain_name, graph, sess)
+    frozen_graph_def = _make_frozen_graph(behavior_name, graph, sess)
     if not os.path.exists(output_filepath):
         os.makedirs(output_filepath)
     # Save frozen graph
@@ -90,7 +90,7 @@ def export_policy_model(
     if ONNX_EXPORT_ENABLED:
         if SerializationSettings.convert_to_onnx:
             try:
-                onnx_graph = convert_frozen_to_onnx(brain_name, frozen_graph_def)
+                onnx_graph = convert_frozen_to_onnx(behavior_name, frozen_graph_def)
                 onnx_output_path = f"{output_filepath}.onnx"
                 with open(onnx_output_path, "wb") as f:
                     f.write(onnx_graph.SerializeToString())
@@ -113,10 +113,10 @@ def export_policy_model(
 
 
 def _make_frozen_graph(
-    brain_name: str, graph: tf.Graph, sess: tf.Session
+    behavior_name: str, graph: tf.Graph, sess: tf.Session
 ) -> tf.GraphDef:
     with graph.as_default():
-        target_nodes = ",".join(_process_graph(brain_name, graph))
+        target_nodes = ",".join(_process_graph(behavior_name, graph))
         graph_def = graph.as_graph_def()
         output_graph_def = graph_util.convert_variables_to_constants(
             sess, graph_def, target_nodes.replace(" ", "").split(",")
@@ -124,7 +124,7 @@ def _make_frozen_graph(
     return output_graph_def
 
 
-def convert_frozen_to_onnx(brain_name: str, frozen_graph_def: tf.GraphDef) -> Any:
+def convert_frozen_to_onnx(behavior_name: str, frozen_graph_def: tf.GraphDef) -> Any:
     # This is basically https://github.com/onnx/tensorflow-onnx/blob/master/tf2onnx/convert.py
 
     inputs = _get_input_node_names(frozen_graph_def)
@@ -146,7 +146,7 @@ def convert_frozen_to_onnx(brain_name: str, frozen_graph_def: tf.GraphDef) -> An
         )
 
     onnx_graph = optimizer.optimize_graph(g)
-    model_proto = onnx_graph.make_model(brain_name)
+    model_proto = onnx_graph.make_model(behavior_name)
 
     return model_proto
 
@@ -195,14 +195,14 @@ def _get_frozen_graph_node_names(frozen_graph_def: Any) -> Set[str]:
     return names
 
 
-def _process_graph(brain_name: str, graph: tf.Graph) -> List[str]:
+def _process_graph(behavior_name: str, graph: tf.Graph) -> List[str]:
     """
     Gets the list of the output nodes present in the graph for inference
     :return: list of node names
     """
     all_nodes = [x.name for x in graph.as_graph_def().node]
     nodes = [x for x in all_nodes if x in POSSIBLE_OUTPUT_NODES | MODEL_CONSTANTS]
-    logger.info("List of nodes to export for brain :" + brain_name)
+    logger.info("List of nodes to export for behavior :" + behavior_name)
     for n in nodes:
         logger.info("\t" + n)
     return nodes

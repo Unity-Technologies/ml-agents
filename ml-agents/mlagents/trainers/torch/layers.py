@@ -1,4 +1,6 @@
 import torch
+import abc
+from typing import Tuple
 from enum import Enum
 
 
@@ -82,3 +84,68 @@ def lstm_layer(
                         forget_bias
                     )
     return lstm
+
+
+class MemoryModule(torch.nn.Module):
+    @abc.abstractproperty
+    def memory_size(self) -> int:
+        """
+        Size of memory that is required at the start of a sequence.
+        """
+        pass
+
+    @abc.abstractmethod
+    def forward(
+        self, input_tensor: torch.Tensor, memories: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
+        Pass a sequence to the memory module.
+        :input_tensor: Tensor of shape (batch_size, seq_length, size) that represents the input.
+        :memories: Tensor of initial memories.
+        :return: Tuple of output, final memories.
+        """
+        pass
+
+
+class LSTM(MemoryModule):
+    """
+    Memory module that implements LSTM.
+    """
+
+    def __init__(
+        self,
+        input_size: int,
+        memory_size: int,
+        num_layers: int = 1,
+        forget_bias: float = 1.0,
+        kernel_init: Initialization = Initialization.XavierGlorotUniform,
+        bias_init: Initialization = Initialization.Zero,
+    ):
+        super().__init__()
+        # We set hidden size to half of memory_size since the initial memory
+        # will be divided between the hidden state and initial cell state.
+        self.hidden_size = memory_size // 2
+        self.lstm = lstm_layer(
+            input_size,
+            self.hidden_size,
+            num_layers,
+            True,
+            forget_bias,
+            kernel_init,
+            bias_init,
+        )
+
+    @property
+    def memory_size(self) -> int:
+        return 2 * self.hidden_size
+
+    def forward(
+        self, input_tensor: torch.Tensor, memories: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        # We don't use torch.split here since it is not supported by Barracuda
+        h0 = memories[:, :, : self.hidden_size]
+        c0 = memories[:, :, self.hidden_size :]
+        hidden = (h0, c0)
+        lstm_out, hidden_out = self.lstm(input_tensor, hidden)
+        output_mem = torch.cat(hidden_out, dim=-1)
+        return lstm_out, output_mem

@@ -531,6 +531,11 @@ class TrainerType(Enum):
         return _mapping[self]
 
 
+class FrameworkType(Enum):
+    TENSORFLOW: str = "tensorflow"
+    PYTORCH: str = "pytorch"
+
+
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     trainer_type: TrainerType = TrainerType.PPO
@@ -553,6 +558,7 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
+    framework: FrameworkType = FrameworkType.TENSORFLOW
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
@@ -720,7 +726,9 @@ class RunOptions(ExportableSettings):
                     configured_dict["engine_settings"][key] = val
                 else:  # Base options
                     configured_dict[key] = val
-        return RunOptions.from_dict(configured_dict)
+
+        final_runoptions = RunOptions.from_dict(configured_dict)
+        return final_runoptions
 
     @staticmethod
     def from_dict(options_dict: Dict[str, Any]) -> "RunOptions":
