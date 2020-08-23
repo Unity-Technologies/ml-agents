@@ -88,11 +88,9 @@ public class WormAgent : Agent
         m_startingPos = bodySegment0.position;
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
-
-//        m_OrientationCube.UpdateOrientation(bodySegment0, m_Target.transform);
-        UpdateOrientationObjects();
-
         m_JdController = GetComponent<JointDriveController>();
+
+        UpdateOrientationObjects();
 
         //Setup each body part
         m_JdController.SetupBodyPart(bodySegment0);
@@ -117,7 +115,6 @@ public class WormAgent : Agent
 
         UpdateOrientationObjects();
 
-//        m_OrientationCube.UpdateOrientation(bodySegment0, target.transform);
         rewardManager.ResetEpisodeRewards();
 
 //        walkingSpeedGoal =
@@ -170,10 +167,10 @@ public class WormAgent : Agent
 //        var avgVel = GetAvgVelocity();
 
         //current ragdoll velocity. normalized
-        sensor.AddObservation(Vector3.Distance(velGoal, m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
+//        sensor.AddObservation(Vector3.Distance(velGoal, m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
         //avg body vel relative to cube
 //        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
+//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
         //vel goal relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
 
