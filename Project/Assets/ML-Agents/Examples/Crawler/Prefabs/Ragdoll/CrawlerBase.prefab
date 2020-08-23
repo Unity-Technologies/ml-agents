@@ -1091,8 +1091,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!1 &4845971000697267374
@@ -1593,8 +1593,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!1 &4845971001073609770
@@ -2158,8 +2158,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!1 &4845971001327158050
@@ -2336,8 +2336,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!1 &4845971001588102158
@@ -2470,8 +2470,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 0}
-  agentDoneOnGroundContact: 0
-  penalizeGroundContact: 0
+  agentDoneOnGroundContact: 1
+  penalizeGroundContact: 1
   groundContactPenalty: -1
   touchingGround: 0
 --- !u!1 &4845971001622533707
@@ -2810,10 +2810,10 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   typeOfCrawler: 0
-  crawlerDyBrain: {fileID: 11400000, guid: 53b79c6f40aeb46e693e7c1822ff1047, type: 3}
-  crawlerDyVSBrain: {fileID: 11400000, guid: e77594c44930c402f8852c7efa8e3dd1, type: 3}
-  crawlerStBrain: {fileID: 11400000, guid: ed47ea041cd354cab91424ce98724880, type: 3}
-  crawlerStVSBrain: {fileID: 11400000, guid: 32a2c0080046f452dbe701cbf27cc9a4, type: 3}
+  crawlerDyBrain: {fileID: 11400000, guid: 2dc51465533e7468d8bcafc17250cebf, type: 3}
+  crawlerDyVSBrain: {fileID: 11400000, guid: 0d9a992c217a44684b41c7663f3eab3d, type: 3}
+  crawlerStBrain: {fileID: 11400000, guid: e88b5542c96104c01b56f1ed82d8ccc8, type: 3}
+  crawlerStVSBrain: {fileID: 11400000, guid: e0800a8eb11a34c138fa8186124af9dc, type: 3}
   m_TargetWalkingSpeed: 15
   randomizeWalkSpeedEachEpisode: 0
   dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,

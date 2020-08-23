@@ -180,6 +180,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000672
       objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: typeOfCrawler
@@ -642,6 +647,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000672
       objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: typeOfCrawler
@@ -1062,6 +1072,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.y
       value: 0.32999593
+      objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -1509,6 +1524,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000815
+      objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -1991,6 +2011,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000132
       objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: typeOfCrawler
@@ -2411,6 +2436,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000147
+      objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -2852,6 +2882,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000815
+      objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -3353,6 +3388,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_ConnectedAnchor.y
       value: 0.32999736
+      objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
@@ -4121,6 +4161,11 @@ PrefabInstance:
       propertyPath: m_ConnectedAnchor.y
       value: 0.33000275
       objectReference: {fileID: 0}
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: typeOfCrawler
@@ -4542,6 +4587,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3421283061859478279, guid: 0058b366f9d6d44a3ba35beb06b0174b,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3421283062001101770, guid: 0058b366f9d6d44a3ba35beb06b0174b,
         type: 3}
       propertyPath: targetPrefab
