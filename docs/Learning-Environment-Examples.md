@@ -248,22 +248,29 @@ you would like to contribute environments, please see our
 
 - Set-up: A creature with 4 arms and 4 forearms.
 - Goal: The agents must move its body toward the goal direction without falling.
-  - `CrawlerStaticTarget` - Goal direction is always forward.
   - `CrawlerDynamicTarget`- Goal direction is randomized.
+  - `CrawlerDynamicVariableSpeed`- Goal direction and walking speed are randomized.
+  - `CrawlerStaticTarget` - Goal direction is always forward.
+  - `CrawlerStaticVariableSpeed`- Goal direction is always forward. Walking speed is randomized
 - Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
-  - +0.03 times body velocity in the goal direction.
-  - +0.01 times body direction alignment with goal direction.
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.
+  - Body velocity matches goal velocity. (normalized between (0,1))
+  - Head direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 138 variables corresponding to position, rotation,
+  - Vector Observation space: 172 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
   - Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `CrawlerStaticTarget`: 1600
-- Benchmark Mean Reward for `CrawlerDynamicTarget`: 800
+- Benchmark Mean Reward for `CrawlerDynamicTarget`: 2000
+- Benchmark Mean Reward for `CrawlerDynamicVariableSpeed`: 3000
+- Benchmark Mean Reward for `CrawlerStaticTarget`: 4000
+- Benchmark Mean Reward for `CrawlerStaticVariableSpeed`: 4000
 
 ## Worm
 
