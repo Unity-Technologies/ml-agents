@@ -395,9 +395,9 @@ class SACTrainer(RLTrainer):
         for _reward_signal in self.optimizer.reward_signals.keys():
             self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
 
-        self.saver.register(self.policy)
-        self.saver.register(self.optimizer)
-        self.saver.initialize_or_load()
+        self.model_saver.register(self.policy)
+        self.model_saver.register(self.optimizer)
+        self.model_saver.initialize_or_load()
 
         # Needed to resume loads properly
         self.step = policy.get_current_step()

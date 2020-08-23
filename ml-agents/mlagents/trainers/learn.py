@@ -19,7 +19,7 @@ from mlagents.trainers.stats import (
     GaugeWriter,
     ConsoleWriter,
 )
-from mlagents.trainers.cli_utils import parser
+from mlagents.trainers.cli_utils import parser, DetectDefault
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
 
@@ -125,14 +125,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
 
         trainer_factory = TrainerFactory(
-            options.behaviors,
-            write_path,
-            not checkpoint_settings.inference,
-            checkpoint_settings.resume,
-            run_seed,
-            env_parameter_manager,
-            maybe_init_path,
-            False,
+            trainer_config=options.behaviors,
+            output_path=write_path,
+            train_model=not checkpoint_settings.inference,
+            load_model=checkpoint_settings.resume,
+            seed=run_seed,
+            param_manager=env_parameter_manager,
+            init_path=maybe_init_path,
+            multi_gpu=False,
+            force_torch="torch" in DetectDefault.non_default_args,
         )
         # Create controller and begin training.
         tc = TrainerController(

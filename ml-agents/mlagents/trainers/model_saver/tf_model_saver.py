@@ -4,7 +4,7 @@ from typing import Optional, Union, cast
 from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
 from mlagents.tf_utils import tf
-from mlagents.trainers.saver.saver import BaseSaver
+from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 from mlagents.trainers.tf.model_serialization import export_policy_model
 from mlagents.trainers.settings import TrainerSettings, SerializationSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
@@ -15,9 +15,9 @@ from mlagents.trainers import __version__
 logger = get_logger(__name__)
 
 
-class TFSaver(BaseSaver):
+class TFModelSaver(BaseModelSaver):
     """
-    Saver class for TensorFlow
+    ModelSaver class for TensorFlow
     """
 
     def __init__(
