@@ -80,7 +80,8 @@ public class WormAgent : Agent
                 m_BehaviorParams.BehaviorName = "WormStatic";
                 if (wormStBrain)
                     m_BehaviorParams.Model = wormStBrain;
-                m_Target = Instantiate(staticTargetPrefab, transform.position, Quaternion.identity, transform);
+                var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
+                m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 break;
             }
         }
