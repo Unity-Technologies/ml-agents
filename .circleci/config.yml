@@ -241,106 +241,106 @@ jobs:
 workflows:
   version: 2
   workflow:
-    jobs: []
-#      - build_python:
-#          name: python_3.6.1
-#          executor: python361
-#          pyversion: 3.6.1
-#          # Test python 3.6 with the oldest supported versions
-#          pip_constraints: test_constraints_min_version.txt
-#      - build_python:
-#          name: python_3.7.3
-#          executor: python373
-#          pyversion: 3.7.3
-#          # Test python 3.7 with the newest supported versions
-#          pip_constraints: test_constraints_max_tf1_version.txt
-#          # Make sure ONNX conversion passes here (recent version of tensorflow 1.x)
-#          enforce_onnx_conversion: 1
-#      - build_python:
-#          name: python_3.7.3+tf2
-#          executor: python373
-#          pyversion: 3.7.3
-#          # Test python 3.7 with the newest supported versions
-#          pip_constraints: test_constraints_max_tf2_version.txt
-#      - build_python:
-#          name: python_3.8.2+tf2.2
-#          executor: python382
-#          pyversion: 3.8.2
-#          # Test python 3.8 with the newest edge versions
-#          pip_constraints: test_constraints_max_tf2_version.txt
-#      - markdown_link_check
-#      - pre-commit
-#      # The first deploy jobs are the "real" ones that upload to pypi
-#      - deploy:
-#          name: deploy ml-agents-envs
-#          directory: ml-agents-envs
-#          filters:
-#            tags:
-#              # Matches e.g. "release_123"
-#              only: /^release_[0-9]+$/
-#            branches:
-#              ignore: /.*/
-#      - deploy:
-#          name: deploy ml-agents
-#          directory: ml-agents
-#          filters:
-#            tags:
-#              # Matches e.g. "release_123"
-#              only: /^release_[0-9]+$/
-#            branches:
-#              ignore: /.*/
-#      - deploy:
-#          name: deploy gym-unity
-#          directory: gym-unity
-#          filters:
-#            tags:
-#              # Matches e.g. "release_123"
-#              only: /^release_[0-9]+$/
-#            branches:
-#              ignore: /.*/
-#      # These deploy jobs upload to the pypi test repo. They have different tag triggers than the real ones.
-#      - deploy:
-#          name: test deploy ml-agents-envs
-#          directory: ml-agents-envs
-#          username: mlagents-test
-#          test_repository_args: --repository-url https://test.pypi.org/legacy/
-#          filters:
-#            tags:
-#              # Matches e.g. "release_123_test456
-#              only: /^release_[0-9]+_test[0-9]+$/
-#            branches:
-#              ignore: /.*/
-#      - deploy:
-#          name: test deploy ml-agents
-#          directory: ml-agents
-#          username: mlagents-test
-#          test_repository_args: --repository-url https://test.pypi.org/legacy/
-#          filters:
-#            tags:
-#              # Matches e.g. "release_123_test456
-#              only: /^release_[0-9]+_test[0-9]+$/
-#            branches:
-#              ignore: /.*/
-#      - deploy:
-#          name: test deploy gym-unity
-#          directory: gym-unity
-#          username: mlagents-test
-#          test_repository_args: --repository-url https://test.pypi.org/legacy/
-#          filters:
-#            tags:
-#              # Matches e.g. "release_123_test456
-#              only: /^release_[0-9]+_test[0-9]+$/
-#            branches:
-#              ignore: /.*/
-#  nightly:
-#    triggers:
-#      - schedule:
-#          cron: "0 0 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-#    jobs:
-#      - markdown_link_check:
-#          name: markdown-link-check full
-#          precommit_command: markdown-link-check-full
+    jobs:
+      - build_python:
+          name: python_3.6.1
+          executor: python361
+          pyversion: 3.6.1
+          # Test python 3.6 with the oldest supported versions
+          pip_constraints: test_constraints_min_version.txt
+      - build_python:
+          name: python_3.7.3
+          executor: python373
+          pyversion: 3.7.3
+          # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_tf1_version.txt
+          # Make sure ONNX conversion passes here (recent version of tensorflow 1.x)
+          enforce_onnx_conversion: 1
+      - build_python:
+          name: python_3.7.3+tf2
+          executor: python373
+          pyversion: 3.7.3
+          # Test python 3.7 with the newest supported versions
+          pip_constraints: test_constraints_max_tf2_version.txt
+      - build_python:
+          name: python_3.8.2+tf2.2
+          executor: python382
+          pyversion: 3.8.2
+          # Test python 3.8 with the newest edge versions
+          pip_constraints: test_constraints_max_tf2_version.txt
+      - markdown_link_check
+      - pre-commit
+      # The first deploy jobs are the "real" ones that upload to pypi
+      - deploy:
+          name: deploy ml-agents-envs
+          directory: ml-agents-envs
+          filters:
+            tags:
+              # Matches e.g. "release_123"
+              only: /^release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy ml-agents
+          directory: ml-agents
+          filters:
+            tags:
+              # Matches e.g. "release_123"
+              only: /^release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy gym-unity
+          directory: gym-unity
+          filters:
+            tags:
+              # Matches e.g. "release_123"
+              only: /^release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      # These deploy jobs upload to the pypi test repo. They have different tag triggers than the real ones.
+      - deploy:
+          name: test deploy ml-agents-envs
+          directory: ml-agents-envs
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: test deploy ml-agents
+          directory: ml-agents
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: test deploy gym-unity
+          directory: gym-unity
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - markdown_link_check:
+          name: markdown-link-check full
+          precommit_command: markdown-link-check-full
