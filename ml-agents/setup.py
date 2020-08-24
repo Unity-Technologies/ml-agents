@@ -79,5 +79,5 @@ setup(
         ]
     },
     cmdclass={"verify": VerifyVersionCommand},
-    extras_require={"torch": ["torch==1.5.0"]},
+    extras_require={"torch": ["torch>=1.5.0"]},
 )
