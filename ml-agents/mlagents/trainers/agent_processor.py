@@ -94,6 +94,7 @@ class AgentProcessor:
             if global_id in self.last_step_result:  # Don't store if agent just reset
                 self.last_take_action_outputs[global_id] = take_action_outputs
             if global_id not in self.episode_tasks.keys():
+                # print("gid: {0} not in episodes tasks - prev actions".format(global_id))
                 self._assign_task(worker_id, global_id, local_id)
 
         # Iterate over all the terminal steps
@@ -104,6 +105,7 @@ class AgentProcessor:
                 terminal_step, global_id, terminal_steps.agent_id_to_index[local_id]
             )
             if global_id not in self.episode_tasks.keys():
+                # print("gid: {0} not in episodes tasks - terminal".format(global_id))
                 self._assign_task(worker_id, global_id, local_id)
         # Iterate over all the decision steps
         for ongoing_step in decision_steps.values():
@@ -113,6 +115,7 @@ class AgentProcessor:
                 ongoing_step, global_id, decision_steps.agent_id_to_index[local_id]
             )
             if global_id not in self.episode_tasks.keys():
+                # print("gid: {0} not in episodes tasks - decision".format(global_id))
                 self._assign_task(worker_id, global_id, local_id)
 
         for _gid in action_global_agent_ids:
@@ -130,8 +133,10 @@ class AgentProcessor:
             task = self.task_queue.pop(0)
             self.episode_tasks[global_id] = task
             self.set_task_params_fn(worker_id, local_id, task)
+            # print("assigned gid {0} to task {1}".format(global_id, task))
         else:
             if global_id not in self.tasks_needed.keys():
+                # print("gid {0} has not already requested a task, requesting new task".format(global_id))
                 self.tasks_needed[global_id] = (worker_id, local_id)
         
         

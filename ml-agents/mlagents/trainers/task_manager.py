@@ -39,6 +39,7 @@ class TaskManager:
         self.behavior_names = list(self._dict_settings.keys())
         self.param_names = {name: list(self._dict_settings[name].parameters.keys()) for name in self.behavior_names}
         self._taskSamplers = {}
+        self.report_buffer = []
 
         for behavior_name in self.behavior_names:
             lows = []
@@ -85,8 +86,9 @@ class TaskManager:
             taus = self._taskSamplers[behavior_name].get_design_points(num_points=num_samples, time=current_time).data.numpy().tolist()
         else:
             taus  = self._taskSamplers[behavior_name](num_samples).tolist()
-
+        # print("sampled taus", current_time, taus)
         tasks = [self._make_task(behavior_name, tau) for tau in taus]
+        self.report_buffer.extend(tasks)
         return tasks
 
     def update(self, behavior_name: str, task_perfs: List[Tuple[Dict, float]]
@@ -109,10 +111,11 @@ class TaskManager:
                 taus.append(tau)
 
             X = torch.stack(taus, dim=0)
-            Y = torch.tensor(perfs).float()
+            Y = torch.tensor(perfs).float().reshape(-1, 1)
             self._taskSamplers[behavior_name].update_model(X, Y, refit=True)
         
         return updated, must_reset
+
 
 def uniform_sample(ranges, num_samples):
     low = ranges[:, 0]

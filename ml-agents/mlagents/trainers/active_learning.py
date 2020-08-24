@@ -157,8 +157,8 @@ class ActiveLearningTaskSampler(object):
         self.xdim = ranges.shape[0] + 1
         self.model = None
         self.mll = None
-        self.Xdata = None
-        self.Ydata = None
+        self.X = None
+        self.Y = None
         
         self.bounds = torch.tensor(ranges)
         self.bounds = torch.cat([self.bounds, torch.tensor([[0.0,1.0]])]).T
@@ -166,13 +166,16 @@ class ActiveLearningTaskSampler(object):
         
 
     def update_model(self, new_X, new_Y, refit=False):
-        if self.model is not None:
+        if self.X is not None:
             new_X = new_X.to(self.X)
             new_Y = new_Y.to(self.X)
             self.X = torch.cat([self.X, new_X.to(self.X)])
             
             self.Y = torch.cat([self.Y, new_Y.to(self.X)])
-            state_dict = self.model.state_dict()
+            if self.model is not None:
+                state_dict = self.model.state_dict()
+            else:
+                state_dict = None
         else:
             self.X = new_X.float()
             self.Y = new_Y.float()

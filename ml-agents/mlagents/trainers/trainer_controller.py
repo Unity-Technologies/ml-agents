@@ -29,7 +29,7 @@ from mlagents.trainers.task_manager import TaskManager
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
-
+from mlagents.trainers.stats import StatsPropertyType
 
 class TrainerController:
     def __init__(
@@ -265,8 +265,16 @@ class TrainerController:
                 self.task_manager.update(behavior_name, task_perf)
             K = manager.get_num_tasks_needed()
             if K > 0:
+                # print("num tasks needed: ", K)
                 new_tasks = self.task_manager.get_tasks(behavior_name, K)
                 manager.add_new_tasks(new_tasks)
+                if len(self.task_manager.report_buffer) >= 16:
+                    d = defaultdict(list)
+                    for task in self.task_manager.report_buffer:
+                        for k,v in task.items():
+                            d[k].append(v)
+                    manager.stats_reporter.add_property(StatsPropertyType.SALIENCY, d)
+                    self.task_manager.report_buffer = []
 
         for trainer in self.trainers.values():
             if not trainer.threaded:
