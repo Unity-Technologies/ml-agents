@@ -194,18 +194,18 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = action.detach().cpu().numpy()
-        run_out["pre_action"] = action.detach().cpu().numpy()
+        run_out["action"] = ModelUtils.to_numpy(action)
+        run_out["pre_action"] = ModelUtils.to_numpy(action)
         # Todo - make pre_action difference
-        run_out["log_probs"] = log_probs.detach().cpu().numpy()
-        run_out["entropy"] = entropy.detach().cpu().numpy()
+        run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
+        run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["value_heads"] = {
-            name: t.detach().cpu().numpy() for name, t in value_heads.items()
+            name: ModelUtils.to_numpy(t) for name, t in value_heads.items()
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
-            run_out["memory_out"] = memories.detach().cpu().numpy().squeeze(0)
+            run_out["memory_out"] = ModelUtils.to_numpy(memories).squeeze(0)
         return run_out
 
     def get_action(
