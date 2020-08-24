@@ -87,106 +87,6 @@ jobs:
           path: htmlcov
           destination: htmlcov
 
-  pre-commit:
-    docker:
-      - image: circleci/python:3.7.3
-    working_directory: ~/repo/
-
-    steps:
-      - checkout
-      - run:
-          name: Combine precommit config and python versions for caching
-          command: |
-            cat .pre-commit-config.yaml > pre-commit-deps.txt
-            python -VV >> pre-commit-deps.txt
-
-      - restore_cache:
-          keys:
-          - v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
-
-      - run:
-          name: Install Dependencies
-          command: |
-            # Need ruby for search-and-replace
-            sudo apt-get update
-            sudo apt-get install ruby-full
-
-            # install dotnet and the formatter - see https://docs.microsoft.com/en-us/dotnet/core/install/linux-debian#debian-9-
-            pushd ~
-            wget -O - https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
-            sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-            wget https://packages.microsoft.com/config/debian/9/prod.list
-            sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
-            sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
-            sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
-            popd
-
-            sudo apt-get install -y apt-transport-https && \
-              sudo apt-get update && \
-              sudo apt-get install -y dotnet-sdk-3.1 && \
-              dotnet tool install -g dotnet-format --version 4.1.131201
-
-            echo "Setting up venv"
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install --upgrade pip
-            pip install --upgrade setuptools
-            pip install pre-commit
-            # Install the hooks now so that they'll be cached
-            pre-commit install-hooks
-
-      - save_cache:
-          paths:
-            - ~/.cache/pre-commit
-            - ./venv
-          key: v1-precommit-deps-{{ checksum "pre-commit-deps.txt" }}
-
-      - run:
-          name: Check Code Style using pre-commit
-          command: |
-            . venv/bin/activate
-            export PATH="$PATH:~/.dotnet/tools"
-            pre-commit run --show-diff-on-failure --all-files
-
-  markdown_link_check:
-    parameters:
-      precommit_command:
-        type: string
-        description: precommit hook to run
-        default: markdown-link-check
-    docker:
-      - image: circleci/node:12.6.0
-    working_directory: ~/repo
-
-    steps:
-      - checkout
-
-      - restore_cache:
-          keys:
-          - v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
-          # fallback to using the latest cache if no exact match is found
-          - v1-node-dependencies-
-
-      - run:
-          name: Install Dependencies
-          command: |
-            sudo apt-get install python3-venv
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install pre-commit
-      - run: sudo npm install -g markdown-link-check
-
-      - save_cache:
-          paths:
-            - ./venv
-          key: v1-node-dependencies-{{ checksum ".pre-commit-config.yaml" }}
-
-      - run:
-          name: Run markdown-link-check via precommit
-          command: |
-            . venv/bin/activate
-            pre-commit run --hook-stage manual << parameters.precommit_command >> --all-files
-
   deploy:
     parameters:
       directory:
@@ -257,8 +157,6 @@ workflows:
           pyversion: 3.8.2
           # Test python 3.8 with the newest edge versions
           pip_constraints: test_constraints_max_tf2_version.txt
-      - markdown_link_check
-      - pre-commit
       # The first deploy jobs are the "real" ones that upload to pypi
       - deploy:
           name: deploy ml-agents-envs
@@ -321,15 +219,3 @@ workflows:
               only: /^release_[0-9]+_test[0-9]+$/
             branches:
               ignore: /.*/
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 0 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - markdown_link_check:
-          name: markdown-link-check full
-          precommit_command: markdown-link-check-full
