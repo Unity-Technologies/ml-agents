@@ -19,6 +19,7 @@ namespace Unity.MLAgentsExamples
         public readonly int Columns;
         public readonly int NumCellTypes;
         readonly int[,] m_Cells;
+        readonly int[,] m_TempCells;
         readonly bool[,] m_Matched;
 
         System.Random m_Random;
@@ -29,6 +30,7 @@ namespace Unity.MLAgentsExamples
             Columns = cols;
             NumCellTypes = numCellTypes;
             m_Cells = new int[cols, rows];
+            m_TempCells = new int[cols, rows];
             m_Matched = new bool[cols, rows];
 
             m_Random = new System.Random(randomSeed);
@@ -44,10 +46,29 @@ namespace Unity.MLAgentsExamples
 
         public bool IsMoveValid(int row, int col, Direction dir)
         {
+            if (row == 0 && dir == Direction.Down)
+            {
+                return false;
+            }
+
+            if (row == Rows - 1 && dir == Direction.Up)
+            {
+                return false;
+            }
+
+            if (col == 0 && dir == Direction.Left)
+            {
+                return false;
+            }
+
+            if (col == Columns - 1 && dir == Direction.Right)
+            {
+                return false;
+            }
             return true;
         }
 
-        public bool MarkMatchedCells()
+        public bool MarkMatchedCells(int[,] cells = null)
         {
             ClearMarked();
             bool madeMatch = false;
@@ -123,8 +144,9 @@ namespace Unity.MLAgentsExamples
             return hasMatchedCell;
         }
 
-        public void DropCells()
+        public bool DropCells()
         {
+            var madeChanges = false;
             // Gravity is applied in the negative row direction
             for (var j = 0; j < Columns; j++)
             {
@@ -142,23 +164,30 @@ namespace Unity.MLAgentsExamples
                 // TODO combine with random drops?
                 for (; writeIndex < Rows; writeIndex++)
                 {
+                    madeChanges = true;
                     m_Cells[j, writeIndex] = k_EmptyCell;
                 }
             }
+
+            return madeChanges;
         }
 
-        public void FillFromAbove()
+        public bool FillFromAbove()
         {
+            bool madeChanges = false;
             for (var i = 0; i < Rows; i++)
             {
                 for (var j = 0; j < Columns; j++)
                 {
                     if (m_Cells[j, i] == k_EmptyCell)
                     {
+                        madeChanges = true;
                         m_Cells[j, i] = m_Random.Next(0, NumCellTypes);
                     }
                 }
             }
+
+            return madeChanges;
         }
 
         public int[,] Cells

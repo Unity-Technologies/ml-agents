@@ -44,10 +44,33 @@ namespace Unity.MLAgentsExamples
                     var pos = new Vector3(j, i, 0);
 
                     Gizmos.DrawCube(pos, .5f * Vector3.one);
+
+                    Gizmos.color = Color.yellow;
                     if (board.Matched[j, i])
                     {
-                        Gizmos.color = Color.yellow;
                         Gizmos.DrawWireCube(pos, .75f * Vector3.one);
+                    }
+
+                    // Draw possible moves
+                    var arrowSize = .375f;
+                    if (board.IsMoveValid(i, j, Direction.Up))
+                    {
+                        Gizmos.DrawRay(pos, arrowSize * Vector3.up);
+                    }
+
+                    if (board.IsMoveValid(i, j, Direction.Down))
+                    {
+                        Gizmos.DrawRay(pos, arrowSize * Vector3.down);
+                    }
+
+                    if (board.IsMoveValid(i, j, Direction.Left))
+                    {
+                        Gizmos.DrawRay(pos, arrowSize * Vector3.left);
+                    }
+
+                    if (board.IsMoveValid(i, j, Direction.Right))
+                    {
+                        Gizmos.DrawRay(pos, arrowSize * Vector3.right);
                     }
                 }
             }
