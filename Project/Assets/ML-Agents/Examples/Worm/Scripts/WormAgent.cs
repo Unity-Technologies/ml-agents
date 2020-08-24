@@ -15,9 +15,8 @@ public class WormAgent : Agent
 
     public WormAgentBehaviorType typeOfWorm;
 
-    [Range(0, 15)]
 //    private float m_TargetWalkingSpeed = 10;
-    const float m_maxWalkingSpeed = 10; //The max walking speed
+    const float m_maxWalkingSpeed = 5; //The max walking speed
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
@@ -179,7 +178,11 @@ public class WormAgent : Agent
 
 
 //        sensor.AddObservation(walkingSpeedGoal);
-        sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
+        sensor.AddObservation(m_OrientationCube.transform.rotation);
+        sensor.AddObservation(bodySegment0.rotation);
+        sensor.AddObservation(Quaternion.Angle(m_OrientationCube.transform.rotation,
+            m_JdController.bodyPartsDict[bodySegment0].rb.rotation)/180);
+//        sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
@@ -268,15 +271,26 @@ public class WormAgent : Agent
 //                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
 //        var velReward =
 //            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed, GetAvgVelocity());
+
+
+
+
+
         var velReward =
             GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,  m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
-        var lookDotForward = (Vector3.Dot(m_OrientationCube.transform.forward, bodySegment0.forward) + 1) * .5F;
-        var lookDotUp = (Vector3.Dot(m_OrientationCube.transform.up, bodySegment0.up) + 1) * .5F;
+//        var lookDotForward = (Vector3.Dot(m_OrientationCube.transform.forward, bodySegment0.forward) + 1) * .5F;
+//        var lookDotUp = (Vector3.Dot(m_OrientationCube.transform.up, bodySegment0.up) + 1) * .5F;
+//        var facingRew = (lookDotForward * lookDotUp);
+
+        //normalizes to (0, 1) 1 means perfectly facing
+        var facingRew = 1 - ((Quaternion.Angle(m_OrientationCube.transform.rotation,
+            m_JdController.bodyPartsDict[bodySegment0].rb.rotation))/180);
+//        var facingRew = (Quaternion.Dot(m_OrientationCube.transform.rotation,
+//            m_JdController.bodyPartsDict[bodySegment0].rb.rotation) + 1) * .5F;
+
 //        var facingRew = ((lookDotForward + lookDotUp) * .5f);
-        var facingRew = (lookDotForward * lookDotUp);
         rewardManager.rewardsDict["velReward"].rewardThisStep = velReward;
         rewardManager.rewardsDict["facingReward"].rewardThisStep = facingRew;
-
         rewardManager.UpdateReward("velFacingComboReward", velReward * facingRew);
 
 
