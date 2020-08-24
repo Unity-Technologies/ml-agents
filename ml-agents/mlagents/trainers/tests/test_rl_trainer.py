@@ -25,13 +25,13 @@ class FakeTrainer(RLTrainer):
 
     def add_policy(self, mock_behavior_id, mock_policy):
         def checkpoint_path(brain_name, step):
-            return os.path.join(self.saver.model_path, f"{brain_name}-{step}")
+            return os.path.join(self.model_saver.model_path, f"{brain_name}-{step}")
 
         self.policies[mock_behavior_id] = mock_policy
-        mock_saver = mock.Mock()
-        mock_saver.model_path = self.artifact_path
-        mock_saver.save_checkpoint.side_effect = checkpoint_path
-        self.saver = mock_saver
+        mock_model_saver = mock.Mock()
+        mock_model_saver.model_path = self.artifact_path
+        mock_model_saver.save_checkpoint.side_effect = checkpoint_path
+        self.model_saver = mock_model_saver
 
     def create_tf_policy(self, parsed_behavior_id, behavior_spec):
         return mock.Mock()
@@ -163,7 +163,8 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
         checkpoint_interval, num_trajectories * time_horizon, checkpoint_interval
     )
     calls = [mock.call(trainer.brain_name, step) for step in checkpoint_range]
-    trainer.saver.save_checkpoint.assert_has_calls(calls, any_order=True)
+
+    trainer.model_saver.save_checkpoint.assert_has_calls(calls, any_order=True)
     export_ext = "nn" if trainer.framework == FrameworkType.TENSORFLOW else "onnx"
 
     add_checkpoint_calls = [
@@ -171,7 +172,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
             trainer.brain_name,
             NNCheckpoint(
                 step,
-                f"{trainer.saver.model_path}/{trainer.brain_name}-{step}.{export_ext}",
+                f"{trainer.model_saver.model_path}/{trainer.brain_name}-{step}.{export_ext}",
                 None,
                 mock.ANY,
             ),

@@ -3,5 +3,5 @@ grpcio==1.11.0
 numpy==1.14.1
 Pillow==4.2.1
 protobuf==3.6
-tensorflow==1.7.0
+tensorflow==1.14.0
 h5py==2.9.0

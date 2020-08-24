@@ -2,5 +2,5 @@
 # For projects with upper bounds, we should periodically update this list to the latest release version
 grpcio>=1.23.0
 numpy>=1.17.2
-tensorflow==2.2.0rc3
+tensorflow==2.3.0
 h5py>=2.10.0
