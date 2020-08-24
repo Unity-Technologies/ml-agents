@@ -3,6 +3,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Unity.MLAgents.Extensions.Sensors;
+using Unity.MLAgents.Extensions.TestUtils.Sensors;
 using System.Linq;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Unity.MLAgents.Extensions.Tests.Sensors
+namespace Unity.MLAgents.Extensions.TestUtils.Sensors
 {
     public class GridSensorDummyData : MonoBehaviour
     {

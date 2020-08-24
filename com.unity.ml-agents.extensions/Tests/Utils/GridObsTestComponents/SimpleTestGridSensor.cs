@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.MLAgents.Extensions.Sensors;
 
-namespace Unity.MLAgents.Extensions.Tests.Sensors
+namespace Unity.MLAgents.Extensions.TestUtils.Sensors
 {
     public class SimpleTestGridSensor : GridSensor
     {
