@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: []
+        python-version: [3.6.x, 3.7.x, 3.8.x]
         include:
           - python-version: 3.6.x
             pip_constraints: test_constraints_min_version.txt
