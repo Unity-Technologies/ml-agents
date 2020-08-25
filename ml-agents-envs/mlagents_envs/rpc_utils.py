@@ -18,6 +18,9 @@ from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
 from PIL import Image
 
 
+PNG_HEADER = b"\x89PNG\r\n\x1a\n"
+
+
 def behavior_spec_from_proto(
     brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
 ) -> BehaviorSpec:
@@ -51,34 +54,39 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
     :param expected_channels: Expected output channels
     :return: processed numpy array of observation from environment
     """
-    png_header = b"\x89PNG\r\n\x1a\n"
-    images = []
-    s = None
+    image_bytearray = bytearray(image_bytes)
 
-    with hierarchical_timer("image_decompress"):
-        image_bytearray = bytearray(image_bytes)
-
-        if expected_channels == 1:
-            # Convert to grayscale
+    if expected_channels == 1:
+        # Convert to grayscale
+        with hierarchical_timer("image_decompress"):
             image = Image.open(io.BytesIO(image_bytearray))
+            # Normally Image loads lazily, load() forces it to do loading in the timer scope.
             image.load()
-            s = np.array(image, dtype=np.float32) / 255.0
-            s = np.mean(s, axis=2)
-            s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-            return s
+        s = np.array(image, dtype=np.float32) / 255.0
+        s = np.mean(s, axis=2)
+        s = np.reshape(s, [s.shape[0], s.shape[1], 1])
+        return s
 
-        image_byte_splits = image_bytearray.split(png_header)
-        for image_bytes in image_byte_splits:
-            if len(image_bytes) > 0:
-                # add back the header
-                image = Image.open(io.BytesIO(png_header + image_bytes))
-                # Normally Image loads lazily, this forces it to do loading in the timer scope.
-                image.load()
-                images.append(image)
+    image_arrays = []
 
-    arrs = list(map(lambda i: np.array(i, dtype=np.float32) / 255.0, images))
+    bytes_read = 0
+    # Read the images back from the bytes (without knowing the sizes).
+    while bytes_read < len(image_bytearray):
+        buffer = io.BytesIO(image_bytearray[bytes_read:])
+        with hierarchical_timer("image_decompress"):
+            image = Image.open(buffer)
+            image.load()
+        image_arrays.append(np.array(image, dtype=np.float32) / 255.0)
 
-    img = np.concatenate(arrs, axis=2)
+        # Look for the next header, starting from the current stream location
+        try:
+            offset = buffer.getvalue().index(PNG_HEADER, buffer.tell())
+            bytes_read += offset
+        except ValueError:
+            # Didn't find the header, so must be at the end.
+            break
+
+    img = np.concatenate(image_arrays, axis=2)
     # We can drop additional channels since they may need to be added to include
     # numbers of observation channels not divisible by 3.
     actual_channels = list(img.shape)[2]
