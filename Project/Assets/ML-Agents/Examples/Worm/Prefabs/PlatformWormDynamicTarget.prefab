@@ -8938,7 +8938,7 @@ PrefabInstance:
         type: 3}
       propertyPath: wormDyBrain
       value: 
-      objectReference: {fileID: 11400000, guid: f29a7d2c842dd4eb786fa084f19f990d,
+      objectReference: {fileID: 11400000, guid: 2a9305c636f404ff6945b6c3c7885f01,
         type: 3}
     - target: {fileID: 7430253518223459950, guid: ff2999c8614d848f8a7e55e3a6fb9282,
         type: 3}
