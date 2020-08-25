@@ -178,11 +178,11 @@ public class WormAgent : Agent
 
 
 //        sensor.AddObservation(walkingSpeedGoal);
-        sensor.AddObservation(m_OrientationCube.transform.rotation);
-        sensor.AddObservation(bodySegment0.rotation);
+//        sensor.AddObservation(m_OrientationCube.transform.rotation);
+//        sensor.AddObservation(bodySegment0.rotation);
         sensor.AddObservation(Quaternion.Angle(m_OrientationCube.transform.rotation,
             m_JdController.bodyPartsDict[bodySegment0].rb.rotation)/180);
-//        sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
+        sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));

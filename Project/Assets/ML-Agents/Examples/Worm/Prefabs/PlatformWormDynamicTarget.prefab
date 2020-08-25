@@ -8934,12 +8934,6 @@ PrefabInstance:
       propertyPath: targetToLookAt
       value: 
       objectReference: {fileID: 3839136119618797732}
-    - target: {fileID: 7430253518223459940, guid: ff2999c8614d848f8a7e55e3a6fb9282,
-        type: 3}
-      propertyPath: wormDyBrain
-      value: 
-      objectReference: {fileID: 11400000, guid: 2a9305c636f404ff6945b6c3c7885f01,
-        type: 3}
     - target: {fileID: 7430253518223459950, guid: ff2999c8614d848f8a7e55e3a6fb9282,
         type: 3}
       propertyPath: m_Name

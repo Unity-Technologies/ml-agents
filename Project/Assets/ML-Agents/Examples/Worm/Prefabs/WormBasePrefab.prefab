@@ -943,7 +943,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 68
+    VectorObservationSize: 64
     NumStackedVectorObservations: 1
     VectorActionSize: 09000000
     VectorActionDescriptions: []
@@ -973,8 +973,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   typeOfWorm: 0
-  wormDyBrain: {fileID: 11400000, guid: e81305346bd9b408c8871523f9088c2a, type: 3}
-  wormStBrain: {fileID: 0}
+  wormDyBrain: {fileID: 11400000, guid: 2a9305c636f404ff6945b6c3c7885f01, type: 3}
+  wormStBrain: {fileID: 11400000, guid: 03218729c7d9842ab8b0a5b16a31e81e, type: 3}
   dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
     type: 3}
   staticTargetPrefab: {fileID: 3839136118347789758, guid: 2173d15c0b5fc49e5870c9d1c7f7ee8e,

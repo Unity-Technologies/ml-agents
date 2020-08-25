@@ -961,12 +961,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4363568567438618963, guid: 75720cc09f5b24833af829458ac467fa,
-        type: 3}
-      propertyPath: wormDyBrain
-      value: 
-      objectReference: {fileID: 11400000, guid: 3d3f60afd7c7e41099e44aead1936518,
-        type: 3}
     - target: {fileID: 7516351800607109742, guid: 75720cc09f5b24833af829458ac467fa,
         type: 3}
       propertyPath: m_Name
@@ -1306,6 +1300,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 146995241}
+  smoothingTime: 0.5
 --- !u!1001 &1481808307
 PrefabInstance:
   m_ObjectHideFlags: 0
