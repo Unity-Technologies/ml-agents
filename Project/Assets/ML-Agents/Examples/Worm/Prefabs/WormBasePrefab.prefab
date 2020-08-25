@@ -905,7 +905,6 @@ GameObject:
   - component: {fileID: 7430253518223459947}
   - component: {fileID: 7430253518223459946}
   - component: {fileID: 7430253518223459945}
-  - component: {fileID: 7430253518223459944}
   m_Layer: 0
   m_Name: WormBasePrefab
   m_TagString: Untagged
@@ -973,8 +972,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 5000
   typeOfWorm: 0
-  wormDyBrain: {fileID: 11400000, guid: 2a9305c636f404ff6945b6c3c7885f01, type: 3}
-  wormStBrain: {fileID: 11400000, guid: 03218729c7d9842ab8b0a5b16a31e81e, type: 3}
+  wormDyBrain: {fileID: 11400000, guid: 117512193457f4b35994eedc14532276, type: 3}
+  wormStBrain: {fileID: 11400000, guid: fc1e2a84251634459bfd8edc900e2e71, type: 3}
   dynamicTargetPrefab: {fileID: 3839136118347789758, guid: 46734abd0de454192b407379c6a4ab8d,
     type: 3}
   staticTargetPrefab: {fileID: 3839136118347789758, guid: 2173d15c0b5fc49e5870c9d1c7f7ee8e,
@@ -983,10 +982,6 @@ MonoBehaviour:
   bodySegment1: {fileID: 7430253518698367209}
   bodySegment2: {fileID: 7430253518623948737}
   bodySegment3: {fileID: 7430253517665647541}
-  rewardMovingTowardsTarget: 0
-  rewardFacingTarget: 0
-  rewardUseTimePenalty: 0
-  rewardManager: {fileID: 7430253518223459944}
 --- !u!114 &7430253518223459947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1030,41 +1025,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugCommandLineOverride: 
---- !u!114 &7430253518223459944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7430253518223459950}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d2b3caecf069467ebf3a650d8ee401e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rewardsList:
-  - rewardKey: velReward
-    rawVal: 0
-    rewardScalar: 1
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  - rewardKey: facingReward
-    rawVal: 0
-    rewardScalar: 1
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  - rewardKey: velFacingComboReward
-    rawVal: 0
-    rewardScalar: 1
-    rewardThisStep: 0
-    cumulativeThisEpisode: 0
-    cumulativeThisSession: 0
-    lastNaNStep: 0
-  maxSteps: 0
 --- !u!1 &7430253518344216409
 GameObject:
   m_ObjectHideFlags: 0

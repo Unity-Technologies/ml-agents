@@ -10,30 +10,24 @@ public class WormAgent : Agent
 {
     public enum WormAgentBehaviorType
     {
-        WormDynamic, WormStatic
+        WormDynamic,
+        WormStatic
     }
 
     public WormAgentBehaviorType typeOfWorm;
 
-//    private float m_TargetWalkingSpeed = 10;
     const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
-    [Header("NN Models")]
-    public NNModel wormDyBrain;
+    [Header("NN Models")] public NNModel wormDyBrain;
     public NNModel wormStBrain;
 
-//    public float walkingSpeedGoal = 15; //The walking speed to try and achieve
-//    float m_maxWalkingSpeed = 15; //The max walking speed
-//    public bool randomizeWalkSpeedEachEpisode; //should the walking speed randomize each episode?
-
-    [Header("Target Prefabs")]
-    public Transform dynamicTargetPrefab;
+    [Header("Target Prefabs")] public Transform dynamicTargetPrefab;
     public Transform staticTargetPrefab;
     private Transform m_Target; //Target the agent will walk towards.
 
-    [Header("Body Parts")] [Space(10)] public Transform bodySegment0;
+    [Header("Body Parts")] public Transform bodySegment0;
     public Transform bodySegment1;
     public Transform bodySegment2;
     public Transform bodySegment3;
@@ -49,17 +43,7 @@ public class WormAgent : Agent
     Vector3 m_DirToTarget;
     float m_MovingTowardsDot;
     float m_FacingDot;
-    Vector3 m_startingPos;
-
-    [Header("Reward Functions To Use")] [Space(10)]
-    public bool rewardMovingTowardsTarget; // Agent should move towards target
-
-    public bool rewardFacingTarget; // Agent should face the target
-    public bool rewardUseTimePenalty; // Hurry up
-
-//    Quaternion m_LookRotation; //LookRotation from m_TargetDirMatrix to Target
-//    Matrix4x4 m_TargetDirMatrix; //Matrix used by agent as orientation reference
-
+    Vector3 m_StartingPos;
 
     public override void Initialize()
     {
@@ -85,7 +69,7 @@ public class WormAgent : Agent
             }
         }
 
-        m_startingPos = bodySegment0.position;
+        m_StartingPos = bodySegment0.position;
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
         m_JdController = GetComponent<JointDriveController>();
@@ -97,7 +81,6 @@ public class WormAgent : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
-
     }
 
     /// <summary>
@@ -114,11 +97,6 @@ public class WormAgent : Agent
         bodySegment0.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
 
         UpdateOrientationObjects();
-
-        rewardManager.ResetEpisodeRewards();
-
-//        walkingSpeedGoal =
-//            randomizeWalkSpeedEachEpisode ? Random.Range(0.0f, m_maxWalkingSpeed) : walkingSpeedGoal; //Random Walk Speed
     }
 
     /// <summary>
@@ -142,7 +120,8 @@ public class WormAgent : Agent
                 m_OrientationCube.transform.InverseTransformDirection(bp.rb.position - bodySegment0.position));
             sensor.AddObservation(bp.rb.transform.localRotation);
         }
-        if(bp.joint)
+
+        if (bp.joint)
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
     }
 
@@ -158,30 +137,10 @@ public class WormAgent : Agent
             sensor.AddObservation(1);
 
         var cubeForward = m_OrientationCube.transform.forward;
-
-//        sensor.AddObservation(bodySegment0.rotation);
-//        sensor.AddObservation(orientationCube.transform.rotation);
-        //velocity we want to match
         var velGoal = cubeForward * m_maxWalkingSpeed;
-        //ragdoll's avg vel
-//        var avgVel = GetAvgVelocity();
-
-        //current ragdoll velocity. normalized
-//        sensor.AddObservation(Vector3.Distance(velGoal, m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
-        //avg body vel relative to cube
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
-//        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(m_JdController.bodyPartsDict[bodySegment0].rb.velocity));
-        //vel goal relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
-
-
-
-
-//        sensor.AddObservation(walkingSpeedGoal);
-//        sensor.AddObservation(m_OrientationCube.transform.rotation);
-//        sensor.AddObservation(bodySegment0.rotation);
         sensor.AddObservation(Quaternion.Angle(m_OrientationCube.transform.rotation,
-            m_JdController.bodyPartsDict[bodySegment0].rb.rotation)/180);
+                                  m_JdController.bodyPartsDict[bodySegment0].rb.rotation) / 180);
         sensor.AddObservation(Quaternion.FromToRotation(bodySegment0.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
@@ -199,7 +158,6 @@ public class WormAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-//        EndEpisode();
     }
 
     //Returns the average velocity of all of the body parts
@@ -240,7 +198,7 @@ public class WormAgent : Agent
         bpDict[bodySegment2].SetJointStrength(continuousActions[++i]);
 
         //Reset if Worm fell through floor;
-        if (bodySegment0.position.y < m_startingPos.y - 2)
+        if (bodySegment0.position.y < m_StartingPos.y - 2)
         {
             EndEpisode();
         }
@@ -248,39 +206,11 @@ public class WormAgent : Agent
 
     void FixedUpdate()
     {
-//        m_OrientationCube.UpdateOrientation(bodySegment0, target.transform);
         UpdateOrientationObjects();
-//        // Set reward for this step according to mixture of the following elements.
-//        if (rewardMovingTowardsTarget)
-//        {
-//            RewardFunctionMovingTowards();
-//        }
-//
-//        if (rewardFacingTarget)
-//        {
-//            RewardFunctionFacingTarget();
-//        }
-//
-//        if (rewardUseTimePenalty)
-//        {
-//            RewardFunctionTimePenalty();
-//        }
-
-//        var velReward =
-//            Mathf.Exp(-0.1f * (m_OrientationCube.transform.forward * m_maxWalkingSpeed -
-//                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
-//        var velReward =
-//            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed, GetAvgVelocity());
-
-
-
-
 
         var velReward =
-            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,  m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
-//        var lookDotForward = (Vector3.Dot(m_OrientationCube.transform.forward, bodySegment0.forward) + 1) * .5F;
-//        var lookDotUp = (Vector3.Dot(m_OrientationCube.transform.up, bodySegment0.up) + 1) * .5F;
-//        var facingRew = (lookDotForward * lookDotUp);
+            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,
+                m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 
         //normalizes to (0, 1) 1 means perfectly facing
         var rotAngle = Quaternion.Angle(m_OrientationCube.transform.rotation,
@@ -288,22 +218,10 @@ public class WormAgent : Agent
         var facingRew = 0f;
         if (rotAngle < 30)
         {
-            facingRew = 1 - (rotAngle/180);
+            facingRew = 1 - (rotAngle / 180);
         }
 
-//        var facingRew = (Quaternion.Dot(m_OrientationCube.transform.rotation,
-//            m_JdController.bodyPartsDict[bodySegment0].rb.rotation) + 1) * .5F;
-
-//        var facingRew = ((lookDotForward + lookDotUp) * .5f);
-        rewardManager.rewardsDict["velReward"].rewardThisStep = velReward;
-        rewardManager.rewardsDict["facingReward"].rewardThisStep = facingRew;
-        rewardManager.UpdateReward("velFacingComboReward", velReward * facingRew);
-
-
-//        facingReward = 0.5f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward) +
-//                       0.5f * Vector3.Dot(orientationCube.transform.up, bodySegment0.up);
-//        rewardManager.UpdateReward("velFacingComboReward", velReward * facingReward);
-
+        AddReward(velReward * facingRew);
     }
 
     //normalized value of the difference in avg speed vs goal walking speed.
@@ -320,77 +238,10 @@ public class WormAgent : Agent
     //Update OrientationCube and DirectionIndicator
     void UpdateOrientationObjects()
     {
-//        m_WorldDirToWalk = target.position - hips.position;
         m_OrientationCube.UpdateOrientation(bodySegment0, m_Target);
         if (m_DirectionIndicator)
         {
             m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
         }
     }
-
-    public RewardManager rewardManager;
-//    public float velReward;
-
-    /// <summary>
-    /// Reward moving towards target & Penalize moving away from target.
-    /// </summary>
-//    void RewardFunctionMovingTowards()
-//    {
-////        velReward = Vector3.Dot(orientationCube.transform.forward,
-////            Vector3.ClampMagnitude(m_JdController.bodyPartsDict[bodySegment0].rb.velocity, maximumWalkingSpeed));
-//        velReward =
-//            Mathf.Exp(-0.1f * (orientationCube.transform.forward * walkingSpeedGoal -
-//                               m_JdController.bodyPartsDict[bodySegment0].rb.velocity).sqrMagnitude);
-////        velReward = Vector3.Dot(orientationCube.transform.forward,
-////            m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
-////        rewardManager.UpdateReward("velReward", velReward);
-////        rewardManager.UpdateReward("velReward", (velReward/maximumWalkingSpeed)/MaxStep);
-////        rewardManager.UpdateReward("velReward", (velReward / maximumWalkingSpeed));
-//        rewardManager.UpdateReward("velReward", velReward);
-//
-//
-////        m_MovingTowardsDot = Vector3.Dot(orientationCube.transform.forward, m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
-////        AddReward(0.01f * m_MovingTowardsDot);
-//    }
-//
-////    public float facingReward;
-//
-//    /// <summary>
-//    /// Reward facing target & Penalize facing away from target
-//    /// </summary>
-//    void RewardFunctionFacingTarget()
-//    {
-////        facingReward =  Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
-////        facingReward = Quaternion.Dot(bodySegment0.rotation, orientationCube.transform.rotation);
-////        print(Vector3.Dot(bodySegment0.forward, orientationCube.transform.forward));
-////        rewardManager.UpdateReward("facingReward", facingReward);
-//
-////        float bodyRotRelativeToMatrixDot = Quaternion.Dot(orientationCube.transform.rotation, bodySegment0.rotation);
-////        AddReward(0.01f * bodyRotRelativeToMatrixDot);
-//        // b. Rotation alignment with target direction.
-//
-//        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-//        var lookDirForward = (Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward) + 1) * .5F;
-//        var lookDirUp = (Vector3.Dot(orientationCube.transform.up, bodySegment0.up) + 1) * .5F;
-//
-//        facingReward = lookDirForward + lookDirUp;
-//        rewardManager.UpdateReward("facingReward", facingReward);
-//
-////        //normalizes between (-1, 1)
-////        facingReward = 0.5f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward) +
-////            0.5f * Vector3.Dot(orientationCube.transform.up, bodySegment0.up);
-//////        facingReward =  Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward);
-//////        rewardManager.UpdateReward("facingReward", facingReward);
-////        rewardManager.UpdateReward("facingReward", facingReward);
-////        rewardManager.UpdateReward("facingReward", facingReward/MaxStep);
-////        AddReward(0.01f * Vector3.Dot(orientationCube.transform.forward, bodySegment0.forward));
-//    }
-//
-//    /// <summary>
-//    /// Existential penalty for time-contrained tasks.
-//    /// </summary>
-//    void RewardFunctionTimePenalty()
-//    {
-//        AddReward(-0.001f);
-//    }
 }

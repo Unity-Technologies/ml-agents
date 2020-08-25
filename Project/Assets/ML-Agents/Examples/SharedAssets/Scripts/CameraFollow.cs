@@ -7,9 +7,6 @@ namespace Unity.MLAgentsExamples
         public Transform target;
         Vector3 m_Offset;
 
-        private Vector3 m_CamVelocity;
-
-        public float smoothingTime = .5f;
         // Use this for initialization
         void Start()
         {
@@ -19,10 +16,10 @@ namespace Unity.MLAgentsExamples
         // Update is called once per frame
         void Update()
         {
+            // gameObject.transform.position = target.position + offset;
             var newPosition = new Vector3(target.position.x + m_Offset.x, transform.position.y,
                 target.position.z + m_Offset.z);
-
-            gameObject.transform.position = Vector3.SmoothDamp(transform.position, newPosition, ref m_CamVelocity, smoothingTime);
+            gameObject.transform.position = newPosition;
         }
     }
 }
