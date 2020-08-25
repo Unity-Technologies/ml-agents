@@ -177,7 +177,7 @@ class PPOOptimizer(TFOptimizer):
             name="old_probabilities",
         )
 
-        # Break old log probs into separate branches
+        # Break old log log_probs into separate branches
         old_log_prob_branches = ModelUtils.break_into_branches(
             self.all_old_log_probs, self.policy.act_size
         )
