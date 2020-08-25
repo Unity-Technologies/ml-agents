@@ -210,17 +210,24 @@ public class WormAgent : Agent
 
         var velReward =
             GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,
-                m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
+                GetAvgVelocity());
+//                m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 
-        //normalizes to (0, 1) 1 means perfectly facing
+        //Angle delta of rotation between cube and body.
         var rotAngle = Quaternion.Angle(m_OrientationCube.transform.rotation,
             m_JdController.bodyPartsDict[bodySegment0].rb.rotation);
+
+        //The reward for facing the target
         var facingRew = 0f;
+        //If we are within 30 degrees of facing the target
         if (rotAngle < 30)
         {
+            //Set normalized facingReward
+            //Facing the target perfectly yields a reward of 1
             facingRew = 1 - (rotAngle / 180);
         }
 
+        //Add the product of these two rewards
         AddReward(velReward * facingRew);
     }
 
