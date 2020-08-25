@@ -248,6 +248,46 @@ class ActionType(Enum):
     DISCRETE = 0
     CONTINUOUS = 1
 
+class HybridBehaviorSpec(NamedTuple):
+    observation_shapes: List[Tuple]
+    continuous_action_shape: int 
+    discrete_action_shape: Tuple[int]
+
+    def discrete_action_size(self) -> int:
+        return len(self.discrete_action_shape)
+
+    def continuous_action_size(self) -> int:
+        return self.continuous_action_shape
+
+    @property
+    def action_size(self) -> int:
+        return self.discrete_action_size() + self.continuous_action_size()
+
+    @property
+    def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
+        return self.discrete_action_shape  # type: ignore
+
+    def create_empty_action(self, n_agents: int) -> np.ndarray:
+        return np.zeros((n_agents, self.discrete_action_size + self.continuous_action_size), dtype=np.float32)
+
+    def create_random_action(self, n_agents: int) -> np.ndarray:
+        continuous_action = np.random.uniform(
+            low=-1.0, high=1.0, size=(n_agents, self.continuous_action_size)
+        ).astype(np.float32)
+
+        branch_size = self.discrete_action_branches
+        discrete_action = np.column_stack(
+            [
+                np.random.randint(
+                    0,
+                    branch_size[i],  # type: ignore
+                    size=(n_agents),
+                    dtype=np.int32,
+                )
+                for i in range(self.action_size)
+            ]
+        )
+        return np.concatenate(discrete_action, continuous_action)
 
 class BehaviorSpec(NamedTuple):
     """
