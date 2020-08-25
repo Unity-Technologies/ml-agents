@@ -16,7 +16,7 @@ public class WormAgent : Agent
     public WormAgentBehaviorType typeOfWorm;
 
 //    private float m_TargetWalkingSpeed = 10;
-    const float m_maxWalkingSpeed = 5; //The max walking speed
+    const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
@@ -283,8 +283,14 @@ public class WormAgent : Agent
 //        var facingRew = (lookDotForward * lookDotUp);
 
         //normalizes to (0, 1) 1 means perfectly facing
-        var facingRew = 1 - ((Quaternion.Angle(m_OrientationCube.transform.rotation,
-            m_JdController.bodyPartsDict[bodySegment0].rb.rotation))/180);
+        var rotAngle = Quaternion.Angle(m_OrientationCube.transform.rotation,
+            m_JdController.bodyPartsDict[bodySegment0].rb.rotation);
+        var facingRew = 0f;
+        if (rotAngle < 30)
+        {
+            facingRew = 1 - (rotAngle/180);
+        }
+
 //        var facingRew = (Quaternion.Dot(m_OrientationCube.transform.rotation,
 //            m_JdController.bodyPartsDict[bodySegment0].rb.rotation) + 1) * .5F;
 
@@ -325,9 +331,9 @@ public class WormAgent : Agent
     public RewardManager rewardManager;
 //    public float velReward;
 
-//    /// <summary>
-//    /// Reward moving towards target & Penalize moving away from target.
-//    /// </summary>
+    /// <summary>
+    /// Reward moving towards target & Penalize moving away from target.
+    /// </summary>
 //    void RewardFunctionMovingTowards()
 //    {
 ////        velReward = Vector3.Dot(orientationCube.transform.forward,
