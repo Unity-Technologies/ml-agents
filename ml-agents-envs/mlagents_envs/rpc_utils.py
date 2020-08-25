@@ -43,12 +43,12 @@ def behavior_spec_from_proto(
 
 
 @timed
-def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
+def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
     """
     Converts byte array observation image into numpy array, re-sizes it,
     and optionally converts it to grey scale
-    :param gray_scale: Whether to convert the image to grayscale.
     :param image_bytes: input byte array corresponding to image
+    :param expected_channels: Expected output channels
     :return: processed numpy array of observation from environment
     """
     png_header = b"\x89PNG\r\n\x1a\n"
@@ -58,7 +58,8 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
     with hierarchical_timer("image_decompress"):
         image_bytearray = bytearray(image_bytes)
 
-        if gray_scale:
+        if expected_channels == 1:
+            # Convert to grayscale
             image = Image.open(io.BytesIO(image_bytearray))
             image.load()
             s = np.array(image, dtype=np.float32) / 255.0
@@ -77,7 +78,14 @@ def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
 
     arrs = list(map(lambda i: np.array(i, dtype=np.float32) / 255.0, images))
 
-    return np.concatenate(arrs, axis=2)
+    img = np.concatenate(arrs, axis=2)
+    # We can drop additional channels since they may need to be added to include
+    # numbers of observation channels not divisible by 3.
+    actual_channels = list(img.shape)[2]
+    if actual_channels > expected_channels:
+        img = img[..., 0:expected_channels]
+
+    return img
 
 
 @timed
@@ -95,19 +103,13 @@ def observation_to_np_array(
             raise UnityObservationException(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
             )
-    gray_scale = obs.shape[2] == 1
+    expected_channels = obs.shape[2]
     if obs.compression_type == COMPRESSION_TYPE_NONE:
         img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)
         return img
     else:
-        img = process_pixels(obs.compressed_data, gray_scale)
-        # We can drop additional channels since they may need to be added to include
-        # numbers of observation channels not divisible by 3.
-        expected_channels = list(obs.shape)[2]
-        actual_channels = list(img.shape)[2]
-        if actual_channels > expected_channels:
-            img = img[..., 0:expected_channels]
+        img = process_pixels(obs.compressed_data, expected_channels)
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(
