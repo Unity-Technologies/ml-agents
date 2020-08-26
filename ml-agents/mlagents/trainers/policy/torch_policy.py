@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 import copy
 
 from mlagents.trainers.action_info import ActionInfo
@@ -85,7 +85,7 @@ class TorchPolicy(Policy):
         # m_size needed for training is determined by network, not trainer settings
         self.m_size = self.actor_critic.memory_size
 
-        self.actor_critic.to("cpu")
+        self.actor_critic.to(default_device())
 
     @property
     def export_memory_size(self) -> int:

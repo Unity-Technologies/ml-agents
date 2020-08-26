@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict, List, Mapping, cast, Tuple, Optional
-from mlagents.torch_utils import torch, nn
+from mlagents.torch_utils import torch, nn, default_device
 import attr
 
 from mlagents_envs.logging_util import get_logger
@@ -171,6 +171,12 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer = torch.optim.Adam(
             [self._log_ent_coef], lr=hyperparameters.learning_rate
         )
+        self._move_to_device(default_device())
+
+    def _move_to_device(self, device: torch.device) -> None:
+        self._log_ent_coef.to(device)
+        self.target_network.to(device)
+        self.value_network.to(device)
 
     def sac_q_loss(
         self,
