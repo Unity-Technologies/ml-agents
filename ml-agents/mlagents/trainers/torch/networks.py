@@ -98,11 +98,11 @@ class NetworkBody(nn.Module):
 
         # Constants don't work in Barracuda
         if actions is not None:
-            input = torch.cat(encodes + [actions], dim=-1)
+            inputs = torch.cat(encodes + [actions], dim=-1)
         else:
-            input = torch.cat(encodes, dim=-1)
-            
-        # HIDDEN LAYERS
+            inputs = torch.cat(encodes, dim=-1)
+        encoding = self.linear_encoder(inputs)
+
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])

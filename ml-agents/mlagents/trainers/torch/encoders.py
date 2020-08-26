@@ -1,6 +1,6 @@
 from typing import Tuple, Optional, Union
 
-from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
+from mlagents.trainers.torch.layers import Swish
 
 
 import torch
@@ -92,8 +92,6 @@ class VectorInput(nn.Module):
     def __init__(self, input_size: int, normalize: bool = False):
         self.normalizer: Optional[Normalizer] = None
         super().__init__()
-        self.normalizer: Optional[Normalizer] = None
-        super().__init__()
         if normalize:
             self.normalizer = Normalizer(input_size)
 
@@ -109,7 +107,6 @@ class VectorInput(nn.Module):
     def update_normalization(self, inputs: torch.Tensor) -> None:
         if self.normalizer is not None:
             self.normalizer.update(inputs)
-
 
 
 class SimpleVisualEncoder(nn.Module):
