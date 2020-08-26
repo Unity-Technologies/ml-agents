@@ -1,6 +1,5 @@
 from typing import Tuple, Optional, Union
 
-from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
 
 import torch
@@ -88,99 +87,26 @@ def pool_out_shape(h_w: Tuple[int, int], kernel_size: int) -> Tuple[int, int]:
     return height, width
 
 
-class VectorEncoder(nn.Module):
-    def __init__(
-        self,
-        input_size: int,
-        hidden_size: int,
-        num_layers: int,
-        normalize: bool = False,
-    ):
+class VectorInput(nn.Module):
+    def __init__(self, input_size: int, normalize: bool = False):
         self.normalizer: Optional[Normalizer] = None
         super().__init__()
-        self.layers = [
-            linear_layer(
-                input_size,
-                hidden_size,
-                kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
-            )
-        ]
-        self.layers.append(Swish())
+
         if normalize:
             self.normalizer = Normalizer(input_size)
-
-        for _ in range(num_layers - 1):
-            self.layers.append(
-                linear_layer(
-                    hidden_size,
-                    hidden_size,
-                    kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1.0,
-                )
-            )
-            self.layers.append(Swish())
-        self.seq_layers = nn.Sequential(*self.layers)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         if self.normalizer is not None:
             inputs = self.normalizer(inputs)
         return self.seq_layers(inputs)
 
-    def copy_normalization(self, other_encoder: "VectorEncoder") -> None:
-        if self.normalizer is not None and other_encoder.normalizer is not None:
-            self.normalizer.copy_from(other_encoder.normalizer)
+    def copy_normalization(self, other_input: "VectorInput") -> None:
+        if self.normalizer is not None and other_input.normalizer is not None:
+            self.normalizer.copy_from(other_input.normalizer)
 
     def update_normalization(self, inputs: torch.Tensor) -> None:
         if self.normalizer is not None:
             self.normalizer.update(inputs)
-
-
-class VectorAndUnnormalizedInputEncoder(VectorEncoder):
-    """
-    Encoder for concatenated vector input (can be normalized) and unnormalized vector input.
-    This is used for passing inputs to the network that should not be normalized, such as
-    actions in the case of a Q function or task parameterizations. It will result in an encoder with
-    this structure:
-    ____________       ____________       ____________
-    | Vector     |     | Normalize  |     | Fully      |
-    |            | --> |            | --> | Connected  |      ___________
-    |____________|     |____________|     |            |     | Output    |
-    ____________                          |            | --> |           |
-    |Unnormalized|                        |            |     |___________|
-    |   Input    | ---------------------> |            |
-    |____________|                        |____________|
-    """
-
-    def __init__(
-        self,
-        input_size: int,
-        hidden_size: int,
-        unnormalized_input_size: int,
-        num_layers: int,
-        normalize: bool = False,
-    ):
-        super().__init__(
-            input_size + unnormalized_input_size,
-            hidden_size,
-            num_layers,
-            normalize=False,
-        )
-        if normalize:
-            self.normalizer = Normalizer(input_size)
-        else:
-            self.normalizer = None
-
-    def forward(  # pylint: disable=W0221
-        self, inputs: torch.Tensor, unnormalized_inputs: Optional[torch.Tensor] = None
-    ) -> None:
-        if unnormalized_inputs is None:
-            raise UnityTrainerException(
-                "Attempted to call an VectorAndUnnormalizedInputEncoder without an unnormalized input."
-            )  # Fix mypy errors about method parameters.
-        if self.normalizer is not None:
-            inputs = self.normalizer(inputs)
-        return self.seq_layers(torch.cat([inputs, unnormalized_inputs], dim=-1))
 
 
 class SimpleVisualEncoder(nn.Module):
