@@ -46,9 +46,9 @@ class NetworkBody(nn.Module):
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
-        input_size = sum(
-            _input.size for _input in self.visual_inputs + self.vector_inputs
-        )
+        vector_input_size = sum(_input.output_size for _input in self.vector_inputs)
+        visual_encoded_size = sum(_input.output_size for _input in self.visual_inputs)
+        input_size = vector_input_size + visual_encoded_size + encoded_act_size
         self.linear_encoder = LinearEncoder(
             input_size, network_settings.num_layers, self.h_size
         )

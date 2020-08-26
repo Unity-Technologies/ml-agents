@@ -90,10 +90,15 @@ def pool_out_shape(h_w: Tuple[int, int], kernel_size: int) -> Tuple[int, int]:
 
 class VectorInput(nn.Module):
     def __init__(self, input_size: int, normalize: bool = False):
-        self.normalizer: Optional[Normalizer] = None
         super().__init__()
+        self.normalizer: Optional[Normalizer] = None
+        self._output_size = input_size
         if normalize:
             self.normalizer = Normalizer(input_size)
+
+    @property
+    def output_size(self) -> int:
+        return self._output_size
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         if self.normalizer is not None:
@@ -126,6 +131,7 @@ class SimpleVisualEncoder(nn.Module):
             nn.LeakyReLU(),
         )
 
+    @property
     def output_size(self) -> int:
         return self.final_flat
 
@@ -155,6 +161,7 @@ class NatureVisualEncoder(nn.Module):
             nn.LeakyReLU(),
         )
 
+    @property
     def output_size(self) -> int:
         return self.final_flat
 
@@ -201,6 +208,7 @@ class ResNetVisualEncoder(nn.Module):
         self._output_size = n_channels[-1] * height * width
         self.sequential = nn.Sequential(*layers)
 
+    @property
     def output_size(self) -> int:
         return self._output_size
 

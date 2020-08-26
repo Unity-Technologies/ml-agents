@@ -113,6 +113,7 @@ class LinearEncoder(torch.nn.Module):
     """
 
     def __init__(self, input_size: int, num_layers: int, hidden_size: int):
+        super().__init__()
         self.layers = [
             linear_layer(
                 input_size,
