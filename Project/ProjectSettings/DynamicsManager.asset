@@ -29,5 +29,5 @@ PhysicsManager:
     m_Extent: {x: 250, y: 250, z: 250}
   m_WorldSubdivisions: 8
   m_FrictionType: 0
-  m_EnableEnhancedDeterminism: 0
+  m_EnableEnhancedDeterminism: 1
   m_EnableUnifiedHeightmaps: 1
