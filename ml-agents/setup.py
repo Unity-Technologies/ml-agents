@@ -63,7 +63,7 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
-        "tensorflow>=1.7,<3.0",
+        "tensorflow>=1.14,<3.0",
         "cattrs>=1.0.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
@@ -79,4 +79,5 @@ setup(
         ]
     },
     cmdclass={"verify": VerifyVersionCommand},
+    extras_require={"torch": ["torch>=1.5.0"]},
 )

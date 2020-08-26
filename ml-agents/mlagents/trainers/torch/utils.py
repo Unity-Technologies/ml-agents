@@ -205,6 +205,14 @@ class ModelUtils:
         return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
 
     @staticmethod
+    def to_numpy(tensor: torch.Tensor) -> np.ndarray:
+        """
+        Converts a Torch Tensor to a numpy array. If the Tensor is on the GPU, it will
+        be brought to the CPU.
+        """
+        return tensor.detach().cpu().numpy()
+
+    @staticmethod
     def break_into_branches(
         concatenated_logits: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:

@@ -70,7 +70,7 @@ def test_reward_decreases(
     buffer_policy = create_agent_buffer(behavior_spec, 1000)
     demo_to_buffer.return_value = None, buffer_expert
     gail_settings = GAILSettings(
-        demo_path="", learning_rate=0.05, use_vail=False, use_actions=use_actions
+        demo_path="", learning_rate=0.005, use_vail=False, use_actions=use_actions
     )
     gail_rp = create_reward_provider(
         RewardSignalType.GAIL, behavior_spec, gail_settings

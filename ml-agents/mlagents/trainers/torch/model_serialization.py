@@ -54,7 +54,6 @@ class ModelSerializer:
         Exports a Torch model for a Policy to .onnx format for Unity embedding.
 
         :param output_filepath: file path to output the model (without file suffix)
-        :param brain_name: Brain name of brain to be trained
         """
         if not os.path.exists(output_filepath):
             os.makedirs(output_filepath)

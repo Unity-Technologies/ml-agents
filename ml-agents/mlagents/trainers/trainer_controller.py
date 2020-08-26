@@ -83,22 +83,6 @@ class TrainerController:
             self.trainers[brain_name].save_model()
         self.logger.info("Saved Model")
 
-    def _save_model_when_interrupted(self):
-        self.logger.info(
-            "Learning was interrupted. Please wait while the graph is generated."
-        )
-        self._save_models()
-
-    def _export_graph(self):
-        """
-        Saves models for all trainers.
-        """
-        if self.rank is not None and self.rank != 0:
-            return
-
-        for brain_name in self.trainers.keys():
-            self.trainers[brain_name].save_model()
-
     @staticmethod
     def _create_output_path(output_path):
         try:

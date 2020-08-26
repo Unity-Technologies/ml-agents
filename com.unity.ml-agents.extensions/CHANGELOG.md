@@ -6,3 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
  * Initial version
+
+ ### Minor Changes
+#### com.unity.ml-agents.extensions (C#)
+- Added the GridSensor and GridSensor tests
+#### ml-agents-envs  (Python)
+- Modified the rpc_utils.py to support multiple PNGs
