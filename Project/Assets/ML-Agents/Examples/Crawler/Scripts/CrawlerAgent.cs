@@ -21,7 +21,7 @@ public class CrawlerAgent : Agent
     }
 
     [Tooltip(
-        "VariableSpeed - The agent will sample random speeds while training.\n" +
+        "VariableSpeed - The agent will sample random speed magnitudes while training.\n" +
         "Dynamic - The agent will run towards a target that changes position.\n" +
         "Static - The agent will run towards a static target. "
     )]
