@@ -29,10 +29,10 @@ public class CrawlerAgent : Agent
 
     //Crawler Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
-    [Header("NN Models")] public NNModel crawlerDyBrain;
-    public NNModel crawlerDyVSBrain;
-    public NNModel crawlerStBrain;
-    public NNModel crawlerStVSBrain;
+    [Header("NN Models")] public NNModel crawlerDyModel;
+    public NNModel crawlerDyVSModel;
+    public NNModel crawlerStModel;
+    public NNModel crawlerStVSModel;
 
     [Header("Walk Speed")] [Range(0.1f, m_maxWalkingSpeed)] [SerializeField]
     [Tooltip(
@@ -95,52 +95,8 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
-        var m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
-        switch (typeOfCrawler)
-        {
-            case CrawlerAgentBehaviorType.CrawlerDynamic:
-            {
-                m_BehaviorParams.BehaviorName = "CrawlerDynamic"; //set behavior name
-                if (crawlerDyBrain)
-                    m_BehaviorParams.Model = crawlerDyBrain; //assign the brain
-                m_RandomizeWalkSpeedEachEpisode = false; //do not randomize m_TargetWalkingSpeed during training
-                //spawn target
-                m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
-                break;
-            }
-            case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed:
-            {
-                m_BehaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed"; //set behavior name
-                if (crawlerDyVSBrain)
-                    m_BehaviorParams.Model = crawlerDyVSBrain; //assign the brain
-                m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
-                //spawn target
-                m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
-                break;
-            }
-            case CrawlerAgentBehaviorType.CrawlerStatic:
-            {
-                m_BehaviorParams.BehaviorName = "CrawlerStatic"; //set behavior name
-                if (crawlerStBrain)
-                    m_BehaviorParams.Model = crawlerStBrain; //assign the brain
-                m_RandomizeWalkSpeedEachEpisode = false; //do not randomize m_TargetWalkingSpeed during training
-                var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
-                //spawn target
-                m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
-                break;
-            }
-            case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed:
-            {
-                m_BehaviorParams.BehaviorName = "CrawlerStaticVariableSpeed"; //set behavior name
-                if (crawlerStVSBrain)
-                    m_BehaviorParams.Model = crawlerStVSBrain; //assign the brain
-                m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
-                var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
-                //spawn target
-                m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
-                break;
-            }
-        }
+
+        SetAgentType();
 
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
@@ -156,6 +112,63 @@ public class CrawlerAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+    }
+
+    /// <summary>
+    /// Spawns a target prefab at pos
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="pos"></param>
+    void SpawnTarget(Transform prefab, Vector3 pos)
+    {
+        m_Target = Instantiate(prefab, pos, Quaternion.identity, transform);
+    }
+
+    /// <summary>
+    /// Set up the agent based on the typeOfCrawler
+    /// </summary>
+    void SetAgentType()
+    {
+        var behaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
+        switch (typeOfCrawler)
+        {
+            case CrawlerAgentBehaviorType.CrawlerDynamic:
+            {
+                behaviorParams.BehaviorName = "CrawlerDynamic"; //set behavior name
+                if (crawlerDyModel)
+                    behaviorParams.Model = crawlerDyModel; //assign the brain
+                m_RandomizeWalkSpeedEachEpisode = false; //do not randomize m_TargetWalkingSpeed during training
+                SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
+                break;
+            }
+            case CrawlerAgentBehaviorType.CrawlerDynamicVariableSpeed:
+            {
+                behaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed"; //set behavior name
+                if (crawlerDyVSModel)
+                    behaviorParams.Model = crawlerDyVSModel; //assign the brain
+                m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
+                SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
+                break;
+            }
+            case CrawlerAgentBehaviorType.CrawlerStatic:
+            {
+                behaviorParams.BehaviorName = "CrawlerStatic"; //set behavior name
+                if (crawlerStModel)
+                    behaviorParams.Model = crawlerStModel; //assign the brain
+                m_RandomizeWalkSpeedEachEpisode = false; //do not randomize m_TargetWalkingSpeed during training
+                SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
+                break;
+            }
+            case CrawlerAgentBehaviorType.CrawlerStaticVariableSpeed:
+            {
+                behaviorParams.BehaviorName = "CrawlerStaticVariableSpeed"; //set behavior name
+                if (crawlerStVSModel)
+                    behaviorParams.Model = crawlerStVSModel; //assign the brain
+                m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
+                SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
+                break;
+            }
+        }
     }
 
     /// <summary>
