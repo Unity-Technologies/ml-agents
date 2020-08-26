@@ -13,7 +13,7 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -45,6 +45,12 @@ class NetworkBody(nn.Module):
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
+        )
+        input_size = sum(
+            _input.size for _input in self.visual_inputs + self.vector_inputs
+        )
+        self.linear_encoder = LinearEncoder(
+            input_size, network_settings.num_layers, self.h_size
         )
 
         if self.use_lstm:
@@ -90,11 +96,13 @@ class NetworkBody(nn.Module):
         if len(encodes) == 0:
             raise Exception("No valid inputs to network.")
 
+        # Constants don't work in Barracuda
         if actions is not None:
-            encoding = torch.cat(encodes + [actions], dim=-1)
+            input = torch.cat(encodes + [actions], dim=-1)
         else:
-            encoding = torch.cat(encodes, dim=-1)
-
+            input = torch.cat(encodes, dim=-1)
+            
+        # HIDDEN LAYERS
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
