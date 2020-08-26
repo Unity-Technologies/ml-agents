@@ -50,29 +50,8 @@ public class WormAgent : Agent
 
     public override void Initialize()
     {
-        var m_BehaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
-        switch (typeOfWorm)
-        {
-            case WormAgentBehaviorType.WormDynamic:
-            {
-                m_BehaviorParams.BehaviorName = "WormDynamic"; //set behavior name
-                if (wormDyModel)
-                    m_BehaviorParams.Model = wormDyModel; //assign the brain
-                //spawn target
-                m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
-                break;
-            }
-            case WormAgentBehaviorType.WormStatic:
-            {
-                m_BehaviorParams.BehaviorName = "WormStatic"; //set behavior name
-                if (wormStModel)
-                    m_BehaviorParams.Model = wormStModel; //assign the brain
-                var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
-                //spawn target
-                m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
-                break;
-            }
-        }
+        SetAgentType();
+
 
         m_StartingPos = bodySegment0.position;
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
@@ -86,6 +65,44 @@ public class WormAgent : Agent
         m_JdController.SetupBodyPart(bodySegment1);
         m_JdController.SetupBodyPart(bodySegment2);
         m_JdController.SetupBodyPart(bodySegment3);
+    }
+
+
+    /// <summary>
+    /// Spawns a target prefab at pos
+    /// </summary>
+    /// <param name="prefab"></param>
+    /// <param name="pos"></param>
+    void SpawnTarget(Transform prefab, Vector3 pos)
+    {
+        m_Target = Instantiate(prefab, pos, Quaternion.identity, transform);
+    }
+
+    /// <summary>
+    /// Set up the agent based on the type
+    /// </summary>
+    void SetAgentType()
+    {
+        var behaviorParams = GetComponent<Unity.MLAgents.Policies.BehaviorParameters>();
+        switch (typeOfWorm)
+        {
+            case WormAgentBehaviorType.WormDynamic:
+            {
+                behaviorParams.BehaviorName = "WormDynamic"; //set behavior name
+                if (wormDyModel)
+                    behaviorParams.Model = wormDyModel; //assign the brain
+                SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
+                break;
+            }
+            case WormAgentBehaviorType.WormStatic:
+            {
+                behaviorParams.BehaviorName = "WormStatic"; //set behavior name
+                if (wormStModel)
+                    behaviorParams.Model = wormStModel; //assign the brain
+                SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
+                break;
+            }
+        }
     }
 
     /// <summary>
