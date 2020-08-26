@@ -55,8 +55,8 @@ class TFModelSaver(BaseModelSaver):
             with self.policy.graph.as_default():
                 self.tf_saver = tf.train.Saver(max_to_keep=self._keep_checkpoints)
 
-    def save_checkpoint(self, brain_name: str, step: int) -> str:
-        checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{step}")
+    def save_checkpoint(self, behavior_name: str, step: int) -> str:
+        checkpoint_path = os.path.join(self.model_path, f"{behavior_name}-{step}")
         # Save the TF checkpoint and graph definition
         if self.graph:
             with self.graph.as_default():
@@ -66,16 +66,16 @@ class TFModelSaver(BaseModelSaver):
                     self.graph, self.model_path, "raw_graph_def.pb", as_text=False
                 )
         # also save the policy so we have optimized model files for each checkpoint
-        self.export(checkpoint_path, brain_name)
+        self.export(checkpoint_path, behavior_name)
         return checkpoint_path
 
-    def export(self, output_filepath: str, brain_name: str) -> None:
+    def export(self, output_filepath: str, behavior_name: str) -> None:
         # save model if there is only one worker or
         # only on worker-0 if there are multiple workers
         if self.policy and self.policy.rank is not None and self.policy.rank != 0:
             return
         export_policy_model(
-            self.model_path, output_filepath, brain_name, self.graph, self.sess
+            self.model_path, output_filepath, behavior_name, self.graph, self.sess
         )
 
     def initialize_or_load(self, policy: Optional[TFPolicy] = None) -> None:
