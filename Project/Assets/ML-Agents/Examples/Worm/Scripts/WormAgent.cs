@@ -26,8 +26,8 @@ public class WormAgent : Agent
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
-    [Header("NN Models")] public NNModel wormDyBrain;
-    public NNModel wormStBrain;
+    [Header("NN Models")] public NNModel wormDyModel;
+    public NNModel wormStModel;
 
     [Header("Target Prefabs")] public Transform dynamicTargetPrefab; //Target prefab to use in Dynamic envs
     public Transform staticTargetPrefab; //Target prefab to use in Static envs
@@ -56,8 +56,8 @@ public class WormAgent : Agent
             case WormAgentBehaviorType.WormDynamic:
             {
                 m_BehaviorParams.BehaviorName = "WormDynamic"; //set behavior name
-                if (wormDyBrain)
-                    m_BehaviorParams.Model = wormDyBrain; //assign the brain
+                if (wormDyModel)
+                    m_BehaviorParams.Model = wormDyModel; //assign the brain
                 //spawn target
                 m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
                 break;
@@ -65,8 +65,8 @@ public class WormAgent : Agent
             case WormAgentBehaviorType.WormStatic:
             {
                 m_BehaviorParams.BehaviorName = "WormStatic"; //set behavior name
-                if (wormStBrain)
-                    m_BehaviorParams.Model = wormStBrain; //assign the brain
+                if (wormStModel)
+                    m_BehaviorParams.Model = wormStModel; //assign the brain
                 var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
                 //spawn target
                 m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
