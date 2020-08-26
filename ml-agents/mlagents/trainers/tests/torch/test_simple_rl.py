@@ -72,7 +72,6 @@ SAC_CONFIG = TrainerSettings(
     summary_freq=100,
     max_steps=1000,
     threaded=False,
-    framework=FrameworkType.PYTORCH,
 )
 
 
