@@ -138,7 +138,7 @@ public class CrawlerAgent : Agent
             {
                 behaviorParams.BehaviorName = "CrawlerDynamic"; //set behavior name
                 if (crawlerDyModel)
-                    behaviorParams.Model = crawlerDyModel; //assign the brain
+                    behaviorParams.Model = crawlerDyModel; //assign the model
                 m_RandomizeWalkSpeedEachEpisode = false; //do not randomize m_TargetWalkingSpeed during training
                 SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
                 break;
@@ -147,7 +147,7 @@ public class CrawlerAgent : Agent
             {
                 behaviorParams.BehaviorName = "CrawlerDynamicVariableSpeed"; //set behavior name
                 if (crawlerDyVSModel)
-                    behaviorParams.Model = crawlerDyVSModel; //assign the brain
+                    behaviorParams.Model = crawlerDyVSModel; //assign the model
                 m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
                 SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
                 break;
@@ -156,7 +156,7 @@ public class CrawlerAgent : Agent
             {
                 behaviorParams.BehaviorName = "CrawlerStatic"; //set behavior name
                 if (crawlerStModel)
-                    behaviorParams.Model = crawlerStModel; //assign the brain
+                    behaviorParams.Model = crawlerStModel; //assign the model
                 m_RandomizeWalkSpeedEachEpisode = false; //do not randomize m_TargetWalkingSpeed during training
                 SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
                 break;
@@ -165,7 +165,7 @@ public class CrawlerAgent : Agent
             {
                 behaviorParams.BehaviorName = "CrawlerStaticVariableSpeed"; //set behavior name
                 if (crawlerStVSModel)
-                    behaviorParams.Model = crawlerStVSModel; //assign the brain
+                    behaviorParams.Model = crawlerStVSModel; //assign the model
                 m_RandomizeWalkSpeedEachEpisode = true; //randomize m_TargetWalkingSpeed during training
                 SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
                 break;
