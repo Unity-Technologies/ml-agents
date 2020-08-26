@@ -193,7 +193,7 @@ def test_process_pixels():
     out_array = process_pixels(byte_arr, 3)
     assert out_array.shape == (128, 64, 3)
     assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
-    assert (in_array - out_array < 0.01).all()
+    assert np.allclose(in_array, out_array, atol=0.01)
 
 
 def test_process_pixels_multi_png():
@@ -205,7 +205,7 @@ def test_process_pixels_multi_png():
     out_array = process_pixels(byte_arr, num_channels)
     assert out_array.shape == (height, width, num_channels)
     assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
-    assert (in_array - out_array < 0.01).all()
+    assert np.allclose(in_array, out_array, atol=0.01)
 
 
 def test_process_pixels_gray():
@@ -214,7 +214,7 @@ def test_process_pixels_gray():
     out_array = process_pixels(byte_arr, 1)
     assert out_array.shape == (128, 64, 1)
     assert np.mean(in_array.mean(axis=2, keepdims=True) - out_array) < 0.01
-    assert (in_array.mean(axis=2, keepdims=True) - out_array < 0.01).all()
+    assert np.allclose(in_array.mean(axis=2, keepdims=True), out_array, atol=0.01)
 
 
 def test_vector_observation():
@@ -224,7 +224,7 @@ def test_vector_observation():
     for obs_index, shape in enumerate(shapes):
         arr = _process_vector_observation(obs_index, shape, list_proto)
         assert list(arr.shape) == ([n_agents] + list(shape))
-        assert (np.abs(arr - 0.1) < 0.01).all()
+        assert np.allclose(arr, 0.1, atol=0.01)
 
 
 def test_process_visual_observation():
@@ -239,8 +239,8 @@ def test_process_visual_observation():
     ap_list = [ap1, ap2]
     arr = _process_visual_observation(0, (128, 64, 3), ap_list)
     assert list(arr.shape) == [2, 128, 64, 3]
-    assert (arr[0, :, :, :] - in_array_1 < 0.01).all()
-    assert (arr[1, :, :, :] - in_array_2 < 0.01).all()
+    assert np.allclose(arr[0, :, :, :], in_array_1, atol=0.01)
+    assert np.allclose(arr[1, :, :, :], in_array_2, atol=0.01)
 
 
 def test_process_visual_observation_bad_shape():
