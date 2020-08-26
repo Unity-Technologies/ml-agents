@@ -8,12 +8,18 @@ using Unity.MLAgents.Sensors;
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
 public class WormAgent : Agent
 {
+    //The type of agent behavior we want to use.
+    //This setting will determine how the agent is set up during initialization.
     public enum WormAgentBehaviorType
     {
         WormDynamic,
         WormStatic
     }
 
+    [Tooltip(
+        "Dynamic - The agent will run towards a target that changes position.\n\n" +
+        "Static - The agent will run towards a static target. "
+    )]
     public WormAgentBehaviorType typeOfWorm;
 
     const float m_maxWalkingSpeed = 10; //The max walking speed
@@ -23,9 +29,9 @@ public class WormAgent : Agent
     [Header("NN Models")] public NNModel wormDyBrain;
     public NNModel wormStBrain;
 
-    [Header("Target Prefabs")] public Transform dynamicTargetPrefab;
-    public Transform staticTargetPrefab;
-    private Transform m_Target; //Target the agent will walk towards.
+    [Header("Target Prefabs")] public Transform dynamicTargetPrefab; //Target prefab to use in Dynamic envs
+    public Transform staticTargetPrefab; //Target prefab to use in Static envs
+    private Transform m_Target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] public Transform bodySegment0;
     public Transform bodySegment1;
@@ -40,10 +46,7 @@ public class WormAgent : Agent
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
 
-    Vector3 m_DirToTarget;
-    float m_MovingTowardsDot;
-    float m_FacingDot;
-    Vector3 m_StartingPos;
+    private Vector3 m_StartingPos; //starting position of the agent
 
     public override void Initialize()
     {
@@ -52,18 +55,20 @@ public class WormAgent : Agent
         {
             case WormAgentBehaviorType.WormDynamic:
             {
-                m_BehaviorParams.BehaviorName = "WormDynamic";
+                m_BehaviorParams.BehaviorName = "WormDynamic"; //set behavior name
                 if (wormDyBrain)
-                    m_BehaviorParams.Model = wormDyBrain;
+                    m_BehaviorParams.Model = wormDyBrain; //assign the brain
+                //spawn target
                 m_Target = Instantiate(dynamicTargetPrefab, transform.position, Quaternion.identity, transform);
                 break;
             }
             case WormAgentBehaviorType.WormStatic:
             {
-                m_BehaviorParams.BehaviorName = "WormStatic";
+                m_BehaviorParams.BehaviorName = "WormStatic"; //set behavior name
                 if (wormStBrain)
-                    m_BehaviorParams.Model = wormStBrain;
+                    m_BehaviorParams.Model = wormStBrain; //assign the brain
                 var targetSpawnPos = transform.TransformPoint(new Vector3(0, 0, 1000));
+                //spawn target
                 m_Target = Instantiate(staticTargetPrefab, targetSpawnPos, Quaternion.identity, transform);
                 break;
             }
@@ -192,7 +197,8 @@ public class WormAgent : Agent
             GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,
                 m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 
-        //Angle delta of rotation between cube and body.
+        //Angle of the rotation delta between cube and body.
+        //This will range from (0, 180)
         var rotAngle = Quaternion.Angle(m_OrientationCube.transform.rotation,
             m_JdController.bodyPartsDict[bodySegment0].rb.rotation);
 
@@ -210,7 +216,9 @@ public class WormAgent : Agent
         AddReward(velReward * facingRew);
     }
 
-    //normalized value of the difference in avg speed vs goal walking speed.
+    /// <summary>
+    /// Normalized value of the difference in actual speed vs goal walking speed.
+    /// </summary>
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
@@ -221,7 +229,9 @@ public class WormAgent : Agent
         return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
     }
 
-    //Update OrientationCube and DirectionIndicator
+    /// <summary>
+    /// Update OrientationCube and DirectionIndicator
+    /// </summary>
     void UpdateOrientationObjects()
     {
         m_OrientationCube.UpdateOrientation(bodySegment0, m_Target);
