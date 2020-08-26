@@ -144,7 +144,7 @@ class ModelUtils:
         h_size: int,
         vis_encode_type: EncoderType,
         normalize: bool = False,
-    ) -> Tuple[nn.ModuleList, nn.ModuleList]:
+    ) -> Tuple[nn.ModuleList, nn.ModuleList, int]:
         """
         Creates visual and vector encoders, along with their normalizers.
         :param observation_shapes: List of Tuples that represent the action dimensions.
@@ -162,6 +162,7 @@ class ModelUtils:
 
         visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
         vector_size = 0
+        visual_output_size = 0
         for i, dimension in enumerate(observation_shapes):
             if len(dimension) == 3:
                 ModelUtils._check_resolution_for_encoder(
@@ -172,6 +173,7 @@ class ModelUtils:
                         dimension[0], dimension[1], dimension[2], h_size
                     )
                 )
+                visual_output_size += h_size
             elif len(dimension) == 1:
                 vector_size += dimension[0]
             else:
@@ -180,7 +182,13 @@ class ModelUtils:
                 )
         if vector_size > 0:
             vector_encoders.append(VectorInput(vector_size, normalize))
-        return nn.ModuleList(visual_encoders), nn.ModuleList(vector_encoders)
+        # Total output size for all inputs + CNNs
+        total_processed_size = vector_size + visual_output_size
+        return (
+            nn.ModuleList(visual_encoders),
+            nn.ModuleList(vector_encoders),
+            total_processed_size,
+        )
 
     @staticmethod
     def list_to_tensor(

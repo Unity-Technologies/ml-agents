@@ -40,17 +40,15 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_inputs, self.vector_inputs = ModelUtils.create_input_processors(
+        self.visual_inputs, self.vector_inputs, total_input_size = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
-        vector_input_size = sum(_input.output_size for _input in self.vector_inputs)
-        visual_encoded_size = sum(_input.output_size for _input in self.visual_inputs)
-        input_size = vector_input_size + visual_encoded_size + encoded_act_size
+        total_enc_size = total_input_size + encoded_act_size
         self.linear_encoder = LinearEncoder(
-            input_size, network_settings.num_layers, self.h_size
+            total_enc_size, network_settings.num_layers, self.h_size
         )
 
         if self.use_lstm:

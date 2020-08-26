@@ -1,6 +1,6 @@
 from typing import Tuple, Optional, Union
 
-from mlagents.trainers.torch.layers import Swish
+from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
 
 
 import torch
@@ -92,13 +92,8 @@ class VectorInput(nn.Module):
     def __init__(self, input_size: int, normalize: bool = False):
         super().__init__()
         self.normalizer: Optional[Normalizer] = None
-        self._output_size = input_size
         if normalize:
             self.normalizer = Normalizer(input_size)
-
-    @property
-    def output_size(self) -> int:
-        return self._output_size
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
         if self.normalizer is not None:
@@ -130,15 +125,20 @@ class SimpleVisualEncoder(nn.Module):
             nn.Conv2d(16, 32, [4, 4], [2, 2]),
             nn.LeakyReLU(),
         )
-
-    @property
-    def output_size(self) -> int:
-        return self.final_flat
+        self.dense = nn.Sequential(
+            linear_layer(
+                self.final_flat,
+                self.h_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            ),
+            nn.LeakyReLU(),
+        )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
         hidden = self.conv_layers(visual_obs)
         hidden = torch.reshape(hidden, (-1, self.final_flat))
-        return hidden
+        return self.dense(hidden)
 
 
 class NatureVisualEncoder(nn.Module):
@@ -160,15 +160,20 @@ class NatureVisualEncoder(nn.Module):
             nn.Conv2d(64, 64, [3, 3], [1, 1]),
             nn.LeakyReLU(),
         )
-
-    @property
-    def output_size(self) -> int:
-        return self.final_flat
+        self.dense = nn.Sequential(
+            linear_layer(
+                self.final_flat,
+                self.h_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            ),
+            nn.LeakyReLU(),
+        )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
         hidden = self.conv_layers(visual_obs)
         hidden = hidden.view([-1, self.final_flat])
-        return hidden
+        return self.dense(hidden)
 
 
 class ResNetBlock(nn.Module):
@@ -191,7 +196,9 @@ class ResNetBlock(nn.Module):
 
 
 class ResNetVisualEncoder(nn.Module):
-    def __init__(self, height: int, width: int, initial_channels: int):
+    def __init__(
+        self, height: int, width: int, initial_channels: int, output_size: int
+    ):
         super().__init__()
         n_channels = [16, 32, 32]  # channel for each stack
         n_blocks = 2  # number of residual blocks
@@ -205,15 +212,16 @@ class ResNetVisualEncoder(nn.Module):
                 layers.append(ResNetBlock(channel))
             last_channel = channel
         layers.append(Swish())
-        self._output_size = n_channels[-1] * height * width
+        self.dense = linear_layer(
+            n_channels[-1] * height * width,
+            output_size,
+            kernel_init=Initialization.KaimingHeNormal,
+            kernel_gain=1.0,
+        )
         self.sequential = nn.Sequential(*layers)
-
-    @property
-    def output_size(self) -> int:
-        return self._output_size
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
         batch_size = visual_obs.shape[0]
         hidden = self.sequential(visual_obs)
         before_out = hidden.view(batch_size, -1)
-        return torch.relu(before_out)
+        return torch.relu(self.dense(before_out))
