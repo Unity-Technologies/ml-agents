@@ -312,8 +312,8 @@ public class CrawlerAgent : Agent
     }
 
     //Returns the average velocity of all of the body parts
-    //Using the velocity of the hips only has shown to result in more erratic movement from the limbs, so...
-    //...using the average helps prevent this erratic movement
+    //Using the velocity of the body only has shown to result in more erratic movement from the limbs
+    //Using the average helps prevent this erratic movement
     Vector3 GetAvgVelocity()
     {
         Vector3 velSum = Vector3.zero;
