@@ -2,7 +2,6 @@ from unittest.mock import MagicMock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
 
-import numpy as np
 import os
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
@@ -31,6 +30,11 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
         default_num_epoch=3,
     )
     return bc_module
+
+
+def assert_stats_are_float(stats):
+    for _, item in stats.items():
+        assert isinstance(item, float)
 
 
 # Test default values
@@ -63,8 +67,7 @@ def test_bcmodule_update(is_sac):
     )
     bc_module = create_bc_module(mock_specs, bc_settings, False, is_sac)
     stats = bc_module.update()
-    for _, item in stats.items():
-        assert isinstance(item, np.float32)
+    assert_stats_are_float(stats)
 
 
 # Test with constant pretraining learning rate
@@ -77,8 +80,7 @@ def test_bcmodule_constant_lr_update(is_sac):
     )
     bc_module = create_bc_module(mock_specs, bc_settings, False, is_sac)
     stats = bc_module.update()
-    for _, item in stats.items():
-        assert isinstance(item, np.float32)
+    assert_stats_are_float(stats)
     old_learning_rate = bc_module.current_lr
 
     _ = bc_module.update()
@@ -110,8 +112,7 @@ def test_bcmodule_rnn_update(is_sac):
     )
     bc_module = create_bc_module(mock_specs, bc_settings, True, is_sac)
     stats = bc_module.update()
-    for _, item in stats.items():
-        assert isinstance(item, np.float32)
+    assert_stats_are_float(stats)
 
 
 # Test with discrete control and visual observations
@@ -123,8 +124,7 @@ def test_bcmodule_dc_visual_update(is_sac):
     )
     bc_module = create_bc_module(mock_specs, bc_settings, False, is_sac)
     stats = bc_module.update()
-    for _, item in stats.items():
-        assert isinstance(item, np.float32)
+    assert_stats_are_float(stats)
 
 
 # Test with discrete control, visual observations and RNN
@@ -136,8 +136,7 @@ def test_bcmodule_rnn_dc_update(is_sac):
     )
     bc_module = create_bc_module(mock_specs, bc_settings, True, is_sac)
     stats = bc_module.update()
-    for _, item in stats.items():
-        assert isinstance(item, np.float32)
+    assert_stats_are_float(stats)
 
 
 if __name__ == "__main__":
