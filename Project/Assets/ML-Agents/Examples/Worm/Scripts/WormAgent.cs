@@ -160,26 +160,6 @@ public class WormAgent : Agent
         AddReward(1f);
     }
 
-    //Returns the average velocity of all of the body parts
-    //Using the velocity of the hips only has shown to result in more erratic movement from the limbs, so...
-    //...using the average helps prevent this erratic movement
-    Vector3 GetAvgVelocity()
-    {
-        Vector3 velSum = Vector3.zero;
-        Vector3 avgVel = Vector3.zero;
-
-        //ALL RBS
-        int numOfRB = 0;
-        foreach (var item in m_JdController.bodyPartsList)
-        {
-            numOfRB++;
-            velSum += item.rb.velocity;
-        }
-
-        avgVel = velSum / numOfRB;
-        return avgVel;
-    }
-
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         // The dictionary with all the body parts in it are in the jdController
@@ -210,8 +190,7 @@ public class WormAgent : Agent
 
         var velReward =
             GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,
-                GetAvgVelocity());
-//                m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
+                m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 
         //Angle delta of rotation between cube and body.
         var rotAngle = Quaternion.Angle(m_OrientationCube.transform.rotation,
