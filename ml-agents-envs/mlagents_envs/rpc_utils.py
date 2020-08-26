@@ -71,7 +71,7 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
 
     bytes_read = 0
     # Read the images back from the bytes (without knowing the sizes).
-    while bytes_read < len(image_bytearray):
+    while True:
         # TODO avoid creating a new array here. Unfortunately, Pillow doesn't respect the current state of the buffer
         # and always starts with seek(0), but we should be able to wrap BytesIO with something that lets us adjust
         # the "start" offset.
