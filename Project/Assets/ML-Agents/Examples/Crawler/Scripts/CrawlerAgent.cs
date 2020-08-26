@@ -34,7 +34,9 @@ public class CrawlerAgent : Agent
     public NNModel crawlerStModel;
     public NNModel crawlerStVSModel;
 
-    [Header("Walk Speed")] [Range(0.1f, m_maxWalkingSpeed)] [SerializeField]
+    [Header("Walk Speed")]
+    [Range(0.1f, m_maxWalkingSpeed)]
+    [SerializeField]
     [Tooltip(
         "The speed the agent will try to match.\n\n" +
         "TRAINING:\n" +
@@ -46,6 +48,7 @@ public class CrawlerAgent : Agent
     )]
     //The walking speed to try and achieve
     private float m_TargetWalkingSpeed = m_maxWalkingSpeed;
+
     const float m_maxWalkingSpeed = 15; //The max walking speed
 
     //The current target walking speed. Clamped because a value of zero will cause NaNs
@@ -95,7 +98,6 @@ public class CrawlerAgent : Agent
 
     public override void Initialize()
     {
-
         SetAgentType();
 
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
