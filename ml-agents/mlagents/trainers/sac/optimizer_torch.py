@@ -530,14 +530,11 @@ class TorchSACOptimizer(TorchOptimizer):
         # Update target network
         self.soft_update(self.policy.actor_critic.critic, self.target_network, self.tau)
         update_stats = {
-            "Losses/Policy Loss": abs(policy_loss.detach().cpu().numpy()),
-            "Losses/Value Loss": value_loss.detach().cpu().numpy(),
-            "Losses/Q1 Loss": q1_loss.detach().cpu().numpy(),
-            "Losses/Q2 Loss": q2_loss.detach().cpu().numpy(),
-            "Policy/Entropy Coeff": torch.exp(self._log_ent_coef)
-            .detach()
-            .cpu()
-            .numpy(),
+            "Losses/Policy Loss": policy_loss.item(),
+            "Losses/Value Loss": value_loss.item(),
+            "Losses/Q1 Loss": q1_loss.item(),
+            "Losses/Q2 Loss": q2_loss.item(),
+            "Policy/Entropy Coeff": torch.exp(self._log_ent_coef).item(),
             "Policy/Learning Rate": decay_lr,
         }
 
@@ -552,10 +549,13 @@ class TorchSACOptimizer(TorchOptimizer):
         return {}
 
     def get_modules(self):
-        return {
+        modules = {
             "Optimizer:value_network": self.value_network,
             "Optimizer:target_network": self.target_network,
             "Optimizer:policy_optimizer": self.policy_optimizer,
             "Optimizer:value_optimizer": self.value_optimizer,
             "Optimizer:entropy_optimizer": self.entropy_optimizer,
         }
+        for reward_provider in self.reward_signals.values():
+            modules.update(reward_provider.get_modules())
+        return modules

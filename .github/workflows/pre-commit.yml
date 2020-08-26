@@ -1,0 +1,41 @@
+name: pre-commit
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: actions/setup-ruby@v1
+      with:
+        ruby-version: '2.6'
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.x'
+    - run: dotnet tool install -g dotnet-format --version 4.1.131201
+    - uses: pre-commit/action@v2.0.0
+
+  markdown-link-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: actions/setup-node@v2-beta
+      with:
+        node-version: '12'
+    - run: sudo npm install -g markdown-link-check
+    - uses: pre-commit/action@v2.0.0
+      with:
+          extra_args: --hook-stage manual markdown-link-check --all-files
+
+  validate-meta-files:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - run: python utils/validate_meta_files.py

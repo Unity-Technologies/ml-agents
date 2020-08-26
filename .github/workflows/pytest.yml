@@ -1,0 +1,60 @@
+name: pytest
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6.x, 3.7.x, 3.8.x]
+        include:
+          - python-version: 3.6.x
+            pip_constraints: test_constraints_min_version.txt
+          - python-version: 3.7.x
+            pip_constraints: test_constraints_max_tf1_version.txt
+          - python-version: 3.8.x
+            pip_constraints: test_constraints_max_tf2_version.txt
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Cache pip
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install --upgrade setuptools
+        python -m pip install --progress-bar=off -e ./ml-agents-envs -c ${{ matrix.pip_constraints }}
+        python -m pip install --progress-bar=off -e ./ml-agents -c ${{ matrix.pip_constraints }}
+        python -m pip install --progress-bar=off -r test_requirements.txt -c ${{ matrix.pip_constraints }}
+        python -m pip install --progress-bar=off -e ./gym-unity -c ${{ matrix.pip_constraints }}
+    - name: Save python dependencies
+      run: pip freeze > pip_versions-${{ matrix.python-version }}.txt
+    - name: Run pytest
+      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@v2
+      with:
+        name: artifacts-${{ matrix.python-version }}
+        path: |
+          htmlcov
+          pip_versions-${{ matrix.python-version }}.txt
+          junit/test-results-${{ matrix.python-version }}.xml
+      # Use always() to always run this step to publish test results when there are test failures
+      if: ${{ always() }}
