@@ -311,9 +311,11 @@ public class CrawlerAgent : Agent
         }
     }
 
-    //Returns the average velocity of all of the body parts
-    //Using the velocity of the body only has shown to result in more erratic movement from the limbs
-    //Using the average helps prevent this erratic movement
+    /// <summary>
+    ///Returns the average velocity of all of the body parts
+    ///Using the velocity of the body only has shown to result in more erratic movement from the limbs
+    ///Using the average helps prevent this erratic movement
+    /// </summary>
     Vector3 GetAvgVelocity()
     {
         Vector3 velSum = Vector3.zero;
@@ -331,7 +333,9 @@ public class CrawlerAgent : Agent
         return avgVel;
     }
 
-    //normalized value of the difference in avg speed vs goal walking speed.
+    /// <summary>
+    /// Normalized value of the difference in actual speed vs goal walking speed.
+    /// </summary>
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
