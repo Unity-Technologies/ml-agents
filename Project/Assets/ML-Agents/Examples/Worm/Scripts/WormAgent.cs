@@ -22,7 +22,7 @@ public class WormAgent : Agent
     )]
     public WormAgentBehaviorType typeOfWorm;
 
-    const float m_maxWalkingSpeed = 10; //The max walking speed
+    const float m_MaxWalkingSpeed = 10; //The max walking speed
 
     //Brains
     //A different brain will be used depending on the CrawlerAgentBehaviorType selected
@@ -142,7 +142,7 @@ public class WormAgent : Agent
             sensor.AddObservation(1);
 
         var cubeForward = m_OrientationCube.transform.forward;
-        var velGoal = cubeForward * m_maxWalkingSpeed;
+        var velGoal = cubeForward * m_MaxWalkingSpeed;
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
         sensor.AddObservation(Quaternion.Angle(m_OrientationCube.transform.rotation,
                                   m_JdController.bodyPartsDict[bodySegment0].rb.rotation) / 180);
@@ -194,7 +194,7 @@ public class WormAgent : Agent
         UpdateOrientationObjects();
 
         var velReward =
-            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_maxWalkingSpeed,
+            GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_MaxWalkingSpeed,
                 m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
 
         //Angle of the rotation delta between cube and body.
@@ -222,11 +222,11 @@ public class WormAgent : Agent
     public float GetMatchingVelocityReward(Vector3 velocityGoal, Vector3 actualVelocity)
     {
         //distance between our actual velocity and goal velocity
-        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_maxWalkingSpeed);
+        var velDeltaMagnitude = Mathf.Clamp(Vector3.Distance(actualVelocity, velocityGoal), 0, m_MaxWalkingSpeed);
 
         //return the value on a declining sigmoid shaped curve that decays from 1 to 0
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
-        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_maxWalkingSpeed, 2), 2);
+        return Mathf.Pow(1 - Mathf.Pow(velDeltaMagnitude / m_MaxWalkingSpeed, 2), 2);
     }
 
     /// <summary>
