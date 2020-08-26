@@ -13,7 +13,7 @@ from mlagents.trainers.torch.distributions import (
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
-from mlagents.trainers.torch.layers import LSTM
+from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -40,13 +40,19 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_encoders, self.vector_encoders = ModelUtils.create_encoders(
+        self.visual_inputs, self.vector_inputs = ModelUtils.create_encoders(
             observation_shapes,
             self.h_size,
             network_settings.num_layers,
             network_settings.vis_encode_type,
             unnormalized_inputs=encoded_act_size,
             normalize=self.normalize,
+        )
+        input_size = sum(
+            _input.size for _input in self.visual_inputs + self.vector_inputs
+        )
+        self.linear_encoder = LinearEncoder(
+            input_size, network_settings.num_layers, self.h_size
         )
 
         if self.use_lstm:
@@ -55,12 +61,12 @@ class NetworkBody(nn.Module):
             self.lstm = None  # type: ignore
 
     def update_normalization(self, vec_inputs: List[torch.Tensor]) -> None:
-        for vec_input, vec_enc in zip(vec_inputs, self.vector_encoders):
+        for vec_input, vec_enc in zip(vec_inputs, self.visual_inputs):
             vec_enc.update_normalization(vec_input)
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
-            for n1, n2 in zip(self.vector_encoders, other_network.vector_encoders):
+            for n1, n2 in zip(self.visual_inputs, other_network.vector_encoders):
                 n1.copy_normalization(n2)
 
     @property
@@ -76,29 +82,27 @@ class NetworkBody(nn.Module):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
-        for idx, encoder in enumerate(self.vector_encoders):
+        for idx, processor in enumerate(self.visual_inputs):
             vec_input = vec_inputs[idx]
             if actions is not None:
-                hidden = encoder(vec_input, actions)
+                hidden = processor(vec_input, actions)
             else:
-                hidden = encoder(vec_input)
+                hidden = processor(vec_input)
             encodes.append(hidden)
 
-        for idx, encoder in enumerate(self.visual_encoders):
+        for idx, processor in enumerate(self.visual_inputs):
             vis_input = vis_inputs[idx]
             if not torch.onnx.is_in_onnx_export():
                 vis_input = vis_input.permute([0, 3, 1, 2])
-            hidden = encoder(vis_input)
+            hidden = processor(vis_input)
             encodes.append(hidden)
 
         if len(encodes) == 0:
             raise Exception("No valid inputs to network.")
 
         # Constants don't work in Barracuda
-        encoding = encodes[0]
-        if len(encodes) > 1:
-            for _enc in encodes[1:]:
-                encoding += _enc
+        input_encoding = torch.cat(encodes, dim=-1)
+        encoding = self.linear_encoder(input_encoding)
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
