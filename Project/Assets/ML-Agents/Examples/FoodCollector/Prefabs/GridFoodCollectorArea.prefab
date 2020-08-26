@@ -2186,7 +2186,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: GridFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -2538,7 +2538,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: GridFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -2881,7 +2881,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: GridFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -3487,7 +3487,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: GridFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -3816,7 +3816,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 699f852e79b5ba642871514fb1fb9843, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: GridFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
