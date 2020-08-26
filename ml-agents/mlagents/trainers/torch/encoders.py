@@ -1,7 +1,7 @@
 from typing import Tuple, Optional, Union
 
-from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.torch.layers import Swish
+from mlagents.trainers.torch.layers import linear_layer, Initialization, Swish
+
 
 import torch
 from torch import nn
@@ -90,7 +90,8 @@ def pool_out_shape(h_w: Tuple[int, int], kernel_size: int) -> Tuple[int, int]:
 
 class VectorInput(nn.Module):
     def __init__(self, input_size: int, normalize: bool = False):
-        self._output_size = input_size
+        self.normalizer: Optional[Normalizer] = None
+        super().__init__()
         self.normalizer: Optional[Normalizer] = None
         super().__init__()
         if normalize:
@@ -101,54 +102,14 @@ class VectorInput(nn.Module):
             inputs = self.normalizer(inputs)
         return inputs
 
-    def copy_normalization(self, other_encoder: "VectorInput") -> None:
-        if self.normalizer is not None and other_encoder.normalizer is not None:
-            self.normalizer.copy_from(other_encoder.normalizer)
+    def copy_normalization(self, other_input: "VectorInput") -> None:
+        if self.normalizer is not None and other_input.normalizer is not None:
+            self.normalizer.copy_from(other_input.normalizer)
 
     def update_normalization(self, inputs: torch.Tensor) -> None:
         if self.normalizer is not None:
             self.normalizer.update(inputs)
 
-    def output_size(self) -> int:
-        return self._output_size
-
-
-class VectorAndUnnormalizedInput(VectorInput):
-    """
-    Encoder for concatenated vector input (can be normalized) and unnormalized vector input.
-    This is used for passing inputs to the network that should not be normalized, such as
-    actions in the case of a Q function or task parameterizations. It will result in an encoder with
-    this structure:
-    ____________       ____________       ____________
-    | Vector     |     | Normalize  |     | Fully      |
-    |            | --> |            | --> | Connected  |      ___________
-    |____________|     |____________|     |            |     | Output    |
-    ____________                          |            | --> |           |
-    |Unnormalized|                        |            |     |___________|
-    |   Input    | ---------------------> |            |
-    |____________|                        |____________|
-    """
-
-    def __init__(
-        self, input_size: int, unnormalized_input_size: int, normalize: bool = False
-    ):
-        super().__init__(input_size + unnormalized_input_size, normalize=False)
-        self._output_size = input_size + unnormalized_input_size
-        if normalize:
-            self.normalizer = Normalizer(input_size)
-        else:
-            self.normalizer = None
-
-    def forward(  # pylint: disable=W0221
-        self, inputs: torch.Tensor, unnormalized_inputs: Optional[torch.Tensor] = None
-    ) -> None:
-        if unnormalized_inputs is None:
-            raise UnityTrainerException(
-                "Attempted to call an VectorAndUnnormalizedInputEncoder without an unnormalized input."
-            )  # Fix mypy errors about method parameters.
-        if self.normalizer is not None:
-            inputs = self.normalizer(inputs)
-        return torch.cat([inputs, unnormalized_inputs], dim=-1)
 
 
 class SimpleVisualEncoder(nn.Module):

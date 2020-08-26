@@ -7,8 +7,7 @@ from mlagents.trainers.torch.encoders import (
     SimpleVisualEncoder,
     ResNetVisualEncoder,
     NatureVisualEncoder,
-    VectorEncoder,
-    VectorAndUnnormalizedInputEncoder,
+    VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
@@ -140,12 +139,10 @@ class ModelUtils:
             )
 
     @staticmethod
-    def create_encoders(
+    def create_input_processors(
         observation_shapes: List[Tuple[int, ...]],
         h_size: int,
-        num_layers: int,
         vis_encode_type: EncoderType,
-        unnormalized_inputs: int = 0,
         normalize: bool = False,
     ) -> Tuple[nn.ModuleList, nn.ModuleList]:
         """
@@ -154,7 +151,6 @@ class ModelUtils:
         :param action_size: Number of additional un-normalized inputs to each vector encoder. Used for
             conditioining network on other values (e.g. actions for a Q function)
         :param h_size: Number of hidden units per layer.
-        :param num_layers: Depth of MLP per encoder.
         :param vis_encode_type: Type of visual encoder to use.
         :param unnormalized_inputs: Vector inputs that should not be normalized, and added to the vector
             obs.
@@ -182,17 +178,8 @@ class ModelUtils:
                 raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
-        if vector_size + unnormalized_inputs > 0:
-            if unnormalized_inputs > 0:
-                vector_encoders.append(
-                    VectorAndUnnormalizedInputEncoder(
-                        vector_size, h_size, unnormalized_inputs, num_layers, normalize
-                    )
-                )
-            else:
-                vector_encoders.append(
-                    VectorEncoder(vector_size, h_size, num_layers, normalize)
-                )
+        if vector_size > 0:
+            vector_encoders.append(VectorInput(vector_size, normalize))
         return nn.ModuleList(visual_encoders), nn.ModuleList(vector_encoders)
 
     @staticmethod

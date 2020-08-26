@@ -40,12 +40,10 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_inputs, self.vector_inputs = ModelUtils.create_encoders(
+        self.visual_inputs, self.vector_inputs = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
-            network_settings.num_layers,
             network_settings.vis_encode_type,
-            unnormalized_inputs=encoded_act_size,
             normalize=self.normalize,
         )
         input_size = sum(
@@ -61,12 +59,12 @@ class NetworkBody(nn.Module):
             self.lstm = None  # type: ignore
 
     def update_normalization(self, vec_inputs: List[torch.Tensor]) -> None:
-        for vec_input, vec_enc in zip(vec_inputs, self.visual_inputs):
+        for vec_input, vec_enc in zip(vec_inputs, self.vector_inputs):
             vec_enc.update_normalization(vec_input)
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
-            for n1, n2 in zip(self.visual_inputs, other_network.vector_encoders):
+            for n1, n2 in zip(self.vector_inputs, other_network.vector_inputs):
                 n1.copy_normalization(n2)
 
     @property
@@ -82,28 +80,29 @@ class NetworkBody(nn.Module):
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         encodes = []
-        for idx, processor in enumerate(self.visual_inputs):
+
+        for idx, processor in enumerate(self.vector_inputs):
             vec_input = vec_inputs[idx]
-            if actions is not None:
-                hidden = processor(vec_input, actions)
-            else:
-                hidden = processor(vec_input)
-            encodes.append(hidden)
+            processed_vec = processor(vec_input)
+            encodes.append(processed_vec)
 
         for idx, processor in enumerate(self.visual_inputs):
             vis_input = vis_inputs[idx]
             if not torch.onnx.is_in_onnx_export():
                 vis_input = vis_input.permute([0, 3, 1, 2])
-            hidden = processor(vis_input)
-            encodes.append(hidden)
+            processed_vis = processor(vis_input)
+            encodes.append(processed_vis)
 
         if len(encodes) == 0:
             raise Exception("No valid inputs to network.")
 
         # Constants don't work in Barracuda
-        input_encoding = torch.cat(encodes, dim=-1)
-        encoding = self.linear_encoder(input_encoding)
-
+        if actions is not None:
+            input = torch.cat(encodes + [actions], dim=-1)
+        else:
+            input = torch.cat(encodes, dim=-1)
+            
+        # HIDDEN LAYERS
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)
             encoding = encoding.reshape([-1, sequence_length, self.h_size])
