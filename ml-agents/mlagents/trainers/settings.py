@@ -432,6 +432,7 @@ class TaskParameterSettings:
     
     parameters: Dict[str, UniformSettings]
     active_learning: Optional[ActiveLearnerSettings] = None
+    repeat:int=8
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Dict[str, "TaskParameterSettings"]:
