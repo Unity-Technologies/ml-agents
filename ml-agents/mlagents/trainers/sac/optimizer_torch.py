@@ -523,7 +523,7 @@ class TorchSACOptimizer(TorchOptimizer):
             "Losses/Value Loss": value_loss.item(),
             "Losses/Q1 Loss": q1_loss.item(),
             "Losses/Q2 Loss": q2_loss.item(),
-            "Policy/Entropy Coeff": torch.exp(self._log_ent_coef).item(),
+            "Policy/Entropy Coeff": torch.mean(torch.exp(self._log_ent_coef)).item(),
             "Policy/Learning Rate": decay_lr,
         }
 
