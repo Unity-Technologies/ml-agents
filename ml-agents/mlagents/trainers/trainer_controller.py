@@ -69,6 +69,7 @@ class TrainerController:
 
         self.trainer_threads: List[threading.Thread] = []
         self.kill_trainers = False
+        torch.set_num_threads(1)
         np.random.seed(training_seed)
         tf.set_random_seed(training_seed)
         if torch is not None:
