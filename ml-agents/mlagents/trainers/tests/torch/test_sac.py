@@ -1,6 +1,6 @@
 import pytest
 import copy
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
