@@ -155,7 +155,7 @@ class BCModule:
         if self.policy.use_vis_obs:
             vis_obs = []
             for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_encoders
+                self.policy.actor_critic.network_body.visual_processors
             ):
                 vis_ob = ModelUtils.list_to_tensor(
                     mini_batch_demo["visual_obs%d" % idx]
@@ -179,5 +179,5 @@ class BCModule:
         bc_loss.backward()
 
         self.optimizer.step()
-        run_out = {"loss": bc_loss.detach().cpu().numpy()}
+        run_out = {"loss": bc_loss.item()}
         return run_out

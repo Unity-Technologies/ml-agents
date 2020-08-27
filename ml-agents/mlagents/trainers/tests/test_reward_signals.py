@@ -3,8 +3,8 @@ import copy
 import os
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.sac.optimizer import SACOptimizer
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.sac.optimizer_tf import SACOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG, SAC_CONFIG
 from mlagents.trainers.settings import (
     GAILSettings,

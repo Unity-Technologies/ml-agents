@@ -107,6 +107,38 @@ class MemoryModule(torch.nn.Module):
         pass
 
 
+class LinearEncoder(torch.nn.Module):
+    """
+    Linear layers.
+    """
+
+    def __init__(self, input_size: int, num_layers: int, hidden_size: int):
+        super().__init__()
+        self.layers = [
+            linear_layer(
+                input_size,
+                hidden_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            )
+        ]
+        self.layers.append(Swish())
+        for _ in range(num_layers - 1):
+            self.layers.append(
+                linear_layer(
+                    hidden_size,
+                    hidden_size,
+                    kernel_init=Initialization.KaimingHeNormal,
+                    kernel_gain=1.0,
+                )
+            )
+            self.layers.append(Swish())
+        self.seq_layers = torch.nn.Sequential(*self.layers)
+
+    def forward(self, input_tensor: torch.Tensor) -> torch.Tensor:
+        return self.seq_layers(input_tensor)
+
+
 class LSTM(MemoryModule):
     """
     Memory module that implements LSTM.

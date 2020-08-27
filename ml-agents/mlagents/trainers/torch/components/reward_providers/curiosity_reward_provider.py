@@ -30,7 +30,7 @@ class CuriosityRewardProvider(BaseRewardProvider):
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
-            rewards = self._network.compute_reward(mini_batch).detach().cpu().numpy()
+            rewards = ModelUtils.to_numpy(self._network.compute_reward(mini_batch))
         rewards = np.minimum(rewards, 1.0 / self.strength)
         return rewards * self._has_updated_once
 
@@ -46,9 +46,12 @@ class CuriosityRewardProvider(BaseRewardProvider):
         loss.backward()
         self.optimizer.step()
         return {
-            "Losses/Curiosity Forward Loss": forward_loss.detach().cpu().numpy(),
-            "Losses/Curiosity Inverse Loss": inverse_loss.detach().cpu().numpy(),
+            "Losses/Curiosity Forward Loss": forward_loss.item(),
+            "Losses/Curiosity Inverse Loss": inverse_loss.item(),
         }
+
+    def get_modules(self):
+        return {f"Module:{self.name}": self._network}
 
 
 class CuriosityNetwork(torch.nn.Module):
@@ -88,7 +91,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_encoders)
+        n_vis = len(self._state_encoder.visual_processors)
         hidden, _ = self._state_encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
@@ -106,7 +109,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the next state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_encoders)
+        n_vis = len(self._state_encoder.visual_processors)
         hidden, _ = self._state_encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(

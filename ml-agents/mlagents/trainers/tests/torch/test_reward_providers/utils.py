@@ -26,7 +26,7 @@ def create_agent_buffer(
         buffer["vector_obs"].append(curr_split_obs.vector_observations)
         buffer["next_vector_in"].append(next_split_obs.vector_observations)
         buffer["actions"].append(action)
-        buffer["done"].append(np.zeros(1, dtype=np.float32))
         buffer["reward"].append(np.ones(1, dtype=np.float32) * reward)
         buffer["masks"].append(np.ones(1, dtype=np.float32))
+    buffer["done"] = np.zeros(number, dtype=np.float32)
     return buffer
