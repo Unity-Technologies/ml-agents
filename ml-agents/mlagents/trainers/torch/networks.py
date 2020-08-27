@@ -40,13 +40,13 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_inputs, self.vector_inputs, total_input_size = ModelUtils.create_input_processors(
+        self.visual_inputs, self.vector_inputs, encoder_input_size = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
-        total_enc_size = total_input_size + encoded_act_size
+        total_enc_size = encoder_input_size + encoded_act_size
         self.linear_encoder = LinearEncoder(
             total_enc_size, network_settings.num_layers, self.h_size
         )
