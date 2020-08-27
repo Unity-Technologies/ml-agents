@@ -1,6 +1,6 @@
 from typing import Optional, Dict
 import numpy as np
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
@@ -20,6 +20,7 @@ class GAILRewardProvider(BaseRewardProvider):
         super().__init__(specs, settings)
         self._ignore_done = True
         self._discriminator_network = DiscriminatorNetwork(specs, settings)
+        self._discriminator_network.to(default_device())
         _, self._demo_buffer = demo_to_buffer(
             settings.demo_path, 1, specs
         )  # This is supposed to be the sequence length but we do not have access here

@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
@@ -23,6 +23,8 @@ class CuriosityRewardProvider(BaseRewardProvider):
         super().__init__(specs, settings)
         self._ignore_done = True
         self._network = CuriosityNetwork(specs, settings)
+        self._network.to(default_device())
+
         self.optimizer = torch.optim.Adam(
             self._network.parameters(), lr=settings.learning_rate
         )
