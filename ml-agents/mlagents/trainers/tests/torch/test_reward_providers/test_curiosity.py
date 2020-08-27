@@ -67,8 +67,7 @@ def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:
     for _ in range(10):
         curiosity_rp.update(buffer)
         reward_new = curiosity_rp.evaluate(buffer)[0]
-        assert reward_new < reward_old
-        reward_old = reward_new
+    assert reward_new < reward_old
 
 
 @pytest.mark.parametrize("seed", SEED)
