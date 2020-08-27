@@ -40,7 +40,7 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_inputs, self.vector_inputs, encoder_input_size = ModelUtils.create_input_processors(
+        self.visual_processors, self.vector_processors, encoder_input_size = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
@@ -57,12 +57,12 @@ class NetworkBody(nn.Module):
             self.lstm = None  # type: ignore
 
     def update_normalization(self, vec_inputs: List[torch.Tensor]) -> None:
-        for vec_input, vec_enc in zip(vec_inputs, self.vector_inputs):
+        for vec_input, vec_enc in zip(vec_inputs, self.vector_processors):
             vec_enc.update_normalization(vec_input)
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
-            for n1, n2 in zip(self.vector_inputs, other_network.vector_inputs):
+            for n1, n2 in zip(self.vector_processors, other_network.vector_processors):
                 n1.copy_normalization(n2)
 
     @property
@@ -79,12 +79,12 @@ class NetworkBody(nn.Module):
     ) -> Tuple[torch.Tensor, torch.Tensor]:
 
         encodes = []
-        for idx, processor in enumerate(self.vector_inputs):
+        for idx, processor in enumerate(self.vector_processors):
             vec_input = vec_inputs[idx]
             processed_vec = processor(vec_input)
             encodes.append(processed_vec)
 
-        for idx, processor in enumerate(self.visual_inputs):
+        for idx, processor in enumerate(self.visual_processors):
             vis_input = vis_inputs[idx]
             if not torch.onnx.is_in_onnx_export():
                 vis_input = vis_input.permute([0, 3, 1, 2])

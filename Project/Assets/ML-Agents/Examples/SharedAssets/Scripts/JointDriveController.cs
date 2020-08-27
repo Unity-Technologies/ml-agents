@@ -141,6 +141,17 @@ namespace Unity.MLAgentsExamples
                 bp.groundContact.agent = gameObject.GetComponent<Agent>();
             }
 
+            if (bp.joint)
+            {
+                var jd = new JointDrive
+                {
+                    positionSpring = maxJointSpring,
+                    positionDamper = jointDampen,
+                    maximumForce = maxJointForceLimit
+                };
+                bp.joint.slerpDrive = jd;
+            }
+
             bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);

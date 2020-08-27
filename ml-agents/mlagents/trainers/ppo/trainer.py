@@ -12,7 +12,7 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
@@ -34,7 +34,7 @@ class PPOTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain_name: str,
+        behavior_name: str,
         reward_buff_cap: int,
         trainer_settings: TrainerSettings,
         training: bool,
@@ -44,7 +44,7 @@ class PPOTrainer(RLTrainer):
     ):
         """
         Responsible for collecting experiences and training PPO model.
-        :param brain_name: The name of the brain associated with trainer config
+        :param behavior_name: The name of the behavior associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
@@ -53,7 +53,12 @@ class PPOTrainer(RLTrainer):
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, load, artifact_path, reward_buff_cap
+            behavior_name,
+            trainer_settings,
+            training,
+            load,
+            artifact_path,
+            reward_buff_cap,
         )
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, self.trainer_settings.hyperparameters

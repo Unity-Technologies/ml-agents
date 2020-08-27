@@ -122,7 +122,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         Creates the observation input.
         """
-        n_vis = len(self.encoder.visual_inputs)
+        n_vis = len(self.encoder.visual_processors)
         vec_inputs = [
             ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
         ]

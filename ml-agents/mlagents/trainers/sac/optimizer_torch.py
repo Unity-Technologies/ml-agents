@@ -422,7 +422,7 @@ class TorchSACOptimizer(TorchOptimizer):
         if self.policy.use_vis_obs:
             vis_obs = []
             for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_inputs
+                self.policy.actor_critic.network_body.visual_processors
             ):
                 vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
