@@ -878,7 +878,7 @@ will be recorded from the agent.
 <p align="center">
   <img src="images/demo_component.png"
        alt="Demonstration Recorder"
-       width="450" border="10" />
+       width="650" border="10" />
 </p>
 
 When `Record` is checked, a demonstration will be created whenever the scene is
