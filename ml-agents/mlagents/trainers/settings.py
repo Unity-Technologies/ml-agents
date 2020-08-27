@@ -425,14 +425,14 @@ class ActiveLearnerSettings:
     beta:float=1.96
     raw_samples:int=128
     num_restarts:int=1
-    num_batch:int=16
 
 @attr.s(auto_attribs=True)
 class TaskParameterSettings:
     
     parameters: Dict[str, UniformSettings]
     active_learning: Optional[ActiveLearnerSettings] = None
-    repeat:int=8
+    num_repeat:int=8
+    num_batch:int=16
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Dict[str, "TaskParameterSettings"]:

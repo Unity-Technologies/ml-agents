@@ -153,7 +153,6 @@ class ActiveLearningTaskSampler(object):
         self.num_mc = num_mc
         self.beta = beta
         self.raw_samples = raw_samples
-        self.num_batch = num_batch
         self.num_restarts = num_restarts
         self.xdim = ranges.shape[0] + 1
         self.model = None
@@ -198,13 +197,11 @@ class ActiveLearningTaskSampler(object):
             if state_dict is not None:
                 self.model.load_state_dict(state_dict)
             fit_gpytorch_model(mll)
-        else:
-            self.model.set_train_data(self.X, self.Y)
+        # elif self.model is not None:
+            # self.model.set_train_data(self.X, self.Y)
             # self.model = self.model.condition_on_observations(new_X, new_Y)  # TODO: might be faster than setting the data need to test
 
-    def get_design_points(self, num_points:int=1, time=None, get_batch=True):
-        if get_batch:
-            num_points = min(num_points, self.num_batch)
+    def get_design_points(self, num_points:int=1, time=None):
         if not self.model or time < self.warmup_steps:
             return sample_random_points(self.bounds, num_points)
         

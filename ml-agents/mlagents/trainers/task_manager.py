@@ -41,6 +41,8 @@ class TaskManager:
         self._taskSamplers = {}
         self.report_buffer = []
         self.num_repeat = {name: 1 for name in self.behavior_names}
+        self.task_completed = {name: defaultdict(list) for name in self.behavior_names}
+        self.num_batch = {name: 1 for name in self.behavior_names}
 
         for behavior_name in self.behavior_names:
             lows = []
@@ -52,18 +54,19 @@ class TaskManager:
                 lows.append(low)
                 highs.append(high)    
             task_ranges = torch.tensor([lows, highs]).float().T
-            num_repeat = self._dict_settings[behavior_name].num_repeat
-            self.num_repeat[behavior_name] = num_repeat
+            self.num_repeat[behavior_name] = self._dict_settings[behavior_name].num_repeat
+            self.num_batch[behavior_name] = self._dict_settings[behavior_name].num_batch
+            
             active_hyps = self._dict_settings[behavior_name].active_learning
             if active_hyps:
                 self._taskSamplers[behavior_name] = ActiveLearningTaskSampler(task_ranges, 
                     warmup_steps=active_hyps.warmup_steps, capacity=active_hyps.capacity,
                     num_mc=active_hyps.num_mc, beta=active_hyps.beta,
                     raw_samples=active_hyps.raw_samples, num_restarts=active_hyps.num_restarts,
-                    num_batch=active_hyps.num_batch
                 )
             else:
                 self._taskSamplers[behavior_name] = lambda n: sample_random_points(task_ranges.T, n)
+        print("num batch", self.num_batch)
         self.t = {name: 0.0 for name in self.behavior_names}    
         self.counter = {name: 0 for name in self.behavior_names}    
 
@@ -88,7 +91,8 @@ class TaskManager:
         current_time = self.t[behavior_name] + 1
 
         if isinstance(self._taskSamplers[behavior_name], ActiveLearningTaskSampler):
-            taus = self._taskSamplers[behavior_name].get_design_points(num_points=num_samples, time=current_time).data.numpy().tolist()
+            num_points = max(num_samples, self.num_batch[behavior_name])
+            taus = self._taskSamplers[behavior_name].get_design_points(num_points=num_points, time=current_time).data.numpy().tolist()
         else:
             taus  = self._taskSamplers[behavior_name](num_samples).tolist()
         # print("sampled taus", current_time, taus)
@@ -97,7 +101,30 @@ class TaskManager:
         tasks_repeated = []
         for i in range(self.num_repeat[behavior_name]):
             tasks_repeated.extend(tasks)
+
         return tasks_repeated
+
+    def add_run(self, behavior_name, tau, perf):
+        k = tuple(tau.data.numpy().flatten()[:-1].tolist())
+        self.task_completed[behavior_name][k].append(perf)
+
+    def get_data(self, behavior_name, last=True):
+        taus = []
+        perfs = []
+        t = self.t[behavior_name]
+        for k, v in self.task_completed[behavior_name].items():
+            tau = torch.tensor(k + (t,)).float()
+            taus.append(tau)
+            if last:
+                perf = v[-1]
+            else:
+                perf = np.mean(v)
+            perfs.append(perf)
+
+        X = torch.stack(taus, dim=0)
+        Y = torch.tensor(perfs).float().reshape(-1, 1)
+        return X, Y
+            
 
     def update(self, behavior_name: str, task_perfs: List[Tuple[Dict, float]]
     ) -> Tuple[bool, bool]:
@@ -109,25 +136,22 @@ class TaskManager:
         updated = False
         behavior_name = [bname for bname in self.behavior_names if bname in behavior_name][0] # TODO make work with actual behavior names
         if isinstance(self._taskSamplers[behavior_name], ActiveLearningTaskSampler):
-            updated = True
-            taus = []
-            perfs = []
             for task, perf in task_perfs:
-                perfs.append(perf)
-                self.t[behavior_name] = self.t[behavior_name] + 1
+                # perfs.append(perf)
+                # self.t[behavior_name] = self.t[behavior_name] + 1
                 tau = self._build_tau(behavior_name, task, self.t[behavior_name])
-                taus.append(tau)
-
-            X = torch.stack(taus, dim=0)
-            Y = torch.tensor(perfs).float().reshape(-1, 1)
+                # taus.append(tau)
+                self.add_run(behavior_name, tau, perf)
+            
             N = len(task_perfs)
             self.counter[behavior_name] += N
-            if self.counter[behavior_name] >= self.num_repeat:
-                refit = True
-                self.counter[behavior_name] = 0
-            else:
-                refit = False
-            self._taskSamplers[behavior_name].update_model(X, Y, refit=refit)
+            M = self.num_repeat[behavior_name] * self.num_batch[behavior_name]
+            if self.counter[behavior_name] >= M:
+                updated = True
+                self.t[behavior_name] += 1
+                X, Y = self.get_data(behavior_name, last=True)
+                self.task_completed[behavior_name] = defaultdict(list)
+                self._taskSamplers[behavior_name].update_model(X, Y, refit=True)
         
         return updated, must_reset
 
