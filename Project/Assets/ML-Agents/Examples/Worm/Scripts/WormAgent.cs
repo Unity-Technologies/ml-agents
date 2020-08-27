@@ -87,21 +87,21 @@ public class WormAgent : Agent
         switch (typeOfWorm)
         {
             case WormAgentBehaviorType.WormDynamic:
-            {
-                behaviorParams.BehaviorName = "WormDynamic"; //set behavior name
-                if (wormDyModel)
-                    behaviorParams.Model = wormDyModel; //assign the brain
-                SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
-                break;
-            }
+                {
+                    behaviorParams.BehaviorName = "WormDynamic"; //set behavior name
+                    if (wormDyModel)
+                        behaviorParams.Model = wormDyModel; //assign the brain
+                    SpawnTarget(dynamicTargetPrefab, transform.position); //spawn target
+                    break;
+                }
             case WormAgentBehaviorType.WormStatic:
-            {
-                behaviorParams.BehaviorName = "WormStatic"; //set behavior name
-                if (wormStModel)
-                    behaviorParams.Model = wormStModel; //assign the brain
-                SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
-                break;
-            }
+                {
+                    behaviorParams.BehaviorName = "WormStatic"; //set behavior name
+                    if (wormStModel)
+                        behaviorParams.Model = wormStModel; //assign the brain
+                    SpawnTarget(staticTargetPrefab, transform.TransformPoint(new Vector3(0, 0, 1000))); //spawn target
+                    break;
+                }
         }
     }
 

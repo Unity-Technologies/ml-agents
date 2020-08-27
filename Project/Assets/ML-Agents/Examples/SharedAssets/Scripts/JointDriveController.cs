@@ -151,7 +151,7 @@ namespace Unity.MLAgentsExamples
                 };
                 bp.joint.slerpDrive = jd;
             }
-            
+
             bp.thisJdController = this;
             bodyPartsDict.Add(t, bp);
             bodyPartsList.Add(bp);
