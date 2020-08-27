@@ -884,8 +884,12 @@ will be recorded from the agent.
 When `Record` is checked, a demonstration will be created whenever the scene is
 played from the Editor. Depending on the complexity of the task, anywhere from a
 few minutes or a few hours of demonstration data may be necessary to be useful
-for imitation learning. To specify an exact number of steps you want to record use the `Num Steps To Record` field and the editor will end your play session automatically once that many steps are recorded. If you set `Num Steps To Record` to `0` then recording will continue until you manually end the play session. Once the play session ends a `.demo` file will be created in the `Assets/Demonstrations` folder
-(by default). This file contains the demonstrations. Clicking on the file will
+for imitation learning. To specify an exact number of steps you want to record 
+use the `Num Steps To Record` field and the editor will end your play session 
+automatically once that many steps are recorded. If you set `Num Steps To Record` 
+to `0` then recording will continue until you manually end the play session. Once 
+the play session ends a `.demo` file will be created in the `Assets/Demonstrations` 
+folder (by default). This file contains the demonstrations. Clicking on the file will
 provide metadata about the demonstration in the inspector.
 
 <p align="center">
@@ -894,4 +898,5 @@ provide metadata about the demonstration in the inspector.
        width="375" border="10" />
 </p>
 
-You can then specify the path to this file in your [training configurations](Training-Configuration-File.md#behavioral-cloning).
+You can then specify the path to this file in your 
+[training configurations](Training-Configuration-File.md#behavioral-cloning).
