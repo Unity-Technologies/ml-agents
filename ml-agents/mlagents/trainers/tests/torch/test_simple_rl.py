@@ -210,7 +210,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=500,
+        max_steps=700,
         summary_freq=100,
     )
     # The number of steps is pretty small for these encoders
