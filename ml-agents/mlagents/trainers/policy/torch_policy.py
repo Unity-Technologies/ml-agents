@@ -37,7 +37,7 @@ class TorchPolicy(Policy):
         also use a CNN to encode visual input prior to the MLP. Supports discrete and
         continuous action spaces, as well as recurrent networks.
         :param seed: Random seed.
-        :param brain: Assigned BrainParameters object.
+        :param behavior_spec: Assigned BehaviorSpec object.
         :param trainer_settings: Defined training parameters.
         :param load: Whether a pre-trained model will be loaded or a new one created.
         :param tanh_squash: Whether to use a tanh function on the continuous output,
@@ -194,18 +194,18 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = action.detach().cpu().numpy()
-        run_out["pre_action"] = action.detach().cpu().numpy()
+        run_out["action"] = ModelUtils.to_numpy(action)
+        run_out["pre_action"] = ModelUtils.to_numpy(action)
         # Todo - make pre_action difference
-        run_out["log_probs"] = log_probs.detach().cpu().numpy()
-        run_out["entropy"] = entropy.detach().cpu().numpy()
+        run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
+        run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["value_heads"] = {
-            name: t.detach().cpu().numpy() for name, t in value_heads.items()
+            name: ModelUtils.to_numpy(t) for name, t in value_heads.items()
         }
         run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
-            run_out["memory_out"] = memories.detach().cpu().numpy().squeeze(0)
+            run_out["memory_out"] = ModelUtils.to_numpy(memories).squeeze(0)
         return run_out
 
     def get_action(
@@ -214,7 +214,7 @@ class TorchPolicy(Policy):
         """
         Decides actions given observations information, and takes them in environment.
         :param worker_id:
-        :param decision_requests: A dictionary of brain names and BrainInfo from environment.
+        :param decision_requests: A dictionary of behavior names and DecisionSteps from environment.
         :return: an ActionInfo containing action, memories, values and an object
         to be passed to add experiences
         """

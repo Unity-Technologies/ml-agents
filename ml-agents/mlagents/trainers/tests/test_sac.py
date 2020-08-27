@@ -7,7 +7,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.sac.trainer import SACTrainer
-from mlagents.trainers.sac.optimizer import SACOptimizer
+from mlagents.trainers.sac.optimizer_tf import SACOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
