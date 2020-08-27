@@ -9,7 +9,7 @@ from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 from mlagents_envs.logging_util import get_logger
 
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.active_learning import ActiveLearningTaskSampler
+from mlagents.trainers.active_learning import ActiveLearningTaskSampler, sample_random_points
 
 logger = get_logger(__name__)
 
@@ -56,10 +56,11 @@ class TaskManager:
                 self._taskSamplers[behavior_name] = ActiveLearningTaskSampler(task_ranges, 
                     warmup_steps=active_hyps.warmup_steps, capacity=active_hyps.capacity,
                     num_mc=active_hyps.num_mc, beta=active_hyps.beta,
-                    raw_samples=active_hyps.raw_samples, num_restarts=active_hyps.num_restarts
+                    raw_samples=active_hyps.raw_samples, num_restarts=active_hyps.num_restarts,
+                    num_batch=active_hyps.num_batch
                 )
             else:
-                self._taskSamplers[behavior_name] = lambda n: uniform_sample(task_ranges, n)
+                self._taskSamplers[behavior_name] = lambda n: sample_random_points(task_ranges.T, n)
         self.t = {name: 0.0 for name in self.behavior_names}    
 
     def _make_task(self, behavior_name, tau):

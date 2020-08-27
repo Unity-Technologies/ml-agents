@@ -425,6 +425,7 @@ class ActiveLearnerSettings:
     beta:float=1.96
     raw_samples:int=128
     num_restarts:int=1
+    num_batch:int=16
 
 @attr.s(auto_attribs=True)
 class TaskParameterSettings:

@@ -146,13 +146,14 @@ class StandardActiveLearningGP(ExactGP, GPyTorchModel):
         return MultivariateNormal(mean_x, covar_x)
 
 class ActiveLearningTaskSampler(object):
-    def __init__(self,ranges, warmup_steps=30, capacity=600, num_mc=500, beta=1.96, raw_samples=128, num_restarts=1):
+    def __init__(self,ranges, warmup_steps:int=30, capacity:int=600, num_mc:int=500, beta:float=1.96, raw_samples:int=128, num_restarts:int=1, num_batch:int=16):
         self.ranges = ranges
         self.warmup_steps = warmup_steps
         self.capacity = capacity
         self.num_mc = num_mc
         self.beta = beta
         self.raw_samples = raw_samples
+        self.num_batch = num_batch
         self.num_restarts = num_restarts
         self.xdim = ranges.shape[0] + 1
         self.model = None
@@ -201,7 +202,9 @@ class ActiveLearningTaskSampler(object):
             self.model.set_train_data(self.X, self.Y)
             # self.model = self.model.condition_on_observations(new_X, new_Y)  # TODO: might be faster than setting the data need to test
 
-    def get_design_points(self, num_points:int=1, time=None):
+    def get_design_points(self, num_points:int=1, time=None, get_batch=True):
+        if get_batch:
+            num_points = min(num_points, self.num_batch)
         if not self.model or time < self.warmup_steps:
             return sample_random_points(self.bounds, num_points)
         
