@@ -304,30 +304,9 @@ public class CrawlerAgent : Agent
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         var matchSpeedReward = GetMatchingVelocityReward(cubeForward * TargetWalkingSpeed, GetAvgVelocity());
 
-        //Check for NaNs
-        if (float.IsNaN(matchSpeedReward))
-        {
-            throw new ArgumentException(
-                "NaN in moveTowardsTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" hips.velocity: {m_JdController.bodyPartsDict[body].rb.velocity}\n" +
-                $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
-            );
-        }
-
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
         var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
-
-        //Check for NaNs
-        if (float.IsNaN(lookAtTargetReward))
-        {
-            throw new ArgumentException(
-                "NaN in lookAtTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" body.forward: {body.forward}"
-            );
-        }
 
         AddReward(matchSpeedReward * lookAtTargetReward);
     }
