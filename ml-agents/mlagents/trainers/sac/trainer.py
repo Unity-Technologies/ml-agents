@@ -361,6 +361,12 @@ class SACTrainer(RLTrainer):
                             self.hyperparameters.batch_size,
                             sequence_length=self.policy.sequence_length,
                         )
+                else:
+                    if name != "extrinsic":
+                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                            self.hyperparameters.batch_size,
+                            sequence_length=self.policy.sequence_length,
+                        )
             update_stats = self.optimizer.update_reward_signals(
                 reward_signal_minibatches, n_sequences
             )

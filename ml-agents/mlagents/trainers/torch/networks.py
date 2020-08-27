@@ -480,6 +480,10 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             mem_out = None
         return dists, value_outputs, mem_out
 
+    def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
+        super().update_normalization(vector_obs)
+        self.critic.network_body.update_normalization(vector_obs)
+
 
 class GlobalSteps(nn.Module):
     def __init__(self):
