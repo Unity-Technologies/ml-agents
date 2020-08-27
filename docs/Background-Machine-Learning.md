@@ -185,7 +185,7 @@ example is [AlphaGo](https://en.wikipedia.org/wiki/AlphaGo), a
 [computer Go](https://en.wikipedia.org/wiki/Computer_Go) program, that leverages
 deep learning, that was able to beat Lee Sedol (a Go world champion).
 
-A key characteristic of deep learning algorithms is their ability learn very
+A key characteristic of deep learning algorithms is their ability to learn very
 complex functions from large amounts of training data. This makes them a natural
 choice for reinforcement learning tasks when a large amount of data can be
 generated, say through the use of a simulator or engine such as Unity. By

@@ -31,15 +31,12 @@ class GAILRewardProvider(BaseRewardProvider):
             estimates, _ = self._discriminator_network.compute_estimate(
                 mini_batch, use_vail_noise=False
             )
-            return (
+            return ModelUtils.to_numpy(
                 -torch.log(
                     1.0
                     - estimates.squeeze(dim=1)
                     * (1.0 - self._discriminator_network.EPSILON)
                 )
-                .detach()
-                .cpu()
-                .numpy()
             )
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
@@ -154,7 +151,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         encoder_input = self.get_state_encoding(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
-            dones = torch.as_tensor(mini_batch["done"], dtype=torch.float)
+            dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
             encoder_input = torch.cat([encoder_input, actions, dones], dim=1)
         hidden = self.encoder(encoder_input)
         z_mu: Optional[torch.Tensor] = None
@@ -178,17 +175,13 @@ class DiscriminatorNetwork(torch.nn.Module):
         expert_estimate, expert_mu = self.compute_estimate(
             expert_batch, use_vail_noise=True
         )
-        stats_dict["Policy/GAIL Policy Estimate"] = (
-            policy_estimate.mean().detach().cpu().numpy()
-        )
-        stats_dict["Policy/GAIL Expert Estimate"] = (
-            expert_estimate.mean().detach().cpu().numpy()
-        )
+        stats_dict["Policy/GAIL Policy Estimate"] = policy_estimate.mean().item()
+        stats_dict["Policy/GAIL Expert Estimate"] = expert_estimate.mean().item()
         discriminator_loss = -(
             torch.log(expert_estimate + self.EPSILON)
             + torch.log(1.0 - policy_estimate + self.EPSILON)
         ).mean()
-        stats_dict["Losses/GAIL Loss"] = discriminator_loss.detach().cpu().numpy()
+        stats_dict["Losses/GAIL Loss"] = discriminator_loss.item()
         total_loss += discriminator_loss
         if self._settings.use_vail:
             # KL divergence loss (encourage latent representation to be normal)
@@ -209,13 +202,15 @@ class DiscriminatorNetwork(torch.nn.Module):
                     torch.tensor(0.0),
                 )
             total_loss += vail_loss
-            stats_dict["Policy/GAIL Beta"] = self._beta.detach().cpu().numpy()
-            stats_dict["Losses/GAIL KL Loss"] = kl_loss.detach().cpu().numpy()
+            stats_dict["Policy/GAIL Beta"] = self._beta.item()
+            stats_dict["Losses/GAIL KL Loss"] = kl_loss.item()
         if self.gradient_penalty_weight > 0.0:
-            total_loss += (
+            gradient_magnitude_loss = (
                 self.gradient_penalty_weight
                 * self.compute_gradient_magnitude(policy_batch, expert_batch)
             )
+            stats_dict["Policy/GAIL Grad Mag Loss"] = gradient_magnitude_loss.item()
+            total_loss += gradient_magnitude_loss
         return total_loss, stats_dict
 
     def compute_gradient_magnitude(
@@ -231,10 +226,14 @@ class DiscriminatorNetwork(torch.nn.Module):
         encoder_input = obs_epsilon * policy_obs + (1 - obs_epsilon) * expert_obs
         if self._settings.use_actions:
             policy_action = self.get_action_input(policy_batch)
-            expert_action = self.get_action_input(policy_batch)
+            expert_action = self.get_action_input(expert_batch)
             action_epsilon = torch.rand(policy_action.shape)
-            policy_dones = torch.as_tensor(policy_batch["done"], dtype=torch.float)
-            expert_dones = torch.as_tensor(expert_batch["done"], dtype=torch.float)
+            policy_dones = torch.as_tensor(
+                policy_batch["done"], dtype=torch.float
+            ).unsqueeze(1)
+            expert_dones = torch.as_tensor(
+                expert_batch["done"], dtype=torch.float
+            ).unsqueeze(1)
             dones_epsilon = torch.rand(policy_dones.shape)
             encoder_input = torch.cat(
                 [
@@ -250,9 +249,9 @@ class DiscriminatorNetwork(torch.nn.Module):
             use_vail_noise = True
             z_mu = self._z_mu_layer(hidden)
             hidden = torch.normal(z_mu, self._z_sigma * use_vail_noise)
-        hidden = self._estimator(hidden)
-        estimate = torch.mean(torch.sum(hidden, dim=1))
-        gradient = torch.autograd.grad(estimate, encoder_input)[0]
+        estimate = self._estimator(hidden).squeeze(1).sum()
+
+        gradient = torch.autograd.grad(estimate, encoder_input, create_graph=True)[0]
         # Norm's gradient could be NaN at 0. Use our own safe_norm
         safe_norm = (torch.sum(gradient ** 2, dim=1) + self.EPSILON).sqrt()
         gradient_mag = torch.mean((safe_norm - 1) ** 2)

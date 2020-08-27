@@ -9,7 +9,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.ppo.trainer import PPOTrainer, discount_rewards
-from mlagents.trainers.ppo.optimizer import PPOOptimizer
+from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb

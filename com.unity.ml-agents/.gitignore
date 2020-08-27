@@ -25,3 +25,5 @@ build.bat.meta
 # Visual Studio 2015 cache directory
 /.vs/
 
+*.api
+*.api.meta

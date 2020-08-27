@@ -83,8 +83,8 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         )
 
         for name, estimate in value_estimates.items():
-            value_estimates[name] = estimate.detach().cpu().numpy()
-            next_value_estimate[name] = next_value_estimate[name].detach().cpu().numpy()
+            value_estimates[name] = ModelUtils.to_numpy(estimate)
+            next_value_estimate[name] = ModelUtils.to_numpy(next_value_estimate[name])
 
         if done:
             for k in next_value_estimate:
