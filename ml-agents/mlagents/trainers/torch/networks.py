@@ -77,7 +77,6 @@ class NetworkBody(nn.Module):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-
         encodes = []
         for idx, processor in enumerate(self.vector_processors):
             vec_input = vec_inputs[idx]
