@@ -282,18 +282,21 @@ you would like to contribute environments, please see our
   - `WormDynamicTarget`- Goal direction is randomized.
 - Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
-  - +0.01 times body velocity in the goal direction.
-  - +0.01 times body direction alignment with goal direction.
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.
+  - Body velocity matches goal velocity. (normalized between (0,1))
+  - Body direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 57 variables corresponding to position, rotation,
+  - Vector Observation space: 64 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
   - Vector Action space: (Continuous) Size of 9, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `WormStaticTarget`: 200
-- Benchmark Mean Reward for `WormDynamicTarget`: 150
+- Benchmark Mean Reward for `WormStaticTarget`: 1200
+- Benchmark Mean Reward for `WormDynamicTarget`: 800
 
 ## Food Collector
 
