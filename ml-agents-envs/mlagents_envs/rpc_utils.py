@@ -46,6 +46,12 @@ def behavior_spec_from_proto(
 
 
 class OffsetBytesIO:
+    """
+    Simple file-like class that wraps a bytes, and allows moving its "start"
+    position in the bytes. This is only used for reading concatenated PNGs,
+    because Pillow always calls seek(0) at the start of reading.
+    """
+
     __slots__ = ["fp", "offset"]
 
     def __init__(self, data: bytes):
@@ -94,9 +100,6 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
 
     # Read the images back from the bytes (without knowing the sizes).
     while True:
-        # TODO avoid creating a new array here. Unfortunately, Pillow doesn't respect the current state of the buffer
-        # and always starts with seek(0), but we should be able to wrap BytesIO with something that lets us adjust
-        # the "start" offset.
         with hierarchical_timer("image_decompress"):
             image = Image.open(image_fp)
             image.load()
