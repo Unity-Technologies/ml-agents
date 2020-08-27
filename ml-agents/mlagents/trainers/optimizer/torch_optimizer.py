@@ -56,7 +56,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         if self.policy.use_vis_obs:
             visual_obs = []
             for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_inputs
+                self.policy.actor_critic.network_body.visual_processors
             ):
                 visual_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 visual_obs.append(visual_ob)

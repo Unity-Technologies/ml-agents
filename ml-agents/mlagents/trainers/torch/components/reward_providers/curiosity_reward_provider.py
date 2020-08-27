@@ -91,7 +91,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_inputs)
+        n_vis = len(self._state_encoder.visual_processors)
         hidden, _ = self._state_encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
@@ -109,7 +109,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the next state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_inputs)
+        n_vis = len(self._state_encoder.visual_processors)
         hidden, _ = self._state_encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(
