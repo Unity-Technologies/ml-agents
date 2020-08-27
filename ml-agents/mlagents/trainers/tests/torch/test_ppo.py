@@ -29,7 +29,7 @@ BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
 
 
-def create_ppo_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
+def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
     mock_specs = mb.setup_test_behavior_specs(
         use_discrete,
         use_visual,
@@ -56,7 +56,7 @@ def create_ppo_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
 def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     # Test evaluate
     tf.reset_default_graph()
-    optimizer = create_ppo_optimizer_mock(
+    optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     # Test update
@@ -100,7 +100,7 @@ def test_ppo_optimizer_update_curiosity(
     # Test evaluate
     tf.reset_default_graph()
     dummy_config.reward_signals = curiosity_dummy_config
-    optimizer = create_ppo_optimizer_mock(
+    optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     # Test update
@@ -129,7 +129,7 @@ def test_ppo_optimizer_update_curiosity(
 def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
     # Test evaluate
     dummy_config.reward_signals = gail_dummy_config
-    optimizer = create_ppo_optimizer_mock(
+    optimizer = create_test_ppo_optimizer(
         PPO_CONFIG, use_rnn=False, use_discrete=False, use_visual=False
     )
     # Test update
@@ -169,7 +169,7 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
 @pytest.mark.parametrize("rnn", [True, False], ids=["rnn", "no_rnn"])
 def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
-    optimizer = create_ppo_optimizer_mock(
+    optimizer = create_test_ppo_optimizer(
         dummy_config, use_rnn=rnn, use_discrete=discrete, use_visual=visual
     )
     time_horizon = 15
