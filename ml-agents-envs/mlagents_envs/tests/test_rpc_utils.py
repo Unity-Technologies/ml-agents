@@ -62,10 +62,24 @@ def generate_list_agent_proto(
 
 def generate_compressed_data(in_array: np.ndarray) -> bytes:
     image_arr = (in_array * 255).astype(np.uint8)
-    im = Image.fromarray(image_arr, "RGB")
-    byteIO = io.BytesIO()
-    im.save(byteIO, format="PNG")
-    return byteIO.getvalue()
+    bytes_out = bytes()
+
+    num_channels = in_array.shape[2]
+    num_images = (num_channels + 2) // 3
+    # Split the input image into batches of 3 channels.
+    for i in range(num_images):
+        sub_image = image_arr[..., 3 * i : 3 * i + 3]
+        if (i == num_images - 1) and (num_channels % 3) != 0:
+            # Pad zeros
+            zero_shape = list(in_array.shape)
+            zero_shape[2] = 3 - (num_channels % 3)
+            z = np.zeros(zero_shape, dtype=np.uint8)
+            sub_image = np.concatenate([sub_image, z], axis=2)
+        im = Image.fromarray(sub_image, "RGB")
+        byteIO = io.BytesIO()
+        im.save(byteIO, format="PNG")
+        bytes_out += byteIO.getvalue()
+    return bytes_out
 
 
 def generate_compressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
@@ -176,19 +190,31 @@ def proto_from_steps_and_action(
 def test_process_pixels():
     in_array = np.random.rand(128, 64, 3)
     byte_arr = generate_compressed_data(in_array)
-    out_array = process_pixels(byte_arr, False)
+    out_array = process_pixels(byte_arr, 3)
     assert out_array.shape == (128, 64, 3)
     assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
-    assert (in_array - out_array < 0.01).all()
+    assert np.allclose(in_array, out_array, atol=0.01)
+
+
+def test_process_pixels_multi_png():
+    height = 128
+    width = 64
+    num_channels = 7
+    in_array = np.random.rand(height, width, num_channels)
+    byte_arr = generate_compressed_data(in_array)
+    out_array = process_pixels(byte_arr, num_channels)
+    assert out_array.shape == (height, width, num_channels)
+    assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
+    assert np.allclose(in_array, out_array, atol=0.01)
 
 
 def test_process_pixels_gray():
     in_array = np.random.rand(128, 64, 3)
     byte_arr = generate_compressed_data(in_array)
-    out_array = process_pixels(byte_arr, True)
+    out_array = process_pixels(byte_arr, 1)
     assert out_array.shape == (128, 64, 1)
     assert np.mean(in_array.mean(axis=2, keepdims=True) - out_array) < 0.01
-    assert (in_array.mean(axis=2, keepdims=True) - out_array < 0.01).all()
+    assert np.allclose(in_array.mean(axis=2, keepdims=True), out_array, atol=0.01)
 
 
 def test_vector_observation():
@@ -198,7 +224,7 @@ def test_vector_observation():
     for obs_index, shape in enumerate(shapes):
         arr = _process_vector_observation(obs_index, shape, list_proto)
         assert list(arr.shape) == ([n_agents] + list(shape))
-        assert (np.abs(arr - 0.1) < 0.01).all()
+        assert np.allclose(arr, 0.1, atol=0.01)
 
 
 def test_process_visual_observation():
@@ -213,8 +239,8 @@ def test_process_visual_observation():
     ap_list = [ap1, ap2]
     arr = _process_visual_observation(0, (128, 64, 3), ap_list)
     assert list(arr.shape) == [2, 128, 64, 3]
-    assert (arr[0, :, :, :] - in_array_1 < 0.01).all()
-    assert (arr[1, :, :, :] - in_array_2 < 0.01).all()
+    assert np.allclose(arr[0, :, :, :], in_array_1, atol=0.01)
+    assert np.allclose(arr[1, :, :, :], in_array_2, atol=0.01)
 
 
 def test_process_visual_observation_bad_shape():

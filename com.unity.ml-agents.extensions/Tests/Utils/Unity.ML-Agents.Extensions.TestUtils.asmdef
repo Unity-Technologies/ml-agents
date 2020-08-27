@@ -1,17 +1,13 @@
 {
-    "name": "Unity.ML-Agents.Extensions.EditorTests",
+    "name": "Unity.ML-Agents.Extensions.TestUtils",
     "references": [
-        "Unity.ML-Agents.Extensions.Editor",
-        "Unity.ML-Agents.Extensions.TestUtils",
         "Unity.ML-Agents.Extensions",
         "Unity.ML-Agents"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "defineConstraints": [
         "UNITY_INCLUDE_TESTS"
