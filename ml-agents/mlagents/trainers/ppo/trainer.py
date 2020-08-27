@@ -77,8 +77,8 @@ class PPOTrainer(RLTrainer):
 
         agent_buffer_trajectory = trajectory.to_agentbuffer()
         # Update the normalization
-        if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+        # if self.is_training:
+        #     self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
         # Get all value estimates
         value_estimates, value_next = self.optimizer.get_trajectory_value_estimates(

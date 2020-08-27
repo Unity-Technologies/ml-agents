@@ -209,7 +209,7 @@ class SimpleVisualEncoder(nn.Module):
             nn.LeakyReLU(),
         )
 
-    def forward(self, visual_obs: torch.Tensor) -> None:
+    def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
         hidden = self.conv_layers(visual_obs)
         hidden = torch.reshape(hidden, (-1, self.final_flat))
         hidden = self.dense(hidden)

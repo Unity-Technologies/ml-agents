@@ -80,6 +80,13 @@ class TorchPolicy(Policy):
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
         )
+
+        use_jit = True
+        if use_jit:
+            self.actor_critic = torch.jit.script(self.actor_critic)
+
+        print(self.actor_critic)
+
         # Save the m_size needed for export
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings

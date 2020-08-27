@@ -146,6 +146,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         ]
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
+        else:
+            memories = None
 
         if self.policy.use_vis_obs:
             vis_obs = []
