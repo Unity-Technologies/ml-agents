@@ -1,4 +1,4 @@
-from typing import Optional, Dict
+from typing import Optional, Dict, List, Tuple
 import numpy as np
 import torch
 
@@ -10,7 +10,7 @@ from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
-from mlagents.trainers.torch.layers import linear_layer, Swish, Initialization
+from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 from mlagents.trainers.demo_loader import demo_to_buffer
 
@@ -69,31 +69,23 @@ class DiscriminatorNetwork(torch.nn.Module):
         self._use_vail = settings.use_vail
         self._settings = settings
 
-        state_encoder_settings = NetworkSettings(
+        encoder_settings = NetworkSettings(
             normalize=False,
             hidden_units=settings.encoding_size,
             num_layers=2,
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._state_encoder = NetworkBody(
-            specs.observation_shapes, state_encoder_settings
-        )
-
         self._action_flattener = ModelUtils.ActionFlattener(specs)
 
-        encoder_input_size = settings.encoding_size
         if settings.use_actions:
-            encoder_input_size += (
-                self._action_flattener.flattened_size + 1
+            self.encoder = NetworkBody(
+                specs.observation_shapes,
+                encoder_settings,
+                self._action_flattener.flattened_size + 1,
             )  # + 1 is for done
-
-        self.encoder = torch.nn.Sequential(
-            linear_layer(encoder_input_size, settings.encoding_size),
-            Swish(),
-            linear_layer(settings.encoding_size, settings.encoding_size),
-            Swish(),
-        )
+        else:
+            self.encoder = NetworkBody(specs.observation_shapes, encoder_settings)
 
         estimator_input_size = settings.encoding_size
         if settings.use_vail:
@@ -124,19 +116,21 @@ class DiscriminatorNetwork(torch.nn.Module):
             torch.as_tensor(mini_batch["actions"], dtype=torch.float)
         )
 
-    def get_state_encoding(self, mini_batch: AgentBuffer) -> torch.Tensor:
+    def get_state_inputs(
+        self, mini_batch: AgentBuffer
+    ) -> Tuple[List[torch.Tensor], List[torch.Tensor]]:
         """
         Creates the observation input.
         """
-        n_vis = len(self._state_encoder.visual_inputs)
-        hidden, _ = self._state_encoder.forward(
-            vec_inputs=[torch.as_tensor(mini_batch["vector_obs"], dtype=torch.float)],
-            vis_inputs=[
-                torch.as_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
-                for i in range(n_vis)
-            ],
-        )
-        return hidden
+        n_vis = len(self.encoder.visual_inputs)
+        vec_inputs = [
+            ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
+        ]
+        vis_inputs = [
+            ModelUtils.list_to_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
+            for i in range(n_vis)
+        ]
+        return vec_inputs, vis_inputs
 
     def compute_estimate(
         self, mini_batch: AgentBuffer, use_vail_noise: bool = False
@@ -148,12 +142,16 @@ class DiscriminatorNetwork(torch.nn.Module):
         :param use_vail_noise: Only when using VAIL : If true, will sample the code, if
         false, will return the mean of the code.
         """
-        encoder_input = self.get_state_encoding(mini_batch)
+        vec_inputs, vis_inputs = self.get_state_inputs(mini_batch)
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
             dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
-            encoder_input = torch.cat([encoder_input, actions, dones], dim=1)
-        hidden = self.encoder(encoder_input)
+            action_inputs = torch.cat([actions, dones], dim=1)
+            hidden = self.encoder(vec_inputs, vis_inputs, action_inputs)[
+                0
+            ]  # 0 Index removes memories
+        else:
+            hidden = self.encoder(vec_inputs, vis_inputs)[0]  # 0 Index removes memories
         z_mu: Optional[torch.Tensor] = None
         if self._settings.use_vail:
             z_mu = self._z_mu_layer(hidden)
@@ -220,10 +218,28 @@ class DiscriminatorNetwork(torch.nn.Module):
         Gradient penalty from https://arxiv.org/pdf/1704.00028. Adds stability esp.
         for off-policy. Compute gradients w.r.t randomly interpolated input.
         """
-        policy_obs = self.get_state_encoding(policy_batch)
-        expert_obs = self.get_state_encoding(expert_batch)
-        obs_epsilon = torch.rand(policy_obs.shape)
-        encoder_input = obs_epsilon * policy_obs + (1 - obs_epsilon) * expert_obs
+        policy_vec_inputs, policy_vis_inputs = self.get_state_inputs(policy_batch)
+        expert_vec_inputs, expert_vis_inputs = self.get_state_inputs(expert_batch)
+        interp_vec_inputs = []
+        for policy_vec_input, expert_vec_input in zip(
+            policy_vec_inputs, expert_vec_inputs
+        ):
+            obs_epsilon = torch.rand(policy_vec_input.shape)
+            interp_vec_input = (
+                obs_epsilon * policy_vec_input + (1 - obs_epsilon) * expert_vec_input
+            )
+            interp_vec_input.requires_grad = True  # For gradient calculation
+            interp_vec_inputs.append(interp_vec_input)
+        interp_vis_inputs = []
+        for policy_vis_input, expert_vis_input in zip(
+            policy_vis_inputs, expert_vis_inputs
+        ):
+            obs_epsilon = torch.rand(policy_vis_input.shape)
+            interp_vis_input = (
+                obs_epsilon * policy_vis_input + (1 - obs_epsilon) * expert_vis_input
+            )
+            interp_vis_input.requires_grad = True  # For gradient calculation
+            interp_vis_inputs.append(interp_vis_input)
         if self._settings.use_actions:
             policy_action = self.get_action_input(policy_batch)
             expert_action = self.get_action_input(expert_batch)
@@ -235,16 +251,24 @@ class DiscriminatorNetwork(torch.nn.Module):
                 expert_batch["done"], dtype=torch.float
             ).unsqueeze(1)
             dones_epsilon = torch.rand(policy_dones.shape)
-            encoder_input = torch.cat(
+            action_inputs = torch.cat(
                 [
-                    encoder_input,
                     action_epsilon * policy_action
                     + (1 - action_epsilon) * expert_action,
                     dones_epsilon * policy_dones + (1 - dones_epsilon) * expert_dones,
                 ],
                 dim=1,
             )
-        hidden = self.encoder(encoder_input)
+            action_inputs.requires_grad = True
+            hidden, _ = self.encoder(
+                interp_vec_inputs, interp_vis_inputs, action_inputs
+            )
+            encoder_input = tuple(
+                interp_vec_inputs + interp_vis_inputs + [action_inputs]
+            )
+        else:
+            hidden, _ = self.encoder(interp_vec_inputs, interp_vis_inputs)
+            encoder_input = tuple(interp_vec_inputs + interp_vis_inputs)
         if self._settings.use_vail:
             use_vail_noise = True
             z_mu = self._z_mu_layer(hidden)
