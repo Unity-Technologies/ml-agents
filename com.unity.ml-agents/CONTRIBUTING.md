@@ -52,9 +52,11 @@ We run continuous integration on all PRs; all tests must be passing before the P
 
 Several static checks are run on the codebase using the
 [pre-commit framework](https://pre-commit.com/) during CI. To execute the same
-checks locally, install `pre-commit` via `pip` and run `pre-commit run --all-files`.
+checks locally, run `pip install pre-commit` and then `pre-commit run --all-files`.
 Some hooks (for example, `black`) will output the corrected version of the code;
-others (like `mypy`) may require more effort to fix.
+others (like `mypy`) may require more effort to fix. You can optionally run
+`pre-commit install` to install it as a git hook; after this it will run on all
+commits that you make.
 
 ### Code style
 
