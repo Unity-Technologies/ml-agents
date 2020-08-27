@@ -185,7 +185,8 @@ public class CrawlerAgent : Agent
         }
 
         //Random start rotation to help generalize
-        body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        //        body.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        body.rotation = Random.rotation;
 
         UpdateOrientationObjects();
 
@@ -226,6 +227,9 @@ public class CrawlerAgent : Agent
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
         //vel goal relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
+
+        sensor.AddObservation(Quaternion.Angle(m_OrientationCube.transform.rotation,
+                                  m_JdController.bodyPartsDict[body].rb.rotation) / 180);
         //rotation delta
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
 
@@ -304,11 +308,32 @@ public class CrawlerAgent : Agent
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         var matchSpeedReward = GetMatchingVelocityReward(cubeForward * TargetWalkingSpeed, GetAvgVelocity());
 
-        // b. Rotation alignment with target direction.
-        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
+        //        // b. Rotation alignment with target direction.
+        //        //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
+        //        var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
 
-        AddReward(matchSpeedReward * lookAtTargetReward);
+        //        AddReward(matchSpeedReward * lookAtTargetReward);
+
+
+
+        //Angle of the rotation delta between cube and body.
+        //This will range from (0, 180)
+        var rotAngle = Quaternion.Angle(m_OrientationCube.transform.rotation,
+            m_JdController.bodyPartsDict[body].rb.rotation);
+
+        //The reward for facing the target
+        var facingRew = 0f;
+        //If we are within 30 degrees of facing the target
+        if (rotAngle < 30)
+        {
+            //Set normalized facingReward
+            //Facing the target perfectly yields a reward of 1
+            facingRew = 1 - (rotAngle / 180);
+        }
+
+        //Add the product of these two rewards
+        AddReward(matchSpeedReward * facingRew);
+
     }
 
     /// <summary>
