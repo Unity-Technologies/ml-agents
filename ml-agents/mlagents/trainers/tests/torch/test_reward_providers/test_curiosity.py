@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-import torch
+from mlagents.torch_utils import torch
 from mlagents.trainers.torch.components.reward_providers import (
     CuriosityRewardProvider,
     create_reward_provider,

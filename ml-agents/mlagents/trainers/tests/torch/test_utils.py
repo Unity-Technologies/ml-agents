@@ -1,5 +1,5 @@
 import pytest
-import torch
+from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.settings import EncoderType, ScheduleType

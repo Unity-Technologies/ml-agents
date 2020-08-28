@@ -1,6 +1,6 @@
 from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
-import torch
+from mlagents.torch_utils import torch, default_device
 import copy
 
 from mlagents.trainers.action_info import ActionInfo
@@ -58,8 +58,6 @@ class TorchPolicy(Policy):
         )  # could be much simpler if TorchPolicy is nn.Module
         self.grads = None
 
-        torch.set_default_tensor_type(torch.FloatTensor)
-
         reward_signal_configs = trainer_settings.reward_signals
         reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
 
@@ -85,7 +83,7 @@ class TorchPolicy(Policy):
         # m_size needed for training is determined by network, not trainer settings
         self.m_size = self.actor_critic.memory_size
 
-        self.actor_critic.to("cpu")
+        self.actor_critic.to(default_device())
 
     @property
     def export_memory_size(self) -> int:

@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Tuple, List
-import torch
+from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer

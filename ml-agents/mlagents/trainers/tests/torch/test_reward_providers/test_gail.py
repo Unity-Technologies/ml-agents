@@ -2,7 +2,7 @@ from typing import Any
 import numpy as np
 import pytest
 from unittest.mock import patch
-import torch
+from mlagents.torch_utils import torch
 import os
 from mlagents.trainers.torch.components.reward_providers import (
     GAILRewardProvider,

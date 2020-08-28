@@ -1,4 +1,4 @@
-import torch
+from mlagents.torch_utils import torch
 from unittest import mock
 import pytest
 

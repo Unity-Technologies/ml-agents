@@ -1,5 +1,5 @@
 from typing import Dict, cast
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
 
