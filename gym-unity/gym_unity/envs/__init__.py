@@ -104,7 +104,7 @@ class UnityToGymWrapper(gym.Env):
         # Set action spaces
         if self.group_spec.is_action_discrete():
             branches = self.group_spec.discrete_action_branches
-            if self.group_spec.action_shape == 1:
+            if self.group_spec.action_size == 1:
                 self._action_space = spaces.Discrete(branches[0])
             else:
                 if flatten_branched:
