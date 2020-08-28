@@ -5,6 +5,8 @@ try:
     # Everywhere else is caught by the banned-modules setting for flake8
     import torch  # noqa I201
 
+    torch.set_num_threads(1)
+
     # Known PyLint compatibility with PyTorch https://github.com/pytorch/pytorch/issues/701
     # pylint: disable=E1101
     if torch.cuda.is_available():
