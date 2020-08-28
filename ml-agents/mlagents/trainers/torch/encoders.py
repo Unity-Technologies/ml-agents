@@ -109,6 +109,43 @@ class VectorInput(nn.Module):
             self.normalizer.update(inputs)
 
 
+class SmallVisualEncoder(nn.Module):
+    """
+    CNN architecture used by King in their Candy Crush predictor
+    https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning
+    """
+
+    def __init__(
+        self, height: int, width: int, initial_channels: int, output_size: int
+    ):
+        super().__init__()
+        self.h_size = output_size
+        conv_1_hw = conv_output_shape((height, width), 3, 1)
+        conv_2_hw = conv_output_shape(conv_1_hw, 3, 1)
+        self.final_flat = conv_2_hw[0] * conv_2_hw[1] * 144
+
+        self.conv_layers = nn.Sequential(
+            nn.Conv2d(initial_channels, 35, [3, 3], [1, 1]),
+            nn.LeakyReLU(),
+            nn.Conv2d(35, 144, [3, 3], [1, 1]),
+            nn.LeakyReLU(),
+        )
+        self.dense = nn.Sequential(
+            linear_layer(
+                self.final_flat,
+                self.h_size,
+                kernel_init=Initialization.KaimingHeNormal,
+                kernel_gain=1.0,
+            ),
+            nn.LeakyReLU(),
+        )
+
+    def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
+        hidden = self.conv_layers(visual_obs)
+        hidden = torch.reshape(hidden, (-1, self.final_flat))
+        return self.dense(hidden)
+
+
 class SimpleVisualEncoder(nn.Module):
     def __init__(
         self, height: int, width: int, initial_channels: int, output_size: int

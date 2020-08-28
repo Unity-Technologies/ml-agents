@@ -59,6 +59,7 @@ class ExportableSettings:
 
 
 class EncoderType(Enum):
+    SMALL = "small"
     SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
     RESNET = "resnet"
