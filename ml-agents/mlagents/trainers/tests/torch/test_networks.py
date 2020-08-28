@@ -1,6 +1,6 @@
 import pytest
 
-import torch
+from mlagents.torch_utils import torch
 from mlagents.trainers.torch.networks import (
     NetworkBody,
     ValueNetwork,
@@ -71,11 +71,10 @@ def test_networkbody_visual():
     obs_size = (84, 84, 3)
     network_settings = NetworkSettings()
     obs_shapes = [(vec_obs_size,), obs_size]
-    torch.random.manual_seed(0)
 
     networkbody = NetworkBody(obs_shapes, network_settings)
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
-    sample_obs = torch.ones((1, 84, 84, 3))
+    sample_obs = 0.1 * torch.ones((1, 84, 84, 3))
     sample_vec_obs = torch.ones((1, vec_obs_size))
 
     for _ in range(150):

@@ -14,17 +14,18 @@ from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.sac.optimizer import SACOptimizer
+from mlagents.trainers.sac.optimizer_tf import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
 from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents import torch_utils
 
-try:
+if torch_utils.is_available():
     from mlagents.trainers.policy.torch_policy import TorchPolicy
     from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
-except ModuleNotFoundError:
+else:
     TorchPolicy = None  # type: ignore
     TorchSACOptimizer = None  # type: ignore
 
@@ -41,7 +42,7 @@ class SACTrainer(RLTrainer):
 
     def __init__(
         self,
-        brain_name: str,
+        behavior_name: str,
         reward_buff_cap: int,
         trainer_settings: TrainerSettings,
         training: bool,
@@ -51,7 +52,7 @@ class SACTrainer(RLTrainer):
     ):
         """
         Responsible for collecting experiences and training SAC model.
-        :param brain_name: The name of the brain associated with trainer config
+        :param behavior_name: The name of the behavior associated with trainer config
         :param reward_buff_cap: Max reward history to track in the reward buffer
         :param trainer_settings: The parameters for the trainer.
         :param training: Whether the trainer is set for training.
@@ -60,7 +61,12 @@ class SACTrainer(RLTrainer):
         :param artifact_path: The directory within which to store artifacts from this trainer.
         """
         super().__init__(
-            brain_name, trainer_settings, training, load, artifact_path, reward_buff_cap
+            behavior_name,
+            trainer_settings,
+            training,
+            load,
+            artifact_path,
+            reward_buff_cap,
         )
 
         self.seed = seed
@@ -352,6 +358,12 @@ class SACTrainer(RLTrainer):
                 if isinstance(signal, RewardSignal):
                     # Some signals don't need a minibatch to be sampled - so we don't!
                     if signal.update_dict:
+                        reward_signal_minibatches[name] = buffer.sample_mini_batch(
+                            self.hyperparameters.batch_size,
+                            sequence_length=self.policy.sequence_length,
+                        )
+                else:
+                    if name != "extrinsic":
                         reward_signal_minibatches[name] = buffer.sample_mini_batch(
                             self.hyperparameters.batch_size,
                             sequence_length=self.policy.sequence_length,

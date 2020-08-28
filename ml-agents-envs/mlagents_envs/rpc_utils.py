@@ -18,6 +18,9 @@ from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
 from PIL import Image
 
 
+PNG_HEADER = b"\x89PNG\r\n\x1a\n"
+
+
 def behavior_spec_from_proto(
     brain_param_proto: BrainParametersProto, agent_info: AgentInfoProto
 ) -> BehaviorSpec:
@@ -43,24 +46,57 @@ def behavior_spec_from_proto(
 
 
 @timed
-def process_pixels(image_bytes: bytes, gray_scale: bool) -> np.ndarray:
+def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
     """
     Converts byte array observation image into numpy array, re-sizes it,
     and optionally converts it to grey scale
-    :param gray_scale: Whether to convert the image to grayscale.
     :param image_bytes: input byte array corresponding to image
+    :param expected_channels: Expected output channels
     :return: processed numpy array of observation from environment
     """
-    with hierarchical_timer("image_decompress"):
-        image_bytearray = bytearray(image_bytes)
-        image = Image.open(io.BytesIO(image_bytearray))
-        # Normally Image loads lazily, this forces it to do loading in the timer scope.
-        image.load()
-    s = np.array(image, dtype=np.float32) / 255.0
-    if gray_scale:
+    image_bytearray = bytearray(image_bytes)
+
+    if expected_channels == 1:
+        # Convert to grayscale
+        with hierarchical_timer("image_decompress"):
+            image = Image.open(io.BytesIO(image_bytearray))
+            # Normally Image loads lazily, load() forces it to do loading in the timer scope.
+            image.load()
+        s = np.array(image, dtype=np.float32) / 255.0
         s = np.mean(s, axis=2)
         s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-    return s
+        return s
+
+    image_arrays = []
+
+    bytes_read = 0
+    # Read the images back from the bytes (without knowing the sizes).
+    while True:
+        # TODO avoid creating a new array here. Unfortunately, Pillow doesn't respect the current state of the buffer
+        # and always starts with seek(0), but we should be able to wrap BytesIO with something that lets us adjust
+        # the "start" offset.
+        buffer = io.BytesIO(image_bytearray[bytes_read:])
+        with hierarchical_timer("image_decompress"):
+            image = Image.open(buffer)
+            image.load()
+        image_arrays.append(np.array(image, dtype=np.float32) / 255.0)
+
+        # Look for the next header, starting from the current stream location
+        try:
+            offset = buffer.getvalue().index(PNG_HEADER, buffer.tell())
+            bytes_read += offset
+        except ValueError:
+            # Didn't find the header, so must be at the end.
+            break
+
+    img = np.concatenate(image_arrays, axis=2)
+    # We can drop additional channels since they may need to be added to include
+    # numbers of observation channels not divisible by 3.
+    actual_channels = list(img.shape)[2]
+    if actual_channels > expected_channels:
+        img = img[..., 0:expected_channels]
+
+    return img
 
 
 @timed
@@ -78,13 +114,13 @@ def observation_to_np_array(
             raise UnityObservationException(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
             )
-    gray_scale = obs.shape[2] == 1
+    expected_channels = obs.shape[2]
     if obs.compression_type == COMPRESSION_TYPE_NONE:
         img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)
         return img
     else:
-        img = process_pixels(obs.compressed_data, gray_scale)
+        img = process_pixels(obs.compressed_data, expected_channels)
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(

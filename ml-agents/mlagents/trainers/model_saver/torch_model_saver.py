@@ -1,6 +1,6 @@
 import os
 import shutil
-import torch
+from mlagents.torch_utils import torch
 from typing import Dict, Union, Optional, cast
 from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
@@ -45,19 +45,19 @@ class TorchModelSaver(BaseModelSaver):
             self.policy = module
             self.exporter = ModelSerializer(self.policy)
 
-    def save_checkpoint(self, brain_name: str, step: int) -> str:
+    def save_checkpoint(self, behavior_name: str, step: int) -> str:
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
-        checkpoint_path = os.path.join(self.model_path, f"{brain_name}-{step}")
+        checkpoint_path = os.path.join(self.model_path, f"{behavior_name}-{step}")
         state_dict = {
             name: module.state_dict() for name, module in self.modules.items()
         }
         torch.save(state_dict, f"{checkpoint_path}.pt")
         torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
-        self.export(checkpoint_path, brain_name)
+        self.export(checkpoint_path, behavior_name)
         return checkpoint_path
 
-    def export(self, output_filepath: str, brain_name: str) -> None:
+    def export(self, output_filepath: str, behavior_name: str) -> None:
         if self.exporter is not None:
             self.exporter.export_policy_model(output_filepath)
 

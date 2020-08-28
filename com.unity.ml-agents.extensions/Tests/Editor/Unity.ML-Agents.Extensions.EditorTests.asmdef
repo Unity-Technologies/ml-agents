@@ -2,6 +2,7 @@
     "name": "Unity.ML-Agents.Extensions.EditorTests",
     "references": [
         "Unity.ML-Agents.Extensions.Editor",
+        "Unity.ML-Agents.Extensions.TestUtils",
         "Unity.ML-Agents.Extensions",
         "Unity.ML-Agents"
     ],

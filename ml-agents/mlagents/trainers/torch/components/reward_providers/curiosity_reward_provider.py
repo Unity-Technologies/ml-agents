@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict
-import torch
+from mlagents.torch_utils import torch, default_device
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
@@ -23,6 +23,8 @@ class CuriosityRewardProvider(BaseRewardProvider):
         super().__init__(specs, settings)
         self._ignore_done = True
         self._network = CuriosityNetwork(specs, settings)
+        self._network.to(default_device())
+
         self.optimizer = torch.optim.Adam(
             self._network.parameters(), lr=settings.learning_rate
         )
@@ -30,7 +32,7 @@ class CuriosityRewardProvider(BaseRewardProvider):
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
-            rewards = self._network.compute_reward(mini_batch).detach().cpu().numpy()
+            rewards = ModelUtils.to_numpy(self._network.compute_reward(mini_batch))
         rewards = np.minimum(rewards, 1.0 / self.strength)
         return rewards * self._has_updated_once
 
@@ -46,8 +48,8 @@ class CuriosityRewardProvider(BaseRewardProvider):
         loss.backward()
         self.optimizer.step()
         return {
-            "Losses/Curiosity Forward Loss": forward_loss.detach().cpu().numpy(),
-            "Losses/Curiosity Inverse Loss": inverse_loss.detach().cpu().numpy(),
+            "Losses/Curiosity Forward Loss": forward_loss.item(),
+            "Losses/Curiosity Inverse Loss": inverse_loss.item(),
         }
 
     def get_modules(self):
@@ -91,7 +93,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_encoders)
+        n_vis = len(self._state_encoder.visual_processors)
         hidden, _ = self._state_encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
@@ -109,7 +111,7 @@ class CuriosityNetwork(torch.nn.Module):
         """
         Extracts the next state embedding from a mini_batch.
         """
-        n_vis = len(self._state_encoder.visual_encoders)
+        n_vis = len(self._state_encoder.visual_processors)
         hidden, _ = self._state_encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(

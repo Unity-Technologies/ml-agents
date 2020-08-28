@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-import torch
+from mlagents.torch_utils import torch
 from mlagents.trainers.torch.components.reward_providers import (
     CuriosityRewardProvider,
     create_reward_provider,
@@ -10,6 +10,7 @@ from mlagents.trainers.settings import CuriositySettings, RewardSignalType
 from mlagents.trainers.tests.torch.test_reward_providers.utils import (
     create_agent_buffer,
 )
+from mlagents.trainers.torch.utils import ModelUtils
 
 SEED = [42]
 
@@ -66,8 +67,7 @@ def test_reward_decreases(behavior_spec: BehaviorSpec, seed: int) -> None:
     for _ in range(10):
         curiosity_rp.update(buffer)
         reward_new = curiosity_rp.evaluate(buffer)[0]
-        assert reward_new < reward_old
-        reward_old = reward_new
+    assert reward_new < reward_old
 
 
 @pytest.mark.parametrize("seed", SEED)
@@ -82,9 +82,9 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     buffer = create_agent_buffer(behavior_spec, 5)
     for _ in range(200):
         curiosity_rp.update(buffer)
-    prediction = curiosity_rp._network.predict_action(buffer)[0].detach()
-    target = buffer["actions"][0]
-    error = float(torch.mean((prediction - target) ** 2))
+    prediction = curiosity_rp._network.predict_action(buffer)[0]
+    target = torch.tensor(buffer["actions"][0])
+    error = torch.mean((prediction - target) ** 2).item()
     assert error < 0.001
 
 
@@ -107,5 +107,5 @@ def test_next_state_prediction(behavior_spec: BehaviorSpec, seed: int) -> None:
         curiosity_rp.update(buffer)
     prediction = curiosity_rp._network.predict_next_state(buffer)[0]
     target = curiosity_rp._network.get_next_state(buffer)[0]
-    error = float(torch.mean((prediction - target) ** 2).detach())
+    error = float(ModelUtils.to_numpy(torch.mean((prediction - target) ** 2)))
     assert error < 0.001

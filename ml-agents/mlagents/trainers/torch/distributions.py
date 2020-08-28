@@ -1,7 +1,6 @@
 import abc
 from typing import List
-import torch
-from torch import nn
+from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
 from mlagents.trainers.torch.layers import linear_layer, Initialization
