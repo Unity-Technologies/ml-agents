@@ -225,8 +225,8 @@ namespace Unity.MLAgentsExamples
             var isOnnx = m_OverrideExtension.Equals("onnx");
             if (isOnnx)
             {
-                var importer = new ONNXModelImporterRuntime(true);
-                var onnxModel = importer.Import(rawModel);
+                var converter = new ONNXModelConverter(true);
+                var onnxModel = converter.Convert(rawModel);
 
                 NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
                 using (var memoryStream = new MemoryStream())
