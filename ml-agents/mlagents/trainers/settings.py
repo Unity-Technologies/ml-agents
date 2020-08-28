@@ -431,8 +431,8 @@ class TaskParameterSettings:
     
     parameters: Dict[str, UniformSettings]
     active_learning: Optional[ActiveLearnerSettings] = None
-    num_repeat:int=8
-    num_batch:int=16
+    num_repeat:Optional[int]=1
+    num_batch:Optional[int]=1
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Dict[str, "TaskParameterSettings"]:
@@ -450,15 +450,21 @@ class TaskParameterSettings:
         for behavior_name, behavior_config in d.items():
             activelearner_settings = None
             tmp_settings: Dict[str, UniformSettings] = {}
+            num_repeat = 1
+            num_batch = 1
             for agent_parameter, agent_parameter_config in behavior_config.items():
                 if agent_parameter == "active_learner":
                     activelearner_settings = ActiveLearnerSettings(**agent_parameter_config)
+                elif agent_parameter == "num_repeat":
+                    num_repeat = agent_parameter_config
+                elif agent_parameter == "num_batch":
+                    num_batch = agent_parameter_config
                 else:
                     sampler = ParameterRandomizationSettings.structure(
                         agent_parameter_config, ParameterRandomizationSettings
                     )
                     tmp_settings[agent_parameter] = sampler
-            d_final[behavior_name] = TaskParameterSettings(parameters=tmp_settings, active_learning=activelearner_settings)
+            d_final[behavior_name] = TaskParameterSettings(parameters=tmp_settings, active_learning=activelearner_settings, num_batch=num_batch, num_repeat=num_repeat)
             
         
         return d_final
