@@ -70,7 +70,10 @@ class OffsetBytesIO:
     def read(self, size: int = -1) -> bytes:
         return self.fp.read(size)
 
-    def _real_tell(self) -> int:
+    def original_tell(self) -> int:
+        """
+        Returns the offset into the original byte array
+        """
         return self.fp.tell()
 
 
@@ -107,7 +110,7 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
 
         # Look for the next header, starting from the current stream location
         try:
-            new_offset = image_bytes.index(PNG_HEADER, image_fp._real_tell())
+            new_offset = image_bytes.index(PNG_HEADER, image_fp.original_tell())
             image_fp.offset = new_offset
         except ValueError:
             # Didn't find the header, so must be at the end.
