@@ -8,10 +8,10 @@ try:
     import torch  # noqa I201
 
     if "TORCH_NUM_THREADS" in os.environ:
-        torch.set_num_threads(int(os.environ.get('TORCH_NUM_THREADS')))
+        torch.set_num_threads(int(os.environ.get("TORCH_NUM_THREADS")))
 
     if "TORCH_NUM_INTEROP" in os.environ:
-        torch.set_num_threads(int(os.environ.get('TORCH_NUM_INTEROP')))
+        torch.set_num_interop_threads(int(os.environ.get("TORCH_NUM_INTEROP")))
     # torch.set_num_interop_threads(4)
     # os.environ["KMP_AFFINITY"] = "granularity=fine,compact,1,0"
     # os.environ["KMP_BLOCKTIME"] = "1"
