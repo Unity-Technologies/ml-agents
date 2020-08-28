@@ -274,10 +274,10 @@ python3 python/learn.py <env_name> --run-id=<run-identifier> --train
 ### 观测训练进度
 
 开始使用 `learn.py` 按照前面部分所述的方式进行训练后，`ml-agents` 文件夹将
-包含一个 `summaries` 目录。为了更详细地观测训练过程，
+包含一个 `results` 目录。为了更详细地观测训练过程，
 您可以使用 TensorBoard。从命令行中运行：
 
-`tensorboard --logdir=summaries`
+`tensorboard --logdir results`
 
 然后导航至 `localhost:6006`。
 

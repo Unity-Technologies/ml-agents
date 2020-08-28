@@ -18,6 +18,8 @@ STATUS_FORMAT_VERSION = "0.1.0"
 class StatusType(Enum):
     LESSON_NUM = "lesson_num"
     STATS_METADATA = "metadata"
+    CHECKPOINTS = "checkpoints"
+    FINAL_CHECKPOINT = "final_checkpoint"
 
 
 @attr.s(auto_attribs=True)
@@ -65,7 +67,7 @@ class GlobalTrainingStatus:
         :param path: Path to the JSON file containing the state.
         """
         try:
-            with open(path, "r") as f:
+            with open(path) as f:
                 loaded_dict = json.load(f)
             # Compare the metadata
             _metadata = loaded_dict[StatusType.STATS_METADATA.value]

@@ -1,14 +1,14 @@
 # # Unity ML-Agents Toolkit
 # ## ML-Agent Learning (Ghost Trainer)
 
-from typing import Deque, Dict, List, cast
+from collections import defaultdict
+from typing import Deque, Dict, DefaultDict, List
 
 import numpy as np
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.policy.tf_policy import TFPolicy
 
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.trajectory import Trajectory
@@ -58,7 +58,7 @@ class GhostTrainer(Trainer):
         :param artifact_path: Path to store artifacts from this trainer.
         """
 
-        super(GhostTrainer, self).__init__(
+        super().__init__(
             brain_name, trainer_settings, training, artifact_path, reward_buff_cap
         )
 
@@ -68,9 +68,9 @@ class GhostTrainer(Trainer):
         self._internal_trajectory_queues: Dict[str, AgentManagerQueue[Trajectory]] = {}
         self._internal_policy_queues: Dict[str, AgentManagerQueue[Policy]] = {}
 
-        self._team_to_name_to_policy_queue: Dict[
+        self._team_to_name_to_policy_queue: DefaultDict[
             int, Dict[str, AgentManagerQueue[Policy]]
-        ] = {}
+        ] = defaultdict(dict)
 
         self._name_to_parsed_behavior_id: Dict[str, BehaviorIdentifiers] = {}
 
@@ -117,7 +117,6 @@ class GhostTrainer(Trainer):
         self.current_policy_snapshot: Dict[str, List[float]] = {}
 
         self.snapshot_counter: int = 0
-        self.policies: Dict[str, TFPolicy] = {}
 
         # wrapped_training_team and learning team need to be separate
         # in the situation where new agents are created destroyed
@@ -262,7 +261,7 @@ class GhostTrainer(Trainer):
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
             try:
-                policy = cast(TFPolicy, internal_policy_queue.get_nowait())
+                policy = internal_policy_queue.get_nowait()
                 self.current_policy_snapshot[brain_name] = policy.get_weights()
             except AgentManagerQueue.Empty:
                 pass
@@ -298,25 +297,18 @@ class GhostTrainer(Trainer):
         """
         self.trainer.end_episode()
 
-    def save_model(self, name_behavior_id: str) -> None:
+    def save_model(self) -> None:
         """
-        Forwarding call to wrapped trainers save_model
+        Forwarding call to wrapped trainers save_model.
         """
-        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
-        brain_name = parsed_behavior_id.brain_name
-        self.trainer.save_model(brain_name)
-
-    def export_model(self, name_behavior_id: str) -> None:
-        """
-        Forwarding call to wrapped trainers export_model.
-        """
-        parsed_behavior_id = self._name_to_parsed_behavior_id[name_behavior_id]
-        brain_name = parsed_behavior_id.brain_name
-        self.trainer.export_model(brain_name)
+        self.trainer.save_model()
 
     def create_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
-    ) -> TFPolicy:
+        self,
+        parsed_behavior_id: BehaviorIdentifiers,
+        behavior_spec: BehaviorSpec,
+        create_graph: bool = False,
+    ) -> Policy:
         """
         Creates policy with the wrapped trainer's create_policy function
         The first policy encountered sets the wrapped
@@ -324,10 +316,10 @@ class GhostTrainer(Trainer):
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
         """
-        policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
-        policy.create_tf_graph()
-        policy.initialize_or_load()
-        policy.init_load_weights()
+        policy = self.trainer.create_policy(
+            parsed_behavior_id, behavior_spec, create_graph=True
+        )
+        self.trainer.model_saver.initialize_or_load(policy)
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
 
@@ -337,7 +329,6 @@ class GhostTrainer(Trainer):
                 parsed_behavior_id, behavior_spec
             )
             self.trainer.add_policy(parsed_behavior_id, internal_trainer_policy)
-            internal_trainer_policy.init_load_weights()
             self.current_policy_snapshot[
                 parsed_behavior_id.brain_name
             ] = internal_trainer_policy.get_weights()
@@ -349,7 +340,7 @@ class GhostTrainer(Trainer):
         return policy
 
     def add_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, policy: TFPolicy
+        self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
         """
         Adds policy to GhostTrainer.
@@ -360,7 +351,7 @@ class GhostTrainer(Trainer):
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
         self.policies[name_behavior_id] = policy
 
-    def get_policy(self, name_behavior_id: str) -> TFPolicy:
+    def get_policy(self, name_behavior_id: str) -> Policy:
         """
         Gets policy associated with name_behavior_id
         :param name_behavior_id: Fully qualified behavior name
@@ -424,14 +415,9 @@ class GhostTrainer(Trainer):
         """
         super().publish_policy_queue(policy_queue)
         parsed_behavior_id = self._name_to_parsed_behavior_id[policy_queue.behavior_id]
-        try:
-            self._team_to_name_to_policy_queue[parsed_behavior_id.team_id][
-                parsed_behavior_id.brain_name
-            ] = policy_queue
-        except KeyError:
-            self._team_to_name_to_policy_queue[parsed_behavior_id.team_id] = {
-                parsed_behavior_id.brain_name: policy_queue
-            }
+        self._team_to_name_to_policy_queue[parsed_behavior_id.team_id][
+            parsed_behavior_id.brain_name
+        ] = policy_queue
         if parsed_behavior_id.team_id == self.wrapped_trainer_team:
             # With a future multiagent trainer, this will be indexed by 'role'
             internal_policy_queue: AgentManagerQueue[Policy] = AgentManagerQueue(

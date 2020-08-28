@@ -15,12 +15,11 @@ from mlagents.trainers.environment_parameter_manager import EnvironmentParameter
 from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
-    CSVWriter,
     StatsReporter,
     GaugeWriter,
     ConsoleWriter,
 )
-from mlagents.trainers.cli_utils import parser
+from mlagents.trainers.cli_utils import parser, DetectDefault
 from mlagents_envs.environment import UnityEnvironment
 from mlagents.trainers.settings import RunOptions
 
@@ -89,22 +88,14 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             GlobalTrainingStatus.load_state(
                 os.path.join(run_logs_dir, "training_status.json")
             )
-        # Configure CSV, Tensorboard Writers and StatsReporter
-        # We assume reward and episode length are needed in the CSV.
-        csv_writer = CSVWriter(
-            write_path,
-            required_fields=[
-                "Environment/Cumulative Reward",
-                "Environment/Episode Length",
-            ],
-        )
+
+        # Configure Tensorboard Writers and StatsReporter
         tb_writer = TensorboardWriter(
             write_path, clear_past_data=not checkpoint_settings.resume
         )
         gauge_write = GaugeWriter()
         console_writer = ConsoleWriter()
         StatsReporter.add_writer(tb_writer)
-        StatsReporter.add_writer(csv_writer)
         StatsReporter.add_writer(gauge_write)
         StatsReporter.add_writer(console_writer)
 
@@ -134,14 +125,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         )
 
         trainer_factory = TrainerFactory(
-            options.behaviors,
-            write_path,
-            not checkpoint_settings.inference,
-            checkpoint_settings.resume,
-            run_seed,
-            env_parameter_manager,
-            maybe_init_path,
-            False,
+            trainer_config=options.behaviors,
+            output_path=write_path,
+            train_model=not checkpoint_settings.inference,
+            load_model=checkpoint_settings.resume,
+            seed=run_seed,
+            param_manager=env_parameter_manager,
+            init_path=maybe_init_path,
+            multi_gpu=False,
+            force_torch="torch" in DetectDefault.non_default_args,
         )
         # Create controller and begin training.
         tc = TrainerController(
@@ -273,9 +265,11 @@ def run_cli(options: RunOptions) -> None:
     add_timer_metadata("mlagents_envs_version", mlagents_envs.__version__)
     add_timer_metadata("communication_protocol_version", UnityEnvironment.API_VERSION)
     add_timer_metadata("tensorflow_version", tf_utils.tf.__version__)
+    add_timer_metadata("numpy_version", np.__version__)
 
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
+        logger.info(f"run_seed set to {run_seed}")
     run_training(run_seed, options)
 
 

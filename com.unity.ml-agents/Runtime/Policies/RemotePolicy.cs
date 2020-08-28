@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Policies
@@ -13,17 +14,22 @@ namespace Unity.MLAgents.Policies
     {
         int m_AgentId;
         string m_FullyQualifiedBehaviorName;
+        SpaceType m_SpaceType;
+        ActionBuffers m_LastActionBuffer;
 
         internal ICommunicator m_Communicator;
 
         /// <inheritdoc />
         public RemotePolicy(
-            BrainParameters brainParameters,
+            ActionSpec actionSpec,
             string fullyQualifiedBehaviorName)
         {
             m_FullyQualifiedBehaviorName = fullyQualifiedBehaviorName;
             m_Communicator = Academy.Instance.Communicator;
-            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, brainParameters);
+            m_Communicator.SubscribeBrain(m_FullyQualifiedBehaviorName, actionSpec);
+
+            actionSpec.CheckNotHybrid();
+            m_SpaceType = actionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
         }
 
         /// <inheritdoc />
@@ -34,10 +40,18 @@ namespace Unity.MLAgents.Policies
         }
 
         /// <inheritdoc />
-        public float[] DecideAction()
+        public ref readonly ActionBuffers DecideAction()
         {
             m_Communicator?.DecideBatch();
-            return m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+            var actions = m_Communicator?.GetActions(m_FullyQualifiedBehaviorName, m_AgentId);
+            // TODO figure out how to handle this with multiple space types.
+            if (m_SpaceType == SpaceType.Continuous)
+            {
+                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
+                return ref m_LastActionBuffer;
+            }
+            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
+            return ref m_LastActionBuffer;
         }
 
         public void Dispose()

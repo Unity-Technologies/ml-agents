@@ -5,6 +5,7 @@ using Google.Protobuf;
 using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using System.Runtime.CompilerServices;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
@@ -27,7 +28,7 @@ namespace Unity.MLAgents
             var agentInfoProto = ai.ToAgentInfoProto();
 
             var agentActionProto = new AgentActionProto();
-            if(ai.storedVectorActions != null)
+            if (ai.storedVectorActions != null)
             {
                 agentActionProto.VectorActions.AddRange(ai.storedVectorActions);
             }
@@ -85,7 +86,7 @@ namespace Unity.MLAgents
 
         #region BrainParameters
         /// <summary>
-        /// Converts a Brain into to a Protobuf BrainInfoProto so it can be sent
+        /// Converts a BrainParameters into to a BrainParametersProto so it can be sent.
         /// </summary>
         /// <returns>The BrainInfoProto generated.</returns>
         /// <param name="bp">The instance of BrainParameter to extend.</param>
@@ -96,14 +97,45 @@ namespace Unity.MLAgents
             var brainParametersProto = new BrainParametersProto
             {
                 VectorActionSize = { bp.VectorActionSize },
-                VectorActionSpaceType = (SpaceTypeProto) bp.VectorActionSpaceType,
+                VectorActionSpaceType = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
-            if(bp.VectorActionDescriptions != null)
+            if (bp.VectorActionDescriptions != null)
             {
                 brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
             }
+            return brainParametersProto;
+        }
+
+        /// <summary>
+        /// Converts an ActionSpec into to a Protobuf BrainInfoProto so it can be sent.
+        /// </summary>
+        /// <returns>The BrainInfoProto generated.</returns>
+        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="name">The name of the brain.</param>
+        /// <param name="isTraining">Whether or not the Brain is training.</param>
+        public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
+        {
+            actionSpec.CheckNotHybrid();
+
+            var brainParametersProto = new BrainParametersProto
+            {
+                BrainName = name,
+                IsTraining = isTraining
+            };
+            if (actionSpec.NumContinuousActions > 0)
+            {
+                brainParametersProto.VectorActionSize.Add(actionSpec.NumContinuousActions);
+                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Continuous;
+            }
+            else if (actionSpec.NumDiscreteActions > 0)
+            {
+                brainParametersProto.VectorActionSize.AddRange(actionSpec.BranchSizes);
+                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Discrete;
+            }
+
+            // TODO handle ActionDescriptions?
             return brainParametersProto;
         }
 
@@ -175,20 +207,12 @@ namespace Unity.MLAgents
         }
 
         #region AgentAction
-        public static AgentAction ToAgentAction(this AgentActionProto aap)
+        public static List<float[]> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
         {
-            return new AgentAction
-            {
-                vectorActions = aap.VectorActions.ToArray()
-            };
-        }
-
-        public static List<AgentAction> ToAgentActionList(this UnityRLInputProto.Types.ListAgentActionProto proto)
-        {
-            var agentActions = new List<AgentAction>(proto.Value.Count);
+            var agentActions = new List<float[]>(proto.Value.Count);
             foreach (var ap in proto.Value)
             {
-                agentActions.Add(ap.ToAgentAction());
+                agentActions.Add(ap.VectorActions.ToArray());
             }
             return agentActions;
         }

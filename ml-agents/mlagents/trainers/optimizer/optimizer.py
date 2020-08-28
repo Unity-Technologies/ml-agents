@@ -10,6 +10,9 @@ class Optimizer(abc.ABC):
     Provides methods to update the Policy.
     """
 
+    def __init__(self):
+        self.reward_signals = {}
+
     @abc.abstractmethod
     def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
         """

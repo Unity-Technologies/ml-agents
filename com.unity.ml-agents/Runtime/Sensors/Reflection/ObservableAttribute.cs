@@ -131,7 +131,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal static List<ISensor> CreateObservableSensors(object o, bool excludeInherited)
         {
             var sensorsOut = new List<ISensor>();
-            foreach (var(field, attr) in GetObservableFields(o, excludeInherited))
+            foreach (var (field, attr) in GetObservableFields(o, excludeInherited))
             {
                 var sensor = CreateReflectionSensor(o, field, null, attr);
                 if (sensor != null)
@@ -140,7 +140,7 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
             }
 
-            foreach (var(prop, attr) in GetObservableProperties(o, excludeInherited))
+            foreach (var (prop, attr) in GetObservableProperties(o, excludeInherited))
             {
                 if (!prop.CanRead)
                 {
@@ -218,7 +218,7 @@ namespace Unity.MLAgents.Sensors.Reflection
             else
             {
                 var (_, sensorType) = s_TypeToSensorInfo[memberType];
-                sensor = (ISensor) Activator.CreateInstance(sensorType, reflectionSensorInfo);
+                sensor = (ISensor)Activator.CreateInstance(sensorType, reflectionSensorInfo);
             }
 
             // Wrap the base sensor in a StackingSensor if we're using stacking.
@@ -241,7 +241,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         internal static int GetTotalObservationSize(object o, bool excludeInherited, List<string> errorsOut)
         {
             int sizeOut = 0;
-            foreach (var(field, attr) in GetObservableFields(o, excludeInherited))
+            foreach (var (field, attr) in GetObservableFields(o, excludeInherited))
             {
                 if (s_TypeToSensorInfo.ContainsKey(field.FieldType))
                 {
@@ -258,7 +258,7 @@ namespace Unity.MLAgents.Sensors.Reflection
                 }
             }
 
-            foreach (var(prop, attr) in GetObservableProperties(o, excludeInherited))
+            foreach (var (prop, attr) in GetObservableProperties(o, excludeInherited))
             {
                 if (!prop.CanRead)
                 {

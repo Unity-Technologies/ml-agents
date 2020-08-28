@@ -11,12 +11,13 @@ namespace Unity.MLAgentsExamples
     [System.Serializable]
     public class BodyPart
     {
-        [Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
+        [Header("Body Part Info")] [Space(10)] public ConfigurableJoint joint;
         public Rigidbody rb;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
 
-        [Header("Ground & Target Contact")][Space(10)]
+        [Header("Ground & Target Contact")]
+        [Space(10)]
         public GroundContact groundContact;
 
         public TargetContact targetContact;
@@ -24,7 +25,8 @@ namespace Unity.MLAgentsExamples
         [FormerlySerializedAs("thisJDController")]
         [HideInInspector] public JointDriveController thisJdController;
 
-        [Header("Current Joint Settings")][Space(10)]
+        [Header("Current Joint Settings")]
+        [Space(10)]
         public Vector3 currentEularJointRotation;
 
         [HideInInspector] public float currentStrength;
@@ -32,7 +34,8 @@ namespace Unity.MLAgentsExamples
         public float currentYNormalizedRot;
         public float currentZNormalizedRot;
 
-        [Header("Other Debug Info")][Space(10)]
+        [Header("Other Debug Info")]
+        [Space(10)]
         public Vector3 currentJointForce;
 
         public float currentJointForceSqrMag;
@@ -99,7 +102,8 @@ namespace Unity.MLAgentsExamples
 
     public class JointDriveController : MonoBehaviour
     {
-        [Header("Joint Drive Settings")][Space(10)]
+        [Header("Joint Drive Settings")]
+        [Space(10)]
         public float maxJointSpring;
 
         public float jointDampen;
@@ -135,6 +139,17 @@ namespace Unity.MLAgentsExamples
             else
             {
                 bp.groundContact.agent = gameObject.GetComponent<Agent>();
+            }
+
+            if (bp.joint)
+            {
+                var jd = new JointDrive
+                {
+                    positionSpring = maxJointSpring,
+                    positionDamper = jointDampen,
+                    maximumForce = maxJointForceLimit
+                };
+                bp.joint.slerpDrive = jd;
             }
 
             bp.thisJdController = this;

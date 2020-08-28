@@ -23,7 +23,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv("CIRCLE_TAG")
 
         if tag != EXPECTED_TAG:
-            info = "Git tag: {0} does not match the expected tag of this app: {1}".format(
+            info = "Git tag: {} does not match the expected tag of this app: {}".format(
                 tag, EXPECTED_TAG
             )
             sys.exit(info)
@@ -48,11 +48,11 @@ setup(
     install_requires=[
         "cloudpickle",
         "grpcio>=1.11.0",
-        "numpy>=1.14.1,<2.0",
+        "numpy>=1.14.1,<1.19.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
     ],
-    python_requires=">=3.5",
+    python_requires=">=3.6.1",
     cmdclass={"verify": VerifyVersionCommand},
 )

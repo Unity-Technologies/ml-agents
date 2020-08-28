@@ -95,8 +95,8 @@ in the `results/<run-identifier>` folder:
    blocks. See [Profiling in Python](Profiling-Python.md) for more information
    on the timers generated.
 
-These artifacts (except the `.nn` file) are updated throughout the training
-process and finalized when training completes or is interrupted.
+These artifacts are updated throughout the training
+process and finalized when training is completed or is interrupted.
 
 #### Stopping and Resuming Training
 
@@ -433,7 +433,7 @@ if we wanted to train the 3D ball agent with parameter randomization, we would r
 mlagents-learn config/ppo/3DBall_randomize.yaml --run-id=3D-Ball-randomize
 ```
 
-We can observe progress and metrics via Tensorboard.
+We can observe progress and metrics via TensorBoard.
 
 #### Curriculum
 

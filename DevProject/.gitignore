@@ -9,6 +9,7 @@
 /Assets/Demonstrations*
 /Assets/ML-Agents/Timers*
 /csharp_timers.json
+/CodeCoverage/
 
 # Environemnt logfile
 *Project.log

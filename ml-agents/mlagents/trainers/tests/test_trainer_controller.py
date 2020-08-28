@@ -67,8 +67,7 @@ def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
 
     tc.advance.side_effect = take_step_sideeffect
 
-    tc._export_graph = MagicMock()
-    tc._save_model = MagicMock()
+    tc._save_models = MagicMock()
     return tc, trainer_mock
 
 
@@ -90,8 +89,7 @@ def test_start_learning_trains_forever_if_no_train_model(
     tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == 11
-    tc._export_graph.assert_not_called()
-    tc._save_model.assert_not_called()
+    tc._save_models.assert_not_called()
 
 
 @patch.object(tf, "reset_default_graph")
@@ -111,7 +109,7 @@ def test_start_learning_trains_until_max_steps_then_saves(
     tf_reset_graph.assert_called_once()
     env_mock.reset.assert_called_once()
     assert tc.advance.call_count == trainer_mock.get_max_steps + 1
-    tc._save_model.assert_called_once()
+    tc._save_models.assert_called_once()
 
 
 @pytest.fixture
@@ -143,6 +141,7 @@ def test_advance_adds_experiences_to_trainer_and_trains(
     tc.advance(env_mock)
 
     env_mock.reset.assert_not_called()
-    env_mock.advance.assert_called_once()
+    env_mock.get_steps.assert_called_once()
+    env_mock.process_steps.assert_called_once()
     # May have been called many times due to thread
     trainer_mock.advance.call_count > 0

@@ -3,6 +3,7 @@ using UnityEngine;
 using NUnit.Framework;
 using System.Reflection;
 using System.Collections.Generic;
+using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
 using Unity.MLAgents.Policies;
@@ -14,6 +15,8 @@ namespace Unity.MLAgents.Tests
     {
         public Action OnRequestDecision;
         ObservationWriter m_ObsWriter = new ObservationWriter();
+        static ActionSpec s_ActionSpec = ActionSpec.MakeContinuous(1);
+        static ActionBuffers s_EmptyActionBuffers = new ActionBuffers(new float[1], Array.Empty<int>());
         public void RequestDecision(AgentInfo info, List<ISensor> sensors)
         {
             foreach (var sensor in sensors)
@@ -23,9 +26,9 @@ namespace Unity.MLAgents.Tests
             OnRequestDecision?.Invoke();
         }
 
-        public float[] DecideAction() { return new float[0]; }
+        public ref readonly ActionBuffers DecideAction() { return ref s_EmptyActionBuffers; }
 
-        public void Dispose() {}
+        public void Dispose() { }
     }
 
     public class TestAgent : Agent
@@ -85,7 +88,7 @@ namespace Unity.MLAgents.Tests
             sensor.AddObservation(collectObservationsCallsForEpisode);
         }
 
-        public override void OnActionReceived(float[] vectorAction)
+        public override void OnActionReceived(ActionBuffers buffers)
         {
             agentActionCalls += 1;
             agentActionCallsForEpisode += 1;
@@ -99,10 +102,11 @@ namespace Unity.MLAgents.Tests
             agentActionCallsForEpisode = 0;
         }
 
-        public override void Heuristic(float[] actionsOut)
+        public override void Heuristic(in ActionBuffers actionsOut)
         {
             var obs = GetObservations();
-            actionsOut[0] = obs[0];
+            var continuousActions = actionsOut.ContinuousActions;
+            continuousActions[0] = (int)obs[0];
             heuristicCalls++;
         }
     }
@@ -148,7 +152,7 @@ namespace Unity.MLAgents.Tests
             return sensorName;
         }
 
-        public void Update() {}
+        public void Update() { }
 
         public void Reset()
         {
@@ -335,9 +339,15 @@ namespace Unity.MLAgents.Tests
         public void TestAgent()
         {
             var agentGo1 = new GameObject("TestAgent");
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.VectorActionSize = new[] { 1 };
+            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var agentGo2 = new GameObject("TestAgent");
+            var bp2 = agentGo2.AddComponent<BehaviorParameters>();
+            bp2.BrainParameters.VectorActionSize = new[] { 1 };
+            bp2.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
@@ -441,9 +451,15 @@ namespace Unity.MLAgents.Tests
         public void TestAgent()
         {
             var agentGo1 = new GameObject("TestAgent");
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.VectorActionSize = new[] { 1 };
+            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var agentGo2 = new GameObject("TestAgent");
+            var bp2 = agentGo2.AddComponent<BehaviorParameters>();
+            bp2.BrainParameters.VectorActionSize = new[] { 1 };
+            bp2.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             agentGo2.AddComponent<TestAgent>();
             var agent2 = agentGo2.GetComponent<TestAgent>();
 
@@ -521,10 +537,12 @@ namespace Unity.MLAgents.Tests
         public void AssertStackingReset()
         {
             var agentGo1 = new GameObject("TestAgent");
-            agentGo1.AddComponent<TestAgent>();
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.VectorActionSize = new[] { 1 };
+            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            var agent1 = agentGo1.AddComponent<TestAgent>();
             var behaviorParameters = agentGo1.GetComponent<BehaviorParameters>();
             behaviorParameters.BrainParameters.NumStackedVectorObservations = 3;
-            var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
             agent1.LazyInitialize();
             var policy = new TestPolicy();
@@ -533,7 +551,7 @@ namespace Unity.MLAgents.Tests
             StackingSensor sensor = null;
             foreach (ISensor s in agent1.sensors)
             {
-                if (s is  StackingSensor)
+                if (s is StackingSensor)
                 {
                     sensor = s as StackingSensor;
                 }
@@ -547,9 +565,9 @@ namespace Unity.MLAgents.Tests
                 aca.EnvironmentStep();
             }
 
-            policy.OnRequestDecision = () =>  SensorTestHelper.CompareObservation(sensor, new[] {18f, 19f, 21f});
+            policy.OnRequestDecision = () => SensorTestHelper.CompareObservation(sensor, new[] { 18f, 19f, 21f });
             agent1.EndEpisode();
-            SensorTestHelper.CompareObservation(sensor, new[] {0f, 0f, 0f});
+            SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f });
         }
     }
 
@@ -569,11 +587,15 @@ namespace Unity.MLAgents.Tests
         public void TestCumulativeReward()
         {
             var agentGo1 = new GameObject("TestAgent");
-            agentGo1.AddComponent<TestAgent>();
-            var agent1 = agentGo1.GetComponent<TestAgent>();
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.VectorActionSize = new[] { 1 };
+            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            var agent1 = agentGo1.AddComponent<TestAgent>();
             var agentGo2 = new GameObject("TestAgent");
-            agentGo2.AddComponent<TestAgent>();
-            var agent2 = agentGo2.GetComponent<TestAgent>();
+            var bp2 = agentGo2.AddComponent<BehaviorParameters>();
+            bp2.BrainParameters.VectorActionSize = new[] { 1 };
+            bp2.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
+            var agent2 = agentGo2.AddComponent<TestAgent>();
             var aca = Academy.Instance;
 
             var decisionRequester = agent1.gameObject.AddComponent<DecisionRequester>();
@@ -609,6 +631,9 @@ namespace Unity.MLAgents.Tests
         public void TestMaxStepsReset()
         {
             var agentGo1 = new GameObject("TestAgent");
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.VectorActionSize = new[] { 1 };
+            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
@@ -672,6 +697,9 @@ namespace Unity.MLAgents.Tests
         {
             // Make sure that Agents with HeuristicPolicies step their sensors each Academy step.
             var agentGo1 = new GameObject("TestAgent");
+            var bp1 = agentGo1.AddComponent<BehaviorParameters>();
+            bp1.BrainParameters.VectorActionSize = new[] { 1 };
+            bp1.BrainParameters.VectorActionSpaceType = SpaceType.Continuous;
             agentGo1.AddComponent<TestAgent>();
             var agent1 = agentGo1.GetComponent<TestAgent>();
             var aca = Academy.Instance;
@@ -783,7 +811,7 @@ namespace Unity.MLAgents.Tests
                 (ObservableAttributeOptions.ExamineAll, 2)
             };
 
-            foreach (var(behavior, expectedNumSensors) in variants)
+            foreach (var (behavior, expectedNumSensors) in variants)
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();

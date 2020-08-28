@@ -48,7 +48,7 @@ class AgentBuffer(dict):
             Adds a list of np.arrays to the end of the list of np.arrays.
             :param data: The np.array list to append.
             """
-            self += list(np.array(data))
+            self += list(np.array(data, dtype=np.float32))
 
         def set(self, data):
             """
@@ -134,7 +134,7 @@ class AgentBuffer(dict):
         super().__init__()
 
     def __str__(self):
-        return ", ".join(["'{0}' : {1}".format(k, str(self[k])) for k in self.keys()])
+        return ", ".join(["'{}' : {}".format(k, str(self[k])) for k in self.keys()])
 
     def reset_agent(self) -> None:
         """
@@ -275,7 +275,7 @@ class AgentBuffer(dict):
             key_list = list(self.keys())
         if not self.check_length(key_list):
             raise BufferException(
-                "The length of the fields {0} were not of same length".format(key_list)
+                f"The length of the fields {key_list} were not of same length"
             )
         for field_key in key_list:
             target_buffer[field_key].extend(

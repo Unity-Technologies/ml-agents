@@ -248,22 +248,29 @@ you would like to contribute environments, please see our
 
 - Set-up: A creature with 4 arms and 4 forearms.
 - Goal: The agents must move its body toward the goal direction without falling.
-  - `CrawlerStaticTarget` - Goal direction is always forward.
   - `CrawlerDynamicTarget`- Goal direction is randomized.
+  - `CrawlerDynamicVariableSpeed`- Goal direction and walking speed are randomized.
+  - `CrawlerStaticTarget` - Goal direction is always forward.
+  - `CrawlerStaticVariableSpeed`- Goal direction is always forward. Walking speed is randomized
 - Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
-  - +0.03 times body velocity in the goal direction.
-  - +0.01 times body direction alignment with goal direction.
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.
+  - Body velocity matches goal velocity. (normalized between (0,1))
+  - Head direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 138 variables corresponding to position, rotation,
+  - Vector Observation space: 172 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
   - Vector Action space: (Continuous) Size of 20, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `CrawlerStaticTarget`: 1600
-- Benchmark Mean Reward for `CrawlerDynamicTarget`: 800
+- Benchmark Mean Reward for `CrawlerDynamicTarget`: 2000
+- Benchmark Mean Reward for `CrawlerDynamicVariableSpeed`: 3000
+- Benchmark Mean Reward for `CrawlerStaticTarget`: 4000
+- Benchmark Mean Reward for `CrawlerStaticVariableSpeed`: 4000
 
 ## Worm
 
@@ -275,18 +282,21 @@ you would like to contribute environments, please see our
   - `WormDynamicTarget`- Goal direction is randomized.
 - Agents: The environment contains 10 agents with same Behavior Parameters.
 - Agent Reward Function (independent):
-  - +0.01 times body velocity in the goal direction.
-  - +0.01 times body direction alignment with goal direction.
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.
+  - Body velocity matches goal velocity. (normalized between (0,1))
+  - Body direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 57 variables corresponding to position, rotation,
+  - Vector Observation space: 64 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb plus the acceleration and
     angular acceleration of the body.
   - Vector Action space: (Continuous) Size of 9, corresponding to target
     rotations for joints.
   - Visual Observations: None
 - Float Properties: None
-- Benchmark Mean Reward for `WormStaticTarget`: 200
-- Benchmark Mean Reward for `WormDynamicTarget`: 150
+- Benchmark Mean Reward for `WormStaticTarget`: 1200
+- Benchmark Mean Reward for `WormDynamicTarget`: 800
 
 ## Food Collector
 
@@ -458,19 +468,22 @@ you would like to contribute environments, please see our
 - Set-up: Physics-based Humanoid agents with 26 degrees of freedom. These DOFs
   correspond to articulation of the following body-parts: hips, chest, spine,
   head, thighs, shins, feet, arms, forearms and hands.
-- Goal: The agents must move its body toward the goal direction as quickly as
-  possible without falling.
-  - `WalkerStatic` - Goal direction is always forward.
+- Goal: The agents must move its body toward the goal direction without falling.
   - `WalkerDynamic`- Goal direction is randomized.
+  - `WalkerDynamicVariableSpeed`- Goal direction and walking speed are randomized.
+  - `WalkerStatic` - Goal direction is always forward.
+  - `WalkerStaticVariableSpeed` - Goal direction is always forward. Walking
+     speed is randomized
 - Agents: The environment contains 10 independent agents with same Behavior
   Parameters.
 - Agent Reward Function (independent):
-  - +0.02 times body velocity in the goal direction. (run towards target)
-  - +0.01 times head direction alignment with goal direction. (face towards target)
-  - +0.005 times head y position - left foot y position. (encourage head height)
-  - +0.005 times head y position - right foot y position. (encourage head height)
+  The reward function is now geometric meaning the reward each step is a product
+  of all the rewards instead of a sum, this helps the agent try to maximize all
+  rewards instead of the easiest rewards.
+  - Body velocity matches goal velocity. (normalized between (0,1))
+  - Head direction alignment with goal direction. (normalized between (0,1))
 - Behavior Parameters:
-  - Vector Observation space: 236 variables corresponding to position, rotation,
+  - Vector Observation space: 243 variables corresponding to position, rotation,
     velocity, and angular velocities of each limb, along with goal direction.
   - Vector Action space: (Continuous) Size of 39, corresponding to target
     rotations and strength applicable to the joints.
@@ -481,7 +494,7 @@ you would like to contribute environments, please see our
     - Recommended Minimum:
     - Recommended Maximum:
   - hip_mass: Mass of the hip component of the walker
-    - Default: 15
+    - Default: 8
     - Recommended Minimum: 7
     - Recommended Maximum: 28
   - chest_mass: Mass of the chest component of the walker
@@ -489,11 +502,15 @@ you would like to contribute environments, please see our
     - Recommended Minimum: 3
     - Recommended Maximum: 20
   - spine_mass: Mass of the spine component of the walker
-    - Default: 10
+    - Default: 8
     - Recommended Minimum: 3
     - Recommended Maximum: 20
-- Benchmark Mean Reward for `WalkerStatic`: 1500
-- Benchmark Mean Reward for `WalkerDynamic`: 700
+- Benchmark Mean Reward for `WalkerDynamic`: 2500
+- Benchmark Mean Reward for `WalkerDynamicVariableSpeed`: 2500
+- Benchmark Mean Reward for `WalkerStatic`: 3500
+- Benchmark Mean Reward for `WalkerStaticVariableSpeed`: 3500
+
+
 
 ## Pyramids
 

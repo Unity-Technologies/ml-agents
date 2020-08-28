@@ -1,4 +1,3 @@
-from io import open
 import os
 import sys
 
@@ -25,7 +24,7 @@ class VerifyVersionCommand(install):
         tag = os.getenv("CIRCLE_TAG")
 
         if tag != EXPECTED_TAG:
-            info = "Git tag: {0} does not match the expected tag of this app: {1}".format(
+            info = "Git tag: {} does not match the expected tag of this app: {}".format(
                 tag, EXPECTED_TAG
             )
             sys.exit(info)
@@ -59,12 +58,12 @@ setup(
         # Test-only dependencies should go in test_requirements.txt, not here.
         "grpcio>=1.11.0",
         "h5py>=2.9.0",
-        "mlagents_envs=={}".format(VERSION),
+        f"mlagents_envs=={VERSION}",
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
-        "tensorflow>=1.7,<3.0",
+        "tensorflow>=1.14,<3.0",
         "cattrs>=1.0.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
@@ -80,4 +79,5 @@ setup(
         ]
     },
     cmdclass={"verify": VerifyVersionCommand},
+    extras_require={"torch": ["torch>=1.5.0"]},
 )

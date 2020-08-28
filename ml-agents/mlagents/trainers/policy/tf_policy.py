@@ -1,8 +1,8 @@
-from typing import Any, Dict, List, Optional, Tuple
-import abc
-import os
+from typing import Any, Dict, List, Optional, Tuple, Callable
 import numpy as np
 from distutils.version import LooseVersion
+
+from mlagents_envs.timers import timed
 
 from mlagents.tf_utils import tf
 from mlagents import tf_utils
@@ -14,9 +14,14 @@ from mlagents.trainers.action_info import ActionInfo
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.behavior_id_utils import get_global_agent_id
 from mlagents_envs.base_env import DecisionSteps
-from mlagents.trainers.models import ModelUtils
-from mlagents.trainers.settings import TrainerSettings, NetworkSettings
+from mlagents.trainers.tf.models import ModelUtils
+from mlagents.trainers.settings import TrainerSettings, EncoderType
 from mlagents.trainers import __version__
+from mlagents.trainers.tf.distributions import (
+    GaussianDistribution,
+    MultiCategoricalDistribution,
+)
+from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
@@ -25,6 +30,8 @@ logger = get_logger(__name__)
 # This is the version number of the inputs and outputs of the model, and
 # determines compatibility with inference in Barracuda.
 MODEL_FORMAT_VERSION = 2
+
+EPSILON = 1e-6  # Small value to avoid divide by zero
 
 
 class UnityPolicyException(UnityException):
@@ -41,83 +48,138 @@ class TFPolicy(Policy):
     functions to save/load models and create the input placeholders.
     """
 
+    # Callback function used at the start of training to synchronize weights.
+    # By default, this nothing.
+    # If this needs to be used, it should be done from outside ml-agents.
+    broadcast_global_variables: Callable[[int], None] = lambda root_rank: None
+
     def __init__(
         self,
         seed: int,
         behavior_spec: BehaviorSpec,
         trainer_settings: TrainerSettings,
-        model_path: str,
-        load: bool = False,
+        tanh_squash: bool = False,
+        reparameterize: bool = False,
+        condition_sigma_on_obs: bool = True,
+        create_tf_graph: bool = True,
     ):
         """
         Initialized the policy.
         :param seed: Random seed to use for TensorFlow.
         :param brain: The corresponding Brain for this policy.
         :param trainer_settings: The trainer parameters.
-        :param model_path: Where to load/save the model.
-        :param load: If True, load model from model_path. Otherwise, create new model.
         """
-
-        self.m_size = 0
-        self.trainer_settings = trainer_settings
-        self.network_settings: NetworkSettings = trainer_settings.network_settings
+        super().__init__(
+            seed,
+            behavior_spec,
+            trainer_settings,
+            tanh_squash,
+            reparameterize,
+            condition_sigma_on_obs,
+        )
         # for ghost trainer save/load snapshots
         self.assign_phs: List[tf.Tensor] = []
         self.assign_ops: List[tf.Operation] = []
-
-        self.inference_dict: Dict[str, tf.Tensor] = {}
         self.update_dict: Dict[str, tf.Tensor] = {}
-        self.sequence_length = 1
-        self.seed = seed
-        self.behavior_spec = behavior_spec
+        self.inference_dict: Dict[str, tf.Tensor] = {}
+        self.first_normalization_update: bool = False
 
-        self.act_size = (
-            list(behavior_spec.discrete_action_branches)
-            if behavior_spec.is_action_discrete()
-            else [behavior_spec.action_size]
-        )
-        self.vec_obs_size = sum(
-            shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
-        )
-        self.vis_obs_size = sum(
-            1 for shape in behavior_spec.observation_shapes if len(shape) == 3
-        )
-
-        self.use_recurrent = self.network_settings.memory is not None
-        self.memory_dict: Dict[str, np.ndarray] = {}
-        self.num_branches = self.behavior_spec.action_size
-        self.previous_action_dict: Dict[str, np.array] = {}
-        self.normalize = self.network_settings.normalize
-        self.use_continuous_act = behavior_spec.is_action_continuous()
-        self.model_path = model_path
-        self.initialize_path = self.trainer_settings.init_path
-        self.keep_checkpoints = self.trainer_settings.keep_checkpoints
         self.graph = tf.Graph()
         self.sess = tf.Session(
             config=tf_utils.generate_session_config(), graph=self.graph
         )
-        self.saver: Optional[tf.Operation] = None
-        self.seed = seed
-        if self.network_settings.memory is not None:
-            self.m_size = self.network_settings.memory.memory_size
-            self.sequence_length = self.network_settings.memory.sequence_length
         self._initialize_tensorflow_references()
-        self.load = load
+        self.grads = None
+        self.update_batch: Optional[tf.Operation] = None
+        self.trainable_variables: List[tf.Variable] = []
+        self.rank = get_rank()
+        if create_tf_graph:
+            self.create_tf_graph()
 
-    @abc.abstractmethod
     def get_trainable_variables(self) -> List[tf.Variable]:
         """
         Returns a List of the trainable variables in this policy. if create_tf_graph hasn't been called,
         returns empty list.
         """
-        pass
+        return self.trainable_variables
 
-    @abc.abstractmethod
-    def create_tf_graph(self):
+    def create_tf_graph(self) -> None:
         """
         Builds the tensorflow graph needed for this policy.
         """
-        pass
+        with self.graph.as_default():
+            tf.set_random_seed(self.seed)
+            _vars = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES)
+            if len(_vars) > 0:
+                # We assume the first thing created in the graph is the Policy. If
+                # already populated, don't create more tensors.
+                return
+
+            self.create_input_placeholders()
+            encoded = self._create_encoder(
+                self.visual_in,
+                self.processed_vector_in,
+                self.h_size,
+                self.num_layers,
+                self.vis_encode_type,
+            )
+            if self.use_continuous_act:
+                self._create_cc_actor(
+                    encoded,
+                    self.tanh_squash,
+                    self.reparameterize,
+                    self.condition_sigma_on_obs,
+                )
+            else:
+                self._create_dc_actor(encoded)
+            self.trainable_variables = tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope="policy"
+            )
+            self.trainable_variables += tf.get_collection(
+                tf.GraphKeys.TRAINABLE_VARIABLES, scope="lstm"
+            )  # LSTMs need to be root scope for Barracuda export
+
+        self.inference_dict = {
+            "action": self.output,
+            "log_probs": self.all_log_probs,
+            "entropy": self.entropy,
+        }
+        if self.use_continuous_act:
+            self.inference_dict["pre_action"] = self.output_pre
+        if self.use_recurrent:
+            self.inference_dict["memory_out"] = self.memory_out
+
+        # We do an initialize to make the Policy usable out of the box. If an optimizer is needed,
+        # it will re-load the full graph
+        self.initialize()
+        # Create assignment ops for Ghost Trainer
+        self.init_load_weights()
+
+    def _create_encoder(
+        self,
+        visual_in: List[tf.Tensor],
+        vector_in: tf.Tensor,
+        h_size: int,
+        num_layers: int,
+        vis_encode_type: EncoderType,
+    ) -> tf.Tensor:
+        """
+        Creates an encoder for visual and vector observations.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
+        :return: The hidden layer (tf.Tensor) after the encoder.
+        """
+        with tf.variable_scope("policy"):
+            encoded = ModelUtils.create_observation_streams(
+                self.visual_in,
+                self.processed_vector_in,
+                1,
+                h_size,
+                num_layers,
+                vis_encode_type,
+            )[0]
+        return encoded
 
     @staticmethod
     def _convert_version_string(version_string: str) -> Tuple[int, ...]:
@@ -129,74 +191,10 @@ class TFPolicy(Policy):
         ver = LooseVersion(version_string)
         return tuple(map(int, ver.version[0:3]))
 
-    def _check_model_version(self, version: str) -> None:
-        """
-        Checks whether the model being loaded was created with the same version of
-        ML-Agents, and throw a warning if not so.
-        """
-        if self.version_tensors is not None:
-            loaded_ver = tuple(
-                num.eval(session=self.sess) for num in self.version_tensors
-            )
-            if loaded_ver != TFPolicy._convert_version_string(version):
-                logger.warning(
-                    f"The model checkpoint you are loading from was saved with ML-Agents version "
-                    f"{loaded_ver[0]}.{loaded_ver[1]}.{loaded_ver[2]} but your current ML-Agents"
-                    f"version is {version}. Model may not behave properly."
-                )
-
-    def _initialize_graph(self):
+    def initialize(self):
         with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
             init = tf.global_variables_initializer()
             self.sess.run(init)
-
-    def _load_graph(self, model_path: str, reset_global_steps: bool = False) -> None:
-        with self.graph.as_default():
-            self.saver = tf.train.Saver(max_to_keep=self.keep_checkpoints)
-            logger.info(f"Loading model from {model_path}.")
-            ckpt = tf.train.get_checkpoint_state(model_path)
-            if ckpt is None:
-                raise UnityPolicyException(
-                    "The model {0} could not be loaded. Make "
-                    "sure you specified the right "
-                    "--run-id and that the previous run you are loading from had the same "
-                    "behavior names.".format(model_path)
-                )
-            try:
-                self.saver.restore(self.sess, ckpt.model_checkpoint_path)
-            except tf.errors.NotFoundError:
-                raise UnityPolicyException(
-                    "The model {0} was found but could not be loaded. Make "
-                    "sure the model is from the same version of ML-Agents, has the same behavior parameters, "
-                    "and is using the same trainer configuration as the current run.".format(
-                        model_path
-                    )
-                )
-            self._check_model_version(__version__)
-            if reset_global_steps:
-                self._set_step(0)
-                logger.info(
-                    "Starting training from step 0 and saving to {}.".format(
-                        self.model_path
-                    )
-                )
-            else:
-                logger.info(
-                    "Resuming training from step {}.".format(self.get_current_step())
-                )
-
-    def initialize_or_load(self):
-        # If there is an initialize path, load from that. Else, load from the set model path.
-        # If load is set to True, don't reset steps to 0. Else, do. This allows a user to,
-        # e.g., resume from an initialize path.
-        reset_steps = not self.load
-        if self.initialize_path is not None:
-            self._load_graph(self.initialize_path, reset_global_steps=reset_steps)
-        elif self.load:
-            self._load_graph(self.model_path, reset_global_steps=reset_steps)
-        else:
-            self._initialize_graph()
 
     def get_weights(self):
         with self.graph.as_default():
@@ -224,15 +222,29 @@ class TFPolicy(Policy):
                 feed_dict[assign_ph] = value
             self.sess.run(self.assign_ops, feed_dict=feed_dict)
 
+    @timed
     def evaluate(
         self, decision_requests: DecisionSteps, global_agent_ids: List[str]
     ) -> Dict[str, Any]:
         """
         Evaluates policy for the agent experiences provided.
-        :param decision_requests: DecisionSteps input to network.
-        :return: Output from policy based on self.inference_dict.
+        :param decision_requests: DecisionSteps object containing inputs.
+        :param global_agent_ids: The global (with worker ID) agent ids of the data in the batched_step_result.
+        :return: Outputs from network as defined by self.inference_dict.
         """
-        raise UnityPolicyException("The evaluate function was not implemented.")
+        feed_dict = {
+            self.batch_size_ph: len(decision_requests),
+            self.sequence_length_ph: 1,
+        }
+        if self.use_recurrent:
+            if not self.use_continuous_act:
+                feed_dict[self.prev_action] = self.retrieve_previous_action(
+                    global_agent_ids
+                )
+            feed_dict[self.memory_in] = self.retrieve_memories(global_agent_ids)
+        feed_dict = self.fill_eval_dict(feed_dict, decision_requests)
+        run_out = self._execute_model(feed_dict, self.inference_dict)
+        return run_out
 
     def get_action(
         self, decision_requests: DecisionSteps, worker_id: int = 0
@@ -304,62 +316,6 @@ class TFPolicy(Policy):
             feed_dict[self.action_masks] = mask
         return feed_dict
 
-    def make_empty_memory(self, num_agents):
-        """
-        Creates empty memory for use with RNNs
-        :param num_agents: Number of agents.
-        :return: Numpy array of zeros.
-        """
-        return np.zeros((num_agents, self.m_size), dtype=np.float32)
-
-    def save_memories(
-        self, agent_ids: List[str], memory_matrix: Optional[np.ndarray]
-    ) -> None:
-        if memory_matrix is None:
-            return
-        for index, agent_id in enumerate(agent_ids):
-            self.memory_dict[agent_id] = memory_matrix[index, :]
-
-    def retrieve_memories(self, agent_ids: List[str]) -> np.ndarray:
-        memory_matrix = np.zeros((len(agent_ids), self.m_size), dtype=np.float32)
-        for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.memory_dict:
-                memory_matrix[index, :] = self.memory_dict[agent_id]
-        return memory_matrix
-
-    def remove_memories(self, agent_ids):
-        for agent_id in agent_ids:
-            if agent_id in self.memory_dict:
-                self.memory_dict.pop(agent_id)
-
-    def make_empty_previous_action(self, num_agents):
-        """
-        Creates empty previous action for use with RNNs and discrete control
-        :param num_agents: Number of agents.
-        :return: Numpy array of zeros.
-        """
-        return np.zeros((num_agents, self.num_branches), dtype=np.int)
-
-    def save_previous_action(
-        self, agent_ids: List[str], action_matrix: Optional[np.ndarray]
-    ) -> None:
-        if action_matrix is None:
-            return
-        for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_matrix[index, :]
-
-    def retrieve_previous_action(self, agent_ids: List[str]) -> np.ndarray:
-        action_matrix = np.zeros((len(agent_ids), self.num_branches), dtype=np.int)
-        for index, agent_id in enumerate(agent_ids):
-            if agent_id in self.previous_action_dict:
-                action_matrix[index, :] = self.previous_action_dict[agent_id]
-        return action_matrix
-
-    def remove_previous_action(self, agent_ids):
-        for agent_id in agent_ids:
-            if agent_id in self.previous_action_dict:
-                self.previous_action_dict.pop(agent_id)
-
     def get_current_step(self):
         """
         Gets current model step.
@@ -368,7 +324,7 @@ class TFPolicy(Policy):
         step = self.sess.run(self.global_step)
         return step
 
-    def _set_step(self, step: int) -> int:
+    def set_step(self, step: int) -> int:
         """
         Sets current model step to step without creating additional ops.
         :param step: Step to set the current model step to.
@@ -401,28 +357,21 @@ class TFPolicy(Policy):
         """
         return list(self.update_dict.keys())
 
-    def save_model(self, steps):
-        """
-        Saves the model
-        :param steps: The number of steps the model was trained for
-        :return:
-        """
-        with self.graph.as_default():
-            last_checkpoint = os.path.join(self.model_path, f"model-{steps}.ckpt")
-            self.saver.save(self.sess, last_checkpoint)
-            tf.train.write_graph(
-                self.graph, self.model_path, "raw_graph_def.pb", as_text=False
-            )
-
     def update_normalization(self, vector_obs: np.ndarray) -> None:
         """
         If this policy normalizes vector observations, this will update the norm values in the graph.
         :param vector_obs: The vector observations to add to the running estimate of the distribution.
         """
         if self.use_vec_obs and self.normalize:
-            self.sess.run(
-                self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
-            )
+            if self.first_normalization_update:
+                self.sess.run(
+                    self.init_normalization_op, feed_dict={self.vector_in: vector_obs}
+                )
+                self.first_normalization_update = False
+            else:
+                self.sess.run(
+                    self.update_normalization_op, feed_dict={self.vector_in: vector_obs}
+                )
 
     @property
     def use_vis_obs(self):
@@ -437,6 +386,7 @@ class TFPolicy(Policy):
         self.normalization_steps: Optional[tf.Variable] = None
         self.running_mean: Optional[tf.Variable] = None
         self.running_variance: Optional[tf.Variable] = None
+        self.init_normalization_op: Optional[tf.Operation] = None
         self.update_normalization_op: Optional[tf.Operation] = None
         self.value: Optional[tf.Tensor] = None
         self.all_log_probs: tf.Tensor = None
@@ -462,8 +412,10 @@ class TFPolicy(Policy):
                 self.behavior_spec.observation_shapes
             )
             if self.normalize:
+                self.first_normalization_update = True
                 normalization_tensors = ModelUtils.create_normalizer(self.vector_in)
                 self.update_normalization_op = normalization_tensors.update_op
+                self.init_normalization_op = normalization_tensors.init_op
                 self.normalization_steps = normalization_tensors.steps
                 self.running_mean = normalization_tensors.running_mean
                 self.running_variance = normalization_tensors.running_variance
@@ -541,3 +493,108 @@ class TFPolicy(Policy):
                     trainable=False,
                     dtype=tf.int32,
                 )
+
+    def _create_cc_actor(
+        self,
+        encoded: tf.Tensor,
+        tanh_squash: bool = False,
+        reparameterize: bool = False,
+        condition_sigma_on_obs: bool = True,
+    ) -> None:
+        """
+        Creates Continuous control actor-critic model.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
+        :param tanh_squash: Whether to use a tanh function, or a clipped output.
+        :param reparameterize: Whether we are using the resampling trick to update the policy.
+        """
+        if self.use_recurrent:
+            self.memory_in = tf.placeholder(
+                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+            )
+            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
+                encoded, self.memory_in, self.sequence_length_ph, name="lstm_policy"
+            )
+
+            self.memory_out = tf.identity(memory_policy_out, name="recurrent_out")
+        else:
+            hidden_policy = encoded
+
+        with tf.variable_scope("policy"):
+            distribution = GaussianDistribution(
+                hidden_policy,
+                self.act_size,
+                reparameterize=reparameterize,
+                tanh_squash=tanh_squash,
+                condition_sigma=condition_sigma_on_obs,
+            )
+
+        if tanh_squash:
+            self.output_pre = distribution.sample
+            self.output = tf.identity(self.output_pre, name="action")
+        else:
+            self.output_pre = distribution.sample
+            # Clip and scale output to ensure actions are always within [-1, 1] range.
+            output_post = tf.clip_by_value(self.output_pre, -3, 3) / 3
+            self.output = tf.identity(output_post, name="action")
+
+        self.selected_actions = tf.stop_gradient(self.output)
+
+        self.all_log_probs = tf.identity(distribution.log_probs, name="action_probs")
+        self.entropy = distribution.entropy
+
+        # We keep these tensors the same name, but use new nodes to keep code parallelism with discrete control.
+        self.total_log_probs = distribution.total_log_probs
+
+    def _create_dc_actor(self, encoded: tf.Tensor) -> None:
+        """
+        Creates Discrete control actor-critic model.
+        :param h_size: Size of hidden linear layers.
+        :param num_layers: Number of hidden linear layers.
+        :param vis_encode_type: Type of visual encoder to use if visual input.
+        """
+        if self.use_recurrent:
+            self.prev_action = tf.placeholder(
+                shape=[None, len(self.act_size)], dtype=tf.int32, name="prev_action"
+            )
+            prev_action_oh = tf.concat(
+                [
+                    tf.one_hot(self.prev_action[:, i], self.act_size[i])
+                    for i in range(len(self.act_size))
+                ],
+                axis=1,
+            )
+            hidden_policy = tf.concat([encoded, prev_action_oh], axis=1)
+
+            self.memory_in = tf.placeholder(
+                shape=[None, self.m_size], dtype=tf.float32, name="recurrent_in"
+            )
+            hidden_policy, memory_policy_out = ModelUtils.create_recurrent_encoder(
+                hidden_policy,
+                self.memory_in,
+                self.sequence_length_ph,
+                name="lstm_policy",
+            )
+
+            self.memory_out = tf.identity(memory_policy_out, "recurrent_out")
+        else:
+            hidden_policy = encoded
+
+        self.action_masks = tf.placeholder(
+            shape=[None, sum(self.act_size)], dtype=tf.float32, name="action_masks"
+        )
+
+        with tf.variable_scope("policy"):
+            distribution = MultiCategoricalDistribution(
+                hidden_policy, self.act_size, self.action_masks
+            )
+        # It's important that we are able to feed_dict a value into this tensor to get the
+        # right one-hot encoding, so we can't do identity on it.
+        self.output = distribution.sample
+        self.all_log_probs = tf.identity(distribution.log_probs, name="action")
+        self.selected_actions = tf.stop_gradient(
+            distribution.sample_onehot
+        )  # In discrete, these are onehot
+        self.entropy = distribution.entropy
+        self.total_log_probs = distribution.total_log_probs

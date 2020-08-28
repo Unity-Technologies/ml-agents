@@ -4,7 +4,7 @@ import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
 import os
 
-from mlagents.trainers.policy.nn_policy import NNPolicy
+from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.components.bc.module import BCModule
 from mlagents.trainers.settings import (
     TrainerSettings,
@@ -19,15 +19,8 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
     trainer_config.network_settings.memory = (
         NetworkSettings.MemorySettings() if use_rnn else None
     )
-    policy = NNPolicy(
-        0,
-        mock_behavior_specs,
-        trainer_config,
-        False,
-        "test",
-        False,
-        tanhresample,
-        tanhresample,
+    policy = TFPolicy(
+        0, mock_behavior_specs, trainer_config, tanhresample, tanhresample
     )
     with policy.graph.as_default():
         bc_module = BCModule(
@@ -37,7 +30,7 @@ def create_bc_module(mock_behavior_specs, bc_settings, use_rnn, tanhresample):
             default_num_epoch=3,
             settings=bc_settings,
         )
-    policy.initialize_or_load()  # Normally the optimizer calls this after the BCModule is created
+    policy.initialize()  # Normally the optimizer calls this after the BCModule is created
     return bc_module
 
 
@@ -89,7 +82,7 @@ def test_bcmodule_constant_lr_update(is_sac):
         assert isinstance(item, np.float32)
     old_learning_rate = bc_module.current_lr
 
-    stats = bc_module.update()
+    _ = bc_module.update()
     assert old_learning_rate == bc_module.current_lr
 
 
