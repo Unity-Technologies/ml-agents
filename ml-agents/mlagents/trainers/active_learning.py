@@ -40,7 +40,7 @@ class qEISP(MCAcquisitionFunction):
         maximize: bool = True,
     ) -> None:
         r"""q-Espected Improvement of Skill Performance. 
-
+        
         Args:
             model: A fitted model.
             beta: value to trade off between upper confidence bound and mean of fantasized performance.
@@ -133,10 +133,7 @@ class StandardActiveLearningGP(ExactGP, GPyTorchModel):
         xdims = train_X.shape[-1]
         self.Kspatial = ScaleKernel(RBFKernel(active_dims=torch.tensor(list(range(xdims-1)))))
         self.Ktime = ScaleKernel(RBFKernel(active_dims=torch.tensor([xdims-1])))
-        # Kspatial = ScaleKernel(RBFKernel())
-        # Ktime = ScaleKernel(RBFKernel())
         
-        # self.covar_module = ScaleKernel(RBFKernel()) # AdditiveKernel(Kspatial, ProductKernel(Kspatial, Ktime))
         self.covar_module = AdditiveKernel(self.Kspatial, ProductKernel(self.Kspatial, self.Ktime))
         self.to(train_X)  # make sure we're on the right device/dtype
         

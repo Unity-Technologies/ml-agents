@@ -26,12 +26,14 @@ behaviors:
     threaded: true
 agent_parameters:
   WalkerStaticVariableSpeed:
+    num_repeat: 8
+    num_batch: 16
     active_learner:
-      warmup_steps: 30
+      warmup_steps: 600
       capacity: 600
-      num_mc: 500
+      num_mc: 100
       beta: 1.96
-      raw_samples: 128
+      raw_samples: 100
       num_restarts: 1
     targetWalkingSpeed:
       sampler_type: uniform

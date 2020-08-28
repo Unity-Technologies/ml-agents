@@ -419,20 +419,20 @@ class CompletionCriteriaSettings:
 
 @attr.s(auto_attribs=True)
 class ActiveLearnerSettings:
-    warmup_steps:int=30
-    capacity:int=600
-    num_mc:int=50
-    beta:float=1.96
-    raw_samples:int=128
-    num_restarts:int=1
+    warmup_steps:int=30     # number of data points before active learning is used
+    capacity:int=600        # maximum number of data points to store
+    num_mc:int=50           # number of monte-carlo points to intergrate over task distribution
+    beta:float=1.96         # upper confidence bound parameter ucb = mean + beta * std
+    raw_samples:int=128     # number of task samples to generate before selecting one to optimized
+    num_restarts:int=1      # how many different task parameters to try and optimize at once before choosing the best. 
 
 @attr.s(auto_attribs=True)
 class TaskParameterSettings:
     
     parameters: Dict[str, UniformSettings]
     active_learning: Optional[ActiveLearnerSettings] = None
-    num_repeat:Optional[int]=1
-    num_batch:Optional[int]=1
+    num_repeat:Optional[int]=1  # number of times to repeat a sampled skill
+    num_batch:Optional[int]=1   # minimum number of skills to get at once
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Dict[str, "TaskParameterSettings"]:

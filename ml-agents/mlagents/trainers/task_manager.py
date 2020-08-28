@@ -58,25 +58,31 @@ class TaskManager:
             self.num_batch[behavior_name] = self._dict_settings[behavior_name].num_batch
             
             active_hyps = self._dict_settings[behavior_name].active_learning
-            if active_hyps:
+            if active_hyps:  # use active learning
                 self._taskSamplers[behavior_name] = ActiveLearningTaskSampler(task_ranges, 
                     warmup_steps=active_hyps.warmup_steps, capacity=active_hyps.capacity,
                     num_mc=active_hyps.num_mc, beta=active_hyps.beta,
                     raw_samples=active_hyps.raw_samples, num_restarts=active_hyps.num_restarts,
                 )
-            else:
+            else:  # use uniform random sampling
                 self._taskSamplers[behavior_name] = lambda n: sample_random_points(task_ranges.T, n)
-        print("num batch", self.num_batch)
+
         self.t = {name: 0.0 for name in self.behavior_names}    
         self.counter = {name: 0 for name in self.behavior_names}    
 
     def _make_task(self, behavior_name, tau):
+        """
+        converts array to dictionary so it can be passed to c# side through agent parameter channel
+        """
         task = {}
         for i, name in enumerate(self.param_names[behavior_name]):
             task[name] = tau[i]
         return task
 
     def _build_tau(self, behavior_name, task, time):
+        """
+        converts a dictionary description of the task to a vector representation and adds the time parameter. 
+        """
         tau = []
         for name in self.param_names[behavior_name]:
             tau.append(task[name])
@@ -85,7 +91,7 @@ class TaskManager:
 
     def get_tasks(self, behavior_name, num_samples) -> Dict[str, ParameterRandomizationSettings]:
         """
-        TODO
+        Samples task parameters to pass to agents
         """
         behavior_name = [bname for bname in self.behavior_names if bname in behavior_name][0] # TODO make work with actual behavior names
         current_time = self.t[behavior_name] + 1
@@ -105,10 +111,16 @@ class TaskManager:
         return tasks_repeated
 
     def add_run(self, behavior_name, tau, perf):
+        """
+        adds a finished run to the buffer organized by tau
+        """
         k = tuple(tau.data.numpy().flatten()[:-1].tolist())
         self.task_completed[behavior_name][k].append(perf)
 
     def get_data(self, behavior_name, last=True):
+        """
+        Compiles performances that have been completed
+        """
         taus = []
         perfs = []
         t = self.t[behavior_name]
@@ -129,7 +141,7 @@ class TaskManager:
     def update(self, behavior_name: str, task_perfs: List[Tuple[Dict, float]]
     ) -> Tuple[bool, bool]:
         """
-        TODO
+        Updates the model of the task performance
         """
 
         must_reset = False

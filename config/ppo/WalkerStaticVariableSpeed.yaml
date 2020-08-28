@@ -26,6 +26,8 @@ behaviors:
     threaded: true
 agent_parameters:
   WalkerStaticVariableSpeed:
+    num_repeat: 1
+    num_batch: 1
     targetWalkingSpeed:
       sampler_type: uniform
       sampler_parameters:
