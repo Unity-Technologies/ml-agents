@@ -193,7 +193,7 @@ def test_visual_ppo(num_visual, use_discrete):
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
-@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
 def test_visual_advanced_ppo(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
@@ -272,7 +272,7 @@ def test_visual_sac(num_visual, use_discrete):
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
-@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
 def test_visual_advanced_sac(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],

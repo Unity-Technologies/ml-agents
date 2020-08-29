@@ -32,7 +32,7 @@ class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
     MIN_RESOLUTION_FOR_ENCODER = {
-        EncoderType.SMALL: 5,
+        EncoderType.MATCH3: 5,
         EncoderType.SIMPLE: 20,
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
@@ -526,7 +526,7 @@ class ModelUtils:
             EncoderType.SIMPLE: ModelUtils.create_visual_observation_encoder,
             EncoderType.NATURE_CNN: ModelUtils.create_nature_cnn_visual_observation_encoder,
             EncoderType.RESNET: ModelUtils.create_resnet_visual_observation_encoder,
-            EncoderType.SMALL: ModelUtils.create_small_visual_observation_encoder,
+            EncoderType.MATCH3: ModelUtils.create_small_visual_observation_encoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(
             encoder_type, ModelUtils.create_visual_observation_encoder
