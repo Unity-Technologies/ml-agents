@@ -22,6 +22,8 @@ and this project adheres to
 Note that PyTorch 1.6.0 or greater should be installed to use this feature; see
 [the PyTorch website](https://pytorch.org/) for installation instructions. (#4335)
 - The minimum supported version of TensorFlow was increased to 1.14.0. (#4411)
+- A CNN (`vis_encode_type: match3`) for smaller grids, e.g. board games, has been added.
+(#4434)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
