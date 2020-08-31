@@ -77,15 +77,12 @@ class DiscriminatorNetwork(torch.nn.Module):
             memory=None,
         )
         self._action_flattener = ModelUtils.ActionFlattener(specs)
-
-        if settings.use_actions:
-            self.encoder = NetworkBody(
-                specs.observation_shapes,
-                encoder_settings,
-                self._action_flattener.flattened_size + 1,
-            )  # + 1 is for done
-        else:
-            self.encoder = NetworkBody(specs.observation_shapes, encoder_settings)
+        unencoded_size = (
+            self._action_flattener.flattened_size + 1 if settings.use_actions else 0
+        )  # +1 is for dones
+        self.encoder = NetworkBody(
+            specs.observation_shapes, encoder_settings, unencoded_size
+        )
 
         estimator_input_size = settings.encoding_size
         if settings.use_vail:
