@@ -8,6 +8,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
 from mlagents.trainers.torch.utils import ModelUtils
+import wandb
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -179,6 +180,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             + 0.5 * value_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
+        wandb.log({"loss": loss})
 
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)

@@ -35,6 +35,8 @@ from mlagents_envs.timers import (
 )
 from mlagents_envs import logging_util
 
+import wandb
+
 logger = logging_util.get_logger(__name__)
 
 TRAINING_STATUS_FILE_NAME = "training_status.json"
@@ -61,6 +63,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
     :param run_seed: Random seed used for training.
     :param run_options: Command line arguments for training.
     """
+    #wandb.init(project="mlagent-cloud-profiling", sync_tensorboard=True)
     with hierarchical_timer("run_training.setup"):
         checkpoint_settings = options.checkpoint_settings
         env_settings = options.env_settings
