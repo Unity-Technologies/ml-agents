@@ -168,9 +168,9 @@ class TensorboardWriter(StatsWriter):
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
 
-        with open('wandb_API', 'r') as f:
+        with open("wandb_API") as f:
             api_key = f.readline().strip()
-        os.environ['WANDB_API_KEY'] = api_key
+        os.environ["WANDB_API_KEY"] = api_key
         wandb.init(project="mlagent-cloud-profiling")
         wandb.tensorboard.patch(pytorch=True, tensorboardX=True)
 
