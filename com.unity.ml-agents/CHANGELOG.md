@@ -14,8 +14,8 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-- Update Barracuda to 1.0.2.
-- Enabled C# formatting using `dotnet-format`.
+- Update Barracuda to 1.1.0-preview (#4208)
+- Enabled C# formatting using `dotnet-format`. (#4362)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Experimental PyTorch support has been added. Use `--torch` when running `mlagents-learn`, or add
 `framework: pytorch` to your trainer configuration (under the behavior name) to enable it.

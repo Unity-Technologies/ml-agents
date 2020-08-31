@@ -111,9 +111,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     if csharp_version is None and python_version is None:
         # Use abs path so that loading doesn't get confused
         model_path = os.path.abspath(os.path.dirname(nn_file_expected))
-        # Onnx loading for overrides not currently supported, but this is
-        # where to add it in when it is.
-        for extension in ["nn"]:
+        for extension in ["nn", "onnx"]:
             inference_ok = run_inference(env_path, model_path, extension)
             if not inference_ok:
                 return False
