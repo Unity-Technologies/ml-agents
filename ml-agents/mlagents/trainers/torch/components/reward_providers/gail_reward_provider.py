@@ -150,7 +150,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             actions = self.get_action_input(mini_batch)
             dones = torch.as_tensor(mini_batch["done"], dtype=torch.float).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
-            hidden = self.encoder(vec_inputs, vis_inputs, action_inputs)[
+            hidden, _ = self.encoder(vec_inputs, vis_inputs, action_inputs)
                 0
             ]  # 0 Index removes memories
         else:
