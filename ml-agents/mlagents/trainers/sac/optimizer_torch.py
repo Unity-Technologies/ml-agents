@@ -1,6 +1,6 @@
 import numpy as np
 import threading
-from typing import Dict, List, Mapping, cast, Tuple, Optional
+from typing import Dict, List, Mapping, cast, Tuple, Optional, Callable
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
@@ -436,13 +436,12 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (
-            sampled_actions,
-            log_probs,
-            entropies,
-            sampled_values,
-            _,
-        ) = self.policy.sample_actions(
+        results = {}
+        threads = []
+        policy_thread = self.spawn_forward_thread(
+            results,
+            "policy",
+            self.policy.sample_actions,
             vec_obs,
             vis_obs,
             masks=act_masks,
@@ -450,23 +449,52 @@ class TorchSACOptimizer(TorchOptimizer):
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
         )
+        policy_thread.join()
+        (
+            sampled_actions,
+            log_probs,
+            entropies,
+            sampled_values,
+            _,
+        ) = results["policy"]
+        # (
+        #     sampled_actions,
+        #     log_probs,
+        #     entropies,
+        #     sampled_values,
+        #     _,
+        # ) = self.policy.sample_actions(
+        #     vec_obs,
+        #     vis_obs,
+        #     masks=act_masks,
+        #     memories=memories,
+        #     seq_len=self.policy.sequence_length,
+        #     all_log_probs=not self.policy.use_continuous_act,
+        # )
         if self.policy.use_continuous_act:
             squeezed_actions = actions.squeeze(-1)
-            q1p_out, q2p_out = self.value_network(
+
+            qp_thread = self.spawn_forward_thread(
+                results,
+                "qp",
+                self.value_network,
                 vec_obs,
                 vis_obs,
                 sampled_actions,
                 memories=q_memories,
                 sequence_length=self.policy.sequence_length,
             )
-            q1_out, q2_out = self.value_network(
+            q_thread = self.spawn_forward_thread(
+                results,
+                "q",
+                self.value_network,
                 vec_obs,
                 vis_obs,
                 squeezed_actions,
                 memories=q_memories,
                 sequence_length=self.policy.sequence_length,
             )
-            q1_stream, q2_stream = q1_out, q2_out
+            # q1_stream, q2_stream = q1_out, q2_out
         else:
             with torch.no_grad():
                 q1p_out, q2p_out = self.value_network(
@@ -485,7 +513,10 @@ class TorchSACOptimizer(TorchOptimizer):
             q2_stream = self._condense_q_streams(q2_out, actions)
 
         with torch.no_grad():
-            target_values, _ = self.target_network(
+            target_value_thread = self.spawn_forward_thread(
+                results,
+                "target_value",
+                self.target_network,
                 next_vec_obs,
                 next_vis_obs,
                 memories=next_memories,
@@ -495,12 +526,20 @@ class TorchSACOptimizer(TorchOptimizer):
         use_discrete = not self.policy.use_continuous_act
         dones = ModelUtils.list_to_tensor(batch["done"])
 
+        q_thread.join()
+        q1_stream, q2_stream = results["q"]
+        target_value_thread.join()
+        target_values, _ = results["target_value"]
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
+
+        qp_thread.join()
+        q1p_out, q2p_out = results["qp"]
         value_loss = self.sac_value_loss(
             log_probs, sampled_values, q1p_out, q2p_out, masks, use_discrete
         )
+
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
         entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
 
@@ -509,22 +548,28 @@ class TorchSACOptimizer(TorchOptimizer):
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         ModelUtils.update_learning_rate(self.policy_optimizer, decay_lr)
         self.policy_optimizer.zero_grad()
-        ploss_thread = self.spawn_backward_thread(policy_loss)
+        policy_loss.backward()
+        self.policy_optimizer.step()
+        # ploss_thread = self.spawn_backward_thread(policy_loss)
 
         ModelUtils.update_learning_rate(self.value_optimizer, decay_lr)
         self.value_optimizer.zero_grad()
-        vloss_thread = self.spawn_backward_thread(total_value_loss)
+        total_value_loss.backward()
+        self.value_optimizer.step()
+        # vloss_thread = self.spawn_backward_thread(total_value_loss)
 
         ModelUtils.update_learning_rate(self.entropy_optimizer, decay_lr)
         self.entropy_optimizer.zero_grad()
-        entloss_thread = self.spawn_backward_thread(entropy_loss)
-
-        ploss_thread.join()
-        vloss_thread.join()
-        entloss_thread.join()
-        self.policy_optimizer.step()
-        self.value_optimizer.step()
+        entropy_loss.backward()
         self.entropy_optimizer.step()
+        # entloss_thread = self.spawn_backward_thread(entropy_loss)
+
+        # ploss_thread.join()
+        # vloss_thread.join()
+        # entloss_thread.join()
+        # self.policy_optimizer.step()
+        # self.value_optimizer.step()
+        # self.entropy_optimizer.step()
 
         # Update target network
         self.soft_update(self.policy.actor_critic.critic, self.target_network, self.tau)
@@ -538,6 +583,34 @@ class TorchSACOptimizer(TorchOptimizer):
         }
 
         return update_stats
+
+    def spawn_forward_thread(
+        self, results: Dict[str, Tuple], name: str, func: Callable, *args, **kwargs
+    ):
+        thr = TorchSACOptimizer.ForwardThread(results, name, func, args, kwargs)
+        thr.start()
+        return thr
+
+    class ForwardThread(threading.Thread):
+        def __init__(
+            self, results: Dict[str, Tuple], name: str, func: Callable, args, kwargs
+        ):
+            super().__init__()
+            self.func = func
+            self.func_args = args
+            self.func_kwargs = kwargs
+            self.name = name
+            self.results = results
+
+        def run(self):
+            self.results[self.name] = self.func(*self.func_args, **self.func_kwargs)
+
+    def _forward_thread_func(
+        self, results: Dict[str, Tuple], name: str, func: Callable, args, kwargs
+    ):
+        result = func(*args, **kwargs)
+        print(name, result)
+        results[name] = result
 
     def spawn_backward_thread(self, loss: torch.Tensor) -> threading.Thread:
         thr = threading.Thread(target=loss.backward)
