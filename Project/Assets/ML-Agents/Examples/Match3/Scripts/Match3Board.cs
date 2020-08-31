@@ -11,6 +11,117 @@ namespace Unity.MLAgentsExamples
         Right,
     }
 
+    /// <summary>
+    /// Struct that encapsulates a swpa of adjacent cells.
+    /// A Move can be constructed from either a starting cells and a direction,
+    /// or enumerated from 0 to NumEdgeIndices()-1
+    /// </summary>
+    public struct Move
+    {
+
+        /**
+         * Moves are enumerated as the internal edges of the game grid.
+         * Left/right moves come first. There are (maxCols - 1) * maxRows of these.
+         * Up/down moves are next. There are (maxRows - 1) * maxCols of these.
+         */
+        public int m_InternalEdgeIndex;
+        public int m_Row;
+        public int m_Column;
+        public Direction m_Direction;
+
+        public static Move FromEdgeIndex(int edgeIndex, int maxRows, int maxCols)
+        {
+            if (edgeIndex < 0 || edgeIndex >= NumEdgeIndices(maxRows, maxCols))
+            {
+                throw new ArgumentOutOfRangeException("Invalid edge index.");
+            }
+            Direction dir;
+            int row, col;
+            if (edgeIndex < (maxCols - 1) * maxRows)
+            {
+                dir = Direction.Right;
+                col = edgeIndex % (maxCols - 1);
+                row = edgeIndex / (maxCols - 1);
+            }
+            else
+            {
+                dir = Direction.Down;
+                var offset = edgeIndex - (maxCols - 1) * maxRows;
+                col = offset % maxCols;
+                row = offset / maxCols;
+            }
+            return new Move
+            {
+                m_InternalEdgeIndex = edgeIndex,
+                m_Direction = dir,
+                m_Row = row,
+                m_Column = col
+            };
+        }
+
+        public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)
+        {
+            int edgeIndex;
+            // Normalize - only consider Right and Down
+            if (dir == Direction.Left)
+            {
+                dir = Direction.Right;
+                col = col - 1;
+            }
+            else if (dir == Direction.Up)
+            {
+                dir = Direction.Down;
+                row = row - 1;
+            }
+
+            if (dir == Direction.Right)
+            {
+                edgeIndex = col + row * (maxCols - 1);
+            }
+            else
+            {
+                var offset = (maxCols - 1) * maxRows;
+                edgeIndex = offset + col + row * maxCols;
+            }
+
+            return new Move
+            {
+                m_Row = row,
+                m_Column = col,
+                m_Direction = dir,
+                m_InternalEdgeIndex = edgeIndex,
+            };
+        }
+
+        public (int Row, int Column) OtherCell()
+        {
+            switch (m_Direction)
+            {
+                case Direction.Up:
+                    return (m_Row - 1, m_Column);
+                case Direction.Down:
+                    return (m_Row + 1, m_Column);
+                case Direction.Left:
+                    return (m_Row, m_Column - 1);
+                case Direction.Right:
+                    return (m_Row, m_Column + 1);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        /// <summary>
+        /// Return the number of internal edges in a board of the given size.
+        /// </summary>
+        /// <param name="maxRows"></param>
+        /// <param name="maxCols"></param>
+        /// <returns></returns>
+        public static int NumEdgeIndices(int maxRows, int maxCols)
+        {
+            return maxRows * (maxCols - 1) + (maxRows - 1) * (maxCols);
+        }
+    }
+
     public class Match3Board
     {
         const int k_EmptyCell = -1;
@@ -39,32 +150,25 @@ namespace Unity.MLAgentsExamples
             MarkMatchedCells();
         }
 
-        public bool MakeMove(int row, int col, Direction dir)
+        public bool MakeMove(Move move)
         {
             return true;
         }
 
-        public bool IsMoveValid(int row, int col, Direction dir)
+        public bool IsMoveValid(Move move)
         {
-            if (row == 0 && dir == Direction.Down)
+            // Simple check - if the values are the same, don't match
+            // This might not be valid for all games
             {
-                return false;
+                var val1 = m_Cells[move.m_Column, move.m_Row];
+                var (otherRow, otherCol) = move.OtherCell();
+                var val2 = m_Cells[otherCol, otherRow];
+                if (val1 == val2)
+                {
+                    return false;
+                }
             }
 
-            if (row == Rows - 1 && dir == Direction.Up)
-            {
-                return false;
-            }
-
-            if (col == 0 && dir == Direction.Left)
-            {
-                return false;
-            }
-
-            if (col == Columns - 1 && dir == Direction.Right)
-            {
-                return false;
-            }
             return true;
         }
 

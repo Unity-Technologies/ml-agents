@@ -50,31 +50,27 @@ namespace Unity.MLAgentsExamples
                     {
                         Gizmos.DrawWireCube(pos, .75f * Vector3.one);
                     }
-
-                    // Draw possible moves
-                    var arrowSize = .375f;
-                    if (board.IsMoveValid(i, j, Direction.Up))
-                    {
-                        Gizmos.DrawRay(pos, arrowSize * Vector3.up);
-                    }
-
-                    if (board.IsMoveValid(i, j, Direction.Down))
-                    {
-                        Gizmos.DrawRay(pos, arrowSize * Vector3.down);
-                    }
-
-                    if (board.IsMoveValid(i, j, Direction.Left))
-                    {
-                        Gizmos.DrawRay(pos, arrowSize * Vector3.left);
-                    }
-
-                    if (board.IsMoveValid(i, j, Direction.Right))
-                    {
-                        Gizmos.DrawRay(pos, arrowSize * Vector3.right);
-                    }
                 }
             }
 
+            // Draw possible moves
+            //var arrowSize = .375f;
+
+            for (var eIdx = 0; eIdx < Move.NumEdgeIndices(board.Rows, board.Columns); eIdx++)
+            {
+                Move move = Move.FromEdgeIndex(eIdx, board.Rows, board.Columns);
+                if (!board.IsMoveValid(move))
+                {
+                    continue;
+                }
+                var (otherRow, otherCol) = move.OtherCell();
+                var pos = new Vector3(move.m_Column, move.m_Row, 0);
+                var otherPos = new Vector3(otherCol, otherRow, 0);
+
+                var oneQuarter = Vector3.Lerp(pos, otherPos, .25f);
+                var threeQuarters = Vector3.Lerp(pos, otherPos, .75f);
+                Gizmos.DrawLine(oneQuarter, threeQuarters);
+            }
         }
     }
 }
