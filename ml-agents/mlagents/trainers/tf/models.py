@@ -351,7 +351,7 @@ class ModelUtils:
         return hidden_flat
 
     @staticmethod
-    def create_small_visual_observation_encoder(
+    def create_match3_visual_observation_encoder(
         image_input: tf.Tensor,
         h_size: int,
         activation: ActivationFunction,
@@ -526,7 +526,7 @@ class ModelUtils:
             EncoderType.SIMPLE: ModelUtils.create_visual_observation_encoder,
             EncoderType.NATURE_CNN: ModelUtils.create_nature_cnn_visual_observation_encoder,
             EncoderType.RESNET: ModelUtils.create_resnet_visual_observation_encoder,
-            EncoderType.MATCH3: ModelUtils.create_small_visual_observation_encoder,
+            EncoderType.MATCH3: ModelUtils.create_match3_visual_observation_encoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(
             encoder_type, ModelUtils.create_visual_observation_encoder
