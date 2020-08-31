@@ -123,9 +123,12 @@ class DiscriminatorNetwork(torch.nn.Module):
         Creates the observation input.
         """
         n_vis = len(self.encoder.visual_processors)
-        vec_inputs = [
-            ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
-        ]
+        n_vec = len(self.encoder.vector_processors)
+        vec_inputs = (
+            [ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)]
+            if n_vec > 0
+            else []
+        )
         vis_inputs = [
             ModelUtils.list_to_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
             for i in range(n_vis)
@@ -274,7 +277,6 @@ class DiscriminatorNetwork(torch.nn.Module):
             z_mu = self._z_mu_layer(hidden)
             hidden = torch.normal(z_mu, self._z_sigma * use_vail_noise)
         estimate = self._estimator(hidden).squeeze(1).sum()
-
         gradient = torch.autograd.grad(estimate, encoder_input, create_graph=True)[0]
         # Norm's gradient could be NaN at 0. Use our own safe_norm
         safe_norm = (torch.sum(gradient ** 2, dim=1) + self.EPSILON).sqrt()
