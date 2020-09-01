@@ -169,6 +169,16 @@ namespace Unity.MLAgentsExamples
 
         public bool MakeMove(Move move)
         {
+            if (!IsMoveValid(move))
+            {
+                return false;
+            }
+            var originalValue = m_Cells[move.m_Column, move.m_Row];
+            var (otherRow, otherCol) = move.OtherCell();
+            var destinationValue = m_Cells[otherCol, otherRow];
+
+            m_Cells[move.m_Column, move.m_Row] = destinationValue;
+            m_Cells[otherCol, otherRow] = originalValue;
             return true;
         }
 
@@ -187,46 +197,6 @@ namespace Unity.MLAgentsExamples
                 }
             }
 
-            // Check if the cell being moved into (move.m_Column, move.m_Row) completes a 3-match (or better)
-            // {
-            //     int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
-            //     for (var c = move.m_Column - 1; c >= 0; c--)
-            //     {
-            //         if (m_Cells[c, move.m_Row] == oppositeVal)
-            //             matchedLeft++;
-            //         else
-            //             break;
-            //     }
-            //
-            //     for (var c = move.m_Column + 1; c < Columns; c++)
-            //     {
-            //         if (m_Cells[c, move.m_Row] == oppositeVal)
-            //             matchedRight++;
-            //         else
-            //             break;
-            //     }
-            //
-            //     for (var r = move.m_Row - 1; r >= 0; r--)
-            //     {
-            //         if (m_Cells[move.m_Column, r] == oppositeVal)
-            //             matchedUp++;
-            //         else
-            //             break;
-            //     }
-            //
-            //     for (var r = move.m_Row + 1; r < Rows; r++)
-            //     {
-            //         if (m_Cells[move.m_Column, r] == oppositeVal)
-            //             matchedDown++;
-            //         else
-            //             break;
-            //     }
-            //
-            //     if ((matchedUp + matchedDown >= 2) || (matchedLeft + matchedRight >= 2))
-            //     {
-            //         return true;
-            //     }
-            // }
             bool moveMatches = CheckHalfMove(otherRow, otherCol, m_Cells[move.m_Column, move.m_Row], move.m_Direction);
             bool otherMatches = CheckHalfMove(move.m_Row, move.m_Column, m_Cells[otherCol, otherRow],
                 move.OtherDirection());

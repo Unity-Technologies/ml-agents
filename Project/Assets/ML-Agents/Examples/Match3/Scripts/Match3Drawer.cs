@@ -15,7 +15,9 @@ namespace Unity.MLAgentsExamples
           Color.blue,
           Color.cyan,
           Color.magenta,
-          Color.yellow
+          Color.yellow,
+          Color.gray,
+          Color.black,
         };
 
 
