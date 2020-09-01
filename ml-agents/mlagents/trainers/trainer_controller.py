@@ -4,7 +4,7 @@
 
 import os
 import threading
-from typing import Dict, Set, List
+from typing import Dict, Set, List, Callable
 from collections import defaultdict
 
 import numpy as np
@@ -28,11 +28,18 @@ from mlagents.trainers.environment_parameter_manager import EnvironmentParameter
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
-from mlagents.tf_utils.globals import get_rank
+from mlagents.trainers.globals import get_rank
 from mlagents import torch_utils
 
 
 class TrainerController:
+
+    # Callback function used at the start of training to synchronize weights for
+    # distributed training.
+    # By default, this nothing.
+    # If this needs to be used, it should be done from outside ml-agents.
+    broadcast_global_variables: Callable[[int], None] = lambda root_rank: None
+
     def __init__(
         self,
         trainer_factory: TrainerFactory,
@@ -76,6 +83,8 @@ class TrainerController:
         """
         Saves current model to checkpoint folder.
         """
+        # save model if there is only one worker or
+        # only on worker-0 if there are multiple workers
         if self.rank is not None and self.rank != 0:
             return
 
@@ -170,6 +179,8 @@ class TrainerController:
         try:
             # Initial reset
             self._reset_env(env_manager)
+            # broadcast initial weights from worker-0 for distributed training
+            TrainerController.broadcast_global_variables(0)
             while self._not_done_training():
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):

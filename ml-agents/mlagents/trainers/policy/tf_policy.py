@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple, Callable
+from typing import Any, Dict, List, Optional, Tuple
 import numpy as np
 from distutils.version import LooseVersion
 
@@ -21,7 +21,6 @@ from mlagents.trainers.tf.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
@@ -47,11 +46,6 @@ class TFPolicy(Policy):
     Contains a learning model, and the necessary
     functions to save/load models and create the input placeholders.
     """
-
-    # Callback function used at the start of training to synchronize weights.
-    # By default, this nothing.
-    # If this needs to be used, it should be done from outside ml-agents.
-    broadcast_global_variables: Callable[[int], None] = lambda root_rank: None
 
     def __init__(
         self,
@@ -92,7 +86,6 @@ class TFPolicy(Policy):
         self.grads = None
         self.update_batch: Optional[tf.Operation] = None
         self.trainable_variables: List[tf.Variable] = []
-        self.rank = get_rank()
         if create_tf_graph:
             self.create_tf_graph()
 

@@ -70,10 +70,6 @@ class TFModelSaver(BaseModelSaver):
         return checkpoint_path
 
     def export(self, output_filepath: str, behavior_name: str) -> None:
-        # save model if there is only one worker or
-        # only on worker-0 if there are multiple workers
-        if self.policy and self.policy.rank is not None and self.policy.rank != 0:
-            return
         export_policy_model(
             self.model_path, output_filepath, behavior_name, self.graph, self.sess
         )
@@ -94,7 +90,6 @@ class TFModelSaver(BaseModelSaver):
             self._load_graph(policy, self.model_path, reset_global_steps=reset_steps)
         else:
             policy.initialize()
-        TFPolicy.broadcast_global_variables(0)
 
     def _load_graph(
         self, policy: TFPolicy, model_path: str, reset_global_steps: bool = False

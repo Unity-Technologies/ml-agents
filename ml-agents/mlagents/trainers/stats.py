@@ -10,7 +10,7 @@ from threading import RLock
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
-from mlagents.tf_utils.globals import get_rank
+from mlagents.trainers.globals import get_rank
 
 
 logger = get_logger(__name__)
