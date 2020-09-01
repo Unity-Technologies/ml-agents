@@ -162,7 +162,7 @@ namespace Unity.MLAgentsExamples
             m_Random = new System.Random(randomSeed);
 
             InitRandom();
-            MarkMatchedCells();
+            //MarkMatchedCells();
         }
 
         public bool MakeMove(Move move)
@@ -315,23 +315,23 @@ namespace Unity.MLAgentsExamples
             return madeMatch;
         }
 
-        public bool ClearMatchedCells()
+        public int ClearMatchedCells()
         {
-            bool hasMatchedCell = false;
+            int numMatchedCells = 0;
             for (var i = 0; i < Rows; i++)
             {
                 for (var j = 0; j < Columns; j++)
                 {
                     if (m_Matched[j, i])
                     {
-                        hasMatchedCell = true;
+                        numMatchedCells++;
                         m_Cells[j, i] = k_EmptyCell;
                     }
                 }
             }
 
             ClearMarked(); // TODO clear here or at start of matching?
-            return hasMatchedCell;
+            return numMatchedCells;
         }
 
         public bool DropCells()
@@ -391,7 +391,7 @@ namespace Unity.MLAgentsExamples
         }
 
         // Initialize the board to random values.
-        void InitRandom()
+        public void InitRandom()
         {
             for (var i = 0; i < Rows; i++)
             {

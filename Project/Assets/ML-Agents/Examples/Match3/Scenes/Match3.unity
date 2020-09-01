@@ -347,7 +347,7 @@ MonoBehaviour:
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 11400000, guid: c34da50737a3c4a50918002b20b2b927, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Match3

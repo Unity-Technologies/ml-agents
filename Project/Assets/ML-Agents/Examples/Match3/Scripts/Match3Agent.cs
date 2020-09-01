@@ -38,13 +38,22 @@ namespace Unity.MLAgentsExamples
 
         private bool[] m_ValidMoves;
         private System.Random m_Random;
+        private const float k_RewardMultiplier = 0.01f;
 
         void Awake()
         {
             Board = new Match3Board(Rows, Cols, NumCellTypes, RandomSeed);
-            m_TimeUntilMove = MoveTime;
             m_ValidMoves = new bool[Move.NumEdgeIndices(Rows, Cols)];
             m_Random = new System.Random(RandomSeed + 1);
+        }
+
+        public override void OnEpisodeBegin()
+        {
+            base.OnEpisodeBegin();
+
+            Board.InitRandom();
+            m_CurrentState = State.FindMatches;
+            m_TimeUntilMove = MoveTime;
         }
 
         private void FixedUpdate()
@@ -68,15 +77,21 @@ namespace Unity.MLAgentsExamples
                 {
                     break;
                 }
-                Board.ClearMatchedCells();
+                var numMatched = Board.ClearMatchedCells();
+                AddReward(k_RewardMultiplier * numMatched);
                 Board.DropCells();
                 Board.FillFromAbove();
             }
 
             bool hasMoves = CheckValidMoves();
-            // TODO reset if no valid moves
-
-            RequestDecision();
+            if (hasMoves)
+            {
+                RequestDecision();
+            }
+            else
+            {
+                EndEpisode();
+            }
         }
 
         void AnimatedUpdate()
@@ -97,7 +112,8 @@ namespace Unity.MLAgentsExamples
                     nextState = hasMatched ? State.ClearMatched : State.WaitForMove;
                     break;
                 case State.ClearMatched:
-                    Board.ClearMatchedCells();
+                    var numMatched = Board.ClearMatchedCells();
+                    AddReward(k_RewardMultiplier * numMatched);
                     nextState = State.Drop;
                     break;
                 case State.Drop:
@@ -110,9 +126,15 @@ namespace Unity.MLAgentsExamples
                     break;
                 case State.WaitForMove:
                     bool hasMoves = CheckValidMoves();
-                    // TODO reset if no valid moves
+                    if (hasMoves)
+                    {
+                        RequestDecision();
+                    }
+                    else
+                    {
+                        EndEpisode();
+                    }
 
-                    RequestDecision();
                     nextState = State.FindMatches;
                     break;
                 default:
