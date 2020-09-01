@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unity.MLAgents.Actuators;
 
@@ -26,7 +27,8 @@ namespace Unity.MLAgentsExamples
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-
+            var numMoves = Move.NumEdgeIndices(m_Agent.Rows, m_Agent.Cols);
+            actionMask.WriteMask(0, InvalidMoveIndices());
         }
 
         public string Name => "Match3Actuator";
@@ -34,6 +36,19 @@ namespace Unity.MLAgentsExamples
         public void ResetData()
         {
 
+        }
+
+        IEnumerable<int> InvalidMoveIndices()
+        {
+            var numMoves = Move.NumEdgeIndices(m_Agent.Rows, m_Agent.Cols);
+            for (var i = 0; i < numMoves; i++)
+            {
+                Move move = Move.FromEdgeIndex(i, m_Agent.Rows, m_Agent.Cols);
+                if (!m_Agent.Board.IsMoveValid(move))
+                {
+                    yield return i;
+                }
+            }
         }
     }
 
