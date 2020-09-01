@@ -147,7 +147,6 @@ namespace Unity.MLAgentsExamples
         public readonly int Columns;
         public readonly int NumCellTypes;
         readonly int[,] m_Cells;
-        readonly int[,] m_TempCells;
         readonly bool[,] m_Matched;
 
         System.Random m_Random;
@@ -158,7 +157,6 @@ namespace Unity.MLAgentsExamples
             Columns = cols;
             NumCellTypes = numCellTypes;
             m_Cells = new int[cols, rows];
-            m_TempCells = new int[cols, rows];
             m_Matched = new bool[cols, rows];
 
             m_Random = new System.Random(randomSeed);

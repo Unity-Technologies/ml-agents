@@ -49,7 +49,34 @@ namespace Unity.MLAgentsExamples
 
         private void FixedUpdate()
         {
-            AnimatedUpdate();
+            if (Academy.Instance.IsCommunicatorOn)
+            {
+                FastUpdate();
+            }
+            else
+            {
+                AnimatedUpdate();
+            }
+        }
+
+        void FastUpdate()
+        {
+            while (true)
+            {
+                var hasMatched = Board.MarkMatchedCells();
+                if (!hasMatched)
+                {
+                    break;
+                }
+                Board.ClearMatchedCells();
+                Board.DropCells();
+                Board.FillFromAbove();
+            }
+
+            bool hasMoves = CheckValidMoves();
+            // TODO reset if no valid moves
+
+            RequestDecision();
         }
 
         void AnimatedUpdate()
