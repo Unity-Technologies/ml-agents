@@ -140,8 +140,8 @@ class SACTrainer(RLTrainer):
         agent_buffer_trajectory = trajectory.to_agentbuffer()
 
         # Update the normalization
-        if self.is_training:
-            self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
+        # if self.is_training:
+        #     self.policy.update_normalization(agent_buffer_trajectory["vector_obs"])
 
         # Evaluate all reward functions for reporting purposes
         self.collected_rewards["environment"][agent_id] += np.sum(

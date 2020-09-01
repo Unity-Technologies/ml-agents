@@ -183,16 +183,19 @@ class ModelUtils:
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
         if vector_size + unnormalized_inputs > 0:
-            if unnormalized_inputs > 0:
-                vector_encoders.append(
-                    VectorAndUnnormalizedInputEncoder(
-                        vector_size, h_size, unnormalized_inputs, num_layers, normalize
-                    )
-                )
-            else:
-                vector_encoders.append(
-                    VectorEncoder(vector_size, h_size, num_layers, normalize)
-                )
+            # if unnormalized_inputs > 0:
+            #     vector_encoders.append(
+            #         VectorAndUnnormalizedInputEncoder(
+            #             vector_size, h_size, unnormalized_inputs, num_layers, normalize
+            #         )
+            #     )
+            # else:
+            #     vector_encoders.append(
+            #         VectorEncoder(vector_size, h_size, num_layers, normalize)
+            #     )
+            vector_encoders.append(
+                VectorEncoder(vector_size, h_size, num_layers, normalize)
+            )
         return nn.ModuleList(visual_encoders), nn.ModuleList(vector_encoders)
 
     @staticmethod

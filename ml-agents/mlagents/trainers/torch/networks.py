@@ -60,8 +60,9 @@ class NetworkBody(nn.Module):
         self.memory_size = 0
 
     def update_normalization(self, vec_inputs: List[torch.Tensor]) -> None:
-        for vec_input, vec_enc in zip(vec_inputs, self.vector_encoders):
-            vec_enc.update_normalization(vec_input)
+        # for vec_input, vec_enc in zip(vec_inputs, self.vector_encoders):
+        #     vec_enc.update_normalization(vec_input)
+        self.vector_encoders[0].update_normalization(vec_inputs[0])
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         if self.normalize:
@@ -300,6 +301,7 @@ class SimpleActor(nn.Module, Actor):
     # def memory_size(self) -> int:
     #     return self.network_body.memory_size
 
+    # @torch.jit.export
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
         self.network_body.update_normalization(vector_obs)
 
