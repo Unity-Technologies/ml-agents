@@ -5,10 +5,10 @@ namespace Unity.MLAgentsExamples
 {
     public enum Direction
     {
-        Up,
-        Down,
-        Left,
-        Right,
+        Up, // +row direction
+        Down, // -row direction
+        Left, // -column direction
+        Right, // +column direction
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ namespace Unity.MLAgentsExamples
             }
             else
             {
-                dir = Direction.Down;
+                dir = Direction.Up;
                 var offset = edgeIndex - (maxCols - 1) * maxRows;
                 col = offset % maxCols;
                 row = offset / maxCols;
@@ -62,15 +62,15 @@ namespace Unity.MLAgentsExamples
         public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)
         {
             int edgeIndex;
-            // Normalize - only consider Right and Down
+            // Normalize - only consider Right and Up
             if (dir == Direction.Left)
             {
                 dir = Direction.Right;
                 col = col - 1;
             }
-            else if (dir == Direction.Up)
+            else if (dir == Direction.Down)
             {
-                dir = Direction.Down;
+                dir = Direction.Up;
                 row = row - 1;
             }
 
@@ -98,9 +98,9 @@ namespace Unity.MLAgentsExamples
             switch (m_Direction)
             {
                 case Direction.Up:
-                    return (m_Row - 1, m_Column);
-                case Direction.Down:
                     return (m_Row + 1, m_Column);
+                case Direction.Down:
+                    return (m_Row - 1, m_Column);
                 case Direction.Left:
                     return (m_Row, m_Column - 1);
                 case Direction.Right:
@@ -262,7 +262,7 @@ namespace Unity.MLAgentsExamples
 
             if (incomingDirection != Direction.Down)
             {
-                for (var r = newRow - 1; r >= 0; r--)
+                for (var r = newRow + 1; r < Rows; r++)
                 {
                     if (m_Cells[newCol, r] == newValue)
                         matchedUp++;
@@ -273,7 +273,7 @@ namespace Unity.MLAgentsExamples
 
             if (incomingDirection != Direction.Up)
             {
-                for (var r = newRow + 1; r < Rows; r++)
+                for (var r = newRow - 1; r >= 0; r--)
                 {
                     if (m_Cells[newCol, r] == newValue)
                         matchedDown++;

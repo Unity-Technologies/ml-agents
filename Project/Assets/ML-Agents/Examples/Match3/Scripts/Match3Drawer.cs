@@ -6,6 +6,7 @@ namespace Unity.MLAgentsExamples
     public class Match3Drawer : MonoBehaviour
     {
         public Match3Agent Agent;
+        public int DebugEdgeIndex = -1;
 
         static Color[] s_Colors = new[]
         {
@@ -53,13 +54,11 @@ namespace Unity.MLAgentsExamples
                 }
             }
 
-            // Draw possible moves
-            //var arrowSize = .375f;
-            var debugIndex = -1;
+            // Draw valid moves
 
             for (var eIdx = 0; eIdx < Move.NumEdgeIndices(board.Rows, board.Columns); eIdx++)
             {
-                if (debugIndex >= 0 && eIdx != debugIndex)
+                if (DebugEdgeIndex >= 0 && eIdx != DebugEdgeIndex)
                 {
                     continue;
                 }
