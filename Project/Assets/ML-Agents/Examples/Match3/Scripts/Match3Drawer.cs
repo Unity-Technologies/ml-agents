@@ -55,9 +55,14 @@ namespace Unity.MLAgentsExamples
 
             // Draw possible moves
             //var arrowSize = .375f;
+            var debugIndex = -1;
 
             for (var eIdx = 0; eIdx < Move.NumEdgeIndices(board.Rows, board.Columns); eIdx++)
             {
+                if (debugIndex >= 0 && eIdx != debugIndex)
+                {
+                    continue;
+                }
                 Move move = Move.FromEdgeIndex(eIdx, board.Rows, board.Columns);
                 if (!board.IsMoveValid(move))
                 {
