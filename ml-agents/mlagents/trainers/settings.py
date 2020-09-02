@@ -57,6 +57,17 @@ def defaultdict_to_dict(d: DefaultDict) -> Dict:
     return {key: cattr.unstructure(val) for key, val in d.items()}
 
 
+def deep_update_dict(d: Dict, update_d: Mapping) -> None:
+    """
+    Similar to dict.update(), but works for nested dicts of dicts as well.
+    """
+    for key, val in update_d.items():
+        if key in d and isinstance(d[key], Mapping) and isinstance(val, Mapping):
+            deep_update_dict(d[key], val)
+        else:
+            d[key] = val
+
+
 class SerializationSettings:
     convert_to_barracuda = True
     convert_to_onnx = True
@@ -611,7 +622,7 @@ class TrainerSettings(ExportableSettings):
         if TrainerSettings.default_override is not None:
             d_copy.update(cattr.unstructure(TrainerSettings.default_override))
 
-        d_copy.update(d)
+        deep_update_dict(d_copy, d)
 
         for key, val in d_copy.items():
             if attr.has(type(val)):
@@ -685,7 +696,7 @@ class EngineSettings:
 class RunOptions(ExportableSettings):
     default_settings: Optional[TrainerSettings] = None
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
-        factory=lambda: TrainerSettings.DefaultTrainerDict
+        factory=TrainerSettings.DefaultTrainerDict
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
@@ -709,7 +720,9 @@ class RunOptions(ExportableSettings):
     cattr.register_unstructure_hook(
         ParameterRandomizationSettings, ParameterRandomizationSettings.unstructure
     )
+
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
+
     cattr.register_structure_hook(
         DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
     )
@@ -746,12 +759,6 @@ class RunOptions(ExportableSettings):
                     )
                 )
 
-        # If a default settings was specified, set the TrainerSettings class override
-        if "default_settings" in configured_dict.keys():
-            TrainerSettings.default_override = cattr.structure(
-                configured_dict["default_settings"], TrainerSettings
-            )
-
         # Override with CLI args
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
@@ -771,4 +778,12 @@ class RunOptions(ExportableSettings):
 
     @staticmethod
     def from_dict(options_dict: Dict[str, Any]) -> "RunOptions":
+        # If a default settings was specified, set the TrainerSettings class override
+        if (
+            "default_settings" in options_dict.keys()
+            and options_dict["default_settings"] is not None
+        ):
+            TrainerSettings.default_override = cattr.structure(
+                options_dict["default_settings"], TrainerSettings
+            )
         return cattr.structure(options_dict, RunOptions)
