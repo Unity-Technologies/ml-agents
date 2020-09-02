@@ -4,6 +4,7 @@ import yaml
 import os
 import numpy as np
 import json
+import cProfile
 
 from typing import Callable, Optional, List
 
@@ -274,7 +275,9 @@ def run_cli(options: RunOptions) -> None:
 
 
 def main():
-    run_cli(parse_command_line())
+    with cProfile.Profile() as pr:
+        run_cli(parse_command_line())
+    pr.dump_stats("pytorch_sac.prof")
 
 
 # For python debugger to directly run this script
