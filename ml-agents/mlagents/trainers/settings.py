@@ -2,13 +2,24 @@ import warnings
 
 import attr
 import cattr
-from typing import Dict, Optional, List, Any, DefaultDict, Mapping, Tuple, Union
+from typing import (
+    Dict,
+    Optional,
+    List,
+    Any,
+    DefaultDict,
+    Mapping,
+    Tuple,
+    Union,
+    ClassVar,
+)
 from enum import Enum
 import collections
 import argparse
 import abc
 import numpy as np
 import math
+import copy
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
@@ -539,6 +550,7 @@ class FrameworkType(Enum):
 
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
+    default_override: ClassVar[Optional["TrainerSettings"]] = None
     trainer_type: TrainerType = TrainerType.PPO
     hyperparameters: HyperparamSettings = attr.ib()
 
@@ -578,8 +590,8 @@ class TrainerSettings(ExportableSettings):
 
     @staticmethod
     def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
-        return collections.defaultdict(
-            TrainerSettings, cattr.structure(d, Dict[str, TrainerSettings])
+        return TrainerSettings.DefaultTrainerDict(
+            cattr.structure(d, Dict[str, TrainerSettings])
         )
 
     @staticmethod
@@ -588,9 +600,14 @@ class TrainerSettings(ExportableSettings):
         Helper method to structure a TrainerSettings class. Meant to be registered with
         cattr.register_structure_hook() and called with cattr.structure().
         """
+
         if not isinstance(d, Mapping):
             raise TrainerConfigError(f"Unsupported config {d} for {t.__name__}.")
+
         d_copy: Dict[str, Any] = {}
+        if TrainerSettings.default_override is not None:
+            d_copy.update(cattr.unstructure(TrainerSettings.default_override))
+
         d_copy.update(d)
 
         for key, val in d_copy.items():
@@ -612,6 +629,16 @@ class TrainerSettings(ExportableSettings):
             else:
                 d_copy[key] = check_and_structure(key, val, t)
         return t(**d_copy)
+
+    class DefaultTrainerDict(collections.defaultdict):
+        def __init__(self, *args):
+            super().__init__(TrainerSettings, *args)
+
+        def __missing__(self, key: Any) -> "TrainerSettings":
+            if TrainerSettings.default_override is not None:
+                return copy.deepcopy(TrainerSettings.default_override)
+            else:
+                return TrainerSettings()
 
 
 # COMMAND LINE #########################################################################
@@ -653,8 +680,9 @@ class EngineSettings:
 
 @attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
+    default_settings: Optional[TrainerSettings] = None
     behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
-        factory=lambda: collections.defaultdict(TrainerSettings)
+        factory=lambda: TrainerSettings.DefaultTrainerDict
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
@@ -714,6 +742,13 @@ class RunOptions(ExportableSettings):
                         key
                     )
                 )
+
+        # If a default settings was specified, set the TrainerSettings override
+        if "default_settings" in configured_dict.keys():
+            TrainerSettings.default_override = cattr.structure(
+                configured_dict["default_settings"], TrainerSettings
+            )
+
         # Override with CLI args
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
