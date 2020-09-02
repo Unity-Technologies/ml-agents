@@ -720,9 +720,7 @@ class RunOptions(ExportableSettings):
     cattr.register_unstructure_hook(
         ParameterRandomizationSettings, ParameterRandomizationSettings.unstructure
     )
-
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
-
     cattr.register_structure_hook(
         DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
     )
@@ -758,7 +756,6 @@ class RunOptions(ExportableSettings):
                         key
                     )
                 )
-
         # Override with CLI args
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
