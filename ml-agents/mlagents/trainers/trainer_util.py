@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import DefaultDict
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 class TrainerFactory:
     def __init__(
         self,
-        trainer_config: Dict[str, TrainerSettings],
+        trainer_config: DefaultDict[str, TrainerSettings],
         output_path: str,
         train_model: bool,
         load_model: bool,
@@ -62,8 +62,9 @@ class TrainerFactory:
     def generate(self, behavior_name: str) -> Trainer:
         if behavior_name not in self.trainer_config.keys():
             logger.warning(
-                f"Behavior name {behavior_name} does not match any behaviors specified"
-                f"in the trainer configuration file: {sorted(self.trainer_config.keys())}"
+                f"Behavior name {behavior_name} does not match any behaviors specified "
+                f"in the trainer configuration file: {sorted(self.trainer_config.keys())}. "
+                "Using default settings."
             )
         trainer_settings = self.trainer_config[behavior_name]
         if self._force_torch:
