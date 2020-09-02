@@ -162,7 +162,6 @@ namespace Unity.MLAgentsExamples
             m_Random = new System.Random(randomSeed);
 
             InitRandom();
-            //MarkMatchedCells();
         }
 
         public bool MakeMove(Move move)

@@ -27,7 +27,6 @@ namespace Unity.MLAgentsExamples
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            var numMoves = Move.NumEdgeIndices(m_Agent.Rows, m_Agent.Cols);
             actionMask.WriteMask(0, InvalidMoveIndices());
         }
 
