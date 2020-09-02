@@ -6,6 +6,7 @@ from mlagents.trainers.torch.encoders import (
     SimpleVisualEncoder,
     ResNetVisualEncoder,
     NatureVisualEncoder,
+    SmallVisualEncoder,
     VectorInput,
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
@@ -18,6 +19,7 @@ class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
     # adjust these also.
     MIN_RESOLUTION_FOR_ENCODER = {
+        EncoderType.MATCH3: 5,
         EncoderType.SIMPLE: 20,
         EncoderType.NATURE_CNN: 36,
         EncoderType.RESNET: 15,
@@ -123,6 +125,7 @@ class ModelUtils:
             EncoderType.SIMPLE: SimpleVisualEncoder,
             EncoderType.NATURE_CNN: NatureVisualEncoder,
             EncoderType.RESNET: ResNetVisualEncoder,
+            EncoderType.MATCH3: SmallVisualEncoder,
         }
         return ENCODER_FUNCTION_BY_TYPE.get(encoder_type)
 
