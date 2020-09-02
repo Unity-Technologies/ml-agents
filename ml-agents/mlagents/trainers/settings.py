@@ -59,6 +59,7 @@ class ExportableSettings:
 
 
 class EncoderType(Enum):
+    MATCH3 = "match3"
     SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
     RESNET = "resnet"

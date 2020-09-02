@@ -1,5 +1,5 @@
 import numpy as np
-import torch
+from mlagents.torch_utils import torch
 from abc import ABC, abstractmethod
 from typing import Dict
 

@@ -1,6 +1,6 @@
 from typing import Dict
 import numpy as np
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
@@ -155,7 +155,7 @@ class BCModule:
         if self.policy.use_vis_obs:
             vis_obs = []
             for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_encoders
+                self.policy.actor_critic.network_body.visual_processors
             ):
                 vis_ob = ModelUtils.list_to_tensor(
                     mini_batch_demo["visual_obs%d" % idx]

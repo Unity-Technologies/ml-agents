@@ -13,9 +13,10 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Minor Changes
-#### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- The Barracuda dependency was upgraded to 1.0.2.
-- Enabled C# formatting using `dotnet-format`.
+
+#### com.unity.ml-agents (C#)
+- Update Barracuda to 1.1.0-preview (#4208)
+- Enabled C# formatting using `dotnet-format`. (#4362)
 - GridSensor was added to the com.unity.ml-agents.extensions package. Thank you
 to Jaden Travnik from Eidos Montreal for the contribution! (#4399)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
@@ -27,6 +28,8 @@ Note that PyTorch 1.6.0 or greater should be installed to use this feature; see
 - Compressed visual observations with >3 channels are now supported. In
 ISensor.GetCompressedObservation(), this can be done by writing 3 channels at a
 time to a PNG and concatenating the resulting bytes. (#4399)
+- A CNN (`vis_encode_type: match3`) for smaller grids, e.g. board games, has been added.
+(#4434)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)

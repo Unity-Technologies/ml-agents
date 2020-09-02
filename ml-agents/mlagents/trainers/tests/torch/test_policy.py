@@ -1,6 +1,6 @@
 import pytest
 
-import torch
+from mlagents.torch_utils import torch
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
@@ -73,7 +73,7 @@ def test_evaluate_actions(rnn, visual, discrete):
     else:
         actions = ModelUtils.list_to_tensor(buffer["actions"], dtype=torch.long)
     vis_obs = []
-    for idx, _ in enumerate(policy.actor_critic.network_body.visual_encoders):
+    for idx, _ in enumerate(policy.actor_critic.network_body.visual_processors):
         vis_ob = ModelUtils.list_to_tensor(buffer["visual_obs%d" % idx])
         vis_obs.append(vis_ob)
 
@@ -110,7 +110,7 @@ def test_sample_actions(rnn, visual, discrete):
     act_masks = ModelUtils.list_to_tensor(buffer["action_mask"])
 
     vis_obs = []
-    for idx, _ in enumerate(policy.actor_critic.network_body.visual_encoders):
+    for idx, _ in enumerate(policy.actor_critic.network_body.visual_processors):
         vis_ob = ModelUtils.list_to_tensor(buffer["visual_obs%d" % idx])
         vis_obs.append(vis_ob)
 
