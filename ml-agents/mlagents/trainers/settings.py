@@ -605,6 +605,9 @@ class TrainerSettings(ExportableSettings):
             raise TrainerConfigError(f"Unsupported config {d} for {t.__name__}.")
 
         d_copy: Dict[str, Any] = {}
+
+        # Check if a default_settings was specified. If so, used those as the default
+        # rather than an empty dict.
         if TrainerSettings.default_override is not None:
             d_copy.update(cattr.unstructure(TrainerSettings.default_override))
 
@@ -743,7 +746,7 @@ class RunOptions(ExportableSettings):
                     )
                 )
 
-        # If a default settings was specified, set the TrainerSettings override
+        # If a default settings was specified, set the TrainerSettings class override
         if "default_settings" in configured_dict.keys():
             TrainerSettings.default_override = cattr.structure(
                 configured_dict["default_settings"], TrainerSettings
