@@ -2,7 +2,7 @@ from typing import Any
 import numpy as np
 import pytest
 from unittest.mock import patch
-import torch
+from mlagents.torch_utils import torch
 import os
 from mlagents.trainers.torch.components.reward_providers import (
     GAILRewardProvider,
@@ -127,7 +127,7 @@ def test_reward_decreases_vail(
         RewardSignalType.GAIL, behavior_spec, gail_settings
     )
 
-    for _ in range(100):
+    for _ in range(200):
         gail_rp.update(buffer_policy)
         reward_expert = gail_rp.evaluate(buffer_expert)[0]
         reward_policy = gail_rp.evaluate(buffer_policy)[0]

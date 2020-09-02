@@ -1,10 +1,9 @@
-import torch
+from mlagents.torch_utils import torch
 from unittest import mock
 import pytest
 
 from mlagents.trainers.torch.encoders import (
-    VectorEncoder,
-    VectorAndUnnormalizedInputEncoder,
+    VectorInput,
     Normalizer,
     SimpleVisualEncoder,
     ResNetVisualEncoder,
@@ -54,47 +53,22 @@ def test_vector_encoder(mock_normalizer):
     mock_normalizer_inst = mock.Mock()
     mock_normalizer.return_value = mock_normalizer_inst
     input_size = 64
-    hidden_size = 128
-    num_layers = 3
     normalize = False
-    vector_encoder = VectorEncoder(input_size, hidden_size, num_layers, normalize)
+    vector_encoder = VectorInput(input_size, normalize)
     output = vector_encoder(torch.ones((1, input_size)))
-    assert output.shape == (1, hidden_size)
+    assert output.shape == (1, input_size)
 
     normalize = True
-    vector_encoder = VectorEncoder(input_size, hidden_size, num_layers, normalize)
+    vector_encoder = VectorInput(input_size, normalize)
     new_vec = torch.ones((1, input_size))
     vector_encoder.update_normalization(new_vec)
 
     mock_normalizer.assert_called_with(input_size)
     mock_normalizer_inst.update.assert_called_with(new_vec)
 
-    vector_encoder2 = VectorEncoder(input_size, hidden_size, num_layers, normalize)
+    vector_encoder2 = VectorInput(input_size, normalize)
     vector_encoder.copy_normalization(vector_encoder2)
     mock_normalizer_inst.copy_from.assert_called_with(mock_normalizer_inst)
-
-
-@mock.patch("mlagents.trainers.torch.encoders.Normalizer")
-def test_vector_and_unnormalized_encoder(mock_normalizer):
-    mock_normalizer_inst = mock.Mock()
-    mock_normalizer.return_value = mock_normalizer_inst
-    input_size = 64
-    unnormalized_size = 32
-    hidden_size = 128
-    num_layers = 3
-    normalize = True
-    mock_normalizer_inst.return_value = torch.ones((1, input_size))
-    vector_encoder = VectorAndUnnormalizedInputEncoder(
-        input_size, hidden_size, unnormalized_size, num_layers, normalize
-    )
-    # Make sure normalizer is only called on input_size
-    mock_normalizer.assert_called_with(input_size)
-    normal_input = torch.ones((1, input_size))
-
-    unnormalized_input = torch.ones((1, 32))
-    output = vector_encoder(normal_input, unnormalized_input)
-    mock_normalizer_inst.assert_called_with(normal_input)
-    assert output.shape == (1, hidden_size)
 
 
 @pytest.mark.parametrize("image_size", [(36, 36, 3), (84, 84, 4), (256, 256, 5)])

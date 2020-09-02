@@ -1,14 +1,11 @@
 import pytest
-import torch
+from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.torch.encoders import (
-    VectorEncoder,
-    VectorAndUnnormalizedInputEncoder,
-)
+from mlagents.trainers.torch.encoders import VectorInput
 from mlagents.trainers.torch.distributions import (
     CategoricalDistInstance,
     GaussianDistInstance,
@@ -42,14 +39,11 @@ def test_min_visual_size():
             enc.forward(vis_input)
 
 
-@pytest.mark.parametrize("unnormalized_inputs", [0, 1])
 @pytest.mark.parametrize("num_visual", [0, 1, 2])
 @pytest.mark.parametrize("num_vector", [0, 1, 2])
 @pytest.mark.parametrize("normalize", [True, False])
 @pytest.mark.parametrize("encoder_type", [EncoderType.SIMPLE, EncoderType.NATURE_CNN])
-def test_create_encoders(
-    encoder_type, normalize, num_vector, num_visual, unnormalized_inputs
-):
+def test_create_inputs(encoder_type, normalize, num_vector, num_visual):
     vec_obs_shape = (5,)
     vis_obs_shape = (84, 84, 3)
     obs_shapes = []
@@ -58,22 +52,16 @@ def test_create_encoders(
     for _ in range(num_visual):
         obs_shapes.append(vis_obs_shape)
     h_size = 128
-    num_layers = 3
-    unnormalized_inputs = 1
-    vis_enc, vec_enc = ModelUtils.create_encoders(
-        obs_shapes, h_size, num_layers, encoder_type, unnormalized_inputs, normalize
+    vis_enc, vec_enc, total_output = ModelUtils.create_input_processors(
+        obs_shapes, h_size, encoder_type, normalize
     )
     vec_enc = list(vec_enc)
     vis_enc = list(vis_enc)
-    assert len(vec_enc) == (
-        1 if unnormalized_inputs + num_vector > 0 else 0
-    )  # There's always at most one vector encoder.
+    assert len(vec_enc) == (1 if num_vector >= 1 else 0)
     assert len(vis_enc) == num_visual
-
-    if unnormalized_inputs > 0:
-        assert isinstance(vec_enc[0], VectorAndUnnormalizedInputEncoder)
-    elif num_vector > 0:
-        assert isinstance(vec_enc[0], VectorEncoder)
+    assert total_output == int(num_visual * h_size + vec_obs_shape[0] * num_vector)
+    if num_vector > 0:
+        assert isinstance(vec_enc[0], VectorInput)
 
     for enc in vis_enc:
         assert isinstance(enc, ModelUtils.get_encoder_for_type(encoder_type))

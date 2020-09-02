@@ -72,6 +72,7 @@ SAC_CONFIG = TrainerSettings(
     summary_freq=100,
     max_steps=1000,
     threaded=False,
+    framework=FrameworkType.PYTORCH,
 )
 
 
@@ -192,7 +193,7 @@ def test_visual_ppo(num_visual, use_discrete):
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
-@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
 def test_visual_advanced_ppo(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
@@ -200,7 +201,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
-        vis_obs_size=(36, 36, 3),
+        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (36, 36, 3),
     )
     new_networksettings = attr.evolve(
         SAC_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
@@ -210,7 +211,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=500,
+        max_steps=700,
         summary_freq=100,
     )
     # The number of steps is pretty small for these encoders
@@ -271,7 +272,7 @@ def test_visual_sac(num_visual, use_discrete):
 
 
 @pytest.mark.parametrize("num_visual", [1, 2])
-@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn"])
+@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
 def test_visual_advanced_sac(vis_encode_type, num_visual):
     env = SimpleEnvironment(
         [BRAIN_NAME],
@@ -279,7 +280,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
-        vis_obs_size=(36, 36, 3),
+        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (36, 36, 3),
     )
     new_networksettings = attr.evolve(
         SAC_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
@@ -302,7 +303,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    step_size = 0.5 if use_discrete else 0.2
+    step_size = 0.2 if use_discrete else 0.5
     env = MemoryEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
     )

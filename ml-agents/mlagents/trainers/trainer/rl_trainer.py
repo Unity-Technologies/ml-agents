@@ -26,12 +26,14 @@ from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents import torch_utils
 
-try:
+if torch_utils.is_available():
     from mlagents.trainers.policy.torch_policy import TorchPolicy
     from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
-except ModuleNotFoundError:
+else:
     TorchPolicy = None  # type: ignore
+    TorchSaver = None  # type: ignore
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
@@ -57,6 +59,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
         self.framework = self.trainer_settings.framework
+        if self.framework == FrameworkType.PYTORCH and not torch_utils.is_available():
+            raise UnityTrainerException(
+                "To use the experimental PyTorch backend, install the PyTorch Python package first."
+            )
+
         logger.debug(f"Using framework {self.framework.value}")
 
         self._next_save_step = 0
@@ -118,11 +125,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         behavior_spec: BehaviorSpec,
         create_graph: bool = False,
     ) -> Policy:
-        if self.framework == FrameworkType.PYTORCH and TorchPolicy is None:
-            raise UnityTrainerException(
-                "To use the experimental PyTorch backend, install the PyTorch Python package first."
-            )
-        elif self.framework == FrameworkType.PYTORCH:
+        if self.framework == FrameworkType.PYTORCH:
             return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
             return self.create_tf_policy(

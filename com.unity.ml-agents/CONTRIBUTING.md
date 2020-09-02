@@ -48,18 +48,20 @@ nature of the environment and task.
 
 ## Continuous Integration (CI)
 
-We run CircleCI on all PRs; all tests must be passing before the PR is merged.
+We run continuous integration on all PRs; all tests must be passing before the PR is merged.
 
 Several static checks are run on the codebase using the
 [pre-commit framework](https://pre-commit.com/) during CI. To execute the same
-checks locally, install `pre-commit` and run `pre-commit run --all-files`. Some
-hooks (for example, `black`) will output the corrected version of the code;
-others (like `mypy`) may require more effort to fix.
+checks locally, run `pip install pre-commit` and then `pre-commit run --all-files`.
+Some hooks (for example, `black`) will output the corrected version of the code;
+others (like `mypy`) may require more effort to fix. You can optionally run
+`pre-commit install` to install it as a git hook; after this it will run on all
+commits that you make.
 
 ### Code style
 
 All python code should be formatted with
-[`black`](https://github.com/ambv/black).
+[`black`](https://github.com/psf/black).
 
 C# code is formatted using [`dotnet-format`](https://github.com/dotnet/format).
 You must have [dotnet](https://dotnet.microsoft.com/download) and
