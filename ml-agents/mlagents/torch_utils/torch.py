@@ -1,3 +1,5 @@
+import os
+
 # Detect availability of torch package here.
 # NOTE: this try/except is temporary until torch is required for ML-Agents.
 try:
@@ -5,7 +7,8 @@ try:
     # Everywhere else is caught by the banned-modules setting for flake8
     import torch  # noqa I201
 
-    torch.set_num_threads(1)
+    torch.set_num_interop_threads(2)
+    os.environ["KMP_BLOCKTIME"] = "0"
 
     # Known PyLint compatibility with PyTorch https://github.com/pytorch/pytorch/issues/701
     # pylint: disable=E1101
