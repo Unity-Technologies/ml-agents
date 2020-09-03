@@ -7,9 +7,14 @@ try:
     # Everywhere else is caught by the banned-modules setting for flake8
     import torch  # noqa I201
 
-    torch.set_num_interop_threads(2)
-    os.environ["KMP_AFFINITY"] = "granularity=fine,compact,1,0"
-    os.environ["KMP_BLOCKTIME"] = "0"
+    if "TORCH_NUM_THREADS" in os.environ:
+        torch.set_num_threads(int(os.environ.get("TORCH_NUM_THREADS")))
+
+    if "TORCH_NUM_INTEROP" in os.environ:
+        torch.set_num_interop_threads(int(os.environ.get("TORCH_NUM_INTEROP")))
+    # torch.set_num_interop_threads(4)
+    # os.environ["KMP_AFFINITY"] = "granularity=fine,compact,1,0"
+    # os.environ["KMP_BLOCKTIME"] = "1"
 
     # Known PyLint compatibility with PyTorch https://github.com/pytorch/pytorch/issues/701
     # pylint: disable=E1101

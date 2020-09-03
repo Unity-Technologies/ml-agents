@@ -6,6 +6,8 @@ import numpy as np
 import json
 import cProfile
 
+from mlagents_envs.registry import default_registry
+
 from typing import Callable, Optional, List
 
 import mlagents.trainers
@@ -198,8 +200,7 @@ def create_environment_factory(
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
-        return UnityEnvironment(
-            file_name=env_path,
+        return default_registry["CrawlerStaticTarget"].make(
             worker_id=worker_id,
             seed=env_seed,
             no_graphics=no_graphics,
