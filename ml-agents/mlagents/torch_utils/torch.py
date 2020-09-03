@@ -8,7 +8,6 @@ try:
     import torch  # noqa I201
 
     torch.set_num_interop_threads(2)
-    os.environ["KMP_AFFINITY"] = "granularity=fine,compact,1,0"
     os.environ["KMP_BLOCKTIME"] = "0"
 
     # Known PyLint compatibility with PyTorch https://github.com/pytorch/pytorch/issues/701
