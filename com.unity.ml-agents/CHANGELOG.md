@@ -30,6 +30,8 @@ ISensor.GetCompressedObservation(), this can be done by writing 3 channels at a
 time to a PNG and concatenating the resulting bytes. (#4399)
 - A CNN (`vis_encode_type: match3`) for smaller grids, e.g. board games, has been added.
 (#4434)
+- You can now again specify a default configuration for your behaviors. Specify `default_settings` in
+your trainer configuration to do so. (#4448)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
