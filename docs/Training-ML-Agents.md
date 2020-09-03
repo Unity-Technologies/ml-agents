@@ -352,7 +352,7 @@ behaviors:
   # < Same as above >
 ```
 
-Behaviors found in the environment that aren't secified in the YAML will now use the `default_settings`,
+Behaviors found in the environment that aren't specified in the YAML will now use the `default_settings`,
 and unspecified settings in behavior configurations will default to the values in `default_settings` if
 specified there.
 
