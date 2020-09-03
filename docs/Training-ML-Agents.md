@@ -176,7 +176,8 @@ add typically has its own training configurations. For instance:
 The trainer config file, `<trainer-config-file>`, determines the features you will
 use during training, and the answers to the above questions will dictate its contents.
 The rest of this guide breaks down the different sub-sections of the trainer config file
-and explains the possible settings for each.
+and explains the possible settings for each. If you need a list of all the trainer
+configurations, please see [Training Configuration File](Training-Configuration-File.md).
 
 **NOTE:** The configuration file format has been changed between 0.17.0 and 0.18.0 and
 between 0.18.0 and onwards. To convert
