@@ -8,10 +8,12 @@ namespace Unity.MLAgentsExamples
     {
         private Match3Agent m_Agent;
         private ActionSpec m_ActionSpec;
+        private bool m_ForceRandom;
 
-        public Match3Actuator(Match3Agent agent)
+        public Match3Actuator(Match3Agent agent, bool forceRandom)
         {
             m_Agent = agent;
+            m_ForceRandom = forceRandom;
             var numMoves = Move.NumEdgeIndices(m_Agent.Rows, m_Agent.Cols);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
         }
@@ -20,7 +22,15 @@ namespace Unity.MLAgentsExamples
 
         public void OnActionReceived(ActionBuffers actions)
         {
-            int moveIndex = actions.DiscreteActions[0];
+            int moveIndex;
+            if (m_ForceRandom)
+            {
+                moveIndex = m_Agent.GetRandomValidMoveIndex();
+            }
+            else
+            {
+                moveIndex = actions.DiscreteActions[0];
+            }
             Move move = Move.FromEdgeIndex(moveIndex, m_Agent.Rows, m_Agent.Cols);
             m_Agent.Board.MakeMove(move);
         }
@@ -54,9 +64,10 @@ namespace Unity.MLAgentsExamples
     public class Match3ActuatorComponent : ActuatorComponent
     {
         public Match3Agent Agent;
+        public bool ForceRandom = false;
         public override IActuator CreateActuator()
         {
-            return new Match3Actuator(Agent);
+            return new Match3Actuator(Agent, ForceRandom);
         }
 
         public override ActionSpec ActionSpec
