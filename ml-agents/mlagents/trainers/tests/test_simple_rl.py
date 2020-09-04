@@ -48,7 +48,7 @@ PPO_CONFIG = TrainerSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
         batch_size=16,
-        buffer_size=64,
+        buffer_size=63,
     ),
     network_settings=NetworkSettings(num_layers=1, hidden_units=32),
     summary_freq=500,
