@@ -116,7 +116,7 @@ def test_checkpoint_conversion(tmpdir, rnn, visual, discrete):
     assert os.path.isfile(model_path + "/Mock_Brain-100.nn")
 
 
-# This is the normalizeer test from test_nn_policy.py but with a load
+# This is the normalizer test from test_nn_policy.py but with a load
 def test_normalizer_after_load(tmp_path):
     behavior_spec = mb.setup_test_behavior_specs(
         use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
