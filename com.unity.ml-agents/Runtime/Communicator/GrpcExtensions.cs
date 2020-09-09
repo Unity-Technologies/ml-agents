@@ -281,7 +281,7 @@ namespace Unity.MLAgents
                 {
                     if (!s_HaveWarnedAboutTrainerCapabilities)
                     {
-                        Debug.LogWarning("Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations.");
+                        Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
                         s_HaveWarnedAboutTrainerCapabilities = true;
                     }
                     compressionType = SensorCompressionType.None;
