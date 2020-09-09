@@ -267,7 +267,19 @@ namespace Unity.MLAgents
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
-            if (sensor.GetCompressionType() == SensorCompressionType.None)
+            var compressionType = sensor.GetCompressionType();
+            // Check capabilities if we need to concatenate PNGs
+            if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
+            {
+                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
+                if (!trainerCanHandle)
+                {
+                    Debug.LogWarning("Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations.");
+                    compressionType = SensorCompressionType.None;
+                }
+            }
+
+            if (compressionType == SensorCompressionType.None)
             {
                 var numFloats = sensor.ObservationSize();
                 var floatDataProto = new ObservationProto.Types.FloatData();
@@ -289,16 +301,6 @@ namespace Unity.MLAgents
             }
             else
             {
-                // Check capabilities if we need to concatenate PNGs
-                if (sensor.GetCompressionType() == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
-                {
-                    var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
-                    if (!trainerCanHandle)
-                    {
-                        throw new UnityAgentsException("Attached trainer doesn't support multiple PNGs. Upgrade to a version with communicator API >= 1.1.0");
-                    }
-                }
-
                 var compressedObs = sensor.GetCompressedObservation();
                 if (compressedObs == null)
                 {

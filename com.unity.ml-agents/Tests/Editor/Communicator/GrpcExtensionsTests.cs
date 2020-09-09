@@ -101,14 +101,14 @@ namespace Unity.MLAgents.Tests
                 // Uncompressed floats
                 (new[] {4, 4, 3}, SensorCompressionType.None, false, false),
                 // Compressed floats, 3 channels
-                (new[] {4, 4, 3}, SensorCompressionType.PNG, false, false),
+                (new[] {4, 4, 3}, SensorCompressionType.PNG, false, true),
 
                 // Compressed floats, >3 channels
-                (new[] {4, 4, 4}, SensorCompressionType.PNG, false, true), // Unsupported should throw
-                (new[] {4, 4, 4}, SensorCompressionType.PNG, true, false), // Supported doesn't throw
+                (new[] {4, 4, 4}, SensorCompressionType.PNG, false, false), // Unsupported - results in uncompressed
+                (new[] {4, 4, 4}, SensorCompressionType.PNG, true, true), // Supported compressed
             };
 
-            foreach (var (shape, compressionType, supportsMultiPngObs, expectThrow) in variants)
+            foreach (var (shape, compressionType, supportsMultiPngObs, expectCompressed) in variants)
             {
                 var dummySensor = new DummySensor();
                 var obsWriter = new ObservationWriter();
@@ -123,16 +123,17 @@ namespace Unity.MLAgents.Tests
                 };
                 Academy.Instance.TrainerCapabilities = caps;
 
-                if (expectThrow)
+
+                var obsProto = dummySensor.GetObservationProto(obsWriter);
+                if (expectCompressed)
                 {
-                    Assert.Throws<UnityAgentsException>(() =>
-                    {
-                        dummySensor.GetObservationProto(obsWriter);
-                    });
+                    Assert.Greater(obsProto.CompressedData.Length, 0);
+                    Assert.AreEqual(obsProto.FloatData, null);
                 }
                 else
                 {
-                    dummySensor.GetObservationProto(obsWriter);
+                    Assert.Greater(obsProto.FloatData.Data.Count, 0);
+                    Assert.AreEqual(obsProto.CompressedData.Length, 0);
                 }
             }
 
