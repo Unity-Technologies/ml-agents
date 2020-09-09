@@ -40,6 +40,7 @@ your trainer configuration to do so. (#4448)
 #### com.unity.ml-agents (C#)
 - The package dependencies were updated to include the built-in packages that are used also. (#4384)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed the sample code in the custom SideChannel example. (#4466)
 
 ## [1.3.0-preview] - 2020-08-12
 
