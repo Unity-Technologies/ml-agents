@@ -119,7 +119,7 @@ namespace Unity.MLAgents.Tests
 
                 var caps = new UnityRLCapabilities
                 {
-                    m_ConcatenatedPngObservations = supportsMultiPngObs
+                    ConcatenatedPngObservations = supportsMultiPngObs
                 };
                 Academy.Instance.TrainerCapabilities = caps;
 
