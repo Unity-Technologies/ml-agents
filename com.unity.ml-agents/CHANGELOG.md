@@ -19,6 +19,9 @@ and this project adheres to
 - Enabled C# formatting using `dotnet-format`. (#4362)
 - GridSensor was added to the com.unity.ml-agents.extensions package. Thank you
 to Jaden Travnik from Eidos Montreal for the contribution! (#4399)
+- Added `Agent.EpisodeInterrupted()`, which can be used to reset the agent when
+it has reached a user-determined maximum number of steps. This behaves similarly
+to `Agent.EndEpsiode()` but has a slightly different effect on training (#4453).
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Experimental PyTorch support has been added. Use `--torch` when running `mlagents-learn`, or add
 `framework: pytorch` to your trainer configuration (under the behavior name) to enable it.
