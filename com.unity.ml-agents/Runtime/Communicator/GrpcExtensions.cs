@@ -256,6 +256,11 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
+        /// Static flag to make sure that we only fire the warning once.
+        /// </summary>
+        private static bool s_HaveWarnedAboutTrainerCapabilities = false;
+
+        /// <summary>
         /// Generate an ObservationProto for the sensor using the provided ObservationWriter.
         /// This is equivalent to producing an Observation and calling Observation.ToProto(),
         /// but avoid some intermediate memory allocations.
@@ -274,7 +279,11 @@ namespace Unity.MLAgents
                 var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
                 if (!trainerCanHandle)
                 {
-                    Debug.LogWarning("Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations.");
+                    if (!s_HaveWarnedAboutTrainerCapabilities)
+                    {
+                        Debug.LogWarning("Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations.");
+                        s_HaveWarnedAboutTrainerCapabilities = true;
+                    }
                     compressionType = SensorCompressionType.None;
                 }
             }
