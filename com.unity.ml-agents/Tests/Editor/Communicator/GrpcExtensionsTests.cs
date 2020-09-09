@@ -3,6 +3,7 @@ using UnityEngine;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
 {
@@ -48,6 +49,94 @@ namespace Unity.MLAgents.Tests
             // Should be able to convert a default instance to proto.
             var demoMetaData = new DemonstrationMetaData();
             demoMetaData.ToProto();
+        }
+
+        class DummySensor : ISensor
+        {
+            public int[] Shape;
+            public SensorCompressionType CompressionType;
+
+            internal DummySensor()
+            {
+            }
+
+            public int[] GetObservationShape()
+            {
+                return Shape;
+            }
+
+            public int Write(ObservationWriter writer)
+            {
+                return 0;
+            }
+
+            public byte[] GetCompressedObservation()
+            {
+                return new byte[] { 13, 37 };
+            }
+
+            public void Update() { }
+
+            public void Reset() { }
+
+            public SensorCompressionType GetCompressionType()
+            {
+                return CompressionType;
+            }
+
+            public string GetName()
+            {
+                return "Dummy";
+            }
+        }
+
+        [Test]
+        public void TestGetObservationProtoCapabilities()
+        {
+            // Shape, compression type, concatenatedPngObservations, expect throw
+            var variants = new[]
+            {
+                // Vector observations
+                (new[] {3}, SensorCompressionType.None, false, false),
+                // Uncompressed floats
+                (new[] {4, 4, 3}, SensorCompressionType.None, false, false),
+                // Compressed floats, 3 channels
+                (new[] {4, 4, 3}, SensorCompressionType.PNG, false, false),
+
+                // Compressed floats, >3 channels
+                (new[] {4, 4, 4}, SensorCompressionType.PNG, false, true), // Unsupported should throw
+                (new[] {4, 4, 4}, SensorCompressionType.PNG, true, false), // Supported doesn't throw
+            };
+
+            foreach (var (shape, compressionType, supportsMultiPngObs, expectThrow) in variants)
+            {
+                var dummySensor = new DummySensor();
+                var obsWriter = new ObservationWriter();
+
+                dummySensor.Shape = shape;
+                dummySensor.CompressionType = compressionType;
+                obsWriter.SetTarget(new float[128], shape, 0);
+
+                var caps = new UnityRLCapabilities
+                {
+                    m_ConcatenatedPngObservations = supportsMultiPngObs
+                };
+                Academy.Instance.TrainerCapabilities = caps;
+
+                if (expectThrow)
+                {
+                    Assert.Throws<UnityAgentsException>(() =>
+                    {
+                        dummySensor.GetObservationProto(obsWriter);
+                    });
+                }
+                else
+                {
+                    dummySensor.GetObservationProto(obsWriter);
+                }
+            }
+
+
         }
     }
 }

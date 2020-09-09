@@ -76,7 +76,7 @@ namespace Unity.MLAgents
         ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.0.0";
+        const string k_ApiVersion = "1.1.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.

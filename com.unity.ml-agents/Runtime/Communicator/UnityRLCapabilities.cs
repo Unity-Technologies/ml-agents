@@ -5,6 +5,7 @@ namespace Unity.MLAgents
     internal class UnityRLCapabilities
     {
         internal bool m_BaseRLCapabilities;
+        internal bool m_ConcatenatedPngObservations;
 
         /// <summary>
         /// A class holding the capabilities flags for Reinforcement Learning across C# and the Trainer codebase.  This

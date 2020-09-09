@@ -117,6 +117,7 @@ class UnityEnvironment(BaseEnv):
     def _get_capabilities_proto() -> UnityRLCapabilitiesProto:
         capabilities = UnityRLCapabilitiesProto()
         capabilities.baseRLCapabilities = True
+        capabilities.concatenatedPngObservations = True
         return capabilities
 
     @staticmethod
