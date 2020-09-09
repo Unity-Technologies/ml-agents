@@ -696,14 +696,14 @@ namespace Unity.MLAgents
         /// reaches the goal or fails at the task.
         /// </remarks>
         /// <seealso cref="OnEpisodeBegin"/>
-        /// <seealso cref="EpisodeMaxStepReached"/>
+        /// <seealso cref="EpisodeInterrupted"/>
         public void EndEpisode()
         {
             EndEpisodeAndReset(DoneReason.DoneCalled);
         }
 
         /// <summary>
-        /// Indicate that the episode has reached a maximum number of steps.
+        /// Indicate that the episode is over but not due to the "fault" of the Agent.
         /// This has the same end result as calling <see cref="EndEpisode"/>, but has a
         /// slightly different effect on training.
         /// </summary>
@@ -713,7 +713,7 @@ namespace Unity.MLAgents
         /// </remarks>
         /// <seealso cref="OnEpisodeBegin"/>
         /// <seealso cref="EndEpisode"/>
-        public void EpisodeMaxStepReached()
+        public void EpisodeInterrupted()
         {
             EndEpisodeAndReset(DoneReason.MaxStepReached);
         }
