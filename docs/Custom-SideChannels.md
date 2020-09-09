@@ -87,7 +87,7 @@ public class StringLogSideChannel : SideChannel
         ChannelId = new Guid("621f0a70-4f87-11ea-a6bf-784f4387d1f7");
     }
 
-    public override void OnMessageReceived(IncomingMessage msg)
+    protected override void OnMessageReceived(IncomingMessage msg)
     {
         var receivedString = msg.ReadString();
         Debug.Log("From Python : " + receivedString);
