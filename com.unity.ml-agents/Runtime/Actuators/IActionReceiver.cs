@@ -36,10 +36,16 @@ namespace Unity.MLAgents.Actuators
         public static ActionBuffers FromDiscreteActions(float[] discreteActions)
         {
             return new ActionBuffers(ActionSegment<float>.Empty, discreteActions == null ? ActionSegment<int>.Empty
-                                : new ActionSegment<int>(Array.ConvertAll(discreteActions,
-                                    x => (int)x)));
+                : new ActionSegment<int>(Array.ConvertAll(discreteActions,
+                    x => (int)x)));
         }
 
+        /// <summary>
+        /// Construct an <see cref="ActionBuffers"/> instance with the continuous and discrete actions that will
+        /// be used.
+        /// /// </summary>
+        /// <param name="continuousActions">The continuous actions to send to an <see cref="IActionReceiver"/>.</param>
+        /// <param name="discreteActions">The discrete actions to send to an <see cref="IActionReceiver"/>.</param>
         public ActionBuffers(float[] continuousActions, int[] discreteActions)
             : this(new ActionSegment<float>(continuousActions), new ActionSegment<int>(discreteActions)) { }
 
@@ -132,7 +138,6 @@ namespace Unity.MLAgents.Actuators
     /// </summary>
     public interface IActionReceiver
     {
-
         /// <summary>
         /// The specification of the Action space for this IActionReceiver.
         /// </summary>
