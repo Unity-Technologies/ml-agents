@@ -1,6 +1,6 @@
 import numpy as np
 from typing import Dict
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
@@ -71,7 +71,7 @@ class RNDNetwork(torch.nn.Module):
         """
         Extracts the current state embedding from a mini_batch.
         """
-        n_vis = len(self._encoder.visual_encoders)
+        n_vis = len(self._encoder.visual_processors)
         hidden, _ = self._encoder.forward(
             vec_inputs=[
                 ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
