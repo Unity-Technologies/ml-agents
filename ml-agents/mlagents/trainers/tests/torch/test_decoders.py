@@ -1,5 +1,5 @@
 import pytest
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.torch.decoders import ValueHeads
 

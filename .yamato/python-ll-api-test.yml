@@ -1,5 +1,5 @@
 test_editors:
-  - version: 2019.3
+  - version: 2019.4
 ---
 {% for editor in test_editors %}
 test_mac_ll_api_{{ editor.version }}:

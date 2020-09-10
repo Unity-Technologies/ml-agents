@@ -23,15 +23,17 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.settings import TrainerSettings, FrameworkType
 from mlagents.trainers.stats import StatsPropertyType
-from mlagents.trainers.saver.saver import BaseSaver
-from mlagents.trainers.saver.tf_saver import TFSaver
+from mlagents.trainers.model_saver.model_saver import BaseModelSaver
+from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
 from mlagents.trainers.exception import UnityTrainerException
+from mlagents import torch_utils
 
-try:
+if torch_utils.is_available():
     from mlagents.trainers.policy.torch_policy import TorchPolicy
-    from mlagents.trainers.saver.torch_saver import TorchSaver
-except ModuleNotFoundError:
+    from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
+else:
     TorchPolicy = None  # type: ignore
+    TorchSaver = None  # type: ignore
 
 RewardSignalResults = Dict[str, RewardSignalResult]
 
@@ -57,11 +59,16 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
         self.framework = self.trainer_settings.framework
+        if self.framework == FrameworkType.PYTORCH and not torch_utils.is_available():
+            raise UnityTrainerException(
+                "To use the experimental PyTorch backend, install the PyTorch Python package first."
+            )
+
         logger.debug(f"Using framework {self.framework.value}")
 
         self._next_save_step = 0
         self._next_summary_step = 0
-        self.saver = self.create_saver(
+        self.model_saver = self.create_model_saver(
             self.framework, self.trainer_settings, self.artifact_path, self.load
         )
 
@@ -118,11 +125,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         behavior_spec: BehaviorSpec,
         create_graph: bool = False,
     ) -> Policy:
-        if self.framework == FrameworkType.PYTORCH and TorchPolicy is None:
-            raise UnityTrainerException(
-                "To use the experimental PyTorch backend, install the PyTorch Python package first."
-            )
-        elif self.framework == FrameworkType.PYTORCH:
+        if self.framework == FrameworkType.PYTORCH:
             return self.create_torch_policy(parsed_behavior_id, behavior_spec)
         else:
             return self.create_tf_policy(
@@ -151,18 +154,18 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         pass
 
     @staticmethod
-    def create_saver(
+    def create_model_saver(
         framework: str, trainer_settings: TrainerSettings, model_path: str, load: bool
-    ) -> BaseSaver:
+    ) -> BaseModelSaver:
         if framework == FrameworkType.PYTORCH:
-            saver = TorchSaver(  # type: ignore
+            model_saver = TorchModelSaver(  # type: ignore
                 trainer_settings, model_path, load
             )
         else:
-            saver = TFSaver(  # type: ignore
+            model_saver = TFModelSaver(  # type: ignore
                 trainer_settings, model_path, load
             )
-        return saver
+        return model_saver
 
     def _policy_mean_reward(self) -> Optional[float]:
         """ Returns the mean episode reward for the current policy. """
@@ -182,10 +185,11 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        checkpoint_path = self.saver.save_checkpoint(self.brain_name, self.step)
+        checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self.step)
+        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
         new_checkpoint = NNCheckpoint(
             int(self.step),
-            f"{checkpoint_path}.nn",
+            f"{checkpoint_path}.{export_ext}",
             self._policy_mean_reward(),
             time.time(),
         )
@@ -208,9 +212,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             return
 
         model_checkpoint = self._checkpoint()
-        self.saver.copy_final_model(model_checkpoint.file_path)
+        self.model_saver.copy_final_model(model_checkpoint.file_path)
+        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
         final_checkpoint = attr.evolve(
-            model_checkpoint, file_path=f"{self.saver.model_path}.nn"
+            model_checkpoint, file_path=f"{self.model_saver.model_path}.{export_ext}"
         )
         NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 

@@ -2,7 +2,7 @@ test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
     enableCodeCoverage: !!bool false
-  - version: 2019.3
+  - version: 2019.4
     enableCodeCoverage: !!bool true
   - version: 2020.1
     enableCodeCoverage: !!bool true
@@ -70,7 +70,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
     {% if editor.enableCodeCoverage %}
     - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
@@ -116,7 +116,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }}
+    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
     {% if editor.enableCodeCoverage %}
     - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}

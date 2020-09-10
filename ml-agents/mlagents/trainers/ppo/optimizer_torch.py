@@ -1,5 +1,5 @@
 from typing import Dict, cast
-import torch
+from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer
 
@@ -150,7 +150,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         if self.policy.use_vis_obs:
             vis_obs = []
             for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_encoders
+                self.policy.actor_critic.network_body.visual_processors
             ):
                 vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 vis_obs.append(vis_ob)
@@ -187,8 +187,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.optimizer.step()
         update_stats = {
-            "Losses/Policy Loss": abs(policy_loss.detach().cpu().numpy()),
-            "Losses/Value Loss": value_loss.detach().cpu().numpy(),
+            "Losses/Policy Loss": policy_loss.item(),
+            "Losses/Value Loss": value_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
@@ -200,4 +200,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         return update_stats
 
     def get_modules(self):
-        return {"Optimizer": self.optimizer}
+        modules = {"Optimizer": self.optimizer}
+        for reward_provider in self.reward_signals.values():
+            modules.update(reward_provider.get_modules())
+        return modules

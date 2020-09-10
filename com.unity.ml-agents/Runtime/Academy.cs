@@ -63,7 +63,20 @@ namespace Unity.MLAgents
         /// functionality will work as long the major versions match.
         /// This should be changed whenever a change is made to the communication protocol.
         /// </summary>
-        const string k_ApiVersion = "1.0.0";
+        /// <remarks>
+        /// History:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <term>1.0.0</term>
+        ///         <description>Initial version</description>
+        ///     </item>
+        ///     <item>
+        ///         <term>1.1.0</term>
+        ///         <description>Support concatenated PNGs for compressed observations.</description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
+        const string k_ApiVersion = "1.1.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.

@@ -52,7 +52,7 @@ namespace Unity.MLAgents.Sensors
         void Update();
 
         /// <summary>
-        /// Resets the internal states of the sensor. This is called at the end of an Agent's episode.
+        /// Resets the internal state of the sensor. This is called at the end of an Agent's episode.
         /// Most implementations can leave this empty.
         /// </summary>
         void Reset();
