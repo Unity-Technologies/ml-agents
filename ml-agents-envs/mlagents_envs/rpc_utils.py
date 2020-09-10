@@ -116,7 +116,7 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
             # Didn't find the header, so must be at the end.
             break
 
-    img = np.concatenate(image_arrays, axis=2)
+    img = np.concatenate(image_arrays, axis=0)
     # We can drop additional channels since they may need to be added to include
     # numbers of observation channels not divisible by 3.
     actual_channels = list(img.shape)[2]

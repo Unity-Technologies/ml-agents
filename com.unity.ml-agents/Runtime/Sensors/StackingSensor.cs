@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -32,8 +33,12 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         float[][] m_StackedObservations;
 
+        byte[][] m_StackedCompressedObservations;
+
         int m_CurrentIndex;
         ObservationWriter m_LocalWriter = new ObservationWriter();
+
+        byte[] m_DummyPNG;
 
         /// <summary>
         /// Initializes the sensor.
@@ -48,16 +53,7 @@ namespace Unity.MLAgents.Sensors
 
             m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
-            if (wrapped.GetCompressionType() != SensorCompressionType.None)
-            {
-                throw new UnityAgentsException("StackingSensor doesn't support compressed observations.'");
-            }
-
             var shape = wrapped.GetObservationShape();
-            if (shape.Length != 1)
-            {
-                throw new UnityAgentsException("Only 1-D observations are supported by StackingSensor");
-            }
             m_Shape = new int[shape.Length];
 
             m_UnstackedObservationSize = wrapped.ObservationSize();
@@ -69,9 +65,22 @@ namespace Unity.MLAgents.Sensors
             // TODO support arbitrary stacking dimension
             m_Shape[0] *= numStackedObservations;
             m_StackedObservations = new float[numStackedObservations][];
-            for (var i = 0; i < numStackedObservations; i++)
+            m_StackedCompressedObservations = new byte[numStackedObservations][];
+            m_DummyPNG = CreateDummyPNG();
+
+            if (m_WrappedSensor.GetCompressionType() == SensorCompressionType.None)
             {
-                m_StackedObservations[i] = new float[m_UnstackedObservationSize];
+                for (var i = 0; i < numStackedObservations; i++)
+                {
+                    m_StackedObservations[i] = new float[m_UnstackedObservationSize];
+                }
+            }
+            else
+            {
+                for (var i = 0; i < numStackedObservations; i++)
+                {
+                    m_StackedCompressedObservations[i] = m_DummyPNG;
+                }
             }
         }
 
@@ -109,9 +118,19 @@ namespace Unity.MLAgents.Sensors
         {
             m_WrappedSensor.Reset();
             // Zero out the buffer.
-            for (var i = 0; i < m_NumStackedObservations; i++)
+            if (m_WrappedSensor.GetCompressionType() == SensorCompressionType.None)
             {
-                Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
+                for (var i = 0; i < m_NumStackedObservations; i++)
+                {
+                    Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
+                }
+            }
+            else
+            {
+                for (var i = 0; i < m_NumStackedObservations; i++)
+                {
+                    m_StackedCompressedObservations[i] = m_DummyPNG;
+                }
             }
         }
 
@@ -128,17 +147,42 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public virtual byte[] GetCompressedObservation()
+        public byte[] GetCompressedObservation()
         {
-            return null;
+            var compressed = m_WrappedSensor.GetCompressedObservation();
+            m_StackedCompressedObservations[m_CurrentIndex] = compressed;
+
+            int bytesLength = 0;
+            foreach (byte[] compressedObs in m_StackedCompressedObservations)
+            {
+                bytesLength += compressedObs.Length;
+            }
+
+            byte[] bytes = new byte[bytesLength];
+            int offset = 0;
+            for (var i = 0; i < m_NumStackedObservations; i++)
+            {
+                var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
+                Buffer.BlockCopy(m_StackedCompressedObservations[obsIndex], 0, bytes, offset, m_StackedCompressedObservations[obsIndex].Length);
+                offset += m_StackedCompressedObservations[obsIndex].Length;
+            }
+
+            return bytes;
         }
 
         /// <inheritdoc/>
-        public virtual SensorCompressionType GetCompressionType()
+        public SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.None;
+            return m_WrappedSensor.GetCompressionType();
         }
 
-        // TODO support stacked compressed observations (byte stream)
+        public byte[] CreateDummyPNG()
+        {
+            int height = m_WrappedSensor.GetObservationShape()[0];
+            int width = m_WrappedSensor.GetObservationShape()[1];
+            var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
+            var png = texture2D.EncodeToPNG();
+            return png;
+        }
     }
 }
