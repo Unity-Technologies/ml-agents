@@ -45,7 +45,7 @@ ISensor.GetCompressedObservation(), this can be done by writing 3 channels at a
 time to a PNG and concatenating the resulting bytes. (#4399)
 - The Communication API was changed to 1.1.0 to indicate support for concatenated PNGs
 (see above). Newer versions of the package that wish to make use of this will also need
-a compatible version of the trainer.
+a compatible version of the trainer. (#4462)
 - A CNN (`vis_encode_type: match3`) for smaller grids, e.g. board games, has been added.
 (#4434)
 - You can now again specify a default configuration for your behaviors. Specify `default_settings` in
