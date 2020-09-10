@@ -1130,11 +1130,6 @@ namespace Unity.MLAgents
             CollectDiscreteActionMasks(m_ActionMasker);
         }
 
-        ActionSpec IActionReceiver.ActionSpec
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based
         /// on the provided action.

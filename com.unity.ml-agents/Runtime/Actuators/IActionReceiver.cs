@@ -139,12 +139,6 @@ namespace Unity.MLAgents.Actuators
     public interface IActionReceiver
     {
         /// <summary>
-        /// The specification of the Action space for this IActionReceiver.
-        /// </summary>
-        /// <seealso cref="ActionSpec"/>
-        ActionSpec ActionSpec { get; }
-
-        /// <summary>
         /// Method called in order too allow object to execute actions based on the
         /// <see cref="ActionBuffers"/> contents.  The structure of the contents in the <see cref="ActionBuffers"/>
         /// are defined by the <see cref="ActionSpec"/>.
@@ -170,21 +164,5 @@ namespace Unity.MLAgents.Actuators
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);
-    }
-
-    /// <summary>
-    /// Helper methods to be shared by all classes that implement <see cref="IActionReceiver"/>.
-    /// </summary>
-    public static class ActionReceiverExtensions
-    {
-        /// <summary>
-        /// Returns the number of discrete branches + the number of continuous actions.
-        /// </summary>
-        /// <param name="actionReceiver"></param>
-        /// <returns></returns>
-        public static int TotalNumberOfActions(this IActionReceiver actionReceiver)
-        {
-            return actionReceiver.ActionSpec.NumContinuousActions + actionReceiver.ActionSpec.NumDiscreteActions;
-        }
     }
 }
