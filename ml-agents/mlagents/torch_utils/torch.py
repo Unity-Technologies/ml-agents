@@ -12,7 +12,7 @@ try:
 
     # Known PyLint compatibility with PyTorch https://github.com/pytorch/pytorch/issues/701
     # pylint: disable=E1101
-    if torch.cuda.is_available():
+    if False:#torch.cuda.is_available():
         torch.set_default_tensor_type(torch.cuda.FloatTensor)
         device = torch.device("cuda")
     else:
