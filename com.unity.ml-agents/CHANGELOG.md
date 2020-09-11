@@ -15,8 +15,8 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - The `IActuator` interface and `ActuatorComponent` abstract class were added.
 These are analogous to `ISensor` and `SensorComponent`, but for applying actions
-for an Agent. They allow you to control the action space of an Agent more
-programmatically than defining the actions in the `BrainParameters`. See
+for an Agent. They allow you to control the action space more programmatically
+than defining the actions in the Agent's Behavior Parameters. See
 [BasicActuatorComponent.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/Project/Assets/ML-Agents/Examples/Basic/Scripts/BasicActuatorComponent.cs)
  for an example of how to use them. (#4297, #4315)
 - Update Barracuda to 1.1.0-preview (#4208)
