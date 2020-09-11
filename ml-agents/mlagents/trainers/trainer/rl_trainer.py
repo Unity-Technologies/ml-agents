@@ -287,6 +287,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.trainer_settings.checkpoint_interval
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
+            from guppy import hpy; h = hpy(); print(h.heap())
             self._checkpoint()
 
     def advance(self) -> None:
