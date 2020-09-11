@@ -54,6 +54,11 @@ namespace Unity.MLAgents.Sensors
             set { m_Grayscale = value; }
         }
 
+        [HideInInspector, SerializeField, FormerlySerializedAs("observationStacks")]
+        [Range(1, 50)]
+        [Tooltip("Number of frames that will be stacked before being fed to the neural network.")]
+        int m_ObservationStacks = 1;
+
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
         SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
@@ -66,10 +71,24 @@ namespace Unity.MLAgents.Sensors
             set { m_Compression = value; UpdateSensor(); }
         }
 
+        /// <summary>
+        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Note that changing this after the sensor is created has no effect.
+        /// </summary>
+        public int ObservationStacks
+        {
+            get { return m_ObservationStacks; }
+            set { m_ObservationStacks = value; }
+        }
+
         /// <inheritdoc/>
         public override ISensor CreateSensor()
         {
             m_Sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
+            if (ObservationStacks != 1)
+            {
+                return new StackingSensor(m_Sensor, ObservationStacks);
+            }
             return m_Sensor;
         }
 
