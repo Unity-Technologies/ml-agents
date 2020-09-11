@@ -121,7 +121,8 @@ settings:
 
 ### RND Intrinsic Reward
 
-To enable Random Network Distillation (RND), provide these settings:
+Random Network Distillation (RND) is only available for the PyTorch trainers.
+To enable RND, provide these settings:
 
 | **Setting**                  | **Description**                                                                                                                                                                                                                                                                                                                       |
 | :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
