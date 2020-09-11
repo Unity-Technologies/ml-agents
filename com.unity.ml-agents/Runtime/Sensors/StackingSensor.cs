@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Sensors
         int m_CurrentIndex;
         ObservationWriter m_LocalWriter = new ObservationWriter();
 
-        byte[] m_EmptyPNG;
+        byte[] m_EmptyCompressedObservation;
 
         /// <summary>
         /// Initializes the sensor.
@@ -63,12 +63,10 @@ namespace Unity.MLAgents.Sensors
 
             // TODO support arbitrary stacking dimension
             m_Shape[m_Shape.Length - 1] *= numStackedObservations;
-            m_StackedObservations = new float[numStackedObservations][];
-            m_StackedCompressedObservations = new byte[numStackedObservations][];
-            m_EmptyPNG = CreateEmptyPNG();
 
             if (m_WrappedSensor.GetCompressionType() == SensorCompressionType.None)
             {
+                m_StackedObservations = new float[numStackedObservations][];
                 for (var i = 0; i < numStackedObservations; i++)
                 {
                     m_StackedObservations[i] = new float[m_UnstackedObservationSize];
@@ -76,9 +74,11 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
+                m_StackedCompressedObservations = new byte[numStackedObservations][];
+                m_EmptyCompressedObservation = CreateEmptyPNG();
                 for (var i = 0; i < numStackedObservations; i++)
                 {
-                    m_StackedCompressedObservations[i] = m_EmptyPNG;
+                    m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
             }
         }
@@ -128,7 +128,7 @@ namespace Unity.MLAgents.Sensors
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
-                    m_StackedCompressedObservations[i] = m_EmptyPNG;
+                    m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
             }
         }
@@ -157,17 +157,17 @@ namespace Unity.MLAgents.Sensors
                 bytesLength += compressedObs.Length;
             }
 
-            byte[] bytes = new byte[bytesLength];
+            byte[] outputBytes = new byte[bytesLength];
             int offset = 0;
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
                 var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
                 Buffer.BlockCopy(m_StackedCompressedObservations[obsIndex],
-                    0, bytes, offset, m_StackedCompressedObservations[obsIndex].Length);
+                    0, outputBytes, offset, m_StackedCompressedObservations[obsIndex].Length);
                 offset += m_StackedCompressedObservations[obsIndex].Length;
             }
 
-            return bytes;
+            return outputBytes;
         }
 
         /// <inheritdoc/>

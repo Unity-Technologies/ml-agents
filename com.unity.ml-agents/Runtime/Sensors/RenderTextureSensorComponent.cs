@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Sensors
             set { m_Grayscale = value; }
         }
 
-        [HideInInspector, SerializeField, FormerlySerializedAs("observationStacks")]
+        [HideInInspector, SerializeField]
         [Range(1, 50)]
         [Tooltip("Number of frames that will be stacked before being fed to the neural network.")]
         int m_ObservationStacks = 1;
