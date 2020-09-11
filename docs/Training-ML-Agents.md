@@ -16,6 +16,7 @@
     - [Curriculum Learning](#curriculum)
       - [Training with a Curriculum](#training-with-a-curriculum)
   - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
+  - [Using PyTorch (Experimental)](#using-pytorch-experimental)
 
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
@@ -275,6 +276,9 @@ behaviors:
       save_steps: 50000
       swap_steps: 2000
       team_change: 100000
+
+    # use TensorFlow backend
+    framework: tensorflow
 ```
 
 Here is an equivalent file if we use an SAC trainer instead. Notice that the
@@ -552,3 +556,29 @@ Some considerations:
 - **Result Variation Using Concurrent Unity Instances** - If you keep all the
   hyperparameters the same, but change `--num-envs=<n>`, the results and model
   would likely change.
+
+### Using PyTorch (Experimental)
+
+ML-Agents, by default, uses TensorFlow as its backend, but experimental support
+for PyTorch has been added. To use PyTorch, the `torch` Python package must
+be installed, and PyTorch must be enabled for your trainer.
+
+#### Installing PyTorch
+
+Installing PyTorch can usually be done by running `pip install torch`
+in the console. We support versions 1.6.0 and later.
+See the (official install instructions)[https://pytorch.org/] for more info.
+
+#### Enabling PyTorch
+
+PyTorch can be enabled in one of two ways. First, by adding `--torch` to the
+`mlagents-learn` command. This will make all behaviors train with PyTorch.
+
+Second, by changing the `framework` option for your agent behavior in the
+configuration YAML as below. This will use PyTorch just for that behavior.
+
+```yaml
+behaviors:
+  YourAgentBehavior:
+    framework: pytorch
+```
