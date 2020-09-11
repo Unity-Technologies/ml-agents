@@ -29,6 +29,6 @@ def _get_num_cpus() -> Optional[int]:
 def _read_in_integer_file(filename: str) -> int:
     try:
         with open(filename) as f:
-            return int(f.readlines()[0])
+            return int(f.read().rstrip())
     except FileNotFoundError:
         return -1
