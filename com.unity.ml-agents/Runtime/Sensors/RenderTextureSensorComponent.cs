@@ -97,8 +97,15 @@ namespace Unity.MLAgents.Sensors
         {
             var width = RenderTexture != null ? RenderTexture.width : 0;
             var height = RenderTexture != null ? RenderTexture.height : 0;
+            var observationShape = new[] { height, width, Grayscale ? 1 : 3 };
 
-            return new[] { height, width, Grayscale ? 1 : 3 };
+            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
+            if (stacks > 1)
+            {
+                observationShape[observationShape.Length - 1] *= stacks;
+            }
+
+            return observationShape;
         }
 
         /// <summary>

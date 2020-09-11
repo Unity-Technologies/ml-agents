@@ -125,9 +125,9 @@ namespace Unity.MLAgents.Sensors
         {
             var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
             var cameraSensorshape = CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
-            if (ObservationStacks > 1)
+            if (stacks > 1)
             {
-                cameraSensorshape[0] *= stacks;
+                cameraSensorshape[cameraSensorshape.Length - 1] *= stacks;
             }
             return cameraSensorshape;
         }
