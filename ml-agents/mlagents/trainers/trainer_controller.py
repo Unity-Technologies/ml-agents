@@ -186,6 +186,7 @@ class TrainerController:
             self.logger.info(
                 "Learning was interrupted. Please wait while the graph is generated."
             )
+            raise ex
             if isinstance(ex, KeyboardInterrupt) or isinstance(
                 ex, UnityCommunicatorStoppedException
             ):
