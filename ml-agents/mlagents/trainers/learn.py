@@ -153,7 +153,10 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
-        from guppy import hpy; h=hpy(); print(h.heap())
+        from guppy import hpy
+
+        h = hpy()
+        print(h.heap())
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
@@ -198,16 +201,26 @@ def create_environment_factory(
     ) -> UnityEnvironment:
         # Make sure that each environment gets a different seed
         env_seed = seed + worker_id
-        return UnityEnvironment(
-            file_name=env_path,
+        from mlagents_envs.registry import default_registry
+        return default_registry["Pyramids"].make(
             worker_id=worker_id,
             seed=env_seed,
             no_graphics=no_graphics,
             base_port=start_port,
             additional_args=env_args,
             side_channels=side_channels,
-            log_folder=log_folder,
-        )
+            log_folder=log_folder
+            )
+        # return UnityEnvironment(
+        #     file_name=env_path,
+        #     worker_id=worker_id,
+        #     seed=env_seed,
+        #     no_graphics=no_graphics,
+        #     base_port=start_port,
+        #     additional_args=env_args,
+        #     side_channels=side_channels,
+        #     log_folder=log_folder,
+        # )
 
     return create_unity_environment
 
