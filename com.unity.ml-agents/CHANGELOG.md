@@ -13,9 +13,15 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- The `IActuator` interface and `ActuatorComponent` abstract class were added.
+These are analogous to `ISensor` and `SensorComponent`, but for applying actions
+for an Agent. They allow you to control the action space more programmatically
+than defining the actions in the Agent's Behavior Parameters. See
+[BasicActuatorComponent.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/Project/Assets/ML-Agents/Examples/Basic/Scripts/BasicActuatorComponent.cs)
+ for an example of how to use them. (#4297, #4315)
 - Update Barracuda to 1.1.0-preview (#4208)
 - Enabled C# formatting using `dotnet-format`. (#4362)
-- GridSensor was added to the com.unity.ml-agents.extensions package. Thank you
+- GridSensor was added to the `com.unity.ml-agents.extensions` package. Thank you
 to Jaden Travnik from Eidos Montreal for the contribution! (#4399)
 - Added `Agent.EpisodeInterrupted()`, which can be used to reset the agent when
 it has reached a user-determined maximum number of steps. This behaves similarly
@@ -27,7 +33,7 @@ Note that PyTorch 1.6.0 or greater should be installed to use this feature; see
 [the PyTorch website](https://pytorch.org/) for installation instructions. (#4335)
 - The minimum supported version of TensorFlow was increased to 1.14.0. (#4411)
 - Compressed visual observations with >3 channels are now supported. In
-ISensor.GetCompressedObservation(), this can be done by writing 3 channels at a
+`ISensor.GetCompressedObservation()`, this can be done by writing 3 channels at a
 time to a PNG and concatenating the resulting bytes. (#4399)
 - The Communication API was changed to 1.1.0 to indicate support for concatenated PNGs
 (see above). Newer versions of the package that wish to make use of this will also need
@@ -39,7 +45,8 @@ your trainer configuration to do so. (#4448)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
-- The package dependencies were updated to include the built-in packages that are used also. (#4384)
+- Previously, `com.unity.ml-agents` was not declaring built-in packages as
+dependencies in its package.json. The relevant dependencies are now listed. (#4384)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed the sample code in the custom SideChannel example. (#4466)
 - A bug in the observation normalizer that would cause rewards to decrease
