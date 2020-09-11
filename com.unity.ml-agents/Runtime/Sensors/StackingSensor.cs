@@ -9,8 +9,7 @@ namespace Unity.MLAgents.Sensors
     /// For example, 4 stacked sets of observations would be output like
     ///   |  t = now - 3  |  t = now -3  |  t = now - 2  |  t = now  |
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
-    ///
-    /// Currently, compressed and multidimensional observations are not supported.
+    /// Currently, observations are stacked on the last dimension.
     /// </summary>
     public class StackingSensor : ISensor
     {
@@ -177,6 +176,9 @@ namespace Unity.MLAgents.Sensors
             return m_WrappedSensor.GetCompressionType();
         }
 
+        /// <summary>
+        /// Create Empty PNG for initializing the buffer for stacking.
+        /// </summary>
         public byte[] CreateEmptyPNG()
         {
             int height = m_WrappedSensor.GetObservationShape()[0];
