@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Sensors
         int m_CurrentIndex;
         ObservationWriter m_LocalWriter = new ObservationWriter();
 
-        byte[] m_DummyPNG;
+        byte[] m_EmptyPNG;
 
         /// <summary>
         /// Initializes the sensor.
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Sensors
             m_Shape[m_Shape.Length - 1] *= numStackedObservations;
             m_StackedObservations = new float[numStackedObservations][];
             m_StackedCompressedObservations = new byte[numStackedObservations][];
-            m_DummyPNG = CreateDummyPNG();
+            m_EmptyPNG = CreateEmptyPNG();
 
             if (m_WrappedSensor.GetCompressionType() == SensorCompressionType.None)
             {
@@ -79,7 +79,7 @@ namespace Unity.MLAgents.Sensors
             {
                 for (var i = 0; i < numStackedObservations; i++)
                 {
-                    m_StackedCompressedObservations[i] = m_DummyPNG;
+                    m_StackedCompressedObservations[i] = m_EmptyPNG;
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Unity.MLAgents.Sensors
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
-                    m_StackedCompressedObservations[i] = m_DummyPNG;
+                    m_StackedCompressedObservations[i] = m_EmptyPNG;
                 }
             }
         }
@@ -177,13 +177,12 @@ namespace Unity.MLAgents.Sensors
             return m_WrappedSensor.GetCompressionType();
         }
 
-        public byte[] CreateDummyPNG()
+        public byte[] CreateEmptyPNG()
         {
             int height = m_WrappedSensor.GetObservationShape()[0];
             int width = m_WrappedSensor.GetObservationShape()[1];
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-            var png = texture2D.EncodeToPNG();
-            return png;
+            return texture2D.EncodeToPNG();
         }
     }
 }
