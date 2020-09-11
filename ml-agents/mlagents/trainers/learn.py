@@ -153,6 +153,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         write_run_options(write_path, options)
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
+        from guppy import hpy; h=hpy(); print(h.heap())
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
