@@ -63,7 +63,7 @@ namespace Unity.MLAgents.Sensors
             }
 
             // TODO support arbitrary stacking dimension
-            m_Shape[0] *= numStackedObservations;
+            m_Shape[m_Shape.Length - 1] *= numStackedObservations;
             m_StackedObservations = new float[numStackedObservations][];
             m_StackedCompressedObservations = new byte[numStackedObservations][];
             m_DummyPNG = CreateDummyPNG();
@@ -163,7 +163,8 @@ namespace Unity.MLAgents.Sensors
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
                 var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                Buffer.BlockCopy(m_StackedCompressedObservations[obsIndex], 0, bytes, offset, m_StackedCompressedObservations[obsIndex].Length);
+                Buffer.BlockCopy(m_StackedCompressedObservations[obsIndex],
+                    0, bytes, offset, m_StackedCompressedObservations[obsIndex].Length);
                 offset += m_StackedCompressedObservations[obsIndex].Length;
             }
 
