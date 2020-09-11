@@ -17,7 +17,7 @@ from mlagents.trainers.settings import NetworkSettings, EncoderType
 
 class RNDRewardProvider(BaseRewardProvider):
     """
-    https://arxiv.org/pdf/1810.12894.pdf
+    Implementation of Random Network Distillation : https://arxiv.org/pdf/1810.12894.pdf
     """
 
     def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
@@ -68,9 +68,6 @@ class RNDNetwork(torch.nn.Module):
         self._encoder = NetworkBody(specs.observation_shapes, state_encoder_settings)
 
     def forward(self, mini_batch: AgentBuffer) -> torch.Tensor:
-        """
-        Extracts the current state embedding from a mini_batch.
-        """
         n_vis = len(self._encoder.visual_processors)
         hidden, _ = self._encoder.forward(
             vec_inputs=[
