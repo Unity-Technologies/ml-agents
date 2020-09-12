@@ -400,9 +400,9 @@ namespace Unity.MLAgents.Inference
             var heightBp = shape[0];
             var widthBp = shape[1];
             var pixelBp = shape[2];
-            var heightT = tensorProxy.shape[1];
-            var widthT = tensorProxy.shape[2];
-            var pixelT = tensorProxy.shape[3];
+            var heightT = tensorProxy.Height;
+            var widthT = tensorProxy.Width;
+            var pixelT = tensorProxy.Channels;
             if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
                 return $"The visual Observation of the model does not match. " +
