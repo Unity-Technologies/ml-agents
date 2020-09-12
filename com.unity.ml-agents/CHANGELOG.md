@@ -30,7 +30,8 @@ to `Agent.EndEpsiode()` but has a slightly different effect on training (#4453).
 - Experimental PyTorch support has been added. Use `--torch` when running `mlagents-learn`, or add
 `framework: pytorch` to your trainer configuration (under the behavior name) to enable it.
 Note that PyTorch 1.6.0 or greater should be installed to use this feature; see
-[the PyTorch website](https://pytorch.org/) for installation instructions. (#4335)
+[the PyTorch website](https://pytorch.org/) for installation instructions and
+[the relevant ML-Agents docs](https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Training-ML-Agents.md#using-pytorch-experimental) for usage. (#4335)
 - The minimum supported version of TensorFlow was increased to 1.14.0. (#4411)
 - Compressed visual observations with >3 channels are now supported. In
 `ISensor.GetCompressedObservation()`, this can be done by writing 3 channels at a
