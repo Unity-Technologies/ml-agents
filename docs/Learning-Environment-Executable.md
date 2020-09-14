@@ -85,8 +85,8 @@ env = UnityEnvironment(file_name=<env_name>)
    - `<run-identifier>` is a string used to separate the results of different
      training runs
 
-For example, if you are training with a 3DBall executable you exported to the
-directory where you installed the ML-Agents Toolkit, run:
+For example, if you are training with a 3DBall executable, and you saved it to
+the directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
 mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
