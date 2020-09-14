@@ -41,6 +41,8 @@ logger = get_logger(__name__)
 
 
 from pympler import muppy, summary
+import psutil
+import os
 
 
 class RLTrainer(Trainer):  # pylint: disable=abstract-method
@@ -281,6 +283,10 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             all_objects = muppy.get_objects()
             sum1 = summary.summarize(all_objects)
             summary.print_(sum1)
+            process = psutil.Process(os.getpid())
+            mem = process.memory_info().rss
+            print("Total memory ", mem)
+
 
     def _maybe_save_model(self, step_after_process: int) -> None:
         """

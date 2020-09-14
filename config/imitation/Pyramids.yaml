@@ -2,7 +2,7 @@ behaviors:
   Pyramids:
     trainer_type: ppo
     time_horizon: 128
-    max_steps: 1.0e5
+    max_steps: 1.0e7
     hyperparameters:
       batch_size: 128
       beta: 0.01
