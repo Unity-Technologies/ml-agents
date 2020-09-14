@@ -26,6 +26,7 @@ from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.training_status import GlobalTrainingStatus
 from mlagents_envs.base_env import BaseEnv
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
+from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.timers import (
@@ -117,12 +118,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             target_frame_rate=engine_settings.target_frame_rate,
             capture_frame_rate=engine_settings.capture_frame_rate,
         )
-        env_manager = SubprocessEnvManager(
-            env_factory, engine_config, env_settings.num_envs
-        )
+        # env_manager = SubprocessEnvManager(
+        #     env_factory, engine_config, env_settings.num_envs
+        # )
+
         env_parameter_manager = EnvironmentParameterManager(
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
+
+        env_manager = SimpleEnvManager(env_factory(0, []), env_parameter_manager)
 
         trainer_factory = TrainerFactory(
             trainer_config=options.behaviors,
