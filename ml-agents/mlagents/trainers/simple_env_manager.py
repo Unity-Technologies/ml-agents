@@ -8,6 +8,7 @@ from mlagents.trainers.settings import ParameterRandomizationSettings
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
+import numpy as np
 
 
 class SimpleEnvManager(EnvManager):
@@ -28,7 +29,7 @@ class SimpleEnvManager(EnvManager):
         self.previous_all_action_info = all_action_info
 
         for brain_name, action_info in all_action_info.items():
-            self.env.set_actions(brain_name, action_info.action)
+            self.env.set_actions(brain_name, np.array(action_info.action))
         self.env.step()
         all_step_result = self._generate_all_results()
 
