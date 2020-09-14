@@ -86,7 +86,7 @@ env = UnityEnvironment(file_name=<env_name>)
      training runs
 
 For example, if you are training with a 3DBall executable you exported to the
-the directory where you installed the ML-Agents Toolkit, run:
+directory where you installed the ML-Agents Toolkit, run:
 
 ```sh
 mlagents-learn config/ppo/3DBall.yaml --env=3DBall --run-id=firstRun
