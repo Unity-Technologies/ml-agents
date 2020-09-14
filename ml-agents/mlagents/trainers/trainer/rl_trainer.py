@@ -291,7 +291,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             sum1 = summary.summarize(all_objects)
             summary.print_(sum1)
             print("Diff Memory")
-            diff = summary.get_diff(sum1, self.past_sum)
+            diff = summary.get_diff( self.past_sum, sum1)
             summary.print_(diff)
             self.past_sum = sum1
 
