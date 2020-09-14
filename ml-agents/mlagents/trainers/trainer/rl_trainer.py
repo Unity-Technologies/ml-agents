@@ -277,15 +277,25 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         :param step_after_process: the step count after processing the next trajectory.
         """
         if self._next_summary_step == 0:  # Don't write out the first one
+            all_objects = muppy.get_objects()
+            self.past_sum = summary.summarize(all_objects)
             self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         if step_after_process >= self._next_summary_step and self.get_step != 0:
+            print("\n ------------------------------------- ")
             self._write_summary(self._next_summary_step)
-            all_objects = muppy.get_objects()
-            sum1 = summary.summarize(all_objects)
-            summary.print_(sum1)
             process = psutil.Process(os.getpid())
             mem = process.memory_info().rss
             print("Total memory ", mem)
+            print("Total Memory in Python")
+            all_objects = muppy.get_objects()
+            sum1 = summary.summarize(all_objects)
+            summary.print_(sum1)
+            print("Diff Memory")
+            diff = summary.get_diff(sum1, self.past_sum)
+            summary.print_(diff)
+            self.past_sum = sum1
+
+
 
 
     def _maybe_save_model(self, step_after_process: int) -> None:
