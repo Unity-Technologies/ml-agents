@@ -236,6 +236,12 @@ class ParameterRandomizationType(Enum):
 class ParameterRandomizationSettings(abc.ABC):
     seed: int = parser.get_default("seed")
 
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        raise TrainerConfigError(f"__str__ not implemented for type {self.__class__}.")
+
     @staticmethod
     def structure(
         d: Union[Mapping, float], t: type
@@ -292,17 +298,16 @@ class ParameterRandomizationSettings(abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
-    def to_string(self) -> str:
-        """
-        Helper method to output sampler stats to console.
-        """
-        pass
-
 
 @attr.s(auto_attribs=True)
 class ConstantSettings(ParameterRandomizationSettings):
     value: float = 0.0
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"Float: value={self.value}"
 
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
         """
@@ -313,17 +318,17 @@ class ConstantSettings(ParameterRandomizationSettings):
         """
         env_channel.set_float_parameter(key, self.value)
 
-    def to_string(self) -> str:
-        """
-        Helper method to output sampler stats to console.
-        """
-        return f"Float: value={self.value}"
-
 
 @attr.s(auto_attribs=True)
 class UniformSettings(ParameterRandomizationSettings):
     min_value: float = attr.ib()
     max_value: float = 1.0
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"Uniform sampler: min={self.min_value}, max={self.max_value}"
 
     @min_value.default
     def _min_value_default(self):
@@ -347,17 +352,17 @@ class UniformSettings(ParameterRandomizationSettings):
             key, self.min_value, self.max_value, self.seed
         )
 
-    def to_string(self) -> str:
-        """
-        Helper method to output sampler stats to console.
-        """
-        return f"Uniform sampler: min={self.min_value}, max={self.max_value}"
-
 
 @attr.s(auto_attribs=True)
 class GaussianSettings(ParameterRandomizationSettings):
     mean: float = 1.0
     st_dev: float = 1.0
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"Gaussian sampler: mean={self.mean}, stddev={self.st_dev}"
 
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
         """
@@ -370,16 +375,16 @@ class GaussianSettings(ParameterRandomizationSettings):
             key, self.mean, self.st_dev, self.seed
         )
 
-    def to_string(self) -> str:
-        """
-        Helper method to output sampler stats to console.
-        """
-        return f"Gaussian sampler: mean={self.mean}, stddev={self.st_dev}"
-
 
 @attr.s(auto_attribs=True)
 class MultiRangeUniformSettings(ParameterRandomizationSettings):
     intervals: List[Tuple[float, float]] = attr.ib()
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"MultiRangeUniform sampler: intervals={self.intervals}"
 
     @intervals.default
     def _intervals_default(self):
@@ -408,12 +413,6 @@ class MultiRangeUniformSettings(ParameterRandomizationSettings):
         env_channel.set_multirangeuniform_sampler_parameters(
             key, self.intervals, self.seed
         )
-
-    def to_string(self) -> str:
-        """
-        Helper method to output sampler stats to console.
-        """
-        return f"MultiRangeUniform sampler: intervals={self.intervals}"
 
 
 # ENVIRONMENT PARAMETERS ###############################################################

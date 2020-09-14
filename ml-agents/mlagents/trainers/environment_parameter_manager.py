@@ -148,9 +148,7 @@ class EnvironmentParameterManager:
                             param_name, StatusType.LESSON_NUM, next_lesson_num
                         )
                         new_lesson_name = settings.curriculum[next_lesson_num].name
-                        new_lesson_value = settings.curriculum[
-                            next_lesson_num
-                        ].value.to_string()
+                        new_lesson_value = settings.curriculum[next_lesson_num].value
 
                         logger.info(
                             f"Parameter '{param_name}' has been updated with {new_lesson_value}."
