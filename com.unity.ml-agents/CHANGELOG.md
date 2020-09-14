@@ -19,7 +19,7 @@ for an Agent. They allow you to control the action space more programmatically
 than defining the actions in the Agent's Behavior Parameters. See
 [BasicActuatorComponent.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/Project/Assets/ML-Agents/Examples/Basic/Scripts/BasicActuatorComponent.cs)
  for an example of how to use them. (#4297, #4315)
-- Update Barracuda to 1.1.0-preview (#4208)
+- Update Barracuda to 1.1.1-preview (#4482)
 - Enabled C# formatting using `dotnet-format`. (#4362)
 - GridSensor was added to the `com.unity.ml-agents.extensions` package. Thank you
 to Jaden Travnik from Eidos Montreal for the contribution! (#4399)
