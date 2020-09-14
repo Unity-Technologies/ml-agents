@@ -43,6 +43,8 @@ logger = get_logger(__name__)
 from pympler import muppy, summary
 import psutil
 import os
+import torch
+import gc
 
 
 class RLTrainer(Trainer):  # pylint: disable=abstract-method
@@ -294,6 +296,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             diff = summary.get_diff( self.past_sum, sum1)
             summary.print_(diff)
             self.past_sum = sum1
+            tmp = 0
+            for obj in gc.get_objects():
+                try:
+                    if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
+                        tmp+=1
+                except:
+                    pass
+            print("Total number of tensors", tmp)
 
 
 

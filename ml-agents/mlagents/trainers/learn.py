@@ -118,15 +118,15 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             target_frame_rate=engine_settings.target_frame_rate,
             capture_frame_rate=engine_settings.capture_frame_rate,
         )
-        # env_manager = SubprocessEnvManager(
-        #     env_factory, engine_config, env_settings.num_envs
-        # )
+        env_manager = SubprocessEnvManager(
+            env_factory, engine_config, env_settings.num_envs
+        )
 
         env_parameter_manager = EnvironmentParameterManager(
             options.environment_parameters, run_seed, restore=checkpoint_settings.resume
         )
 
-        env_manager = SimpleEnvManager(env_factory(0, []), env_parameter_manager)
+        # env_manager = SimpleEnvManager(env_factory(0, []), env_parameter_manager)
 
         trainer_factory = TrainerFactory(
             trainer_config=options.behaviors,
