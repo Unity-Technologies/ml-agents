@@ -296,14 +296,20 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             diff = summary.get_diff( self.past_sum, sum1)
             summary.print_(diff)
             self.past_sum = sum1
-            tmp = 0
+            tmp_tensor = 0
+            tmp_module = 0
             for obj in gc.get_objects():
                 try:
                     if torch.is_tensor(obj) or (hasattr(obj, 'data') and torch.is_tensor(obj.data)):
-                        tmp+=1
+                        tmp_tensor+=1
                 except:
                     pass
-            print("Total number of tensors", tmp)
+                try:
+                    if isinstance(obj, torch.nn.Module):
+                        tmp_module+=1
+                except:
+                    pass
+            print("Total number of tensors", tmp_tensor, " of modules", tmp_module)
 
 
 
