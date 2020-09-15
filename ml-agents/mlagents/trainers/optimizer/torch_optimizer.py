@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Tuple, List
-import torch
+from mlagents.torch_utils import torch
 import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
@@ -56,7 +56,7 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         if self.policy.use_vis_obs:
             visual_obs = []
             for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_encoders
+                self.policy.actor_critic.network_body.visual_processors
             ):
                 visual_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 visual_obs.append(visual_ob)
@@ -83,8 +83,8 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         )
 
         for name, estimate in value_estimates.items():
-            value_estimates[name] = estimate.detach().cpu().numpy()
-            next_value_estimate[name] = next_value_estimate[name].detach().cpu().numpy()
+            value_estimates[name] = ModelUtils.to_numpy(estimate)
+            next_value_estimate[name] = ModelUtils.to_numpy(next_value_estimate[name])
 
         if done:
             for k in next_value_estimate:

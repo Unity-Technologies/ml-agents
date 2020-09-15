@@ -25,13 +25,14 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NhcGFiaWxp",
-            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiNgoYVW5pdHlSTENh",
-            "cGFiaWxpdGllc1Byb3RvEhoKEmJhc2VSTENhcGFiaWxpdGllcxgBIAEoCEIl",
-            "qgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiWwoYVW5pdHlSTENh",
+            "cGFiaWxpdGllc1Byb3RvEhoKEmJhc2VSTENhcGFiaWxpdGllcxgBIAEoCBIj",
+            "Chtjb25jYXRlbmF0ZWRQbmdPYnNlcnZhdGlvbnMYAiABKAhCJaoCIlVuaXR5",
+            "Lk1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations" }, null, null, null)
           }));
     }
     #endregion
@@ -69,6 +70,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public UnityRLCapabilitiesProto(UnityRLCapabilitiesProto other) : this() {
       baseRLCapabilities_ = other.baseRLCapabilities_;
+      concatenatedPngObservations_ = other.concatenatedPngObservations_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -91,6 +93,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "concatenatedPngObservations" field.</summary>
+    public const int ConcatenatedPngObservationsFieldNumber = 2;
+    private bool concatenatedPngObservations_;
+    /// <summary>
+    /// concatenated PNG files for compressed visual observations with >3 channels.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool ConcatenatedPngObservations {
+      get { return concatenatedPngObservations_; }
+      set {
+        concatenatedPngObservations_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLCapabilitiesProto);
@@ -105,6 +121,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
         return true;
       }
       if (BaseRLCapabilities != other.BaseRLCapabilities) return false;
+      if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -112,6 +129,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public override int GetHashCode() {
       int hash = 1;
       if (BaseRLCapabilities != false) hash ^= BaseRLCapabilities.GetHashCode();
+      if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -129,6 +147,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(8);
         output.WriteBool(BaseRLCapabilities);
       }
+      if (ConcatenatedPngObservations != false) {
+        output.WriteRawTag(16);
+        output.WriteBool(ConcatenatedPngObservations);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -138,6 +160,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public int CalculateSize() {
       int size = 0;
       if (BaseRLCapabilities != false) {
+        size += 1 + 1;
+      }
+      if (ConcatenatedPngObservations != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -154,6 +179,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.BaseRLCapabilities != false) {
         BaseRLCapabilities = other.BaseRLCapabilities;
       }
+      if (other.ConcatenatedPngObservations != false) {
+        ConcatenatedPngObservations = other.ConcatenatedPngObservations;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -167,6 +195,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           case 8: {
             BaseRLCapabilities = input.ReadBool();
+            break;
+          }
+          case 16: {
+            ConcatenatedPngObservations = input.ReadBool();
             break;
           }
         }

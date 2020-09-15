@@ -445,7 +445,7 @@ namespace Unity.MLAgents
         enum DoneReason
         {
             /// <summary>
-            /// The <see cref="EndEpisode"/> method was called.
+            /// The episode was ended manually by calling <see cref="EndEpisode"/>.
             /// </summary>
             DoneCalled,
 
@@ -691,10 +691,40 @@ namespace Unity.MLAgents
         /// <summary>
         /// Sets the done flag to true and resets the agent.
         /// </summary>
+        /// <remarks>
+        /// This should be used when the episode can no longer continue, such as when the Agent
+        /// reaches the goal or fails at the task.
+        /// </remarks>
         /// <seealso cref="OnEpisodeBegin"/>
+        /// <seealso cref="EpisodeInterrupted"/>
         public void EndEpisode()
         {
-            NotifyAgentDone(DoneReason.DoneCalled);
+            EndEpisodeAndReset(DoneReason.DoneCalled);
+        }
+
+        /// <summary>
+        /// Indicate that the episode is over but not due to the "fault" of the Agent.
+        /// This has the same end result as calling <see cref="EndEpisode"/>, but has a
+        /// slightly different effect on training.
+        /// </summary>
+        /// <remarks>
+        /// This should be used when the episode could continue, but has gone on for
+        /// a sufficient number of steps.
+        /// </remarks>
+        /// <seealso cref="OnEpisodeBegin"/>
+        /// <seealso cref="EndEpisode"/>
+        public void EpisodeInterrupted()
+        {
+            EndEpisodeAndReset(DoneReason.MaxStepReached);
+        }
+
+        /// <summary>
+        /// Internal method to end the episode and reset the Agent.
+        /// </summary>
+        /// <param name="reason"></param>
+        void EndEpisodeAndReset(DoneReason reason)
+        {
+            NotifyAgentDone(reason);
             _AgentReset();
         }
 
@@ -1099,8 +1129,6 @@ namespace Unity.MLAgents
             }
             CollectDiscreteActionMasks(m_ActionMasker);
         }
-
-        ActionSpec IActionReceiver.ActionSpec { get; }
 
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based

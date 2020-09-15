@@ -87,7 +87,7 @@ public class StringLogSideChannel : SideChannel
         ChannelId = new Guid("621f0a70-4f87-11ea-a6bf-784f4387d1f7");
     }
 
-    public override void OnMessageReceived(IncomingMessage msg)
+    protected override void OnMessageReceived(IncomingMessage msg)
     {
         var receivedString = msg.ReadString();
         Debug.Log("From Python : " + receivedString);
@@ -209,13 +209,14 @@ env = UnityEnvironment(side_channels=[string_log])
 env.reset()
 string_log.send_string("The environment was reset")
 
-group_name = env.get_agent_groups()[0]  # Get the first group_name
+group_name = list(env.behavior_specs.keys())[0]  # Get the first group_name
+group_spec = env.behavior_specs[group_name]
 for i in range(1000):
-    step_data = env.get_step_result(group_name)
-    n_agents = step_data.n_agents()  # Get the number of agents
+    decision_steps, terminal_steps = env.get_steps(group_name)
     # We send data to Unity : A string with the number of Agent at each
     string_log.send_string(
-        "Step " + str(i) + " occurred with " + str(n_agents) + " agents."
+        f"Step {i} occurred with {len(decision_steps)} deciding agents and "
+        f"{len(terminal_steps)} terminal agents"
     )
     env.step()  # Move the simulation forward
 

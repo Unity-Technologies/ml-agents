@@ -11,6 +11,10 @@
         {
             "pattern": "^https?://",
             "comment": "Skip external links for fast runs."
+        },
+        {
+            "pattern": "mailto:",
+            "comment": "mailto checking broken"
         }
     ]
 }
