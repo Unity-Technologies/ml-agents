@@ -1096,7 +1096,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Returns a read-only view of the observations that were generated in
         /// <see cref="CollectObservations(VectorSensor)"/>. This is mainly useful inside of a
-        /// <see cref="Heuristic(float[], int[])"/> method to avoid recomputing the observations.
+        /// <see cref="Heuristic(in ActionBuffers)"/> method to avoid recomputing the observations.
         /// </summary>
         /// <returns>A read-only view of the observations list.</returns>
         public ReadOnlyCollection<float> GetObservations()
@@ -1145,7 +1145,7 @@ namespace Unity.MLAgents
         /// three values in the action array to use as the force components. During
         /// training, the agent's  policy learns to set those particular elements of
         /// the array to maximize the training rewards the agent receives. (Of course,
-        /// if you implement a <seealso cref="Heuristic(float[], int[])"/> function, it must use the same
+        /// if you implement a <seealso cref="Heuristic(in ActionBuffers)"/> function, it must use the same
         /// elements of the action array for the same purpose since there is no learning
         /// involved.)
         ///

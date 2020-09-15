@@ -70,7 +70,7 @@ namespace Unity.MLAgents.Actuators
             DiscreteActions.Clear();
         }
 
-        /// <inheritdoc cref="ValueType.Equals(object)"/>
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionBuffers))
@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Actuators
                 ab.DiscreteActions.SequenceEqual(DiscreteActions);
         }
 
-        /// <inheritdoc cref="ValueType.GetHashCode"/>
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             unchecked
