@@ -48,8 +48,8 @@ class CuriosityRewardProvider(BaseRewardProvider):
         loss.backward()
         self.optimizer.step()
         return {
-            "Losses/Curiosity Forward Loss": forward_loss.item(),
-            "Losses/Curiosity Inverse Loss": inverse_loss.item(),
+            "Losses/Curiosity Forward Loss": ModelUtils.to_item(forward_loss),
+            "Losses/Curiosity Inverse Loss": ModelUtils.to_item(inverse_loss),
         }
 
     def get_modules(self):

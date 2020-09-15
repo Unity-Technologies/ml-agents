@@ -211,6 +211,14 @@ class ModelUtils:
         return tensor.detach().cpu().numpy()
 
     @staticmethod
+    def to_item(tensor: torch.Tensor) -> float:
+        """
+        Converts a Torch Tensor to a float array. If the Tensor is on the GPU, it will
+        be brought to the CPU.
+        """
+        return tensor.detach().cpu().item()
+
+    @staticmethod
     def break_into_branches(
         concatenated_logits: torch.Tensor, action_size: List[int]
     ) -> List[torch.Tensor]:

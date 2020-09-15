@@ -490,7 +490,7 @@ class GlobalSteps(nn.Module):
 
     @property
     def current_step(self):
-        return int(self.__global_step.item())
+        return int(ModelUtils.to_item(self.__global_step))
 
     @current_step.setter
     def current_step(self, value):

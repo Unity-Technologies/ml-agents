@@ -187,8 +187,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.optimizer.step()
         update_stats = {
-            "Losses/Policy Loss": policy_loss.item(),
-            "Losses/Value Loss": value_loss.item(),
+            "Losses/Policy Loss": ModelUtils.to_item(policy_loss),
+            "Losses/Value Loss": ModelUtils.to_item(value_loss),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
