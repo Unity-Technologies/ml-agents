@@ -7,7 +7,7 @@ over using the Editor:
 - You can exchange executable with other people without having to share your
   entire repository.
 - You can put your executable on a remote machine for faster training.
-- You can use `Headless` mode for faster training.
+- You can use `Server Build` mode for faster training.
 - You can keep using the Unity Editor for other tasks while the agents are
   training.
 
@@ -37,7 +37,8 @@ launches our environment executable. This means:
 1. Open Player Settings (menu: **Edit** > **Project Settings** > **Player**).
 1. Under **Resolution and Presentation**:
    - Ensure that **Run in Background** is Checked.
-   - Ensure that **Display Resolution Dialog** is set to Disabled.
+   - Ensure that **Display Resolution Dialog** is set to Disabled. (Note: this
+    setting may not be available in newer versions of the editor.)
 1. Open the Build Settings window (menu:**File** > **Build Settings**).
 1. Choose your target platform.
    - (optional) Select “Development Build” to
