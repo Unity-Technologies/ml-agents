@@ -567,7 +567,7 @@ be installed, and PyTorch must be enabled for your trainer.
 
 If you've already installed ML-Agents, follow the
 [official install instructions](https://pytorch.org/get-started/locally/) for
-your platform and configuration. Note that on Windows, you may need the
+your platform and configuration. Note that on Windows, you may also need Microsoft's
 [Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) if you don't have it already.
 
 If you're installing or upgrading ML-Agents on Linux or Mac, you can also run
