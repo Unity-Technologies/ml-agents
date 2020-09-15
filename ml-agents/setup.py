@@ -70,6 +70,7 @@ setup(
         # We don't actually need six, but tensorflow does, and pip seems
         # to get confused and install the wrong version.
         "six>=1.12.0",
+        "pympler>=0.8",
     ],
     python_requires=">=3.6.1",
     entry_points={

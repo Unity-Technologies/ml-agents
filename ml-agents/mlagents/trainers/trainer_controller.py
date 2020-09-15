@@ -30,6 +30,7 @@ from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 from mlagents.tf_utils.globals import get_rank
 from mlagents import torch_utils
+from pympler import muppy, summary
 
 
 class TrainerController:
@@ -174,6 +175,10 @@ class TrainerController:
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
                     self.reset_env_if_ready(env_manager)
+            all_objects = muppy.get_objects()
+            sum1 = summary.summarize(all_objects)
+            # Prints out a summary of the large objects
+            summary.print_(sum1)
             # Stop advancing trainers
             self.join_threads()
         except (
