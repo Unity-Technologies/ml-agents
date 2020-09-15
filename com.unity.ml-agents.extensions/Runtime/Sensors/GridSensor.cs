@@ -479,7 +479,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns>byte[] containing the compressed observation of the grid observation</returns>
         public byte[] GetCompressedObservation()
         {
-            // Timer stack is in accessable due to its protection level
             using (TimerStack.Instance.Scoped("GridSensor.GetCompressedObservation"))
             {
                 Perceive(); // Fill the perception buffer with observed data
@@ -855,8 +854,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            // Timer stack is in accessable due to its protection level
-            //    using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))
+            using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))
             {
                 Perceive();
 
