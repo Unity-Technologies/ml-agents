@@ -7,7 +7,7 @@ over using the Editor:
 - You can exchange executable with other people without having to share your
   entire repository.
 - You can put your executable on a remote machine for faster training.
-- You can use `Server Build` mode for faster training.
+- You can use `Server Build` (`Headless`) mode for faster training (as long as the executable does not need rendering).
 - You can keep using the Unity Editor for other tasks while the agents are
   training.
 
