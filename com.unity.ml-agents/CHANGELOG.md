@@ -43,6 +43,7 @@ a compatible version of the trainer. (#4462)
 (#4434)
 - You can now again specify a default configuration for your behaviors. Specify `default_settings` in
 your trainer configuration to do so. (#4448)
+- Improved the executable detection logic for environments on Windows. (#4485)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
