@@ -565,15 +565,15 @@ be installed, and PyTorch must be enabled for your trainer.
 
 #### Installing PyTorch
 
-If you've already installed ML-Agents, installing PyTorch can be
-done by running `pip3 install torch` after activating your virtual
-environment.
+If you've already installed ML-Agents, follow the
+[official install instructions](https://pytorch.org/get-started/locally/) for
+your platform and configuration. Note that on Windows, you may need the
+[Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) if you don't have it already.
 
-If you're installing or upgrading ML-Agents, run `pip3 install mlagents[torch]`
-instead of `pip3 install mlagents` during [installation](Installation.md).
-
-We support versions 1.6.0 and later.
-See the [official install instructions](https://pytorch.org/) for more info.
+If you're installing or upgrading ML-Agents on Linux or Mac, you can also run
+`pip3 install mlagents[torch]` instead of `pip3 install mlagents`
+during [installation](Installation.md). On Windows, install ML-Agents first and then
+separately install PyTorch.
 
 #### Enabling PyTorch
 
