@@ -15,12 +15,15 @@ behaviors:
       hidden_units: 128
       num_layers: 2
       vis_encode_type: simple
+      memory:
+        sequence_length: 64
+        memory_size: 128
     reward_signals:
       extrinsic:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 500000
+    max_steps: 10000000
     time_horizon: 1000
     summary_freq: 12000
     threaded: true
