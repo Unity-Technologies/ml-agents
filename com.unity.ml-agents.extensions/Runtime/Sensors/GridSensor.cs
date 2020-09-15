@@ -479,8 +479,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns>byte[] containing the compressed observation of the grid observation</returns>
         public byte[] GetCompressedObservation()
         {
-            // Timer stack is in accessable due to its protection level
-            //using (TimerStack.Instance.Scoped("GridSensor.GetCompressedObservation"))
+            using (TimerStack.Instance.Scoped("GridSensor.GetCompressedObservation"))
             {
                 Perceive(); // Fill the perception buffer with observed data
 
@@ -529,28 +528,31 @@ namespace Unity.MLAgents.Extensions.Sensors
         public float[] Perceive()
         {
             Reset();
-            // TODO: make these part of the class
-            Collider[] foundColliders = null;
-            Vector3 cellCenter = Vector3.zero;
-
-            Vector3 halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
-
-            for (int cellIndex = 0; cellIndex < NumCells; cellIndex++)
+            using (TimerStack.Instance.Scoped("GridSensor.Perceive"))
             {
-                if (RotateToAgent)
-                {
-                    cellCenter = transform.TransformPoint(CellPoints[cellIndex]);
-                    foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, transform.rotation, ObserveMask);
-                }
-                else
-                {
-                    cellCenter = transform.position + CellPoints[cellIndex];
-                    foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, Quaternion.identity, ObserveMask);
-                }
+                // TODO: make these part of the class
+                Collider[] foundColliders = null;
+                Vector3 cellCenter = Vector3.zero;
 
-                if (foundColliders != null && foundColliders.Length > 0)
+                Vector3 halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
+
+                for (int cellIndex = 0; cellIndex < NumCells; cellIndex++)
                 {
-                    ParseColliders(foundColliders, cellIndex, cellCenter);
+                    if (RotateToAgent)
+                    {
+                        cellCenter = transform.TransformPoint(CellPoints[cellIndex]);
+                        foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, transform.rotation, ObserveMask);
+                    }
+                    else
+                    {
+                        cellCenter = transform.position + CellPoints[cellIndex];
+                        foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, Quaternion.identity, ObserveMask);
+                    }
+
+                    if (foundColliders != null && foundColliders.Length > 0)
+                    {
+                        ParseColliders(foundColliders, cellIndex, cellCenter);
+                    }
                 }
             }
 
@@ -852,8 +854,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            // Timer stack is in accessable due to its protection level
-            //    using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))
+            using (TimerStack.Instance.Scoped("GridSensor.WriteToTensor"))
             {
                 Perceive();
 
