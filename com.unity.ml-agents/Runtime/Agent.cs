@@ -491,8 +491,8 @@ namespace Unity.MLAgents
                 Academy.Instance.DecideAction -= DecideAction;
                 Academy.Instance.AgentAct -= AgentStep;
                 Academy.Instance.AgentForceReset -= _AgentReset;
+                NotifyAgentDone(DoneReason.Disabled);
             }
-            NotifyAgentDone(DoneReason.Disabled);
             m_Brain?.Dispose();
             m_Initialized = false;
         }
