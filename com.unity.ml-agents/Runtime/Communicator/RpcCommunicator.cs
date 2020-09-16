@@ -314,6 +314,10 @@ namespace Unity.MLAgents
         /// <param name="sensors">Sensors that will produce the observations</param>
         public void PutObservations(string behaviorName, AgentInfo info, List<ISensor> sensors)
         {
+            if (!m_IsOpen)
+            {
+                reutrn
+            }
 #if DEBUG
             if (!m_SensorShapeValidators.ContainsKey(behaviorName))
             {

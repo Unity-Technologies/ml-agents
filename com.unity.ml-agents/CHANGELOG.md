@@ -49,6 +49,8 @@ your trainer configuration to do so. (#4448)
 #### com.unity.ml-agents (C#)
 - Previously, `com.unity.ml-agents` was not declaring built-in packages as
 dependencies in its package.json. The relevant dependencies are now listed. (#4384)
+- Agents no longer try to send observations when they become disabled if the
+Academy has been shut down. (#4489)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 - Fixed the sample code in the custom SideChannel example. (#4466)
 - A bug in the observation normalizer that would cause rewards to decrease
