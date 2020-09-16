@@ -267,7 +267,7 @@ class SimpleActor(nn.Module, Actor):
         self.is_continuous_int = torch.nn.Parameter(
             torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
         )
-        self.act_size_vector = torch.nn.Parameter(torch.Tensor([sum(act_size)]))
+        self.act_size_vector = torch.nn.Parameter(torch.Tensor([sum(act_size)]), requires_grad=False)
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
