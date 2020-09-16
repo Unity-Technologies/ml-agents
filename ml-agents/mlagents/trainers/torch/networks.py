@@ -331,8 +331,7 @@ class SimpleActor(nn.Module, Actor):
         dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
         if self.act_type == ActionType.CONTINUOUS:
             action_list = self.sample_action(dists)
-            sampled_actions = torch.stack(action_list, dim=-1)
-            action_out = sampled_actions
+            action_out = torch.stack(action_list, dim=-1)
         else:
             action_out = torch.cat([dist.all_log_prob() for dist in dists], dim=1)
         return (
