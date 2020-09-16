@@ -256,6 +256,11 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
+        /// Static flag to make sure that we only fire the warning once.
+        /// </summary>
+        private static bool s_HaveWarnedAboutTrainerCapabilities = false;
+
+        /// <summary>
         /// Generate an ObservationProto for the sensor using the provided ObservationWriter.
         /// This is equivalent to producing an Observation and calling Observation.ToProto(),
         /// but avoid some intermediate memory allocations.
@@ -267,7 +272,23 @@ namespace Unity.MLAgents
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
-            if (sensor.GetCompressionType() == SensorCompressionType.None)
+            var compressionType = sensor.GetCompressionType();
+            // Check capabilities if we need to concatenate PNGs
+            if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
+            {
+                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
+                if (!trainerCanHandle)
+                {
+                    if (!s_HaveWarnedAboutTrainerCapabilities)
+                    {
+                        Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
+                        s_HaveWarnedAboutTrainerCapabilities = true;
+                    }
+                    compressionType = SensorCompressionType.None;
+                }
+            }
+
+            if (compressionType == SensorCompressionType.None)
             {
                 var numFloats = sensor.ObservationSize();
                 var floatDataProto = new ObservationProto.Types.FloatData();
@@ -314,7 +335,8 @@ namespace Unity.MLAgents
         {
             return new UnityRLCapabilities
             {
-                m_BaseRLCapabilities = proto.BaseRLCapabilities
+                BaseRLCapabilities = proto.BaseRLCapabilities,
+                ConcatenatedPngObservations = proto.ConcatenatedPngObservations
             };
         }
 
@@ -322,7 +344,8 @@ namespace Unity.MLAgents
         {
             return new UnityRLCapabilitiesProto
             {
-                BaseRLCapabilities = rlCaps.m_BaseRLCapabilities
+                BaseRLCapabilities = rlCaps.BaseRLCapabilities,
+                ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
             };
         }
     }

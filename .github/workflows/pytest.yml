@@ -2,6 +2,12 @@ name: pytest
 
 on:
   pull_request:
+    paths:  # This action will only run if the PR modifies a file in one of these directories
+    - 'ml-agents/**'
+    - 'ml-agents-envs/**'
+    - 'gym-unity/**'
+    - 'test_constraints*.txt'
+    - 'test_requirements.txt'
   push:
     branches: [master]
 

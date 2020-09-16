@@ -176,7 +176,8 @@ add typically has its own training configurations. For instance:
 The trainer config file, `<trainer-config-file>`, determines the features you will
 use during training, and the answers to the above questions will dictate its contents.
 The rest of this guide breaks down the different sub-sections of the trainer config file
-and explains the possible settings for each.
+and explains the possible settings for each. If you need a list of all the trainer
+configurations, please see [Training Configuration File](Training-Configuration-File.md).
 
 **NOTE:** The configuration file format has been changed between 0.17.0 and 0.18.0 and
 between 0.18.0 and onwards. To convert
@@ -337,6 +338,24 @@ each of these parameters mean and provide guidelines on how to set them. See
 description of all the configurations listed above, along with their defaults.
 Unless otherwise specified, omitting a configuration will revert it to its default.
 
+### Default Behavior Settings
+
+In some cases, you may want to specify a set of default configurations for your Behaviors.
+This may be useful, for instance, if your Behavior names are generated procedurally by
+the environment and not known before runtime, or if you have many Behaviors with very similar
+settings. To specify a default configuraton, insert a `default_settings` section in your YAML.
+This section should be formatted exactly like a configuration for a Behavior.
+
+```yaml
+default_settings:
+  # < Same as Behavior configuration >
+behaviors:
+  # < Same as above >
+```
+
+Behaviors found in the environment that aren't specified in the YAML will now use the `default_settings`,
+and unspecified settings in behavior configurations will default to the values in `default_settings` if
+specified there.
 
 ### Environment Parameters
 

@@ -99,6 +99,8 @@ class TFModelSaver(BaseModelSaver):
     def _load_graph(
         self, policy: TFPolicy, model_path: str, reset_global_steps: bool = False
     ) -> None:
+        # This prevents normalizer init up from executing on load
+        policy.first_normalization_update = False
         with policy.graph.as_default():
             logger.info(f"Loading model from {model_path}.")
             ckpt = tf.train.get_checkpoint_state(model_path)

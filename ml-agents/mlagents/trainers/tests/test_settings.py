@@ -1,4 +1,5 @@
 import attr
+import cattr
 import pytest
 import yaml
 
@@ -20,6 +21,7 @@ from mlagents.trainers.settings import (
     GaussianSettings,
     MultiRangeUniformSettings,
     TrainerType,
+    deep_update_dict,
     strict_to_cls,
 )
 from mlagents.trainers.exception import TrainerConfigError
@@ -102,6 +104,14 @@ def test_strict_to_cls():
 
     with pytest.raises(TrainerConfigError):
         strict_to_cls("non_dict_input", TestAttrsClass)
+
+
+def test_deep_update_dict():
+    dict1 = {"a": 1, "b": 2, "c": {"d": 3}}
+    dict2 = {"a": 2, "c": {"d": 4, "e": 5}}
+
+    deep_update_dict(dict1, dict2)
+    assert dict1 == {"a": 2, "b": 2, "c": {"d": 4, "e": 5}}
 
 
 def test_trainersettings_structure():
@@ -468,3 +478,25 @@ def test_environment_settings():
     # Multiple environments with no env_path is an error
     with pytest.raises(ValueError):
         EnvironmentSettings(num_envs=2)
+
+
+def test_default_settings():
+    # Make default settings, one nested and one not.
+    default_settings = {"max_steps": 1, "network_settings": {"num_layers": 1000}}
+    behaviors = {"test1": {"max_steps": 2, "network_settings": {"hidden_units": 2000}}}
+    run_options_dict = {"default_settings": default_settings, "behaviors": behaviors}
+    run_options = RunOptions.from_dict(run_options_dict)
+
+    # Check that a new behavior has the default settings
+    default_settings_cls = cattr.structure(default_settings, TrainerSettings)
+    check_if_different(default_settings_cls, run_options.behaviors["test2"])
+
+    # Check that an existing beehavior overrides the defaults in specified fields
+    test1_settings = run_options.behaviors["test1"]
+    assert test1_settings.max_steps == 2
+    assert test1_settings.network_settings.hidden_units == 2000
+    assert test1_settings.network_settings.num_layers == 1000
+    # Change the overridden fields back, and check if the rest are equal.
+    test1_settings.max_steps = 1
+    test1_settings.network_settings.hidden_units == default_settings_cls.network_settings.hidden_units
+    check_if_different(test1_settings, default_settings_cls)
