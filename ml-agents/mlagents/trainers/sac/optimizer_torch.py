@@ -419,7 +419,8 @@ class TorchSACOptimizer(TorchOptimizer):
                 self.policy.actor_critic.network_body.visual_processors
             ):
                 vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                vis_obs.append(vis_ob)
+                # Make sure to permute visual obs, as PyTorch uses NCHW
+                vis_obs.append(vis_ob.permute([0, 3, 1, 2]))
                 next_vis_ob = ModelUtils.list_to_tensor(
                     batch["next_visual_obs%d" % idx]
                 )

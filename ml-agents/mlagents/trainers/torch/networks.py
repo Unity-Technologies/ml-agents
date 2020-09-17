@@ -84,8 +84,6 @@ class NetworkBody(nn.Module):
 
         for idx, processor in enumerate(self.visual_processors):
             vis_input = vis_inputs[idx]
-            if not torch.onnx.is_in_onnx_export():
-                vis_input = vis_input.permute([0, 3, 1, 2])
             processed_vis = processor(vis_input)
             encodes.append(processed_vis)
 
