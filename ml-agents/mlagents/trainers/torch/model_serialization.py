@@ -13,10 +13,10 @@ class exporting_to_onnx:
     """
     Set this context by calling
     ```
-    with with_normalization_update():
+    with exporting_to_onnx():
     ```
-    Within this context, all Normalizers will update their running_mean and
-    running_variance when their `forward` method is called.
+    Within this context, the variable exporting_to_onnx.is_exporting() will be true.
+    This implementation is thread safe.
     """
 
     _local_data = threading.local()
