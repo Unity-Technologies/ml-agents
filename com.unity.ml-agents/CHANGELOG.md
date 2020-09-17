@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
 ## [1.4.0-preview] - 2020-09-16
 ### Major Changes
 #### com.unity.ml-agents (C#)
@@ -55,6 +56,7 @@ Academy has been shut down. (#4489)
 - Fixed the sample code in the custom SideChannel example. (#4466)
 - A bug in the observation normalizer that would cause rewards to decrease
 when using `--resume` was fixed. (#4463)
+- Fixed a bug in exporting Pytorch models when using multiple discrete actions. (#4491)
 
 ## [1.3.0-preview] - 2020-08-12
 
