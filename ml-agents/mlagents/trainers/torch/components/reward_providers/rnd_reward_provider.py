@@ -11,7 +11,6 @@ from mlagents.trainers.settings import RNDSettings
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
-from mlagents.trainers.torch.encoders import Normalizer
 from mlagents.trainers.settings import NetworkSettings, EncoderType
 
 
@@ -25,7 +24,6 @@ class RNDRewardProvider(BaseRewardProvider):
         self._ignore_done = True
         self._random_network = RNDNetwork(specs, settings)
         self._training_network = RNDNetwork(specs, settings)
-        self._reward_normalizer = Normalizer(1)
         self.optimizer = torch.optim.Adam(
             self._training_network.parameters(), lr=settings.learning_rate
         )
@@ -35,9 +33,7 @@ class RNDRewardProvider(BaseRewardProvider):
         with torch.no_grad():
             target = self._random_network(mini_batch)
             prediction = self._training_network(mini_batch)
-            unnormalized_rewards = torch.sum((prediction - target) ** 2, dim=1)
-            rewards = self._reward_normalizer(unnormalized_rewards)
-        self._reward_normalizer.update(unnormalized_rewards)
+            rewards = torch.sum((prediction - target) ** 2, dim=1)
         return rewards.detach().cpu().numpy() * self._has_updated_once
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
