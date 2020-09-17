@@ -182,7 +182,7 @@ class TorchPolicy(Policy):
         vec_obs = [torch.as_tensor(vec_vis_obs.vector_observations)]
         # Make sure to permute visual obs, as PyTorch uses NCHW
         vis_obs = [
-            torch.as_tensor(vis_ob).permute([0, 3, 1, 2])
+            ModelUtils.nhwc_to_nchw(torch.as_tensor(vis_ob))
             for vis_ob in vec_vis_obs.visual_observations
         ]
         memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(

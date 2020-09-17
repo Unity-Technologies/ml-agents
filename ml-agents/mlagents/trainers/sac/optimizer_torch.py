@@ -420,11 +420,11 @@ class TorchSACOptimizer(TorchOptimizer):
             ):
                 vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 # Make sure to permute visual obs, as PyTorch uses NCHW
-                vis_obs.append(vis_ob.permute([0, 3, 1, 2]))
+                vis_obs.append(ModelUtils.nhwc_to_nchw(vis_ob))
                 next_vis_ob = ModelUtils.list_to_tensor(
                     batch["next_visual_obs%d" % idx]
                 )
-                next_vis_obs.append(next_vis_ob)
+                next_vis_obs.append(ModelUtils.nhwc_to_nchw(next_vis_ob))
 
         # Copy normalizers from policy
         self.value_network.q1_network.network_body.copy_normalization(

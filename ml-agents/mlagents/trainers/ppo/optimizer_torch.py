@@ -154,7 +154,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             ):
                 vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
                 # Make sure to permute visual obs, as PyTorch uses NCHW
-                vis_obs.append(vis_ob.permute([0, 3, 1, 2]))
+                vis_obs.append(ModelUtils.nhwc_to_nchw(vis_ob))
         else:
             vis_obs = []
         log_probs, entropy, values = self.policy.evaluate_actions(

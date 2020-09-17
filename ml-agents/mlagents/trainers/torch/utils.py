@@ -301,3 +301,7 @@ class ModelUtils:
         return (tensor.T * masks).sum() / torch.clamp(
             (torch.ones_like(tensor.T) * masks).float().sum(), min=1.0
         )
+
+    @staticmethod
+    def nhwc_to_nchw(tensor: torch.Tensor) -> torch.Tensor:
+        return tensor.permute([0, 3, 1, 2])
