@@ -18,6 +18,7 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+ - Fixed a bug in exporting Pytorch models when using multiple discrete actions. (#4491)
 
 
 ## [1.4.0-preview] - 2020-09-16
