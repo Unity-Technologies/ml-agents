@@ -13,6 +13,7 @@ from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
+from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -84,7 +85,7 @@ class NetworkBody(nn.Module):
 
         for idx, processor in enumerate(self.visual_processors):
             vis_input = vis_inputs[idx]
-            if not torch.onnx.is_in_onnx_export():
+            if not exporting_to_onnx.is_exporting():
                 vis_input = vis_input.permute([0, 3, 1, 2])
             processed_vis = processor(vis_input)
             encodes.append(processed_vis)
