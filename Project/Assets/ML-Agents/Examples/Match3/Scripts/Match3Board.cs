@@ -401,6 +401,22 @@ namespace Unity.MLAgentsExamples
             }
         }
 
+        public void InitSettled()
+        {
+            InitRandom();
+            while (true)
+            {
+                var anyMatched = MarkMatchedCells();
+                if (!anyMatched)
+                {
+                    return;
+                }
+                ClearMatchedCells();
+                DropCells();
+                FillFromAbove();
+            }
+        }
+
         void ClearMarked()
         {
             for (var i = 0; i < Rows; i++)

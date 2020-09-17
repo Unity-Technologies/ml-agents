@@ -51,7 +51,7 @@ namespace Unity.MLAgentsExamples
         {
             base.OnEpisodeBegin();
 
-            Board.InitRandom();
+            Board.InitSettled();
             m_CurrentState = State.FindMatches;
             m_TimeUntilMove = MoveTime;
         }
@@ -83,15 +83,18 @@ namespace Unity.MLAgentsExamples
                 Board.FillFromAbove();
             }
 
-            bool hasMoves = CheckValidMoves();
-            if (hasMoves)
+            while (true)
             {
-                RequestDecision();
+                // Shuffle the board until we have a valid move.
+                bool hasMoves = CheckValidMoves();
+                if (hasMoves)
+                {
+                    break;
+                }
+                Board.InitSettled();
             }
-            else
-            {
-                EndEpisode();
-            }
+            RequestDecision();
+
         }
 
         void AnimatedUpdate()
@@ -125,15 +128,17 @@ namespace Unity.MLAgentsExamples
                     nextState = State.FindMatches;
                     break;
                 case State.WaitForMove:
-                    bool hasMoves = CheckValidMoves();
-                    if (hasMoves)
+                    while (true)
                     {
-                        RequestDecision();
+                        // Shuffle the board until we have a valid move.
+                        bool hasMoves = CheckValidMoves();
+                        if (hasMoves)
+                        {
+                            break;
+                        }
+                        Board.InitSettled();
                     }
-                    else
-                    {
-                        EndEpisode();
-                    }
+                    RequestDecision();
 
                     nextState = State.FindMatches;
                     break;

@@ -403,6 +403,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Agent: {fileID: 1739664300}
+  ForceRandom: 0
 --- !u!114 &1739664302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -416,4 +417,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Agent: {fileID: 1739664300}
-  UseVectorObservations: 1
+  UseVectorObservations: 0

@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
-using UnityEngine.Experimental.UIElements;
+using UnityEngine;
 
 namespace Unity.MLAgentsExamples
 {
@@ -23,8 +24,8 @@ namespace Unity.MLAgentsExamples
             }
 
             return UseVectorObservations ?
-                new[] { Agent.Cols * Agent.Rows * Agent.NumCellTypes } :
-                new[] { Agent.Cols, Agent.Rows, Agent.NumCellTypes };
+                new[] { Agent.Rows * Agent.Cols * Agent.NumCellTypes } :
+                new[] { Agent.Rows, Agent.Cols, Agent.NumCellTypes };
         }
     }
 
@@ -39,8 +40,8 @@ namespace Unity.MLAgentsExamples
             m_Agent = agent;
             m_UseVectorObservations = useVectorObservations;
             m_shape = useVectorObservations ?
-                new[] { agent.Cols * agent.Rows * agent.NumCellTypes } :
-                new[] { agent.Cols, agent.Rows, agent.NumCellTypes };
+                new[] { agent.Rows * agent.Cols * agent.NumCellTypes } :
+                new[] { agent.Rows, agent.Cols, agent.NumCellTypes };
         }
 
         public int[] GetObservationShape()
@@ -53,9 +54,9 @@ namespace Unity.MLAgentsExamples
             if (m_UseVectorObservations)
             {
                 int offset = 0;
-                for (var c = 0; c < m_Agent.Cols; c++)
+                for (var r = 0; r < m_Agent.Rows; r++)
                 {
-                    for (var r = 0; r < m_Agent.Rows; r++)
+                    for (var c = 0; c < m_Agent.Cols; c++)
                     {
                         var val = m_Agent.Board.Cells[c, r];
                         for (var i = 0; i < m_Agent.NumCellTypes; i++)
@@ -72,14 +73,14 @@ namespace Unity.MLAgentsExamples
             {
                 // TODO combine loops? Only difference is inner-most statement.
                 int offset = 0;
-                for (var c = 0; c < m_Agent.Cols; c++)
+                for (var r = 0; r < m_Agent.Rows; r++)
                 {
-                    for (var r = 0; r < m_Agent.Rows; r++)
+                    for (var c = 0; c < m_Agent.Cols; c++)
                     {
                         var val = m_Agent.Board.Cells[c, r];
                         for (var i = 0; i < m_Agent.NumCellTypes; i++)
                         {
-                            writer[c, r, i] = (i == val) ? 1.0f : 0.0f;
+                            writer[r, c, i] = (i == val) ? 1.0f : 0.0f;
                             offset++;
                         }
                     }
@@ -91,7 +92,20 @@ namespace Unity.MLAgentsExamples
 
         public byte[] GetCompressedObservation()
         {
-            throw new System.NotImplementedException();
+            var height = m_Agent.Rows;
+            var width = m_Agent.Cols;
+            var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
+            var converter = new OneHotToTextureUtil(height, width);
+            var bytesOut = new List<byte>();
+            var numImages = (m_Agent.NumCellTypes + 2) / 3;
+            for (var i = 0; i < numImages; i++)
+            {
+                converter.EncodeToTexture(m_Agent.Board.Cells, tempTexture, 3 * i);
+                bytesOut.AddRange(tempTexture.EncodeToPNG());
+            }
+
+            DestroyTexture(tempTexture);
+            return bytesOut.ToArray();
         }
 
         public void Update()
@@ -104,13 +118,70 @@ namespace Unity.MLAgentsExamples
 
         public SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.None;
+            return SensorCompressionType.PNG;
         }
 
         public string GetName()
         {
             return "Match3 Sensor";
         }
+
+        static void DestroyTexture(Texture2D texture)
+        {
+            if (Application.isEditor)
+            {
+                // Edit Mode tests complain if we use Destroy()
+                // TODO move to extension methods for UnityEngine.Object?
+                Object.DestroyImmediate(texture);
+            }
+            else
+            {
+                Object.Destroy(texture);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Utility class for converting a 2D array of ints representing a one-hot encoding into
+    /// a texture, suitable for conversion to PNGs for observations.
+    /// Works by encoding 3 values at a time as pixels in the texture, thus it should be
+    /// called (maxValue + 2) / 3 times, increasing the channelOffset by 3 each time.
+    /// </summary>
+    public class OneHotToTextureUtil
+    {
+        Color[] m_Colors;
+        int m_Height;
+        int m_Width;
+        private static Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
+
+        public OneHotToTextureUtil(int height, int width)
+        {
+            m_Colors = new Color[height * width];
+            m_Height = height;
+            m_Width = width;
+        }
+
+        public void EncodeToTexture(int[,] oneHotValues, Texture2D texture, int channelOffset)
+        {
+            var i = 0;
+            for (var h = 0; h < m_Height; h++)
+            {
+                for (var w = 0; w < m_Width; w++)
+                {
+                    int oneHotValue = oneHotValues[w, h]; // TODO swap storage for board
+                    if (oneHotValue < channelOffset || oneHotValue >= channelOffset + 3)
+                    {
+                        m_Colors[i++] = Color.black;
+                    }
+                    else
+                    {
+                        m_Colors[i++] = s_OneHotColors[oneHotValue - channelOffset];
+                    }
+                }
+            }
+            texture.SetPixels(m_Colors);
+        }
+
     }
 
 }
