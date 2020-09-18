@@ -97,8 +97,10 @@ class CuriosityNetwork(torch.nn.Module):
                 ModelUtils.list_to_tensor(mini_batch["vector_obs"], dtype=torch.float)
             ],
             vis_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["visual_obs%d" % i], dtype=torch.float
+                ModelUtils.nhwc_to_nchw(
+                    ModelUtils.list_to_tensor(
+                        mini_batch["visual_obs%d" % i], dtype=torch.float
+                    )
                 )
                 for i in range(n_vis)
             ],
@@ -117,8 +119,10 @@ class CuriosityNetwork(torch.nn.Module):
                 )
             ],
             vis_inputs=[
-                ModelUtils.list_to_tensor(
-                    mini_batch["next_visual_obs%d" % i], dtype=torch.float
+                ModelUtils.nhwc_to_nchw(
+                    ModelUtils.list_to_tensor(
+                        mini_batch["next_visual_obs%d" % i], dtype=torch.float
+                    )
                 )
                 for i in range(n_vis)
             ],

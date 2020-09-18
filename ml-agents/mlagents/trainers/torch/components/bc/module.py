@@ -160,7 +160,7 @@ class BCModule:
                 vis_ob = ModelUtils.list_to_tensor(
                     mini_batch_demo["visual_obs%d" % idx]
                 )
-                vis_obs.append(vis_ob)
+                vis_obs.append(ModelUtils.nhwc_to_nchw(vis_ob))
         else:
             vis_obs = []
 

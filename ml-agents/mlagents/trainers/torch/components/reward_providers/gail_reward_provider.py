@@ -128,7 +128,11 @@ class DiscriminatorNetwork(torch.nn.Module):
             else []
         )
         vis_inputs = [
-            ModelUtils.list_to_tensor(mini_batch["visual_obs%d" % i], dtype=torch.float)
+            ModelUtils.nhwc_to_nchw(
+                ModelUtils.list_to_tensor(
+                    mini_batch["visual_obs%d" % i], dtype=torch.float
+                )
+            )
             for i in range(n_vis)
         ]
         return vec_inputs, vis_inputs
