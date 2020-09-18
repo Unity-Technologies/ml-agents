@@ -24,5 +24,7 @@ namespace Unity.MLAgents.Sensors
         /// E.g. for RGB visual observations, this will be {Height, Width, 3}
         /// </summary>
         public int[] Shape;
+
+        public int[] CompressionMapping;
     }
 }

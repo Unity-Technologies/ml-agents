@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Sensors
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// Currently, observations are stacked on the last dimension.
     /// </summary>
-    public class StackingSensor : ISensor
+    public class StackingSensor : ICompressibleSensor
     {
         /// <summary>
         /// The wrapped sensor.
@@ -38,6 +38,7 @@ namespace Unity.MLAgents.Sensors
         ObservationWriter m_LocalWriter = new ObservationWriter();
 
         byte[] m_EmptyCompressedObservation;
+        int[] m_CompressionMapping;
 
         /// <summary>
         /// Initializes the sensor.
@@ -79,6 +80,22 @@ namespace Unity.MLAgents.Sensors
                 for (var i = 0; i < numStackedObservations; i++)
                 {
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
+                }
+
+                // Construct compression mapping
+                var compressibleSensor = m_WrappedSensor as ICompressibleSensor;
+                var wrappedMapping = compressibleSensor.GetCompressionMapping();
+                int wrappedNumChannel = shape[2];
+                int wrappedMapLength = wrappedMapping.Length;
+                int offset;
+                m_CompressionMapping = new int[wrappedMapLength * m_NumStackedObservations];
+                for (var i = 0; i < numStackedObservations; i++)
+                {
+                    offset = wrappedNumChannel * i;
+                    for (var j = 0; j < wrappedMapLength; j++)
+                    {
+                        m_CompressionMapping[j + wrappedMapLength * i] = wrappedMapping[j] > 0 ? wrappedMapping[j] + offset : 0;
+                    }
                 }
             }
         }
@@ -168,6 +185,11 @@ namespace Unity.MLAgents.Sensors
             }
 
             return outputBytes;
+        }
+
+        public int[] GetCompressionMapping()
+        {
+            return m_CompressionMapping;
         }
 
         /// <inheritdoc/>

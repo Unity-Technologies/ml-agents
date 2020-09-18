@@ -85,6 +85,7 @@ def generate_compressed_data(in_array: np.ndarray) -> bytes:
 def generate_compressed_proto_obs(in_array: np.ndarray) -> ObservationProto:
     obs_proto = ObservationProto()
     obs_proto.compressed_data = generate_compressed_data(in_array)
+    obs_proto.mapping.extend(list(range(len(in_array))))
     obs_proto.compression_type = PNG
     obs_proto.shape.extend(in_array.shape)
     return obs_proto

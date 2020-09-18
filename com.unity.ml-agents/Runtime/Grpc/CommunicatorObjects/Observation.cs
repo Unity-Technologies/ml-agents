@@ -25,19 +25,19 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjRtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL29ic2VydmF0",
-            "aW9uLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyL5AQoQT2JzZXJ2YXRp",
+            "aW9uLnByb3RvEhRjb21tdW5pY2F0b3Jfb2JqZWN0cyKKAgoQT2JzZXJ2YXRp",
             "b25Qcm90bxINCgVzaGFwZRgBIAMoBRJEChBjb21wcmVzc2lvbl90eXBlGAIg",
             "ASgOMiouY29tbXVuaWNhdG9yX29iamVjdHMuQ29tcHJlc3Npb25UeXBlUHJv",
             "dG8SGQoPY29tcHJlc3NlZF9kYXRhGAMgASgMSAASRgoKZmxvYXRfZGF0YRgE",
             "IAEoCzIwLmNvbW11bmljYXRvcl9vYmplY3RzLk9ic2VydmF0aW9uUHJvdG8u",
-            "RmxvYXREYXRhSAAaGQoJRmxvYXREYXRhEgwKBGRhdGEYASADKAJCEgoQb2Jz",
-            "ZXJ2YXRpb25fZGF0YSopChRDb21wcmVzc2lvblR5cGVQcm90bxIICgROT05F",
-            "EAASBwoDUE5HEAFCJaoCIlVuaXR5Lk1MQWdlbnRzLkNvbW11bmljYXRvck9i",
-            "amVjdHNiBnByb3RvMw=="));
+            "RmxvYXREYXRhSAASDwoHbWFwcGluZxgFIAMoBRoZCglGbG9hdERhdGESDAoE",
+            "ZGF0YRgBIAMoAkISChBvYnNlcnZhdGlvbl9kYXRhKikKFENvbXByZXNzaW9u",
+            "VHlwZVByb3RvEggKBE5PTkUQABIHCgNQTkcQAUIlqgIiVW5pdHkuTUxBZ2Vu",
+            "dHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Unity.MLAgents.CommunicatorObjects.CompressionTypeProto), }, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Parser, new[]{ "Shape", "CompressionType", "CompressedData", "FloatData", "Mapping" }, new[]{ "ObservationData" }, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData), global::Unity.MLAgents.CommunicatorObjects.ObservationProto.Types.FloatData.Parser, new[]{ "Data" }, null, null, null)})
           }));
     }
     #endregion
@@ -79,6 +79,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public ObservationProto(ObservationProto other) : this() {
       shape_ = other.shape_.Clone();
       compressionType_ = other.compressionType_;
+      mapping_ = other.mapping_.Clone();
       switch (other.ObservationDataCase) {
         case ObservationDataOneofCase.CompressedData:
           CompressedData = other.CompressedData;
@@ -139,6 +140,16 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "mapping" field.</summary>
+    public const int MappingFieldNumber = 5;
+    private static readonly pb::FieldCodec<int> _repeated_mapping_codec
+        = pb::FieldCodec.ForInt32(42);
+    private readonly pbc::RepeatedField<int> mapping_ = new pbc::RepeatedField<int>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<int> Mapping {
+      get { return mapping_; }
+    }
+
     private object observationData_;
     /// <summary>Enum of possible cases for the "observation_data" oneof.</summary>
     public enum ObservationDataOneofCase {
@@ -175,6 +186,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (CompressionType != other.CompressionType) return false;
       if (CompressedData != other.CompressedData) return false;
       if (!object.Equals(FloatData, other.FloatData)) return false;
+      if(!mapping_.Equals(other.mapping_)) return false;
       if (ObservationDataCase != other.ObservationDataCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -186,6 +198,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (CompressionType != 0) hash ^= CompressionType.GetHashCode();
       if (observationDataCase_ == ObservationDataOneofCase.CompressedData) hash ^= CompressedData.GetHashCode();
       if (observationDataCase_ == ObservationDataOneofCase.FloatData) hash ^= FloatData.GetHashCode();
+      hash ^= mapping_.GetHashCode();
       hash ^= (int) observationDataCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -213,6 +226,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(34);
         output.WriteMessage(FloatData);
       }
+      mapping_.WriteTo(output, _repeated_mapping_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -231,6 +245,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (observationDataCase_ == ObservationDataOneofCase.FloatData) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(FloatData);
       }
+      size += mapping_.CalculateSize(_repeated_mapping_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -246,6 +261,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.CompressionType != 0) {
         CompressionType = other.CompressionType;
       }
+      mapping_.Add(other.mapping_);
       switch (other.ObservationDataCase) {
         case ObservationDataOneofCase.CompressedData:
           CompressedData = other.CompressedData;
@@ -289,6 +305,11 @@ namespace Unity.MLAgents.CommunicatorObjects {
             }
             input.ReadMessage(subBuilder);
             FloatData = subBuilder;
+            break;
+          }
+          case 42:
+          case 40: {
+            mapping_.AddEntriesFrom(input, _repeated_mapping_codec);
             break;
           }
         }

@@ -235,6 +235,7 @@ namespace Unity.MLAgents
                 {
                     CompressedData = ByteString.CopyFrom(obs.CompressedData),
                     CompressionType = (CompressionTypeProto)obs.CompressionType,
+                    Mapping = { obs.CompressionMapping },
                 };
             }
             else
@@ -289,6 +290,7 @@ namespace Unity.MLAgents
             }
             else
             {
+                var compressibleSensor = sensor as ICompressibleSensor;
                 var compressedObs = sensor.GetCompressedObservation();
                 if (compressedObs == null)
                 {
@@ -303,6 +305,7 @@ namespace Unity.MLAgents
                 {
                     CompressedData = ByteString.CopyFrom(compressedObs),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
+                    Mapping = { compressibleSensor.GetCompressionMapping() },
                 };
             }
             observationProto.Shape.AddRange(shape);
