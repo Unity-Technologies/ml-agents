@@ -68,6 +68,9 @@ class GaussianDistInstance(DistInstance):
     def entropy(self):
         return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
+    def action_out(self):
+        return self.sample()
+
 
 class TanhGaussianDistInstance(GaussianDistInstance):
     def __init__(self, mean, std):
@@ -115,6 +118,9 @@ class CategoricalDistInstance(DiscreteDistInstance):
 
     def entropy(self):
         return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
+
+    def action_out(self):
+        return self.all_log_prob()
 
 
 class GaussianDistribution(nn.Module):
@@ -203,3 +209,39 @@ class MultiCategoricalDistribution(nn.Module):
             distribution = CategoricalDistInstance(norm_logits)
             branch_distributions.append(distribution)
         return branch_distributions
+
+
+class HybridDistribution(nn.Module):
+    def __init__(
+        self,
+        hidden_size: int,
+        continuous_act_size: int,
+        discrete_act_size: int,
+        conditional_sigma: bool = False,
+        tanh_squash: bool = False,
+    ):
+        self.continuous_distributions: List[GaussianDistribution] = []
+        self.discrete_distributions: List[MultiCategoricalDistribution] = []
+        if continuous_act_size > 0:
+            self.continuous_distributions.append(
+                GaussianDistribution(
+                    self.encoding_size,
+                    continuous_act_size,
+                    conditional_sigma=conditional_sigma,
+                    tanh_squash=tanh_squash,
+                )
+            )
+        if discrete_act_size > 0:
+            self.discrete_distributions.append(
+                MultiCategoricalDistribution(self.encoding_size, discrete_act_size)
+            )
+        else:
+            self.discrete_distribution = None
+
+    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
+        distributions: List[DistInstance] = []
+        for discrete_dist in self.discrete_distributions:
+            distributions += discrete_dist(inputs, masks)
+        for continuous_dist in self.continuous_distributions:
+            distributions += continuous_dist(inputs)
+        return distributions

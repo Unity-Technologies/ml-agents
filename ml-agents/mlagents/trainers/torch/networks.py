@@ -4,11 +4,7 @@ import abc
 from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionType
-from mlagents.trainers.torch.distributions import (
-    GaussianDistribution,
-    MultiCategoricalDistribution,
-    DistInstance,
-)
+from mlagents.trainers.torch.distributions import HybridDistribution, DistInstance
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
@@ -249,6 +245,7 @@ class ActorCritic(Actor):
         """
         pass
 
+
 class HybridSimpleActor(nn.Module, Actor):
     def __init__(
         self,
@@ -263,26 +260,27 @@ class HybridSimpleActor(nn.Module, Actor):
         self.discrete_act_size = discrete_act_size
         self.continuous_act_size = continuous_act_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        #self.is_continuous_int = torch.nn.Parameter(
+        # self.is_continuous_int = torch.nn.Parameter(
         #    torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
-        #)
-        self.continuous_act_size_vector = torch.nn.Parameter(torch.Tensor(continuous_act_size))
-        self.discrete_act_size_vector = torch.nn.Parameter(torch.Tensor(discrete_act_size))
+        # )
+        self.continuous_act_size_vector = torch.nn.Parameter(
+            torch.Tensor(continuous_act_size)
+        )
+        self.discrete_act_size_vector = torch.nn.Parameter(
+            torch.Tensor(discrete_act_size)
+        )
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
         else:
             self.encoding_size = network_settings.hidden_units
 
-        self.continuous_distribution = GaussianDistribution(
-                self.encoding_size,
-                continuous_act_size[0],
-                conditional_sigma=conditional_sigma,
-                tanh_squash=tanh_squash,
-        )
-        
-        self.discrete_distribution = MultiCategoricalDistribution(
-            self.encoding_size, discrete_act_size
+        self.distribution = HybridDistribution(
+            self.encoding_size,
+            continuous_act_size[0],
+            discrete_act_size,
+            conditional_sigma=conditional_sigma,
+            tanh_squash=tanh_squash,
         )
 
     @property
@@ -310,9 +308,8 @@ class HybridSimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        discrete_dists = self.discrete_distribution(encoding, masks)
-        continuous_dists = self.continuous_distribution(encoding)
-        return discrete_dists + continuous_dists, memories
+        dists = self.distribution(encoding, masks)
+        return dists, memories
 
     def forward(
         self,
@@ -325,10 +322,7 @@ class HybridSimpleActor(nn.Module, Actor):
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
         """
         # TODO: This is bad right now
-        dists _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
-
-        discrete_dists = dists[0]
-        continuous_dists = dists[1]
+        dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
 
         discrete_action_out = discrete_dists[0].all_log_prob()
 
@@ -342,6 +336,7 @@ class HybridSimpleActor(nn.Module, Actor):
             self.is_continuous_int,
             self.act_size_vector,
         )
+
 
 class HybridSharedActorCritic(HybridSimpleActor, ActorCritic):
     def __init__(
@@ -386,14 +381,12 @@ class HybridSharedActorCritic(HybridSimpleActor, ActorCritic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+
+        # TODO: this is just a rehashing of get_dists code
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        if self.act_type == ActionType.CONTINUOUS:
-            dists = self.distribution(encoding)
-        else:
-            dists = self.distribution(encoding, masks=masks)
-
+        dists = self.distribution(encoding, masks)
         value_outputs = self.value_heads(encoding)
         return dists, value_outputs, memories
 
@@ -475,6 +468,7 @@ class HybridSeparateActorCritic(HybridSimpleActor, ActorCritic):
         else:
             mem_out = None
         return dists, value_outputs, mem_out
+
 
 ################################################################################
 #########               Continuous xor Discrete cases                 ##########
