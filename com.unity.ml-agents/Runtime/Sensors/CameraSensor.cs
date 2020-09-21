@@ -59,11 +59,11 @@ namespace Unity.MLAgents.Sensors
             {
                 if (m_Grayscale)
                 {
-                    m_CompressionMapping = new int[] { 1, 1, 1 };
+                    m_CompressionMapping = new int[] { 0, 0, 0 };
                 }
                 else
                 {
-                    m_CompressionMapping = new int[] { 1, 2, 3 };
+                    m_CompressionMapping = new int[] { 0, 1, 2 };
                 }
             }
         }

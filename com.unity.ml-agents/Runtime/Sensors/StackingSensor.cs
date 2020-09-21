@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Sensors
                     offset = wrappedNumChannel * i;
                     for (var j = 0; j < wrappedMapLength; j++)
                     {
-                        m_CompressionMapping[j + wrappedMapLength * i] = wrappedMapping[j] > 0 ? wrappedMapping[j] + offset : 0;
+                        m_CompressionMapping[j + wrappedMapLength * i] = wrappedMapping[j] >= 0 ? wrappedMapping[j] + offset : -1;
                     }
                 }
             }

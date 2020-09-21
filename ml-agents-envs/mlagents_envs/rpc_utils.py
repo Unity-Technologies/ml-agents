@@ -116,8 +116,8 @@ def process_pixels(
 
         processed_image_arrays: List[np.array] = [[] for _ in range(expected_channels)]
         for mapping_idx, img in zip(mappings, image_arrays):
-            if mapping_idx > 0:
-                processed_image_arrays[mapping_idx - 1].append(img)
+            if mapping_idx > -1:
+                processed_image_arrays[mapping_idx].append(img)
 
         for i, img_array in enumerate(processed_image_arrays):
             processed_image_arrays[i] = np.mean(img_array, axis=0)

@@ -292,9 +292,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 var compressChannel = 3;
                 var paddedChannel = (totalCannel + compressChannel - 1) / compressChannel;  // division rounding up
                 m_CompressionMapping = new int[paddedChannel];
-                for (var i = 0; i < totalCannel; i++)
+                for (var i = 0; i < paddedChannel; i++)
                 {
-                    m_CompressionMapping[i] = 1;
+                    m_CompressionMapping[i] = i < totalCannel ? i : -1;
                 }
             }
         }
