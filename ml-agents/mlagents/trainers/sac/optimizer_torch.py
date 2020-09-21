@@ -470,9 +470,7 @@ class TorchSACOptimizer(TorchOptimizer):
             masks,
             discrete=not self.policy.use_continuous_act,
         )
-        # value_loss = self.sac_value_loss(
-        #     log_probs, sampled_values, q1p_out, q2p_out, masks, use_discrete
-        # )
+
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
         entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
 
