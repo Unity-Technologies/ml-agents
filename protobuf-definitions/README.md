@@ -18,7 +18,7 @@ Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 
 `pip install grpcio-tools==1.11.1`
 
-`pip install mypy-protobuf`
+`pip install mypy-protobuf==1.16.0`
 
 
 #### On Windows
