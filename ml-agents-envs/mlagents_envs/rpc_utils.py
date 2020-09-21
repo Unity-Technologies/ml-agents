@@ -111,7 +111,8 @@ def process_pixels(
         image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
         if len(mappings) != len(image_arrays):
             raise UnityObservationException(
-                "Compressed observation and its mapping has different number of channels"
+                f"Compressed observation and its mapping had different number of channels - "
+                f"observation had {len(image_arrays)} channels but its mapping had {len(mappings)} channels"
             )
 
         processed_image_arrays: List[np.array] = [[] for _ in range(expected_channels)]
@@ -123,7 +124,7 @@ def process_pixels(
             processed_image_arrays[i] = np.mean(img_array, axis=0)
         img = np.stack(processed_image_arrays, axis=2)
     else:
-        # old API without mapping provided. Use the first n channel, n=expected_channels.
+        # Old API without mapping provided. Use the first n channel, n=expected_channels.
         if expected_channels == 1:
             # Convert to grayscale
             img = np.array(image_arrays[0], dtype=np.float32) / 255.0
@@ -161,7 +162,9 @@ def observation_to_np_array(
         img = np.reshape(img, obs.shape)
         return img
     else:
-        img = process_pixels(obs.compressed_data, list(obs.mapping), expected_channels)
+        img = process_pixels(
+            obs.compressed_data, list(obs.compressed_channel_mapping), expected_channels
+        )
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(
