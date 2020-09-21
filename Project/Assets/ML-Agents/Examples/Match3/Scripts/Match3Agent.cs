@@ -5,6 +5,7 @@ using Unity.MLAgents.Actuators;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
 {

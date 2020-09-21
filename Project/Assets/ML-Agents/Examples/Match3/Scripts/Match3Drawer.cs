@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
 {
