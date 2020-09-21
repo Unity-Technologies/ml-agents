@@ -299,5 +299,5 @@ class ModelUtils:
         :param masks: Boolean tensor of masks with same dimension as tensor.
         """
         return (tensor.T * masks).sum() / torch.clamp(
-            (torch.ones_like(tensor.T) * masks).float().sum(), min=1.0
+            (torch.ones_like(tensor.T) * masks.detach()).float().sum(), min=1.0
         )
