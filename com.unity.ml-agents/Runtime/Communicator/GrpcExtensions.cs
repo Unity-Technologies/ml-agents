@@ -219,42 +219,6 @@ namespace Unity.MLAgents
         #endregion
 
         #region Observations
-        public static ObservationProto ToProto(this Observation obs)
-        {
-            ObservationProto obsProto = null;
-
-            if (obs.CompressedData != null)
-            {
-                // Make sure that uncompressed data is empty
-                if (obs.FloatData.Count != 0)
-                {
-                    Debug.LogWarning("Observation has both compressed and uncompressed data set. Using compressed.");
-                }
-
-                obsProto = new ObservationProto
-                {
-                    CompressedData = ByteString.CopyFrom(obs.CompressedData),
-                    CompressionType = (CompressionTypeProto)obs.CompressionType,
-                };
-            }
-            else
-            {
-                var floatDataProto = new ObservationProto.Types.FloatData
-                {
-                    Data = { obs.FloatData },
-                };
-
-                obsProto = new ObservationProto
-                {
-                    FloatData = floatDataProto,
-                    CompressionType = (CompressionTypeProto)obs.CompressionType,
-                };
-            }
-
-            obsProto.Shape.AddRange(obs.Shape);
-            return obsProto;
-        }
-
         /// <summary>
         /// Static flag to make sure that we only fire the warning once.
         /// </summary>
