@@ -15,6 +15,10 @@
         {
             "pattern": "https://forum.unity.com/forums/ml-agents.453/",
             "comment": "Not reachable from github action"
+        },
+        {
+            "pattern": "mailto:",
+            "comment": "mailto checking broken"
         }
     ]
 }

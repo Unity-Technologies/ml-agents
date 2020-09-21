@@ -219,42 +219,10 @@ namespace Unity.MLAgents
         #endregion
 
         #region Observations
-        public static ObservationProto ToProto(this Observation obs)
-        {
-            ObservationProto obsProto = null;
-
-            if (obs.CompressedData != null)
-            {
-                // Make sure that uncompressed data is empty
-                if (obs.FloatData.Count != 0)
-                {
-                    Debug.LogWarning("Observation has both compressed and uncompressed data set. Using compressed.");
-                }
-
-                obsProto = new ObservationProto
-                {
-                    CompressedData = ByteString.CopyFrom(obs.CompressedData),
-                    CompressionType = (CompressionTypeProto)obs.CompressionType,
-                    Mapping = { obs.CompressionMapping },
-                };
-            }
-            else
-            {
-                var floatDataProto = new ObservationProto.Types.FloatData
-                {
-                    Data = { obs.FloatData },
-                };
-
-                obsProto = new ObservationProto
-                {
-                    FloatData = floatDataProto,
-                    CompressionType = (CompressionTypeProto)obs.CompressionType,
-                };
-            }
-
-            obsProto.Shape.AddRange(obs.Shape);
-            return obsProto;
-        }
+        /// <summary>
+        /// Static flag to make sure that we only fire the warning once.
+        /// </summary>
+        private static bool s_HaveWarnedAboutTrainerCapabilities = false;
 
         /// <summary>
         /// Generate an ObservationProto for the sensor using the provided ObservationWriter.
@@ -268,7 +236,23 @@ namespace Unity.MLAgents
         {
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
-            if (sensor.GetCompressionType() == SensorCompressionType.None)
+            var compressionType = sensor.GetCompressionType();
+            // Check capabilities if we need to concatenate PNGs
+            if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
+            {
+                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
+                if (!trainerCanHandle)
+                {
+                    if (!s_HaveWarnedAboutTrainerCapabilities)
+                    {
+                        Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
+                        s_HaveWarnedAboutTrainerCapabilities = true;
+                    }
+                    compressionType = SensorCompressionType.None;
+                }
+            }
+
+            if (compressionType == SensorCompressionType.None)
             {
                 var numFloats = sensor.ObservationSize();
                 var floatDataProto = new ObservationProto.Types.FloatData();
@@ -317,7 +301,8 @@ namespace Unity.MLAgents
         {
             return new UnityRLCapabilities
             {
-                m_BaseRLCapabilities = proto.BaseRLCapabilities
+                BaseRLCapabilities = proto.BaseRLCapabilities,
+                ConcatenatedPngObservations = proto.ConcatenatedPngObservations
             };
         }
 
@@ -325,7 +310,8 @@ namespace Unity.MLAgents
         {
             return new UnityRLCapabilitiesProto
             {
-                BaseRLCapabilities = rlCaps.m_BaseRLCapabilities
+                BaseRLCapabilities = rlCaps.BaseRLCapabilities,
+                ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
             };
         }
     }

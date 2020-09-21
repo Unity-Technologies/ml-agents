@@ -1,6 +1,7 @@
 test_editors:
   - version: 2018.4
-  - version: 2019.3
+  - version: 2019.4
+  - version: 2020.1
 ---
 {% for editor in test_editors %}
 test_mac_training_int_{{ editor.version }}:

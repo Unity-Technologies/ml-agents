@@ -148,13 +148,13 @@ namespace Unity.MLAgents
     /// [OnDisable()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnDisable.html]
     /// [OnBeforeSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnBeforeSerialize.html
     /// [OnAfterSerialize()]: https://docs.unity3d.com/ScriptReference/MonoBehaviour.OnAfterSerialize.html
-    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md
-    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design.md
+    /// [Agents]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md
+    /// [Reinforcement Learning in Unity]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design.md
     /// [Unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Readme.md
+    /// [Unity ML-Agents Toolkit manual]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Readme.md
     ///
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/" +
         "docs/Learning-Environment-Design-Agents.md")]
     [Serializable]
     [RequireComponent(typeof(BehaviorParameters))]
@@ -445,7 +445,7 @@ namespace Unity.MLAgents
         enum DoneReason
         {
             /// <summary>
-            /// The <see cref="EndEpisode"/> method was called.
+            /// The episode was ended manually by calling <see cref="EndEpisode"/>.
             /// </summary>
             DoneCalled,
 
@@ -491,8 +491,8 @@ namespace Unity.MLAgents
                 Academy.Instance.DecideAction -= DecideAction;
                 Academy.Instance.AgentAct -= AgentStep;
                 Academy.Instance.AgentForceReset -= _AgentReset;
+                NotifyAgentDone(DoneReason.Disabled);
             }
-            NotifyAgentDone(DoneReason.Disabled);
             m_Brain?.Dispose();
             m_Initialized = false;
         }
@@ -630,8 +630,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         /// </remarks>
         /// <param name="reward">The new value of the reward.</param>
         public void SetReward(float reward)
@@ -660,8 +660,8 @@ namespace Unity.MLAgents
         /// for information about mixing reward signals from curiosity and Generative Adversarial
         /// Imitation Learning (GAIL) with rewards supplied through this method.
         ///
-        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#rewards
-        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
+        /// [Agents - Rewards]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#rewards
+        /// [Reward Signals]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/ML-Agents-Overview.md#a-quick-note-on-reward-signals
         ///</remarks>
         /// <param name="increment">Incremental reward value.</param>
         public void AddReward(float increment)
@@ -691,10 +691,40 @@ namespace Unity.MLAgents
         /// <summary>
         /// Sets the done flag to true and resets the agent.
         /// </summary>
+        /// <remarks>
+        /// This should be used when the episode can no longer continue, such as when the Agent
+        /// reaches the goal or fails at the task.
+        /// </remarks>
         /// <seealso cref="OnEpisodeBegin"/>
+        /// <seealso cref="EpisodeInterrupted"/>
         public void EndEpisode()
         {
-            NotifyAgentDone(DoneReason.DoneCalled);
+            EndEpisodeAndReset(DoneReason.DoneCalled);
+        }
+
+        /// <summary>
+        /// Indicate that the episode is over but not due to the "fault" of the Agent.
+        /// This has the same end result as calling <see cref="EndEpisode"/>, but has a
+        /// slightly different effect on training.
+        /// </summary>
+        /// <remarks>
+        /// This should be used when the episode could continue, but has gone on for
+        /// a sufficient number of steps.
+        /// </remarks>
+        /// <seealso cref="OnEpisodeBegin"/>
+        /// <seealso cref="EndEpisode"/>
+        public void EpisodeInterrupted()
+        {
+            EndEpisodeAndReset(DoneReason.MaxStepReached);
+        }
+
+        /// <summary>
+        /// Internal method to end the episode and reset the Agent.
+        /// </summary>
+        /// <param name="reason"></param>
+        void EndEpisodeAndReset(DoneReason reason)
+        {
+            NotifyAgentDone(reason);
             _AgentReset();
         }
 
@@ -809,8 +839,8 @@ namespace Unity.MLAgents
         /// implementing a simple heuristic function can aid in debugging agent actions and interactions
         /// with its environment.
         ///
-        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
-        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Demonstration Recorder]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#recording-demonstrations
+        /// [Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
         /// <example>
@@ -1057,7 +1087,7 @@ namespace Unity.MLAgents
         /// For more information about observations, see [Observations and Sensors].
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
+        /// [Observations and Sensors]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#observations-and-sensors
         /// </remarks>
         public virtual void CollectObservations(VectorSensor sensor)
         {
@@ -1066,7 +1096,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Returns a read-only view of the observations that were generated in
         /// <see cref="CollectObservations(VectorSensor)"/>. This is mainly useful inside of a
-        /// <see cref="Heuristic(float[], int[])"/> method to avoid recomputing the observations.
+        /// <see cref="Heuristic(in ActionBuffers)"/> method to avoid recomputing the observations.
         /// </summary>
         /// <returns>A read-only view of the observations list.</returns>
         public ReadOnlyCollection<float> GetObservations()
@@ -1088,7 +1118,7 @@ namespace Unity.MLAgents
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -1099,8 +1129,6 @@ namespace Unity.MLAgents
             }
             CollectDiscreteActionMasks(m_ActionMasker);
         }
-
-        ActionSpec IActionReceiver.ActionSpec { get; }
 
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based
@@ -1117,7 +1145,7 @@ namespace Unity.MLAgents
         /// three values in the action array to use as the force components. During
         /// training, the agent's  policy learns to set those particular elements of
         /// the array to maximize the training rewards the agent receives. (Of course,
-        /// if you implement a <seealso cref="Heuristic(float[], int[])"/> function, it must use the same
+        /// if you implement a <seealso cref="Heuristic(in ActionBuffers)"/> function, it must use the same
         /// elements of the action array for the same purpose since there is no learning
         /// involved.)
         ///
@@ -1165,7 +1193,7 @@ namespace Unity.MLAgents
         ///
         /// For more information about implementing agent actions see [Agents - Actions].
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_6_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_7_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.

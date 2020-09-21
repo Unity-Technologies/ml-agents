@@ -4,7 +4,10 @@ using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Actuators
 {
-    public class VectorActuator : IActuator
+    /// <summary>
+    /// IActuator implementation that forwards to an <see cref="IActionReceiver"/>.
+    /// </summary>
+    internal class VectorActuator : IActuator
     {
         IActionReceiver m_ActionReceiver;
 
@@ -15,6 +18,15 @@ namespace Unity.MLAgents.Actuators
             private set => m_ActionBuffers = value;
         }
 
+        /// <summary>
+        /// Create a VectorActuator that forwards to the provided IActionReceiver.
+        /// </summary>
+        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.</param>
+        /// <param name="vectorActionSize">For discrete action spaces, the branch sizes for each action.
+        /// For continuous action spaces, the number of actions is the 0th element.</param>
+        /// <param name="spaceType"></param>
+        /// <param name="name"></param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown for invalid <see cref="SpaceType"/></exception>
         public VectorActuator(IActionReceiver actionReceiver,
                               int[] vectorActionSize,
                               SpaceType spaceType,
@@ -59,9 +71,7 @@ namespace Unity.MLAgents.Actuators
             m_ActionReceiver.WriteDiscreteActionMask(actionMask);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IActionReceiver.ActionSpec"/>
-        /// </summary>
+        /// <inheritdoc/>
         public ActionSpec ActionSpec { get; }
 
         /// <inheritdoc />

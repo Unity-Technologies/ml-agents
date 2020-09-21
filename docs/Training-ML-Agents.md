@@ -16,6 +16,7 @@
     - [Curriculum Learning](#curriculum)
       - [Training with a Curriculum](#training-with-a-curriculum)
   - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
+  - [Using PyTorch (Experimental)](#using-pytorch-experimental)
 
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
@@ -176,7 +177,8 @@ add typically has its own training configurations. For instance:
 The trainer config file, `<trainer-config-file>`, determines the features you will
 use during training, and the answers to the above questions will dictate its contents.
 The rest of this guide breaks down the different sub-sections of the trainer config file
-and explains the possible settings for each.
+and explains the possible settings for each. If you need a list of all the trainer
+configurations, please see [Training Configuration File](Training-Configuration-File.md).
 
 **NOTE:** The configuration file format has been changed between 0.17.0 and 0.18.0 and
 between 0.18.0 and onwards. To convert
@@ -274,6 +276,9 @@ behaviors:
       save_steps: 50000
       swap_steps: 2000
       team_change: 100000
+
+    # use TensorFlow backend
+    framework: tensorflow
 ```
 
 Here is an equivalent file if we use an SAC trainer instead. Notice that the
@@ -337,6 +342,24 @@ each of these parameters mean and provide guidelines on how to set them. See
 description of all the configurations listed above, along with their defaults.
 Unless otherwise specified, omitting a configuration will revert it to its default.
 
+### Default Behavior Settings
+
+In some cases, you may want to specify a set of default configurations for your Behaviors.
+This may be useful, for instance, if your Behavior names are generated procedurally by
+the environment and not known before runtime, or if you have many Behaviors with very similar
+settings. To specify a default configuraton, insert a `default_settings` section in your YAML.
+This section should be formatted exactly like a configuration for a Behavior.
+
+```yaml
+default_settings:
+  # < Same as Behavior configuration >
+behaviors:
+  # < Same as above >
+```
+
+Behaviors found in the environment that aren't specified in the YAML will now use the `default_settings`,
+and unspecified settings in behavior configurations will default to the values in `default_settings` if
+specified there.
 
 ### Environment Parameters
 
@@ -533,3 +556,35 @@ Some considerations:
 - **Result Variation Using Concurrent Unity Instances** - If you keep all the
   hyperparameters the same, but change `--num-envs=<n>`, the results and model
   would likely change.
+
+### Using PyTorch (Experimental)
+
+ML-Agents, by default, uses TensorFlow as its backend, but experimental support
+for PyTorch has been added. To use PyTorch, the `torch` Python package must
+be installed, and PyTorch must be enabled for your trainer.
+
+#### Installing PyTorch
+
+If you've already installed ML-Agents, follow the
+[official PyTorch install instructions](https://pytorch.org/get-started/locally/) for
+your platform and configuration. Note that on Windows, you may also need Microsoft's
+[Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) if you don't have it already.
+
+If you're installing or upgrading ML-Agents on Linux or Mac, you can also run
+`pip3 install mlagents[torch]` instead of `pip3 install mlagents`
+during [installation](Installation.md). On Windows, install ML-Agents first and then
+separately install PyTorch.
+
+#### Enabling PyTorch
+
+PyTorch can be enabled in one of two ways. First, by adding `--torch` to the
+`mlagents-learn` command. This will make all behaviors train with PyTorch.
+
+Second, by changing the `framework` option for your agent behavior in the
+configuration YAML as below. This will use PyTorch just for that behavior.
+
+```yaml
+behaviors:
+  YourAgentBehavior:
+    framework: pytorch
+```

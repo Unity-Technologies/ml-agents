@@ -8,10 +8,11 @@ import numpy as np
 from mlagents.tf_utils import tf
 from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
 from mlagents.trainers import __version__
-from mlagents.trainers.settings import TrainerSettings
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_nn_policy import create_policy_mock
+from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 
 
@@ -113,3 +114,66 @@ def test_checkpoint_conversion(tmpdir, rnn, visual, discrete):
     model_saver.register(policy)
     model_saver.save_checkpoint("Mock_Brain", 100)
     assert os.path.isfile(model_path + "/Mock_Brain-100.nn")
+
+
+# This is the normalizer test from test_nn_policy.py but with a load
+def test_normalizer_after_load(tmp_path):
+    behavior_spec = mb.setup_test_behavior_specs(
+        use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
+    )
+    time_horizon = 6
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        observation_shapes=[(1,)],
+        action_space=[2],
+    )
+    # Change half of the obs to 0
+    for i in range(3):
+        trajectory.steps[i].obs[0] = np.zeros(1, dtype=np.float32)
+
+    trainer_params = TrainerSettings(network_settings=NetworkSettings(normalize=True))
+    policy = TFPolicy(0, behavior_spec, trainer_params)
+
+    trajectory_buffer = trajectory.to_agentbuffer()
+    policy.update_normalization(trajectory_buffer["vector_obs"])
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = policy.sess.run(
+        [policy.normalization_steps, policy.running_mean, policy.running_variance]
+    )
+
+    assert steps == 6
+    assert mean[0] == 0.5
+    assert variance[0] / steps == pytest.approx(0.25, abs=0.01)
+    # Save ckpt and load into another policy
+    path1 = os.path.join(tmp_path, "runid1")
+    model_saver = TFModelSaver(trainer_params, path1)
+    model_saver.register(policy)
+    mock_brain_name = "MockBrain"
+    model_saver.save_checkpoint(mock_brain_name, 6)
+    assert len(os.listdir(tmp_path)) > 0
+    policy1 = TFPolicy(0, behavior_spec, trainer_params)
+    model_saver = TFModelSaver(trainer_params, path1, load=True)
+    model_saver.register(policy1)
+    model_saver.initialize_or_load(policy1)
+
+    # Make another update to new policy, this time with all 1's
+    time_horizon = 10
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        observation_shapes=[(1,)],
+        action_space=[2],
+    )
+    trajectory_buffer = trajectory.to_agentbuffer()
+    policy1.update_normalization(trajectory_buffer["vector_obs"])
+
+    # Check that the running mean and variance is correct
+    steps, mean, variance = policy1.sess.run(
+        [policy1.normalization_steps, policy1.running_mean, policy1.running_variance]
+    )
+
+    assert steps == 16
+    assert mean[0] == 0.8125
+    assert variance[0] / steps == pytest.approx(0.152, abs=0.01)

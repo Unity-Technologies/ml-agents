@@ -2,7 +2,7 @@ test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
     enableCodeCoverage: !!bool false
-  - version: 2019.3
+  - version: 2019.4
     enableCodeCoverage: !!bool true
   - version: 2020.1
     enableCodeCoverage: !!bool true
