@@ -58,10 +58,10 @@ example environments and training configurations to experiment with them (some
 of our tutorials / guides assume you have access to our example environments).
 
 ```sh
-git clone --branch release_6 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_7 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_6` option will switch to the tag of the latest stable
+The `--branch release_7` option will switch to the tag of the latest stable
 release. Omitting that will get the `master` branch which is potentially
 unstable.
 
@@ -69,7 +69,7 @@ unstable.
 
 You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `master` branch (by omitting `--branch release_6`
+back, make sure to clone the `master` branch (by omitting `--branch release_7`
 from the command above). See our
 [Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.
