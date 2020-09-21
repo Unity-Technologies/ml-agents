@@ -151,7 +151,7 @@ class EnvironmentParameterManager:
                         new_lesson_value = settings.curriculum[next_lesson_num].value
 
                         logger.info(
-                            f"Parameter '{param_name}' has been updated with {new_lesson_value}."
+                            f"Parameter '{param_name}' has been updated to {new_lesson_value}."
                             + f" Now in lesson '{new_lesson_name}'"
                         )
                         updated = True
