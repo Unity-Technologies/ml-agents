@@ -58,7 +58,7 @@ then python3-distutils needs to be installed. Install python3-distutils using
 1. Create a folder where the virtual environments will reside `md python-envs`
 1. To create a new environment named `sample-env` execute
    `python -m venv python-envs\sample-env`
-1. To activate the environment execute `python-envs\sample-env\Scripts\activate`
+1. To activate the environment execute `python-envs\sample-env\Scripts\activate.bat`
 1. Upgrade to the latest pip version using `pip install --upgrade pip`
 1. To deactivate the environment execute `deactivate` (you can reactivate the
    environment using the same `activate` command listed above)
