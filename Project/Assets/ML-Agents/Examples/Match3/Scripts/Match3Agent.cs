@@ -172,45 +172,7 @@ namespace Unity.MLAgentsExamples
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             var discreteActions = actionsOut.DiscreteActions;
-            discreteActions[0] = GetRandomValidMoveIndex();
-        }
-
-        public int GetRandomValidMoveIndex()
-        {
-            // Pick a random valid move
-            // TODO reservoir sample?
-            var numValidMoves = 0;
-            foreach (var valid in m_ValidMoves)
-            {
-                numValidMoves += valid ? 1 : 0;
-            }
-
-            if (numValidMoves == 0)
-            {
-                Debug.Log("No valid moves");
-                return -1;
-            }
-
-            // We'll make the n'th valid move where n in [0, numValidMoves)
-            var target = m_Random.Next(numValidMoves);
-            var numSkipped = 0;
-
-            for (var i = 0; i < m_ValidMoves.Length; i++)
-            {
-                var valid = m_ValidMoves[i];
-                if (valid)
-                {
-                    if (numSkipped == target)
-                    {
-                        return i;
-                    }
-
-                    numSkipped++;
-                }
-            }
-
-            // Should never reach here
-            return -1;
+            discreteActions[0] = Board.GetRandomValidMoveIndex(m_Random);
         }
     }
 

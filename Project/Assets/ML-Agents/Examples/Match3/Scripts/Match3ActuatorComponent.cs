@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Match3;
+using UnityEngine;
 
 namespace Unity.MLAgentsExamples
 {
@@ -9,11 +10,16 @@ namespace Unity.MLAgentsExamples
         private AbstractBoard m_Board;
         private ActionSpec m_ActionSpec;
         private bool m_ForceRandom;
+        private System.Random m_Random;
 
-        public Match3Actuator(AbstractBoard board, bool forceRandom)
+        public Match3Actuator(AbstractBoard board, bool forceRandom, int randomSeed)
         {
             m_Board = board;
             m_ForceRandom = forceRandom;
+            if (forceRandom)
+            {
+                m_Random = new System.Random(randomSeed);
+            }
             var numMoves = Move.NumEdgeIndices(m_Board.Rows, m_Board.Columns);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
         }
@@ -22,10 +28,10 @@ namespace Unity.MLAgentsExamples
 
         public void OnActionReceived(ActionBuffers actions)
         {
-            int moveIndex;
+            int moveIndex = 0;
             if (m_ForceRandom)
             {
-                //moveIndex = m_Agent.GetRandomValidMoveIndex(); TODO
+                moveIndex = m_Board.GetRandomValidMoveIndex(m_Random);
             }
             else
             {
@@ -40,7 +46,7 @@ namespace Unity.MLAgentsExamples
             actionMask.WriteMask(0, InvalidMoveIndices());
         }
 
-        public string Name => "Match3Actuator";
+        public string Name => "Match3Actuator";// TODO pass optional name
 
         public void ResetData()
         {
@@ -67,7 +73,12 @@ namespace Unity.MLAgentsExamples
         public bool ForceRandom = false;
         public override IActuator CreateActuator()
         {
-            return new Match3Actuator(Agent.Board, ForceRandom);
+            var randomSeed = 0;
+            if (ForceRandom)
+            {
+                randomSeed = this.gameObject.GetInstanceID();
+            }
+            return new Match3Actuator(Agent.Board, ForceRandom, randomSeed);
         }
 
         public override ActionSpec ActionSpec
