@@ -113,7 +113,9 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
         )
-        self.soft_update(self.policy.actor_critic.critic, self.target_network, 1.0)
+        ModelUtils.soft_update(
+            self.policy.actor_critic.critic, self.target_network, 1.0
+        )
 
         self._log_ent_coef = torch.nn.Parameter(
             torch.log(torch.as_tensor([self.init_entcoef] * len(self.act_size))),
@@ -200,24 +202,6 @@ class TorchSACOptimizer(TorchOptimizer):
         q1_loss = torch.mean(torch.stack(q1_losses))
         q2_loss = torch.mean(torch.stack(q2_losses))
         return q1_loss, q2_loss
-
-    def soft_update(self, source: nn.Module, target: nn.Module, tau: float) -> None:
-        """
-        Performs an in-place polyak update of the target module based on the source,
-        by a ratio of tau. Note that source and target modules must have the same
-        parameters.
-        """
-        with torch.no_grad():
-            for source_param, target_param in zip(
-                source.parameters(), target.parameters()
-            ):
-                target_param.data.mul_(1.0 - tau)
-                torch.add(
-                    target_param.data,
-                    source_param.data,
-                    alpha=tau,
-                    out=target_param.data,
-                )
 
     def sac_value_loss(
         self,
@@ -531,7 +515,9 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer.step()
 
         # Update target network
-        self.soft_update(self.policy.actor_critic.critic, self.target_network, self.tau)
+        ModelUtils.soft_update(
+            self.policy.actor_critic.critic, self.target_network, self.tau
+        )
         update_stats = {
             "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": value_loss.item(),
