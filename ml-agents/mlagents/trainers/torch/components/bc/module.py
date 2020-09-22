@@ -164,7 +164,7 @@ class BCModule:
         else:
             vis_obs = []
 
-        selected_actions, all_log_probs, _, _, _ = self.policy.sample_actions(
+        selected_actions, all_log_probs, _, _ = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,

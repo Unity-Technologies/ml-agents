@@ -208,3 +208,20 @@ def test_masked_mean():
     masks = torch.tensor([False, False, True, True, True])
     mean = ModelUtils.masked_mean(test_input, masks=masks)
     assert mean == 4.0
+
+
+def test_soft_update():
+    class TestModule(torch.nn.Module):
+        def __init__(self, vals):
+            super().__init__()
+            self.parameter = torch.nn.Parameter(torch.ones(5, 5, 5) * vals)
+
+    tm1 = TestModule(0)
+    tm2 = TestModule(1)
+    tm3 = TestModule(2)
+
+    ModelUtils.soft_update(tm1, tm3, tau=0.5)
+    assert torch.equal(tm3.parameter, torch.ones(5, 5, 5))
+
+    ModelUtils.soft_update(tm1, tm2, tau=1.0)
+    assert torch.equal(tm2.parameter, tm1.parameter)
