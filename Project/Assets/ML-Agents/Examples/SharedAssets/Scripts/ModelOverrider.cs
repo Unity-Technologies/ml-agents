@@ -25,7 +25,6 @@ namespace Unity.MLAgentsExamples
     public class ModelOverrider : MonoBehaviour
     {
         HashSet<string> k_SupportedExtensions = new HashSet<string> { "nn", "onnx" };
-        const string k_CommandLineModelOverrideFlag = "--mlagents-override-model";
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
         const string k_CommandLineQuitAfterEpisodesFlag = "--mlagents-quit-after-episodes";
@@ -33,9 +32,6 @@ namespace Unity.MLAgentsExamples
 
         // The attached Agent
         Agent m_Agent;
-
-        // Assets paths to use, with the behavior name as the key.
-        Dictionary<string, string> m_BehaviorNameOverrides = new Dictionary<string, string>();
 
         string m_BehaviorNameOverrideDirectory;
 
@@ -74,7 +70,11 @@ namespace Unity.MLAgentsExamples
 
         public bool HasOverrides
         {
-            get { return m_BehaviorNameOverrides.Count > 0 || !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory); }
+            get
+            {
+                GetAssetPathFromCommandLine();
+                return !string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory);
+            }
         }
 
         public static string GetOverrideBehaviorName(string originalBehaviorName)
@@ -88,8 +88,6 @@ namespace Unity.MLAgentsExamples
         /// <returns></returns>
         void GetAssetPathFromCommandLine()
         {
-            m_BehaviorNameOverrides.Clear();
-
             var maxEpisodes = 0;
             string[] commandLineArgsOverride = null;
             if (!string.IsNullOrEmpty(debugCommandLineOverride) && Application.isEditor)
@@ -100,13 +98,7 @@ namespace Unity.MLAgentsExamples
             var args = commandLineArgsOverride ?? Environment.GetCommandLineArgs();
             for (var i = 0; i < args.Length; i++)
             {
-                if (args[i] == k_CommandLineModelOverrideFlag && i < args.Length - 2)
-                {
-                    var key = args[i + 1].Trim();
-                    var value = args[i + 2].Trim();
-                    m_BehaviorNameOverrides[key] = value;
-                }
-                else if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length - 1)
+                if (args[i] == k_CommandLineModelOverrideDirectoryFlag && i < args.Length - 1)
                 {
                     m_BehaviorNameOverrideDirectory = args[i + 1].Trim();
                 }
@@ -133,7 +125,7 @@ namespace Unity.MLAgentsExamples
                 }
             }
 
-            if (HasOverrides)
+            if (!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
             {
                 // If overriding models, set maxEpisodes to 1 or the command line value
                 m_MaxEpisodes = maxEpisodes > 0 ? maxEpisodes : 1;
@@ -193,11 +185,7 @@ namespace Unity.MLAgentsExamples
             }
 
             string assetPath = null;
-            if (m_BehaviorNameOverrides.ContainsKey(behaviorName))
-            {
-                assetPath = m_BehaviorNameOverrides[behaviorName];
-            }
-            else if (!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
+            if (!string.IsNullOrEmpty(m_BehaviorNameOverrideDirectory))
             {
                 assetPath = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.{m_OverrideExtension}");
             }
