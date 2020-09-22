@@ -128,9 +128,15 @@ class TorchPolicy(Policy):
         """
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         """
-        dists, memories = self.actor_critic.get_dists(
-            vec_obs, vis_obs, masks, memories, seq_len
-        )
+        if memories is None:
+            dists, memories = self.actor_critic.get_dists(
+                vec_obs, vis_obs, masks, memories, seq_len
+            )
+        else:
+            # If we're using LSTM. we need to execute the values to get the critic memories
+            dists, _, memories = self.actor_critic.get_dist_and_value(
+                vec_obs, vis_obs, masks, memories, seq_len
+            )
         action_list = self.actor_critic.sample_action(dists)
         log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists
