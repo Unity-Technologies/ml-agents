@@ -25,14 +25,15 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NhcGFiaWxp",
-            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMiWwoYVW5pdHlSTENh",
+            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMieAoYVW5pdHlSTENh",
             "cGFiaWxpdGllc1Byb3RvEhoKEmJhc2VSTENhcGFiaWxpdGllcxgBIAEoCBIj",
-            "Chtjb25jYXRlbmF0ZWRQbmdPYnNlcnZhdGlvbnMYAiABKAhCJaoCIlVuaXR5",
-            "Lk1MQWdlbnRzLkNvbW11bmljYXRvck9iamVjdHNiBnByb3RvMw=="));
+            "Chtjb25jYXRlbmF0ZWRQbmdPYnNlcnZhdGlvbnMYAiABKAgSGwoTY29tcHJl",
+            "c3Npb25NYXBwaW5ncxgDIAEoCEIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVu",
+            "aWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressionMappings" }, null, null, null)
           }));
     }
     #endregion
@@ -71,6 +72,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public UnityRLCapabilitiesProto(UnityRLCapabilitiesProto other) : this() {
       baseRLCapabilities_ = other.baseRLCapabilities_;
       concatenatedPngObservations_ = other.concatenatedPngObservations_;
+      compressionMappings_ = other.compressionMappings_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -107,6 +109,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
+    /// <summary>Field number for the "compressionMappings" field.</summary>
+    public const int CompressionMappingsFieldNumber = 3;
+    private bool compressionMappings_;
+    /// <summary>
+    /// compression mapping for stacking compressed observations.
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool CompressionMappings {
+      get { return compressionMappings_; }
+      set {
+        compressionMappings_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as UnityRLCapabilitiesProto);
@@ -122,6 +138,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (BaseRLCapabilities != other.BaseRLCapabilities) return false;
       if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
+      if (CompressionMappings != other.CompressionMappings) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -130,6 +147,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       int hash = 1;
       if (BaseRLCapabilities != false) hash ^= BaseRLCapabilities.GetHashCode();
       if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
+      if (CompressionMappings != false) hash ^= CompressionMappings.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -151,6 +169,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(16);
         output.WriteBool(ConcatenatedPngObservations);
       }
+      if (CompressionMappings != false) {
+        output.WriteRawTag(24);
+        output.WriteBool(CompressionMappings);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -163,6 +185,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
         size += 1 + 1;
       }
       if (ConcatenatedPngObservations != false) {
+        size += 1 + 1;
+      }
+      if (CompressionMappings != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -182,6 +207,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.ConcatenatedPngObservations != false) {
         ConcatenatedPngObservations = other.ConcatenatedPngObservations;
       }
+      if (other.CompressionMappings != false) {
+        CompressionMappings = other.CompressionMappings;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -199,6 +227,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
           }
           case 16: {
             ConcatenatedPngObservations = input.ReadBool();
+            break;
+          }
+          case 24: {
+            CompressionMappings = input.ReadBool();
             break;
           }
         }

@@ -237,19 +237,33 @@ namespace Unity.MLAgents
             var shape = sensor.GetObservationShape();
             ObservationProto observationProto = null;
             var compressionType = sensor.GetCompressionType();
-            // Check capabilities if we need to concatenate PNGs
-            if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
+            if (!s_HaveWarnedAboutTrainerCapabilities)
             {
-                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
-                if (!trainerCanHandle)
+                // Check capabilities if we need to concatenate PNGs
+                if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
                 {
-                    if (!s_HaveWarnedAboutTrainerCapabilities)
+                    var canHandleMultiPNG = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
+                    if (!canHandleMultiPNG)
                     {
                         Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
-                        s_HaveWarnedAboutTrainerCapabilities = true;
+                        compressionType = SensorCompressionType.None;
                     }
-                    compressionType = SensorCompressionType.None;
                 }
+
+                // Check capabilities if we need mapping for compessed observations
+                if (compressionType != SensorCompressionType.None)
+                {
+                    var canHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
+                    if (!canHandleMapping)
+                    {
+                        Debug.LogWarning($@"Attached trainer doesn't support compression mapping.
+                            No mapping will be provided for sensor {sensor.GetName()} during decompressing.
+                            This could potentially cause wrong observation input to trainer especially
+                            when using compressed observation with stacking or with channels not being multiple of 3");
+                        compressionType = SensorCompressionType.None;
+                    }
+                }
+                s_HaveWarnedAboutTrainerCapabilities = true;
             }
 
             if (compressionType == SensorCompressionType.None)
@@ -302,7 +316,8 @@ namespace Unity.MLAgents
             return new UnityRLCapabilities
             {
                 BaseRLCapabilities = proto.BaseRLCapabilities,
-                ConcatenatedPngObservations = proto.ConcatenatedPngObservations
+                ConcatenatedPngObservations = proto.ConcatenatedPngObservations,
+                CompressionMappings = proto.CompressionMappings,
             };
         }
 
@@ -312,6 +327,7 @@ namespace Unity.MLAgents
             {
                 BaseRLCapabilities = rlCaps.BaseRLCapabilities,
                 ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
+                CompressionMappings = rlCaps.CompressionMappings,
             };
         }
     }
