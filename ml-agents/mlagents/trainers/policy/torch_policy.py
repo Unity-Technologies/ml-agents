@@ -126,7 +126,14 @@ class TorchPolicy(Policy):
         all_log_probs: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
+        :param vec_obs: List of vector observations.
+        :param vis_obs: List of visual observations.
+        :param masks: Loss masks for RNN, else None.
+        :param memories: Input memories when using RNN, else None.
+        :param seq_len: Sequence length when using RNN.
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
+        :return: Tuple of actions, log probabilities (dependent on all_log_probs), entropies, and
+            output memories, all as Torch Tensors.
         """
         if memories is None:
             dists, memories = self.actor_critic.get_dists(

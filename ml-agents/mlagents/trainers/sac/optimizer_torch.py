@@ -443,7 +443,7 @@ class TorchSACOptimizer(TorchOptimizer):
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
         )
-        sampled_values, _ = self.policy.actor_critic.critic_pass(
+        value_estimates, _ = self.policy.actor_critic.critic_pass(
             vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
         )
         if self.policy.use_continuous_act:
@@ -495,7 +495,7 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
         value_loss = self.sac_value_loss(
-            log_probs, sampled_values, q1p_out, q2p_out, masks, use_discrete
+            log_probs, value_estimates, q1p_out, q2p_out, masks, use_discrete
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
         entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
