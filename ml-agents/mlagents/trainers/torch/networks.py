@@ -40,11 +40,7 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        (
-            self.visual_processors,
-            self.vector_processors,
-            encoder_input_size,
-        ) = ModelUtils.create_input_processors(
+        self.visual_processors, self.vector_processors, encoder_input_size = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
