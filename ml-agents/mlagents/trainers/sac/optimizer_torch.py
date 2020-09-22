@@ -393,13 +393,16 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.q2_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (sampled_actions, log_probs, _, _) = self._sample_actions(
+        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
+        )
+        sampled_values, _ = self.policy.actor_critic.critic_pass(
+            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
         )
         if self.policy.use_continuous_act:
             squeezed_actions = actions.squeeze(-1)
@@ -436,7 +439,7 @@ class TorchSACOptimizer(TorchOptimizer):
             q2_stream = self._condense_q_streams(q2_out, actions)
 
         with torch.no_grad():
-            (next_actions, next_log_probs, _, _) = self._sample_actions(
+            (next_actions, next_log_probs, _, _) = self.policy.sample_actions(
                 next_vec_obs,
                 next_vis_obs,
                 masks=act_masks,
@@ -524,30 +527,3 @@ class TorchSACOptimizer(TorchOptimizer):
         for reward_provider in self.reward_signals.values():
             modules.update(reward_provider.get_modules())
         return modules
-
-    def _sample_actions(
-        self,
-        vec_obs: List[torch.Tensor],
-        vis_obs: List[torch.Tensor],
-        masks: Optional[torch.Tensor] = None,
-        memories: Optional[torch.Tensor] = None,
-        seq_len: int = 1,
-        all_log_probs: bool = False,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-        """
-        :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
-        """
-        dists, memories = self.policy.actor_critic.get_dists(
-            vec_obs, vis_obs, masks, memories, seq_len
-        )
-        action_list = self.policy.actor_critic.sample_action(dists)
-        log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
-            action_list, dists
-        )
-        actions = torch.stack(action_list, dim=-1)
-        if self.policy.use_continuous_act:
-            actions = actions[:, :, 0]
-        else:
-            actions = actions[:, 0, :]
-
-        return (actions, all_logs if all_log_probs else log_probs, entropies, memories)
