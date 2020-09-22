@@ -68,6 +68,9 @@ class GaussianDistInstance(DistInstance):
     def entropy(self):
         return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
+    def action_out(self):
+        return self.sample()
+
 
 class TanhGaussianDistInstance(GaussianDistInstance):
     def __init__(self, mean, std):
@@ -115,6 +118,9 @@ class CategoricalDistInstance(DiscreteDistInstance):
 
     def entropy(self):
         return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
+
+    def action_out(self):
+        return self.all_log_prob()
 
 
 class GaussianDistribution(nn.Module):

@@ -153,11 +153,7 @@ def test_simple_actor(action_type):
         [sample_obs], [], masks=masks
     )
     for act in actions:
-        # This is different from above for ONNX export
-        if action_type == ActionType.CONTINUOUS:
-            assert act.shape == (act_size[0], 1)
-        else:
-            assert act.shape == tuple(act_size)
+        assert act.shape == tuple(act_size)
 
     assert mem_size == 0
     assert is_cont == int(action_type == ActionType.CONTINUOUS)
