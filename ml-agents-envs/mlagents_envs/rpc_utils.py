@@ -79,7 +79,7 @@ class OffsetBytesIO:
 
 @timed
 def process_pixels(
-    image_bytes: bytes, mappings: List[int], expected_channels: int
+    image_bytes: bytes, expected_channels: int, mappings: Optional[List[int]] = None
 ) -> np.ndarray:
     """
     Converts byte array observation image into numpy array, re-sizes it,
@@ -107,7 +107,7 @@ def process_pixels(
             # Didn't find the header, so must be at the end.
             break
 
-    if len(mappings) > 0:
+    if mappings is not None and len(mappings) > 0:
         image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
         if len(mappings) != len(image_arrays):
             raise UnityObservationException(
@@ -127,8 +127,7 @@ def process_pixels(
         # Old API without mapping provided. Use the first n channel, n=expected_channels.
         if expected_channels == 1:
             # Convert to grayscale
-            img = np.array(image_arrays[0], dtype=np.float32) / 255.0
-            img = np.mean(img, axis=2)
+            img = np.mean(image_arrays[0], axis=2)
             img = np.reshape(img, [img.shape[0], img.shape[1], 1])
         else:
             img = np.concatenate(image_arrays, axis=2)
@@ -162,9 +161,14 @@ def observation_to_np_array(
         img = np.reshape(img, obs.shape)
         return img
     else:
-        img = process_pixels(
-            obs.compressed_data, list(obs.compressed_channel_mapping), expected_channels
-        )
+        if "compressed_channel_mapping" in (f.name for f in obs.DESCRIPTOR.fields):
+            img = process_pixels(
+                obs.compressed_data,
+                expected_channels,
+                list(obs.compressed_channel_mapping),
+            )
+        else:
+            img = process_pixels(obs.compressed_data, expected_channels)
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(

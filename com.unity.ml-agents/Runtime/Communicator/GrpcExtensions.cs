@@ -289,7 +289,7 @@ namespace Unity.MLAgents
                 {
                     CompressedData = ByteString.CopyFrom(compressedObs),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
-                    Mapping = { compressibleSensor.GetCompressionMapping() },
+                    CompressedChannelMapping = { compressibleSensor.GetCompressionMapping() },
                 };
             }
             observationProto.Shape.AddRange(shape);
