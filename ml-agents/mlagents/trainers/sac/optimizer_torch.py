@@ -435,19 +435,16 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (
-            sampled_actions,
-            log_probs,
-            entropies,
-            sampled_values,
-            _,
-        ) = self.policy.sample_actions(
+        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
+        )
+        sampled_values, _ = self.policy.actor_critic.critic_pass(
+            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
         )
         if self.policy.use_continuous_act:
             squeezed_actions = actions.squeeze(-1)
