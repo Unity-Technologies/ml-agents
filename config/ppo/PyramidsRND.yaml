@@ -28,4 +28,5 @@ behaviors:
     max_steps: 3000000
     time_horizon: 128
     summary_freq: 30000
+    framework: pytorch
     threaded: true
