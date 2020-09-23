@@ -46,6 +46,7 @@ setup(
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     zip_safe=False,
     install_requires=[
+        "gym",
         "cloudpickle",
         "grpcio>=1.11.0",
         "numpy>=1.14.1,<1.19.0",

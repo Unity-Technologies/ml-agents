@@ -13,6 +13,7 @@ from mlagents.trainers.tests.simple_test_envs import (
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.trainer_util import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
+from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents.trainers.settings import (
@@ -38,6 +39,10 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
+
+import gym
+from mlagents_envs.gym_to_unity_wrapper import GymToUnityWrapper
+from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 
 BRAIN_NAME = "1D"
 
@@ -144,15 +149,18 @@ def _check_environment_trains(
             train=True,
             training_seed=seed,
         )
-
         # Begin training
         tc.start_learning(env_manager)
+        env_manager.close()
         if (
             success_threshold is not None
         ):  # For tests where we are just checking setup and not reward
-            processed_rewards = [
-                reward_processor(rewards) for rewards in env.final_rewards.values()
-            ]
+            if hasattr(env, "final_rewards"):
+                processed_rewards = [
+                    reward_processor(rewards) for rewards in env.final_rewards.values()
+                ]
+            else:
+                processed_rewards = list(debug_writer.get_last_rewards().values())
             assert all(not math.isnan(reward) for reward in processed_rewards)
             assert all(reward > success_threshold for reward in processed_rewards)
 
@@ -503,3 +511,32 @@ def test_gail_visual_sac(simple_record, use_discrete):
         max_steps=500,
     )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+
+
+@pytest.mark.gym
+@pytest.mark.parametrize(
+    "gym_name,target_return",
+    [
+        pytest.param("CartPole-v0", 150),  # optimal 200
+        # pytest.param("MountainCar-v0", -199),  # solved if more than -200
+        # pytest.param("MountainCarContinuous-v0", 0),  # optimal 90
+    ],
+)
+def test_sac_gym_training(gym_name, target_return, pytestconfig):
+    if "gym" not in pytestconfig.getoption(name="-m", skip=False):
+        raise pytest.skip(
+            "Dit not run the gym tests, add the marker gym to run these tests"
+        )
+    env = GymToUnityWrapper(gym.make(gym_name), BRAIN_NAME)
+    hyperparams = attr.evolve(
+        SAC_CONFIG.hyperparameters, learning_rate=3e-4, buffer_size=1000
+    )
+    config = attr.evolve(SAC_CONFIG, hyperparameters=hyperparams, max_steps=50000)
+
+    def factory(worker_id, side_channels):
+        return GymToUnityWrapper(gym.make(gym_name), BRAIN_NAME)
+
+    manager = SubprocessEnvManager(factory, EngineConfig.default_config(), 30)
+    _check_environment_trains(
+        env, {BRAIN_NAME: config}, success_threshold=target_return, env_manager=manager
+    )
