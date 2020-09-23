@@ -74,6 +74,9 @@ class TFModelSaver(BaseModelSaver):
         # only on worker-0 if there are multiple workers
         if self.policy and self.policy.rank is not None and self.policy.rank != 0:
             return
+        if self.graph is None:
+            logger.info("No model to export")
+            return
         export_policy_model(
             self.model_path, output_filepath, behavior_name, self.graph, self.sess
         )
