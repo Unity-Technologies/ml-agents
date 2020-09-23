@@ -6,14 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.0.5] - 2020-09-2
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Update Barracuda to 1.0.3. (#4506)
+
 ## [1.0.4] - 2020-08-19
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Update Barracuda to 1.0.2. (#4385)
 - Explicitly call out dependencies in package.json.
-### Bug Fixes
-#### com.unity.ml-agents (C#)
-#### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ## [1.0.3] - 2020-07-07
 ### Minor Changes
