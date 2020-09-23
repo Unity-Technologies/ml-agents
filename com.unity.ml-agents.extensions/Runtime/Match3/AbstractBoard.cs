@@ -36,12 +36,20 @@ namespace Unity.MLAgents.Extensions.Match3
             }
 
             bool moveMatches = CheckHalfMove(otherRow, otherCol, moveVal, move.Direction);
-            bool otherMatches = CheckHalfMove(move.Row, move.Column, oppositeVal,
-                move.OtherDirection());
+            bool otherMatches = CheckHalfMove(move.Row, move.Column, oppositeVal, move.OtherDirection());
 
+            // TODO early out
             return moveMatches || otherMatches;
         }
 
+        /// <summary>
+        /// Check if the "half" of a move is matches 3 or more.
+        /// </summary>
+        /// <param name="newRow"></param>
+        /// <param name="newCol"></param>
+        /// <param name="newValue"></param>
+        /// <param name="incomingDirection"></param>
+        /// <returns></returns>
         bool CheckHalfMove(int newRow, int newCol, int newValue, Direction incomingDirection)
         {
             int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
