@@ -23,10 +23,10 @@ namespace Unity.MLAgents.Extensions.Match3
          * Left/right moves come first. There are (maxCols - 1) * maxRows of these.
          * Up/down moves are next. There are (maxRows - 1) * maxCols of these.
          */
-        public int m_InternalEdgeIndex;
-        public int m_Row;
-        public int m_Column;
-        public Direction m_Direction;
+        public int InternalEdgeIndex;
+        public int Row;
+        public int Column;
+        public Direction Direction;
 
         public static Move FromEdgeIndex(int edgeIndex, int maxRows, int maxCols)
         {
@@ -51,10 +51,10 @@ namespace Unity.MLAgents.Extensions.Match3
             }
             return new Move
             {
-                m_InternalEdgeIndex = edgeIndex,
-                m_Direction = dir,
-                m_Row = row,
-                m_Column = col
+                InternalEdgeIndex = edgeIndex,
+                Direction = dir,
+                Row = row,
+                Column = col
             };
         }
 
@@ -85,25 +85,25 @@ namespace Unity.MLAgents.Extensions.Match3
 
             return new Move
             {
-                m_Row = row,
-                m_Column = col,
-                m_Direction = dir,
-                m_InternalEdgeIndex = edgeIndex,
+                Row = row,
+                Column = col,
+                Direction = dir,
+                InternalEdgeIndex = edgeIndex,
             };
         }
 
         public (int Row, int Column) OtherCell()
         {
-            switch (m_Direction)
+            switch (Direction)
             {
                 case Direction.Up:
-                    return (m_Row + 1, m_Column);
+                    return (Row + 1, Column);
                 case Direction.Down:
-                    return (m_Row - 1, m_Column);
+                    return (Row - 1, Column);
                 case Direction.Left:
-                    return (m_Row, m_Column - 1);
+                    return (Row, Column - 1);
                 case Direction.Right:
-                    return (m_Row, m_Column + 1);
+                    return (Row, Column + 1);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -111,7 +111,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public Direction OtherDirection()
         {
-            switch (m_Direction)
+            switch (Direction)
             {
                 case Direction.Up:
                     return Direction.Down;

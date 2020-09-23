@@ -31,11 +31,11 @@ namespace Unity.MLAgentsExamples
             {
                 return false;
             }
-            var originalValue = m_Cells[move.m_Column, move.m_Row];
+            var originalValue = m_Cells[move.Column, move.Row];
             var (otherRow, otherCol) = move.OtherCell();
             var destinationValue = m_Cells[otherCol, otherRow];
 
-            m_Cells[move.m_Column, move.m_Row] = destinationValue;
+            m_Cells[move.Column, move.Row] = destinationValue;
             m_Cells[otherCol, otherRow] = originalValue;
             return true;
         }
@@ -45,82 +45,9 @@ namespace Unity.MLAgentsExamples
             return m_Cells[col, row];
         }
 
-        public override bool IsMoveValid(Move move)
+        public override bool IsMoveValid(Move m)
         {
-            var moveVal = m_Cells[move.m_Column, move.m_Row];
-            var (otherRow, otherCol) = move.OtherCell();
-            var oppositeVal = m_Cells[otherCol, otherRow];
-
-            // Simple check - if the values are the same, don't match
-            // This might not be valid for all games
-            {
-                if (moveVal == oppositeVal)
-                {
-                    return false;
-                }
-            }
-
-            bool moveMatches = CheckHalfMove(otherRow, otherCol, m_Cells[move.m_Column, move.m_Row], move.m_Direction);
-            bool otherMatches = CheckHalfMove(move.m_Row, move.m_Column, m_Cells[otherCol, otherRow],
-                move.OtherDirection());
-
-            return moveMatches || otherMatches;
-        }
-
-        bool CheckHalfMove(int newRow, int newCol, int newValue, Direction incomingDirection)
-        {
-            int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
-
-            if (incomingDirection != Direction.Right)
-            {
-                for (var c = newCol - 1; c >= 0; c--)
-                {
-                    if (m_Cells[c, newRow] == newValue)
-                        matchedLeft++;
-                    else
-                        break;
-                }
-            }
-
-            if (incomingDirection != Direction.Left)
-            {
-                for (var c = newCol + 1; c < Columns; c++)
-                {
-                    if (m_Cells[c, newRow] == newValue)
-                        matchedRight++;
-                    else
-                        break;
-                }
-            }
-
-            if (incomingDirection != Direction.Down)
-            {
-                for (var r = newRow + 1; r < Rows; r++)
-                {
-                    if (m_Cells[newCol, r] == newValue)
-                        matchedUp++;
-                    else
-                        break;
-                }
-            }
-
-            if (incomingDirection != Direction.Up)
-            {
-                for (var r = newRow - 1; r >= 0; r--)
-                {
-                    if (m_Cells[newCol, r] == newValue)
-                        matchedDown++;
-                    else
-                        break;
-                }
-            }
-
-            if ((matchedUp + matchedDown >= 2) || (matchedLeft + matchedRight >= 2))
-            {
-                return true;
-            }
-
-            return false;
+            return SimpleIsMoveValid(m);
         }
 
         public bool MarkMatchedCells(int[,] cells = null)

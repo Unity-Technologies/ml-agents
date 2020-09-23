@@ -71,7 +71,7 @@ namespace Unity.MLAgentsExamples
                     continue;
                 }
                 var (otherRow, otherCol) = move.OtherCell();
-                var pos = new Vector3(move.m_Column, move.m_Row, 0);
+                var pos = new Vector3(move.Column, move.Row, 0);
                 var otherPos = new Vector3(otherCol, otherRow, 0);
 
                 var oneQuarter = Vector3.Lerp(pos, otherPos, .25f);

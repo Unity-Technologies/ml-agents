@@ -20,6 +20,86 @@ namespace Unity.MLAgents.Extensions.Match3
         // TODO handle "special" cell types?
         public abstract int GetCellType(int row, int col);
 
+        public bool SimpleIsMoveValid(Move move)
+        {
+            var moveVal = GetCellType(move.Row, move.Column);
+            var (otherRow, otherCol) = move.OtherCell();
+            var oppositeVal = GetCellType(otherRow, otherCol);
+
+            // Simple check - if the values are the same, don't match
+            // This might not be valid for all games
+            {
+                if (moveVal == oppositeVal)
+                {
+                    return false;
+                }
+            }
+
+            bool moveMatches = CheckHalfMove(otherRow, otherCol, moveVal, move.Direction);
+            bool otherMatches = CheckHalfMove(move.Row, move.Column, oppositeVal,
+                move.OtherDirection());
+
+            return moveMatches || otherMatches;
+        }
+
+        bool CheckHalfMove(int newRow, int newCol, int newValue, Direction incomingDirection)
+        {
+            int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
+
+            if (incomingDirection != Direction.Right)
+            {
+                for (var c = newCol - 1; c >= 0; c--)
+                {
+
+                    if (GetCellType(newRow, c) == newValue)
+                        matchedLeft++;
+                    else
+                        break;
+                }
+            }
+
+            if (incomingDirection != Direction.Left)
+            {
+                for (var c = newCol + 1; c < Columns; c++)
+                {
+                    if (GetCellType(newRow, c) == newValue)
+                        matchedRight++;
+                    else
+                        break;
+                }
+            }
+
+            if (incomingDirection != Direction.Down)
+            {
+                for (var r = newRow + 1; r < Rows; r++)
+                {
+                    if (GetCellType(r, newCol) == newValue)
+                        matchedUp++;
+                    else
+                        break;
+                }
+            }
+
+            if (incomingDirection != Direction.Up)
+            {
+                for (var r = newRow - 1; r >= 0; r--)
+                {
+                    if (GetCellType(r, newCol) == newValue)
+                        matchedDown++;
+                    else
+                        break;
+                }
+            }
+
+            if ((matchedUp + matchedDown >= 2) || (matchedLeft + matchedRight >= 2))
+            {
+                // TODO account for L-shaped?
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns a random valid move index, or -1 if none are available.
         /// </summary>
