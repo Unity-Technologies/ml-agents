@@ -1,5 +1,5 @@
 import abc
-from typing import List
+from typing import List, Tuple
 from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
@@ -242,13 +242,12 @@ class HybridDistribution(nn.Module):
             self.discrete_distributions.append(
                 MultiCategoricalDistribution(self.encoding_size, discrete_act_size)
             )
-        else:
-            self.discrete_distribution = None
 
-    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
-        distributions: List[DistInstance] = []
+    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> Tuple[List[DistInstance], List[DiscreteDistInstance]]:
+        continuous_distributions: List[DistInstance] = []
+        discrete_distributions: List[DiscreteDistInstance] = []
         for continuous_dist in self.continuous_distributions:
-            distributions += continuous_dist(inputs)
+            continuous_distributions += continuous_dist(inputs)
         for discrete_dist in self.discrete_distributions:
-            distributions += discrete_dist(inputs, masks)
-        return distributions
+            discrete_distributions += discrete_dist(inputs, masks)
+        return continuous_distributions, discrete_distributions
