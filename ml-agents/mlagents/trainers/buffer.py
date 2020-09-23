@@ -210,7 +210,6 @@ class AgentBuffer(dict):
         :param sequence_length: Length of sequences to sample.
             Number of sequences to sample will be batch_size/sequence_length.
         """
-
         num_seq_to_sample = batch_size // sequence_length
         mini_batch = AgentBuffer()
         buff_len = self.num_experiences
