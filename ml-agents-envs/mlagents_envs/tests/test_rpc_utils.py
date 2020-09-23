@@ -110,7 +110,7 @@ def generate_compressed_proto_obs_with_mapping(
         expected_shape = [
             in_array.shape[0],
             in_array.shape[1],
-            len([m for m in mapping if m >= 0]),
+            len({m for m in mapping if m >= 0}),
         ]
         obs_proto.shape.extend(expected_shape)
     else:
