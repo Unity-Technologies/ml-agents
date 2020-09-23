@@ -33,7 +33,7 @@ class DistInstance(nn.Module, abc.ABC):
         pass
 
     @abc.abstractmethod
-    def action_out(self) -> torch.Tensor:
+    def exported_model_output(self) -> torch.Tensor:
         """
         Returns the tensor to be exported to ONNX for the distribution
         """
@@ -75,7 +75,7 @@ class GaussianDistInstance(DistInstance):
     def entropy(self):
         return 0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON)
 
-    def action_out(self):
+    def exported_model_output(self):
         return self.sample()
 
 
@@ -126,7 +126,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
     def entropy(self):
         return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
 
-    def action_out(self):
+    def exported_model_output(self):
         return self.all_log_prob()
 
 
