@@ -261,7 +261,6 @@ namespace Unity.MLAgents.Actuators
             m_DiscreteActionMask.ResetMask();
         }
 
-
         /// <summary>
         /// Sorts the <see cref="IActuator"/>s according to their <see cref="IActuator.Name"/> value.
         /// </summary>
@@ -335,26 +334,19 @@ namespace Unity.MLAgents.Actuators
          * IList implementation that delegates to m_Actuators List.                      *
          *********************************************************************************/
 
-        /// <summary>
-        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerator<IActuator> GetEnumerator()
         {
             return m_Actuators.GetEnumerator();
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IList{T}.GetEnumerator"/>
-        /// </summary>
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)m_Actuators).GetEnumerator();
         }
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.Add"/>
-        /// </summary>
-        /// <param name="item"></param>
+        /// <inheritdoc/>
         public void Add(IActuator item)
         {
             Debug.Assert(m_ReadyForExecution == false,
@@ -363,9 +355,7 @@ namespace Unity.MLAgents.Actuators
             AddToBufferSizes(item);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.Clear"/>
-        /// </summary>
+        /// <inheritdoc/>
         public void Clear()
         {
             Debug.Assert(m_ReadyForExecution == false,
@@ -374,25 +364,19 @@ namespace Unity.MLAgents.Actuators
             ClearBufferSizes();
         }
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.Contains"/>
-        /// </summary>
+        /// <inheritdoc/>
         public bool Contains(IActuator item)
         {
             return m_Actuators.Contains(item);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.CopyTo"/>
-        /// </summary>
+        /// <inheritdoc/>
         public void CopyTo(IActuator[] array, int arrayIndex)
         {
             m_Actuators.CopyTo(array, arrayIndex);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.Remove"/>
-        /// </summary>
+        /// <inheritdoc/>
         public bool Remove(IActuator item)
         {
             Debug.Assert(m_ReadyForExecution == false,
@@ -405,27 +389,19 @@ namespace Unity.MLAgents.Actuators
             return false;
         }
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.Count"/>
-        /// </summary>
+        /// <inheritdoc/>
         public int Count => m_Actuators.Count;
 
-        /// <summary>
-        /// <inheritdoc cref="ICollection{T}.IsReadOnly"/>
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsReadOnly => m_Actuators.IsReadOnly;
 
-        /// <summary>
-        /// <inheritdoc cref="IList{T}.IndexOf"/>
-        /// </summary>
+        /// <inheritdoc/>
         public int IndexOf(IActuator item)
         {
             return m_Actuators.IndexOf(item);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IList{T}.Insert"/>
-        /// </summary>
+        /// <inheritdoc/>
         public void Insert(int index, IActuator item)
         {
             Debug.Assert(m_ReadyForExecution == false,
@@ -434,9 +410,7 @@ namespace Unity.MLAgents.Actuators
             AddToBufferSizes(item);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IList{T}.RemoveAt"/>
-        /// </summary>
+        /// <inheritdoc/>
         public void RemoveAt(int index)
         {
             Debug.Assert(m_ReadyForExecution == false,
@@ -446,9 +420,7 @@ namespace Unity.MLAgents.Actuators
             m_Actuators.RemoveAt(index);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IList{T}.this"/>
-        /// </summary>
+        /// <inheritdoc/>
         public IActuator this[int index]
         {
             get => m_Actuators[index];

@@ -71,9 +71,7 @@ namespace Unity.MLAgents.Actuators
             m_ActionReceiver.WriteDiscreteActionMask(actionMask);
         }
 
-        /// <summary>
-        /// <inheritdoc cref="IActionReceiver.ActionSpec"/>
-        /// </summary>
+        /// <inheritdoc/>
         public ActionSpec ActionSpec { get; }
 
         /// <inheritdoc />

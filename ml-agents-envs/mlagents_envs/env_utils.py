@@ -68,6 +68,16 @@ def validate_environment_path(env_path: str) -> Optional[str]:
         candidates = glob.glob(os.path.join(cwd, env_path + ".exe"))
         if len(candidates) == 0:
             candidates = glob.glob(env_path + ".exe")
+        if len(candidates) == 0:
+            # Look for e.g. 3DBall\UnityEnvironment.exe
+            crash_handlers = set(
+                glob.glob(os.path.join(cwd, env_path, "UnityCrashHandler*.exe"))
+            )
+            candidates = [
+                c
+                for c in glob.glob(os.path.join(cwd, env_path, "*.exe"))
+                if c not in crash_handlers
+            ]
         if len(candidates) > 0:
             launch_string = candidates[0]
     return launch_string

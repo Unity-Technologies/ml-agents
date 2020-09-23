@@ -9,6 +9,7 @@ from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
+from mlagents.trainers.torch.model_serialization import exporting_to_onnx
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -80,7 +81,7 @@ class NetworkBody(nn.Module):
 
         for idx, processor in enumerate(self.visual_processors):
             vis_input = vis_inputs[idx]
-            if not torch.onnx.is_in_onnx_export():
+            if not exporting_to_onnx.is_exporting():
                 vis_input = vis_input.permute([0, 3, 1, 2])
             processed_vis = processor(vis_input)
             encodes.append(processed_vis)
@@ -323,12 +324,7 @@ class SimpleActor(nn.Module, Actor):
         """
         # TODO: This is bad right now
         dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
-
-        discrete_action_out = discrete_dists[0].all_log_prob()
-
-        continuous_action_list = self.sample_action(continuous_dists)
-        continuous_action_out = torch.stack(continuous_action_list, dim=-1)
-        action_out = torch.cat(continuous, discrete_action_out, dim=-1)
+        action_out = torch.cat([dist.action_out() for dist in dists], dim=1)
         return (
             action_out,
             self.version_number,
