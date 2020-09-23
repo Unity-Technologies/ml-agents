@@ -32,6 +32,13 @@ class DistInstance(nn.Module, abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def action_out(self) -> torch.Tensor:
+        """
+        Returns the tensor to be exported to ONNX for the distribution
+        """
+        pass
+
 
 class DiscreteDistInstance(DistInstance):
     @abc.abstractmethod
