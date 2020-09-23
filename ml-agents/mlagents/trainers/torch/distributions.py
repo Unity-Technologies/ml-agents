@@ -240,8 +240,8 @@ class HybridDistribution(nn.Module):
 
     def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
         distributions: List[DistInstance] = []
-        for discrete_dist in self.discrete_distributions:
-            distributions += discrete_dist(inputs, masks)
         for continuous_dist in self.continuous_distributions:
             distributions += continuous_dist(inputs)
+        for discrete_dist in self.discrete_distributions:
+            distributions += discrete_dist(inputs, masks)
         return distributions
