@@ -253,14 +253,13 @@ namespace Unity.MLAgents
                 // Check capabilities if we need mapping for compessed observations
                 if (compressionType != SensorCompressionType.None)
                 {
-                    var canHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
+                    var canHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressionMappings;
                     if (!canHandleMapping)
                     {
-                        Debug.LogWarning($@"Attached trainer doesn't support compression mapping.
-                            No mapping will be provided for sensor {sensor.GetName()} during decompressing.
-                            This could potentially cause wrong observation input to trainer especially
-                            when using compressed observation with stacking or with channels not being multiple of 3");
-                        compressionType = SensorCompressionType.None;
+                        Debug.LogWarning("Attached trainer doesn't support compression mapping. " +
+                            $"No mapping will be provided for sensor {sensor.GetName()} during decompressing. " +
+                            "This could potentially cause wrong observation input to trainer especially " +
+                            "when using compressed observation with stacking or with channels not being multiple of 3.");
                     }
                 }
                 s_HaveWarnedAboutTrainerCapabilities = true;
