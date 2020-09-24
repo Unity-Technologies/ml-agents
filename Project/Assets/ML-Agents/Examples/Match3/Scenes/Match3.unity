@@ -305,9 +305,10 @@ GameObject:
   - component: {fileID: 1739664296}
   - component: {fileID: 1739664298}
   - component: {fileID: 1739664300}
-  - component: {fileID: 1739664302}
-  - component: {fileID: 1739664301}
   - component: {fileID: 1739664299}
+  - component: {fileID: 1739664297}
+  - component: {fileID: 1739664301}
+  - component: {fileID: 1739664302}
   m_Layer: 0
   m_Name: Match3 Agent
   m_TagString: Untagged
@@ -329,6 +330,22 @@ Transform:
   m_Father: {fileID: 1229663168}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1739664297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1739664295}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d852a063770348b68caa91b8e7642a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Rows: 8
+  Columns: 8
+  NumCellTypes: 6
+  RandomSeed: 1337
 --- !u!114 &1739664298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385,10 +402,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 500
-  Rows: 8
-  Cols: 8
-  NumCellTypes: 6
-  RandomSeed: 1337
+  Board: {fileID: 0}
   MoveTime: 0.25
 --- !u!114 &1739664301
 MonoBehaviour:
@@ -399,10 +413,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1739664295}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fdaa2f07cf1d4379b0a92abe74ee1469, type: 3}
+  m_Script: {fileID: 11500000, guid: 08e4b0da54cb4d56bfcbae22dd49ab8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Agent: {fileID: 1739664300}
   ForceRandom: 0
 --- !u!114 &1739664302
 MonoBehaviour:
@@ -413,8 +426,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1739664295}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: faf40cf2a3c04c858a13f08f4f4f41d0, type: 3}
+  m_Script: {fileID: 11500000, guid: 530d2f105aa145bd8a00e021bdd925fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Agent: {fileID: 1739664300}
-  UseVectorObservations: 0
+  UseVectorObservations: 1
