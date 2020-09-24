@@ -14,16 +14,16 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings, FrameworkType
-from mlagents.trainers.tests.dummy_config import PPO_CONFIG
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
     curiosity_dummy_config,
     gail_dummy_config,
+    ppo_dummy_config,
 )
 
 
 @pytest.fixture
 def dummy_config():
-    return attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
+    return attr.evolve(ppo_dummy_config(), framework=FrameworkType.TENSORFLOW)
 
 
 VECTOR_ACTION_SPACE = 2
@@ -115,7 +115,10 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     tf.reset_default_graph()
     dummy_config.reward_signals = gail_dummy_config
     optimizer = _create_ppo_optimizer_ops_mock(
-        PPO_CONFIG, use_rnn=False, use_discrete=False, use_visual=False
+        attr.evolve(ppo_dummy_config(), framework=FrameworkType.TENSORFLOW),
+        use_rnn=False,
+        use_discrete=False,
+        use_visual=False,
     )
     # Test update
     update_buffer = mb.simulate_rollout(
@@ -199,7 +202,10 @@ def test_rl_functions():
 @mock.patch.object(RLTrainer, "create_model_saver")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
 def test_trainer_increment_step(ppo_optimizer, mock_create_model_saver):
-    trainer_params = attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
+    trainer_params = attr.evolve(
+        attr.evolve(ppo_dummy_config(), framework=FrameworkType.TENSORFLOW),
+        framework=FrameworkType.TENSORFLOW,
+    )
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer

@@ -22,7 +22,7 @@ from mlagents.trainers.tests.check_env_trains import (
     check_environment_trains,
     DebugWriter,
 )
-from mlagents.trainers.tests.dummy_config import PPO_CONFIG
+from mlagents.trainers.tests.dummy_config import ppo_dummy_config
 
 
 def mock_env_factory(worker_id):
@@ -195,7 +195,7 @@ def test_subprocess_env_endtoend(num_envs):
     # Run PPO using env_manager
     check_environment_trains(
         simple_env_factory(0, []),
-        {"1D": PPO_CONFIG},
+        {"1D": ppo_dummy_config()},
         env_manager=env_manager,
         success_threshold=None,
     )

@@ -26,7 +26,7 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
 
-from mlagents.trainers.tests.dummy_config import PPO_CONFIG, SAC_CONFIG
+from mlagents.trainers.tests.dummy_config import ppo_dummy_config, sac_dummy_config
 from mlagents.trainers.tests.check_env_trains import (
     check_environment_trains,
     default_reward_processor,
@@ -34,8 +34,8 @@ from mlagents.trainers.tests.check_env_trains import (
 
 BRAIN_NAME = "1D"
 
-PPO_TORCH_CONFIG = attr.evolve(PPO_CONFIG, framework=FrameworkType.PYTORCH)
-SAC_TORCH_CONFIG = attr.evolve(SAC_CONFIG, framework=FrameworkType.PYTORCH)
+PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
+SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
 
 
 @pytest.mark.parametrize("use_discrete", [True, False])
