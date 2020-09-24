@@ -477,6 +477,7 @@ class TorchSACOptimizer(TorchOptimizer):
             )
             q1_stream, q2_stream = q1_out, q2_out
         else:
+            # For discrete, you don't need to backprop through the Q for the policy
             q1p_out, q2p_out = self.value_network(
                 vec_obs,
                 vis_obs,
