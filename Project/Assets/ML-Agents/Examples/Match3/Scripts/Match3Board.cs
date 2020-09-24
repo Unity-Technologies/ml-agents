@@ -8,19 +8,21 @@ namespace Unity.MLAgentsExamples
 
     public class Match3Board : AbstractBoard
     {
+        public int RandomSeed = 1337;
+
         const int k_EmptyCell = -1;
 
-        readonly int[,] m_Cells;
-        readonly bool[,] m_Matched;
+        int[,] m_Cells;
+        bool[,] m_Matched;
 
         System.Random m_Random;
 
-        public Match3Board(int rows, int cols, int numCellTypes, int randomSeed) : base(rows, cols, numCellTypes)
+        void Awake()
         {
-            m_Cells = new int[cols, rows];
-            m_Matched = new bool[cols, rows];
+            m_Cells = new int[Columns, Rows];
+            m_Matched = new bool[Columns, Rows];
 
-            m_Random = new System.Random(randomSeed);
+            m_Random = new System.Random(RandomSeed);
 
             InitRandom();
         }

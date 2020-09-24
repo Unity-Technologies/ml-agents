@@ -8,25 +8,25 @@ namespace Unity.MLAgentsExamples
 {
     public class Match3SensorComponent : SensorComponent
     {
-        public Match3Agent Agent;
-
         public bool UseVectorObservations = true;
 
         public override ISensor CreateSensor()
         {
-            return new Match3Sensor(Agent.Board, UseVectorObservations);
+            var board = GetComponent<AbstractBoard>();
+            return new Match3Sensor(board, UseVectorObservations);
         }
 
         public override int[] GetObservationShape()
         {
-            if (Agent == null)
+            var board = GetComponent<AbstractBoard>();
+            if (board == null)
             {
                 return System.Array.Empty<int>();
             }
 
             return UseVectorObservations ?
-                new[] { Agent.Rows * Agent.Cols * Agent.NumCellTypes } :
-                new[] { Agent.Rows, Agent.Cols, Agent.NumCellTypes };
+                new[] { board.Rows * board.Columns * board.NumCellTypes } :
+                new[] { board.Rows, board.Columns, board.NumCellTypes };
         }
     }
 

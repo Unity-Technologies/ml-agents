@@ -27,10 +27,6 @@ namespace Unity.MLAgentsExamples
     {
         [HideInInspector]
         public Match3Board Board;
-        public int Rows = 8;
-        public int Cols = 8;
-        public int NumCellTypes = 6;
-        public int RandomSeed = 1337;
 
         public float MoveTime = 1.0f;
 
@@ -43,9 +39,9 @@ namespace Unity.MLAgentsExamples
 
         void Awake()
         {
-            Board = new Match3Board(Rows, Cols, NumCellTypes, RandomSeed);
-            m_ValidMoves = new bool[Move.NumEdgeIndices(Rows, Cols)];
-            m_Random = new System.Random(RandomSeed + 1);
+            Board = GetComponent<Match3Board>();
+            m_ValidMoves = new bool[Move.NumEdgeIndices(Board.Rows, Board.Columns)];
+            m_Random = new System.Random(Board.RandomSeed + 1);
         }
 
         public override void OnEpisodeBegin()
@@ -155,9 +151,9 @@ namespace Unity.MLAgentsExamples
             int numValidMoves = 0;
             Array.Clear(m_ValidMoves, 0, m_ValidMoves.Length);
 
-            for (var index = 0; index < Move.NumEdgeIndices(Rows, Cols); index++)
+            for (var index = 0; index < Move.NumEdgeIndices(Board.Rows, Board.Columns); index++)
             {
-                var move = Move.FromEdgeIndex(index, Rows, Cols);
+                var move = Move.FromEdgeIndex(index, Board.Rows, Board.Columns);
                 if (Board.IsMoveValid(move))
                 {
                     m_ValidMoves[index] = true;

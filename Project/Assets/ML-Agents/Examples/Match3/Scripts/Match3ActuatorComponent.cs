@@ -78,6 +78,8 @@ namespace Unity.MLAgentsExamples
             {
                 randomSeed = this.gameObject.GetInstanceID();
             }
+
+            var board = GetComponent<AbstractBoard>();
             return new Match3Actuator(Agent.Board, ForceRandom, randomSeed);
         }
 
@@ -85,12 +87,13 @@ namespace Unity.MLAgentsExamples
         {
             get
             {
-                if (Agent == null)
+                var board = GetComponent<AbstractBoard>();
+                if (board == null)
                 {
                     return ActionSpec.MakeContinuous(0);
                 }
 
-                var numMoves = Move.NumEdgeIndices(Agent.Rows, Agent.Cols);
+                var numMoves = Move.NumEdgeIndices(board.Rows, board.Columns);
                 return ActionSpec.MakeDiscrete(numMoves);
             }
         }
