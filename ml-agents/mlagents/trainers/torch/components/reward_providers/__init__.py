@@ -10,6 +10,9 @@ from mlagents.trainers.torch.components.reward_providers.curiosity_reward_provid
 from mlagents.trainers.torch.components.reward_providers.gail_reward_provider import (  # noqa F401
     GAILRewardProvider,
 )
+from mlagents.trainers.torch.components.reward_providers.rnd_reward_provider import (  # noqa F401
+    RNDRewardProvider,
+)
 from mlagents.trainers.torch.components.reward_providers.reward_provider_factory import (  # noqa F401
     create_reward_provider,
 )

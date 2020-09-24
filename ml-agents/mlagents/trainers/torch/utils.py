@@ -301,3 +301,27 @@ class ModelUtils:
         return (tensor.T * masks).sum() / torch.clamp(
             (torch.ones_like(tensor.T) * masks).float().sum(), min=1.0
         )
+
+    @staticmethod
+    def soft_update(source: nn.Module, target: nn.Module, tau: float) -> None:
+        """
+        Performs an in-place polyak update of the target module based on the source,
+        by a ratio of tau. Note that source and target modules must have the same
+        parameters, where:
+            target = tau * source + (1-tau) * target
+        :param source: Source module whose parameters will be used.
+        :param target: Target module whose parameters will be updated.
+        :param tau: Percentage of source parameters to use in average. Setting tau to
+            1 will copy the source parameters to the target.
+        """
+        with torch.no_grad():
+            for source_param, target_param in zip(
+                source.parameters(), target.parameters()
+            ):
+                target_param.data.mul_(1.0 - tau)
+                torch.add(
+                    target_param.data,
+                    source_param.data,
+                    alpha=tau,
+                    out=target_param.data,
+                )

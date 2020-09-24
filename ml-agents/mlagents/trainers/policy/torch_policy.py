@@ -124,15 +124,26 @@ class TorchPolicy(Policy):
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
         all_log_probs: bool = False,
-    ) -> Tuple[
-        torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
+        :param vec_obs: List of vector observations.
+        :param vis_obs: List of visual observations.
+        :param masks: Loss masks for RNN, else None.
+        :param memories: Input memories when using RNN, else None.
+        :param seq_len: Sequence length when using RNN.
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
+        :return: Tuple of actions, log probabilities (dependent on all_log_probs), entropies, and
+            output memories, all as Torch Tensors.
         """
-        dists, value_heads, memories = self.actor_critic.get_dist_and_value(
-            vec_obs, vis_obs, masks, memories, seq_len
-        )
+        if memories is None:
+            dists, memories = self.actor_critic.get_dists(
+                vec_obs, vis_obs, masks, memories, seq_len
+            )
+        else:
+            # If we're using LSTM. we need to execute the values to get the critic memories
+            dists, _, memories = self.actor_critic.get_dist_and_value(
+                vec_obs, vis_obs, masks, memories, seq_len
+            )
         action_list = self.actor_critic.sample_action(dists)
         log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists
@@ -143,13 +154,7 @@ class TorchPolicy(Policy):
         else:
             actions = actions[:, 0, :]
 
-        return (
-            actions,
-            all_logs if all_log_probs else log_probs,
-            entropies,
-            value_heads,
-            memories,
-        )
+        return (actions, all_logs if all_log_probs else log_probs, entropies, memories)
 
     def evaluate_actions(
         self,
@@ -189,7 +194,7 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, value_heads, memories = self.sample_actions(
+            action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
         run_out["action"] = ModelUtils.to_numpy(action)
@@ -197,10 +202,6 @@ class TorchPolicy(Policy):
         # Todo - make pre_action difference
         run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
-        run_out["value_heads"] = {
-            name: ModelUtils.to_numpy(t) for name, t in value_heads.items()
-        }
-        run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memory_out"] = ModelUtils.to_numpy(memories).squeeze(0)

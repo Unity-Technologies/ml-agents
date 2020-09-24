@@ -113,7 +113,9 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
         )
-        self.soft_update(self.policy.actor_critic.critic, self.target_network, 1.0)
+        ModelUtils.soft_update(
+            self.policy.actor_critic.critic, self.target_network, 1.0
+        )
 
         self._log_ent_coef = torch.nn.Parameter(
             torch.log(torch.as_tensor([self.init_entcoef] * len(self.act_size))),
@@ -201,12 +203,6 @@ class TorchSACOptimizer(TorchOptimizer):
         q2_loss = torch.mean(torch.stack(q2_losses))
         return q1_loss, q2_loss
 
-    def soft_update(self, source: nn.Module, target: nn.Module, tau: float) -> None:
-        for source_param, target_param in zip(source.parameters(), target.parameters()):
-            target_param.data.copy_(
-                target_param.data * (1.0 - tau) + source_param.data * tau
-            )
-
     def sac_value_loss(
         self,
         log_probs: torch.Tensor,
@@ -219,31 +215,37 @@ class TorchSACOptimizer(TorchOptimizer):
         min_policy_qs = {}
         with torch.no_grad():
             _ent_coef = torch.exp(self._log_ent_coef)
-        for name in values.keys():
-            if not discrete:
-                min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
-            else:
-                action_probs = log_probs.exp()
-                _branched_q1p = ModelUtils.break_into_branches(
-                    q1p_out[name] * action_probs, self.act_size
-                )
-                _branched_q2p = ModelUtils.break_into_branches(
-                    q2p_out[name] * action_probs, self.act_size
-                )
-                _q1p_mean = torch.mean(
-                    torch.stack(
-                        [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q1p]
-                    ),
-                    dim=0,
-                )
-                _q2p_mean = torch.mean(
-                    torch.stack(
-                        [torch.sum(_br, dim=1, keepdim=True) for _br in _branched_q2p]
-                    ),
-                    dim=0,
-                )
+            for name in values.keys():
+                if not discrete:
+                    min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
+                else:
+                    action_probs = log_probs.exp()
+                    _branched_q1p = ModelUtils.break_into_branches(
+                        q1p_out[name] * action_probs, self.act_size
+                    )
+                    _branched_q2p = ModelUtils.break_into_branches(
+                        q2p_out[name] * action_probs, self.act_size
+                    )
+                    _q1p_mean = torch.mean(
+                        torch.stack(
+                            [
+                                torch.sum(_br, dim=1, keepdim=True)
+                                for _br in _branched_q1p
+                            ]
+                        ),
+                        dim=0,
+                    )
+                    _q2p_mean = torch.mean(
+                        torch.stack(
+                            [
+                                torch.sum(_br, dim=1, keepdim=True)
+                                for _br in _branched_q2p
+                            ]
+                        ),
+                        dim=0,
+                    )
 
-                min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
+                    min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
 
         value_losses = []
         if not discrete:
@@ -435,19 +437,16 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.network_body.copy_normalization(
             self.policy.actor_critic.network_body
         )
-        (
-            sampled_actions,
-            log_probs,
-            entropies,
-            sampled_values,
-            _,
-        ) = self.policy.sample_actions(
+        (sampled_actions, log_probs, _, _) = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
             all_log_probs=not self.policy.use_continuous_act,
+        )
+        value_estimates, _ = self.policy.actor_critic.critic_pass(
+            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
         )
         if self.policy.use_continuous_act:
             squeezed_actions = actions.squeeze(-1)
@@ -498,7 +497,7 @@ class TorchSACOptimizer(TorchOptimizer):
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
         value_loss = self.sac_value_loss(
-            log_probs, sampled_values, q1p_out, q2p_out, masks, use_discrete
+            log_probs, value_estimates, q1p_out, q2p_out, masks, use_discrete
         )
         policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
         entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
@@ -522,7 +521,9 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer.step()
 
         # Update target network
-        self.soft_update(self.policy.actor_critic.critic, self.target_network, self.tau)
+        ModelUtils.soft_update(
+            self.policy.actor_critic.critic, self.target_network, self.tau
+        )
         update_stats = {
             "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": value_loss.item(),
