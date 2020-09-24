@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 
-namespace Unity.MLAgentsExamples
+
+namespace Unity.MLAgents.Extensions.Match3
 {
     public class Match3Actuator : IActuator
     {
@@ -63,38 +63,6 @@ namespace Unity.MLAgentsExamples
                 {
                     yield return i;
                 }
-            }
-        }
-    }
-
-    public class Match3ActuatorComponent : ActuatorComponent
-    {
-        public Match3Agent Agent;
-        public bool ForceRandom = false;
-        public override IActuator CreateActuator()
-        {
-            var randomSeed = 0;
-            if (ForceRandom)
-            {
-                randomSeed = this.gameObject.GetInstanceID();
-            }
-
-            var board = GetComponent<AbstractBoard>();
-            return new Match3Actuator(Agent.Board, ForceRandom, randomSeed);
-        }
-
-        public override ActionSpec ActionSpec
-        {
-            get
-            {
-                var board = GetComponent<AbstractBoard>();
-                if (board == null)
-                {
-                    return ActionSpec.MakeContinuous(0);
-                }
-
-                var numMoves = Move.NumEdgeIndices(board.Rows, board.Columns);
-                return ActionSpec.MakeDiscrete(numMoves);
             }
         }
     }
