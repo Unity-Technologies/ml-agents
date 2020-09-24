@@ -9,6 +9,7 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
+    public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
 
@@ -21,10 +22,13 @@ public class Ball3DAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(gameObject.transform.rotation.z);
-        sensor.AddObservation(gameObject.transform.rotation.x);
-        sensor.AddObservation(ball.transform.position - gameObject.transform.position);
-        sensor.AddObservation(m_BallRb.velocity);
+        if (useVecObs)
+        {
+            sensor.AddObservation(gameObject.transform.rotation.z);
+            sensor.AddObservation(gameObject.transform.rotation.x);
+            sensor.AddObservation(ball.transform.position - gameObject.transform.position);
+            sensor.AddObservation(m_BallRb.velocity);
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
