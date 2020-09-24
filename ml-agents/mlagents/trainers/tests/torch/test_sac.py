@@ -1,11 +1,11 @@
 import pytest
-import copy
 from mlagents.torch_utils import torch
+import attr
 
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.settings import NetworkSettings, FrameworkType
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
     SAC_CONFIG,
     curiosity_dummy_config,
@@ -14,7 +14,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disabl
 
 @pytest.fixture
 def dummy_config():
-    return copy.deepcopy(SAC_CONFIG)
+    return attr.evolve(SAC_CONFIG, framework=FrameworkType.PYTORCH)
 
 
 VECTOR_ACTION_SPACE = 2

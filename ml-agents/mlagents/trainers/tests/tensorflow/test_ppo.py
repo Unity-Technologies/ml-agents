@@ -3,7 +3,6 @@ import pytest
 
 import numpy as np
 from mlagents.tf_utils import tf
-import copy
 import attr
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 
@@ -24,7 +23,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disabl
 
 @pytest.fixture
 def dummy_config():
-    return copy.deepcopy(attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW))
+    return attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
 
 
 VECTOR_ACTION_SPACE = 2
@@ -200,9 +199,7 @@ def test_rl_functions():
 @mock.patch.object(RLTrainer, "create_model_saver")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
 def test_trainer_increment_step(ppo_optimizer, mock_create_model_saver):
-    trainer_params = copy.deepcopy(
-        attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
-    )
+    trainer_params = attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer

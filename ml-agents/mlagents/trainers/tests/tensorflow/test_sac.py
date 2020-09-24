@@ -1,6 +1,5 @@
 import pytest
 from unittest import mock
-import copy
 import attr
 
 from mlagents.tf_utils import tf
@@ -23,7 +22,7 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disabl
 
 @pytest.fixture
 def dummy_config():
-    return copy.deepcopy(attr.evolve(SAC_CONFIG, framework=FrameworkType.TENSORFLOW))
+    return attr.evolve(SAC_CONFIG, framework=FrameworkType.TENSORFLOW)
 
 
 VECTOR_ACTION_SPACE = 2
