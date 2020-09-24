@@ -16,17 +16,12 @@ from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents.trainers.settings import (
-    TrainerSettings,
-    PPOSettings,
-    SACSettings,
     NetworkSettings,
     SelfPlaySettings,
     BehavioralCloningSettings,
     GAILSettings,
-    TrainerType,
     RewardSignalType,
     EncoderType,
-    ScheduleType,
     FrameworkType,
 )
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
@@ -39,40 +34,9 @@ from mlagents_envs.communicator_objects.demonstration_meta_pb2 import (
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 from mlagents_envs.communicator_objects.space_type_pb2 import discrete, continuous
 
+from mlagents.trainers.tests.dummy_config import PPO_CONFIG, SAC_CONFIG
+
 BRAIN_NAME = "1D"
-
-
-PPO_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.PPO,
-    hyperparameters=PPOSettings(
-        learning_rate=5.0e-3,
-        learning_rate_schedule=ScheduleType.CONSTANT,
-        batch_size=16,
-        buffer_size=64,
-    ),
-    network_settings=NetworkSettings(num_layers=1, hidden_units=32),
-    summary_freq=500,
-    max_steps=3000,
-    threaded=False,
-    framework=FrameworkType.TENSORFLOW,
-)
-
-SAC_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.SAC,
-    hyperparameters=SACSettings(
-        learning_rate=5.0e-3,
-        learning_rate_schedule=ScheduleType.CONSTANT,
-        batch_size=8,
-        buffer_init_steps=100,
-        buffer_size=5000,
-        tau=0.01,
-        init_entcoef=0.01,
-    ),
-    network_settings=NetworkSettings(num_layers=1, hidden_units=16),
-    summary_freq=100,
-    max_steps=1000,
-    threaded=False,
-)
 
 
 # The reward processor is passed as an argument to _check_environment_trains.
@@ -160,7 +124,7 @@ def _check_environment_trains(
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_ppo(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    config = attr.evolve(PPO_CONFIG)
+    config = attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -172,7 +136,12 @@ def test_2d_ppo(use_discrete):
     new_hyperparams = attr.evolve(
         PPO_CONFIG.hyperparameters, batch_size=64, buffer_size=640
     )
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    config = attr.evolve(
+        PPO_CONFIG,
+        hyperparameters=new_hyperparams,
+        max_steps=10000,
+        framework=FrameworkType.TENSORFLOW,
+    )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -187,7 +156,9 @@ def test_visual_ppo(num_visual, use_discrete):
         step_size=0.2,
     )
     new_hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3.0e-4)
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams)
+    config = attr.evolve(
+        PPO_CONFIG, hyperparameters=new_hyperparams, framework=FrameworkType.TENSORFLOW
+    )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -212,6 +183,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         network_settings=new_networksettings,
         max_steps=500,
         summary_freq=100,
+        framework=FrameworkType.TENSORFLOW,
     )
     # The number of steps is pretty small for these encoders
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
@@ -232,6 +204,7 @@ def test_recurrent_ppo(use_discrete):
         hyperparameters=new_hyperparams,
         network_settings=new_network_settings,
         max_steps=5000,
+        framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
@@ -239,7 +212,7 @@ def test_recurrent_ppo(use_discrete):
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_simple_sac(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-    config = attr.evolve(SAC_CONFIG)
+    config = attr.evolve(SAC_CONFIG, framework=FrameworkType.TENSORFLOW)
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -249,7 +222,12 @@ def test_2d_sac(use_discrete):
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
     )
     new_hyperparams = attr.evolve(SAC_CONFIG.hyperparameters, buffer_init_steps=2000)
-    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    config = attr.evolve(
+        SAC_CONFIG,
+        hyperparameters=new_hyperparams,
+        max_steps=10000,
+        framework=FrameworkType.TENSORFLOW,
+    )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 
 
@@ -266,7 +244,9 @@ def test_visual_sac(num_visual, use_discrete):
     new_hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters, batch_size=16, learning_rate=3e-4
     )
-    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams)
+    config = attr.evolve(
+        SAC_CONFIG, hyperparameters=new_hyperparams, framework=FrameworkType.TENSORFLOW
+    )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -295,6 +275,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
         max_steps=100,
+        framework=FrameworkType.TENSORFLOW,
     )
     # The number of steps is pretty small for these encoders
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
@@ -322,6 +303,7 @@ def test_recurrent_sac(use_discrete):
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
         max_steps=5000,
+        framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
@@ -334,7 +316,12 @@ def test_simple_ghost(use_discrete):
     self_play_settings = SelfPlaySettings(
         play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=2000
     )
-    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2500)
+    config = attr.evolve(
+        PPO_CONFIG,
+        self_play=self_play_settings,
+        max_steps=2500,
+        framework=FrameworkType.TENSORFLOW,
+    )
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -348,7 +335,12 @@ def test_simple_ghost_fails(use_discrete):
     self_play_settings = SelfPlaySettings(
         play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=4000
     )
-    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2500)
+    config = attr.evolve(
+        PPO_CONFIG,
+        self_play=self_play_settings,
+        max_steps=2500,
+        framework=FrameworkType.TENSORFLOW,
+    )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=None)
     processed_rewards = [
         default_reward_processor(rewards) for rewards in env.final_rewards.values()
@@ -372,7 +364,12 @@ def test_simple_asymm_ghost(use_discrete):
         swap_steps=10000,
         team_change=400,
     )
-    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=4000)
+    config = attr.evolve(
+        PPO_CONFIG,
+        self_play=self_play_settings,
+        max_steps=4000,
+        framework=FrameworkType.TENSORFLOW,
+    )
     _check_environment_trains(env, {BRAIN_NAME: config, brain_name_opp: config})
 
 
@@ -391,7 +388,12 @@ def test_simple_asymm_ghost_fails(use_discrete):
         swap_steps=5000,
         team_change=2000,
     )
-    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=3000)
+    config = attr.evolve(
+        PPO_CONFIG,
+        self_play=self_play_settings,
+        max_steps=3000,
+        framework=FrameworkType.TENSORFLOW,
+    )
     _check_environment_trains(
         env, {BRAIN_NAME: config, brain_name_opp: config}, success_threshold=None
     )
@@ -449,6 +451,7 @@ def test_gail(simple_record, use_discrete, trainer_config):
         reward_signals=reward_signals,
         behavioral_cloning=bc_settings,
         max_steps=500,
+        framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
@@ -474,6 +477,7 @@ def test_gail_visual_ppo(simple_record, use_discrete):
         hyperparameters=hyperparams,
         behavioral_cloning=bc_settings,
         max_steps=1000,
+        framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 
@@ -501,5 +505,6 @@ def test_gail_visual_sac(simple_record, use_discrete):
         hyperparameters=hyperparams,
         behavioral_cloning=bc_settings,
         max_steps=500,
+        framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)

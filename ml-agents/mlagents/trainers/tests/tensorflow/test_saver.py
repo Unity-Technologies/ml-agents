@@ -11,7 +11,7 @@ from mlagents.trainers import __version__
 from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.tests.test_nn_policy import create_policy_mock
+from mlagents.trainers.tests.tensorflow.test_nn_policy import create_policy_mock
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 

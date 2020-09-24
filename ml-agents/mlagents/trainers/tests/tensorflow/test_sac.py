@@ -1,6 +1,7 @@
 import pytest
 from unittest import mock
 import copy
+import attr
 
 from mlagents.tf_utils import tf
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
@@ -13,16 +14,16 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.mock_brain import setup_test_behavior_specs
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.tests.test_simple_rl import SAC_CONFIG
-from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.settings import NetworkSettings, FrameworkType
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
     curiosity_dummy_config,
+    SAC_CONFIG,
 )
 
 
 @pytest.fixture
 def dummy_config():
-    return copy.deepcopy(SAC_CONFIG)
+    return copy.deepcopy(attr.evolve(SAC_CONFIG, framework=FrameworkType.TENSORFLOW))
 
 
 VECTOR_ACTION_SPACE = 2

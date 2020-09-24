@@ -8,7 +8,7 @@ from mlagents.trainers.cli_utils import load_config, _load_config
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
 from mlagents.trainers.settings import RunOptions
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
+from mlagents.trainers.tests.dummy_config import PPO_CONFIG
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 
 

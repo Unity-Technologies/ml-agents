@@ -14,9 +14,9 @@ from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
-from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.settings import NetworkSettings, FrameworkType
+from mlagents.trainers.tests.dummy_config import PPO_CONFIG
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
     curiosity_dummy_config,
     gail_dummy_config,
 )
@@ -24,7 +24,7 @@ from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint:
 
 @pytest.fixture
 def dummy_config():
-    return copy.deepcopy(PPO_CONFIG)
+    return copy.deepcopy(attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW))
 
 
 VECTOR_ACTION_SPACE = 2
@@ -44,7 +44,7 @@ def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visu
         vector_obs_space=VECTOR_OBS_SPACE,
     )
 
-    trainer_settings = attr.evolve(dummy_config)
+    trainer_settings = attr.evolve(dummy_config, framework=FrameworkType.TENSORFLOW)
     trainer_settings.network_settings.memory = (
         NetworkSettings.MemorySettings(sequence_length=16, memory_size=10)
         if use_rnn
@@ -200,7 +200,9 @@ def test_rl_functions():
 @mock.patch.object(RLTrainer, "create_model_saver")
 @mock.patch("mlagents.trainers.ppo.trainer.PPOOptimizer")
 def test_trainer_increment_step(ppo_optimizer, mock_create_model_saver):
-    trainer_params = PPO_CONFIG
+    trainer_params = copy.deepcopy(
+        attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW)
+    )
     mock_optimizer = mock.Mock()
     mock_optimizer.reward_signals = {}
     ppo_optimizer.return_value = mock_optimizer

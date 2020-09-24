@@ -10,8 +10,8 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
-from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
+    PPO_CONFIG,
     curiosity_dummy_config,
     gail_dummy_config,
 )

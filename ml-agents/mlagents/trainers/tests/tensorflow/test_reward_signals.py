@@ -1,11 +1,17 @@
 import pytest
 import copy
-import os
+import attr
+
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.sac.optimizer_tf import SACOptimizer
 from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG, SAC_CONFIG
+from mlagents.trainers.tests.dummy_config import (
+    PPO_CONFIG,
+    SAC_CONFIG,
+    DISCRETE_DEMO_PATH,
+    CONTINUOUS_DEMO_PATH,
+)
 from mlagents.trainers.settings import (
     GAILSettings,
     CuriositySettings,
@@ -14,23 +20,21 @@ from mlagents.trainers.settings import (
     NetworkSettings,
     TrainerType,
     RewardSignalType,
+    FrameworkType,
 )
-
-CONTINUOUS_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
-DISCRETE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
 
 
 def ppo_dummy_config():
-    return copy.deepcopy(PPO_CONFIG)
+    return copy.deepcopy(attr.evolve(PPO_CONFIG, framework=FrameworkType.TENSORFLOW))
 
 
 def sac_dummy_config():
-    return copy.deepcopy(SAC_CONFIG)
+    return copy.deepcopy(attr.evolve(SAC_CONFIG, framework=FrameworkType.TENSORFLOW))
 
 
 @pytest.fixture
 def gail_dummy_config():
-    return {RewardSignalType.GAIL: GAILSettings(demo_path=CONTINUOUS_PATH)}
+    return {RewardSignalType.GAIL: GAILSettings(demo_path=CONTINUOUS_DEMO_PATH)}
 
 
 @pytest.fixture
@@ -104,7 +108,7 @@ def reward_signal_update(optimizer, reward_signal_name):
 )
 def test_gail_cc(trainer_config, gail_dummy_config):
     trainer_config.behavioral_cloning = BehavioralCloningSettings(
-        demo_path=CONTINUOUS_PATH
+        demo_path=CONTINUOUS_DEMO_PATH
     )
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config, False, False, False
@@ -118,7 +122,7 @@ def test_gail_cc(trainer_config, gail_dummy_config):
 )
 def test_gail_dc_visual(trainer_config, gail_dummy_config):
     gail_dummy_config_discrete = {
-        RewardSignalType.GAIL: GAILSettings(demo_path=DISCRETE_PATH)
+        RewardSignalType.GAIL: GAILSettings(demo_path=DISCRETE_DEMO_PATH)
     }
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config_discrete, False, True, True
