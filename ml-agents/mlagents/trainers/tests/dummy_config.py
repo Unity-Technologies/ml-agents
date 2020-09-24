@@ -17,7 +17,7 @@ from mlagents.trainers.settings import (
 CONTINUOUS_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
 DISCRETE_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
 
-PPO_CONFIG = TrainerSettings(
+_PPO_CONFIG = TrainerSettings(
     trainer_type=TrainerType.PPO,
     hyperparameters=PPOSettings(
         learning_rate=5.0e-3,
@@ -31,7 +31,7 @@ PPO_CONFIG = TrainerSettings(
     threaded=False,
 )
 
-SAC_CONFIG = TrainerSettings(
+_SAC_CONFIG = TrainerSettings(
     trainer_type=TrainerType.SAC,
     hyperparameters=SACSettings(
         learning_rate=5.0e-3,
@@ -50,11 +50,11 @@ SAC_CONFIG = TrainerSettings(
 
 
 def ppo_dummy_config():
-    return copy.deepcopy(PPO_CONFIG)
+    return copy.deepcopy(_PPO_CONFIG)
 
 
 def sac_dummy_config():
-    return copy.deepcopy(SAC_CONFIG)
+    return copy.deepcopy(_SAC_CONFIG)
 
 
 @pytest.fixture

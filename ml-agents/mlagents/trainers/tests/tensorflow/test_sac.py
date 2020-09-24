@@ -16,13 +16,13 @@ from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
 from mlagents.trainers.settings import NetworkSettings, FrameworkType
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
     curiosity_dummy_config,
-    SAC_CONFIG,
+    sac_dummy_config,
 )
 
 
 @pytest.fixture
 def dummy_config():
-    return attr.evolve(SAC_CONFIG, framework=FrameworkType.TENSORFLOW)
+    return attr.evolve(sac_dummy_config(), framework=FrameworkType.TENSORFLOW)
 
 
 VECTOR_ACTION_SPACE = 2
