@@ -92,5 +92,5 @@ except pkg_resources.DistributionNotFound:
 assert torch_pkg is not None and LooseVersion(torch_pkg.version) >= LooseVersion(
     "1.6.0"
 ), "A compatible version of PyTorch was not installed. Please visit the PyTorch homepage \
-    (https://pytorch.org/get-started/locally/) and follow the instructions to install. \
-    Version 1.6.0 and later are supported."
+(https://pytorch.org/get-started/locally/) and follow the instructions to install. \
+Version 1.6.0 and later are supported."
