@@ -13,7 +13,9 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.components.reward_signals import RewardSignalResult, RewardSignal
+from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+    BaseRewardProvider,
+)
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
@@ -35,8 +37,6 @@ if tf_utils.is_available():
 else:
     TFPolicy = None  # type: ignore
     TFModelSaver = None  # type: ignore
-
-RewardSignalResults = Dict[str, RewardSignalResult]
 
 logger = get_logger(__name__)
 
@@ -94,14 +94,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                 self.reward_buffer.appendleft(rewards.get(agent_id, 0))
                 rewards[agent_id] = 0
             else:
-                if isinstance(optimizer.reward_signals[name], RewardSignal):
+                if isinstance(optimizer.reward_signals[name], BaseRewardProvider):
                     self.stats_reporter.add_stat(
-                        optimizer.reward_signals[name].stat_name,
+                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
                         rewards.get(agent_id, 0),
                     )
                 else:
                     self.stats_reporter.add_stat(
-                        f"Policy/{optimizer.reward_signals[name].name.capitalize()} Reward",
+                        optimizer.reward_signals[name].stat_name,
                         rewards.get(agent_id, 0),
                     )
                 rewards[agent_id] = 0

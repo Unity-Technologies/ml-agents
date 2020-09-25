@@ -167,7 +167,8 @@ class TrainerController:
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_output_path(self.output_path)
-        tf.reset_default_graph()
+        if tf_utils.is_available():
+            tf.reset_default_graph()
         try:
             # Initial reset
             self._reset_env(env_manager)
