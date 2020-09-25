@@ -5,11 +5,12 @@ import numpy as np
 import abc
 import os
 import time
+import yaml
 from threading import RLock
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
-from mlagents.tf_utils import tf, generate_session_config
+from torch.utils.tensorboard import SummaryWriter
 from mlagents.tf_utils.globals import get_rank
 
 
@@ -162,7 +163,7 @@ class TensorboardWriter(StatsWriter):
         :param clear_past_data: Whether or not to clean up existing Tensorboard files associated with the base_dir and
             category.
         """
-        self.summary_writers: Dict[str, tf.summary.FileWriter] = {}
+        self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
 
@@ -171,9 +172,7 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
-            summary = tf.Summary()
-            summary.value.add(tag=f"{key}", simple_value=value.mean)
-            self.summary_writers[category].add_summary(summary, step)
+            self.summary_writers[category].add_scalar(f"{key}", value.mean, step)
             self.summary_writers[category].flush()
 
     def _maybe_create_summary_writer(self, category: str) -> None:
@@ -184,7 +183,7 @@ class TensorboardWriter(StatsWriter):
             os.makedirs(filewriter_dir, exist_ok=True)
             if self._clear_past_data:
                 self._delete_all_events_files(filewriter_dir)
-            self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
+            self.summary_writers[category] = SummaryWriter(filewriter_dir)
 
     def _delete_all_events_files(self, directory_name: str) -> None:
         for file_name in os.listdir(directory_name):
@@ -209,26 +208,23 @@ class TensorboardWriter(StatsWriter):
             summary = self._dict_to_tensorboard("Hyperparameters", value)
             self._maybe_create_summary_writer(category)
             if summary is not None:
-                self.summary_writers[category].add_summary(summary, 0)
+                self.summary_writers[category].add_text("Hyperparameters", summary)
+                self.summary_writers[category].flush()
 
     def _dict_to_tensorboard(
         self, name: str, input_dict: Dict[str, Any]
-    ) -> Optional[bytes]:
+    ) -> Optional[str]:
         """
-        Convert a dict to a Tensorboard-encoded string.
+        Convert a dict to a Markdown string.
         :param name: The name of the text.
         :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
         """
         try:
-            with tf.Session(config=generate_session_config()) as sess:
-                s_op = tf.summary.text(
-                    name,
-                    tf.convert_to_tensor(
-                        [[str(x), str(input_dict[x])] for x in input_dict]
-                    ),
-                )
-                s = sess.run(s_op)
-                return s
+            output_string = yaml.dump(input_dict, line_break="\n")
+            # Need to add extra spaces and tab to make it display roperly in markdown
+            markdown_str = output_string.replace("\n", "\n   \t")
+            # need one more tab at the beginning
+            return f"\t{markdown_str}"
         except Exception:
             logger.warning(
                 f"Could not write {name} summary for Tensorboard: {input_dict}"
