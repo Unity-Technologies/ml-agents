@@ -30,7 +30,7 @@ public class FoodCollectorAgent : Agent
     public GameObject myLaser;
     public bool contribute;
     public bool useVectorObs;
-    public bool useForzenFlag;
+    public bool useFrozenFlag;
 
     EnvironmentParameters m_ResetParams;
 
@@ -53,7 +53,7 @@ public class FoodCollectorAgent : Agent
             sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_Shoot);
         }
-        else if (useForzenFlag)
+        else if (useFrozenFlag)
         {
             sensor.AddObservation(m_Frozen);
         }
