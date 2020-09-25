@@ -1,11 +1,10 @@
 from collections import defaultdict
 from enum import Enum
-from typing import List, Dict, NamedTuple, Any, Optional
+from typing import List, Dict, NamedTuple, Any
 import numpy as np
 import abc
 import os
 import time
-import yaml
 from threading import RLock
 
 from mlagents_envs.logging_util import get_logger
@@ -15,6 +14,27 @@ from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
+
+
+def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
+    """
+    Takes a parameter dictionary and converts it to a human-readable string.
+    Recurses if there are multiple levels of dict. Used to print out hyperparameters.
+    param: param_dict: A Dictionary of key, value parameters.
+    return: A string version of this dictionary.
+    """
+    if not isinstance(param_dict, dict):
+        return str(param_dict)
+    else:
+        append_newline = "\n" if num_tabs > 0 else ""
+        return append_newline + "\n".join(
+            [
+                "\t"
+                + "  " * num_tabs
+                + "{}:\t{}".format(x, _dict_to_str(param_dict[x], num_tabs + 1))
+                for x in param_dict
+            ]
+        )
 
 
 class StatsSummary(NamedTuple):
@@ -124,34 +144,12 @@ class ConsoleWriter(StatsWriter):
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             logger.info(
                 """Hyperparameters for behavior name {}: \n{}""".format(
-                    category, self._dict_to_str(value, 0)
+                    category, _dict_to_str(value, 0)
                 )
             )
         elif property_type == StatsPropertyType.SELF_PLAY:
             assert isinstance(value, bool)
             self.self_play = value
-
-    def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
-        """
-        Takes a parameter dictionary and converts it to a human-readable string.
-        Recurses if there are multiple levels of dict. Used to print out hyperparameters.
-        param: param_dict: A Dictionary of key, value parameters.
-        return: A string version of this dictionary.
-        """
-        if not isinstance(param_dict, dict):
-            return str(param_dict)
-        else:
-            append_newline = "\n" if num_tabs > 0 else ""
-            return append_newline + "\n".join(
-                [
-                    "\t"
-                    + "  " * num_tabs
-                    + "{}:\t{}".format(
-                        x, self._dict_to_str(param_dict[x], num_tabs + 1)
-                    )
-                    for x in param_dict
-                ]
-            )
 
 
 class TensorboardWriter(StatsWriter):
@@ -205,31 +203,11 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             assert isinstance(value, dict)
-            summary = self._dict_to_tensorboard("Hyperparameters", value)
+            summary = _dict_to_str(value, 0)
             self._maybe_create_summary_writer(category)
             if summary is not None:
                 self.summary_writers[category].add_text("Hyperparameters", summary)
                 self.summary_writers[category].flush()
-
-    def _dict_to_tensorboard(
-        self, name: str, input_dict: Dict[str, Any]
-    ) -> Optional[str]:
-        """
-        Convert a dict to a Markdown string.
-        :param name: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            output_string = yaml.dump(input_dict, line_break="\n")
-            # Need to add extra spaces and tab to make it display roperly in markdown
-            markdown_str = output_string.replace("\n", "\n   \t")
-            # need one more tab at the beginning
-            return f"\t{markdown_str}"
-        except Exception:
-            logger.warning(
-                f"Could not write {name} summary for Tensorboard: {input_dict}"
-            )
-            return None
 
 
 class StatsReporter:
