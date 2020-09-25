@@ -401,7 +401,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 500
+  MaxStep: 0
   Board: {fileID: 0}
   MoveTime: 0.25
 --- !u!114 &1739664301

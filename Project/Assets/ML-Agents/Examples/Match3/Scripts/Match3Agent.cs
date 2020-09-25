@@ -1,10 +1,7 @@
 using System;
-using System.Security.Principal;
+using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using UnityEditor;
-using UnityEngine;
-using UnityEngine.EventSystems;
 using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
@@ -29,9 +26,11 @@ namespace Unity.MLAgentsExamples
         public Match3Board Board;
 
         public float MoveTime = 1.0f;
+        public int MaxMoves = 500;
 
-        State m_CurrentState = State.FindMatches;
+        State m_CurrentState = State.WaitForMove;
         float m_TimeUntilMove;
+        private int m_MovesMade;
 
         private bool[] m_ValidMoves;
         private System.Random m_Random;
@@ -51,6 +50,7 @@ namespace Unity.MLAgentsExamples
             Board.InitSettled();
             m_CurrentState = State.FindMatches;
             m_TimeUntilMove = MoveTime;
+            m_MovesMade = 0;
         }
 
         private void FixedUpdate()
@@ -62,6 +62,14 @@ namespace Unity.MLAgentsExamples
             else
             {
                 AnimatedUpdate();
+            }
+
+            // We can't use the normal MaxSteps system to decide when to end an episode,
+            // since different agents will make moves at different frequencies (depending on the number of
+            // chained moves). So track a number of moves per Agent and manually interrupt the episode.
+            if (m_MovesMade >= MaxMoves)
+            {
+                EpisodeInterrupted();
             }
         }
 
@@ -110,6 +118,10 @@ namespace Unity.MLAgentsExamples
                 case State.FindMatches:
                     var hasMatched = Board.MarkMatchedCells();
                     nextState = hasMatched ? State.ClearMatched : State.WaitForMove;
+                    if (nextState == State.WaitForMove)
+                    {
+                        m_MovesMade++;
+                    }
                     break;
                 case State.ClearMatched:
                     var numMatched = Board.ClearMatchedCells();

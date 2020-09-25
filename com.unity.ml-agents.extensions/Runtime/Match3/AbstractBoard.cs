@@ -101,7 +101,6 @@ namespace Unity.MLAgents.Extensions.Match3
 
             if ((matchedUp + matchedDown >= 2) || (matchedLeft + matchedRight >= 2))
             {
-                // TODO account for L-shaped?
                 return true;
             }
 

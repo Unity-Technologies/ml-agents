@@ -1,5 +1,3 @@
-using System;
-using UnityEngine;
 using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
@@ -10,7 +8,7 @@ namespace Unity.MLAgentsExamples
     {
         public int RandomSeed = 1337;
 
-        const int k_EmptyCell = -1;
+        public const int k_EmptyCell = -1;
 
         int[,] m_Cells;
         bool[,] m_Matched;
@@ -49,6 +47,11 @@ namespace Unity.MLAgentsExamples
 
         public override bool IsMoveValid(Move m)
         {
+            if (m_Cells == null)
+            {
+                return false;
+            }
+
             return SimpleIsMoveValid(m);
         }
 
