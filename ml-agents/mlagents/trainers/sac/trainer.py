@@ -12,22 +12,22 @@ from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.sac.optimizer_tf import SACOptimizer
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
 from mlagents.trainers.components.reward_signals import RewardSignal
-from mlagents import torch_utils
+from mlagents import tf_utils
 
-if torch_utils.is_available():
-    from mlagents.trainers.policy.torch_policy import TorchPolicy
-    from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
+if tf_utils.is_available():
+    from mlagents.trainers.policy.tf_policy import TFPolicy
+    from mlagents.trainers.sac.optimizer_tf import SACOptimizer
 else:
-    TorchPolicy = None  # type: ignore
-    TorchSACOptimizer = None  # type: ignore
+    TFPolicy = None  # type: ignore
+    SACOptimizer = None  # type: ignore
 
 logger = get_logger(__name__)
 
@@ -71,7 +71,7 @@ class SACTrainer(RLTrainer):
 
         self.seed = seed
         self.policy: Policy = None  # type: ignore
-        self.optimizer: SACOptimizer = None  # type: ignore
+        self.optimizer: TorchSACOptimizer = None  # type: ignore
         self.hyperparameters: SACSettings = cast(
             SACSettings, trainer_settings.hyperparameters
         )
@@ -378,7 +378,7 @@ class SACTrainer(RLTrainer):
             for stat, stat_list in batch_update_stats.items():
                 self._stats_reporter.add_stat(stat, np.mean(stat_list))
 
-    def create_sac_optimizer(self) -> SACOptimizer:
+    def create_sac_optimizer(self) -> TorchSACOptimizer:
         if self.framework == FrameworkType.PYTORCH:
             return TorchSACOptimizer(  # type: ignore
                 cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore

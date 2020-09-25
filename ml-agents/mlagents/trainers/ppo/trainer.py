@@ -11,20 +11,20 @@ from mlagents_envs.logging_util import get_logger
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.policy import Policy
-from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
+from mlagents.trainers.policy.torch_policy import TorchPolicy
+from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
 from mlagents.trainers.components.reward_signals import RewardSignal
-from mlagents import torch_utils
+from mlagents import tf_utils
 
-if torch_utils.is_available():
-    from mlagents.trainers.policy.torch_policy import TorchPolicy
-    from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
+if tf_utils.is_available():
+    from mlagents.trainers.policy.tf_policy import TFPolicy
+    from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 else:
-    TorchPolicy = None  # type: ignore
-    TorchPPOOptimizer = None  # type: ignore
+    TFPolicy = None  # type: ignore
+    PPOOptimizer = None  # type: ignore
 
 
 logger = get_logger(__name__)
