@@ -1,5 +1,7 @@
 import os
 import sys
+import pkg_resources
+from distutils.version import LooseVersion
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
@@ -63,8 +65,8 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
-        # Windows ver. of PyTorch doesn't work from PyPi, use PyTorch server
-        "torch>=1.6.0",
+        # Windows ver. of PyTorch doesn't work from PyPi
+        'torch>=1.6.0;platform_system!="Windows"',
         "cattrs>=1.0.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
@@ -79,3 +81,16 @@ setup(
     cmdclass={"verify": VerifyVersionCommand},
     extras_require={"tensorflow": ["tensorflow>=1.14,<3.0", "six>=1.12.0"]},
 )
+
+# Check that torch version 1.6.0 or later has been installed. If not, refer
+# user to the PyTorch webpage for install instructions.
+torch_pkg = None
+try:
+    torch_pkg = pkg_resources.get_distribution("torch")
+except pkg_resources.DistributionNotFound:
+    pass
+assert torch_pkg is not None and LooseVersion(torch_pkg.version) >= LooseVersion(
+    "1.6.0"
+), "A compatible version of PyTorch was not installed. Please visit the PyTorch homepage \
+    (https://pytorch.org/get-started/locally/) and follow the instructions to install. \
+    Version 1.6.0 and later are supported."
