@@ -25,15 +25,15 @@ namespace Unity.MLAgents.CommunicatorObjects {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CjVtbGFnZW50c19lbnZzL2NvbW11bmljYXRvcl9vYmplY3RzL2NhcGFiaWxp",
-            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMieAoYVW5pdHlSTENh",
+            "dGllcy5wcm90bxIUY29tbXVuaWNhdG9yX29iamVjdHMifQoYVW5pdHlSTENh",
             "cGFiaWxpdGllc1Byb3RvEhoKEmJhc2VSTENhcGFiaWxpdGllcxgBIAEoCBIj",
-            "Chtjb25jYXRlbmF0ZWRQbmdPYnNlcnZhdGlvbnMYAiABKAgSGwoTY29tcHJl",
-            "c3Npb25NYXBwaW5ncxgDIAEoCEIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVu",
-            "aWNhdG9yT2JqZWN0c2IGcHJvdG8z"));
+            "Chtjb25jYXRlbmF0ZWRQbmdPYnNlcnZhdGlvbnMYAiABKAgSIAoYY29tcHJl",
+            "c3NlZENoYW5uZWxNYXBwaW5nGAMgASgIQiWqAiJVbml0eS5NTEFnZW50cy5D",
+            "b21tdW5pY2F0b3JPYmplY3RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressionMappings" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto), global::Unity.MLAgents.CommunicatorObjects.UnityRLCapabilitiesProto.Parser, new[]{ "BaseRLCapabilities", "ConcatenatedPngObservations", "CompressedChannelMapping" }, null, null, null)
           }));
     }
     #endregion
@@ -72,7 +72,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public UnityRLCapabilitiesProto(UnityRLCapabilitiesProto other) : this() {
       baseRLCapabilities_ = other.baseRLCapabilities_;
       concatenatedPngObservations_ = other.concatenatedPngObservations_;
-      compressionMappings_ = other.compressionMappings_;
+      compressedChannelMapping_ = other.compressedChannelMapping_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -109,17 +109,17 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
     }
 
-    /// <summary>Field number for the "compressionMappings" field.</summary>
-    public const int CompressionMappingsFieldNumber = 3;
-    private bool compressionMappings_;
+    /// <summary>Field number for the "compressedChannelMapping" field.</summary>
+    public const int CompressedChannelMappingFieldNumber = 3;
+    private bool compressedChannelMapping_;
     /// <summary>
     /// compression mapping for stacking compressed observations.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool CompressionMappings {
-      get { return compressionMappings_; }
+    public bool CompressedChannelMapping {
+      get { return compressedChannelMapping_; }
       set {
-        compressionMappings_ = value;
+        compressedChannelMapping_ = value;
       }
     }
 
@@ -138,7 +138,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       }
       if (BaseRLCapabilities != other.BaseRLCapabilities) return false;
       if (ConcatenatedPngObservations != other.ConcatenatedPngObservations) return false;
-      if (CompressionMappings != other.CompressionMappings) return false;
+      if (CompressedChannelMapping != other.CompressedChannelMapping) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -147,7 +147,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       int hash = 1;
       if (BaseRLCapabilities != false) hash ^= BaseRLCapabilities.GetHashCode();
       if (ConcatenatedPngObservations != false) hash ^= ConcatenatedPngObservations.GetHashCode();
-      if (CompressionMappings != false) hash ^= CompressionMappings.GetHashCode();
+      if (CompressedChannelMapping != false) hash ^= CompressedChannelMapping.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -169,9 +169,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
         output.WriteRawTag(16);
         output.WriteBool(ConcatenatedPngObservations);
       }
-      if (CompressionMappings != false) {
+      if (CompressedChannelMapping != false) {
         output.WriteRawTag(24);
-        output.WriteBool(CompressionMappings);
+        output.WriteBool(CompressedChannelMapping);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -187,7 +187,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ConcatenatedPngObservations != false) {
         size += 1 + 1;
       }
-      if (CompressionMappings != false) {
+      if (CompressedChannelMapping != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -207,8 +207,8 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other.ConcatenatedPngObservations != false) {
         ConcatenatedPngObservations = other.ConcatenatedPngObservations;
       }
-      if (other.CompressionMappings != false) {
-        CompressionMappings = other.CompressionMappings;
+      if (other.CompressedChannelMapping != false) {
+        CompressedChannelMapping = other.CompressedChannelMapping;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -230,7 +230,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           }
           case 24: {
-            CompressionMappings = input.ReadBool();
+            CompressedChannelMapping = input.ReadBool();
             break;
           }
         }

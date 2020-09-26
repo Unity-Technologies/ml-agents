@@ -119,6 +119,7 @@ class UnityEnvironment(BaseEnv):
         capabilities = UnityRLCapabilitiesProto()
         capabilities.baseRLCapabilities = True
         capabilities.concatenatedPngObservations = True
+        capabilities.compressedChannelMapping = True
         return capabilities
 
     @staticmethod

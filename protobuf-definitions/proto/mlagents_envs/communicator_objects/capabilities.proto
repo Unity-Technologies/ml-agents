@@ -15,5 +15,5 @@ message UnityRLCapabilitiesProto {
     bool concatenatedPngObservations = 2;
 
     // compression mapping for stacking compressed observations.
-    bool compressionMappings = 3;
+    bool compressedChannelMapping = 3;
 }

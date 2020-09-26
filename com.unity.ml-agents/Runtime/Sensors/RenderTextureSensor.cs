@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor class that wraps a [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance.
     /// </summary>
-    public class RenderTextureSensor : ICompressibleSensor
+    public class RenderTextureSensor : ISparseChannelSensor
     {
         RenderTexture m_RenderTexture;
         bool m_Grayscale;
@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Sensors
             return m_CompressionType;
         }
 
-        public int[] GetCompressionMapping()
+        public int[] GetCompressedChannelMapping()
         {
             return m_CompressionMapping;
         }
