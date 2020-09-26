@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// <summary>
     /// Grid-based sensor.
     /// </summary>
-    public class GridSensor : SensorComponent, ISparseChannelSensor
+    public class GridSensor : SensorComponent, ISensor
     {
         /// <summary>
         /// Name of this grid sensor.
@@ -203,8 +203,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         private int[] m_Shape;
 
-        int[] m_CompressionMapping;
-
         //
         // Debug Parameters
         //
@@ -284,17 +282,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             this.DiffNumSideZX = (GridNumSideZ - GridNumSideX);
             this.OffsetGridNumSide = (GridNumSideZ - 1f) / 2f;
             this.DebugColors = debugColors;
-
-            if (GetCompressionType() != SensorCompressionType.None)
-            {
-                var compressChannel = 3;
-                var paddedChannel = (ObservationPerCell + compressChannel - 1) / compressChannel;  // division rounding up
-                m_CompressionMapping = new int[paddedChannel];
-                for (var i = 0; i < paddedChannel; i++)
-                {
-                    m_CompressionMapping[i] = i < ObservationPerCell ? i : -1;
-                }
-            }
         }
 
         /// <summary>
@@ -483,11 +470,6 @@ namespace Unity.MLAgents.Extensions.Sensors
         public virtual SensorCompressionType GetCompressionType()
         {
             return SensorCompressionType.PNG;
-        }
-
-        public int[] GetCompressedChannelMapping()
-        {
-            return m_CompressionMapping;
         }
 
         /// <summary>

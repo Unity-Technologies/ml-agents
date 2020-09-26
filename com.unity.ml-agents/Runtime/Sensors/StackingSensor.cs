@@ -82,34 +82,7 @@ namespace Unity.MLAgents.Sensors
                 {
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
-
-                // Construct stacked compression mapping
-                int[] wrappedMapping;
-                int wrappedNumChannel = shape[2];
-                var compressibleSensor = m_WrappedSensor as ISparseChannelSensor;
-                if (compressibleSensor != null)
-                {
-                    wrappedMapping = compressibleSensor.GetCompressedChannelMapping();
-                }
-                else if (wrappedNumChannel == 1)
-                {
-                    wrappedMapping = new int[] { 0, 0, 0 };
-                }
-                else
-                {
-                    wrappedMapping = Enumerable.Range(0, wrappedNumChannel).ToArray(); ;
-                }
-
-                int wrappedMapLength = wrappedMapping.Length;
-                m_CompressionMapping = new int[wrappedMapLength * m_NumStackedObservations];
-                for (var i = 0; i < numStackedObservations; i++)
-                {
-                    var offset = wrappedNumChannel * i;
-                    for (var j = 0; j < wrappedMapLength; j++)
-                    {
-                        m_CompressionMapping[j + wrappedMapLength * i] = wrappedMapping[j] >= 0 ? wrappedMapping[j] + offset : -1;
-                    }
-                }
+                m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
             }
         }
 
@@ -220,6 +193,37 @@ namespace Unity.MLAgents.Sensors
             int width = m_WrappedSensor.GetObservationShape()[1];
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             return texture2D.EncodeToPNG();
+        }
+
+        public int[] ConstructStackedCompressedChannelMapping(ISensor wrappedSenesor)
+        {
+            int[] wrappedMapping;
+            int wrappedNumChannel = wrappedSenesor.GetObservationShape()[2];
+            var compressibleSensor = m_WrappedSensor as ISparseChannelSensor;
+            if (compressibleSensor != null)
+            {
+                wrappedMapping = compressibleSensor.GetCompressedChannelMapping();
+            }
+            else if (wrappedNumChannel == 1)
+            {
+                wrappedMapping = new int[] { 0, 0, 0 };
+            }
+            else
+            {
+                wrappedMapping = Enumerable.Range(0, wrappedNumChannel).ToArray(); ;
+            }
+
+            int wrappedMapLength = wrappedMapping.Length;
+            var compressionMapping = new int[wrappedMapLength * m_NumStackedObservations];
+            for (var i = 0; i < m_NumStackedObservations; i++)
+            {
+                var offset = wrappedNumChannel * i;
+                for (var j = 0; j < wrappedMapLength; j++)
+                {
+                    compressionMapping[j + wrappedMapLength * i] = wrappedMapping[j] >= 0 ? wrappedMapping[j] + offset : -1;
+                }
+            }
+            return compressionMapping;
         }
     }
 }

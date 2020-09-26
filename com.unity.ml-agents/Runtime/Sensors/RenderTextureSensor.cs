@@ -5,15 +5,13 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// Sensor class that wraps a [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance.
     /// </summary>
-    public class RenderTextureSensor : ISparseChannelSensor
+    public class RenderTextureSensor : ISensor
     {
         RenderTexture m_RenderTexture;
         bool m_Grayscale;
         string m_Name;
         int[] m_Shape;
         SensorCompressionType m_CompressionType;
-
-        int[] m_CompressionMapping;
 
         /// <summary>
         /// The compression type used by the sensor.
@@ -44,18 +42,6 @@ namespace Unity.MLAgents.Sensors
             m_Name = name;
             m_Shape = new[] { height, width, grayscale ? 1 : 3 };
             m_CompressionType = compressionType;
-
-            if (m_CompressionType != SensorCompressionType.None)
-            {
-                if (m_Grayscale)
-                {
-                    m_CompressionMapping = new int[] { 0, 0, 0 };
-                }
-                else
-                {
-                    m_CompressionMapping = new int[] { 0, 1, 2 };
-                }
-            }
         }
 
         /// <inheritdoc/>
@@ -105,11 +91,6 @@ namespace Unity.MLAgents.Sensors
         public SensorCompressionType GetCompressionType()
         {
             return m_CompressionType;
-        }
-
-        public int[] GetCompressedChannelMapping()
-        {
-            return m_CompressionMapping;
         }
 
         /// <summary>

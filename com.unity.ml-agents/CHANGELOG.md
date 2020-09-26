@@ -17,14 +17,15 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
  - Stacking for compressed observations is now supported. An addtional setting
  option `Observation Stacks` is added in editor to sensor components that support
- compressed observations. An additional function `GetCompressionMapping()`is
- added to generate a mapping of the channels in compressed data to the actual
- channel after decompression, for the python side to decompress correctly. (#4476)
+ compressed observations. An new class `ISparseChannelSensor` with an
+ additional function `GetCompressedChannelMapping()`is added to generate a mapping
+ of the channels in compressed data to the actual channel after decompression,
+ for the python side to decompress correctly. (#4476)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - The Communication API was changed to 1.2.0 to indicate support for stacked
- compressed observation. A new entry `compression_mapping` is added to the proto
- to help correct decompressing. Newer versions of the package that wish to make
- use of this will also needa compatible version of the trainer. (#4476)
+ compressed observation. A new entry `compressed_channel_mapping` is added to the
+ proto to handle decompression correctly. Newer versions of the package that wish to
+ make use of this will also need a compatible version of the trainer. (#4476)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)

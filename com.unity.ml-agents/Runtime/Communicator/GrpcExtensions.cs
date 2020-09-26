@@ -255,16 +255,15 @@ namespace Unity.MLAgents
             // Check capabilities if we need mapping for compressed observations
             if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[2] > 3)
             {
-                var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
+                var trainerCanHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
                 var isTrivialMapping = IsTrivialMapping(sensor);
-                if (!trainerCanHandle && !isTrivialMapping)
+                if (!trainerCanHandleMapping && !isTrivialMapping)
                 {
                     if (!s_HaveWarnedTrainerCapabilitiesMapping)
                     {
-                        Debug.LogWarning("Attached trainer doesn't support compression mapping. " +
-                                $"No mapping will be provided for sensor {sensor.GetName()} during decompressing. " +
-                                "This could potentially cause wrong observation input to trainer especially " +
-                                "when using compressed observation with stacking or with channels not being multiple of 3.");
+                        Debug.LogWarning($"The sensor {sensor.GetName()} is using non-trivial mapping and " +
+                                "the attached trainer doesn't support compression mapping. " +
+                                "Switching to uncompressed observations.");
                         s_HaveWarnedTrainerCapabilitiesMapping = true;
                     }
                     compressionType = SensorCompressionType.None;
@@ -345,19 +344,16 @@ namespace Unity.MLAgents
             {
                 return true;
             }
-            else
+            var mapping = compressibleSensor.GetCompressedChannelMapping();
+            if (mapping == null)
             {
-                var mapping = compressibleSensor.GetCompressedChannelMapping();
-                if (mapping == null)
-                {
-                    return true;
-                }
-                var zeroMapping = new int[] { 0, 0, 0 };
-                var identityMapping = Enumerable.Range(0, sensor.GetObservationShape()[2]).ToList();
-                if (mapping.SequenceEqual(zeroMapping) || mapping.SequenceEqual(identityMapping))
-                {
-                    return true;
-                }
+                return true;
+            }
+            var zeroMapping = new int[] { 0, 0, 0 };
+            var identityMapping = Enumerable.Range(0, sensor.GetObservationShape()[2]).ToList();
+            if (mapping.SequenceEqual(zeroMapping) || mapping.SequenceEqual(identityMapping))
+            {
+                return true;
             }
             return false;
         }

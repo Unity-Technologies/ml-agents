@@ -5,7 +5,7 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor that wraps a Camera object to generate visual observations for an agent.
     /// </summary>
-    public class CameraSensor : ISparseChannelSensor
+    public class CameraSensor : ISensor
     {
         Camera m_Camera;
         int m_Width;
@@ -13,7 +13,6 @@ namespace Unity.MLAgents.Sensors
         bool m_Grayscale;
         string m_Name;
         int[] m_Shape;
-        int[] m_CompressionMapping;
         SensorCompressionType m_CompressionType;
 
         /// <summary>
@@ -54,18 +53,6 @@ namespace Unity.MLAgents.Sensors
             m_Name = name;
             m_Shape = GenerateShape(width, height, grayscale);
             m_CompressionType = compression;
-
-            if (m_CompressionType != SensorCompressionType.None)
-            {
-                if (m_Grayscale)
-                {
-                    m_CompressionMapping = new int[] { 0, 0, 0 };
-                }
-                else
-                {
-                    m_CompressionMapping = new int[] { 0, 1, 2 };
-                }
-            }
         }
 
         /// <summary>
@@ -129,11 +116,6 @@ namespace Unity.MLAgents.Sensors
         public SensorCompressionType GetCompressionType()
         {
             return m_CompressionType;
-        }
-
-        public int[] GetCompressedChannelMapping()
-        {
-            return m_CompressionMapping;
         }
 
         /// <summary>
