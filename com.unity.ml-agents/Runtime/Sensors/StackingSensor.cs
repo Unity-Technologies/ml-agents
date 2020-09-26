@@ -66,8 +66,8 @@ namespace Unity.MLAgents.Sensors
             // TODO support arbitrary stacking dimension
             m_Shape[m_Shape.Length - 1] *= numStackedObservations;
 
-            // Initialize uncompressed buffer anyway in case pythontrainer does not
-            // support the compression mapping and has to fall back to uncompressed .
+            // Initialize uncompressed buffer anyway in case python trainer does not
+            // support the compression mapping and has to fall back to uncompressed obs.
             m_StackedObservations = new float[numStackedObservations][];
             for (var i = 0; i < numStackedObservations; i++)
             {
@@ -120,14 +120,11 @@ namespace Unity.MLAgents.Sensors
         {
             m_WrappedSensor.Reset();
             // Zero out the buffer.
-            if (m_WrappedSensor.GetCompressionType() == SensorCompressionType.None)
+            for (var i = 0; i < m_NumStackedObservations; i++)
             {
-                for (var i = 0; i < m_NumStackedObservations; i++)
-                {
-                    Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
-                }
+                Array.Clear(m_StackedObservations[i], 0, m_StackedObservations[i].Length);
             }
-            else
+            if (m_WrappedSensor.GetCompressionType() != SensorCompressionType.None)
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
@@ -210,17 +207,24 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                wrappedMapping = Enumerable.Range(0, wrappedNumChannel).ToArray(); ;
+                wrappedMapping = Enumerable.Range(0, wrappedNumChannel).ToArray();
             }
 
-            int wrappedMapLength = wrappedMapping.Length;
-            var compressionMapping = new int[wrappedMapLength * m_NumStackedObservations];
+            int paddedMapLength = (wrappedMapping.Length + 2) / 3 * 3; // Pad to multiple of 3
+            var compressionMapping = new int[paddedMapLength * m_NumStackedObservations];
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
                 var offset = wrappedNumChannel * i;
-                for (var j = 0; j < wrappedMapLength; j++)
+                for (var j = 0; j < paddedMapLength; j++)
                 {
-                    compressionMapping[j + wrappedMapLength * i] = wrappedMapping[j] >= 0 ? wrappedMapping[j] + offset : -1;
+                    if (j < wrappedMapping.Length)
+                    {
+                        compressionMapping[j + paddedMapLength * i] = wrappedMapping[j] >= 0 ? wrappedMapping[j] + offset : -1;
+                    }
+                    else
+                    {
+                        compressionMapping[j + paddedMapLength * i] = -1;
+                    }
                 }
             }
             return compressionMapping;
