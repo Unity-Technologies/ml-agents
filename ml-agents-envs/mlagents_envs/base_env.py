@@ -36,6 +36,15 @@ AgentId = int
 BehaviorName = str
 
 
+class HybridAction(NamedTuple):
+    """
+    Contains continuous and discrete actions as numpy arrays.
+    """
+
+    continuous: np.ndarray
+    discrete: np.ndarray
+
+
 class DecisionStep(NamedTuple):
     """
     Contains the data a single Agent collected since the last
@@ -247,6 +256,7 @@ class TerminalSteps(Mapping):
 class ActionType(Enum):
     DISCRETE = 0
     CONTINUOUS = 1
+    HYBRID = 2
 
 
 class HybridBehaviorSpec(NamedTuple):
@@ -270,8 +280,11 @@ class HybridBehaviorSpec(NamedTuple):
     def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
         return self.discrete_action_shape  # type: ignore
 
-    def create_empty_action(self, n_agents: int) -> np.ndarray:
-        return np.zeros((n_agents, self.action_size), dtype=np.float32)
+    def create_empty_action(self, n_agents: int) -> Tuple[np.ndarray, np.ndarray]:
+        return HybridAction(
+            np.zeros((n_agents, self.continuous_action_size), dtype=np.float32),
+            np.zeros((n_agents, self.discrete_action_size), dtype=np.int32),
+        )
 
     def create_random_action(self, n_agents: int) -> np.ndarray:
         continuous_action = np.random.uniform(
@@ -290,7 +303,7 @@ class HybridBehaviorSpec(NamedTuple):
                 for i in range(self.discrete_action_size)
             ]
         )
-        return np.concatenate(discrete_action, continuous_action)
+        return HybridAction(continuous_action, discrete_action)
 
 
 class BehaviorSpec(NamedTuple):
@@ -436,7 +449,9 @@ class BaseEnv(ABC):
         """
 
     @abstractmethod
-    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+    def set_actions(
+        self, behavior_name: BehaviorName, action: Union[HybridAction, np.ndarray]
+    ) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in
@@ -448,7 +463,10 @@ class BaseEnv(ABC):
 
     @abstractmethod
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
+        self,
+        behavior_name: BehaviorName,
+        agent_id: AgentId,
+        action: Union[HybridAction, np.ndarray],
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next

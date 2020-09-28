@@ -6,9 +6,12 @@ from mlagents_envs.base_env import (
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
+    HybridBehaviorSpec,
     TerminalSteps,
     ActionType,
     BehaviorMapping,
+    BehaviorName,
+    HybridAction,
 )
 from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -212,6 +215,58 @@ class SimpleEnvironment(BaseEnv):
 
     def close(self):
         pass
+
+
+class HybridEnvironment(SimpleEnvironment):
+    def __init__(
+        self,
+        brain_names,
+        step_size=STEP_SIZE,
+        num_visual=0,
+        num_vector=1,
+        vis_obs_size=VIS_OBS_SIZE,
+        vec_obs_size=OBS_SIZE,
+        action_size=1,
+    ):
+        self.continuous_env = SimpleEnvironment(
+            brain_names,
+            False,
+            step_size,
+            num_visual,
+            num_vector,
+            vis_obs_size,
+            vec_obs_size,
+            action_size,
+        )
+        self.discrete_env = SimpleEnvironment(
+            brain_names,
+            True,
+            step_size,
+            num_visual,
+            num_vector,
+            vis_obs_size,
+            vec_obs_size,
+            action_size,
+        )
+        # Number of steps to reveal the goal for. Lower is harder. Should be
+        # less than 1/step_size to force agent to use memory
+        self.behavior_spec = HybridBehaviorSpec(
+            self._make_obs_spec(), action_size, tuple(2 for _ in range(action_size))
+        )
+        self.continuous_action = {}
+        self.discrete_action = {}
+
+    def step(self) -> None:
+        self.continuous_env.step()
+        self.discrete_env.step()
+
+    def reset(self) -> None:  # type: ignore
+        self.continuous_env.reset()
+        self.discrete_env.reset()
+
+    def set_actions(self, behavior_name: BehaviorName, action: HybridAction) -> None:
+        self.continuous_env.set_actions(action.continuous)
+        self.discrete_env.set_actions(action.discrete)
 
 
 class MemoryEnvironment(SimpleEnvironment):
