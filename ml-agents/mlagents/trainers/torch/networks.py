@@ -331,6 +331,9 @@ class SimpleActor(nn.Module, Actor):
         """
         Note: This forward() method is required for exporting to ONNX. Don't modify the inputs and outputs.
         """
+        # Barracuda prefers memories to be in format (batch, enc_size) when seq_len is 1
+        if memories is not None:
+            memories = memories.unsqueeze(1)
         dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
         if self.act_type == ActionType.CONTINUOUS:
             action_list = self.sample_action(dists)
