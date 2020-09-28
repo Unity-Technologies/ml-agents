@@ -246,7 +246,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         private List<byte[]> byteSizesBytesList;
 
-        private Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.25f);
+        private Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.55f);
 
         /// <inheritdoc/>
         public override ISensor CreateSensor()
@@ -818,6 +818,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Vector3 offset = new Vector3(0, GizmoYOffset, 0);
                 Matrix4x4 oldGizmoMatrix = Gizmos.matrix;
                 Matrix4x4 cubeTransform = Gizmos.matrix;
+                //                Matrix4x4 cubeTransform = transform.localToWorldMatrix;
                 for (int i = 0; i < NumCells; i++)
                 {
                     if (RotateToAgent)
@@ -830,7 +831,10 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     Gizmos.color = CellActivity[i];
-                    Gizmos.DrawCube(Vector3.zero, Vector3.one);
+                    //                    Gizmos.DrawCube(Vector3.zero, Vector3.one * .75f);
+                    Gizmos.DrawCube(Vector3.zero, new Vector3(.85f, .15f, .85f));
+                    //                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one * .75f);
+                    //                    Gizmos.DrawSphere(Vector3.zero, .5f);
                 }
 
                 Gizmos.matrix = oldGizmoMatrix;
