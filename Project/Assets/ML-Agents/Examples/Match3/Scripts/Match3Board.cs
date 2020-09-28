@@ -6,7 +6,7 @@ namespace Unity.MLAgentsExamples
 
     public class Match3Board : AbstractBoard
     {
-        public int RandomSeed = 1337;
+        public int RandomSeed = -1;
 
         public const int k_EmptyCell = -1;
 
@@ -20,7 +20,7 @@ namespace Unity.MLAgentsExamples
             m_Cells = new int[Columns, Rows];
             m_Matched = new bool[Columns, Rows];
 
-            m_Random = new System.Random(RandomSeed);
+            m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
 
             InitRandom();
         }

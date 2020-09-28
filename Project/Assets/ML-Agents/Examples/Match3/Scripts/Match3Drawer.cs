@@ -5,7 +5,6 @@ namespace Unity.MLAgentsExamples
 {
     public class Match3Drawer : MonoBehaviour
     {
-        public Match3Agent Agent;
         public int DebugEdgeIndex = -1;
 
         static Color[] s_Colors = new[]
@@ -52,12 +51,12 @@ namespace Unity.MLAgentsExamples
                     var pos = new Vector3(j, i, 0);
                     pos *= cubeSpacing;
 
-                    Gizmos.DrawCube(pos, cubeSize * Vector3.one);
+                    Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * Vector3.one);
 
                     Gizmos.color = Color.yellow;
                     if (board.Matched != null && board.Matched[j, i])
                     {
-                        Gizmos.DrawWireCube(pos, matchedWireframeSize * Vector3.one);
+                        Gizmos.DrawWireCube(transform.TransformPoint(pos), matchedWireframeSize * Vector3.one);
                     }
                 }
             }
@@ -81,7 +80,7 @@ namespace Unity.MLAgentsExamples
 
                 var oneQuarter = Vector3.Lerp(pos, otherPos, .25f);
                 var threeQuarters = Vector3.Lerp(pos, otherPos, .75f);
-                Gizmos.DrawLine(oneQuarter, threeQuarters);
+                Gizmos.DrawLine(transform.TransformPoint(oneQuarter), transform.TransformPoint(threeQuarters));
             }
         }
     }

@@ -16,8 +16,6 @@ namespace Unity.MLAgentsExamples
         FillEmpty = 3,
 
         WaitForMove = 4,
-
-        NumSteps = 4
     }
 
     public class Match3Agent : Agent
@@ -32,15 +30,14 @@ namespace Unity.MLAgentsExamples
         float m_TimeUntilMove;
         private int m_MovesMade;
 
-        private bool[] m_ValidMoves;
         private System.Random m_Random;
         private const float k_RewardMultiplier = 0.01f;
 
         void Awake()
         {
             Board = GetComponent<Match3Board>();
-            m_ValidMoves = new bool[Move.NumEdgeIndices(Board.Rows, Board.Columns)];
-            m_Random = new System.Random(Board.RandomSeed + 1);
+            var seed = Board.RandomSeed == -1 ? gameObject.GetInstanceID() : Board.RandomSeed + 1;
+            m_Random = new System.Random(seed);
         }
 
         public override void OnEpisodeBegin()
@@ -91,7 +88,7 @@ namespace Unity.MLAgentsExamples
             while (true)
             {
                 // Shuffle the board until we have a valid move.
-                bool hasMoves = CheckValidMoves();
+                bool hasMoves = HasValidMoves();
                 if (hasMoves)
                 {
                     break;
@@ -99,7 +96,7 @@ namespace Unity.MLAgentsExamples
                 Board.InitSettled();
             }
             RequestDecision();
-
+            m_MovesMade++;
         }
 
         void AnimatedUpdate()
@@ -140,7 +137,7 @@ namespace Unity.MLAgentsExamples
                     while (true)
                     {
                         // Shuffle the board until we have a valid move.
-                        bool hasMoves = CheckValidMoves();
+                        bool hasMoves = HasValidMoves();
                         if (hasMoves)
                         {
                             break;
@@ -158,22 +155,18 @@ namespace Unity.MLAgentsExamples
             m_CurrentState = nextState;
         }
 
-        bool CheckValidMoves()
+        bool HasValidMoves()
         {
-            int numValidMoves = 0;
-            Array.Clear(m_ValidMoves, 0, m_ValidMoves.Length);
-
             for (var index = 0; index < Move.NumEdgeIndices(Board.Rows, Board.Columns); index++)
             {
                 var move = Move.FromEdgeIndex(index, Board.Rows, Board.Columns);
                 if (Board.IsMoveValid(move))
                 {
-                    m_ValidMoves[index] = true;
-                    numValidMoves++;
+                    return true;
                 }
             }
 
-            return numValidMoves > 0;
+            return false;
         }
 
 
