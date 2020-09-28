@@ -22,24 +22,31 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public bool SimpleIsMoveValid(Move move)
         {
-            var moveVal = GetCellType(move.Row, move.Column);
-            var (otherRow, otherCol) = move.OtherCell();
-            var oppositeVal = GetCellType(otherRow, otherCol);
-
-            // Simple check - if the values are the same, don't match
-            // This might not be valid for all games
+            using (TimerStack.Instance.Scoped("SimpleIsMoveValid"))
             {
-                if (moveVal == oppositeVal)
+                var moveVal = GetCellType(move.Row, move.Column);
+                var (otherRow, otherCol) = move.OtherCell();
+                var oppositeVal = GetCellType(otherRow, otherCol);
+
+                // Simple check - if the values are the same, don't match
+                // This might not be valid for all games
                 {
-                    return false;
+                    if (moveVal == oppositeVal)
+                    {
+                        return false;
+                    }
                 }
+
+                bool moveMatches = CheckHalfMove(otherRow, otherCol, moveVal, move.Direction);
+                if (moveMatches)
+                {
+                    // early out
+                    return true;
+                }
+
+                bool otherMatches = CheckHalfMove(move.Row, move.Column, oppositeVal, move.OtherDirection());
+                return otherMatches;
             }
-
-            bool moveMatches = CheckHalfMove(otherRow, otherCol, moveVal, move.Direction);
-            bool otherMatches = CheckHalfMove(move.Row, move.Column, oppositeVal, move.OtherDirection());
-
-            // TODO early out
-            return moveMatches || otherMatches;
         }
 
         /// <summary>
@@ -114,47 +121,50 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public int GetRandomValidMoveIndex(System.Random rand)
         {
-            int numMoves = Move.NumEdgeIndices(Rows, Columns);
-            var validMoves = new bool[numMoves];
-
-            int numValidMoves = 0;
-            for (var index = 0; index < Move.NumEdgeIndices(Rows, Columns); index++)
+            using (TimerStack.Instance.Scoped("GetRandomValidMove"))
             {
-                var move = Move.FromEdgeIndex(index, Rows, Columns);
-                if (IsMoveValid(move))
+                int numMoves = Move.NumEdgeIndices(Rows, Columns);
+                var validMoves = new bool[numMoves];
+
+                int numValidMoves = 0;
+                for (var index = 0; index < Move.NumEdgeIndices(Rows, Columns); index++)
                 {
-                    validMoves[index] = true;
-                    numValidMoves++;
+                    var move = Move.FromEdgeIndex(index, Rows, Columns);
+                    if (IsMoveValid(move))
+                    {
+                        validMoves[index] = true;
+                        numValidMoves++;
+                    }
                 }
-            }
 
-            // TODO reservoir sample? More random calls, but one pass through the indices.
-            if (numValidMoves == 0)
-            {
-                Debug.Log("No valid moves");
+                // TODO reservoir sample? More random calls, but one pass through the indices.
+                if (numValidMoves == 0)
+                {
+                    Debug.Log("No valid moves");
+                    return -1;
+                }
+
+                // We'll make the n'th valid move where n in [0, numValidMoves)
+                var target = rand.Next(numValidMoves);
+                var numSkipped = 0;
+
+                for (var i = 0; i < validMoves.Length; i++)
+                {
+                    var valid = validMoves[i];
+                    if (valid)
+                    {
+                        if (numSkipped == target)
+                        {
+                            return i;
+                        }
+
+                        numSkipped++;
+                    }
+                }
+
+                // Should never reach here
                 return -1;
             }
-
-            // We'll make the n'th valid move where n in [0, numValidMoves)
-            var target = rand.Next(numValidMoves);
-            var numSkipped = 0;
-
-            for (var i = 0; i < validMoves.Length; i++)
-            {
-                var valid = validMoves[i];
-                if (valid)
-                {
-                    if (numSkipped == target)
-                    {
-                        return i;
-                    }
-
-                    numSkipped++;
-                }
-            }
-
-            // Should never reach here
-            return -1;
         }
     }
 }

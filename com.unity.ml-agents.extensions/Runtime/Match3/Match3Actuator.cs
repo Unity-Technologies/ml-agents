@@ -43,7 +43,10 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-            actionMask.WriteMask(0, InvalidMoveIndices());
+            using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
+            {
+                actionMask.WriteMask(0, InvalidMoveIndices());
+            }
         }
 
         public string Name => "Match3Actuator";// TODO pass optional name
