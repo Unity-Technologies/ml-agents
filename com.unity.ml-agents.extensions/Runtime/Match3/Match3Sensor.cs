@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.PNG;
+            return m_UseVectorObservations ? SensorCompressionType.None : SensorCompressionType.PNG;
         }
 
         public string GetName()
