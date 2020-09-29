@@ -73,7 +73,8 @@ class TorchPolicy(Policy):
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
             act_type=behavior_spec.action_type,
-            act_size=self.act_size,
+            continuous_act_size=self.continuous_act_size,
+            discrete_act_size=self.discrete_act_size,
             stream_names=reward_signal_names,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
@@ -115,6 +116,20 @@ class TorchPolicy(Policy):
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
+    def get_actions_and_stats(dists : List[DistInstance]):
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        action_list = self.actor_critic.sample_action(dists)
+        log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
+            action_list, dists
+        )
+        actions = torch.stack(action_list, dim=-1)
+        return (
+            actions,
+            all_logs if all_log_probs else log_probs,
+            entropies,
+        )
+
+
     @timed
     def sample_actions(
         self,
@@ -130,23 +145,21 @@ class TorchPolicy(Policy):
         """
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         """
-        dists, value_heads, memories = self.actor_critic.get_dist_and_value(
+        continuous_dists, discrete_dists, value_heads, memories = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        action_list = self.actor_critic.sample_action(dists)
-        log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
-            action_list, dists
-        )
-        actions = torch.stack(action_list, dim=-1)
-        if self.use_continuous_act:
-            actions = actions[:, :, 0]
-        else:
-            actions = actions[:, 0, :]
+        continuous_actions, continuous_entropies, continuous_log_probs = self.get_action_and_stats(continuous_dists) 
+        discrete_actions, discrete_entropies, discrete_log_probs = self.get_action_and_stats(discrete_dists) 
+        continuous_actions = continuous_actions[:, :, 0]
+        discrete_actions = discrete_actions[:, 0, :]
 
         return (
-            actions,
-            all_logs if all_log_probs else log_probs,
-            entropies,
+            continuous_actions,
+            continuous_log_probs,
+            continuous_entropies,
+            discrete_actions,
+            discrete_log_probs,
+            discrete_entropies,
             value_heads,
             memories,
         )
@@ -155,18 +168,21 @@ class TorchPolicy(Policy):
         self,
         vec_obs: torch.Tensor,
         vis_obs: torch.Tensor,
-        actions: torch.Tensor,
+        continuous_actions: torch.Tensor,
+        discrete_actions: torch.Tensor,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
     ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
-        dists, value_heads, _ = self.actor_critic.get_dist_and_value(
+        continuous_dists, discrete_dists, value_heads, memories = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        action_list = [actions[..., i] for i in range(actions.shape[-1])]
-        log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
+        continuous_action_list = [actions[..., i] for i in range(actions.shape[-1])]
+        discrete_action_list = [actions[..., i] for i in range(actions.shape[-1])]
+        continuous_log_probs, continuous_entropies, _ = ModelUtils.get_probs_and_entropy(continuous_action_list, dists)
+        discrete_log_probs, discrete_entropies, _ = ModelUtils.get_probs_and_entropy(discrete_action_list, dists)
 
-        return log_probs, entropies, value_heads
+        return continuous_log_probs, continuous_entropies, discrete_log_probs, discrete_entropies, value_heads
 
     @timed
     def evaluate(
@@ -189,14 +205,18 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, value_heads, memories = self.sample_actions(
+            continuous_action, continuous_log_probs, continuous_entropy, discrete_action, discrete_log_probs, discrete_entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = ModelUtils.to_numpy(action)
-        run_out["pre_action"] = ModelUtils.to_numpy(action)
         # Todo - make pre_action difference
-        run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
-        run_out["entropy"] = ModelUtils.to_numpy(entropy)
+        run_out["pre_action"] = ModelUtils.to_numpy(action)
+        run_out["continuous_action"] = ModelUtils.to_numpy(continuous_action)
+        run_out["continuous_log_probs"] = ModelUtils.to_numpy(log_probs)
+        run_out["continuous_entropy"] = ModelUtils.to_numpy(entropy)
+        run_out["discrete_action"] = ModelUtils.to_numpy(discrete_action)
+        run_out["discrete_log_probs"] = ModelUtils.to_numpy(log_probs)
+        run_out["discrete_entropy"] = ModelUtils.to_numpy(entropy)
+
         run_out["value_heads"] = {
             name: ModelUtils.to_numpy(t) for name, t in value_heads.items()
         }
@@ -228,8 +248,9 @@ class TorchPolicy(Policy):
             decision_requests, global_agent_ids
         )  # pylint: disable=assignment-from-no-return
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
+        action = np.concat([run_out.get("continuous_action"), run_out.get("discrete_action")], axis=1)
         return ActionInfo(
-            action=run_out.get("action"),
+            action=action,
             value=run_out.get("value"),
             outputs=run_out,
             agent_ids=list(decision_requests.agent_id),

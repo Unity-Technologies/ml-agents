@@ -218,7 +218,7 @@ class MultiCategoricalDistribution(nn.Module):
         return branch_distributions
 
 
-class HybridDistribution(nn.Module):
+class OutputDistributions(nn.Module):
     def __init__(
         self,
         hidden_size: int,

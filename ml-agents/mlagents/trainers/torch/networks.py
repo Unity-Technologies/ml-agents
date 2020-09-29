@@ -4,7 +4,7 @@ import abc
 from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionType
-from mlagents.trainers.torch.distributions import HybridDistribution, DistInstance
+from mlagents.trainers.torch.distributions import OutputDistributions, DistInstance
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
@@ -224,7 +224,7 @@ class ActorCritic(Actor):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
         """
         Returns distributions, from which actions can be sampled, and value estimates.
         If memory is enabled, return the memories as well.
@@ -261,9 +261,6 @@ class SimpleActor(nn.Module, Actor):
         self.discrete_act_size = discrete_act_size
         self.continuous_act_size = continuous_act_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        # self.is_continuous_int = torch.nn.Parameter(
-        #    torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
-        # )
         self.continuous_act_size_vector = torch.nn.Parameter(
             torch.Tensor(continuous_act_size)
         )
@@ -276,7 +273,7 @@ class SimpleActor(nn.Module, Actor):
         else:
             self.encoding_size = network_settings.hidden_units
 
-        self.distribution = HybridDistribution(
+        self.output_distributions = OutputDistributions(
             self.encoding_size,
             continuous_act_size[0],
             discrete_act_size,
@@ -309,7 +306,7 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        continuous_dists, discrete_dists = self.distribution(encoding, masks)
+        continuous_dists, discrete_dists = self.output_distribution(encoding, masks)
         return continuous_dists, discrete_dists, memories
 
     def forward(
@@ -334,7 +331,7 @@ class SimpleActor(nn.Module, Actor):
         )
 
 
-class SharedActorCritic(HybridSimpleActor, ActorCritic):
+class SharedActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
         observation_shapes: List[Tuple[int, ...]],
@@ -376,18 +373,18 @@ class SharedActorCritic(HybridSimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
 
         # TODO: this is just a rehashing of get_dists code
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        continuous_dists, discrete_dists = self.distribution(encoding, masks)
+        continuous_dists, discrete_dists = self.output_distribution(encoding, masks)
         value_outputs = self.value_heads(encoding)
         return continuous_dists, discrete_dists, value_outputs, memories
 
 
-class SeparateActorCritic(HybridSimpleActor, ActorCritic):
+class SeparateActorCritic(SimpleActor, ActorCritic):
     def __init__(
         self,
         observation_shapes: List[Tuple[int, ...]],
@@ -442,7 +439,7 @@ class SeparateActorCritic(HybridSimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)

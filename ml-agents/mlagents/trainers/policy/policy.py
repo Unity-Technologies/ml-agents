@@ -32,6 +32,9 @@ class Policy:
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
+        # For hybrid
+        self.continuous_act_size = behavior_spec.continuous_action_size()
+        self.discrete_act_size = behavior_spec.continuous_action_size()
         self.act_size = (
             list(behavior_spec.discrete_action_branches)
             if behavior_spec.is_action_discrete()
