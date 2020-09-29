@@ -114,12 +114,14 @@ def process_pixels(
 
 
 def process_images_mapping(image_arrays, mappings):
+    image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
+
     if len(mappings) != len(image_arrays):
         raise UnityObservationException(
             f"Compressed observation and its mapping had different number of channels - "
             f"observation had {len(image_arrays)} channels but its mapping had {len(mappings)} channels"
         )
-    if len(set(mappings)) != max(mappings) + 1:
+    if len({m for m in mappings if m > -1}) != max(mappings) + 1:
         raise UnityObservationException(
             f"Invalid Compressed Channel Mapping: the mapping {mappings} does not have the correct format."
         )
@@ -130,7 +132,6 @@ def process_images_mapping(image_arrays, mappings):
             f"invalid for input observation with {len(image_arrays)} channels."
         )
 
-    image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
     processed_image_arrays: List[np.array] = [[] for _ in range(max(mappings) + 1)]
     for mapping_idx, img in zip(mappings, image_arrays):
         if mapping_idx > -1:
