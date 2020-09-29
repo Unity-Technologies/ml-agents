@@ -25,7 +25,7 @@ and this project adheres to
  - The Communication API was changed to 1.2.0 to indicate support for stacked
  compressed observation. A new entry `compressed_channel_mapping` is added to the
  proto to handle decompression correctly. Newer versions of the package that wish to
- make use of this will also need a compatible version of the trainer. (#4476)
+ make use of this will also need a compatible version of the Python trainers. (#4476)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
