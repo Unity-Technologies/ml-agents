@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using UnityEngine;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
@@ -59,6 +60,22 @@ namespace Unity.MLAgents.Tests
             sensor.Reset();
             wrapped.AddObservation(new[] { 5f, 6f });
             SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f, 0f, 5f, 6f });
+        }
+
+        [Test]
+        public void TestStackingMapping()
+        {
+            // Test grayscale stacked mapping with CameraSensor
+            CameraSensor cameraSensor = new CameraSensor(new Camera(), 64, 64,
+                true, "grayscaleCamera", SensorCompressionType.PNG);
+            ISparseChannelSensor stackedCameraSensor = new StackingSensor(cameraSensor, 2);
+            Assert.AreEqual(stackedCameraSensor.GetCompressedChannelMapping(), new[] { 0, 0, 0, 1, 1, 1 });
+
+            // Test RGB stacked mapping with RenderTextureSensor
+            RenderTextureSensor renderTextureSensor = new RenderTextureSensor(new RenderTexture(24, 16, 0),
+                false, "renderTexture", SensorCompressionType.PNG);
+            ISparseChannelSensor stackedRenderTextureSensor = new StackingSensor(renderTextureSensor, 2);
+            Assert.AreEqual(stackedRenderTextureSensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, 4, 5 });
         }
     }
 }
