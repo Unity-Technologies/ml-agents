@@ -108,35 +108,43 @@ def process_pixels(
             break
 
     if mappings is not None and len(mappings) > 0:
-        image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
-        if len(mappings) != len(image_arrays):
-            raise UnityObservationException(
-                f"Compressed observation and its mapping had different number of channels - "
-                f"observation had {len(image_arrays)} channels but its mapping had {len(mappings)} channels"
-            )
-
-        processed_image_arrays: List[np.array] = [[] for _ in range(expected_channels)]
-        for mapping_idx, img in zip(mappings, image_arrays):
-            if mapping_idx > -1:
-                processed_image_arrays[mapping_idx].append(img)
-
-        for i, img_array in enumerate(processed_image_arrays):
-            processed_image_arrays[i] = np.mean(img_array, axis=0)
-        img = np.stack(processed_image_arrays, axis=2)
+        return process_images_mapping(image_arrays, mappings)
     else:
-        # Old API without mapping provided. Use the first n channel, n=expected_channels.
-        if expected_channels == 1:
-            # Convert to grayscale
-            img = np.mean(image_arrays[0], axis=2)
-            img = np.reshape(img, [img.shape[0], img.shape[1], 1])
-        else:
-            img = np.concatenate(image_arrays, axis=2)
-            # We can drop additional channels since they may need to be added to include
-            # numbers of observation channels not divisible by 3.
-            actual_channels = list(img.shape)[2]
-            if actual_channels > expected_channels:
-                img = img[..., 0:expected_channels]
+        return process_images_num_channels(image_arrays, expected_channels)
 
+
+def process_images_mapping(image_arrays, mappings):
+    if len(mappings) != len(image_arrays):
+        raise UnityObservationException(
+            f"Compressed observation and its mapping had different number of channels - "
+            f"observation had {len(image_arrays)} channels but its mapping had {len(mappings)} channels"
+        )
+
+    image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
+    processed_image_arrays: List[np.array] = [[] for _ in range(max(mappings) + 1)]
+    for mapping_idx, img in zip(mappings, image_arrays):
+        if mapping_idx > -1:
+            processed_image_arrays[mapping_idx].append(img)
+
+    for i, img_array in enumerate(processed_image_arrays):
+        processed_image_arrays[i] = np.mean(img_array, axis=0)
+    img = np.stack(processed_image_arrays, axis=2)
+    return img
+
+
+# Old API without mapping provided. Use the first n channel, n=expected_channels.
+def process_images_num_channels(image_arrays, expected_channels):
+    if expected_channels == 1:
+        # Convert to grayscale
+        img = np.mean(image_arrays[0], axis=2)
+        img = np.reshape(img, [img.shape[0], img.shape[1], 1])
+    else:
+        img = np.concatenate(image_arrays, axis=2)
+        # We can drop additional channels since they may need to be added to include
+        # numbers of observation channels not divisible by 3.
+        actual_channels = list(img.shape)[2]
+        if actual_channels > expected_channels:
+            img = img[..., 0:expected_channels]
     return img
 
 
@@ -161,14 +169,9 @@ def observation_to_np_array(
         img = np.reshape(img, obs.shape)
         return img
     else:
-        if "compressed_channel_mapping" in (f.name for f in obs.DESCRIPTOR.fields):
-            img = process_pixels(
-                obs.compressed_data,
-                expected_channels,
-                list(obs.compressed_channel_mapping),
-            )
-        else:
-            img = process_pixels(obs.compressed_data, expected_channels)
+        img = process_pixels(
+            obs.compressed_data, expected_channels, list(obs.compressed_channel_mapping)
+        )
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(

@@ -102,7 +102,7 @@ namespace Unity.MLAgents.Sensors
             var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
             if (stacks > 1)
             {
-                observationShape[observationShape.Length - 1] *= stacks;
+                observationShape[2] *= stacks;
             }
 
             return observationShape;

@@ -349,13 +349,21 @@ namespace Unity.MLAgents
             {
                 return true;
             }
-            var zeroMapping = new int[] { 0, 0, 0 };
-            var identityMapping = Enumerable.Range(0, sensor.GetObservationShape()[2]).ToList();
-            if (mapping.SequenceEqual(zeroMapping) || mapping.SequenceEqual(identityMapping))
+            // check if mapping equals zero mapping
+            if (mapping.Length == 3 && mapping.All(m => m == 0))
             {
                 return true;
             }
-            return false;
+            // check if mapping equals identity mapping
+            bool isIdentityMapping = true;
+            for (var i = 0; i < mapping.Length; i++)
+            {
+                if (mapping[i] != i)
+                {
+                    isIdentityMapping = false;
+                }
+            }
+            return isIdentityMapping;
         }
     }
 }
