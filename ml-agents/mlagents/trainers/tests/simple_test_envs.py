@@ -228,6 +228,7 @@ class HybridEnvironment(SimpleEnvironment):
         vec_obs_size=OBS_SIZE,
         action_size=1,
     ):
+        super().__init__(brain_names, False)
         self.continuous_env = SimpleEnvironment(
             brain_names,
             False,
@@ -257,12 +258,28 @@ class HybridEnvironment(SimpleEnvironment):
         self.discrete_action = {}
 
     def step(self) -> None:
-        self.continuous_env.step()
-        self.discrete_env.step()
+        assert all(action is not None for action in self.continuous_env.action.values())
+        assert all(action is not None for action in self.discrete_env.action.values())
+        for name in self.names:
+            cont_done = self.continuous_env._take_action(name)
+            cont_reward = self.continuous_env._compute_reward(name, cont_done)
+            self.rewards[name] += cont_reward / 2
+
+            disc_done = self.discrete_env._take_action(name)
+            disc_reward = self.discrete_env._compute_reward(name, disc_done)
+            self.rewards[name] += disc_reward / 2
+
+            all_done = cont_done and disc_done
+            self.step_result[name] = self._make_batched_step(
+                name, all_done, cont_reward + disc_reward
+            )
 
     def reset(self) -> None:  # type: ignore
+        self.reset()
         self.continuous_env.reset()
         self.discrete_env.reset()
+        self.continuous_env.goal = self.goal
+        self.discrete_env.goal = self.goal
 
     def set_actions(self, behavior_name: BehaviorName, action: HybridAction) -> None:
         self.continuous_env.set_actions(action.continuous)
