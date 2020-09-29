@@ -223,7 +223,7 @@ namespace Unity.MLAgents.Sensors
             // Construct stacked mapping using the mapping of wrapped sensor.
             // First pad the wrapped mapping to multiple of 3, then repeat
             // and add offset to each copy to form the stacked mapping.
-            int paddedMapLength = (wrappedMapping.Length + 2) / 3 * 3; // Pad to multiple of 3
+            int paddedMapLength = (wrappedMapping.Length + 2) / 3 * 3;
             var compressionMapping = new int[paddedMapLength * m_NumStackedObservations];
             for (var i = 0; i < m_NumStackedObservations; i++)
             {
