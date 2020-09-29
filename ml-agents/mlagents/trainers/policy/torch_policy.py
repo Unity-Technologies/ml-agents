@@ -11,6 +11,7 @@ from mlagents_envs.timers import timed
 
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.torch.distributions import DistInstance
 from mlagents.trainers.torch.networks import (
     SharedActorCritic,
     SeparateActorCritic,
@@ -72,7 +73,6 @@ class TorchPolicy(Policy):
         self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
-            act_type=behavior_spec.action_type,
             continuous_act_size=self.continuous_act_size,
             discrete_act_size=self.discrete_act_size,
             stream_names=reward_signal_names,
@@ -116,8 +116,8 @@ class TorchPolicy(Policy):
         if self.use_vec_obs and self.normalize:
             self.actor_critic.update_normalization(vector_obs)
 
-    def get_actions_and_stats(dists : List[DistInstance]):
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def get_actions_and_stats(dists : List[DistInstance]) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    
         action_list = self.actor_critic.sample_action(dists)
         log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists

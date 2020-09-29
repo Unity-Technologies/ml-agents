@@ -223,10 +223,12 @@ class OutputDistributions(nn.Module):
         self,
         hidden_size: int,
         continuous_act_size: int,
-        discrete_act_size: int,
+        discrete_act_size: List[int],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
+
+        self.encoding_size = hidden_size
         self.continuous_distributions: List[GaussianDistribution] = []
         self.discrete_distributions: List[MultiCategoricalDistribution] = []
         if continuous_act_size > 0:
@@ -238,7 +240,7 @@ class OutputDistributions(nn.Module):
                     tanh_squash=tanh_squash,
                 )
             )
-        if discrete_act_size > 0:
+        if len(discrete_act_size) > 0:
             self.discrete_distributions.append(
                 MultiCategoricalDistribution(self.encoding_size, discrete_act_size)
             )

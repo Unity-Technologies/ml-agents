@@ -275,7 +275,7 @@ class SimpleActor(nn.Module, Actor):
 
         self.output_distributions = OutputDistributions(
             self.encoding_size,
-            continuous_act_size[0],
+            continuous_act_size,
             discrete_act_size,
             conditional_sigma=conditional_sigma,
             tanh_squash=tanh_squash,
@@ -343,11 +343,10 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         tanh_squash: bool = False,
     ):
         super().__init__(
-            self,
             observation_shapes,
             network_settings,
-            act_type,
-            act_size,
+            continuous_act_size,
+            discrete_act_size,
             conditional_sigma,
             tanh_squash,
         )
@@ -396,16 +395,16 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         tanh_squash: bool = False,
     ):
         super().__init__(
-            self,
             observation_shapes,
             network_settings,
-            act_type,
-            act_size,
+            continuous_act_size,
+            discrete_act_size,
             conditional_sigma,
             tanh_squash,
         )
         self.stream_names = stream_names
         self.value_heads = ValueHeads(stream_names, self.encoding_size)
+        print("CREATED", self.memory_size)
 
     @property
     def memory_size(self) -> int:
@@ -699,25 +698,25 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
 #        self.critic.network_body.update_normalization(vector_obs)
 #
 #
-# class GlobalSteps(nn.Module):
-#    def __init__(self):
-#        super().__init__()
-#        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
-#
-#    @property
-#    def current_step(self):
-#        return int(self.__global_step.item())
-#
-#    @current_step.setter
-#    def current_step(self, value):
-#        self.__global_step[:] = value
-#
-#    def increment(self, value):
-#        self.__global_step += value
-#
-#
-# class LearningRate(nn.Module):
-#    def __init__(self, lr):
-#        # Todo: add learning rate decay
-#        super().__init__()
-#        self.learning_rate = torch.Tensor([lr])
+class GlobalSteps(nn.Module):
+   def __init__(self):
+       super().__init__()
+       self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+
+   @property
+   def current_step(self):
+       return int(self.__global_step.item())
+
+   @current_step.setter
+   def current_step(self, value):
+       self.__global_step[:] = value
+
+   def increment(self, value):
+       self.__global_step += value
+
+
+class LearningRate(nn.Module):
+   def __init__(self, lr):
+       # Todo: add learning rate decay
+       super().__init__()
+       self.learning_rate = torch.Tensor([lr])
