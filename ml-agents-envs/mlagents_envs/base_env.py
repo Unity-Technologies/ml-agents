@@ -259,7 +259,7 @@ class ActionType(Enum):
     HYBRID = 2
 
 
-class HybridBehaviorSpec(NamedTuple):
+class BehaviorSpec(NamedTuple):
     observation_shapes: List[Tuple]
     continuous_action_shape: int
     discrete_action_shape: Tuple[int]
