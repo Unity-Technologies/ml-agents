@@ -12,6 +12,8 @@ from mlagents_envs.timers import set_gauge
 from mlagents.tf_utils import tf, generate_session_config
 from mlagents.tf_utils.globals import get_rank
 
+from mlagents.torch_utils import cpu_utils
+
 
 logger = get_logger(__name__)
 
@@ -115,6 +117,7 @@ class ConsoleWriter(StatsWriter):
         else:
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
+        log_info.append("NUM CPU " + str(cpu_utils.get_num_threads_to_use()))
         logger.info(". ".join(log_info))
 
     def add_property(

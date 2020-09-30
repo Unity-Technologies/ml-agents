@@ -2,6 +2,8 @@ from typing import Optional
 
 import os
 
+from mlagents_envs.logging_util import get_logger
+logger = get_logger(__name__)
 
 def get_num_threads_to_use() -> Optional[int]:
     """
@@ -10,6 +12,8 @@ def get_num_threads_to_use() -> Optional[int]:
     By default, PyTorch uses 1/2 of the available cores.
     """
     num_cpus = _get_num_available_cpus()
+    print("\n\n\n\n\n NUMCPU ", num_cpus, "\n\n\n\n\n")
+    logger.info("\n\n\n\n\n NUMCPU " + str(num_cpus) + "\n\n\n\n\n")
     return max(min(num_cpus // 2, 4), 1) if num_cpus is not None else None
 
 
