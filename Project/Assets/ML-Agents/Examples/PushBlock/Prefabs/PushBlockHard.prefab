@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 89552374}
   - component: {fileID: 89552373}
   - component: {fileID: 89552372}
-  - component: {fileID: 89552371}
+  - component: {fileID: 3071652823701304804}
   m_Layer: 0
   m_Name: AgentCOMBO
   m_TagString: agent
@@ -176,7 +176,7 @@ MonoBehaviour:
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
   m_EndVerticalOffset: 0
---- !u!114 &89552371
+--- !u!114 &3071652823701304804
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -516,6 +516,114 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &1215672705
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1215672706}
+  - component: {fileID: 1215672710}
+  - component: {fileID: 1215672709}
+  - component: {fileID: 1215672708}
+  - component: {fileID: 1215672707}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: stone
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1215672706
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215672705}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2, y: 0.52, z: 6.18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 5956721712675605120}
+  m_RootOrder: 15
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &1215672710
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215672705}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!65 &1215672709
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215672705}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &1215672708
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215672705}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: eaad04b0e0dec42229c9cb00a981d7ac, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 1
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!54 &1215672707
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215672705}
+  serializedVersion: 2
+  m_Mass: 10
+  m_Drag: 0.5
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &1420080868
 GameObject:
   m_ObjectHideFlags: 0
@@ -643,6 +751,9 @@ MonoBehaviour:
   GridNumSideZ: 20
   CellScaleY: 1.1
   RotateToAgent: 1
+  TranslateToAgent: 0
+  collidersToIgnore:
+  - {fileID: 89552376}
   ChannelDepth: 06000000
   DetectableObjects:
   - agent
@@ -654,18 +765,19 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 257
   gridDepthType: 1
-  rootReference: {fileID: 89552369}
+  rootReference: {fileID: 1514411054}
   ObservationPerCell: 6
   NumberOfObservations: 2400
   ChannelOffsets: 00000000
   DebugColors:
   - {r: 0.31731597, g: 0.72000253, b: 0.853, a: 0}
-  - {r: 0.5283019, g: 0.5283019, b: 0.5283019, a: 1}
+  - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0, g: 0, b: 0, a: 0}
   - {r: 0.65438646, g: 0.875, b: 0.14797792, a: 1}
   - {r: 1, g: 0.07976162, b: 0, a: 1}
   GizmoYOffset: 0
   ShowGizmos: 0
+  DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.09803922}
 --- !u!1 &1907827094
 GameObject:
   m_ObjectHideFlags: 0
@@ -926,8 +1038,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2365449668380784399}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: 0.52, z: -1.43}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalPosition: {x: 1.81, y: 0.52, z: -1.43}
+  m_LocalScale: {x: 1.5, y: 1, z: 1.5}
   m_Children: []
   m_Father: {fileID: 5956721712675605120}
   m_RootOrder: 14
@@ -1869,6 +1981,8 @@ MonoBehaviour:
   GridNumSideZ: 80
   CellScaleY: 1.1
   RotateToAgent: 1
+  TranslateToAgent: 0
+  collidersToIgnore: []
   ChannelDepth: 06000000
   DetectableObjects:
   - agent
@@ -1892,6 +2006,7 @@ MonoBehaviour:
   - {r: 1, g: 0.07976162, b: 0, a: 1}
   GizmoYOffset: 0
   ShowGizmos: 0
+  DebugDefaultColor: {r: 1, g: 1, b: 1, a: 0.55}
 --- !u!1 &5954386630694887120
 GameObject:
   m_ObjectHideFlags: 0
@@ -2922,6 +3037,7 @@ Transform:
   - {fileID: 142039848}
   - {fileID: 89552370}
   - {fileID: 2741929382500039756}
+  - {fileID: 1215672706}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

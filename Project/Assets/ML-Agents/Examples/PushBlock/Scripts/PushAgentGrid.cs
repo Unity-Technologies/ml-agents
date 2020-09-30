@@ -88,6 +88,8 @@ public class PushAgentGrid : Agent
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             sensor.AddObservation(localVelocity.x);
             sensor.AddObservation(localVelocity.z);
+            //            sensor.AddObservation(transform.localRotation);
+            //            sensor.AddObservation(transform.localPosition);
         }
     }
 
@@ -262,7 +264,7 @@ public class PushAgentGrid : Agent
 
     public void SetBlockProperties()
     {
-        var scale = m_ResetParams.GetWithDefault("block_scale", 2);
+        var scale = m_ResetParams.GetWithDefault("block_scale", 1.5f);
         //Set the scale of the block
         m_BlockRb.transform.localScale = new Vector3(scale, 0.75f, scale);
 

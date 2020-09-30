@@ -62,6 +62,10 @@ namespace Unity.MLAgents.Extensions.Sensors
         [Tooltip("Rotate the grid based on the direction the agent is facing")]
         public bool RotateToAgent;
 
+        public bool TranslateToAgent; //should the grid move with the agent
+                                      //        public bool MapThisAgent = false; //should this agent be mapped
+        public List<Collider> collidersToIgnore;
+
         /// <summary>
         /// Array holding the depth of each channel.
         /// </summary>
@@ -246,7 +250,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// </summary>
         private List<byte[]> byteSizesBytesList;
 
-        private Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.55f);
+        public Color DebugDefaultColor = new Color(1f, 1f, 1f, 0.55f);
 
         /// <inheritdoc/>
         public override ISensor CreateSensor()
@@ -540,12 +544,15 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     if (RotateToAgent)
                     {
-                        cellCenter = transform.TransformPoint(CellPoints[cellIndex]);
-                        foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, transform.rotation, ObserveMask);
+                        //                        cellCenter = transform.TransformPoint(CellPoints[cellIndex]);
+                        cellCenter = rootReference.transform.TransformPoint(CellPoints[cellIndex]);
+                        //                        foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, transform.rotation, ObserveMask);
+                        foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, rootReference.transform.rotation, ObserveMask);
                     }
                     else
                     {
-                        cellCenter = transform.position + CellPoints[cellIndex];
+                        cellCenter = rootReference.transform.position + CellPoints[cellIndex];
+                        //                        cellCenter = transform.position + CellPoints[cellIndex];
                         foundColliders = Physics.OverlapBox(cellCenter, halfCellScale, Quaternion.identity, ObserveMask);
                     }
 
@@ -578,7 +585,9 @@ namespace Unity.MLAgents.Extensions.Sensors
                 currentColliderGo = foundColliders[i].gameObject;
 
                 // Continue if the current collider go is the root reference
-                if (currentColliderGo == rootReference)
+                if (collidersToIgnore.Contains(foundColliders[i]))
+                    //                if (currentColliderGo == rootReference && !MapThisAgent)
+                    //                if (!MapThisAgent)
                     continue;
 
                 closestColliderPoint = foundColliders[i].ClosestPointOnBounds(cellCenter);
@@ -749,7 +758,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             float z = (cell / GridNumSideZ - OffsetGridNumSide) * CellScaleZ - DiffNumSideZX;
 
             if (shouldTransformPoint)
-                return transform.TransformPoint(new Vector3(x, 0, z));
+                //                return transform.TransformPoint(new Vector3(x, 0, z));
+                return rootReference.transform.TransformPoint(new Vector3(x, 0, z));
             return new Vector3(x, 0, z);
         }
 
@@ -760,7 +770,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <param name="globalPoint">The 3D point in global space</param>
         public int PointToCell(Vector3 globalPoint)
         {
-            Vector3 point = transform.InverseTransformPoint(globalPoint);
+            //            Vector3 point = transform.InverseTransformPoint(globalPoint);
+            Vector3 point = rootReference.transform.InverseTransformPoint(globalPoint);
 
             if (point.x < -HalfOfGridX || point.x > HalfOfGridX || point.z < -HalfOfGridZ || point.z > HalfOfGridZ)
                 return -1;
@@ -818,16 +829,19 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Vector3 offset = new Vector3(0, GizmoYOffset, 0);
                 Matrix4x4 oldGizmoMatrix = Gizmos.matrix;
                 Matrix4x4 cubeTransform = Gizmos.matrix;
+                //                Matrix4x4 cubeTransform = rootReference.transform.localToWorldMatrix;
                 //                Matrix4x4 cubeTransform = transform.localToWorldMatrix;
                 for (int i = 0; i < NumCells; i++)
                 {
                     if (RotateToAgent)
                     {
-                        cubeTransform = Matrix4x4.TRS(CellToPoint(i) + offset, transform.rotation, scale);
+                        //                        cubeTransform = Matrix4x4.TRS(CellToPoint(i) + offset, transform.rotation, scale);
+                        cubeTransform = Matrix4x4.TRS(CellToPoint(i) + offset, rootReference.transform.rotation, scale);
                     }
                     else
                     {
-                        cubeTransform = Matrix4x4.TRS(CellToPoint(i, false) + transform.position + offset, Quaternion.identity, scale);
+                        //                        cubeTransform = Matrix4x4.TRS(CellToPoint(i, false) + transform.position + offset, Quaternion.identity, scale);
+                        cubeTransform = Matrix4x4.TRS(CellToPoint(i, false) + rootReference.transform.position + offset, Quaternion.identity, scale);
                         //                        cubeTransform = Matrix4x4.TRS(CellToPoint(i, false) + offset, Quaternion.identity, scale);
                     }
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
