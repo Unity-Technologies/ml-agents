@@ -25,7 +25,10 @@ def _get_num_available_cpus() -> Optional[int]:
     period = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
     logger.info("period "+str(period))
     quota = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
-    logger.info("quota "+str(quota))
+    logger.info("quota " + str(quota))
+
+    shares = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.shares")
+    logger.info("shares "+str(shares))
     if period > 0 and quota > 0:
         return int(quota // period)
     else:
