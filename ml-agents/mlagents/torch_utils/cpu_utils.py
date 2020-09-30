@@ -12,7 +12,7 @@ def get_num_threads_to_use() -> Optional[int]:
     By default, PyTorch uses 1/2 of the available cores.
     """
     num_cpus = _get_num_available_cpus()
-    print("\n\n\n\n\n NUMCPU ", num_cpus, "\n\n\n\n\n")
+    print("NUM_CPU ", num_cpus)
     logger.info("\n\n\n\n\n NUMCPU " + str(num_cpus) + "\n\n\n\n\n")
     return max(min(num_cpus // 2, 4), 1) if num_cpus is not None else None
 
@@ -23,7 +23,9 @@ def _get_num_available_cpus() -> Optional[int]:
     for Docker containers that are limited in cores.
     """
     period = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
+    print("period ", period)
     quota = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
+    print("quota ", quota)
     if period > 0 and quota > 0:
         return int(quota // period)
     else:
