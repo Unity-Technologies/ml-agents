@@ -23,9 +23,9 @@ def _get_num_available_cpus() -> Optional[int]:
     for Docker containers that are limited in cores.
     """
     period = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
-    print("period ", period)
+    logger.info("period "+str(period))
     quota = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
-    print("quota ", quota)
+    logger.info("quota "+str(quota))
     if period > 0 and quota > 0:
         return int(quota // period)
     else:
