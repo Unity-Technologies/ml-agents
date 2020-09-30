@@ -17,7 +17,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
  - Stacking for compressed observations is now supported. An addtional setting
  option `Observation Stacks` is added in editor to sensor components that support
- compressed observations. An new class `ISparseChannelSensor` with an
+ compressed observations. A new class `ISparseChannelSensor` with an
  additional function `GetCompressedChannelMapping()`is added to generate a mapping
  of the channels in compressed data to the actual channel after decompression,
  for the python side to decompress correctly. (#4476)
