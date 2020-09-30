@@ -5,6 +5,7 @@ from distutils.version import LooseVersion
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
+from setuptools.command.develop import develop
 import mlagents.trainers
 
 VERSION = mlagents.trainers.__version__
@@ -30,6 +31,37 @@ class VerifyVersionCommand(install):
                 tag, EXPECTED_TAG
             )
             sys.exit(info)
+
+
+def verify_torch_installed():
+    # Check that torch version 1.6.0 or later has been installed. If not, refer
+    # user to the PyTorch webpage for install instructions.
+    torch_pkg = None
+    try:
+        torch_pkg = pkg_resources.get_distribution("torch")
+    except pkg_resources.DistributionNotFound:
+        pass
+    assert torch_pkg is not None and LooseVersion(torch_pkg.version) >= LooseVersion(
+        "1.6.0"
+    ), (
+        "A compatible version of PyTorch was not installed. Please visit the PyTorch homepage ",
+        "(https://pytorch.org/get-started/locally/) and follow the instructions to install. ",
+        "Version 1.6.0 and later are supported.",
+    )
+
+
+class VerifyTorchInstallCommand(install):
+    description = "verify that Torch is installed"
+
+    def run(self):
+        verify_torch_installed()
+
+
+class VerifyTorchDevelopCommand(develop):
+    description = "verify that Torch is installed"
+
+    def run(self):
+        verify_torch_installed()
 
 
 # Get the long description from the README file
@@ -79,19 +111,10 @@ setup(
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
         ]
     },
-    cmdclass={"verify": VerifyVersionCommand},
+    cmdclass={
+        "verify": VerifyVersionCommand,
+        "install": VerifyTorchInstallCommand,
+        "develop": VerifyTorchDevelopCommand,
+    },
     extras_require={"tensorflow": ["tensorflow>=1.14,<3.0", "six>=1.12.0"]},
 )
-
-# Check that torch version 1.6.0 or later has been installed. If not, refer
-# user to the PyTorch webpage for install instructions.
-torch_pkg = None
-try:
-    torch_pkg = pkg_resources.get_distribution("torch")
-except pkg_resources.DistributionNotFound:
-    pass
-assert torch_pkg is not None and LooseVersion(torch_pkg.version) >= LooseVersion(
-    "1.6.0"
-), "A compatible version of PyTorch was not installed. Please visit the PyTorch homepage \
-(https://pytorch.org/get-started/locally/) and follow the instructions to install. \
-Version 1.6.0 and later are supported."
