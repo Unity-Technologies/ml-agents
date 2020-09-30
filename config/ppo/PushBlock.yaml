@@ -2,8 +2,8 @@ behaviors:
   PushBlock:
     trainer_type: ppo
     hyperparameters:
-      batch_size: 128
-      buffer_size: 2048
+      batch_size: 1024 #128
+      buffer_size: 10240 #2048
       learning_rate: 0.0003
       beta: 0.01
       epsilon: 0.2
@@ -22,5 +22,5 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 2000000
     time_horizon: 64
-    summary_freq: 60000
+    summary_freq: 10000
     threaded: true

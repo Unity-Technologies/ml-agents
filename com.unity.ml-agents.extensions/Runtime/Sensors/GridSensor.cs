@@ -828,6 +828,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                     else
                     {
                         cubeTransform = Matrix4x4.TRS(CellToPoint(i, false) + transform.position + offset, Quaternion.identity, scale);
+                        //                        cubeTransform = Matrix4x4.TRS(CellToPoint(i, false) + offset, Quaternion.identity, scale);
                     }
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     Gizmos.color = CellActivity[i];
