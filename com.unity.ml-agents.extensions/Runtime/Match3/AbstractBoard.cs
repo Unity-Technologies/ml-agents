@@ -8,18 +8,43 @@ namespace Unity.MLAgents.Extensions.Match3
         public int Columns;
         public int NumCellTypes;
 
-        // public AbstractBoard(int rows, int cols, int numCellTypes)
-        // {
-        //     Rows = rows;
-        //     Columns = cols;
-        //     NumCellTypes = numCellTypes;
-        // }
 
-        public abstract bool MakeMove(Move m);
-        public abstract bool IsMoveValid(Move m);
-        // TODO handle "special" cell types?
+        /// <summary>
+        /// Returns the "type" of piece at the given row and column.
+        /// This should be between 0 and NumCellTypes-1 (inclusive).
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <returns></returns>
         public abstract int GetCellType(int row, int col);
 
+        /// <summary>
+        /// Check whether the particular Move is valid for the game.
+        /// The actual results will depend on the rules of the game, but we provide SimpleIsMoveValid()
+        /// that handles basic match3 rules with no special or immovable pieces.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public abstract bool IsMoveValid(Move m);
+
+        /// <summary>
+        /// Instruct the game to make the given move. Returns true if the move was made.
+        /// Note that during training, a move that was marked as invalid may occasionally still be
+        /// requested. If this happens, it is safe to do nothing and request another move.
+        /// </summary>
+        /// <param name="m"></param>
+        /// <returns></returns>
+        public abstract bool MakeMove(Move m);
+
+        // TODO handle "special" cell types?
+
+        /// <summary>
+        /// Returns true if swapped the cells specified by the move would result in
+        /// 3 or more cells of the same type in a row. This assumes that all pieces are allowed
+        /// to be moved; to add extra logic, incorporate it into you IsMoveValid() method.
+        /// </summary>
+        /// <param name="move"></param>
+        /// <returns></returns>
         public bool SimpleIsMoveValid(Move move)
         {
             using (TimerStack.Instance.Scoped("SimpleIsMoveValid"))

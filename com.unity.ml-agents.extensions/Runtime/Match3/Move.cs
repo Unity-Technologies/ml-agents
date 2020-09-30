@@ -11,7 +11,7 @@ namespace Unity.MLAgents.Extensions.Match3
     }
 
     /// <summary>
-    /// Struct that encapsulates a swpa of adjacent cells.
+    /// Struct that encapsulates a swap of adjacent cells.
     /// A Move can be constructed from either a starting cells and a direction,
     /// or enumerated from 0 to NumEdgeIndices()-1
     /// </summary>
@@ -62,6 +62,7 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             int edgeIndex;
             // Normalize - only consider Right and Up
+            // TODO throw if e.g. col == 0 and dir == Left
             if (dir == Direction.Left)
             {
                 dir = Direction.Right;
