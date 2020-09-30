@@ -20,8 +20,13 @@ def _get_num_available_cpus() -> Optional[int]:
     """
     period = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
     quota = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
+    share = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.share")
     if period > 0 and quota > 0:
         return int(quota // period)
+    elif period > 0 and share > 0:
+        # In docker, each requested CPU is 1024 CPU shares
+        # https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/#how-pods-with-resource-limits-are-run
+        return int(share // 1024)
     else:
         return os.cpu_count()
 
