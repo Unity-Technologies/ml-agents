@@ -35,7 +35,7 @@ namespace Unity.MLAgents.Actuators
             m_BranchSizes = branchSizes;
         }
 
-        /// <inheritdoc cref="IDiscreteActionMask.WriteMask"/>
+        /// <inheritdoc/>
         public void WriteMask(int branch, IEnumerable<int> actionIndices)
         {
             LazyInitialize();
@@ -84,7 +84,7 @@ namespace Unity.MLAgents.Actuators
             }
         }
 
-        /// <inheritdoc cref="IDiscreteActionMask.GetMask"/>
+        /// <inheritdoc/>
         public bool[] GetMask()
         {
 #if DEBUG

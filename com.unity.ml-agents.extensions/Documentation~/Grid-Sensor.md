@@ -2,6 +2,7 @@
 
 The Grid Sensor combines the generality of data extraction from Raycasts with the image processing power of Convolutional Neural Networks. The Grid Sensor can be used to collect data in the general form of a "Width x Height x Channel" matrix which can be used for training Reinforcement Learning agents or for data analysis.
 
+<img src="images/gridsensor-debug.png" align="middle" width="3000"/>
 
 # Motivation
 

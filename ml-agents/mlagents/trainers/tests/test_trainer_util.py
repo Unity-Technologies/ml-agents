@@ -8,13 +8,13 @@ from mlagents.trainers.cli_utils import load_config, _load_config
 from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.exception import TrainerConfigError, UnityTrainerException
 from mlagents.trainers.settings import RunOptions
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
+from mlagents.trainers.tests.dummy_config import ppo_dummy_config
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 
 
 @pytest.fixture
 def dummy_config():
-    return RunOptions(behaviors={"testbrain": PPO_CONFIG})
+    return RunOptions(behaviors={"testbrain": ppo_dummy_config()})
 
 
 @patch("mlagents_envs.base_env.BehaviorSpec")
@@ -28,7 +28,7 @@ def test_initialize_ppo_trainer(BehaviorSpecMock, dummy_config):
     expected_reward_buff_cap = 1
 
     base_config = dummy_config.behaviors
-    expected_config = PPO_CONFIG
+    expected_config = ppo_dummy_config()
 
     def mock_constructor(
         self,

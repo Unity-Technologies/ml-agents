@@ -107,19 +107,19 @@ namespace Unity.MLAgents.Actuators
             System.Array.Clear(Array, Offset, Length);
         }
 
-        /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
+        /// <inheritdoc/>
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return new Enumerator(this);
         }
 
-        /// <inheritdoc cref="IEnumerable{T}"/>
+        /// <inheritdoc/>
         public IEnumerator GetEnumerator()
         {
             return new Enumerator(this);
         }
 
-        /// <inheritdoc cref="ValueType.Equals(object)"/>
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionSegment<T>))
@@ -129,13 +129,13 @@ namespace Unity.MLAgents.Actuators
             return Equals((ActionSegment<T>)obj);
         }
 
-        /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
+        /// <inheritdoc/>
         public bool Equals(ActionSegment<T> other)
         {
             return Offset == other.Offset && Length == other.Length && Array.SequenceEqual(other.Array);
         }
 
-        /// <inheritdoc cref="ValueType.GetHashCode"/>
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             unchecked
