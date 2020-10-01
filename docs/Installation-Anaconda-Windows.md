@@ -101,14 +101,12 @@ activate ml-agents
 
 You should see `(ml-agents)` prepended on the last line.
 
-Next, install `tensorflow`. Install this package using `pip` - which is a
-package management system used to install Python packages. Latest versions of
-TensorFlow won't work, so you will need to make sure that you install version
-1.7.1. In the same Anaconda Prompt, type in the following command _(make sure
+Next, install `torch`. Install this package using `pip` - which is a
+package management system used to install Python packages. In the same Anaconda Prompt, type in the following command _(make sure
 you are connected to the Internet)_:
 
 ```sh
-pip install tensorflow==1.7.1
+pip install torch -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 ## Step 3: Install Required Python Packages
@@ -318,40 +316,6 @@ installed. _Please note that case sensitivity matters_.
         alt="Path variables"
         width="500" border="10" />
 </p>
-
-### Install TensorFlow GPU
-
-Next, install `tensorflow-gpu` using `pip`. You'll need version 1.7.1. In an
-Anaconda Prompt with the Conda environment ml-agents activated, type in the
-following command to uninstall TensorFlow for cpu and install TensorFlow for gpu
-_(make sure you are connected to the Internet)_:
-
-```sh
-pip uninstall tensorflow
-pip install tensorflow-gpu==1.7.1
-```
-
-Lastly, you should test to see if everything installed properly and that
-TensorFlow can identify your GPU. In the same Anaconda Prompt, open Python in
-the Prompt by calling:
-
-```sh
-python
-```
-
-And then type the following commands:
-
-```python
-import tensorflow as tf
-
-sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
-```
-
-You should see something similar to:
-
-```console
-Found device 0 with properties ...
-```
 
 ## Acknowledgments
 
