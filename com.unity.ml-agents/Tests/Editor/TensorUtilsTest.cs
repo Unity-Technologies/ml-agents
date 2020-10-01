@@ -9,7 +9,6 @@ namespace Unity.MLAgents.Tests
     public class TensorUtilsTest
     {
         [TestCase(4, TestName = "TestResizeTensor_4D")]
-        [TestCase(8, TestName = "TestResizeTensor_8D")]
         public void TestResizeTensor(int dimension)
         {
             var alloc = new TensorCachingAllocator();
