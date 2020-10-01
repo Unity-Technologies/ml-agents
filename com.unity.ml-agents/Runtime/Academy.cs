@@ -237,6 +237,10 @@ namespace Unity.MLAgents
 #endif
         }
 
+        /// <summary>
+        /// Clean up the Academy when switching from edit mode to play mode
+        /// </summary>
+        /// <param name="state">State.</param>
         void HandleOnPlayModeChanged(PlayModeStateChange state)
         {
             if (state == PlayModeStateChange.ExitingEditMode)
