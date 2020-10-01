@@ -20,7 +20,7 @@ def _get_num_available_cpus() -> Optional[int]:
     """
     period = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_period_us")
     quota = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.cfs_quota_us")
-    share = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.share")
+    share = _read_in_integer_file("/sys/fs/cgroup/cpu/cpu.shares")
     if period > 0 and quota > 0:
         return int(quota // period)
     elif period > 0 and share > 0:
