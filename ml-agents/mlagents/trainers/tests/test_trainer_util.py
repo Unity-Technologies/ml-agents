@@ -10,7 +10,7 @@ from mlagents.trainers.exception import TrainerConfigError, UnityTrainerExceptio
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.tests.dummy_config import ppo_dummy_config
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.directory_utils import handle_existing_directories
+from mlagents.trainers.directory_utils import validate_existing_directories
 
 
 @pytest.fixture
@@ -113,25 +113,25 @@ you:
 def test_existing_directories(tmp_path):
     output_path = os.path.join(tmp_path, "runid")
     # Test fresh new unused path - should do nothing.
-    handle_existing_directories(output_path, False, False)
+    validate_existing_directories(output_path, False, False)
     # Test resume with fresh path - should throw an exception.
     with pytest.raises(UnityTrainerException):
-        handle_existing_directories(output_path, True, False)
+        validate_existing_directories(output_path, True, False)
 
     # make a directory
     os.mkdir(output_path)
     # Test try to train w.o. force, should complain
     with pytest.raises(UnityTrainerException):
-        handle_existing_directories(output_path, False, False)
+        validate_existing_directories(output_path, False, False)
     # Test try to train w/ resume - should work
-    handle_existing_directories(output_path, True, False)
+    validate_existing_directories(output_path, True, False)
     # Test try to train w/ force - should work
-    handle_existing_directories(output_path, False, True)
+    validate_existing_directories(output_path, False, True)
 
     # Test initialize option
     init_path = os.path.join(tmp_path, "runid2")
     with pytest.raises(UnityTrainerException):
-        handle_existing_directories(output_path, False, True, init_path)
+        validate_existing_directories(output_path, False, True, init_path)
     os.mkdir(init_path)
     # Should pass since the directory exists now.
-    handle_existing_directories(output_path, False, True, init_path)
+    validate_existing_directories(output_path, False, True, init_path)

@@ -2,7 +2,7 @@ import os
 from mlagents.trainers.exception import UnityTrainerException
 
 
-def handle_existing_directories(
+def validate_existing_directories(
     output_path: str, resume: bool, force: bool, init_path: str = None
 ) -> None:
     """
