@@ -13,7 +13,10 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.components.reward_signals import RewardSignalResult, RewardSignal
+from mlagents.trainers.tf.components.reward_signals import (
+    RewardSignalResult,
+    RewardSignal,
+)
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy

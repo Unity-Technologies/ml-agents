@@ -12,7 +12,8 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
+from mlagents.trainers.trainer import TrainerFactory
+from mlagents.trainers.directory_utils import handle_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
     StatsReporter,

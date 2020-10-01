@@ -4,7 +4,7 @@ import mlagents.trainers.tests.mock_brain as mb
 import numpy as np
 
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents.trainers.components.bc.module import BCModule
+from mlagents.trainers.tf.components.bc.module import BCModule
 from mlagents.trainers.settings import (
     TrainerSettings,
     BehavioralCloningSettings,
