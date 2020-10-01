@@ -18,7 +18,7 @@ and this project adheres to
  - Stacking for compressed observations is now supported. An addtional setting
  option `Observation Stacks` is added in editor to sensor components that support
  compressed observations. A new class `ISparseChannelSensor` with an
- additional function `GetCompressedChannelMapping()`is added to generate a mapping
+ additional method `GetCompressedChannelMapping()`is added to generate a mapping
  of the channels in compressed data to the actual channel after decompression,
  for the python side to decompress correctly. (#4476)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
