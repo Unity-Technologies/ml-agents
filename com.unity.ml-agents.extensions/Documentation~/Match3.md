@@ -1,12 +1,13 @@
 # Match-3 Game Support
 
-We provide some utilities to make integration with Match-3 games.
+We provide some utilities to integrate ML-Agents with Match-3 games.
 
 ## AbstractBoard class
-The AbstractBoard is the bridge between ML-Agents and your game. It allows ML-Agents to
-* ask your game what the "color" at a row and column is
+The `AbstractBoard` is the bridge between ML-Agents and your game. It allows ML-Agents to
+* ask your game what the "color" of a cell is
 * ask your game whether a move is allowed
 * request that your game make a move
+
 These are handled by implementing the `GetCellType()`, `IsMoveValid()`, and `MakeMove()` abstract methods.
 
 The AbstractBoard also tracks the number of rows, columns, and potential piece types that the board can have.
@@ -16,8 +17,8 @@ Returns the "type" of piece at the given row and column.
 This should be between 0 and NumCellTypes-1 (inclusive).
 
 ### `public abstract bool IsMoveValid(Move m)`
-Check whether the particular Move is valid for the game.
-The actual results will depend on the rules of the game, but we provide SimpleIsMoveValid()
+Check whether the particular `Move` is valid for the game.
+The actual results will depend on the rules of the game, but we provide the `SimpleIsMoveValid()` method
 that handles basic match3 rules with no special or immovable pieces.
 
 ### `public abstract bool MakeMove(Move m)`
@@ -36,7 +37,7 @@ for (var index = 0; index < Move.NumEdgeIndices(NumRows, NumColumns); index++)
 You can also construct a `Move` from a row, column, and direction.
 
 ## `Match3Sensor` and `Match3SensorComponent` classes
-The `Match3Sensor` generates observations about the state using the AbstractBoard interface. You can
+The `Match3Sensor` generates observations about the state using the `AbstractBoard` interface. You can
 choose whether to use vector or "visual" observations; in theory, visual observations should perform
 better because they are 2-dimensional like the board, but we need to experiment more on this.
 
