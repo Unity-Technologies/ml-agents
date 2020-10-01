@@ -261,6 +261,7 @@ class HybridEnvironment(SimpleEnvironment):
         self.behavior_spec = HybridBehaviorSpec(
             self._make_obs_spec(), action_size, tuple(2 for _ in range(action_size))
         )
+        self.action_size = action_size
         self.continuous_action = {}
         self.discrete_action = {}
 
@@ -270,27 +271,33 @@ class HybridEnvironment(SimpleEnvironment):
         for name in self.names:
             cont_done = self.continuous_env._take_action(name)
             cont_reward = self.continuous_env._compute_reward(name, cont_done)
-            self.rewards[name] += cont_reward / 2
 
             disc_done = self.discrete_env._take_action(name)
             disc_reward = self.discrete_env._compute_reward(name, disc_done)
-            self.rewards[name] += disc_reward / 2
 
             all_done = cont_done and disc_done
+            if all_done:
+                reward = (cont_reward + disc_reward) / 2
+            else:
+                reward = -TIME_PENALTY
+                
+            self.rewards[name] += reward
             self.step_result[name] = self._make_batched_step(
-                name, all_done, cont_reward + disc_reward
+                name, all_done, reward
             )
 
     def reset(self) -> None:  # type: ignore
-        self.reset()
+        super().reset()
         self.continuous_env.reset()
         self.discrete_env.reset()
         self.continuous_env.goal = self.goal
         self.discrete_env.goal = self.goal
 
-    def set_actions(self, behavior_name: BehaviorName, action: HybridAction) -> None:
-        self.continuous_env.set_actions(action.continuous)
-        self.discrete_env.set_actions(action.discrete)
+    def set_actions(self, behavior_name: BehaviorName, action) -> None:
+        continuous_action = action[:, :self.action_size]
+        discrete_action = action[:, self.action_size:]
+        self.continuous_env.set_actions(behavior_name, continuous_action)
+        self.discrete_env.set_actions(behavior_name, discrete_action)
 
 
 class MemoryEnvironment(SimpleEnvironment):

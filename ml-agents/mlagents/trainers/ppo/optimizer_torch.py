@@ -135,8 +135,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        continuous_actions = ModelUtils.list_to_tensor(batch["actions"][:self.policy.continuous_act_size]).unsqueeze(-1)
-        discrete_actions = ModelUtils.list_to_tensor(batch["actions"][self.policy.continuous_act_size:], dtype=torch.long)
+        actions = ModelUtils.list_to_tensor(batch["actions"]).unsqueeze(-1)
+        #discrete_actions = ModelUtils.list_to_tensor(batch["actions"][self.policy.continuous_act_size:], dtype=torch.long)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -155,17 +155,14 @@ class TorchPPOOptimizer(TorchOptimizer):
         else:
             vis_obs = []
 
-        continuous_log_probs, continuous_entropy, discrete_log_probs, discrete_entropy, values = self.policy.evaluate_actions(
+        log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
-            continuous_actions=continuous_actions,
-            discrete_actions=discrete_actions,
+            actions=actions,
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
-        log_probs = continuous_log_probs + discrete_log_probs
-        entropy = continuous_entropy + discrete_entropy
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks

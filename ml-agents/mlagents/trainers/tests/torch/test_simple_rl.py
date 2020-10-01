@@ -164,11 +164,11 @@ def _check_environment_trains(
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
 #    config = attr.evolve(PPO_CONFIG)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
-#
+
 def test_hybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME])
+    env = HybridEnvironment([BRAIN_NAME], action_size=3)
     config = attr.evolve(PPO_CONFIG)
-    _check_environment_trains(env, {BRAIN_NAME: config})
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=2.0)
 
 
 #
