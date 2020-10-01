@@ -30,6 +30,15 @@ namespace Unity.MLAgents
     /// </summary>
     internal class AcademyFixedUpdateStepper : MonoBehaviour
     {
+        void OnEnable()
+        {
+            // Check if this stepper belongs to current Academy singleton
+            if (Academy.IsInitialized && !Academy.Instance.IsStepperOwner(this))
+            {
+                Destroy(this);
+            }
+        }
+
         void FixedUpdate()
         {
             Academy.Instance.EnvironmentStep();
@@ -222,6 +231,18 @@ namespace Unity.MLAgents
             Application.quitting += Dispose;
 
             LazyInitialize();
+
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#endif
+        }
+
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                Dispose();
+            }
         }
 
         /// <summary>
@@ -630,6 +651,14 @@ namespace Unity.MLAgents
 
             // Reset the Lazy instance
             s_Lazy = new Lazy<Academy>(() => new Academy());
+        }
+
+        /// <summary>
+        /// Check if the input AcademyFixedUpdateStepper belongs to this Academy.
+        /// </summary>
+        internal bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
+        {
+            return stepper.Equals(m_FixedUpdateStepper);
         }
     }
 }
