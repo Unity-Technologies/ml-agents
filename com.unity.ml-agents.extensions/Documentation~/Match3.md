@@ -12,29 +12,29 @@ These are handled by implementing the `GetCellType()`, `IsMoveValid()`, and `Mak
 
 The AbstractBoard also tracks the number of rows, columns, and potential piece types that the board can have.
 
-### `public abstract int GetCellType(int row, int col)`
-Returns the "type" of piece at the given row and column.
+#### `public abstract int GetCellType(int row, int col)`
+Returns the "color" of piece at the given row and column.
 This should be between 0 and NumCellTypes-1 (inclusive).
+The actual order of the values doesn't matter.
 
-### `public abstract bool IsMoveValid(Move m)`
+#### `public abstract bool IsMoveValid(Move m)`
 Check whether the particular `Move` is valid for the game.
 The actual results will depend on the rules of the game, but we provide the `SimpleIsMoveValid()` method
 that handles basic match3 rules with no special or immovable pieces.
 
-### `public abstract bool MakeMove(Move m)`
+#### `public abstract bool MakeMove(Move m)`
 Instruct the game to make the given move. Returns true if the move was made.
 Note that during training, a move that was marked as invalid may occasionally still be
 requested. If this happens, it is safe to do nothing and request another move.
 
 ## Move struct
-The Move struct encapsulates a swap of two adjacent cells. To enumerate over all potential moves:
-```csharp
-for (var index = 0; index < Move.NumEdgeIndices(NumRows, NumColumns); index++)
-{
-    var move = Move.FromEdgeIndex(index, NumRows, NumColumns);
-}
-```
-You can also construct a `Move` from a row, column, and direction.
+The Move struct encapsulates a swap of two adjacent cells. You can get the number of potential moves
+for a board of a given size with. `Move.NumPotentialMoves(NumRows, NumColumns)`. There are two helper
+functions to create a new `Move`:
+* `public static Move FromMoveIndex(int moveIndex, int maxRows, int maxCols)` can be used to
+iterate over all potential moves for the board by looping from 0 to `Move.NumPotentialMoves()`
+* `public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)` creates
+a `Move` from a row, column, and direction (and board size).
 
 ## `Match3Sensor` and `Match3SensorComponent` classes
 The `Match3Sensor` generates observations about the state using the `AbstractBoard` interface. You can

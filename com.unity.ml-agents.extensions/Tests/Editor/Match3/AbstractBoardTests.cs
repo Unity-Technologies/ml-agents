@@ -111,10 +111,10 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 validIndices.Add(m.InternalEdgeIndex);
             }
 
-            var numPotentialMoves = Move.NumEdgeIndices(board.Rows, board.Columns);
+            var numPotentialMoves = Move.NumPotentialMoves(board.Rows, board.Columns);
             for (var i = 0; i < numPotentialMoves; i++)
             {
-                var move = Move.FromEdgeIndex(i, board.Rows, board.Columns);
+                var move = Move.FromMoveIndex(i, board.Rows, board.Columns);
                 var expected = validIndices.Contains(move.InternalEdgeIndex);
                 Assert.AreEqual(expected, board.IsMoveValid(move), $"({move.Row}, {move.Column}, {move.Direction})");
             }

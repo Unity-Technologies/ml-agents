@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 m_Random = new System.Random(randomSeed);
             }
-            var numMoves = Move.NumEdgeIndices(m_Board.Rows, m_Board.Columns);
+            var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
         }
 
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 moveIndex = actions.DiscreteActions[0];
             }
-            Move move = Move.FromEdgeIndex(moveIndex, m_Board.Rows, m_Board.Columns);
+            Move move = Move.FromMoveIndex(moveIndex, m_Board.Rows, m_Board.Columns);
             m_Board.MakeMove(move);
         }
 
@@ -58,10 +58,10 @@ namespace Unity.MLAgents.Extensions.Match3
 
         IEnumerable<int> InvalidMoveIndices()
         {
-            var numMoves = Move.NumEdgeIndices(m_Board.Rows, m_Board.Columns);
+            var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
             for (var i = 0; i < numMoves; i++)
             {
-                Move move = Move.FromEdgeIndex(i, m_Board.Rows, m_Board.Columns);
+                Move move = Move.FromMoveIndex(i, m_Board.Rows, m_Board.Columns);
                 if (!m_Board.IsMoveValid(move))
                 {
                     yield return i;

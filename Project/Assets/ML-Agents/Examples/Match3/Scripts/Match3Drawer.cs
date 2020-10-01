@@ -63,13 +63,13 @@ namespace Unity.MLAgentsExamples
 
             // Draw valid moves
 
-            for (var eIdx = 0; eIdx < Move.NumEdgeIndices(board.Rows, board.Columns); eIdx++)
+            for (var eIdx = 0; eIdx < Move.NumPotentialMoves(board.Rows, board.Columns); eIdx++)
             {
                 if (DebugEdgeIndex >= 0 && eIdx != DebugEdgeIndex)
                 {
                     continue;
                 }
-                Move move = Move.FromEdgeIndex(eIdx, board.Rows, board.Columns);
+                Move move = Move.FromMoveIndex(eIdx, board.Rows, board.Columns);
                 if (!board.IsMoveValid(move))
                 {
                     continue;

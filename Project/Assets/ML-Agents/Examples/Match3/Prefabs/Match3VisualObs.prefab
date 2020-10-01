@@ -85,7 +85,7 @@ MonoBehaviour:
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 9d640543ac0914a7c8b488e0701e9f62, type: 3}
+  m_Model: {fileID: 11400000, guid: 48d14da88fea74d0693c691c6e3f2e34, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Match3VisualObs

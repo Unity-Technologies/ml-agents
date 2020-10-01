@@ -12,8 +12,8 @@ namespace Unity.MLAgents.Extensions.Match3
 
     /// <summary>
     /// Struct that encapsulates a swap of adjacent cells.
-    /// A Move can be constructed from either a starting cells and a direction,
-    /// or enumerated from 0 to NumEdgeIndices()-1
+    /// A Move can be constructed from either a starting row, column, and direction,
+    /// or enumerated from 0 to NumPotentialMoves()-1
     /// </summary>
     public struct Move
     {
@@ -28,41 +28,59 @@ namespace Unity.MLAgents.Extensions.Match3
         public int Column;
         public Direction Direction;
 
-        public static Move FromEdgeIndex(int edgeIndex, int maxRows, int maxCols)
+        /// <summary>
+        /// Construct a Move from its index and the board size.
+        /// </summary>
+        /// <param name="moveIndex">Must be between 0 and NumPotentialMoves(maxRows, maxCols).</param>
+        /// <param name="maxRows"></param>
+        /// <param name="maxCols"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public static Move FromMoveIndex(int moveIndex, int maxRows, int maxCols)
         {
-            if (edgeIndex < 0 || edgeIndex >= NumEdgeIndices(maxRows, maxCols))
+            if (moveIndex < 0 || moveIndex >= NumPotentialMoves(maxRows, maxCols))
             {
-                throw new ArgumentOutOfRangeException("Invalid edge index.");
+                throw new ArgumentOutOfRangeException("Invalid move index.");
             }
             Direction dir;
             int row, col;
-            if (edgeIndex < (maxCols - 1) * maxRows)
+            if (moveIndex < (maxCols - 1) * maxRows)
             {
                 dir = Direction.Right;
-                col = edgeIndex % (maxCols - 1);
-                row = edgeIndex / (maxCols - 1);
+                col = moveIndex % (maxCols - 1);
+                row = moveIndex / (maxCols - 1);
             }
             else
             {
                 dir = Direction.Up;
-                var offset = edgeIndex - (maxCols - 1) * maxRows;
+                var offset = moveIndex - (maxCols - 1) * maxRows;
                 col = offset % maxCols;
                 row = offset / maxCols;
             }
             return new Move
             {
-                InternalEdgeIndex = edgeIndex,
+                InternalEdgeIndex = moveIndex,
                 Direction = dir,
                 Row = row,
                 Column = col
             };
         }
 
+        /// <summary>
+        /// Construct a Move from the row, column, and direction.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="dir"></param>
+        /// <param name="maxRows"></param>
+        /// <param name="maxCols"></param>
+        /// <returns></returns>
         public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)
         {
             int edgeIndex;
             // Normalize - only consider Right and Up
-            // TODO throw if e.g. col == 0 and dir == Left
+            // TODO throw if e.g. col == 0 and dir == Left, etc.
+            // TODO throw if row < 0 or row>=maxRows (and same for columns).
             if (dir == Direction.Left)
             {
                 dir = Direction.Right;
@@ -93,6 +111,11 @@ namespace Unity.MLAgents.Extensions.Match3
             };
         }
 
+        /// <summary>
+        /// Get the other row and column that correspond to this move.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public (int Row, int Column) OtherCell()
         {
             switch (Direction)
@@ -110,6 +133,11 @@ namespace Unity.MLAgents.Extensions.Match3
             }
         }
 
+        /// <summary>
+        /// Get the opposite direction of this move.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public Direction OtherDirection()
         {
             switch (Direction)
@@ -128,12 +156,13 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <summary>
-        /// Return the number of internal edges in a board of the given size.
+        /// Return the number of potential moves for a board of the given size.
+        /// This is equivalent to the number of internal edges in the board.
         /// </summary>
         /// <param name="maxRows"></param>
         /// <param name="maxCols"></param>
         /// <returns></returns>
-        public static int NumEdgeIndices(int maxRows, int maxCols)
+        public static int NumPotentialMoves(int maxRows, int maxCols)
         {
             return maxRows * (maxCols - 1) + (maxRows - 1) * (maxCols);
         }

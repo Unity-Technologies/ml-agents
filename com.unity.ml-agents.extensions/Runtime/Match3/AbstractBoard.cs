@@ -10,8 +10,9 @@ namespace Unity.MLAgents.Extensions.Match3
 
 
         /// <summary>
-        /// Returns the "type" of piece at the given row and column.
+        /// Returns the "color" of piece at the given row and column.
         /// This should be between 0 and NumCellTypes-1 (inclusive).
+        /// The actual order of the values doesn't matter.
         /// </summary>
         /// <param name="row"></param>
         /// <param name="col"></param>
@@ -148,13 +149,13 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             using (TimerStack.Instance.Scoped("GetRandomValidMove"))
             {
-                int numMoves = Move.NumEdgeIndices(Rows, Columns);
+                int numMoves = Move.NumPotentialMoves(Rows, Columns);
                 var validMoves = new bool[numMoves];
 
                 int numValidMoves = 0;
-                for (var index = 0; index < Move.NumEdgeIndices(Rows, Columns); index++)
+                for (var index = 0; index < Move.NumPotentialMoves(Rows, Columns); index++)
                 {
-                    var move = Move.FromEdgeIndex(index, Rows, Columns);
+                    var move = Move.FromMoveIndex(index, Rows, Columns);
                     if (IsMoveValid(move))
                     {
                         validMoves[index] = true;
