@@ -35,6 +35,21 @@ namespace Unity.MLAgents.Inference
         public Type DataType => k_TypeMap[valueType];
         public long[] shape;
         public Tensor data;
+
+        public long Height
+        {
+            get { return shape.Length == 4 ? shape[1] : shape[5]; }
+        }
+
+        public long Width
+        {
+            get { return shape.Length == 4 ? shape[2] : shape[6]; }
+        }
+
+        public long Channels
+        {
+            get { return shape.Length == 4 ? shape[3] : shape[7]; }
+        }
     }
 
     internal static class TensorUtils
@@ -50,14 +65,14 @@ namespace Unity.MLAgents.Inference
             tensor.data?.Dispose();
             tensor.shape[0] = batch;
 
-            if (tensor.shape.Length == 4)
+            if (tensor.shape.Length == 4 || tensor.shape.Length == 8)
             {
                 tensor.data = allocator.Alloc(
                     new TensorShape(
                         batch,
-                        (int)tensor.shape[1],
-                        (int)tensor.shape[2],
-                        (int)tensor.shape[3]));
+                        (int)tensor.Height,
+                        (int)tensor.Width,
+                        (int)tensor.Channels));
             }
             else
             {
