@@ -5,11 +5,15 @@ on:
   push:
     tags:
       - "release_[0-9]+_test[0-9]+"
+      - "release_[0-9]+"
 
 jobs:
   build-n-publish:
     name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
     runs-on: ubuntu-18.04
+    strategy:
+        matrix:
+            package-path: [ml-agents, ml-agents-env, gym-unity]
 
     steps:
     - uses: actions/checkout@master
@@ -21,19 +25,19 @@ jobs:
       run: pip install setuptools wheel twine --user
     - name: verify git tag vs. version
       run: |
-        cd ml-agents
-        GITHUB_REF=${{ github.ref }} python setup.py verify
+        cd ${{ matrix.package-path }}
+        python setup.py verify
     - name: Build package
       run: |
-        cd ml-agents
+        cd ${{ matrix.package-path }}
         python setup.py sdist
         python setup.py bdist_wheel
     - name: Publish distribution 📦 to Test PyPI
-      if: startsWith(github.ref, 'refs/tags')
+      if: startsWith(github.ref, 'refs/tags') && contains(github.ref, 'test')
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
-        packages_dir: ml-agents/dist/
+        packages_dir: ${{ matrix.package-path }}/dist/
 
 

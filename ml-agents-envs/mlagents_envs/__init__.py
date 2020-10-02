@@ -2,4 +2,4 @@
 __version__ = "0.21.0.dev0"
 
 # Git tag that will be checked to determine whether to trigger upload to pypi
-__release_tag__ = None
+__release_tag__ = "release_8_test0"  # TODO DO NOT MERGE
