@@ -46,7 +46,9 @@ To install this _ML-Agents_ package, follow the instructions in the [Package
 Manager documentation].
 
 To install the companion Python package to enable training behaviors, follow the
-[installation instructions] on our [GitHub repository].
+[installation instructions] on our [GitHub repository]. It is strongly recommended that you
+use the Python package that corresponds to this release (version 0.16.1) for the best experience;
+versions between 0.16.1 and 0.20.0 are supported.
 
 ## Requirements
 

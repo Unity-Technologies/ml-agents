@@ -50,5 +50,21 @@ namespace Unity.MLAgents.Tests.Communicator
                 pythonPackageVerStr));
 
         }
+
+        [Test]
+        public void TestCheckPythonPackageVersionIsCompatible()
+        {
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.13.37")); // too low
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.42.0")); // too high
+
+            // These are fine
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.16.1"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.17.17"));
+            Assert.IsTrue(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.20.0"));
+
+            // "dev" string or otherwise unparseable
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("0.17.0-dev0"));
+            Assert.IsFalse(RpcCommunicator.CheckPythonPackageVersionIsCompatible("oh point seventeen point oh"));
+        }
     }
 }
