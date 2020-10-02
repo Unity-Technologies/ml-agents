@@ -174,12 +174,11 @@ class TorchPPOOptimizer(TorchOptimizer):
             ModelUtils.list_to_tensor(batch["action_probs"]),
             loss_masks,
         )
-        # Use the sum of entropy across actions, not the mean
-        entropy_sum = torch.sum(entropy, dim=1)
+
         loss = (
             policy_loss
             + 0.5 * value_loss
-            - decay_bet * ModelUtils.masked_mean(entropy_sum, loss_masks)
+            - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
         # Set optimizer learning rate
@@ -189,7 +188,7 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.optimizer.step()
         update_stats = {
-            "Losses/Policy Loss": policy_loss.item(),
+            "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,

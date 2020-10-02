@@ -153,8 +153,14 @@ class TorchPolicy(Policy):
             actions = actions[:, :, 0]
         else:
             actions = actions[:, 0, :]
-
-        return (actions, all_logs if all_log_probs else log_probs, entropies, memories)
+        # Use the sum of entropy across actions, not the mean
+        entropy_sum = torch.sum(entropies, dim=1)
+        return (
+            actions,
+            all_logs if all_log_probs else log_probs,
+            entropy_sum,
+            memories,
+        )
 
     def evaluate_actions(
         self,
