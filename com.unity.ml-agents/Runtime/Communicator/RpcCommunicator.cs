@@ -187,8 +187,9 @@ namespace Unity.MLAgents
                 if (!packageVersionSupported)
                 {
                     Debug.LogWarningFormat(
-                        "Python package version ({0}) is out of the supported range. It is strongly recommended that you use" +
-                        "a Python package between {1} and {2}. Training will proceed, but the output format may be different.",
+                        "Python package version ({0}) is out of the supported range or not from an official release. " +
+                        "It is strongly recommended that you use a Python package between {1} and {2}. " +
+                        "Training will proceed, but the output format may be different.",
                         pythonPackageVersion,
                         s_MinSupportedPythonPackageVersion,
                         s_MaxSupportedPythonPackageVersion
