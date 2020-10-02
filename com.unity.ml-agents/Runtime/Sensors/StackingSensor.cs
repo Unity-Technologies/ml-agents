@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
+using Unity.Barracuda;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -40,6 +41,7 @@ namespace Unity.MLAgents.Sensors
 
         byte[] m_EmptyCompressedObservation;
         int[] m_CompressionMapping;
+        TensorShape m_tensorShape;
 
         /// <summary>
         /// Initializes the sensor.
@@ -83,6 +85,7 @@ namespace Unity.MLAgents.Sensors
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
                 m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
+                m_tensorShape = new TensorShape(0, shape[0], shape[1], shape[2]);
             }
         }
 
@@ -96,11 +99,32 @@ namespace Unity.MLAgents.Sensors
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
-            for (var i = 0; i < m_NumStackedObservations; i++)
+            if (wrappedShape.Length == 1)
             {
-                var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                writer.AddRange(m_StackedObservations[obsIndex], numWritten);
-                numWritten += m_UnstackedObservationSize;
+                for (var i = 0; i < m_NumStackedObservations; i++)
+                {
+                    var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
+                    writer.AddRange(m_StackedObservations[obsIndex], numWritten);
+                    numWritten += m_UnstackedObservationSize;
+                }
+            }
+            else
+            {
+                for (var i = 0; i < m_NumStackedObservations; i++)
+                {
+                    var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
+                    for (var h = 0; h < wrappedShape[0]; h++)
+                    {
+                        for (var w = 0; w < wrappedShape[1]; w++)
+                        {
+                            for (var c = 0; c < wrappedShape[2]; c++)
+                            {
+                                writer[h, w, obsIndex * wrappedShape[2] + c] = m_StackedObservations[obsIndex][m_tensorShape.Index(0, h, w, c)];
+                            }
+                        }
+                    }
+                }
+                numWritten = wrappedShape[0] * wrappedShape[1] * wrappedShape[2] * m_NumStackedObservations;
             }
 
             return numWritten;
