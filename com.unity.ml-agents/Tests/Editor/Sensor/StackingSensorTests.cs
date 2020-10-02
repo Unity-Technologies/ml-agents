@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using UnityEngine;
 using Unity.MLAgents.Sensors;
 
@@ -62,20 +63,91 @@ namespace Unity.MLAgents.Tests
             SensorTestHelper.CompareObservation(sensor, new[] { 0f, 0f, 0f, 0f, 5f, 6f });
         }
 
+        class DummySensor : ISparseChannelSensor
+        {
+            public SensorCompressionType CompressionType = SensorCompressionType.PNG;
+            public int[] Mapping;
+            public int[] Shape = new int[] { 8, 8, 3 };
+
+            internal DummySensor()
+            {
+            }
+
+            public int[] GetObservationShape()
+            {
+                return Shape;
+            }
+
+            public int Write(ObservationWriter writer)
+            {
+                return 0;
+            }
+
+            public byte[] GetCompressedObservation()
+            {
+                var obs = new int[] { 1, 2, 3 };
+                byte[] bytes = Array.ConvertAll(obs, (z) => (byte)z);
+                return bytes;
+            }
+
+            public void Update() { }
+
+            public void Reset() { }
+
+            public SensorCompressionType GetCompressionType()
+            {
+                return CompressionType;
+            }
+
+            public string GetName()
+            {
+                return "Dummy";
+            }
+
+            public int[] GetCompressedChannelMapping()
+            {
+                return Mapping;
+            }
+        }
+
         [Test]
         public void TestStackingMapping()
         {
             // Test grayscale stacked mapping with CameraSensor
-            CameraSensor cameraSensor = new CameraSensor(new Camera(), 64, 64,
+            var cameraSensor = new CameraSensor(new Camera(), 64, 64,
                 true, "grayscaleCamera", SensorCompressionType.PNG);
-            ISparseChannelSensor stackedCameraSensor = new StackingSensor(cameraSensor, 2);
+            var stackedCameraSensor = new StackingSensor(cameraSensor, 2);
             Assert.AreEqual(stackedCameraSensor.GetCompressedChannelMapping(), new[] { 0, 0, 0, 1, 1, 1 });
 
             // Test RGB stacked mapping with RenderTextureSensor
-            RenderTextureSensor renderTextureSensor = new RenderTextureSensor(new RenderTexture(24, 16, 0),
+            var renderTextureSensor = new RenderTextureSensor(new RenderTexture(24, 16, 0),
                 false, "renderTexture", SensorCompressionType.PNG);
-            ISparseChannelSensor stackedRenderTextureSensor = new StackingSensor(renderTextureSensor, 2);
+            var stackedRenderTextureSensor = new StackingSensor(renderTextureSensor, 2);
             Assert.AreEqual(stackedRenderTextureSensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, 4, 5 });
+
+            // Test mapping with dummy layers that should be dropped
+            var dummySensor = new DummySensor();
+            dummySensor.Shape = new int[] { 2, 2, 4 };
+            dummySensor.Mapping = new int[] { 0, 1, 2, 3, -1, -1 };
+            var stackedDummySensor = new StackingSensor(dummySensor, 2);
+            Assert.AreEqual(stackedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
+        }
+
+        [Test]
+        public void TestStackedGetCompressedObservation()
+        {
+            var dummySensor = new DummySensor();
+            var stackedDummySensor = new StackingSensor(dummySensor, 3);
+            // Call three times to fill the buffer
+            stackedDummySensor.GetCompressedObservation();
+            stackedDummySensor.Update();
+            stackedDummySensor.GetCompressedObservation();
+            stackedDummySensor.Update();
+            var compressedObs = stackedDummySensor.GetCompressedObservation();
+
+            int[] decompressed = Array.ConvertAll(compressedObs, c => (int)c);
+            var expectedObservation = new int[] { 1, 2, 3, 1, 2, 3, 1, 2, 3 };
+            Assert.AreEqual(decompressed, expectedObservation);
         }
     }
 }

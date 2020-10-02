@@ -108,12 +108,15 @@ def process_pixels(
             break
 
     if mappings is not None and len(mappings) > 0:
-        return process_images_mapping(image_arrays, mappings)
+        return _process_images_mapping(image_arrays, mappings)
     else:
-        return process_images_num_channels(image_arrays, expected_channels)
+        return _process_images_num_channels(image_arrays, expected_channels)
 
 
-def process_images_mapping(image_arrays, mappings):
+def _process_images_mapping(image_arrays, mappings):
+    """
+    Helper function for processing decompressed images with compressed channel mappings.
+    """
     image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
 
     if len(mappings) != len(image_arrays):
@@ -143,8 +146,11 @@ def process_images_mapping(image_arrays, mappings):
     return img
 
 
-# Old API without mapping provided. Use the first n channel, n=expected_channels.
-def process_images_num_channels(image_arrays, expected_channels):
+def _process_images_num_channels(image_arrays, expected_channels):
+    """
+    Helper function for processing decompressed images with number of expected channels.
+    This is for old API without mapping provided. Use the first n channel, n=expected_channels.
+    """
     if expected_channels == 1:
         # Convert to grayscale
         img = np.mean(image_arrays[0], axis=2)

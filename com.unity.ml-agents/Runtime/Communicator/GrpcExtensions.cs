@@ -337,7 +337,7 @@ namespace Unity.MLAgents
             };
         }
 
-        private static bool IsTrivialMapping(ISensor sensor)
+        internal static bool IsTrivialMapping(ISensor sensor)
         {
             var compressibleSensor = sensor as ISparseChannelSensor;
             if (compressibleSensor is null)
@@ -355,15 +355,14 @@ namespace Unity.MLAgents
                 return true;
             }
             // check if mapping equals identity mapping
-            bool isIdentityMapping = true;
             for (var i = 0; i < mapping.Length; i++)
             {
                 if (mapping[i] != i)
                 {
-                    isIdentityMapping = false;
+                    return false;
                 }
             }
-            return isIdentityMapping;
+            return true;
         }
     }
 }
