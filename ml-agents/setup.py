@@ -21,7 +21,10 @@ class VerifyVersionCommand(install):
     description = "verify that the git tag matches our version"
 
     def run(self):
-        tag = os.getenv("CIRCLE_TAG")
+        if "GITHUB_REF" in os.environ:
+            tag = os.getenv("GITHUB_REF").replace("refs/tags", "")
+        else:
+            tag = os.getenv("CIRCLE_TAG")
 
         if tag != EXPECTED_TAG:
             info = "Git tag: {} does not match the expected tag of this app: {}".format(
