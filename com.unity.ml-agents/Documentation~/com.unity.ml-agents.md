@@ -111,12 +111,12 @@ If you are new to the Unity ML-Agents package, or have a question after reading
 the documentation, you can checkout our [GitHUb Repository], which also includes
 a number of ways to [connect with us] including our [ML-Agents Forum].
 
-[unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
+[unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents/tree/release_2_verified_docs
 [unity inference engine]: https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html
 [package manager documentation]: https://docs.unity3d.com/Manual/upm-ui-install.html
-[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_1_docs/docs/Installation.md
-[github repository]: https://github.com/Unity-Technologies/ml-agents
-[python package]: https://github.com/Unity-Technologies/ml-agents
+[installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_2_verified_docs/docs/Installation.md
+[github repository]: https://github.com/Unity-Technologies/ml-agents/tree/release_2_verified_docs
+[python package]: https://github.com/Unity-Technologies/ml-agents/tree/release_2_verified_docs
 [execution order of event functions]: https://docs.unity3d.com/Manual/ExecutionOrder.html
-[connect with us]: https://github.com/Unity-Technologies/ml-agents#community-and-feedback
+[connect with us]: https://github.com/Unity-Technologies/ml-agents/tree/release_2_verified_docs#community-and-feedback
 [ml-agents forum]: https://forum.unity.com/forums/ml-agents.453/
