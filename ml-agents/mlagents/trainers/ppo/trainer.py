@@ -251,7 +251,7 @@ class PPOTrainer(RLTrainer):
             behavior_spec,
             self.trainer_settings,
             condition_sigma_on_obs=False,  # Faster training for PPO
-            separate_critic=True,
+            separate_critic=behavior_spec.is_action_continuous(),
         )
         return policy
 
