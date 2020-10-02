@@ -22,7 +22,7 @@ class VerifyVersionCommand(install):
 
     def run(self):
         if "GITHUB_REF" in os.environ:
-            tag = os.getenv("GITHUB_REF").replace("refs/tags", "")
+            tag = os.getenv("GITHUB_REF").replace("refs/tags/", "")
         else:
             tag = os.getenv("CIRCLE_TAG")
 
