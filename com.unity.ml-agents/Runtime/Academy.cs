@@ -237,6 +237,7 @@ namespace Unity.MLAgents
 #endif
         }
 
+#if UNITY_EDITOR
         /// <summary>
         /// Clean up the Academy when switching from edit mode to play mode
         /// </summary>
@@ -248,6 +249,7 @@ namespace Unity.MLAgents
                 Dispose();
             }
         }
+#endif
 
         /// <summary>
         /// Initialize the Academy if it hasn't already been initialized.
