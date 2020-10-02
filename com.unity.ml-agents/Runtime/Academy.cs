@@ -33,10 +33,10 @@ namespace Unity.MLAgents
         void OnEnable()
         {
             // Check if this stepper belongs to current Academy singleton
-            // if (!Academy.Instance.IsStepperOwner(this))
-            // {
-            //     Destroy(this);
-            // }
+            if (Academy.IsInitialized && !Academy.IsStepperOwner(this))
+            {
+                Destroy(this);
+            }
         }
 
         void FixedUpdate()
@@ -662,9 +662,9 @@ namespace Unity.MLAgents
         /// <summary>
         /// Check if the input AcademyFixedUpdateStepper belongs to this Academy.
         /// </summary>
-        internal bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
+        internal static bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
         {
-            return stepper.gameObject.Equals(Academy.Instance.m_StepperObject);
+            return GameObject.ReferenceEquals(stepper.gameObject, Academy.Instance.m_StepperObject);
         }
     }
 }
