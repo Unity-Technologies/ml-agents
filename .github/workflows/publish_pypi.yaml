@@ -1,0 +1,34 @@
+# Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+name: Publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+
+on: push
+
+jobs:
+  build-n-publish:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI and TestPyPI
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: pip install setuptools wheel twine --user
+    - name: verify git tag vs. version
+      run: |
+        cd ml-agents
+        python setup.py verify
+    - name: Build package
+      run: |
+        cd ml-agents
+        python setup.py sdist
+        python setup.py bdist_wheel
+    - name: Publish distribution 📦 to Test PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.test_pypi_password }}
+        repository_url: https://test.pypi.org/legacy/
+
+
