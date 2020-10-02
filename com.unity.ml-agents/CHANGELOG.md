@@ -17,6 +17,9 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+ - In `VisualFoodCollector` scene, a vector flag representing the frozen state of
+ the agent is added to the input observations in addition to the original first-person
+ camera frame. The scene is able to train with the provided default config file.
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
