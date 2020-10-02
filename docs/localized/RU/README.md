@@ -57,7 +57,8 @@ Proximal Policy Optimization (PPO) и Soft Actor-Critic (SAC). Первый ал
 
 ## Релизы и Документация
 
-**Наш последний стабильный релиз - это `7-ой Релиз` (Release 7). См. [здесь](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/Readme.md),
+**Наш последний стабильный релиз - это `7-ой Релиз` (Release 7).
+См. [здесь](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/Readme.md),
 чтобы начать работать с самой последней версий ML-Agents.**
 
 Таблица внизу - список всех наших релизов, включая master ветку, над которой мы ведем активную работу
