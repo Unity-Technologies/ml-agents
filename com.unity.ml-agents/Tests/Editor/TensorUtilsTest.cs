@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Tests
                 // Unfortunately, the PackageInfo methods don't exist in earlier versions of the editor,
                 // so just skip that variant of the test then.
                 // It's unlikely, but possible that we'll upgrade to a newer dependency of Barracuda,
-                // in which case we should make sure this test kicks in the.
+                // in which case we should make sure this test is run then.
 #if UNITY_2019_3_OR_NEWER
                 var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
                 Assert.AreEqual("com.unity.barracuda", packageInfo.name);
