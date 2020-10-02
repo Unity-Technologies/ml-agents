@@ -128,10 +128,10 @@ repos:
         language: script
         entry: utils/validate_inits.py
         types: [python]
-    -   id: validate-release-links-py
-        name: validate release links
-        language: script
-        entry: utils/validate_release_links.py
+#    -   id: validate-release-links-py  # TODO revert
+#        name: validate release links
+#        language: script
+#        entry: utils/validate_release_links.py
     -   id: dotnet-format
         name: dotnet-format
         language: script
