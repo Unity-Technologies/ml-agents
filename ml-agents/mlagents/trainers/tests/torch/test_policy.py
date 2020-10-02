@@ -136,7 +136,7 @@ def test_sample_actions(rnn, visual, discrete):
         )
     else:
         assert log_probs.shape == (64, policy.behavior_spec.action_shape)
-    assert entropies.shape == (64, policy.behavior_spec.action_size)
+    assert entropies.shape == (64,)
 
     if rnn:
         assert memories.shape == (1, 1, policy.m_size)
