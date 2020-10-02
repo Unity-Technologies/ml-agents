@@ -35,7 +35,5 @@ jobs:
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
         packages_dir: ml-agents/dist/
-        with:
-            skip_existing: true
 
 
