@@ -174,7 +174,6 @@ class TorchPPOOptimizer(TorchOptimizer):
             ModelUtils.list_to_tensor(batch["action_probs"]),
             loss_masks,
         )
-
         loss = (
             policy_loss
             + 0.5 * value_loss
