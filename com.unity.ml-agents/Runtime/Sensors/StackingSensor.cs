@@ -1,7 +1,11 @@
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Unity.Barracuda;
+
+
+[assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
 
 namespace Unity.MLAgents.Sensors
 {
@@ -28,6 +32,7 @@ namespace Unity.MLAgents.Sensors
 
         string m_Name;
         int[] m_Shape;
+        int[] m_WrappedShape;
 
         /// <summary>
         /// Buffer of previous observations
@@ -56,13 +61,13 @@ namespace Unity.MLAgents.Sensors
 
             m_Name = $"StackingSensor_size{numStackedObservations}_{wrapped.GetName()}";
 
-            var shape = wrapped.GetObservationShape();
-            m_Shape = new int[shape.Length];
+            m_WrappedShape = wrapped.GetObservationShape();
+            m_Shape = new int[m_WrappedShape.Length];
 
             m_UnstackedObservationSize = wrapped.ObservationSize();
-            for (int d = 0; d < shape.Length; d++)
+            for (int d = 0; d < m_WrappedShape.Length; d++)
             {
-                m_Shape[d] = shape[d];
+                m_Shape[d] = m_WrappedShape[d];
             }
 
             // TODO support arbitrary stacking dimension
@@ -85,7 +90,7 @@ namespace Unity.MLAgents.Sensors
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
                 m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
-                m_tensorShape = new TensorShape(0, shape[0], shape[1], shape[2]);
+                m_tensorShape = new TensorShape(0, m_WrappedShape[0], m_WrappedShape[1], m_WrappedShape[2]);
             }
         }
 
@@ -93,13 +98,12 @@ namespace Unity.MLAgents.Sensors
         public int Write(ObservationWriter writer)
         {
             // First, call the wrapped sensor's write method. Make sure to use our own writer, not the passed one.
-            var wrappedShape = m_WrappedSensor.GetObservationShape();
-            m_LocalWriter.SetTarget(m_StackedObservations[m_CurrentIndex], wrappedShape, 0);
+            m_LocalWriter.SetTarget(m_StackedObservations[m_CurrentIndex], m_WrappedShape, 0);
             m_WrappedSensor.Write(m_LocalWriter);
 
             // Now write the saved observations (oldest first)
             var numWritten = 0;
-            if (wrappedShape.Length == 1)
+            if (m_WrappedShape.Length == 1)
             {
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
@@ -113,18 +117,18 @@ namespace Unity.MLAgents.Sensors
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
                     var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                    for (var h = 0; h < wrappedShape[0]; h++)
+                    for (var h = 0; h < m_WrappedShape[0]; h++)
                     {
-                        for (var w = 0; w < wrappedShape[1]; w++)
+                        for (var w = 0; w < m_WrappedShape[1]; w++)
                         {
-                            for (var c = 0; c < wrappedShape[2]; c++)
+                            for (var c = 0; c < m_WrappedShape[2]; c++)
                             {
-                                writer[h, w, obsIndex * wrappedShape[2] + c] = m_StackedObservations[obsIndex][m_tensorShape.Index(0, h, w, c)];
+                                writer[h, w, i * m_WrappedShape[2] + c] = m_StackedObservations[obsIndex][m_tensorShape.Index(0, h, w, c)];
                             }
                         }
                     }
                 }
-                numWritten = wrappedShape[0] * wrappedShape[1] * wrappedShape[2] * m_NumStackedObservations;
+                numWritten = m_WrappedShape[0] * m_WrappedShape[1] * m_WrappedShape[2] * m_NumStackedObservations;
             }
 
             return numWritten;
