@@ -165,11 +165,18 @@ def _check_environment_trains(
 #    config = attr.evolve(PPO_CONFIG)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 
-def test_hybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], action_size=3)
-    config = attr.evolve(PPO_CONFIG)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=2.0)
+#def test_hybrid_ppo():
+#    env = HybridEnvironment([BRAIN_NAME], action_size=1, step_size=0.2)
+#    config = attr.evolve(PPO_CONFIG, max_steps=10000)
+#    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=5.0)
 
+def test_2dhybrid_ppo():
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
+    new_hyperparams = attr.evolve(
+        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280
+    )
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=100000)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=5.0)
 
 #
 #@pytest.mark.parametrize("use_discrete", [True, False])
