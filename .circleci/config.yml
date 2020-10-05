@@ -1,0 +1,127 @@
+version: 2.1
+executors:
+  python361:
+    docker:
+      - image: circleci/python:3.6.1
+  python373:
+    docker:
+      - image: circleci/python:3.7.3
+  python382:
+    docker:
+      - image: circleci/python:3.8.2
+
+jobs:
+  deploy:
+    parameters:
+      directory:
+        type: string
+        description: Local directory to use for publishing (e.g. ml-agents)
+      username:
+        type: string
+        description: pypi username
+        default: mlagents
+      test_repository_args:
+        type: string
+        description: Optional override repository URL. Only use for tests, leave blank for "real"
+        default: ""
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install  --upgrade pip
+            pip install setuptools wheel twine
+      - run:
+          name: verify git tag vs. version
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py verify
+      - run:
+          name: create packages
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            python setup.py sdist
+            python setup.py bdist_wheel
+      - run:
+          name: upload to pypi
+          # To upload to test, just add the following flag to twine upload:
+          # --repository-url https://test.pypi.org/legacy/
+          # and change the username to "mlagents-test"
+          command: |
+            . venv/bin/activate
+            cd << parameters.directory >>
+            twine upload -u << parameters.username >> -p $PYPI_PASSWORD << parameters.test_repository_args >> dist/*
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      # The first deploy jobs are the "real" ones that upload to pypi
+      - deploy:
+          name: deploy ml-agents-envs
+          directory: ml-agents-envs
+          filters:
+            tags:
+              # Matches e.g. "release_123"
+              only: /^DEPRECATED_release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy ml-agents
+          directory: ml-agents
+          filters:
+            tags:
+              # Matches e.g. "release_123"
+              only: /^DEPRECATED_release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: deploy gym-unity
+          directory: gym-unity
+          filters:
+            tags:
+              # Matches e.g. "release_123"
+              only: /^DEPRECATED_release_[0-9]+$/
+            branches:
+              ignore: /.*/
+      # These deploy jobs upload to the pypi test repo. They have different tag triggers than the real ones.
+      - deploy:
+          name: test deploy ml-agents-envs
+          directory: ml-agents-envs
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^DEPRECATED_release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: test deploy ml-agents
+          directory: ml-agents
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^DEPRECATED_release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
+      - deploy:
+          name: test deploy gym-unity
+          directory: gym-unity
+          username: mlagents-test
+          test_repository_args: --repository-url https://test.pypi.org/legacy/
+          filters:
+            tags:
+              # Matches e.g. "release_123_test456
+              only: /^DEPRECATED_release_[0-9]+_test[0-9]+$/
+            branches:
+              ignore: /.*/
