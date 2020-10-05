@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -23,6 +24,10 @@ using Unity.Barracuda;
  * https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/
  */
 
+
+[assembly: InternalsVisibleTo("Tests")]
+
+
 namespace Unity.MLAgents
 {
     /// <summary>
@@ -32,11 +37,27 @@ namespace Unity.MLAgents
     {
         void OnEnable()
         {
+            Debug.Log($"Stepper enabled: {this.gameObject.name}");
+            Debug.Log($"Academy.IsInitialized: {Academy.IsInitialized}");
+
+            if (Academy.IsInitialized)
+            {
+                Debug.Log($"IsStepperOwner:{Academy.IsStepperOwner(this)}");
+            }
+
             // Check if this stepper belongs to current Academy singleton
             if (Academy.IsInitialized && !Academy.IsStepperOwner(this))
             {
-                Destroy(this);
+                Debug.Log($"Destroy {this.gameObject.name}");
+                Destroy(this.gameObject);
             }
+
+            // Doing this will delete the new steper
+            // if (!Academy.IsInitialized)
+            // {
+            //     Debug.Log($"Destroy {this.gameObject.name}");
+            //     Destroy(this.gameObject);
+            // }
         }
 
         void FixedUpdate()
@@ -217,7 +238,7 @@ namespace Unity.MLAgents
         public event Action OnEnvironmentReset;
 
         AcademyFixedUpdateStepper m_FixedUpdateStepper;
-        GameObject m_StepperObject;
+        GameObject m_StepperObject = null;
 
 
         /// <summary>
@@ -278,7 +299,7 @@ namespace Unity.MLAgents
 
             m_StepperObject = new GameObject("AcademyFixedUpdateStepper");
             // Don't show this object in the hierarchy
-            m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
+            //m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
             m_FixedUpdateStepper = m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
             try
             {
