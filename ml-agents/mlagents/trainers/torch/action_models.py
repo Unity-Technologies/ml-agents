@@ -10,42 +10,7 @@ from mlagents.trainers.torch.utils import ModelUtils
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
-
-
-
-class ActionModel(nn.Module, abc.ABC):
-    def _sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
-        """
-        Samples actions from list of distribution instances
-        """
-        actions = []
-        for action_dist in dists:
-            action = action_dist.sample()
-            actions.append(action)
-        return actions
-
-    @abc.abstractmethod
-    def evaluate(self, inputs: torch.Tensor, masks: torch.Tensor, actions: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
-        """
-        Returns the log_probs and entropies of actions
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_action_out(self, inputs: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
-        """
-        Returns the tensor to be exported to ONNX for the distribution
-        """
-        pass
-
-    @abc.abstractmethod
-    def forward(self, inputs: torch.Tensor, masks: torch.Tensor):
-        """
-        Returns the actions, log probs and entropies for given input
-        """
-        pass
-
-class HybridActionModel(ActionModel):
+class HybridActionModel(nn.Module):
     def __init__(
         self,
         hidden_size: int,
@@ -71,9 +36,28 @@ class HybridActionModel(ActionModel):
                 )
             )
             self._split_list.append(continuous_act_size)
+
         if len(discrete_act_size) > 0:
             self._distributions.append(MultiCategoricalDistribution(self.encoding_size, discrete_act_size))
             self._split_list += [1 for _ in range(len(discrete_act_size))]
+
+    def _sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
+        """
+        Samples actions from list of distribution instances
+        """
+        actions = []
+        for action_dist in dists:
+            action = action_dist.sample()
+            actions.append(action)
+        return actions
+
+    def _get_dists(self, inputs: torch.Tensor, masks: torch.Tensor) -> Tuple[List[DistInstance], List[DiscreteDistInstance]]:
+        distribution_instances: List[DistInstance] = []
+        for distribution in self._distributions:
+            dist_instances = distribution(inputs, masks)
+            for dist_instance in dist_instances:
+                distribution_instances.append(dist_instance)
+        return distribution_instances
 
     def evaluate(self, inputs: torch.Tensor, masks: torch.Tensor, actions: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         dists = self._get_dists(inputs, masks)
@@ -89,14 +73,7 @@ class HybridActionModel(ActionModel):
         dists = self._get_dists(inputs, masks)
         return torch.cat([dist.exported_model_output() for dist in dists], dim=1)
 
-    def _get_dists(self, inputs: torch.Tensor, masks: torch.Tensor) -> Tuple[List[DistInstance], List[DiscreteDistInstance]]:
-        distribution_instances: List[DistInstance] = []
-        for distribution in self._distributions:
-            dist_instances = distribution(inputs, masks)
-            for dist_instance in dist_instances:
-                distribution_instances.append(dist_instance)
-        return distribution_instances
-
+    
     def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         dists = self._get_dists(inputs, masks)
         action_outs : List[torch.Tensor] = []

@@ -297,6 +297,7 @@ class HybridEnvironment(SimpleEnvironment):
         self.discrete_env.goal = self.goal
 
     def set_actions(self, behavior_name: BehaviorName, action) -> None:
+        #print(action, self.goal[behavior_name])
         continuous_action = action[:, :self.continuous_action_size]
         discrete_action = action[:, self.continuous_action_size:]
         self.continuous_env.set_actions(behavior_name, continuous_action)
