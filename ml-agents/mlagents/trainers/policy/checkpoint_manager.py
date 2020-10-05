@@ -9,14 +9,14 @@ logger = get_logger(__name__)
 
 
 @attr.s(auto_attribs=True)
-class NNCheckpoint:
+class ModelCheckpoint:
     steps: int
     file_path: str
     reward: Optional[float]
     creation_time: float
 
 
-class NNCheckpointManager:
+class ModelCheckpointManager:
     @staticmethod
     def get_checkpoints(behavior_name: str) -> List[Dict[str, Any]]:
         checkpoint_list = GlobalTrainingStatus.get_parameter_state(
@@ -60,12 +60,12 @@ class NNCheckpointManager:
         while len(checkpoints) > keep_checkpoints:
             if keep_checkpoints <= 0 or len(checkpoints) == 0:
                 break
-            NNCheckpointManager.remove_checkpoint(checkpoints.pop(0))
+            ModelCheckpointManager.remove_checkpoint(checkpoints.pop(0))
         return checkpoints
 
     @classmethod
     def add_checkpoint(
-        cls, behavior_name: str, new_checkpoint: NNCheckpoint, keep_checkpoints: int
+        cls, behavior_name: str, new_checkpoint: ModelCheckpoint, keep_checkpoints: int
     ) -> None:
         """
         Make room for new checkpoint if needed and insert new checkpoint information.
@@ -83,7 +83,7 @@ class NNCheckpointManager:
 
     @classmethod
     def track_final_checkpoint(
-        cls, behavior_name: str, final_checkpoint: NNCheckpoint
+        cls, behavior_name: str, final_checkpoint: ModelCheckpoint
     ) -> None:
         """
         Ensures number of checkpoints stored is within the max number of checkpoints
