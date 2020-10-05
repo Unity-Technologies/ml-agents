@@ -523,6 +523,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             m_perceptionTexture2D.SetPixels(m_PerceptionColors);
         }
 
+        public float overlapBoxScale = .5f;
         /// <summary>
         /// Perceive - Clears the buffers, calls overlap box on the actual cell (the actual perception part)
         /// for all found colliders, LoadObjectData is called
@@ -538,7 +539,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Collider[] foundColliders = null;
                 Vector3 cellCenter = Vector3.zero;
 
-                Vector3 halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
+                Vector3 halfCellScale = Vector3.one * overlapBoxScale;
+                //                Vector3 halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
 
                 for (int cellIndex = 0; cellIndex < NumCells; cellIndex++)
                 {
