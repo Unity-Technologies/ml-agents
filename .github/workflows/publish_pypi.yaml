@@ -39,5 +39,9 @@ jobs:
         password: ${{ secrets.test_pypi_password }}
         repository_url: https://test.pypi.org/legacy/
         packages_dir: ${{ matrix.package-path }}/dist/
-
-
+    - name: Publish distribution 📦 to Production PyPI
+      if: startsWith(github.ref, 'refs/tags') && !contains(github.ref, 'test')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.pypi_password }}
+        packages_dir: ${{ matrix.package-path }}/dist/
