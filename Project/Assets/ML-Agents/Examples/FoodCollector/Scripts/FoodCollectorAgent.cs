@@ -30,7 +30,6 @@ public class FoodCollectorAgent : Agent
     public GameObject myLaser;
     public bool contribute;
     public bool useVectorObs;
-    public bool useFrozenFlag;
 
     EnvironmentParameters m_ResetParams;
 
