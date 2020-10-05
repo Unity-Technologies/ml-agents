@@ -343,12 +343,16 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
+        all_discrete_probs: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
 
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        if all_discrete_probs:
+            action, log_probs, entropies = self.action_model.forward_all_disc_probs(encoding, masks)
+        else:
+            action, log_probs, entropies = self.action_model(encoding, masks)
         value_outputs = self.value_heads(encoding)
         return action, log_probs, entropies, value_outputs, memories
 
@@ -433,6 +437,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
+        all_discrete_probs: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
@@ -443,7 +448,10 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        if all_discrete_probs:
+            action, log_probs, entropies = self.action_model.forward_all_disc_probs(encoding, masks)
+        else:
+            action, log_probs, entropies = self.action_model(encoding, masks)
         value_outputs, critic_mem_outs = self.critic(
         vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
