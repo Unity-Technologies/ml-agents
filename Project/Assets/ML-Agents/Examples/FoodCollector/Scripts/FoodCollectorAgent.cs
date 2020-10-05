@@ -53,10 +53,7 @@ public class FoodCollectorAgent : Agent
             sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_Shoot);
         }
-        else if (useFrozenFlag)
-        {
-            sensor.AddObservation(m_Frozen);
-        }
+        sensor.AddObservation(m_Frozen);
     }
 
     public Color32 ToColor(int hexVal)
