@@ -7,7 +7,7 @@ from typing import Dict, cast
 import os
 
 import numpy as np
-from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
+from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
@@ -88,7 +88,7 @@ class SACTrainer(RLTrainer):
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
-    def _checkpoint(self) -> NNCheckpoint:
+    def _checkpoint(self) -> ModelCheckpoint:
         """
         Writes a checkpoint model to memory
         Overrides the default to save the replay buffer.
