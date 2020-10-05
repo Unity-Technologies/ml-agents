@@ -9,8 +9,31 @@ namespace Unity.MLAgents.Tests
     public class TensorUtilsTest
     {
         [TestCase(4, TestName = "TestResizeTensor_4D")]
+        [TestCase(8, TestName = "TestResizeTensor_8D")]
         public void TestResizeTensor(int dimension)
         {
+            if (dimension == 8)
+            {
+                // Barracuda 1.0.x doesn't support 8D tensors
+                // Barracuda 1.1.x does but it initially broke ML-Agents support
+                // Unfortunately, the PackageInfo methods don't exist in earlier versions of the editor,
+                // so just skip that variant of the test then.
+                // It's unlikely, but possible that we'll upgrade to a newer dependency of Barracuda,
+                // in which case we should make sure this test is run then.
+#if UNITY_2019_3_OR_NEWER
+                var packageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
+                Assert.AreEqual("com.unity.barracuda", packageInfo.name);
+                var barracuda8DSupport = new Version(1, 1, 0);
+                var strippedBarracudaVersion = packageInfo.version.Replace("-preview", "");
+                var version = new Version(strippedBarracudaVersion);
+                if (version <= barracuda8DSupport)
+                {
+                    return;
+                }
+#else
+                return;
+#endif
+            }
             var alloc = new TensorCachingAllocator();
             var height = 64;
             var width = 84;
