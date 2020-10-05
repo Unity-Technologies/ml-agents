@@ -2,9 +2,12 @@ from typing import Any, Dict
 import numpy as np
 from mlagents.tf_utils import tf
 
-from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
+from mlagents.trainers.tf.components.reward_signals import (
+    RewardSignal,
+    RewardSignalResult,
+)
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from .model import GAILModel
+from mlagents.trainers.tf.components.reward_signals.gail.model import GAILModel
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.settings import GAILSettings
