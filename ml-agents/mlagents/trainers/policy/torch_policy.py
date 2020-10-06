@@ -97,7 +97,7 @@ class TorchPolicy(Policy):
         self, decision_requests: DecisionSteps
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
-        # mask = None
+        #mask = None
         mask = torch.ones([len(decision_requests), np.sum(self.discrete_act_size)])
         if decision_requests.action_mask is not None:
             mask = torch.as_tensor(
@@ -130,7 +130,7 @@ class TorchPolicy(Policy):
         :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         """
         actions, log_probs, entropies, value_heads, memories = self.actor_critic.get_action_stats_and_value(
-            vec_obs, vis_obs, masks, memories, seq_len, all_log_probs
+            vec_obs, vis_obs, masks, memories, seq_len
         )
         return (
             actions,
