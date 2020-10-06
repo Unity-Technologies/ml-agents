@@ -319,9 +319,10 @@ you would like to contribute environments, please see our
     - Side Motion (3 possible actions: Left, Right, No Action)
     - Rotation (3 possible actions: Rotate Left, Rotate Right, No Action)
     - Laser (2 possible actions: Laser, No Action)
-  - Visual Observations (Optional): First-person camera per-agent. Use
-    `VisualFoodCollector` scene. **The visual observation version of this
-    environment does not train with the provided default training parameters.**
+  - Visual Observations (Optional): First-person camera per-agent, plus one vector
+    flag representing the frozen state of the agent. This scene uses a combination
+    of vector and visual observations and the training will not succeed without
+    the frozen vector flag. Use `VisualFoodCollector` scene.
 - Float Properties: Two
   - laser_length: Length of the laser used by the agent
     - Default: 1

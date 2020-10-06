@@ -49,9 +49,9 @@ public class FoodCollectorAgent : Agent
             var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
             sensor.AddObservation(localVelocity.x);
             sensor.AddObservation(localVelocity.z);
-            sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_Shoot);
         }
+        sensor.AddObservation(m_Frozen);
     }
 
     public Color32 ToColor(int hexVal)

@@ -26,6 +26,9 @@ and this project adheres to
  compressed observation. A new entry `compressed_channel_mapping` is added to the
  proto to handle decompression correctly. Newer versions of the package that wish to
  make use of this will also need a compatible version of the Python trainers. (#4476)
+ - In `VisualFoodCollector` scene, a vector flag representing the frozen state of
+ the agent is added to the input observations in addition to the original first-person
+ camera frame. The scene is able to train with the provided default config file. (#4511)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
