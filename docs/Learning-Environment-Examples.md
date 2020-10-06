@@ -60,7 +60,8 @@ you would like to contribute environments, please see our
     rotation of the agent cube and position of ball.
   - Vector Action space: (Continuous) Size of 2, with one value corresponding to
     X-rotation, and the other to Z-rotation.
-  - Visual Observations: None.
+  - Visual Observations: Third-person view from the upper-front of the agent. Use
+    `Visual3DBall` scene.
 - Float Properties: Three
   - scale: Specifies the scale of the ball in the 3 dimensions (equal across the
     three dimensions)
