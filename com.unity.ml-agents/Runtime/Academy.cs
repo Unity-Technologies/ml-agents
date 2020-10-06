@@ -23,7 +23,6 @@ using Unity.Barracuda;
  * https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/
  */
 
-
 namespace Unity.MLAgents
 {
     /// <summary>
