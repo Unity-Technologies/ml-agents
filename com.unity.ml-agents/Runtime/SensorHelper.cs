@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Sensors
 
         public static bool CompareObservation(ISensor sensor, float[,,] expected, out string errorMessage)
         {
-            var tensorShape = new TensorShape(0, expected.GetLength(0), expected.GetLength(1), expected.GetLength(2)); ;
+            var tensorShape = new TensorShape(0, expected.GetLength(0), expected.GetLength(1), expected.GetLength(2));
             var numExpected = tensorShape.height * tensorShape.width * tensorShape.channels;
             const float fill = -1337f;
             var output = new float[numExpected];
