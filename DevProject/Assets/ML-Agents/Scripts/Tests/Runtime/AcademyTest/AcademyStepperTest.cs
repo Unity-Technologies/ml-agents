@@ -25,10 +25,12 @@ namespace Tests
         public IEnumerator AcademyStepperCleanupPasses()
         {
             var academy = Academy.Instance;
-            int stepCount1 = academy.TotalStepCount;
-            yield return null;
-            int stepCount2 = academy.TotalStepCount;
-            Assert.True(stepCount2 - stepCount1 == 1);
+            int initStepCount = academy.TotalStepCount;
+            for (var i = 0; i < 5; i++)
+            {
+                yield return new WaitForFixedUpdate();
+                Assert.True(academy.TotalStepCount - initStepCount == i + 1);
+            }
         }
     }
 }
