@@ -140,12 +140,19 @@ namespace Unity.MLAgents.Tests
             var stackedRenderTextureSensor = new StackingSensor(renderTextureSensor, 2);
             Assert.AreEqual(stackedRenderTextureSensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, 4, 5 });
 
-            // Test mapping with dummy layers that should be dropped
+            // Test mapping with dummy layers with number of layers not being multiple of 3
             var dummySensor = new Dummy3DSensor();
             dummySensor.Shape = new int[] { 2, 2, 4 };
-            dummySensor.Mapping = new int[] { 0, 1, 2, 3, -1, -1 };
+            dummySensor.Mapping = new int[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
             Assert.AreEqual(stackedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
+
+            // Test mapping with dummy layers that should be dropped
+            var paddedDummySensor = new Dummy3DSensor();
+            paddedDummySensor.Shape = new int[] { 2, 2, 4 };
+            paddedDummySensor.Mapping = new int[] { 0, 1, 2, 3, -1, -1 };
+            var stackedPaddedDummySensor = new StackingSensor(paddedDummySensor, 2);
+            Assert.AreEqual(stackedPaddedDummySensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
         }
 
         [Test]
