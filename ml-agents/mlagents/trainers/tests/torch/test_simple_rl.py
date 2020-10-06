@@ -165,52 +165,38 @@ def _check_environment_trains(
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 
 def test_hybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=2, discrete_action_size=2, step_size=0.8)
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8)
     new_hyperparams = attr.evolve(
         PPO_CONFIG.hyperparameters, batch_size=32, buffer_size=1280
     )
     config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
-#def test_conthybrid_ppo():
-#    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=0, step_size=0.8)
-#    new_hyperparams = attr.evolve(
-#        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280
-#    )
-#    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-#    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
-#
-#def test_dischybrid_ppo():
-#    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=0, discrete_action_size=1, step_size=0.8)
-#    new_hyperparams = attr.evolve(
-#        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280
-#    )
-#    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-#    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+def test_conthybrid_ppo():
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=0, step_size=0.8)
+    config = attr.evolve(PPO_CONFIG)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
-#jdef test_2dhybrid_ppo():
-#j    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=2, discrete_action_size=2, step_size=0.8)
-#j    new_hyperparams = attr.evolve(
-#j        PPO_CONFIG.hyperparameters, batch_size=256, buffer_size=2560, beta=.05
-#j    )
-#j    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-#j    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
-#j
-#jdef test_3chybrid_ppo():
-#j    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8)
-#j    new_hyperparams = attr.evolve(
-#j        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=.01
-#j    )
-#j    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-#j    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+def test_dischybrid_ppo():
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=0, discrete_action_size=1, step_size=0.8)
+    config = attr.evolve(PPO_CONFIG)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
-#def test_3ddhybrid_ppo():
-#    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
-#    new_hyperparams = attr.evolve(
-#        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=.05
-#    )
-#    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-#    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+def test_3chybrid_ppo():
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8)
+    new_hyperparams = attr.evolve(
+        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=.01
+    )
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+
+def test_3ddhybrid_ppo():
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
+    new_hyperparams = attr.evolve(
+        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=.05
+    )
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 #@pytest.mark.parametrize("use_discrete", [True, False])
