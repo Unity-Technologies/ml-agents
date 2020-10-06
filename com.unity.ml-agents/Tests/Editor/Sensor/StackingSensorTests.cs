@@ -140,7 +140,7 @@ namespace Unity.MLAgents.Tests
             var stackedRenderTextureSensor = new StackingSensor(renderTextureSensor, 2);
             Assert.AreEqual(stackedRenderTextureSensor.GetCompressedChannelMapping(), new[] { 0, 1, 2, 3, 4, 5 });
 
-            // Test mapping with dummy layers with number of layers not being multiple of 3
+            // Test mapping with number of layers not being multiple of 3
             var dummySensor = new Dummy3DSensor();
             dummySensor.Shape = new int[] { 2, 2, 4 };
             dummySensor.Mapping = new int[] { 0, 1, 2, 3 };
@@ -162,7 +162,7 @@ namespace Unity.MLAgents.Tests
             wrapped.Shape = new int[] { 2, 1, 2 };
             var sensor = new StackingSensor(wrapped, 2);
 
-            // check the stacking is on the last dimension
+            // Check the stacking is on the last dimension
             wrapped.CurrentObservation = new[, ,] { { { 1f, 2f } }, { { 3f, 4f } } };
             SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 1f, 2f } }, { { 0f, 0f, 3f, 4f } } });
 
