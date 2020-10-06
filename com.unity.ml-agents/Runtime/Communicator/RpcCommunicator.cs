@@ -19,6 +19,11 @@ namespace Unity.MLAgents
     /// Responsible for communication with External using gRPC.
     internal class RpcCommunicator : ICommunicator
     {
+        // The python package version must be >= s_MinSupportedPythonPackageVersion
+        // and <= s_MaxSupportedPythonPackageVersion.
+        static Version s_MinSupportedPythonPackageVersion = new Version("0.16.1");
+        static Version s_MaxSupportedPythonPackageVersion = new Version("0.20.0");
+
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
 
@@ -96,6 +101,27 @@ namespace Unity.MLAgents
             return true;
         }
 
+        internal static bool CheckPythonPackageVersionIsCompatible(string pythonLibraryVersion)
+        {
+            Version pythonVersion;
+            try
+            {
+                pythonVersion = new Version(pythonLibraryVersion);
+            }
+            catch
+            {
+                // Unparseable - this also catches things like "0.20.0-dev0" which we don't want to support
+                return false;
+            }
+
+            if (pythonVersion < s_MinSupportedPythonPackageVersion ||
+                pythonVersion > s_MaxSupportedPythonPackageVersion)
+            {
+                return false;
+            }
+            return true;
+        }
+
         /// <summary>
         /// Sends the initialization parameters through the Communicator.
         /// Is used by the academy to send initialization parameters to the communicator.
@@ -155,6 +181,19 @@ namespace Unity.MLAgents
                     }
 
                     throw new UnityAgentsException("ICommunicator.Initialize() failed.");
+                }
+
+                var packageVersionSupported = CheckPythonPackageVersionIsCompatible(pythonPackageVersion);
+                if (!packageVersionSupported)
+                {
+                    Debug.LogWarningFormat(
+                        "Python package version ({0}) is out of the supported range or not from an official release. " +
+                        "It is strongly recommended that you use a Python package between {1} and {2}. " +
+                        "Training will proceed, but the output format may be different.",
+                        pythonPackageVersion,
+                        s_MinSupportedPythonPackageVersion,
+                        s_MaxSupportedPythonPackageVersion
+                    );
                 }
             }
             catch

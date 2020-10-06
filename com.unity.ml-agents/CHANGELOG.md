@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+
+## [Unreleased]
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Update documentation with recommended version of Python trainer. (#4535)
+- Log a warning if a version of the Python trainer is used that is newer than expected. (#4535)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+- Fixed a bug with visual observations using .onnx model files and newer versions of Barracuda (1.1.0 or later). (#4533)
+
 ## [1.0.5] - 2020-09-23
 ### Minor Changes
 #### com.unity.ml-agents (C#)
