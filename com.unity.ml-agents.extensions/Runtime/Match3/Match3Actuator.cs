@@ -59,7 +59,7 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             foreach (var move in m_Board.InvalidMoves())
             {
-                yield return move.InternalEdgeIndex;
+                yield return move.MoveIndex;
             }
         }
     }

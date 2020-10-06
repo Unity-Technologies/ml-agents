@@ -157,13 +157,9 @@ namespace Unity.MLAgentsExamples
 
         bool HasValidMoves()
         {
-            for (var index = 0; index < Move.NumPotentialMoves(Board.Rows, Board.Columns); index++)
+            foreach (var move in Board.ValidMoves())
             {
-                var move = Move.FromMoveIndex(index, Board.Rows, Board.Columns);
-                if (Board.IsMoveValid(move))
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;

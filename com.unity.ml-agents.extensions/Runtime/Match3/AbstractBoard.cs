@@ -192,14 +192,10 @@ namespace Unity.MLAgents.Extensions.Match3
                 var validMoves = new bool[numMoves];
 
                 int numValidMoves = 0;
-                for (var index = 0; index < Move.NumPotentialMoves(Rows, Columns); index++)
+                foreach (var move in ValidMoves())
                 {
-                    var move = Move.FromMoveIndex(index, Rows, Columns);
-                    if (IsMoveValid(move))
-                    {
-                        validMoves[index] = true;
-                        numValidMoves++;
-                    }
+                    validMoves[move.MoveIndex] = true;
+                    numValidMoves++;
                 }
 
                 // TODO reservoir sample? More random calls, but one pass through the indices.

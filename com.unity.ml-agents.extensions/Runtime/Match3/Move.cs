@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Extensions.Match3
          * Left/right moves come first. There are (maxCols - 1) * maxRows of these.
          * Up/down moves are next. There are (maxRows - 1) * maxCols of these.
          */
-        public int InternalEdgeIndex;
+        public int MoveIndex;
         public int Row;
         public int Column;
         public Direction Direction;
@@ -58,7 +58,7 @@ namespace Unity.MLAgents.Extensions.Match3
             }
             return new Move
             {
-                InternalEdgeIndex = moveIndex,
+                MoveIndex = moveIndex,
                 Direction = dir,
                 Row = row,
                 Column = col
@@ -69,8 +69,8 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             var switchoverIndex = (maxCols - 1) * maxRows;
 
-            InternalEdgeIndex++;
-            if (InternalEdgeIndex < switchoverIndex)
+            MoveIndex++;
+            if (MoveIndex < switchoverIndex)
             {
                 Column++;
                 if (Column == maxCols - 1)
@@ -79,7 +79,7 @@ namespace Unity.MLAgents.Extensions.Match3
                     Column = 0;
                 }
             }
-            else if (InternalEdgeIndex == switchoverIndex)
+            else if (MoveIndex == switchoverIndex)
             {
                 // switch from moving right to moving up
                 Row = 0;
@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 Row = row,
                 Column = col,
                 Direction = dir,
-                InternalEdgeIndex = edgeIndex,
+                MoveIndex = edgeIndex,
             };
         }
 

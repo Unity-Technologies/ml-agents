@@ -108,14 +108,14 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             HashSet<int> validIndices = new HashSet<int>();
             foreach (var m in validMoves)
             {
-                validIndices.Add(m.InternalEdgeIndex);
+                validIndices.Add(m.MoveIndex);
             }
 
             var numPotentialMoves = Move.NumPotentialMoves(board.Rows, board.Columns);
             for (var i = 0; i < numPotentialMoves; i++)
             {
                 var move = Move.FromMoveIndex(i, board.Rows, board.Columns);
-                var expected = validIndices.Contains(move.InternalEdgeIndex);
+                var expected = validIndices.Contains(move.MoveIndex);
                 Assert.AreEqual(expected, board.IsMoveValid(move), $"({move.Row}, {move.Column}, {move.Direction})");
             }
         }

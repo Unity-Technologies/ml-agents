@@ -14,11 +14,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         {
             var moveUp = Move.FromPositionAndDirection(1, 1, Direction.Up, 10, 10);
             var moveDown = Move.FromPositionAndDirection(2, 1, Direction.Down, 10, 10);
-            Assert.AreEqual(moveUp.InternalEdgeIndex, moveDown.InternalEdgeIndex);
+            Assert.AreEqual(moveUp.MoveIndex, moveDown.MoveIndex);
 
             var moveRight = Move.FromPositionAndDirection(1, 1, Direction.Right, 10, 10);
             var moveLeft = Move.FromPositionAndDirection(1, 2, Direction.Left, 10, 10);
-            Assert.AreEqual(moveRight.InternalEdgeIndex, moveLeft.InternalEdgeIndex);
+            Assert.AreEqual(moveRight.MoveIndex, moveLeft.MoveIndex);
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             for (var moveIndex = 0; moveIndex < Move.NumPotentialMoves(maxRows, maxCols); moveIndex++)
             {
                 var moveFromIndex = Move.FromMoveIndex(moveIndex, maxRows, maxCols);
-                Assert.AreEqual(advanceMove.InternalEdgeIndex, moveFromIndex.InternalEdgeIndex);
+                Assert.AreEqual(advanceMove.MoveIndex, moveFromIndex.MoveIndex);
                 Assert.AreEqual(advanceMove.Row, moveFromIndex.Row);
                 Assert.AreEqual(advanceMove.Column, moveFromIndex.Column);
                 Assert.AreEqual(advanceMove.Direction, moveFromIndex.Direction);

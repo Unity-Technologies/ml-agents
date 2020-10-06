@@ -63,17 +63,18 @@ namespace Unity.MLAgentsExamples
 
             // Draw valid moves
 
-            for (var eIdx = 0; eIdx < Move.NumPotentialMoves(board.Rows, board.Columns); eIdx++)
+            foreach (var move in board.AllMoves())
             {
-                if (DebugEdgeIndex >= 0 && eIdx != DebugEdgeIndex)
+                if (DebugEdgeIndex >= 0 && move.MoveIndex != DebugEdgeIndex)
                 {
                     continue;
                 }
-                Move move = Move.FromMoveIndex(eIdx, board.Rows, board.Columns);
+
                 if (!board.IsMoveValid(move))
                 {
                     continue;
                 }
+
                 var (otherRow, otherCol) = move.OtherCell();
                 var pos = new Vector3(move.Column, move.Row, 0) * cubeSpacing;
                 var otherPos = new Vector3(otherCol, otherRow, 0) * cubeSpacing;
