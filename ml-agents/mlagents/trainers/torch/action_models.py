@@ -23,10 +23,9 @@ class HybridActionModel(nn.Module):
         self.encoding_size = hidden_size
         self.continuous_act_size = continuous_act_size
         self.discrete_act_size = discrete_act_size
-        self._distributions : List[Union[GaussianDistribution, MulticategoricalDistribution]] = []
-        self.continuous_distribution = None #: List[GaussianDistribution] = []
-        self.discrete_distribution = None #: List[MultiCategoricalDistribution] = []
+
         self._split_list : List[int] = []
+        self._distributions = torch.nn.ModuleList()
         if continuous_act_size > 0:
             self._distributions.append(GaussianDistribution(
                     self.encoding_size,
