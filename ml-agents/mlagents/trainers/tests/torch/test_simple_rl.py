@@ -171,11 +171,11 @@ def _check_environment_trains(
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=5.0)
 
 def test_2dhybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8)
     new_hyperparams = attr.evolve(
         PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280
     )
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=100000)
+    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=5.0)
 
 #
