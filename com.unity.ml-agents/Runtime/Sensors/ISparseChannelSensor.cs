@@ -1,7 +1,7 @@
 namespace Unity.MLAgents.Sensors
 {
     /// <summary>
-    /// Sensor interface for generating observations.
+    /// Sensor interface for sparse channel sensor which requires a compressed channel mapping.
     /// </summary>
     public interface ISparseChannelSensor : ISensor
     {

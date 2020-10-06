@@ -90,6 +90,10 @@ namespace Unity.MLAgents.Sensors
                     m_StackedCompressedObservations[i] = m_EmptyCompressedObservation;
                 }
                 m_CompressionMapping = ConstructStackedCompressedChannelMapping(wrapped);
+            }
+
+            if (m_Shape.Length != 1)
+            {
                 m_tensorShape = new TensorShape(0, m_WrappedShape[0], m_WrappedShape[1], m_WrappedShape[2]);
             }
         }
