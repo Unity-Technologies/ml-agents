@@ -216,7 +216,7 @@ namespace Unity.MLAgents
         public event Action OnEnvironmentReset;
 
         AcademyFixedUpdateStepper m_FixedUpdateStepper;
-        GameObject m_StepperObject = null;
+        GameObject m_StepperObject;
 
 
         /// <summary>
@@ -277,7 +277,7 @@ namespace Unity.MLAgents
 
             m_StepperObject = new GameObject("AcademyFixedUpdateStepper");
             // Don't show this object in the hierarchy
-            //m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
+            m_StepperObject.hideFlags = HideFlags.HideInHierarchy;
             m_FixedUpdateStepper = m_StepperObject.AddComponent<AcademyFixedUpdateStepper>();
             try
             {
