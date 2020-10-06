@@ -53,19 +53,13 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public void ResetData()
         {
-
         }
 
         IEnumerable<int> InvalidMoveIndices()
         {
-            var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
-            for (var i = 0; i < numMoves; i++)
+            foreach (var move in m_Board.InvalidMoves())
             {
-                Move move = Move.FromMoveIndex(i, m_Board.Rows, m_Board.Columns);
-                if (!m_Board.IsMoveValid(move))
-                {
-                    yield return i;
-                }
+                yield return move.InternalEdgeIndex;
             }
         }
     }

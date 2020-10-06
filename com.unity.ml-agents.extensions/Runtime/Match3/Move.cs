@@ -17,7 +17,6 @@ namespace Unity.MLAgents.Extensions.Match3
     /// </summary>
     public struct Move
     {
-
         /**
          * Moves are enumerated as the internal edges of the game grid.
          * Left/right moves come first. There are (maxCols - 1) * maxRows of these.
@@ -64,6 +63,38 @@ namespace Unity.MLAgents.Extensions.Match3
                 Row = row,
                 Column = col
             };
+        }
+
+        public void Advance(int maxRows, int maxCols)
+        {
+            var switchoverIndex = (maxCols - 1) * maxRows;
+
+            InternalEdgeIndex++;
+            if (InternalEdgeIndex < switchoverIndex)
+            {
+                Column++;
+                if (Column == maxCols - 1)
+                {
+                    Row++;
+                    Column = 0;
+                }
+            }
+            else if (InternalEdgeIndex == switchoverIndex)
+            {
+                // switch from moving right to moving up
+                Row = 0;
+                Column = 0;
+                Direction = Direction.Up;
+            }
+            else
+            {
+                Column++;
+                if (Column == maxCols)
+                {
+                    Row++;
+                    Column = 0;
+                }
+            }
         }
 
         /// <summary>
@@ -166,5 +197,7 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             return maxRows * (maxCols - 1) + (maxRows - 1) * (maxCols);
         }
+
+
     }
 }

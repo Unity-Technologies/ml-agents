@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
@@ -38,6 +39,45 @@ namespace Unity.MLAgents.Extensions.Match3
         public abstract bool MakeMove(Move m);
 
         // TODO handle "special" cell types?
+
+        public IEnumerable<Move> AllMoves()
+        {
+            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var numMoves = Move.NumPotentialMoves(Rows, Columns);
+            for (var i = 0; i < numMoves; i++)
+            {
+                yield return currentMove;
+                currentMove.Advance(Rows, Columns);
+            }
+        }
+
+        public IEnumerable<Move> ValidMoves()
+        {
+            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var numMoves = Move.NumPotentialMoves(Rows, Columns);
+            for (var i = 0; i < numMoves; i++)
+            {
+                if (IsMoveValid(currentMove))
+                {
+                    yield return currentMove;
+                }
+                currentMove.Advance(Rows, Columns);
+            }
+        }
+
+        public IEnumerable<Move> InvalidMoves()
+        {
+            var currentMove = Move.FromMoveIndex(0, Rows, Columns);
+            var numMoves = Move.NumPotentialMoves(Rows, Columns);
+            for (var i = 0; i < numMoves; i++)
+            {
+                if (!IsMoveValid(currentMove))
+                {
+                    yield return currentMove;
+                }
+                currentMove.Advance(Rows, Columns);
+            }
+        }
 
         /// <summary>
         /// Returns true if swapped the cells specified by the move would result in
@@ -91,7 +131,6 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 for (var c = newCol - 1; c >= 0; c--)
                 {
-
                     if (GetCellType(newRow, c) == newValue)
                         matchedLeft++;
                     else

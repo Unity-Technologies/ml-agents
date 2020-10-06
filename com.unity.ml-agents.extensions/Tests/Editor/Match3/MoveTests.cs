@@ -19,7 +19,25 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var moveRight = Move.FromPositionAndDirection(1, 1, Direction.Right, 10, 10);
             var moveLeft = Move.FromPositionAndDirection(1, 2, Direction.Left, 10, 10);
             Assert.AreEqual(moveRight.InternalEdgeIndex, moveLeft.InternalEdgeIndex);
+        }
 
+        [Test]
+        public void TestAdvance()
+        {
+            var maxRows = 8;
+            var maxCols = 13;
+            // make sure using Advance agrees with FromMoveIndex.
+            var advanceMove = Move.FromMoveIndex(0, maxRows, maxCols);
+            for (var moveIndex = 0; moveIndex < Move.NumPotentialMoves(maxRows, maxCols); moveIndex++)
+            {
+                var moveFromIndex = Move.FromMoveIndex(moveIndex, maxRows, maxCols);
+                Assert.AreEqual(advanceMove.InternalEdgeIndex, moveFromIndex.InternalEdgeIndex);
+                Assert.AreEqual(advanceMove.Row, moveFromIndex.Row);
+                Assert.AreEqual(advanceMove.Column, moveFromIndex.Column);
+                Assert.AreEqual(advanceMove.Direction, moveFromIndex.Direction);
+
+                advanceMove.Advance(maxRows, maxCols);
+            }
         }
     }
 }
