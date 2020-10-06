@@ -1,46 +1,25 @@
 import pytest
-import copy
-import os
+
 import mlagents.trainers.tests.mock_brain as mb
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.sac.optimizer_tf import SACOptimizer
 from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG, SAC_CONFIG
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
+    ppo_dummy_config,
+    sac_dummy_config,
+    gail_dummy_config,
+    curiosity_dummy_config,
+    extrinsic_dummy_config,
+    DISCRETE_DEMO_PATH,
+    CONTINUOUS_DEMO_PATH,
+)
 from mlagents.trainers.settings import (
     GAILSettings,
-    CuriositySettings,
-    RewardSignalSettings,
     BehavioralCloningSettings,
     NetworkSettings,
     TrainerType,
     RewardSignalType,
 )
-
-CONTINUOUS_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
-DISCRETE_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
-
-
-def ppo_dummy_config():
-    return copy.deepcopy(PPO_CONFIG)
-
-
-def sac_dummy_config():
-    return copy.deepcopy(SAC_CONFIG)
-
-
-@pytest.fixture
-def gail_dummy_config():
-    return {RewardSignalType.GAIL: GAILSettings(demo_path=CONTINUOUS_PATH)}
-
-
-@pytest.fixture
-def curiosity_dummy_config():
-    return {RewardSignalType.CURIOSITY: CuriositySettings()}
-
-
-@pytest.fixture
-def extrinsic_dummy_config():
-    return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
 
 
 VECTOR_ACTION_SPACE = 2
@@ -102,9 +81,9 @@ def reward_signal_update(optimizer, reward_signal_name):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_gail_cc(trainer_config, gail_dummy_config):
+def test_gail_cc(trainer_config, gail_dummy_config):  # noqa: F811
     trainer_config.behavioral_cloning = BehavioralCloningSettings(
-        demo_path=CONTINUOUS_PATH
+        demo_path=CONTINUOUS_DEMO_PATH
     )
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config, False, False, False
@@ -116,9 +95,9 @@ def test_gail_cc(trainer_config, gail_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_gail_dc_visual(trainer_config, gail_dummy_config):
+def test_gail_dc_visual(trainer_config, gail_dummy_config):  # noqa: F811
     gail_dummy_config_discrete = {
-        RewardSignalType.GAIL: GAILSettings(demo_path=DISCRETE_PATH)
+        RewardSignalType.GAIL: GAILSettings(demo_path=DISCRETE_DEMO_PATH)
     }
     optimizer = create_optimizer_mock(
         trainer_config, gail_dummy_config_discrete, False, True, True
@@ -130,7 +109,7 @@ def test_gail_dc_visual(trainer_config, gail_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_gail_rnn(trainer_config, gail_dummy_config):
+def test_gail_rnn(trainer_config, gail_dummy_config):  # noqa: F811
     policy = create_optimizer_mock(
         trainer_config, gail_dummy_config, True, False, False
     )
@@ -141,7 +120,7 @@ def test_gail_rnn(trainer_config, gail_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_cc(trainer_config, curiosity_dummy_config):
+def test_curiosity_cc(trainer_config, curiosity_dummy_config):  # noqa: F811
     policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, False, False
     )
@@ -152,7 +131,7 @@ def test_curiosity_cc(trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_dc(trainer_config, curiosity_dummy_config):
+def test_curiosity_dc(trainer_config, curiosity_dummy_config):  # noqa: F811
     policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, True, False
     )
@@ -163,7 +142,7 @@ def test_curiosity_dc(trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_visual(trainer_config, curiosity_dummy_config):
+def test_curiosity_visual(trainer_config, curiosity_dummy_config):  # noqa: F811
     policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, False, False, True
     )
@@ -174,7 +153,7 @@ def test_curiosity_visual(trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_curiosity_rnn(trainer_config, curiosity_dummy_config):
+def test_curiosity_rnn(trainer_config, curiosity_dummy_config):  # noqa: F811
     policy = create_optimizer_mock(
         trainer_config, curiosity_dummy_config, True, False, False
     )
@@ -185,7 +164,7 @@ def test_curiosity_rnn(trainer_config, curiosity_dummy_config):
 @pytest.mark.parametrize(
     "trainer_config", [ppo_dummy_config(), sac_dummy_config()], ids=["ppo", "sac"]
 )
-def test_extrinsic(trainer_config, extrinsic_dummy_config):
+def test_extrinsic(trainer_config, extrinsic_dummy_config):  # noqa: F811
     policy = create_optimizer_mock(
         trainer_config, extrinsic_dummy_config, False, False, False
     )

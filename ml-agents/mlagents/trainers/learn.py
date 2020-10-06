@@ -12,7 +12,8 @@ import mlagents_envs
 from mlagents import tf_utils
 from mlagents.trainers.trainer_controller import TrainerController
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.trainer_util import TrainerFactory, handle_existing_directories
+from mlagents.trainers.trainer import TrainerFactory
+from mlagents.trainers.directory_utils import validate_existing_directories
 from mlagents.trainers.stats import (
     TensorboardWriter,
     StatsReporter,
@@ -75,7 +76,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
         run_logs_dir = os.path.join(write_path, "run_logs")
         port: Optional[int] = env_settings.base_port
         # Check if directory exists
-        handle_existing_directories(
+        validate_existing_directories(
             write_path,
             checkpoint_settings.resume,
             checkpoint_settings.force,

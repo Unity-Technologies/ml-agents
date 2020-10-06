@@ -45,6 +45,12 @@ class RNDRewardProvider(BaseRewardProvider):
         self.optimizer.step()
         return {"Losses/RND Loss": loss.detach().cpu().numpy()}
 
+    def get_modules(self):
+        return {
+            f"Module:{self.name}-pred": self._training_network,
+            f"Module:{self.name}-target": self._random_network,
+        }
+
 
 class RNDNetwork(torch.nn.Module):
     EPSILON = 1e-10

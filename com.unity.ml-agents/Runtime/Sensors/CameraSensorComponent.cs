@@ -75,6 +75,11 @@ namespace Unity.MLAgents.Sensors
             set { m_Grayscale = value; }
         }
 
+        [HideInInspector, SerializeField]
+        [Range(1, 50)]
+        [Tooltip("Number of camera frames that will be stacked before being fed to the neural network.")]
+        int m_ObservationStacks = 1;
+
         [HideInInspector, SerializeField, FormerlySerializedAs("compression")]
         SensorCompressionType m_Compression = SensorCompressionType.PNG;
 
@@ -88,12 +93,27 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
+        /// Whether to stack previous observations. Using 1 means no previous observations.
+        /// Note that changing this after the sensor is created has no effect.
+        /// </summary>
+        public int ObservationStacks
+        {
+            get { return m_ObservationStacks; }
+            set { m_ObservationStacks = value; }
+        }
+
+        /// <summary>
         /// Creates the <see cref="CameraSensor"/>
         /// </summary>
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor CreateSensor()
         {
             m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression);
+
+            if (ObservationStacks != 1)
+            {
+                return new StackingSensor(m_Sensor, ObservationStacks);
+            }
             return m_Sensor;
         }
 
@@ -103,7 +123,13 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The observation shape of the associated <see cref="CameraSensor"/> object.</returns>
         public override int[] GetObservationShape()
         {
-            return CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
+            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
+            var cameraSensorshape = CameraSensor.GenerateShape(m_Width, m_Height, Grayscale);
+            if (stacks > 1)
+            {
+                cameraSensorshape[cameraSensorshape.Length - 1] *= stacks;
+            }
+            return cameraSensorshape;
         }
 
         /// <summary>
