@@ -1,10 +1,8 @@
-from mlagents_envs.communicator_objects.space_type_pb2 import continuous
 import numpy as np
 from typing import Dict, List, Mapping, cast, Tuple, Optional
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.base_env import ActionType
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
@@ -114,7 +112,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         _total_act_size = 0
         if self.policy.continuous_act_size > 0:
-            _total_act_size += 1
+            _total_act_size += self.policy.continuous_act_size
         _total_act_size += len(self.policy.discrete_act_size)
 
         self._log_ent_coef = torch.nn.Parameter(
@@ -122,7 +120,7 @@ class TorchSACOptimizer(TorchOptimizer):
             requires_grad=True,
         )
         self.target_entropy = []
-        if self.policy.continuous_act_size > 0:
+        if self.policy.continuous_act_size <= 0:
             self.target_entropy.append(
                 torch.as_tensor(
                     -1
@@ -130,11 +128,10 @@ class TorchSACOptimizer(TorchOptimizer):
                     * np.prod(self.policy.continuous_act_size).astype(np.float32)
                 )
             )
-        else:
-            self.target_entropy += [
-                self.discrete_target_entropy_scale * np.log(i).astype(np.float32)
-                for i in self.policy.discrete_act_size
-            ]
+        self.target_entropy += [
+            self.discrete_target_entropy_scale * np.log(i).astype(np.float32)
+            for i in self.policy.discrete_act_size
+        ]
 
         policy_params = list(self.policy.actor_critic.network_body.parameters()) + list(
             self.policy.actor_critic.action_model.parameters()
@@ -227,7 +224,9 @@ class TorchSACOptimizer(TorchOptimizer):
             if len(self.policy.discrete_act_size) <= 0:
                 min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
             else:
-                disc_action_probs = log_probs[:, self.policy.continuous_act_size:].exp()
+                disc_action_probs = log_probs[
+                    :, self.policy.continuous_act_size :
+                ].exp()
                 _branched_q1p = ModelUtils.break_into_branches(
                     q1p_out[name] * disc_action_probs, self.policy.discrete_act_size
                 )
@@ -292,14 +291,18 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
     ) -> torch.Tensor:
-        _ent_coef = torch.exp(self._log_ent_coef)
+        _cont_ent_coef = torch.exp(
+            self._log_ent_coef[self.policy.continuous_act_size :]
+        )
+        _disc_ent_coef = torch.exp(
+            self._log_ent_coef[: self.policy.continuous_act_size]
+        )
+
         mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())), axis=0)
-        if len(self.policy.discrete_act_size) <= 0:
-            mean_q1 = mean_q1.unsqueeze(1)
-            batch_policy_loss = torch.mean(_ent_coef * log_probs - mean_q1, dim=1)
-            policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
-        else:
-            disc_log_probs = log_probs[:, self.policy.continuous_act_size:]
+        mean_q1 = mean_q1.unsqueeze(1)
+        batch_policy_loss = 0
+        if len(self.policy.discrete_act_size) > 0:
+            disc_log_probs = log_probs[:, self.policy.continuous_act_size :]
             disc_action_probs = disc_log_probs.exp()
             branched_per_action_ent = ModelUtils.break_into_branches(
                 disc_log_probs * disc_action_probs, self.policy.discrete_act_size
@@ -309,14 +312,25 @@ class TorchSACOptimizer(TorchOptimizer):
             )
             branched_policy_loss = torch.stack(
                 [
-                    torch.sum(_ent_coef[i] * _lp - _qt, dim=1, keepdim=True)
+                    torch.sum(_disc_ent_coef[i] * _lp - _qt, dim=1, keepdim=True)
                     for i, (_lp, _qt) in enumerate(
                         zip(branched_per_action_ent, branched_q_term)
                     )
                 ]
             )
-            batch_policy_loss = torch.squeeze(branched_policy_loss)
+            batch_policy_loss += torch.squeeze(branched_policy_loss)
+            all_mean_q1 = disc_action_probs * mean_q1
+        else:
+            all_mean_q1 = mean_q1
+        if self.policy.continuous_act_size > 0:
+            cont_log_probs = log_probs[:, : self.policy.continuous_act_size]
+            batch_policy_loss += torch.mean(
+                _cont_ent_coef * cont_log_probs - all_mean_q1, dim=1
+            )
+
+        policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
         policy_loss = torch.mean(loss_masks * batch_policy_loss)
+
         return policy_loss
 
     def sac_entropy_loss(
