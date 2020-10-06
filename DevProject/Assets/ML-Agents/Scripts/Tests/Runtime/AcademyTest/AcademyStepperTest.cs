@@ -1,12 +1,12 @@
 using System.Collections;
 using NUnit.Framework;
-#if UNITY_EDITOR
-using UnityEditor.SceneManagement;
 using UnityEngine.TestTools;
-#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.MLAgents;
+#if UNITY_EDITOR
+using UnityEditor.SceneManagement;
+#endif
 
 namespace Tests
 {
@@ -19,7 +19,7 @@ namespace Tests
         }
 
         /// <summary>
-        /// Test that in each FixUpdate(), the Academy is only stepped once.
+        /// Verify in each update, the Academy is only stepped once.
         /// </summary>
         [UnityTest]
         public IEnumerator AcademyStepperCleanupPasses()
