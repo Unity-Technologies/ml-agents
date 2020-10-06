@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -25,9 +24,6 @@ using Unity.Barracuda;
  */
 
 
-[assembly: InternalsVisibleTo("Tests")]
-
-
 namespace Unity.MLAgents
 {
     /// <summary>
@@ -35,34 +31,16 @@ namespace Unity.MLAgents
     /// </summary>
     internal class AcademyFixedUpdateStepper : MonoBehaviour
     {
-        void OnEnable()
-        {
-            Debug.Log($"Stepper enabled: {this.gameObject.name}");
-            Debug.Log($"Academy.IsInitialized: {Academy.IsInitialized}");
-
-            if (Academy.IsInitialized)
-            {
-                Debug.Log($"IsStepperOwner:{Academy.IsStepperOwner(this)}");
-            }
-
-            // Check if this stepper belongs to current Academy singleton
-            if (Academy.IsInitialized && !Academy.IsStepperOwner(this))
-            {
-                Debug.Log($"Destroy {this.gameObject.name}");
-                Destroy(this.gameObject);
-            }
-
-            // Doing this will delete the new steper
-            // if (!Academy.IsInitialized)
-            // {
-            //     Debug.Log($"Destroy {this.gameObject.name}");
-            //     Destroy(this.gameObject);
-            // }
-        }
-
         void FixedUpdate()
         {
-            Academy.Instance.EnvironmentStep();
+            if (!Academy.IsStepperOwner(this))
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                Academy.Instance.EnvironmentStep();
+            }
         }
     }
 
