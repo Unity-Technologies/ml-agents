@@ -13,11 +13,19 @@ and this project adheres to
  - Added the Random Network Distillation (RND) intrinsic reward signal to the Pytorch
  trainers. To use RND, add a `rnd` section to the `reward_signals` section of your
  yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward)
-
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+ - Stacking for compressed observations is now supported. An addtional setting
+ option `Observation Stacks` is added in editor to sensor components that support
+ compressed observations. A new class `ISparseChannelSensor` with an
+ additional method `GetCompressedChannelMapping()`is added to generate a mapping
+ of the channels in compressed data to the actual channel after decompression,
+ for the python side to decompress correctly. (#4476)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
-
+ - The Communication API was changed to 1.2.0 to indicate support for stacked
+ compressed observation. A new entry `compressed_channel_mapping` is added to the
+ proto to handle decompression correctly. Newer versions of the package that wish to
+ make use of this will also need a compatible version of the Python trainers. (#4476)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
