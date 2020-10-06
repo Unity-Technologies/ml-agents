@@ -49,7 +49,6 @@ def trainer_controller_with_start_learning_mocks(basic_trainer_controller):
     trainer_mock.write_tensorboard_text = MagicMock()
 
     tc = basic_trainer_controller
-    tc.initialize_trainers = MagicMock()
     tc.trainers = {"testbrain": trainer_mock}
     tc.advance = MagicMock()
     tc.trainers["testbrain"].get_step = 0
