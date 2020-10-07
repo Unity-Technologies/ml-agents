@@ -10,7 +10,7 @@ from mlagents.trainers.torch.utils import ModelUtils
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
-class HybridActionModel(nn.Module):
+class ActionModel(nn.Module):
     def __init__(
         self,
         hidden_size: int,
