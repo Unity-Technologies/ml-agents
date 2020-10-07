@@ -16,5 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '270.0.0'
+          service_account_email: ${{ secrets.GCP_STG_EMAIL }}
+          service_account_key: ${{ secrets.GCP_STG_PRIVATE_KEY }}
+          export_default_credentials: true
+      - name: Set up docker to authenticate with GCP
+        run: gcloud auth configure-docker
       - name: Build docker image
         run: docker build --tag ml-agents:${GITHUB_SHA} .
