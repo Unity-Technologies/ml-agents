@@ -25,4 +25,8 @@ jobs:
       - name: Set up docker to authenticate with GCP
         run: gcloud auth configure-docker
       - name: Build docker image
-        run: docker build --tag ml-agents:${GITHUB_SHA} .
+        run: docker build --tag ml-agents:${GITHUB_SHA} --build-arg SHA=${GITHUB_SHA} .
+      - name: Tag docker image (stg)
+        run: docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
+      - name: Push docker image (stg)
+        run: docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
