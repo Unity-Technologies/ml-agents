@@ -4,29 +4,36 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
+    public enum Match3ObservationType
+    {
+        Vector,
+        UncompressedVisual,
+        CompressedVisual
+    }
+
     public class Match3Sensor : ISensor
     {
+        private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
-        private bool m_UseVectorObservations;
-        private int[] m_shape;
+        private int[] m_Shape;
 
-        public Match3Sensor(AbstractBoard board, bool useVectorObservations)
+        public Match3Sensor(AbstractBoard board, Match3ObservationType obsType)
         {
             m_Board = board;
-            m_UseVectorObservations = useVectorObservations;
-            m_shape = useVectorObservations ?
+            m_ObservationType = obsType;
+            m_Shape = obsType == Match3ObservationType.Vector ?
                 new[] { m_Board.Rows * m_Board.Columns * m_Board.NumCellTypes } :
                 new[] { m_Board.Rows, m_Board.Columns, m_Board.NumCellTypes };
         }
 
         public int[] GetObservationShape()
         {
-            return m_shape;
+            return m_Shape;
         }
 
         public int Write(ObservationWriter writer)
         {
-            if (m_UseVectorObservations)
+            if (m_ObservationType == Match3ObservationType.Vector)
             {
                 int offset = 0;
                 for (var r = 0; r < m_Board.Rows; r++)
@@ -93,7 +100,9 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public SensorCompressionType GetCompressionType()
         {
-            return m_UseVectorObservations ? SensorCompressionType.None : SensorCompressionType.PNG;
+            return m_ObservationType == Match3ObservationType.CompressedVisual ?
+                SensorCompressionType.PNG :
+                SensorCompressionType.None;
         }
 
         public string GetName()
