@@ -32,7 +32,16 @@ namespace Unity.MLAgents
     {
         void FixedUpdate()
         {
-            Academy.Instance.EnvironmentStep();
+            // Check if the stepper belongs to the current Academy and destroy it if it's not.
+            // This is to prevent from having leaked stepper from previous runs.
+            if (!Academy.IsInitialized || !Academy.Instance.IsStepperOwner(this))
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                Academy.Instance.EnvironmentStep();
+            }
         }
     }
 
@@ -226,7 +235,25 @@ namespace Unity.MLAgents
             Application.quitting += Dispose;
 
             LazyInitialize();
+
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#endif
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Clean up the Academy when switching from edit mode to play mode
+        /// </summary>
+        /// <param name="state">State.</param>
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                Dispose();
+            }
+        }
+#endif
 
         /// <summary>
         /// Initialize the Academy if it hasn't already been initialized.
@@ -634,6 +661,14 @@ namespace Unity.MLAgents
 
             // Reset the Lazy instance
             s_Lazy = new Lazy<Academy>(() => new Academy());
+        }
+
+        /// <summary>
+        /// Check if the input AcademyFixedUpdateStepper belongs to this Academy.
+        /// </summary>
+        internal bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
+        {
+            return GameObject.ReferenceEquals(stepper.gameObject, Academy.Instance.m_StepperObject);
         }
     }
 }

@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Scripts/Tests/Runtime/AcademyTest/AcademyStepperTestScene.unity
+    guid: 9bafc50b1e55b43b2b1ae9620f1f8311
   m_configObjects: {}

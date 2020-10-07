@@ -31,6 +31,7 @@ and this project adheres to
  camera frame. The scene is able to train with the provided default config file. (#4511)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+ - Fixed a bug where accessing the Academy outside of play mode would cause the Academy to get stepped multiple times when in play mode. (#4532)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
