@@ -31,6 +31,8 @@ and this project adheres to
  camera frame. The scene is able to train with the provided default config file. (#4511)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+ - Fixed the issue of leaking AcademyFixedUpdateSteppers when accessing Academy
+ in editor mode. (#4521)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
