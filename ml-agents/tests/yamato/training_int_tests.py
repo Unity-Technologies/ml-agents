@@ -86,7 +86,7 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     env_path = os.path.join(get_base_output_path(), standalone_player_path + ".app")
     mla_learn_cmd = (
         f"mlagents-learn {yaml_out} --force --env={env_path} "
-        f"--run-id={run_id} --no-graphics --env-args -logFile -"
+        f"--run-id={run_id} --env-args -logFile -"
     )  # noqa
     res = subprocess.run(
         f"source {venv_path}/bin/activate; {mla_learn_cmd}", shell=True
