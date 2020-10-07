@@ -3,7 +3,7 @@ import tempfile
 import numpy as np
 from typing import Dict
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager

@@ -1,6 +1,6 @@
 # About ML-Agents Extensions package (`com.unity.ml-agents.extensions`)
 
-The Unity ML-Agents Extensions package optional add-ons to the C# SDK for the
+The Unity ML-Agents Extensions package contains optional add-ons to the C# SDK for the
 [Unity ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents).
 
 These extensions are all considered experimental, and their API or behavior
@@ -18,12 +18,30 @@ The following table describes the package folder structure:
 | _Runtime_        | Contains core C# APIs for integrating ML-Agents into your Unity scene. |
 | _Tests_          | Contains the unit tests for the package.                               |
 
-<a name="Installation"></a>
-
 ## Installation
+The ML-Agents Extensions package is not currently available in the Package Manager. There are two
+recommended ways to install the package:
 
-To install this _ML-Agents_ package, follow the instructions in the [Package
-Manager documentation](https://docs.unity3d.com/Manual/upm-ui-install.html).
+### Local Installation
+[Clone the repository](../../docs/Installation.md#clone-the-ml-agents-toolkit-repository-optional) and follow the
+[Local Installation for Development](../../docs/Installation.md#advanced-local-installation-for-development-1)
+directions (substituting `com.unity.ml-agents.extensions` for the package name).
+
+### Github via Package Manager
+In Unity 2019.4 or later, open the Package Manager, hit the "+" button, and select "Add package from git URL".
+
+![Package Manager git URL](../../docs/images/unity_package_manager_git_url.png)
+In the dialog that appears, enter
+ ```
+ git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions
+```
+
+You can also edit your project's `manifest.json` directly and add the following line to the `dependencies`
+section:
+```
+"com.unity.ml-agents.extensions": "git+https://github.com/Unity-Technologies/ml-agents.git?path=com.unity.ml-agents.extensions",
+```
+See [Git dependencies](https://docs.unity3d.com/Manual/upm-git.html#subfolder) for more information.
 
 
 ## Requirements
@@ -34,4 +52,7 @@ following versions of the Unity Editor:
 - 2018.4 and later
 
 ## Known Limitations
+none
 
+## Need Help?
+The main [README](../../README.md) contains links for contacting the team or getting support.

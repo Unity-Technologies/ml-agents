@@ -222,7 +222,8 @@ namespace Unity.MLAgents
         /// <summary>
         /// Static flag to make sure that we only fire the warning once.
         /// </summary>
-        private static bool s_HaveWarnedAboutTrainerCapabilities = false;
+        private static bool s_HaveWarnedTrainerCapabilitiesMultiPng = false;
+        private static bool s_HaveWarnedTrainerCapabilitiesMapping = false;
 
         /// <summary>
         /// Generate an ObservationProto for the sensor using the provided ObservationWriter.
@@ -243,10 +244,27 @@ namespace Unity.MLAgents
                 var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
                 if (!trainerCanHandle)
                 {
-                    if (!s_HaveWarnedAboutTrainerCapabilities)
+                    if (!s_HaveWarnedTrainerCapabilitiesMultiPng)
                     {
                         Debug.LogWarning($"Attached trainer doesn't support multiple PNGs. Switching to uncompressed observations for sensor {sensor.GetName()}.");
-                        s_HaveWarnedAboutTrainerCapabilities = true;
+                        s_HaveWarnedTrainerCapabilitiesMultiPng = true;
+                    }
+                    compressionType = SensorCompressionType.None;
+                }
+            }
+            // Check capabilities if we need mapping for compressed observations
+            if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[2] > 3)
+            {
+                var trainerCanHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
+                var isTrivialMapping = IsTrivialMapping(sensor);
+                if (!trainerCanHandleMapping && !isTrivialMapping)
+                {
+                    if (!s_HaveWarnedTrainerCapabilitiesMapping)
+                    {
+                        Debug.LogWarning($"The sensor {sensor.GetName()} is using non-trivial mapping and " +
+                                "the attached trainer doesn't support compression mapping. " +
+                                "Switching to uncompressed observations.");
+                        s_HaveWarnedTrainerCapabilitiesMapping = true;
                     }
                     compressionType = SensorCompressionType.None;
                 }
@@ -283,12 +301,16 @@ namespace Unity.MLAgents
                         "return SensorCompressionType.None from GetCompressionType()."
                         );
                 }
-
                 observationProto = new ObservationProto
                 {
                     CompressedData = ByteString.CopyFrom(compressedObs),
                     CompressionType = (CompressionTypeProto)sensor.GetCompressionType(),
                 };
+                var compressibleSensor = sensor as ISparseChannelSensor;
+                if (compressibleSensor != null)
+                {
+                    observationProto.CompressedChannelMapping.AddRange(compressibleSensor.GetCompressedChannelMapping());
+                }
             }
             observationProto.Shape.AddRange(shape);
             return observationProto;
@@ -300,7 +322,8 @@ namespace Unity.MLAgents
             return new UnityRLCapabilities
             {
                 BaseRLCapabilities = proto.BaseRLCapabilities,
-                ConcatenatedPngObservations = proto.ConcatenatedPngObservations
+                ConcatenatedPngObservations = proto.ConcatenatedPngObservations,
+                CompressedChannelMapping = proto.CompressedChannelMapping,
             };
         }
 
@@ -310,7 +333,36 @@ namespace Unity.MLAgents
             {
                 BaseRLCapabilities = rlCaps.BaseRLCapabilities,
                 ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
+                CompressedChannelMapping = rlCaps.CompressedChannelMapping,
             };
+        }
+
+        internal static bool IsTrivialMapping(ISensor sensor)
+        {
+            var compressibleSensor = sensor as ISparseChannelSensor;
+            if (compressibleSensor is null)
+            {
+                return true;
+            }
+            var mapping = compressibleSensor.GetCompressedChannelMapping();
+            if (mapping == null)
+            {
+                return true;
+            }
+            // check if mapping equals zero mapping
+            if (mapping.Length == 3 && mapping.All(m => m == 0))
+            {
+                return true;
+            }
+            // check if mapping equals identity mapping
+            for (var i = 0; i < mapping.Length; i++)
+            {
+                if (mapping[i] != i)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }
