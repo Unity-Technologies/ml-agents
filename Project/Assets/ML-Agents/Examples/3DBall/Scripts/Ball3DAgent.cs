@@ -9,6 +9,8 @@ public class Ball3DAgent : Agent
 {
     [Header("Specific to Ball3D")]
     public GameObject ball;
+    [Tooltip("Whether to use vector observation. This option should be checked " +
+        "in 3DBall scene, and unchecked in Visual3DBall scene. ")]
     public bool useVecObs;
     Rigidbody m_BallRb;
     EnvironmentParameters m_ResetParams;
