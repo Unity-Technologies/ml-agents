@@ -259,10 +259,24 @@ class ActionType(Enum):
     HYBRID = 2
 
 
-class HybridBehaviorSpec(NamedTuple):
+class BehaviorSpec(NamedTuple):
     observation_shapes: List[Tuple]
     continuous_action_shape: int
     discrete_action_shape: Tuple[int]
+    
+    # For backwards compatibility
+    def is_action_discrete(self) -> bool:
+        """
+        Returns true if this Behavior uses discrete actions
+        """
+        return self.discrete_action_size > 0
+
+    # For backwards compatibility
+    def is_action_continuous(self) -> bool:
+        """
+        Returns true if this Behavior uses continuous actions
+        """
+        return self.continuous_action_size > 0
 
     @property
     def discrete_action_size(self) -> int:
@@ -304,104 +318,6 @@ class HybridBehaviorSpec(NamedTuple):
             ]
         )
         return HybridAction(continuous_action, discrete_action)
-
-
-class BehaviorSpec(NamedTuple):
-    """
-    A NamedTuple to containing information about the observations and actions
-    spaces for a group of Agents under the same behavior.
-     - observation_shapes is a List of Tuples of int : Each Tuple corresponds
-     to an observation's dimensions. The shape tuples have the same ordering as
-     the ordering of the DecisionSteps and TerminalSteps.
-     - action_type is the type of data of the action. it can be discrete or
-     continuous. If discrete, the action tensors are expected to be int32. If
-     continuous, the actions are expected to be float32.
-     - action_shape is:
-       - An int in continuous action space corresponding to the number of
-     floats that constitute the action.
-       - A Tuple of int in discrete action space where each int corresponds to
-       the number of discrete actions available to the agent.
-    """
-
-    observation_shapes: List[Tuple]
-    action_type: ActionType
-    action_shape: Union[int, Tuple[int, ...]]
-
-    def is_action_discrete(self) -> bool:
-        """
-        Returns true if this Behavior uses discrete actions
-        """
-        return self.action_type == ActionType.DISCRETE
-
-    def is_action_continuous(self) -> bool:
-        """
-        Returns true if this Behavior uses continuous actions
-        """
-        return self.action_type == ActionType.CONTINUOUS
-
-    @property
-    def action_size(self) -> int:
-        """
-        Returns the dimension of the action.
-         - In the continuous case, will return the number of continuous actions.
-         - In the (multi-)discrete case, will return the number of action.
-         branches.
-        """
-        if self.action_type == ActionType.DISCRETE:
-            return len(self.action_shape)  # type: ignore
-        else:
-            return self.action_shape  # type: ignore
-
-    @property
-    def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
-        """
-        Returns a Tuple of int corresponding to the number of possible actions
-        for each branch (only for discrete actions). Will return None in
-        for continuous actions.
-        """
-        if self.action_type == ActionType.DISCRETE:
-            return self.action_shape  # type: ignore
-        else:
-            return None
-
-    def create_empty_action(self, n_agents: int) -> np.ndarray:
-        """
-        Generates a numpy array corresponding to an empty action (all zeros)
-        for a number of agents.
-        :param n_agents: The number of agents that will have actions generated
-        """
-        if self.action_type == ActionType.DISCRETE:
-            return np.zeros((n_agents, self.action_size), dtype=np.int32)
-        else:
-            return np.zeros((n_agents, self.action_size), dtype=np.float32)
-
-    def create_random_action(self, n_agents: int) -> np.ndarray:
-        """
-        Generates a numpy array corresponding to a random action (either discrete
-        or continuous) for a number of agents.
-        :param n_agents: The number of agents that will have actions generated
-        :param generator: The random number generator used for creating random action
-        """
-        if self.is_action_continuous():
-            action = np.random.uniform(
-                low=-1.0, high=1.0, size=(n_agents, self.action_size)
-            ).astype(np.float32)
-            return action
-        elif self.is_action_discrete():
-            branch_size = self.discrete_action_branches
-            action = np.column_stack(
-                [
-                    np.random.randint(
-                        0,
-                        branch_size[i],  # type: ignore
-                        size=(n_agents),
-                        dtype=np.int32,
-                    )
-                    for i in range(self.action_size)
-                ]
-            )
-            return action
-
 
 class BehaviorMapping(Mapping):
     def __init__(self, specs: Dict[BehaviorName, BehaviorSpec]):

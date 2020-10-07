@@ -5,7 +5,6 @@ import numpy as np
 from mlagents_envs.base_env import (
     BaseEnv,
     BehaviorSpec,
-    HybridBehaviorSpec,
     DecisionSteps,
     TerminalSteps,
     ActionType,
@@ -260,7 +259,7 @@ class HybridEnvironment(SimpleEnvironment):
         )
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
-        self.behavior_spec = HybridBehaviorSpec(
+        self.behavior_spec = BehaviorSpec(
             self._make_obs_spec(), continuous_action_size, tuple(2 for _ in range(discrete_action_size))
         )
         self.continuous_action_size = continuous_action_size
