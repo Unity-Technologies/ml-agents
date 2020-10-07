@@ -2,6 +2,7 @@ test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
     enableCodeCoverage: !!bool false
+    # We want some scene tests to run in the DevProject, but packages there only support 2019+
     testProject: Project
   - version: 2019.4
     enableCodeCoverage: !!bool true
@@ -92,6 +93,8 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
     expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
        pull_request.changes.any match " {{ editor.testProject }}/**" OR
