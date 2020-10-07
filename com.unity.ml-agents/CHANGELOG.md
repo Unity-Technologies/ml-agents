@@ -21,6 +21,7 @@ and this project adheres to
  additional method `GetCompressedChannelMapping()`is added to generate a mapping
  of the channels in compressed data to the actual channel after decompression,
  for the python side to decompress correctly. (#4476)
+ - Added new visual 3DBall environment. (#4513)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - The Communication API was changed to 1.2.0 to indicate support for stacked
  compressed observation. A new entry `compressed_channel_mapping` is added to the
