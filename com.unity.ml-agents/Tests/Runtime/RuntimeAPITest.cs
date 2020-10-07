@@ -55,6 +55,10 @@ namespace Tests
         [SetUp]
         public static void Setup()
         {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
             Academy.Instance.AutomaticSteppingEnabled = false;
         }
 
