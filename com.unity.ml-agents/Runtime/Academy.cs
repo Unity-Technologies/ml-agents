@@ -32,7 +32,9 @@ namespace Unity.MLAgents
     {
         void FixedUpdate()
         {
-            if (!Academy.IsStepperOwner(this))
+            // Check if the stepper belongs to the current Academy and destroy it if it's not.
+            // This is to prevent from having leaked stepper from previous runs.
+            if (!Academy.IsInitialized || !Academy.Instance.IsStepperOwner(this))
             {
                 Destroy(this.gameObject);
             }
@@ -664,7 +666,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Check if the input AcademyFixedUpdateStepper belongs to this Academy.
         /// </summary>
-        internal static bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
+        internal bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
         {
             return GameObject.ReferenceEquals(stepper.gameObject, Academy.Instance.m_StepperObject);
         }
