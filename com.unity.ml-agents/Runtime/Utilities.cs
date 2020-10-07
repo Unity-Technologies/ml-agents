@@ -4,7 +4,7 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents
 {
-    internal static class Utilities
+    public static class Utilities
     {
         /// <summary>
         /// Puts a Texture2D into a ObservationWriter.
@@ -20,7 +20,7 @@ namespace Unity.MLAgents
         /// being stored in the tensor.
         /// </param>
         /// <returns>The number of floats written</returns>
-        internal static int TextureToTensorProxy(
+        public static int TextureToTensorProxy(
             Texture2D texture,
             ObservationWriter obsWriter,
             bool grayScale)
