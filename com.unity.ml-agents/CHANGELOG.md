@@ -27,7 +27,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - Added the Random Network Distillation (RND) intrinsic reward signal to the Pytorch
  trainers. To use RND, add a `rnd` section to the `reward_signals` section of your
- yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward)
+ yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward) (#4473)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
  - Stacking for compressed observations is now supported. An additional setting
@@ -47,7 +47,7 @@ and this project adheres to
  camera frame. The scene is able to train with the provided default config file. (#4511)
  - Added conversion to string for sampler classes to increase the verbosity of
  the curriculum lesson changes. The lesson updates would now output the sampler
- stats in addition to the lesson and parameter name to the console.
+ stats in addition to the lesson and parameter name to the console.  (#4484)
  - Localized documentation in Russian is added. Thanks to @SergeyMatrosov for
  the contribution. (#4529)
 ### Bug Fixes
