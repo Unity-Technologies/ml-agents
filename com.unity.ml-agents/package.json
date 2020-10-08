@@ -1,7 +1,7 @@
 {
   "name": "com.unity.ml-agents",
   "displayName": "ML Agents",
-  "version": "1.4.0-preview",
+  "version": "1.5.0-preview",
   "unity": "2018.4",
   "description": "Use state-of-the-art machine learning to create intelligent character behaviors in any Unity environment (games, robotics, film, etc.).",
   "dependencies": {
