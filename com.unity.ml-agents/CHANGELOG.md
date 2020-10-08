@@ -27,7 +27,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs / gym-unity (Python)
  - Added the Random Network Distillation (RND) intrinsic reward signal to the Pytorch
  trainers. To use RND, add a `rnd` section to the `reward_signals` section of your
- yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward)
+ yaml configuration file. [More information here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-Configuration-File.md#rnd-intrinsic-reward) (#4473)
 ### Minor Changes
 #### com.unity.ml-agents (C#)
  - Stacking for compressed observations is now supported. An additional setting
