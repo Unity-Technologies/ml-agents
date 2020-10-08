@@ -47,7 +47,7 @@ and this project adheres to
  camera frame. The scene is able to train with the provided default config file. (#4511)
  - Added conversion to string for sampler classes to increase the verbosity of
  the curriculum lesson changes. The lesson updates would now output the sampler
- stats in addition to the lesson and parameter name to the console.
+ stats in addition to the lesson and parameter name to the console. (#4484)
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
  - Fixed a bug where accessing the Academy outside of play mode would cause the
