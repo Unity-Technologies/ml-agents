@@ -24,9 +24,10 @@ test_compressed_obs_{{ editor.version }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       pull_request.changes.any match "Project/**" OR
       pull_request.changes.any match "ml-agents/**" OR
       pull_request.changes.any match "ml-agents-envs/**" OR
-      pull_request.changes.any match ".yamato/com.unity.ml-agents-compressed-sensor-test.yml") AND
+      pull_request.changes.any match ".yamato/compressed-sensor-test.yml") AND
       NOT pull_request.changes.all match "**/*.md"
 {% endfor %}
