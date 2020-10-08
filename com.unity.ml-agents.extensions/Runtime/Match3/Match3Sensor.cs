@@ -148,7 +148,9 @@ namespace Unity.MLAgents.Extensions.Match3
         public void EncodeToTexture(AbstractBoard board, Texture2D texture, int channelOffset)
         {
             var i = 0;
-            for (var h = 0; h < m_Height; h++)
+            // There's an implicit flip converting to PNG from texture, so make sure we
+            // counteract that when forming the texture by iterating through h in reverse.
+            for (var h = m_Height - 1; h >= 0; h--)
             {
                 for (var w = 0; w < m_Width; w++)
                 {
