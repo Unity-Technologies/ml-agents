@@ -53,7 +53,7 @@ public class TestTextureSensor : ISensor
     /// <inheritdoc/>
     public int Write(ObservationWriter writer)
     {
-        var numWritten = Utilities.TextureToTensorProxy(m_Texture, writer, false);
+        var numWritten = writer.WriteTexture(m_Texture, false);
         return numWritten;
     }
 
