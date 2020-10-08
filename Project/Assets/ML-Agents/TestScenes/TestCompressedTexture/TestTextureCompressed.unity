@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eda65155b8ff4d14a3b048dae0fb21c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestTexture: {fileID: 2800000, guid: 9e56ddb0ab5e44b8bbb6685e29374223, type: 3}
+  TestTexture: {fileID: 2800000, guid: eeba1f6a35c72450894cf4f4cb516004, type: 3}
   ObservationStacks: 4
   CompressionType: 0
 --- !u!114 &293272829
@@ -249,7 +249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eda65155b8ff4d14a3b048dae0fb21c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TestTexture: {fileID: 2800000, guid: 9e56ddb0ab5e44b8bbb6685e29374223, type: 3}
+  TestTexture: {fileID: 2800000, guid: eeba1f6a35c72450894cf4f4cb516004, type: 3}
   ObservationStacks: 4
   CompressionType: 1
 --- !u!114 &2059361218

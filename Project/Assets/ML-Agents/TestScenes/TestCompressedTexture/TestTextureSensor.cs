@@ -5,7 +5,6 @@ using Unity.MLAgents;
 public class TestTextureSensor : ISensor
 {
     Texture2D m_Texture;
-    bool m_Grayscale;
     string m_Name;
     int[] m_Shape;
     SensorCompressionType m_CompressionType;

@@ -20,10 +20,6 @@ def test_run_environment(env_name):
         env.reset()
 
         env.step()
-        env.step()
-        env.step()
-        env.step()
-        env.step()
 
         # Set the default brain to work with
         group_name = list(env.behavior_specs.keys())[0]

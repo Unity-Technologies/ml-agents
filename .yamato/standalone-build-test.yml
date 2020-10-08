@@ -1,5 +1,6 @@
 test_editors:
   - version: 2018.4
+  - version: 2019.4
 ---
 {% for editor in test_editors %}
 test_mac_standalone_{{ editor.version }}:
