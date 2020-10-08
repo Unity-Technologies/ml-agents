@@ -1,6 +1,6 @@
 <img src="https://github.com/Unity-Technologies/ml-agents/blob/master/docs/images/image-banner.png" align="middle" width="3000"/>
 
-# Unity ML-Agents Toolkit v.1.0
+# Unity ML-Agents Toolkit Version Release 7
 
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/)
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](LICENSE)
