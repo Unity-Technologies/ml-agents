@@ -46,6 +46,12 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             var character = m_Board[m_Board.Length - 1 - row][col];
             return (int)(character - '0');
         }
+
+        public override int GetSpecialType(int row, int col)
+        {
+            return 0;
+        }
+
     }
 
     public class AbstractBoardTests

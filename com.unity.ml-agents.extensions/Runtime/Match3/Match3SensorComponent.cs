@@ -20,9 +20,10 @@ namespace Unity.MLAgents.Extensions.Match3
                 return System.Array.Empty<int>();
             }
 
+            var specialSize = board.NumSpecialTypes == 0 ? 0 : board.NumSpecialTypes + 1;
             return ObservationType == Match3ObservationType.Vector ?
-                new[] { board.Rows * board.Columns * board.NumCellTypes } :
-                new[] { board.Rows, board.Columns, board.NumCellTypes };
+                new[] { board.Rows * board.Columns * (board.NumCellTypes + specialSize) } :
+                new[] { board.Rows, board.Columns, board.NumCellTypes + specialSize };
         }
     }
 }

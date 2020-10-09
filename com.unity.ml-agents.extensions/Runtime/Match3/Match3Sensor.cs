@@ -33,11 +33,14 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Rows = board.Rows;
             m_Columns = board.Columns;
             m_NumCellTypes = board.NumCellTypes;
+            m_NumSpecialTypes = board.NumSpecialTypes;
 
             m_ObservationType = obsType;
             m_Shape = obsType == Match3ObservationType.Vector ?
                 new[] { m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize) } :
                 new[] { m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize };
+
+            // See comment in GetCompressedObservation()
         }
 
         public int[] GetObservationShape()
@@ -47,8 +50,6 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public int Write(ObservationWriter writer)
         {
-            var specialTypeSize = (m_Board.NumSpecialTypes == 0) ? 0 : m_Board.NumSpecialTypes + 1;
-
             if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
             {
                 Debug.LogWarning(
@@ -124,10 +125,23 @@ namespace Unity.MLAgents.Extensions.Match3
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
             var converter = new OneHotToTextureUtil(height, width);
             var bytesOut = new List<byte>();
-            var numImages = (m_NumCellTypes + 2) / 3;
-            for (var i = 0; i < numImages; i++)
+
+            // Encode the cell types and special types as separate batches of PNGs
+            // This is potentially wasteful, e.g. if there are 4 cell types and 1 special type, we could
+            // fit in in 2 images, but we'll use 3 here (2 PNGs for the 4 cell type channels, and 1 for
+            // the special types). Note that we have to also implement the sparse channel mapping.
+            // Optimize this it later.
+            var numCellImages = (m_NumCellTypes + 2) / 3;
+            for (var i = 0; i < numCellImages; i++)
             {
-                converter.EncodeToTexture(m_Board, tempTexture, 3 * i);
+                converter.EncodeToTexture(m_Board.GetCellType, tempTexture, 3 * i);
+                bytesOut.AddRange(tempTexture.EncodeToPNG());
+            }
+
+            var numSpecialImages = (m_NumSpecialTypes + 2) / 3;
+            for (var i = 0; i < numSpecialImages; i++)
+            {
+                converter.EncodeToTexture(m_Board.GetSpecialType, tempTexture, 3 * i);
                 bytesOut.AddRange(tempTexture.EncodeToPNG());
             }
 
@@ -183,6 +197,9 @@ namespace Unity.MLAgents.Extensions.Match3
         int m_Width;
         private static Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
 
+        public delegate int GridValueProvider(int x, int y);
+
+
         public OneHotToTextureUtil(int height, int width)
         {
             m_Colors = new Color[height * width];
@@ -190,7 +207,7 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Width = width;
         }
 
-        public void EncodeToTexture(AbstractBoard board, Texture2D texture, int channelOffset)
+        public void EncodeToTexture(GridValueProvider gridValueProvider, Texture2D texture, int channelOffset)
         {
             var i = 0;
             // There's an implicit flip converting to PNG from texture, so make sure we
@@ -199,7 +216,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 for (var w = 0; w < m_Width; w++)
                 {
-                    int oneHotValue = board.GetCellType(h, w);
+                    int oneHotValue = gridValueProvider(h, w);
                     if (oneHotValue < channelOffset || oneHotValue >= channelOffset + 3)
                     {
                         m_Colors[i++] = Color.black;

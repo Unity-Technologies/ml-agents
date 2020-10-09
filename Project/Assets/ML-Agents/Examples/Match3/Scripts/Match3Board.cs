@@ -10,14 +10,14 @@ namespace Unity.MLAgentsExamples
 
         public const int k_EmptyCell = -1;
 
-        int[,] m_Cells;
+        (int, int)[,] m_Cells;
         bool[,] m_Matched;
 
         System.Random m_Random;
 
         void Awake()
         {
-            m_Cells = new int[Columns, Rows];
+            m_Cells = new (int, int)[Columns, Rows];
             m_Matched = new bool[Columns, Rows];
 
             m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
@@ -42,7 +42,12 @@ namespace Unity.MLAgentsExamples
 
         public override int GetCellType(int row, int col)
         {
-            return m_Cells[col, row];
+            return m_Cells[col, row].Item1;
+        }
+
+        public override int GetSpecialType(int row, int col)
+        {
+            return m_Cells[col, row].Item2;
         }
 
         public override bool IsMoveValid(Move m)
@@ -122,7 +127,7 @@ namespace Unity.MLAgentsExamples
                     if (m_Matched[j, i])
                     {
                         numMatchedCells++;
-                        m_Cells[j, i] = k_EmptyCell;
+                        m_Cells[j, i] = (k_EmptyCell, 0);
                     }
                 }
             }
@@ -141,7 +146,7 @@ namespace Unity.MLAgentsExamples
                 for (var readIndex = 0; readIndex < Rows; readIndex++)
                 {
                     m_Cells[j, writeIndex] = m_Cells[j, readIndex];
-                    if (m_Cells[j, readIndex] != k_EmptyCell)
+                    if (m_Cells[j, readIndex].Item1 != k_EmptyCell)
                     {
                         writeIndex++;
                     }
@@ -152,7 +157,7 @@ namespace Unity.MLAgentsExamples
                 for (; writeIndex < Rows; writeIndex++)
                 {
                     madeChanges = true;
-                    m_Cells[j, writeIndex] = k_EmptyCell;
+                    m_Cells[j, writeIndex] = (k_EmptyCell, 0);
                 }
             }
 
@@ -166,10 +171,10 @@ namespace Unity.MLAgentsExamples
             {
                 for (var j = 0; j < Columns; j++)
                 {
-                    if (m_Cells[j, i] == k_EmptyCell)
+                    if (m_Cells[j, i].Item1 == k_EmptyCell)
                     {
                         madeChanges = true;
-                        m_Cells[j, i] = m_Random.Next(0, NumCellTypes);
+                        m_Cells[j, i] = (GetRandomCellType(), GetRandomSpecialType());
                     }
                 }
             }
@@ -177,7 +182,7 @@ namespace Unity.MLAgentsExamples
             return madeChanges;
         }
 
-        public int[,] Cells
+        public (int, int)[,] Cells
         {
             get { return m_Cells; }
         }
@@ -194,7 +199,7 @@ namespace Unity.MLAgentsExamples
             {
                 for (var j = 0; j < Columns; j++)
                 {
-                    m_Cells[j, i] = m_Random.Next(0, NumCellTypes);
+                    m_Cells[j, i] = (GetRandomCellType(), GetRandomSpecialType());
                 }
             }
         }
@@ -226,6 +231,30 @@ namespace Unity.MLAgentsExamples
             }
         }
 
+        int GetRandomCellType()
+        {
+            return m_Random.Next(0, NumCellTypes);
+        }
+
+        int GetRandomSpecialType()
+        {
+            // 1/N chance to get a type-2 special
+            // 2/N chance to get a type-1 special
+            // otherwise 0 (boring)
+            var N = 10;
+            var val = m_Random.Next(0, N);
+            if (val == 0)
+            {
+                return 2;
+            }
+
+            if (val <= 2)
+            {
+                return 1;
+            }
+
+            return 0;
+        }
 
     }
 }
