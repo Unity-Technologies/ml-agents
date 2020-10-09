@@ -17,13 +17,21 @@ namespace Unity.MLAgents.Extensions.Match3
         private AbstractBoard m_Board;
         private int[] m_Shape;
 
+        private int m_Rows;
+        private int m_Columns;
+        private int m_NumCellTypes;
+
         public Match3Sensor(AbstractBoard board, Match3ObservationType obsType)
         {
             m_Board = board;
+            m_Rows = board.Rows;
+            m_Columns = board.Columns;
+            m_NumCellTypes = board.NumCellTypes;
+
             m_ObservationType = obsType;
             m_Shape = obsType == Match3ObservationType.Vector ?
-                new[] { m_Board.Rows * m_Board.Columns * m_Board.NumCellTypes } :
-                new[] { m_Board.Rows, m_Board.Columns, m_Board.NumCellTypes };
+                new[] { m_Rows * m_Columns * m_NumCellTypes } :
+                new[] { m_Rows, m_Columns, m_NumCellTypes };
         }
 
         public int[] GetObservationShape()
@@ -33,15 +41,24 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public int Write(ObservationWriter writer)
         {
+            if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
+            {
+                Debug.LogWarning(
+                    $"Board shape changes since sensor initialization. This may cause unexpected results. " +
+                    $"Old shape: Rows={m_Rows} Columns={m_Columns}, NumCellTypes={m_NumCellTypes} " +
+                    $"Current shape: Rows={m_Board.Rows} Columns={m_Board.Columns}, NumCellTypes={m_Board.NumCellTypes}"
+                );
+            }
+
             if (m_ObservationType == Match3ObservationType.Vector)
             {
                 int offset = 0;
-                for (var r = 0; r < m_Board.Rows; r++)
+                for (var r = 0; r < m_Rows; r++)
                 {
-                    for (var c = 0; c < m_Board.Columns; c++)
+                    for (var c = 0; c < m_Columns; c++)
                     {
                         var val = m_Board.GetCellType(r, c);
-                        for (var i = 0; i < m_Board.NumCellTypes; i++)
+                        for (var i = 0; i < m_NumCellTypes; i++)
                         {
                             writer[offset] = (i == val) ? 1.0f : 0.0f;
                             offset++;
@@ -55,12 +72,12 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 // TODO combine loops? Only difference is inner-most statement.
                 int offset = 0;
-                for (var r = 0; r < m_Board.Rows; r++)
+                for (var r = 0; r < m_Rows; r++)
                 {
-                    for (var c = 0; c < m_Board.Columns; c++)
+                    for (var c = 0; c < m_Columns; c++)
                     {
                         var val = m_Board.GetCellType(r, c);
-                        for (var i = 0; i < m_Board.NumCellTypes; i++)
+                        for (var i = 0; i < m_NumCellTypes; i++)
                         {
                             writer[r, c, i] = (i == val) ? 1.0f : 0.0f;
                             offset++;
@@ -74,12 +91,12 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public byte[] GetCompressedObservation()
         {
-            var height = m_Board.Rows;
-            var width = m_Board.Columns;
+            var height = m_Rows;
+            var width = m_Columns;
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
             var converter = new OneHotToTextureUtil(height, width);
             var bytesOut = new List<byte>();
-            var numImages = (m_Board.NumCellTypes + 2) / 3;
+            var numImages = (m_NumCellTypes + 2) / 3;
             for (var i = 0; i < numImages; i++)
             {
                 converter.EncodeToTexture(m_Board, tempTexture, 3 * i);
