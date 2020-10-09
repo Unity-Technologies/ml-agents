@@ -221,13 +221,13 @@ namespace Unity.MLAgents.Sensors
             int height = m_WrappedSensor.GetObservationShape()[0];
             int width = m_WrappedSensor.GetObservationShape()[1];
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
-            for (int h = 0; h < texture2D.height; h++)
+            Color32[] resetColorArray = texture2D.GetPixels32();
+            Color32 black = new Color32(0, 0, 0, 0);
+            for (int i = 0; i < resetColorArray.Length; i++)
             {
-                for (int w = 0; w < texture2D.width; w++)
-                {
-                    texture2D.SetPixel(w, h, Color.black);
-                }
+                resetColorArray[i] = black;
             }
+            texture2D.SetPixels32(resetColorArray);
             texture2D.Apply();
             return texture2D.EncodeToPNG();
         }
