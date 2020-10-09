@@ -8,6 +8,7 @@ namespace Unity.MLAgents.Extensions.Match3
         public int Rows;
         public int Columns;
         public int NumCellTypes;
+        public int NumSpecialTypes;
 
 
         /// <summary>
@@ -19,6 +20,8 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="col"></param>
         /// <returns></returns>
         public abstract int GetCellType(int row, int col);
+
+        public abstract int GetSpecialType(int row, int col);
 
         /// <summary>
         /// Check whether the particular Move is valid for the game.

@@ -19,11 +19,12 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public Match3Sensor(AbstractBoard board, Match3ObservationType obsType)
         {
+            var specialTypeSize = (m_Board.NumSpecialTypes == 0) ? 0 : m_Board.NumSpecialTypes + 1;
             m_Board = board;
             m_ObservationType = obsType;
             m_Shape = obsType == Match3ObservationType.Vector ?
-                new[] { m_Board.Rows * m_Board.Columns * m_Board.NumCellTypes } :
-                new[] { m_Board.Rows, m_Board.Columns, m_Board.NumCellTypes };
+                new[] { m_Board.Rows * m_Board.Columns * (m_Board.NumCellTypes + specialTypeSize) } :
+                new[] { m_Board.Rows, m_Board.Columns, m_Board.NumCellTypes + specialTypeSize };
         }
 
         public int[] GetObservationShape()
@@ -33,6 +34,8 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public int Write(ObservationWriter writer)
         {
+            var specialTypeSize = (m_Board.NumSpecialTypes == 0) ? 0 : m_Board.NumSpecialTypes + 1;
+
             if (m_ObservationType == Match3ObservationType.Vector)
             {
                 int offset = 0;
@@ -45,6 +48,16 @@ namespace Unity.MLAgents.Extensions.Match3
                         {
                             writer[offset] = (i == val) ? 1.0f : 0.0f;
                             offset++;
+                        }
+
+                        if (m_Board.NumSpecialTypes > 0)
+                        {
+                            var special = m_Board.GetSpecialType(r, c);
+                            for (var i = 0; i < m_Board.NumSpecialTypes + 1; i++)
+                            {
+                                writer[offset] = (i == special) ? 1.0f : 0.0f;
+                                offset++;
+                            }
                         }
                     }
                 }
