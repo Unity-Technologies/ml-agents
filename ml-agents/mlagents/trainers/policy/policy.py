@@ -32,21 +32,21 @@ class Policy:
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        # For hybrid
+        # For mixed action spaces
         self.continuous_act_size = behavior_spec.continuous_action_size
         self.discrete_act_size = behavior_spec.discrete_action_branches
-        #self.act_size = (
-        #    list(behavior_spec.discrete_action_branches)
-        #    if behavior_spec.is_action_discrete()
-        #    else [behavior_spec.action_size]
-        #)
+        self.act_size = (
+            list(behavior_spec.discrete_action_branches)
+            if behavior_spec.is_action_discrete()
+            else [behavior_spec.action_size]
+        )
         self.vec_obs_size = sum(
             shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
         )
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
-        #self.use_continuous_act = behavior_spec.is_action_continuous()
+        self.use_continuous_act = behavior_spec.is_action_continuous()
         self.num_branches = self.behavior_spec.action_size
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}

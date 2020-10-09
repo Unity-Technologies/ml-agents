@@ -77,6 +77,10 @@ class TFPolicy(Policy):
             reparameterize,
             condition_sigma_on_obs,
         )
+        if self.continuous_act_size > 0 and len(self.discrete_act_size) > 0:
+            raise UnityPolicyException(
+                "Tensorflow does not support mixed action spaces. Please run with --torch."
+            )
         # for ghost trainer save/load snapshots
         self.assign_phs: List[tf.Tensor] = []
         self.assign_ops: List[tf.Operation] = []
