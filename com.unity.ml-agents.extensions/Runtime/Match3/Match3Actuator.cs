@@ -12,9 +12,17 @@ namespace Unity.MLAgents.Extensions.Match3
         private bool m_ForceRandom;
         private System.Random m_Random;
 
+        private int m_Rows;
+        private int m_Columns;
+        private int m_NumCellTypes;
+
         public Match3Actuator(AbstractBoard board, bool forceRandom, int randomSeed)
         {
             m_Board = board;
+            m_Rows = board.Rows;
+            m_Columns = board.Columns;
+            m_NumCellTypes = board.NumCellTypes;
+
             m_ForceRandom = forceRandom;
             if (forceRandom)
             {
@@ -37,7 +45,17 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 moveIndex = actions.DiscreteActions[0];
             }
-            Move move = Move.FromMoveIndex(moveIndex, m_Board.Rows, m_Board.Columns);
+
+            if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
+            {
+                Debug.LogWarning(
+                    $"Board shape changes since actuator initialization. This may cause unexpected results. " +
+                    $"Old shape: Rows={m_Rows} Columns={m_Columns}, NumCellTypes={m_NumCellTypes} " +
+                    $"Current shape: Rows={m_Board.Rows} Columns={m_Board.Columns}, NumCellTypes={m_Board.NumCellTypes}"
+                );
+            }
+
+            Move move = Move.FromMoveIndex(moveIndex, m_Rows, m_Columns);
             m_Board.MakeMove(move);
         }
 
