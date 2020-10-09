@@ -8,7 +8,7 @@ using Unity.MLAgents.Sensors;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(JointDriveController))] // Required to set joint forces
-public class CrawlerAgent : Agent
+public class CreatureAgent : Agent
 {
     //The type of crawler behavior we want to use.
     //This setting will determine how the agent is set up during initialization.
@@ -35,7 +35,7 @@ public class CrawlerAgent : Agent
     public NNModel crawlerStVSModel;
 
     [Header("Walk Speed")]
-    [Range(0.1f, m_maxWalkingSpeed)]
+    [Range(m_minWalkingSpeed, m_maxWalkingSpeed)]
     [SerializeField]
     [Tooltip(
         "The speed the agent will try to match.\n\n" +
@@ -49,13 +49,14 @@ public class CrawlerAgent : Agent
     //The walking speed to try and achieve
     private float m_TargetWalkingSpeed = m_maxWalkingSpeed;
 
+    const float m_minWalkingSpeed = 5; //The max walking speed
     const float m_maxWalkingSpeed = 15; //The max walking speed
 
     //The current target walking speed. Clamped because a value of zero will cause NaNs
     public float TargetWalkingSpeed
     {
         get { return m_TargetWalkingSpeed; }
-        set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
+        set { m_TargetWalkingSpeed = Mathf.Clamp(value, m_minWalkingSpeed, m_maxWalkingSpeed); }
     }
 
     //Should the agent sample a new goal velocity each episode?
@@ -98,10 +99,12 @@ public class CrawlerAgent : Agent
     public MeshRenderer foot3;
     public Material groundedMaterial;
     public Material unGroundedMaterial;
+    private Vector3 m_StartingPos; //starting position of the agent
 
     public override void Initialize()
     {
         SetAgentType();
+        m_StartingPos = body.position;
 
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
         m_DirectionIndicator = GetComponentInChildren<DirectionIndicator>();
@@ -193,7 +196,7 @@ public class CrawlerAgent : Agent
 
         //Set our goal walking speed
         TargetWalkingSpeed =
-            m_RandomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : TargetWalkingSpeed;
+            m_RandomizeWalkSpeedEachEpisode ? Random.Range(m_minWalkingSpeed, m_maxWalkingSpeed) : TargetWalkingSpeed;
     }
 
     /// <summary>
@@ -221,27 +224,29 @@ public class CrawlerAgent : Agent
         var velGoal = cubeForward * TargetWalkingSpeed;
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
-
+        //        sensor.AddObservation((Vector3.Dot(cubeForward, body.forward) + 1) * .5F);
+        //        sensor.AddObservation((Vector3.Dot(m_OrientationCube.transform.up, body.up) + 1) * .5F);
         //current ragdoll velocity. normalized
         sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
         //vel goal relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(velGoal));
-        //rotation delta
+        //        //rotation delta
         sensor.AddObservation(Quaternion.FromToRotation(body.forward, cubeForward));
 
         //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
 
-        RaycastHit hit;
-        float maxRaycastDist = 10;
-        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
-        {
-            sensor.AddObservation(hit.distance / maxRaycastDist);
-        }
-        else
-            sensor.AddObservation(1);
+        //        RaycastHit hit;
+        //        float maxRaycastDist = 10;
+        ////        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
+        //        if (Physics.Raycast(body.position, -body.up, out hit, maxRaycastDist))
+        //        {
+        //            sensor.AddObservation(hit.distance / maxRaycastDist);
+        //        }
+        //        else
+        //            sensor.AddObservation(1);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -275,7 +280,40 @@ public class CrawlerAgent : Agent
         bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
+
+        //Reset if Worm fell through floor;
+        if (body.position.y < m_StartingPos.y - 5)
+        {
+            EndEpisode();
+        }
     }
+    //    public override void OnActionReceived(ActionBuffers actionBuffers)
+    //    {
+    //        // The dictionary with all the body parts in it are in the jdController
+    //        var bpDict = m_JdController.bodyPartsDict;
+    //
+    //        var continuousActions = actionBuffers.ContinuousActions;
+    //        var i = -1;
+    //        // Pick a new target joint rotation
+    //        bpDict[leg0Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    ////        bpDict[leg1Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    //        bpDict[leg2Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    ////        bpDict[leg3Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    //        bpDict[leg0Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    ////        bpDict[leg1Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    //        bpDict[leg2Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    ////        bpDict[leg3Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    //
+    //        // Update joint strength
+    //        bpDict[leg0Upper].SetJointStrength(continuousActions[++i]);
+    ////        bpDict[leg1Upper].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg2Upper].SetJointStrength(continuousActions[++i]);
+    ////        bpDict[leg3Upper].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg0Lower].SetJointStrength(continuousActions[++i]);
+    ////        bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
+    ////        bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
+    //    }
 
     void FixedUpdate()
     {
@@ -309,8 +347,11 @@ public class CrawlerAgent : Agent
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
         var lookAtTargetReward = (Vector3.Dot(cubeForward, body.forward) + 1) * .5F;
+        //        AddReward(matchSpeedReward * lookAtTargetReward);
+        //        var dontLayDownReward = (Vector3.Dot(m_OrientationCube.transform.up, body.up) + 1) * .5F;
+        var dontLayDownReward = Vector3.Dot(m_OrientationCube.transform.up, body.up);
+        AddReward(matchSpeedReward * lookAtTargetReward * dontLayDownReward);
 
-        AddReward(matchSpeedReward * lookAtTargetReward);
     }
 
     /// <summary>
