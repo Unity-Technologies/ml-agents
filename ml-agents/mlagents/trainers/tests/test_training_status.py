@@ -9,8 +9,8 @@ from mlagents.trainers.training_status import (
     GlobalTrainingStatus,
 )
 from mlagents.trainers.policy.checkpoint_manager import (
-    NNCheckpointManager,
-    NNCheckpoint,
+    ModelCheckpointManager,
+    ModelCheckpoint,
 )
 
 
@@ -78,25 +78,27 @@ def test_model_management(tmpdir):
         brain_name, StatusType.CHECKPOINTS, test_checkpoint_list
     )
 
-    new_checkpoint_4 = NNCheckpoint(
+    new_checkpoint_4 = ModelCheckpoint(
         4, os.path.join(final_model_path, f"{brain_name}-4.nn"), 2.678, time.time()
     )
-    NNCheckpointManager.add_checkpoint(brain_name, new_checkpoint_4, 4)
-    assert len(NNCheckpointManager.get_checkpoints(brain_name)) == 4
+    ModelCheckpointManager.add_checkpoint(brain_name, new_checkpoint_4, 4)
+    assert len(ModelCheckpointManager.get_checkpoints(brain_name)) == 4
 
-    new_checkpoint_5 = NNCheckpoint(
+    new_checkpoint_5 = ModelCheckpoint(
         5, os.path.join(final_model_path, f"{brain_name}-5.nn"), 3.122, time.time()
     )
-    NNCheckpointManager.add_checkpoint(brain_name, new_checkpoint_5, 4)
-    assert len(NNCheckpointManager.get_checkpoints(brain_name)) == 4
+    ModelCheckpointManager.add_checkpoint(brain_name, new_checkpoint_5, 4)
+    assert len(ModelCheckpointManager.get_checkpoints(brain_name)) == 4
 
     final_model_path = f"{final_model_path}.nn"
     final_model_time = time.time()
     current_step = 6
-    final_model = NNCheckpoint(current_step, final_model_path, 3.294, final_model_time)
+    final_model = ModelCheckpoint(
+        current_step, final_model_path, 3.294, final_model_time
+    )
 
-    NNCheckpointManager.track_final_checkpoint(brain_name, final_model)
-    assert len(NNCheckpointManager.get_checkpoints(brain_name)) == 4
+    ModelCheckpointManager.track_final_checkpoint(brain_name, final_model)
+    assert len(ModelCheckpointManager.get_checkpoints(brain_name)) == 4
 
     check_checkpoints = GlobalTrainingStatus.saved_state[brain_name][
         StatusType.CHECKPOINTS.value

@@ -1,11 +1,11 @@
 from typing import Dict, Type
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.components.reward_signals import RewardSignal
-from mlagents.trainers.components.reward_signals.extrinsic.signal import (
+from mlagents.trainers.tf.components.reward_signals import RewardSignal
+from mlagents.trainers.tf.components.reward_signals.extrinsic.signal import (
     ExtrinsicRewardSignal,
 )
-from mlagents.trainers.components.reward_signals.gail.signal import GAILRewardSignal
-from mlagents.trainers.components.reward_signals.curiosity.signal import (
+from mlagents.trainers.tf.components.reward_signals.gail.signal import GAILRewardSignal
+from mlagents.trainers.tf.components.reward_signals.curiosity.signal import (
     CuriosityRewardSignal,
 )
 from mlagents.trainers.policy.tf_policy import TFPolicy
