@@ -27,6 +27,18 @@ jobs:
       - name: Build docker image
         run: docker build --tag ml-agents:${GITHUB_SHA} --build-arg SHA=${GITHUB_SHA} .
       - name: Tag docker image (stg)
-        run: docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
+        run: |
+          docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
+          docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-stg/ml-agents:latest
       - name: Push docker image (stg)
-        run: docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
+        run: |
+          docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
+          docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:latest
+      - name: Tag docker image (prd)
+        run: |
+          docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-prd/ml-agents:${GITHUB_SHA}
+          docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-prd/ml-agents:latest
+      - name: Push docker image (prd)
+        run: |
+          docker push gcr.io/unity-ai-ml-agents-prd/ml-agents:${GITHUB_SHA}
+          docker push gcr.io/unity-ai-ml-agents-prd/ml-agents:latest
