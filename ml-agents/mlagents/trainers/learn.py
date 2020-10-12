@@ -1,4 +1,5 @@
 # # Unity ML-Agents Toolkit
+from mlagents import torch_utils
 import yaml
 
 import os
@@ -46,7 +47,7 @@ def get_version_string() -> str:
   ml-agents: {mlagents.trainers.__version__},
   ml-agents-envs: {mlagents_envs.__version__},
   Communicator API: {UnityEnvironment.API_VERSION},
-  TensorFlow: {tf_utils.tf.__version__}"""
+  PyTorch: {torch_utils.torch.__version__}"""
 
 
 def parse_command_line(argv: Optional[List[str]] = None) -> RunOptions:
@@ -264,7 +265,7 @@ def run_cli(options: RunOptions) -> None:
     add_timer_metadata("mlagents_version", mlagents.trainers.__version__)
     add_timer_metadata("mlagents_envs_version", mlagents_envs.__version__)
     add_timer_metadata("communication_protocol_version", UnityEnvironment.API_VERSION)
-    add_timer_metadata("tensorflow_version", tf_utils.tf.__version__)
+    add_timer_metadata("pytorch_version", torch_utils.torch.__version__)
     add_timer_metadata("numpy_version", np.__version__)
 
     if options.env_settings.seed == -1:
