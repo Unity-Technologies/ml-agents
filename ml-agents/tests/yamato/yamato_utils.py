@@ -11,11 +11,14 @@ def get_unity_executable_path():
     HUB_UNITY = (
         f"/Applications/Unity/Hub/Editor/{UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
     )
+    downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    if os.path.exists(downloader_install_path):
+        return downloader_install_path
     if os.path.exists(BOKKEN_UNITY):
         return BOKKEN_UNITY
     if os.path.exists(HUB_UNITY):
         return HUB_UNITY
-    raise FileNotFoundError("Can't find bokken or hub executables")
+    raise FileNotFoundError("Can't find downloader, bokken, or hub executables")
 
 
 def get_base_path():
