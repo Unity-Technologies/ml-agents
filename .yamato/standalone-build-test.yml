@@ -17,6 +17,8 @@ test_mac_standalone_{{ editor.version }}:
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Basic/Scenes/Basic.unity
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Bouncer/Scenes/Bouncer.unity
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/TestScenes/TestCompressedGrid/TestGridCompressed.unity
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/TestScenes/TestCompressedTexture/TestTextureCompressed.unity
   triggers:
     cancel_old_ci: true
     expression: |
