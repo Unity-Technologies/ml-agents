@@ -25,6 +25,26 @@ using Unity.Barracuda;
 
 namespace Unity.MLAgents
 {
+    internal class RecursionChecker : IDisposable
+    {
+        private bool m_IsRunning;
+
+        public IDisposable Start()
+        {
+            if (m_IsRunning)
+            {
+                throw new UnityAgentsException("Don't do this.");
+            }
+            m_IsRunning = true;
+            return this;
+        }
+
+        public void Dispose()
+        {
+            m_IsRunning = false;
+        }
+    }
+
     /// <summary>
     /// Helper class to step the Academy during FixedUpdate phase.
     /// </summary>
@@ -157,7 +177,7 @@ namespace Unity.MLAgents
 
         // Whether the Academy is in the middle of a step. This is used to detect and Academy
         // step called by user code that is also called by the Academy.
-        bool m_IsStepping;
+        private RecursionChecker m_StepRecursionChecker = new RecursionChecker();
 
         // Random seed used for inference.
         int m_InferenceSeed;
@@ -535,22 +555,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            // Check whether we're already in the middle of a step.
-            // This shouldn't happen generally, but could happen if user code (e.g. CollectObservations)
-            // that is called by EnvironmentStep() also calls EnvironmentStep(). This would result
-            // in an infinite loop and/or stack overflow, so stop it before it happens.
-            if (m_IsStepping)
-            {
-                throw new UnityAgentsException(
-                    "Academy.EnvironmentStep() called recursively. " +
-                    "This might happen if you call EnvironmentStep() from custom code such as " +
-                    "CollectObservations() or OnActionReceived()."
-                );
-            }
-
-            m_IsStepping = true;
-
-            try
+            using (m_StepRecursionChecker.Start())
             {
                 if (!m_HadFirstReset)
                 {
@@ -583,11 +588,6 @@ namespace Unity.MLAgents
                 {
                     AgentAct?.Invoke();
                 }
-            }
-            finally
-            {
-                // Reset m_IsStepping when we're done (or if an exception occurred).
-                m_IsStepping = false;
             }
         }
 
