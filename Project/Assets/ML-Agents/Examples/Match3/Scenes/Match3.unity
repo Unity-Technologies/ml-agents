@@ -179,6 +179,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Match3VisualObs (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 3019509691567202678, guid: aaa471bd5e2014848a66917476671aed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa471bd5e2014848a66917476671aed, type: 3}
 --- !u!1 &327661542
@@ -611,6 +616,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Match3VisualObs (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 3019509691567202678, guid: aaa471bd5e2014848a66917476671aed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019509692332007790, guid: aaa471bd5e2014848a66917476671aed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa471bd5e2014848a66917476671aed, type: 3}
 --- !u!1001 &1278119417
@@ -681,6 +696,11 @@ PrefabInstance:
       value: Match3VectorObs (1)
       objectReference: {fileID: 0}
     - target: {fileID: 2118285883905619929, guid: 6944ca02359f5427aa13c8551236a824,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2118285884327540673, guid: 6944ca02359f5427aa13c8551236a824,
         type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -966,6 +986,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Match3VisualObs (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 3019509691567202678, guid: aaa471bd5e2014848a66917476671aed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa471bd5e2014848a66917476671aed, type: 3}
 --- !u!1001 &2118285882709515366
@@ -1034,6 +1059,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Match3VectorObs
+      objectReference: {fileID: 0}
+    - target: {fileID: 2118285883905619929, guid: 6944ca02359f5427aa13c8551236a824,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2118285884327540673, guid: 6944ca02359f5427aa13c8551236a824,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2118285884327540680, guid: 6944ca02359f5427aa13c8551236a824,
         type: 3}
@@ -1108,6 +1143,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Match3VisualObs
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019509691567202678, guid: aaa471bd5e2014848a66917476671aed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa471bd5e2014848a66917476671aed, type: 3}

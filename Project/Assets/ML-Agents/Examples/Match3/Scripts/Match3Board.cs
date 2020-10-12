@@ -72,7 +72,7 @@ namespace Unity.MLAgentsExamples
                     var matchedRows = 0;
                     for (var iOffset = i; iOffset < Rows; iOffset++)
                     {
-                        if (m_Cells[j, i] != m_Cells[j, iOffset])
+                        if (m_Cells[j, i].Item1 != m_Cells[j, iOffset].Item1)
                         {
                             break;
                         }
@@ -94,7 +94,7 @@ namespace Unity.MLAgentsExamples
                     var matchedCols = 0;
                     for (var jOffset = j; jOffset < Columns; jOffset++)
                     {
-                        if (m_Cells[j, i] != m_Cells[jOffset, i])
+                        if (m_Cells[j, i].Item1 != m_Cells[jOffset, i].Item1)
                         {
                             break;
                         }

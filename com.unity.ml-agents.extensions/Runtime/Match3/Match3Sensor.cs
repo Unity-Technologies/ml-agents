@@ -11,16 +11,18 @@ namespace Unity.MLAgents.Extensions.Match3
         CompressedVisual
     }
 
-    public class Match3Sensor : ISensor
+    public class Match3Sensor : ISparseChannelSensor
     {
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
         private int[] m_Shape;
+        private int[] m_SparseChannelMapping;
 
         private int m_Rows;
         private int m_Columns;
         private int m_NumCellTypes;
         private int m_NumSpecialTypes;
+        private ISparseChannelSensor sparseChannelSensorImplementation;
 
         private int SpecialTypeSize
         {
@@ -41,6 +43,25 @@ namespace Unity.MLAgents.Extensions.Match3
                 new[] { m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize };
 
             // See comment in GetCompressedObservation()
+            var cellTypePaddedSize = 3 * ((m_NumCellTypes + 2) / 3);
+            m_SparseChannelMapping = new int[cellTypePaddedSize + SpecialTypeSize];
+            // If we have 4 cell types and 2 special types (3 special size), we'd have
+            // [0, 1, 2, 3, -1, -1, 4, 5, 6]
+            for (var i = 0; i < m_NumCellTypes; i++)
+            {
+                m_SparseChannelMapping[i] = i;
+            }
+
+            for (var i = m_NumCellTypes; i < cellTypePaddedSize; i++)
+            {
+                m_SparseChannelMapping[i] = -1;
+            }
+
+            for (var i = 0; i < SpecialTypeSize; i++)
+            {
+                m_SparseChannelMapping[cellTypePaddedSize + i] = i + m_NumCellTypes;
+            }
+
         }
 
         public int[] GetObservationShape()
@@ -138,7 +159,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 bytesOut.AddRange(tempTexture.EncodeToPNG());
             }
 
-            var numSpecialImages = (m_NumSpecialTypes + 2) / 3;
+            var numSpecialImages = (SpecialTypeSize + 2) / 3;
             for (var i = 0; i < numSpecialImages; i++)
             {
                 converter.EncodeToTexture(m_Board.GetSpecialType, tempTexture, 3 * i);
@@ -167,6 +188,11 @@ namespace Unity.MLAgents.Extensions.Match3
         public string GetName()
         {
             return "Match3 Sensor";
+        }
+
+        public int[] GetCompressedChannelMapping()
+        {
+            return m_SparseChannelMapping;
         }
 
         static void DestroyTexture(Texture2D texture)
