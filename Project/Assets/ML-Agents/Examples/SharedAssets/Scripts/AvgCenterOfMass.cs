@@ -258,7 +258,7 @@ public class AvgCenterOfMass : MonoBehaviour
                 // avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
                 float avgCOMRadius = 0.5f; //radius of gizmo
                 Gizmos.color = avgCOMColor;
-                Gizmos.DrawSphere(avgCOMWorldSpace, avgCOMRadius);
+                Gizmos.DrawWireSphere(avgCOMWorldSpace, avgCOMRadius);
             }
         }
         else
@@ -284,7 +284,7 @@ public class AvgCenterOfMass : MonoBehaviour
                 // avgCOMWorldSpace /= rbList.Count; //divide by num of rb's to get avg in WORLD space
                 float avgCOMGizmoRadius = 0.5f; //radius of gizmo
                 Gizmos.color = avgCOMColor;
-                Gizmos.DrawSphere(avgCOMWorldSpace, avgCOMGizmoRadius);
+                Gizmos.DrawWireSphere(avgCOMWorldSpace, avgCOMGizmoRadius);
 
 
 

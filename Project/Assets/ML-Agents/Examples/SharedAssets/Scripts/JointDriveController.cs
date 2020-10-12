@@ -118,7 +118,8 @@ namespace Unity.MLAgentsExamples
         /// <summary>
         /// Create BodyPart object and add it to dictionary.
         /// </summary>
-        public void SetupBodyPart(Transform t)
+//        public void SetupBodyPart(Transform t)
+        public void SetupBodyPart(Transform t, bool includeJoint = true)
         {
             var bp = new BodyPart
             {
@@ -127,6 +128,10 @@ namespace Unity.MLAgentsExamples
                 startingPos = t.position,
                 startingRot = t.rotation
             };
+            if (!includeJoint)
+            {
+                bp.joint = null;
+            }
             bp.rb.maxAngularVelocity = k_MaxAngularVelocity;
 
             // Add & setup the ground contact script

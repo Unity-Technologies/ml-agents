@@ -49,7 +49,7 @@ public class CreatureAgent : Agent
     //The walking speed to try and achieve
     private float m_TargetWalkingSpeed = m_maxWalkingSpeed;
 
-    const float m_minWalkingSpeed = 5; //The max walking speed
+    const float m_minWalkingSpeed = .01f; //The max walking speed
     const float m_maxWalkingSpeed = 15; //The max walking speed
 
     //The current target walking speed. Clamped because a value of zero will cause NaNs
@@ -72,6 +72,8 @@ public class CreatureAgent : Agent
     public Transform m_Target; //Target the agent will walk towards during training.
 
     [Header("Body Parts")] [Space(10)] public Transform body;
+    public Transform bodyMiddle;
+    public Transform body1;
     public Transform leg0Upper;
     public Transform leg0Lower;
     public Transform leg1Upper;
@@ -80,6 +82,10 @@ public class CreatureAgent : Agent
     public Transform leg2Lower;
     public Transform leg3Upper;
     public Transform leg3Lower;
+    public Transform leg4Upper;
+    public Transform leg4Lower;
+    public Transform leg5Upper;
+    public Transform leg5Lower;
 
     //This will be used as a stabilized model space reference point for observations
     //Because ragdolls can move erratically during training, using a stabilized reference transform improves learning
@@ -112,6 +118,8 @@ public class CreatureAgent : Agent
 
         //Setup each body part
         m_JdController.SetupBodyPart(body);
+        m_JdController.SetupBodyPart(bodyMiddle, false);
+        m_JdController.SetupBodyPart(body1, false);
         m_JdController.SetupBodyPart(leg0Upper);
         m_JdController.SetupBodyPart(leg0Lower);
         m_JdController.SetupBodyPart(leg1Upper);
@@ -120,6 +128,10 @@ public class CreatureAgent : Agent
         m_JdController.SetupBodyPart(leg2Lower);
         m_JdController.SetupBodyPart(leg3Upper);
         m_JdController.SetupBodyPart(leg3Lower);
+        m_JdController.SetupBodyPart(leg4Upper);
+        m_JdController.SetupBodyPart(leg4Lower);
+        m_JdController.SetupBodyPart(leg5Upper);
+        m_JdController.SetupBodyPart(leg5Lower);
     }
 
     /// <summary>
@@ -238,15 +250,15 @@ public class CreatureAgent : Agent
         //Add pos of target relative to orientation cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformPoint(m_Target.transform.position));
 
-        //        RaycastHit hit;
-        //        float maxRaycastDist = 10;
-        ////        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
-        //        if (Physics.Raycast(body.position, -body.up, out hit, maxRaycastDist))
-        //        {
-        //            sensor.AddObservation(hit.distance / maxRaycastDist);
-        //        }
-        //        else
-        //            sensor.AddObservation(1);
+        RaycastHit hit;
+        float maxRaycastDist = 10;
+        //        if (Physics.Raycast(body.position, Vector3.down, out hit, maxRaycastDist))
+        if (Physics.Raycast(body.position, -body.up, out hit, maxRaycastDist))
+        {
+            sensor.AddObservation(hit.distance / maxRaycastDist);
+        }
+        else
+            sensor.AddObservation(1);
 
         foreach (var bodyPart in m_JdController.bodyPartsList)
         {
@@ -266,20 +278,28 @@ public class CreatureAgent : Agent
         bpDict[leg1Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[leg2Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[leg3Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[leg4Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+        bpDict[leg5Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
         bpDict[leg0Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[leg1Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[leg2Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[leg3Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+        bpDict[leg4Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+        bpDict[leg5Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
 
         // Update joint strength
         bpDict[leg0Upper].SetJointStrength(continuousActions[++i]);
         bpDict[leg1Upper].SetJointStrength(continuousActions[++i]);
         bpDict[leg2Upper].SetJointStrength(continuousActions[++i]);
         bpDict[leg3Upper].SetJointStrength(continuousActions[++i]);
+        bpDict[leg4Upper].SetJointStrength(continuousActions[++i]);
+        bpDict[leg5Upper].SetJointStrength(continuousActions[++i]);
         bpDict[leg0Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
         bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
+        bpDict[leg4Lower].SetJointStrength(continuousActions[++i]);
+        bpDict[leg5Lower].SetJointStrength(continuousActions[++i]);
 
         //Reset if Worm fell through floor;
         if (body.position.y < m_StartingPos.y - 5)
@@ -287,6 +307,40 @@ public class CreatureAgent : Agent
             EndEpisode();
         }
     }
+    //    public override void OnActionReceived(ActionBuffers actionBuffers)
+    //    {
+    //        // The dictionary with all the body parts in it are in the jdController
+    //        var bpDict = m_JdController.bodyPartsDict;
+    //
+    //        var continuousActions = actionBuffers.ContinuousActions;
+    //        var i = -1;
+    //        // Pick a new target joint rotation
+    //        bpDict[leg0Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    //        bpDict[leg1Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    //        bpDict[leg2Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    //        bpDict[leg3Upper].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
+    //        bpDict[leg0Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    //        bpDict[leg1Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    //        bpDict[leg2Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    //        bpDict[leg3Lower].SetJointTargetRotation(continuousActions[++i], 0, 0);
+    //
+    //        // Update joint strength
+    //        bpDict[leg0Upper].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg1Upper].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg2Upper].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg3Upper].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg0Lower].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg1Lower].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg2Lower].SetJointStrength(continuousActions[++i]);
+    //        bpDict[leg3Lower].SetJointStrength(continuousActions[++i]);
+    //
+    //        //Reset if Worm fell through floor;
+    //        if (body.position.y < m_StartingPos.y - 5)
+    //        {
+    //            EndEpisode();
+    //        }
+    //    }
+
     //    public override void OnActionReceived(ActionBuffers actionBuffers)
     //    {
     //        // The dictionary with all the body parts in it are in the jdController
