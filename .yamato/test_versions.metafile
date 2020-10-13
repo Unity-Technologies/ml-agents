@@ -1,6 +1,6 @@
 # List of editor versions for standalone-build-test and its dependencies.
 test_editors:
-  - version: 2018.4
-  - version: 2019.4
+#  - version: 2018.4
+#  - version: 2019.4
   - version: 2020.1
   - version: 2020.2
