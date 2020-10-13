@@ -2,15 +2,10 @@ name: build and push Docker image
 
 on:
   push:
-    pull_request:
-      paths:  # This action will only run if the PR modifies a file in one of these directories
-        - 'ml-agents/**'
-        - 'ml-agents-envs/**'
-        - 'gym-unity/**'
-        - 'test_constraints*.txt'
-        - 'test_requirements.txt'
-      push:
-        branches: [master]
+    tags:
+      - "release_[0-9]+_test[0-9]+"
+      - "release_[0-9]+"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,7 +17,7 @@ jobs:
           service_account_email: ${{ secrets.GCP_STG_EMAIL }}
           service_account_key: ${{ secrets.GCP_STG_PRIVATE_KEY }}
           export_default_credentials: true
-      - name: Set up docker to authenticate with GCP
+      - name: Configure GCR Docker auth (stg)
         run: gcloud auth configure-docker
       - name: Build docker image
         run: docker build --tag ml-agents:${GITHUB_SHA} --build-arg SHA=${GITHUB_SHA} .
@@ -34,6 +29,14 @@ jobs:
         run: |
           docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:${GITHUB_SHA}
           docker push gcr.io/unity-ai-ml-agents-stg/ml-agents:latest
+      - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '270.0.0'
+          service_account_email: ${{ secrets.GCP_PRD_EMAIL }}
+          service_account_key: ${{ secrets.GCP_PRD_PRIVATE_KEY }}
+          export_default_credentials: true
+      - name: Configure GCR Docker auth (prd)
+        run: gcloud auth configure-docker
       - name: Tag docker image (prd)
         run: |
           docker tag ml-agents:${GITHUB_SHA} gcr.io/unity-ai-ml-agents-prd/ml-agents:${GITHUB_SHA}
