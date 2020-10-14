@@ -3,7 +3,6 @@ name: build and push Docker image
 on:
   push:
     tags:
-      - "release_[0-9]+_test[0-9]+"
       - "release_[0-9]+"
 
 jobs:
