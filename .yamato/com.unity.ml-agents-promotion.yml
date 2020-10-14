@@ -25,7 +25,7 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/com.unity.ml-agents-pack.yml#pack
 {% endfor %}
 {% endfor %}
 
@@ -34,7 +34,7 @@ promotion_test_trigger:
   dependencies:
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
-    - .yamato/package-promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
+    - .yamato/com.unity.ml-agents-promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
 {% endfor %}
 {% endfor %}
 
