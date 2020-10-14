@@ -44,11 +44,6 @@ If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-Although we do not provide support for Anaconda installation on Windows, the
-previous
-[Windows Anaconda Installation (Deprecated) guide](Installation-Anaconda-Windows.md)
-is still available.
-
 ### Clone the ML-Agents Toolkit Repository (Optional)
 
 Now that you have installed Unity and Python, you can now install the Unity and
