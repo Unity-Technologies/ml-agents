@@ -333,7 +333,7 @@ public override void OnActionReceived(float[] vectorAction)
     }
 
     // Fell off platform
-    if (this.transform.localPosition.y < 0)
+    else if (this.transform.localPosition.y < 0)
     {
         EndEpisode();
     }
