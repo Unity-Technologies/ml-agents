@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 
@@ -10,9 +11,10 @@ def main(scene_path):
 
     executable_name = None
     if scene_path is not None:
-        executable_name = scene_path.strip(".unity")
+        executable_name = os.path.splitext(scene_path)[0]  # Remove extension
         executable_name = executable_name.split("/")[-1]
         executable_name = "testPlayer-" + executable_name
+    print(f"Executable name {executable_name}")
 
     returncode = run_standalone_build(
         base_path, output_path=executable_name, scene_path=scene_path
