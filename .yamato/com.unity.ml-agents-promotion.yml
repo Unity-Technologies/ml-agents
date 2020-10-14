@@ -19,13 +19,13 @@ promotion_test_{{ platform.name }}_{{ editor.version }}:
     UPMCI_PROMOTION: 1
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci package test --unity-version {{ editor.version }} --package-path package
+    - upm-ci package test --unity-version {{ editor.version }} --package-path com.unity.ml-agents
   artifacts:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
   dependencies:
-    - .yamato/package-pack.yml#pack
+    - .yamato/com.unity.ml-agents-pack.yml#pack
 {% endfor %}
 {% endfor %}
 
@@ -34,7 +34,7 @@ promotion_test_trigger:
   dependencies:
 {% for editor in test_editors %}
 {% for platform in test_platforms %}
-    - .yamato/package-promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
+    - .yamato/com.unity.ml-agents-promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
 {% endfor %}
 {% endfor %}
 
