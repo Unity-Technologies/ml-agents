@@ -5,7 +5,7 @@ from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionType
 from mlagents.trainers.torch.distributions import DistInstance
-from mlagents.trainers.torch.action_models import HybridActionModel
+from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.settings import NetworkSettings
 from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
@@ -245,7 +245,7 @@ class SimpleActor(nn.Module, Actor):
         else:
             self.encoding_size = network_settings.hidden_units
 
-        self.action_model = HybridActionModel(
+        self.action_model = ActionModel(
             self.encoding_size,
             continuous_act_size,
             discrete_act_size,

@@ -97,8 +97,9 @@ class TorchPolicy(Policy):
         self, decision_requests: DecisionSteps
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
-        # mask = None
-        mask = torch.ones([len(decision_requests), np.sum(self.discrete_act_size)])
+        mask = None
+        if len(self.discrete_act_size) > 0:
+            mask = torch.ones([len(decision_requests), np.sum(self.discrete_act_size)])
         if decision_requests.action_mask is not None:
             mask = torch.as_tensor(
                 1 - np.concatenate(decision_requests.action_mask, axis=1)

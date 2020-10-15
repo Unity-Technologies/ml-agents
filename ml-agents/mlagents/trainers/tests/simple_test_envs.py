@@ -5,7 +5,6 @@ import numpy as np
 from mlagents_envs.base_env import (
     BaseEnv,
     BehaviorSpec,
-    HybridBehaviorSpec,
     DecisionSteps,
     TerminalSteps,
     ActionType,
@@ -55,11 +54,14 @@ class SimpleEnvironment(BaseEnv):
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
-        self.behavior_spec = BehaviorSpec(
-            self._make_obs_spec(),
-            action_type,
-            tuple(2 for _ in range(action_size)) if use_discrete else action_size,
-        )
+        if use_discrete:
+            self.behavior_spec = BehaviorSpec(
+                self._make_obs_spec(), 0, tuple(2 for _ in range(action_size))
+            )
+        else:
+            self.behavior_spec = BehaviorSpec(
+                self._make_obs_spec(), action_size, tuple()
+            )
         self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
@@ -252,16 +254,18 @@ class HybridEnvironment(SimpleEnvironment):
         )
         super().__init__(
             brain_names,
-            True, # This is needed for env to generate masks correctly
+            True,  # This is needed for env to generate masks correctly
             step_size=step_size,
             num_visual=num_visual,
             num_vector=num_vector,
-            action_size=discrete_action_size, # This is needed for env to generate masks correctly
+            action_size=discrete_action_size,  # This is needed for env to generate masks correctly
         )
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
-        self.behavior_spec = HybridBehaviorSpec(
-            self._make_obs_spec(), continuous_action_size, tuple(2 for _ in range(discrete_action_size))
+        self.behavior_spec = BehaviorSpec(
+            self._make_obs_spec(),
+            continuous_action_size,
+            tuple(2 for _ in range(discrete_action_size)),
         )
         self.continuous_action_size = continuous_action_size
         self.discrete_action_size = discrete_action_size
@@ -278,16 +282,18 @@ class HybridEnvironment(SimpleEnvironment):
             all_done = cont_done and disc_done
             if all_done:
                 reward = 0
-                for _pos in self.continuous_env.positions[name] + self.discrete_env.positions[name]:
+                for _pos in (
+                    self.continuous_env.positions[name]
+                    + self.discrete_env.positions[name]
+                ):
                     reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
-                        self.continuous_env.positions[name] + self.discrete_env.positions[name]
+                        self.continuous_env.positions[name]
+                        + self.discrete_env.positions[name]
                     )
             else:
                 reward = -TIME_PENALTY
             self.rewards[name] += reward
-            self.step_result[name] = self._make_batched_step(
-                name, all_done, reward
-            )
+            self.step_result[name] = self._make_batched_step(name, all_done, reward)
 
     def reset(self) -> None:  # type: ignore
         super().reset()
@@ -297,8 +303,9 @@ class HybridEnvironment(SimpleEnvironment):
         self.discrete_env.goal = self.goal
 
     def set_actions(self, behavior_name: BehaviorName, action) -> None:
-        continuous_action = action[:, :self.continuous_action_size]
-        discrete_action = action[:, self.continuous_action_size:]
+        # print(action, self.goal[behavior_name])
+        continuous_action = action[:, : self.continuous_action_size]
+        discrete_action = action[:, self.continuous_action_size :]
         self.continuous_env.set_actions(behavior_name, continuous_action)
         self.discrete_env.set_actions(behavior_name, discrete_action)
 

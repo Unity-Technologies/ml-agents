@@ -39,6 +39,13 @@ class DistInstance(nn.Module, abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def structure_action(self, action: torch.Tensor) -> torch.Tensor:
+        """
+        Return the structured action to be passed to the trainer
+        """
+        pass
+
 
 class DiscreteDistInstance(DistInstance):
     @abc.abstractmethod
@@ -77,6 +84,9 @@ class GaussianDistInstance(DistInstance):
 
     def exported_model_output(self):
         return self.sample()
+
+    def structure_action(self, action):
+        return action[:, :, 0]
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -118,16 +128,20 @@ class CategoricalDistInstance(DiscreteDistInstance):
         ).squeeze(-1)
 
     def log_prob(self, value):
-        return torch.log(self.pdf(value))
+        return torch.log(self.pdf(value)).unsqueeze(-1)
 
     def all_log_prob(self):
         return torch.log(self.probs)
 
     def entropy(self):
-        return -torch.sum(self.probs * torch.log(self.probs), dim=-1)
+        return -torch.sum(self.probs * torch.log(self.probs), dim=-1).unsqueeze(-1)
 
     def exported_model_output(self):
         return self.all_log_prob()
+
+    def structure_action(self, action):
+        return action[:, 0, :].type(torch.float)
+
 
 
 class GaussianDistribution(nn.Module):
@@ -161,7 +175,7 @@ class GaussianDistribution(nn.Module):
                 torch.zeros(1, num_outputs, requires_grad=True)
             )
 
-    def forward(self, inputs: torch.Tensor) -> List[DistInstance]:
+    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> List[DistInstance]:
         mu = self.mu(inputs)
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)

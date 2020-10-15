@@ -277,11 +277,14 @@ class ModelUtils:
         for action, action_dist in zip(action_list, dists):
             log_prob = action_dist.log_prob(action)
             log_probs_list.append(log_prob)
-            entropies_list.append(action_dist.entropy())
+            entropy = action_dist.entropy()
+            entropies_list.append(torch.mean(entropy).unsqueeze(-1).unsqueeze(-1))
+            #entropies_list.append(entropy)
             if isinstance(action_dist, DiscreteDistInstance):
                 all_probs_list.append(action_dist.all_log_prob())
-        log_probs = torch.stack(log_probs_list, dim=-1)
-        entropies = torch.stack(entropies_list, dim=-1)
+        log_probs = torch.cat(log_probs_list, dim=1)
+        entropies = torch.cat(entropies_list, dim=1)
+
         if not all_probs_list:
             log_probs = log_probs.squeeze(-1)
             entropies = entropies.squeeze(-1)

@@ -130,11 +130,10 @@ class AgentProcessor:
             interrupted = step.interrupted if terminated else False
             # Add the outputs of the last eval
             action = stored_take_action_outputs["action"][idx]
-            #if self.policy.use_continuous_act:
-            #    action_pre = stored_take_action_outputs["pre_action"][idx]
-            #else:
-            #    action_pre = None
-            action_pre = None
+            if self.policy.use_continuous_act:
+                action_pre = stored_take_action_outputs["pre_action"][idx]
+            else:
+                action_pre = None
             action_probs = stored_take_action_outputs["log_probs"][idx]
             action_mask = stored_decision_step.action_mask
             prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
