@@ -15,6 +15,7 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- The Barracuda dependency was upgraded to 1.1.2 (#4571)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
