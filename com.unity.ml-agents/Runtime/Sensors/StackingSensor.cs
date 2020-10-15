@@ -202,6 +202,7 @@ namespace Unity.MLAgents.Sensors
             return outputBytes;
         }
 
+        /// <inheritdoc/>
         public int[] GetCompressedChannelMapping()
         {
             return m_CompressionMapping;
@@ -231,7 +232,6 @@ namespace Unity.MLAgents.Sensors
             texture2D.Apply();
             return texture2D.EncodeToPNG();
         }
-
 
         /// <summary>
         /// Constrct stacked CompressedChannelMapping.

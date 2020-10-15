@@ -663,7 +663,7 @@ MonoBehaviour:
   myLaser: {fileID: 1900094563283840}
   contribute: 0
   useVectorObs: 0
-  useFrozenFlag: 1
+  useVectorFrozenFlag: 1
 --- !u!114 &114326390494230518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -681,6 +681,7 @@ MonoBehaviour:
   m_Width: 84
   m_Height: 84
   m_Grayscale: 0
+  m_ObservationStacks: 1
   m_Compression: 1
 --- !u!114 &4034342608499629224
 MonoBehaviour:
@@ -1246,7 +1247,7 @@ MonoBehaviour:
   myLaser: {fileID: 1307818939507544}
   contribute: 0
   useVectorObs: 0
-  useFrozenFlag: 1
+  useVectorFrozenFlag: 1
 --- !u!114 &114429222608880102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1264,6 +1265,7 @@ MonoBehaviour:
   m_Width: 84
   m_Height: 84
   m_Grayscale: 0
+  m_ObservationStacks: 1
   m_Compression: 1
 --- !u!114 &7234640249101665162
 MonoBehaviour:
@@ -1643,7 +1645,7 @@ MonoBehaviour:
   myLaser: {fileID: 1898252046043334}
   contribute: 0
   useVectorObs: 0
-  useFrozenFlag: 1
+  useVectorFrozenFlag: 1
 --- !u!114 &114036270357198286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1661,6 +1663,7 @@ MonoBehaviour:
   m_Width: 84
   m_Height: 84
   m_Grayscale: 0
+  m_ObservationStacks: 1
   m_Compression: 1
 --- !u!114 &3164735207755090463
 MonoBehaviour:
@@ -3460,7 +3463,7 @@ MonoBehaviour:
   myLaser: {fileID: 1779831409734062}
   contribute: 0
   useVectorObs: 0
-  useFrozenFlag: 1
+  useVectorFrozenFlag: 1
 --- !u!114 &114322691115031348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3478,6 +3481,7 @@ MonoBehaviour:
   m_Width: 84
   m_Height: 84
   m_Grayscale: 0
+  m_ObservationStacks: 1
   m_Compression: 1
 --- !u!114 &5903164052970896384
 MonoBehaviour:
