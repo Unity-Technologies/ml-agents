@@ -319,7 +319,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 ]
             )
             batch_policy_loss += torch.squeeze(branched_policy_loss)
-            all_mean_q1 = disc_action_probs * mean_q1
+            all_mean_q1 = torch.sum(disc_action_probs * mean_q1, dim=1)
         else:
             all_mean_q1 = mean_q1
         if self.policy.continuous_act_size > 0:
