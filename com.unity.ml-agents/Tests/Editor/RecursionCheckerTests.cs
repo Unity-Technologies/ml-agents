@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 
 namespace Unity.MLAgents.Tests
@@ -31,6 +32,41 @@ namespace Unity.MLAgents.Tests
 
             // Should increment twice before bailing out.
             Assert.AreEqual(2, rc.NumCalls);
+        }
+
+        class OneTimeThrower
+        {
+            RecursionChecker m_checker = new RecursionChecker("OneTimeThrower");
+            public int NumCalls;
+
+            public void DoStuff()
+            {
+                // This method throws from inside the checker the first time.
+                // Later calls do nothing.
+                NumCalls++;
+                using (m_checker.Start())
+                {
+                    if (NumCalls == 1)
+                    {
+                        throw new ArgumentException("oops");
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void TestThrowResetsFlag()
+        {
+            var ott = new OneTimeThrower();
+            Assert.Throws<ArgumentException>(() =>
+            {
+                ott.DoStuff();
+            });
+
+            // Make sure the flag is cleared if we throw in the "using". Should be able to step subsequently.
+            ott.DoStuff();
+            ott.DoStuff();
+            Assert.AreEqual(3, ott.NumCalls);
         }
     }
 }

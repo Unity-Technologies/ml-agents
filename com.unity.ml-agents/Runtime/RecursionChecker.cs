@@ -28,6 +28,7 @@ namespace Unity.MLAgents
 
         public void Dispose()
         {
+            // Reset the flag when we're done (or if an exception occurred).
             m_IsRunning = false;
         }
     }
