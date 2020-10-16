@@ -12,7 +12,6 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
-from numpy.core.fromnumeric import mean
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
@@ -269,8 +268,9 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
                 value_losses.append(value_loss)
         else:
+            disc_log_probs = log_probs[:, self.policy.continuous_act_size :]
             branched_per_action_ent = ModelUtils.break_into_branches(
-                log_probs * log_probs.exp(), self.policy.discrete_act_size
+                disc_log_probs * disc_log_probs.exp(), self.policy.discrete_act_size
             )
             # We have to do entropy bonus per action branch
             branched_ent_bonus = torch.stack(

@@ -158,58 +158,77 @@ def _check_environment_trains(
             assert all(not math.isnan(reward) for reward in processed_rewards)
             assert all(reward > success_threshold for reward in processed_rewards)
 
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_simple_ppo(use_discrete):
+
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ppo(use_discrete):
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
 #    config = attr.evolve(PPO_CONFIG)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 
+
 def test_hybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8)
+    env = HybridEnvironment(
+        [BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8
+    )
     new_hyperparams = attr.evolve(
         PPO_CONFIG.hyperparameters, batch_size=32, buffer_size=1280
     )
     config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
+
 def test_conthybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=0, step_size=0.8)
+    env = HybridEnvironment(
+        [BRAIN_NAME], continuous_action_size=1, discrete_action_size=0, step_size=0.8
+    )
     config = attr.evolve(PPO_CONFIG)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+
 
 def test_dischybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=0, discrete_action_size=1, step_size=0.8)
+    env = HybridEnvironment(
+        [BRAIN_NAME], continuous_action_size=0, discrete_action_size=1, step_size=0.8
+    )
     config = attr.evolve(PPO_CONFIG)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
+
 def test_3chybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8)
+    env = HybridEnvironment(
+        [BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8
+    )
     new_hyperparams = attr.evolve(
-        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=.01
+        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.01
     )
     config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
+
 def test_3ddhybrid_ppo():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
+    env = HybridEnvironment(
+        [BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8
+    )
     new_hyperparams = attr.evolve(
-        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=.05
+        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.05
     )
     config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 def test_hybrid_sac():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
+    env = HybridEnvironment(
+        [BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8
+    )
     new_hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters, buffer_size=50000, batch_size=128
     )
     config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
+
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_2d_ppo(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_2d_ppo(use_discrete):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
 #    )
@@ -220,9 +239,9 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#@pytest.mark.parametrize("num_visual", [1, 2])
-#def test_visual_ppo(num_visual, use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# def test_visual_ppo(num_visual, use_discrete):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME],
 #        use_discrete=use_discrete,
@@ -235,9 +254,9 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
-#@pytest.mark.parametrize("num_visual", [1, 2])
-#@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
-#def test_visual_advanced_ppo(vis_encode_type, num_visual):
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
+# def test_visual_advanced_ppo(vis_encode_type, num_visual):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME],
 #        use_discrete=True,
@@ -261,8 +280,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_recurrent_ppo(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_recurrent_ppo(use_discrete):
 #    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
 #    new_network_settings = attr.evolve(
 #        PPO_CONFIG.network_settings,
@@ -280,15 +299,15 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_simple_sac(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_sac(use_discrete):
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
 #    config = attr.evolve(SAC_CONFIG)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_2d_sac(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_2d_sac(use_discrete):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
 #    )
@@ -297,9 +316,9 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#@pytest.mark.parametrize("num_visual", [1, 2])
-#def test_visual_sac(num_visual, use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# def test_visual_sac(num_visual, use_discrete):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME],
 #        use_discrete=use_discrete,
@@ -314,9 +333,9 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
-#@pytest.mark.parametrize("num_visual", [1, 2])
-#@pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
-#def test_visual_advanced_sac(vis_encode_type, num_visual):
+# @pytest.mark.parametrize("num_visual", [1, 2])
+# @pytest.mark.parametrize("vis_encode_type", ["resnet", "nature_cnn", "match3"])
+# def test_visual_advanced_sac(vis_encode_type, num_visual):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME],
 #        use_discrete=True,
@@ -344,8 +363,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_recurrent_sac(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_recurrent_sac(use_discrete):
 #    step_size = 0.2 if use_discrete else 0.5
 #    env = MemoryEnvironment(
 #        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
@@ -370,8 +389,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_simple_ghost(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ghost(use_discrete):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
 #    )
@@ -382,8 +401,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_simple_ghost_fails(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_ghost_fails(use_discrete):
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], use_discrete=use_discrete
 #    )
@@ -403,8 +422,8 @@ def test_hybrid_sac():
 #    )
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_simple_asymm_ghost(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_asymm_ghost(use_discrete):
 #    # Make opponent for asymmetric case
 #    brain_name_opp = BRAIN_NAME + "Opp"
 #    env = SimpleEnvironment(
@@ -420,8 +439,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config, brain_name_opp: config})
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_simple_asymm_ghost_fails(use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_simple_asymm_ghost_fails(use_discrete):
 #    # Make opponent for asymmetric case
 #    brain_name_opp = BRAIN_NAME + "Opp"
 #    env = SimpleEnvironment(
@@ -448,8 +467,8 @@ def test_hybrid_sac():
 #    )
 #
 #
-#@pytest.fixture(scope="session")
-#def simple_record(tmpdir_factory):
+# @pytest.fixture(scope="session")
+# def simple_record(tmpdir_factory):
 #    def record_demo(use_discrete, num_visual=0, num_vector=1):
 #        env = RecordEnvironment(
 #            [BRAIN_NAME],
@@ -479,9 +498,9 @@ def test_hybrid_sac():
 #    return record_demo
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#@pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
-#def test_gail(simple_record, use_discrete, trainer_config):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# @pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
+# def test_gail(simple_record, use_discrete, trainer_config):
 #    demo_path = simple_record(use_discrete)
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
 #    bc_settings = BehavioralCloningSettings(demo_path=demo_path, steps=1000)
@@ -497,8 +516,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_gail_visual_ppo(simple_record, use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_gail_visual_ppo(simple_record, use_discrete):
 #    demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME],
@@ -522,8 +541,8 @@ def test_hybrid_sac():
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
 #
 #
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_gail_visual_sac(simple_record, use_discrete):
+# @pytest.mark.parametrize("use_discrete", [True, False])
+# def test_gail_visual_sac(simple_record, use_discrete):
 #    demo_path = simple_record(use_discrete, num_visual=1, num_vector=0)
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME],
