@@ -72,8 +72,7 @@ class TorchPolicy(Policy):
         self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
-            continuous_act_size=self.continuous_act_size,
-            discrete_act_size=self.discrete_act_size,
+            action_spec=self.behavior_spec.action_spec,
             stream_names=reward_signal_names,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
@@ -98,8 +97,8 @@ class TorchPolicy(Policy):
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
-        if len(self.discrete_act_size) > 0:
-            mask = torch.ones([len(decision_requests), np.sum(self.discrete_act_size)])
+        if self.discrete_act_size > 0:
+            mask = torch.ones([len(decision_requests), np.sum(self.discrete_act_branches)])
         if decision_requests.action_mask is not None:
             mask = torch.as_tensor(
                 1 - np.concatenate(decision_requests.action_mask, axis=1)

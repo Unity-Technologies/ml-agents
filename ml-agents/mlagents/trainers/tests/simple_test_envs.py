@@ -3,6 +3,7 @@ from typing import Dict, List, Any, Tuple
 import numpy as np
 
 from mlagents_envs.base_env import (
+    ActionSpec,
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
@@ -10,7 +11,7 @@ from mlagents_envs.base_env import (
     ActionType,
     BehaviorMapping,
     BehaviorName,
-    HybridAction,
+    ActionBuffer,
 )
 from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -56,11 +57,11 @@ class SimpleEnvironment(BaseEnv):
         action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
         if use_discrete:
             self.behavior_spec = BehaviorSpec(
-                self._make_obs_spec(), 0, tuple(2 for _ in range(action_size))
+                self._make_obs_spec(), ActionSpec(0, tuple(2 for _ in range(action_size)))
             )
         else:
             self.behavior_spec = BehaviorSpec(
-                self._make_obs_spec(), action_size, tuple()
+                self._make_obs_spec(), ActionSpec(action_size, tuple())
             )
         self.action_size = action_size
         self.names = brain_names
@@ -264,8 +265,7 @@ class HybridEnvironment(SimpleEnvironment):
         # less than 1/step_size to force agent to use memory
         self.behavior_spec = BehaviorSpec(
             self._make_obs_spec(),
-            continuous_action_size,
-            tuple(2 for _ in range(discrete_action_size)),
+            ActionSpec(continuous_action_size, tuple(2 for _ in range(discrete_action_size))),
         )
         self.continuous_action_size = continuous_action_size
         self.discrete_action_size = discrete_action_size
