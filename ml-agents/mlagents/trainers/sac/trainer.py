@@ -7,7 +7,7 @@ from typing import Dict, cast
 import os
 
 import numpy as np
-from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
+from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
@@ -19,7 +19,7 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.trajectory import Trajectory, SplitObservations
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, SACSettings, FrameworkType
-from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.tf.components.reward_signals import RewardSignal
 from mlagents import torch_utils
 
 if torch_utils.is_available():
@@ -88,7 +88,7 @@ class SACTrainer(RLTrainer):
 
         self.checkpoint_replay_buffer = self.hyperparameters.save_replay_buffer
 
-    def _checkpoint(self) -> NNCheckpoint:
+    def _checkpoint(self) -> ModelCheckpoint:
         """
         Writes a checkpoint model to memory
         Overrides the default to save the replay buffer.

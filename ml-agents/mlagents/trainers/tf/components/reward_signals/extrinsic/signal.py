@@ -1,6 +1,9 @@
 import numpy as np
 
-from mlagents.trainers.components.reward_signals import RewardSignal, RewardSignalResult
+from mlagents.trainers.tf.components.reward_signals import (
+    RewardSignal,
+    RewardSignalResult,
+)
 from mlagents.trainers.buffer import AgentBuffer
 
 

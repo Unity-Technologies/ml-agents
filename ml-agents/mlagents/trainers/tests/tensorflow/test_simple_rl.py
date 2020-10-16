@@ -11,7 +11,7 @@ from mlagents.trainers.tests.simple_test_envs import (
     RecordEnvironment,
 )
 from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.simple_env_manager import SimpleEnvManager
 from mlagents.trainers.demo_loader import write_demo
 from mlagents.trainers.stats import StatsReporter, StatsWriter, StatsSummary
