@@ -155,9 +155,9 @@ namespace Unity.MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
-        // Whether the Academy is in the middle of a step. This is used to detect and Academy
+        // Whether the Academy is in the middle of a step. This is used to detect an Academy
         // step called by user code that is also called by the Academy.
-        private RecursionChecker m_StepRecursionChecker = new RecursionChecker();
+        private RecursionChecker m_StepRecursionChecker = new RecursionChecker("EnvironmentStep");
 
         // Random seed used for inference.
         int m_InferenceSeed;

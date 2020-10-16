@@ -283,8 +283,8 @@ namespace Unity.MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
-        private RecursionChecker m_CollectObservationsChecker = new RecursionChecker();
-        private RecursionChecker m_OnEpisodeBeginChecker = new RecursionChecker();
+        private RecursionChecker m_CollectObservationsChecker = new RecursionChecker("CollectObservations");
+        private RecursionChecker m_OnEpisodeBeginChecker = new RecursionChecker("OnEpisodeBegin");
 
         /// <summary>
         /// List of IActuators that this Agent will delegate actions to if any exist.
