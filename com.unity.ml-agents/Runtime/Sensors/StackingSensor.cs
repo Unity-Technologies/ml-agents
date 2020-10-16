@@ -202,6 +202,7 @@ namespace Unity.MLAgents.Sensors
             return outputBytes;
         }
 
+        /// <inheritdoc/>
         public int[] GetCompressedChannelMapping()
         {
             return m_CompressionMapping;
@@ -221,9 +222,16 @@ namespace Unity.MLAgents.Sensors
             int height = m_WrappedSensor.GetObservationShape()[0];
             int width = m_WrappedSensor.GetObservationShape()[1];
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
+            Color32[] resetColorArray = texture2D.GetPixels32();
+            Color32 black = new Color32(0, 0, 0, 0);
+            for (int i = 0; i < resetColorArray.Length; i++)
+            {
+                resetColorArray[i] = black;
+            }
+            texture2D.SetPixels32(resetColorArray);
+            texture2D.Apply();
             return texture2D.EncodeToPNG();
         }
-
 
         /// <summary>
         /// Constrct stacked CompressedChannelMapping.

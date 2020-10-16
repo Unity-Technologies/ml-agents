@@ -64,6 +64,16 @@ namespace Unity.MLAgents.Sensors
             return true;
         }
 
+        /// <summary>
+        /// Generates the observations for the provided sensor, and returns true if they equal the
+        /// expected values. If they are unequal, errorMessage is also set.
+        /// This should not generally be used in production code. It is only intended for
+        /// simplifying unit tests.
+        /// </summary>
+        /// <param name="sensor"></param>
+        /// <param name="expected"></param>
+        /// <param name="errorMessage"></param>
+        /// <returns></returns>
         public static bool CompareObservation(ISensor sensor, float[,,] expected, out string errorMessage)
         {
             var tensorShape = new TensorShape(0, expected.GetLength(0), expected.GetLength(1), expected.GetLength(2));
