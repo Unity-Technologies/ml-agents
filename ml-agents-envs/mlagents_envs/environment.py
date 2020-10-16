@@ -60,7 +60,8 @@ class UnityEnvironment(BaseEnv):
     #  * 1.0.0 - initial version
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
-    API_VERSION = "1.2.0"
+    #  * 1.3.0 - support hybrid action spaces.
+    API_VERSION = "1.3.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -120,6 +121,7 @@ class UnityEnvironment(BaseEnv):
         capabilities.baseRLCapabilities = True
         capabilities.concatenatedPngObservations = True
         capabilities.compressedChannelMapping = True
+        capabilities.hybridActions = True
         return capabilities
 
     @staticmethod

@@ -324,6 +324,7 @@ namespace Unity.MLAgents
                 BaseRLCapabilities = proto.BaseRLCapabilities,
                 ConcatenatedPngObservations = proto.ConcatenatedPngObservations,
                 CompressedChannelMapping = proto.CompressedChannelMapping,
+                HybridActions = proto.HybridActions,
             };
         }
 
@@ -334,6 +335,7 @@ namespace Unity.MLAgents
                 BaseRLCapabilities = rlCaps.BaseRLCapabilities,
                 ConcatenatedPngObservations = rlCaps.ConcatenatedPngObservations,
                 CompressedChannelMapping = rlCaps.CompressedChannelMapping,
+                HybridActions = rlCaps.HybridActions,
             };
         }
 
