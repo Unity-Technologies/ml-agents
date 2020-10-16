@@ -335,7 +335,8 @@ class TorchSACOptimizer(TorchOptimizer):
                     for i, (_lp, _qt) in enumerate(
                         zip(branched_per_action_ent, branched_q_term)
                     )
-                ]
+                ],
+                dim=1,
             )
             batch_policy_loss = torch.squeeze(branched_policy_loss)
             policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
