@@ -115,19 +115,21 @@ class TorchSACOptimizer(TorchOptimizer):
             _total_act_size += self.policy.continuous_act_size
         _total_act_size += len(self.policy.discrete_act_size)
 
+        # We create one entropy coefficient per action, whether discrete or continuous.
         self._log_ent_coef = torch.nn.Parameter(
             torch.log(torch.as_tensor([self.init_entcoef] * _total_act_size)),
             requires_grad=True,
         )
         self.target_entropy = []
         if self.policy.continuous_act_size > 0:
-            self.target_entropy.append(
-                torch.as_tensor(
-                    -1
-                    * self.continuous_target_entropy_scale
-                    * np.prod(self.policy.continuous_act_size).astype(np.float32)
+            for _ in range(self.policy.continuous_act_size):
+                self.target_entropy.append(
+                    torch.as_tensor(
+                        -1
+                        * self.continuous_target_entropy_scale
+                        * np.prod(self.policy.continuous_act_size).astype(np.float32)
+                    )
                 )
-            )
         self.target_entropy += [
             self.discrete_target_entropy_scale * np.log(i).astype(np.float32)
             for i in self.policy.discrete_act_size
@@ -168,7 +170,9 @@ class TorchSACOptimizer(TorchOptimizer):
         self.target_network.to(device)
         self.value_network.to(device)
 
-    def _split_discrete_continuous(self, tensor: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def _split_discrete_continuous(
+        self, tensor: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         """
         Splits a tensor between continuous and discrete. Assumes tensor is [continuous, discrete],
         for instance target entropy.
@@ -300,7 +304,9 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
     ) -> torch.Tensor:
-        _cont_ent_coef, _disc_ent_coef = self._split_discrete_continuous(self._log_ent_coef)
+        _cont_ent_coef, _disc_ent_coef = self._split_discrete_continuous(
+            self._log_ent_coef
+        )
         _cont_ent_coef = _cont_ent_coef.exp()
         _disc_ent_coef = _disc_ent_coef.exp()
 
@@ -331,7 +337,7 @@ class TorchSACOptimizer(TorchOptimizer):
         if self.policy.continuous_act_size > 0:
             cont_log_probs = log_probs[:, : self.policy.continuous_act_size]
             batch_policy_loss += torch.mean(
-                _cont_ent_coef * cont_log_probs - all_mean_q1, dim=1
+                _cont_ent_coef * cont_log_probs - all_mean_q1.unsqueeze(1), dim=1
             )
         policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
 
@@ -340,8 +346,12 @@ class TorchSACOptimizer(TorchOptimizer):
     def sac_entropy_loss(
         self, log_probs: torch.Tensor, loss_masks: torch.Tensor
     ) -> torch.Tensor:
-        _cont_target_entropy, _disc_target_entropy = self._split_discrete_continuous(self.target_entropy)
-        _cont_ent_coef, _disc_ent_coef = self._split_discrete_continuous(self._log_ent_coef)
+        _cont_target_entropy, _disc_target_entropy = self._split_discrete_continuous(
+            self.target_entropy
+        )
+        _cont_ent_coef, _disc_ent_coef = self._split_discrete_continuous(
+            self._log_ent_coef
+        )
         entropy_loss = 0
         if len(self.policy.discrete_act_size) > 0:
             with torch.no_grad():
@@ -369,9 +379,12 @@ class TorchSACOptimizer(TorchOptimizer):
         if self.policy.continuous_act_size > 0:
             with torch.no_grad():
                 cont_log_probs = log_probs[:, : self.policy.continuous_act_size]
-                target_current_diff = torch.sum(cont_log_probs + _cont_target_entropy[0], dim=1)
+                target_current_diff = torch.sum(
+                    cont_log_probs + _cont_target_entropy[0], dim=1
+                )
+            # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
-                _cont_ent_coef[0] * target_current_diff, loss_masks
+                torch.mean(_cont_ent_coef) * target_current_diff, loss_masks
             )
 
         return entropy_loss
