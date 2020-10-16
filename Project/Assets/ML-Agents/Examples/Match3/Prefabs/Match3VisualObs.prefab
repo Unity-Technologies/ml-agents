@@ -140,6 +140,7 @@ MonoBehaviour:
   Rows: 9
   Columns: 8
   NumCellTypes: 6
+  NumSpecialTypes: 2
   RandomSeed: -1
 --- !u!114 &3019509692332007780
 MonoBehaviour:

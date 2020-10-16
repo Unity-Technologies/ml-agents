@@ -11,15 +11,23 @@ namespace Unity.MLAgents.Extensions.Match3
         CompressedVisual
     }
 
-    public class Match3Sensor : ISensor
+    public class Match3Sensor : ISparseChannelSensor
     {
         private Match3ObservationType m_ObservationType;
         private AbstractBoard m_Board;
         private int[] m_Shape;
+        private int[] m_SparseChannelMapping;
 
         private int m_Rows;
         private int m_Columns;
         private int m_NumCellTypes;
+        private int m_NumSpecialTypes;
+        private ISparseChannelSensor sparseChannelSensorImplementation;
+
+        private int SpecialTypeSize
+        {
+            get { return m_NumSpecialTypes == 0 ? 0 : m_NumSpecialTypes + 1; }
+        }
 
         public Match3Sensor(AbstractBoard board, Match3ObservationType obsType)
         {
@@ -27,11 +35,33 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Rows = board.Rows;
             m_Columns = board.Columns;
             m_NumCellTypes = board.NumCellTypes;
+            m_NumSpecialTypes = board.NumSpecialTypes;
 
             m_ObservationType = obsType;
             m_Shape = obsType == Match3ObservationType.Vector ?
-                new[] { m_Rows * m_Columns * m_NumCellTypes } :
-                new[] { m_Rows, m_Columns, m_NumCellTypes };
+                new[] { m_Rows * m_Columns * (m_NumCellTypes + SpecialTypeSize) } :
+                new[] { m_Rows, m_Columns, m_NumCellTypes + SpecialTypeSize };
+
+            // See comment in GetCompressedObservation()
+            var cellTypePaddedSize = 3 * ((m_NumCellTypes + 2) / 3);
+            m_SparseChannelMapping = new int[cellTypePaddedSize + SpecialTypeSize];
+            // If we have 4 cell types and 2 special types (3 special size), we'd have
+            // [0, 1, 2, 3, -1, -1, 4, 5, 6]
+            for (var i = 0; i < m_NumCellTypes; i++)
+            {
+                m_SparseChannelMapping[i] = i;
+            }
+
+            for (var i = m_NumCellTypes; i < cellTypePaddedSize; i++)
+            {
+                m_SparseChannelMapping[i] = -1;
+            }
+
+            for (var i = 0; i < SpecialTypeSize; i++)
+            {
+                m_SparseChannelMapping[cellTypePaddedSize + i] = i + m_NumCellTypes;
+            }
+
         }
 
         public int[] GetObservationShape()
@@ -63,6 +93,16 @@ namespace Unity.MLAgents.Extensions.Match3
                             writer[offset] = (i == val) ? 1.0f : 0.0f;
                             offset++;
                         }
+
+                        if (m_NumSpecialTypes > 0)
+                        {
+                            var special = m_Board.GetSpecialType(r, c);
+                            for (var i = 0; i < SpecialTypeSize; i++)
+                            {
+                                writer[offset] = (i == special) ? 1.0f : 0.0f;
+                                offset++;
+                            }
+                        }
                     }
                 }
 
@@ -82,6 +122,16 @@ namespace Unity.MLAgents.Extensions.Match3
                             writer[r, c, i] = (i == val) ? 1.0f : 0.0f;
                             offset++;
                         }
+
+                        if (m_NumSpecialTypes > 0)
+                        {
+                            var special = m_Board.GetSpecialType(r, c);
+                            for (var i = 0; i < SpecialTypeSize; i++)
+                            {
+                                writer[offset] = (i == special) ? 1.0f : 0.0f;
+                                offset++;
+                            }
+                        }
                     }
                 }
 
@@ -96,10 +146,23 @@ namespace Unity.MLAgents.Extensions.Match3
             var tempTexture = new Texture2D(width, height, TextureFormat.RGB24, false);
             var converter = new OneHotToTextureUtil(height, width);
             var bytesOut = new List<byte>();
-            var numImages = (m_NumCellTypes + 2) / 3;
-            for (var i = 0; i < numImages; i++)
+
+            // Encode the cell types and special types as separate batches of PNGs
+            // This is potentially wasteful, e.g. if there are 4 cell types and 1 special type, we could
+            // fit in in 2 images, but we'll use 3 here (2 PNGs for the 4 cell type channels, and 1 for
+            // the special types). Note that we have to also implement the sparse channel mapping.
+            // Optimize this it later.
+            var numCellImages = (m_NumCellTypes + 2) / 3;
+            for (var i = 0; i < numCellImages; i++)
             {
-                converter.EncodeToTexture(m_Board, tempTexture, 3 * i);
+                converter.EncodeToTexture(m_Board.GetCellType, tempTexture, 3 * i);
+                bytesOut.AddRange(tempTexture.EncodeToPNG());
+            }
+
+            var numSpecialImages = (SpecialTypeSize + 2) / 3;
+            for (var i = 0; i < numSpecialImages; i++)
+            {
+                converter.EncodeToTexture(m_Board.GetSpecialType, tempTexture, 3 * i);
                 bytesOut.AddRange(tempTexture.EncodeToPNG());
             }
 
@@ -125,6 +188,11 @@ namespace Unity.MLAgents.Extensions.Match3
         public string GetName()
         {
             return "Match3 Sensor";
+        }
+
+        public int[] GetCompressedChannelMapping()
+        {
+            return m_SparseChannelMapping;
         }
 
         static void DestroyTexture(Texture2D texture)
@@ -155,6 +223,9 @@ namespace Unity.MLAgents.Extensions.Match3
         int m_Width;
         private static Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
 
+        public delegate int GridValueProvider(int x, int y);
+
+
         public OneHotToTextureUtil(int height, int width)
         {
             m_Colors = new Color[height * width];
@@ -162,7 +233,7 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Width = width;
         }
 
-        public void EncodeToTexture(AbstractBoard board, Texture2D texture, int channelOffset)
+        public void EncodeToTexture(GridValueProvider gridValueProvider, Texture2D texture, int channelOffset)
         {
             var i = 0;
             // There's an implicit flip converting to PNG from texture, so make sure we
@@ -171,7 +242,7 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 for (var w = 0; w < m_Width; w++)
                 {
-                    int oneHotValue = board.GetCellType(h, w);
+                    int oneHotValue = gridValueProvider(h, w);
                     if (oneHotValue < channelOffset || oneHotValue >= channelOffset + 3)
                     {
                         m_Colors[i++] = Color.black;

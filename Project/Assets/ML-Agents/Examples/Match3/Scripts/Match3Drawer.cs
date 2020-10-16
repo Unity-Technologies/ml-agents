@@ -38,7 +38,7 @@ namespace Unity.MLAgentsExamples
             {
                 for (var j = 0; j < board.Columns; j++)
                 {
-                    var value = board.Cells != null ? board.Cells[j, i] : Match3Board.k_EmptyCell;
+                    var value = board.Cells != null ? board.GetCellType(i, j) : Match3Board.k_EmptyCell;
                     if (value >= 0 && value < s_Colors.Length)
                     {
                         Gizmos.color = s_Colors[value];
@@ -51,7 +51,25 @@ namespace Unity.MLAgentsExamples
                     var pos = new Vector3(j, i, 0);
                     pos *= cubeSpacing;
 
-                    Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * Vector3.one);
+                    var specialType = board.Cells != null ? board.GetSpecialType(i, j) : 0;
+                    if (specialType == 2)
+                    {
+                        Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * new Vector3(1f, .5f, .5f));
+                        Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * new Vector3(.5f, 1f, .5f));
+                        Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * new Vector3(.5f, .5f, 1f));
+                    }
+                    else if (specialType == 1)
+                    {
+                        Gizmos.DrawSphere(transform.TransformPoint(pos), .5f * cubeSize);
+                    }
+                    else
+                    {
+                        Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * Vector3.one);
+                    }
+
+
+
+
 
                     Gizmos.color = Color.yellow;
                     if (board.Matched != null && board.Matched[j, i])

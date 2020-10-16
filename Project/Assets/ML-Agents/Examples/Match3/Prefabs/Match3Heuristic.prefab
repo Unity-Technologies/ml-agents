@@ -109,6 +109,7 @@ MonoBehaviour:
   Rows: 9
   Columns: 8
   NumCellTypes: 6
+  NumSpecialTypes: 2
   RandomSeed: -1
 --- !u!114 &3508723250470608013
 MonoBehaviour:
@@ -135,7 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530d2f105aa145bd8a00e021bdd925fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UseVectorObservations: 1
+  ObservationType: 0
 --- !u!1 &3508723250774301855
 GameObject:
   m_ObjectHideFlags: 0
