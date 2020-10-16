@@ -5,6 +5,7 @@ We provide some utilities to integrate ML-Agents with Match-3 games.
 ## AbstractBoard class
 The `AbstractBoard` is the bridge between ML-Agents and your game. It allows ML-Agents to
 * ask your game what the "color" of a cell is
+* ask whether the cell is a "special" piece type or not
 * ask your game whether a move is allowed
 * request that your game make a move
 
@@ -15,6 +16,11 @@ The AbstractBoard also tracks the number of rows, columns, and potential piece t
 #### `public abstract int GetCellType(int row, int col)`
 Returns the "color" of piece at the given row and column.
 This should be between 0 and NumCellTypes-1 (inclusive).
+The actual order of the values doesn't matter.
+
+#### `public abstract int GetSpecialType(int row, int col)`
+Returns the special type of the piece at the given row and column.
+This should be between 0 and NumSpecialTypes (inclusive).
 The actual order of the values doesn't matter.
 
 #### `public abstract bool IsMoveValid(Move m)`

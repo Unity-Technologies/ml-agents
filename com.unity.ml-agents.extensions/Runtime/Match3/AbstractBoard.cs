@@ -5,14 +5,29 @@ namespace Unity.MLAgents.Extensions.Match3
 {
     public abstract class AbstractBoard : MonoBehaviour
     {
+        /// <summary>
+        /// Number of rows on the board
+        /// </summary>
         public int Rows;
-        public int Columns;
-        public int NumCellTypes;
-        public int NumSpecialTypes;
-
 
         /// <summary>
-        /// Returns the "color" of piece at the given row and column.
+        /// Number of columns on the board
+        /// </summary>
+        public int Columns;
+
+        /// <summary>
+        /// Maximum number of different types of cells (colors, pieces, etc).
+        /// </summary>
+        public int NumCellTypes;
+
+        /// <summary>
+        /// Maximum number of special types. This can be zero, in which case
+        /// all cells of the same type are assumed to be equivalent.
+        /// </summary>
+        public int NumSpecialTypes;
+
+        /// <summary>
+        /// Returns the "color" of the piece at the given row and column.
         /// This should be between 0 and NumCellTypes-1 (inclusive).
         /// The actual order of the values doesn't matter.
         /// </summary>
@@ -21,6 +36,14 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public abstract int GetCellType(int row, int col);
 
+        /// <summary>
+        /// Returns the special type of the piece at the given row and column.
+        /// This should be between 0 and NumSpecialTypes (inclusive).
+        /// The actual order of the values doesn't matter.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <returns></returns>
         public abstract int GetSpecialType(int row, int col);
 
         /// <summary>
@@ -40,8 +63,6 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="m"></param>
         /// <returns></returns>
         public abstract bool MakeMove(Move m);
-
-        // TODO handle "special" cell types?
 
         public IEnumerable<Move> AllMoves()
         {
