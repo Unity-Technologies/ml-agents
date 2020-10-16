@@ -37,7 +37,11 @@ class NetworkBody(nn.Module):
             else 0
         )
 
-        self.visual_processors, self.vector_processors, encoder_input_size = ModelUtils.create_input_processors(
+        (
+            self.visual_processors,
+            self.vector_processors,
+            encoder_input_size,
+        ) = ModelUtils.create_input_processors(
             observation_shapes,
             self.h_size,
             network_settings.vis_encode_type,
@@ -196,7 +200,9 @@ class ActorCritic(Actor):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor
+    ]:
         """
         Returns distributions, from which actions can be sampled, and value estimates.
         If memory is enabled, return the memories as well.
@@ -344,15 +350,16 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
         all_discrete_probs: bool = False,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
 
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        if all_discrete_probs:
-            action, log_probs, entropies = self.action_model.forward_all_disc_probs(encoding, masks)
-        else:
-            action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, entropies = self.action_model(
+            encoding, masks, all_probs=all_discrete_probs
+        )
         value_outputs = self.value_heads(encoding)
         return action, log_probs, entropies, value_outputs, memories
 
@@ -425,7 +432,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         value_outputs, critic_mem_outs = self.critic(
-        vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
 
         return log_probs, entropies, value_outputs
@@ -438,7 +445,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
         all_discrete_probs: bool = False,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
@@ -448,12 +457,12 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
-        if all_discrete_probs:
-            action, log_probs, entropies = self.action_model.forward_all_disc_probs(encoding, masks)
-        else:
-            action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, entropies = self.action_model(
+            encoding, masks, all_probs=all_discrete_probs
+        )
+
         value_outputs, critic_mem_outs = self.critic(
-        vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
         if self.use_lstm:
             mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
@@ -461,25 +470,27 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             mem_out = None
         return action, log_probs, entropies, value_outputs, mem_out
 
+
 class GlobalSteps(nn.Module):
-   def __init__(self):
-       super().__init__()
-       self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+    def __init__(self):
+        super().__init__()
+        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
 
-   @property
-   def current_step(self):
-       return int(self.__global_step.item())
+    @property
+    def current_step(self):
+        return int(self.__global_step.item())
 
-   @current_step.setter
-   def current_step(self, value):
-       self.__global_step[:] = value
+    @current_step.setter
+    def current_step(self, value):
+        self.__global_step[:] = value
 
-   def increment(self, value):
-       self.__global_step += value
+    def increment(self, value):
+        self.__global_step += value
 
 
 class LearningRate(nn.Module):
-   def __init__(self, lr):
-       # Todo: add learning rate decay
-       super().__init__()
-       self.learning_rate = torch.Tensor([lr])
+    def __init__(self, lr):
+        # Todo: add learning rate decay
+        super().__init__()
+        self.learning_rate = torch.Tensor([lr])
+

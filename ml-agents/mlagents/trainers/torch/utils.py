@@ -269,29 +269,24 @@ class ModelUtils:
 
     @staticmethod
     def get_probs_and_entropy(
-        action_list: List[torch.Tensor], dists: List[DistInstance]
+        action_list: List[torch.Tensor],
+        dists: List[DistInstance],
+        all_disc_probs: bool = False,
     ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
         log_probs_list = []
-        all_probs_list = []
         entropies_list = []
         for action, action_dist in zip(action_list, dists):
-            log_prob = action_dist.log_prob(action)
-            log_probs_list.append(log_prob)
+            if isinstance(action_dist, DiscreteDistInstance) and all_disc_probs:
+                log_probs_list.append(action_dist.all_log_prob())
+            else:
+                log_prob = action_dist.log_prob(action)
+                log_probs_list.append(log_prob)
             entropy = action_dist.entropy()
             entropies_list.append(torch.mean(entropy).unsqueeze(-1).unsqueeze(-1))
-            #entropies_list.append(entropy)
-            if isinstance(action_dist, DiscreteDistInstance):
-                all_probs_list.append(action_dist.all_log_prob())
         log_probs = torch.cat(log_probs_list, dim=1)
         entropies = torch.cat(entropies_list, dim=1)
 
-        if not all_probs_list:
-            log_probs = log_probs.squeeze(-1)
-            entropies = entropies.squeeze(-1)
-            all_probs = None
-        else:
-            all_probs = torch.cat(all_probs_list, dim=-1)
-        return log_probs, entropies, all_probs
+        return log_probs, entropies
 
     @staticmethod
     def masked_mean(tensor: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:

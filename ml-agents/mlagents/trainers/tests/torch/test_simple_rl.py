@@ -200,12 +200,12 @@ def test_3ddhybrid_ppo():
 
 
 def test_hybrid_sac():
-    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8)
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8)
     new_hyperparams = attr.evolve(
         SAC_CONFIG.hyperparameters, buffer_size=50000, batch_size=128
     )
-    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=100000)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=5.0)
+    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 #
 #@pytest.mark.parametrize("use_discrete", [True, False])
