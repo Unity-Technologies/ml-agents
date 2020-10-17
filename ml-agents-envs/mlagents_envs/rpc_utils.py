@@ -1,6 +1,6 @@
 from mlagents_envs.base_env import (
+    ActionSpec,
     BehaviorSpec,
-    ActionType,
     DecisionSteps,
     TerminalSteps,
 )
@@ -31,18 +31,11 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    action_type = (
-        ActionType.DISCRETE
-        if brain_param_proto.vector_action_space_type == 0
-        else ActionType.CONTINUOUS
-    )
-    if action_type == ActionType.CONTINUOUS:
-        action_shape: Union[
-            int, Tuple[int, ...]
-        ] = brain_param_proto.vector_action_size[0]
-    else:
-        action_shape = tuple(brain_param_proto.vector_action_size)
-    return BehaviorSpec(observation_shape, action_type, action_shape)
+    action_spec = brain_param_proto.action_spec
+    action_spec = ActionSpec(action_spec.num_continuous_actions,
+                    tuple(branch for branch in action_spec.discrete_branch_sizes)
+                    )
+    return BehaviorSpec(observation_shape, action_spec)
 
 
 class OffsetBytesIO:
