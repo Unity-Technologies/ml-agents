@@ -1,13 +1,14 @@
-# Unity ML-Agents Toolkit Documentation
+# Unity ML-Agents Araç Seti Türkçe Dokümantasyon
 
-## Installation & Set-up
+## Kurulum & Düzenleme
 
-- [Installation](Installation.md)
-  - [Using Virtual Environment](Using-Virtual-Environment.md)
+- [Kurulum](Installation.md)
+<!--  - [Using Virtual Environment](Using-Virtual-Environment.md)-->
 
-## Getting Started
+## Başlangıç
 
-- [Getting Started Guide](Getting-Started.md)
+- [Başlangıç Rehberi](Getting-Started.md)
+<!-- Buradan devam et.
 - [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
   - [Background: Unity](Background-Unity.md)
   - [Background: Machine Learning](Background-Machine-Learning.md)
@@ -76,3 +77,5 @@ to keep them up just in case they are helpful to you.
 - [Training on the Cloud with Amazon Web Services](Training-on-Amazon-Web-Service.md)
 - [Training on the Cloud with Microsoft Azure](Training-on-Microsoft-Azure.md)
 - [Using the Video Recorder](https://github.com/Unity-Technologies/video-recorder)
+
+-->

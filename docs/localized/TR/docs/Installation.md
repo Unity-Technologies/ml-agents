@@ -1,55 +1,38 @@
-# Installation
+# Kurulum
 
-The ML-Agents Toolkit contains several components:
+ML-Agents Araç Seti birkaç bileşen içermektedir:
 
-- Unity package ([`com.unity.ml-agents`](../com.unity.ml-agents/)) contains the
-  Unity C# SDK that will be integrated into your Unity scene.
-- Three Python packages:
-  - [`mlagents`](../ml-agents/) contains the machine learning algorithms that
-    enables you to train behaviors in your Unity scene. Most users of ML-Agents
-    will only need to directly install `mlagents`.
-  - [`mlagents_envs`](../ml-agents-envs/) contains a Python API to interact with
-    a Unity scene. It is a foundational layer that facilitates data messaging
-    between Unity scene and the Python machine learning algorithms.
-    Consequently, `mlagents` depends on `mlagents_envs`.
-  - [`gym_unity`](../gym-unity/) provides a Python-wrapper for your Unity scene
-    that supports the OpenAI Gym interface.
-- Unity [Project](../Project/) that contains several
-  [example environments](Learning-Environment-Examples.md) that highlight the
-  various features of the toolkit to help you get started.
+- Unity paketi ([`com.unity.ml-agents`](../com.unity.ml-agents/)) Unity sahnenize entegre edilecek Unity C# SDK içerir.
+- Python paketleri:
+  - [`mlagents`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/ml-agents) Unity sahnenizdeki davranışları eğitmenizi sağlayan makine öğrenimi algoritmalarını içerir. Bu nedenle `mlagents` paketini kurmanız gerekecek.
+  - [`mlagents_envs`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/ml-agents-envs) Unity sahnesiyle etkileşime girmek için Python API içermektedir. Unity sahnesi ile Python makine öğrenimi algoritmaları arasında veri mesajlaşmasını kolaylaştıran temel bir katmandır.
+    Sonuç olarak, `mlagents,` `mlagents_envs` apisine bağımlıdır.
+  - [`gym_unity`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/gym-unity) OpenAI Gym arayüzünü destekleyen Unity sahneniz için bir Python kapsayıcı sağlar.
+  <!-- düzenle learning-envir... -->
+- Unity [Project](../Project/) klasörü
+  [örnek ortamlar](Learning-Environment-Examples.md) ile başlamanıza yardımcı olacak araç setinin çeşitli özelliklerini vurgulayan sahneler içermektedir.
 
-Consequently, to install and use the ML-Agents Toolkit you will need to:
+ML-Agents Toolkit 'i kurmanız için gerekenler:
 
-- Install Unity (2018.4 or later)
-- Install Python (3.6.1 or higher)
-- Clone this repository (Optional)
-  - __Note:__ If you do not clone the repository, then you will not be
-  able to access the example environments and training configurations.
-  Additionally, the [Getting Started Guide](Getting-Started.md) assumes that
-  you have cloned the repository.
-- Install the `com.unity.ml-agents` Unity package
-- Install the `mlagents` Python package
+- Unity yükleyin (2018.4 veya daha sonraki bir sürüm)
+- Python yükleyin (3.6.1 veya daha yüksek bir sürüm)
+- Bu depoyu klonlayın (İsteğe bağlı)
+  - __Not:__ Depoyu klonlamazsanız, örnek ortamlara ve eğitim yapılandırmalarına erişemezsiniz. Ek olarak, [Başlangıç Rehberi](Getting-Started.md) depoyu klonladığınızı varsayar.
+- `com.unity.ml-agents` ML-Agents Unity paketini yükleyin.
+- `mlagents` Python paketini yüklemek.
 
-### Install **Unity 2018.4** or Later
+### **Unity 2018.4** veya Sonraki Bir Sürüm Yükleyin
 
-[Download](https://unity3d.com/get-unity/download) and install Unity. We
-strongly recommend that you install Unity through the Unity Hub as it will
-enable you to manage multiple Unity versions.
+[İndir](https://unity3d.com/get-unity/download) ve Unity'i yükle. Şiddetli bir şekilde Unity Hub üzerinden kurmanızı ve bu şekilde birden fazla Unity sürümünü yönetmenizi öneriyoruz.
 
-### Install **Python 3.6.1** or Higher
+### **Python 3.6.1** veya Daha Yüksek Bir Sürüm Yükleyin
 
-We recommend [installing](https://www.python.org/downloads/) Python 3.6 or 3.7.
-If you are using Windows, please install the x86-64 version and not x86.
-If your Python environment doesn't include `pip3`, see these
-[instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
-on installing it.
+Python 3.6 veya daha yüksek bir sürümü [yüklemenizi](https://www.python.org/downloads/) öneriyoruz. Eğer, Windows kullanıyorsanız, lütfen x86-64 versiyonunu kurun ve asla sadece x86 isimli versiyonu kurmayın. Python ortamınız `pip3` içermiyorsa, [talimatları](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) takip ederek yükleyebilirsiniz.
 
-Although we do not provide support for Anaconda installation on Windows, the
-previous
-[Windows Anaconda Installation (Deprecated) guide](Installation-Anaconda-Windows.md)
-is still available.
+Windows'ta Anaconda kurulumu için destek sağlamıyor olsak da,
+önceki [Windows için Anaconda Yüklemesi (Kullanımdan Kaldırılan) Rehberine](Installation-Anaconda-Windows.md) bakabilirsiniz.
 
-### Clone the ML-Agents Toolkit Repository (Optional)
+### ML-Agent Toolkit Deposunu Klonlayın (İsteğe Bağlı)
 
 Now that you have installed Unity and Python, you can now install the Unity and
 Python packages. You do not need to clone the repository to install those
