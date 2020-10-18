@@ -1,6 +1,6 @@
 <img src="docs/images/image-banner.png" align="middle" width="3000"/>
 
-# Unity ML-Agents Toolkit(Release 7) Türkçe Dokümantasyon Sayfası
+# Unity ML-Agents Toolkit(Release 8) Türkçe Dokümantasyon Sayfası
 
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/)
 
@@ -37,7 +37,7 @@
 
 ## Sürümler & Dokümantasyon
 
-**Unity ML-Agents Araç Seti son kararlı sürümü `Release 7` 'dir. 
+**Unity ML-Agents Araç Seti son kararlı sürümü `Release 8` 'dir. 
 [Buradan](docs/Readme.md) en son ML-Agents Türkçe dokümantasyonuna giderek öğrenmeye ve kullanmaya başlayabilirsiniz.**
 
 - [Sürümler sayfasında](https://github.com/Unity-Technologies/ml-agents/releases) tüm versiyonları inceleyebilirsiniz.

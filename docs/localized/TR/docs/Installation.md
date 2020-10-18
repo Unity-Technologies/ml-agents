@@ -34,54 +34,36 @@ Windows'ta Anaconda kurulumu için destek sağlamıyor olsak da,
 
 ### ML-Agent Toolkit Deposunu Klonlayın (İsteğe Bağlı)
 
-Now that you have installed Unity and Python, you can now install the Unity and
-Python packages. You do not need to clone the repository to install those
-packages, but you may choose to clone the repository if you'd like download our
-example environments and training configurations to experiment with them (some
-of our tutorials / guides assume you have access to our example environments).
+Artık Unity ve Python'u kurduğunuza göre, Unity ve Python paketlerini kurabilirsiniz. Bu paketleri yüklemek için depoyu klonlamanıza gerek yoktur, ancak örnek ortamlarımızı ve eğitim yapılandırmalarımızı bunlarla denemek için indirmek isterseniz depoyu klonlamayı seçebilirsiniz (bizim bazı eğitim serilerimiz / rehberlerimiz örnek ortamlarımıza erişiminizin olduğunu varsayar).
 
 ```sh
-git clone --branch release_7 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_8 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_7` option will switch to the tag of the latest stable
-release. Omitting that will get the `master` branch which is potentially
-unstable.
+`--branch release_8` seçeneği en son kararlı sürümün etiketine geçecektir. Bunu ihmal ederek yüklerseniz, potansiyel olarak kararsız olan `master` dalı seçilecektir.
 
-#### Advanced: Local Installation for Development
+#### Gelişmiş: Geliştirme için Yerel Kurulum
 
-You will need to clone the repository if you plan to modify or extend the
-ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `master` branch (by omitting `--branch release_7`
-from the command above). See our
-[Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
-information on contributing to the ML-Agents Toolkit.
+Eğer, ML-Agent Toolkit'i amaçlarınız için değiştirmeyi veya genişletmeyi planlıyorsanız, depoyu klonlamanız gerekecektir. Bu değişikliklere tekrar katkıda bulunmayı planlıyorsanız, `master` dalını klonladığınızdan emin olun (yukarıdaki komuttan `--branch release_8` 'i çıkarın). ML-Agent Toolkit'e katkıda bulunma hakkında daha fazla bilgi için [Katkı Yönergelerimize](../com.unity.ml-agents/CONTRIBUTING.md) bakın.
 
-### Install the `com.unity.ml-agents` Unity package
+### `com.unity.ml-agent` Unity paketini kurun
 
-The Unity ML-Agents C# SDK is a Unity Package. You can install the
-`com.unity.ml-agents` package
-[directly from the Package Manager registry](https://docs.unity3d.com/Manual/upm-ui-install.html).
-Please make sure you enable 'Preview Packages' in the 'Advanced' dropdown in
-order to find it.
+Unity ML-Agents C# SDK, bir Unity paketidir. Unity `com.unity.ml-agent` paketini [doğrudan Paket Yöneticisi](https://docs.unity3d.com/Manual/upm-ui-install.html) kayıt defterinden kurabilirsiniz.
+Lütfen bulmak için 'Advanced' açılır menüsünde 'Preview Packages' seçeneğini etkinleştirdiğinizden emin olun.
 
-**NOTE:** If you do not see the ML-Agents package listed in the Package Manager
-please follow the [advanced installation instructions](#advanced-local-installation-for-development) below.
+**NOT:** Paket Yöneticisi'nde listelenen ML-Agent paketini görmüyorsanız, lütfen [aşağıdaki gelişmiş kurulum talimatlarını]() izleyin.
 
-#### Advanced: Local Installation for Development
+#### Gelişmiş: Geliştirme için Yerel Kurulum
 
-You can [add the local](https://docs.unity3d.com/Manual/upm-ui-local.html)
-`com.unity.ml-agents` package (from the repository that you just cloned) to your
-project by:
+[Yerel](https://docs.unity3d.com/Manual/upm-ui-local.html) `com.unity.ml-agent` paketini (yeni klonladığınız depodan) projenize şu şekilde ekleyebilirsiniz:
 
-1. navigating to the menu `Window` -> `Package Manager`.
-1. In the package manager window click on the `+` button.
-1. Select `Add package from disk...`
-1. Navigate into the `com.unity.ml-agents` folder.
-1. Select the `package.json` file.
+1. Menüye gidin ve `Window` -> `Package Manager` seçeneğini seçin.
+1. Paket yöneticisi penceresinde `+` düğmesine tıklayın.
+1. `Add package from disk...` 'i seçin.
+1. `com.unity.ml-agents` klasörüne gidin.
+1. `package.json` dosyasını seçin.
 
-**NOTE:** In Unity 2018.4 the `+` button is on the bottom right of the packages
-list, and in Unity 2019.3 it's on the top left of the packages list.
+**NOT:** Unity 2018.4'te `+` düğmesi paket listesinin sağ altındadır ve Unity 2019.3'te paket listesinin sol üst tarafındadır.
 
 <p align="center">
   <img src="images/unity_package_manager_window.png"
@@ -94,63 +76,38 @@ list, and in Unity 2019.3 it's on the top left of the packages list.
      border="10" />
 </p>
 
-If you are going to follow the examples from our documentation, you can open the
-`Project` folder in Unity and start tinkering immediately.
+Dokümantasyonumuzdaki örnekleri takip edecekseniz, Unity'de `Project` klasörünü açabilir ve hemen kurcalamaya başlayabilirsiniz.
 
-### Install the `mlagents` Python package
+### `mlagents` Python paketi kurulumu
 
-Installing the `mlagents` Python package involves installing other Python
-packages that `mlagents` depends on. So you may run into installation issues if
-your machine has older versions of any of those dependencies already installed.
-Consequently, our supported path for installing `mlagents` is to leverage Python
-Virtual Environments. Virtual Environments provide a mechanism for isolating the
-dependencies for each project and are supported on Mac / Windows / Linux. We
-offer a dedicated [guide on Virtual Environments](Using-Virtual-Environment.md).
+`mlagents` Python paketini kurmak, mlagentlerin bağlı olduğu diğer Python paketlerinin kurulmasını içerir. Dolayısıyla, makinenizde bu bağımlılıklardan herhangi birinin daha eski sürümleri zaten kurulu ise kurulum sorunlarıyla karşılaşabilirsiniz. Sonuç olarak, `mlagents` yüklemek için desteklediğimiz yol, Python Sanal Ortamlarından yararlanmaktır. Sanal Ortamlar, her proje için bağımlılıkları izole etmek için bir mekanizma sağlar ve Mac / Windows / Linux'ta desteklenir. [Sanal Ortamlar hakkında özel bir rehber](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Using-Virtual-Environment.md) sunuyoruz.
 
-To install the `mlagents` Python package, activate your virtual environment and
-run from the command line:
+`mlagents` Python paketini kurmak için sanal ortamınızı etkinleştirin ve komut satırından çalıştırın:
 
 ```sh
 pip3 install mlagents
 ```
 
-Note that this will install `mlagents` from PyPi, _not_ from the cloned
-repository. If you installed this correctly, you should be able to run
-`mlagents-learn --help`, after which you will see the command
-line parameters you can use with `mlagents-learn`.
+`mlagents` için klonlanmış depo yerine PyPi'den yüklenmesini şiddetle tavsiye ediyoruz. Eğer doğru bir şekilde kurduysanız, `mlagents-learn --help` komutunu çalıştırabilmeniz gerekir, ardından `mlagents-learn` ile kullanabileceğiniz komut satırı parametrelerini görürsünüz.
 
-By installing the `mlagents` package, the dependencies listed in the
-[setup.py file](../ml-agents/setup.py) are also installed. These include
-[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support).
+`mlagents` paketini yükleyerek, [setup.py dosyasında](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/ml-agents/setup.py) listelenen bağımlılıklar da yüklenir. Bunlara
+[TensorFlow](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Background-TensorFlow.md) dahildir. (AVX destekli bir CPU gerektirir).
 
-#### Advanced: Local Installation for Development
+#### Gelişmiş: Geliştirme için Yerel Kurulum
 
-If you intend to make modifications to `mlagents` or `mlagents_envs`, you should
-install the packages from the cloned repository rather than from PyPi. To do
-this, you will need to install `mlagents` and `mlagents_envs` separately. From
-the repository's root directory, run:
+`mlagents` veya `mlagents_envs` üzerinde değişiklikler yapmayı planlıyorsanız, paketleri PyPi yerine klonlanmış depodan yüklemelisiniz. Bunu yapmak için `mlagents` ve `mlagents_env` dosyalarını ayrı ayrı yüklemeniz gerekir. Deponun kök dizininden şunu çalıştırmalısınız:
 
 ```sh
 pip3 install -e ./ml-agents-envs
 pip3 install -e ./ml-agents
 ```
 
-Running pip with the `-e` flag will let you make changes to the Python files
-directly and have those reflected when you run `mlagents-learn`. It is important
-to install these packages in this order as the `mlagents` package depends on
-`mlagents_envs`, and installing it in the other order will download
-`mlagents_envs` from PyPi.
+Pip'i `-e` bayrağıyla çalıştırmak, Python dosyalarında doğrudan değişiklik yapmanıza ve `mlagents-learn` çalıştırdığınızda bunların yansıtılmasına izin verir. `mlagents` paketi `mlagents_envs` paketine bağlı olduğundan, bu paketleri bu sırayla kurmak önemlidir ve diğer sırayla yüklemek `mlagents_envs` paketini PyPi'den indirecektir.
 
-## Next Steps
+## Sonraki Adımlar
 
-The [Getting Started](Getting-Started.md) guide contains several short tutorials
-on setting up the ML-Agents Toolkit within Unity, running a pre-trained model,
-in addition to building and training environments.
+[Başlangıç Rehberi](Getting-Started.md), Unity içinde ML-Agents Toolkit'i kurma, önceden eğitilmiş bir model çalıştırma, ortamları oluşturma ve eğitimle ilgili birkaç kısa öğretici içermektedir.
 
-## Help
+## Yardım
 
-If you run into any problems regarding ML-Agents, refer to our [FAQ](FAQ.md) and
-our [Limitations](Limitations.md) pages. If you can't find anything please
-[submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) and
-make sure to cite relevant information on OS, Python version, and exact error
-message (whenever possible).
+ML-Agent'larla ilgili herhangi bir sorunla karşılaşırsanız, [SSS](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/FAQ.md) sayfamıza ve [Sınırlamalar](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Limitations.md) sayfalarımıza bakın. Hiçbir şey bulamazsanız, lütfen bir [sorun gönderin(issue)](https://github.com/Unity-Technologies/ml-agents/issues) ve işletim sisteminiz, Python sürümünüz, mümkünse tam hata mesajı ile ilgili bilgileri verdiğinizden emin olun.
