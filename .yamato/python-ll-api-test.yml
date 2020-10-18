@@ -1,5 +1,4 @@
-test_editors:
-  - version: 2019.4
+{% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
 test_mac_ll_api_{{ editor.version }}:

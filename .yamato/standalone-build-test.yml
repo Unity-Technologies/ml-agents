@@ -1,6 +1,4 @@
-test_editors:
-  - version: 2018.4
-  - version: 2019.3
+{% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
 test_mac_standalone_{{ editor.version }}:
@@ -13,10 +11,15 @@ test_mac_standalone_{{ editor.version }}:
     UNITY_VERSION: {{ editor.version }}
   commands:
     - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    # TODO remove the "--user" command and the path prefix when we can migrate away from the custom bokken image
+    - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade --user
+    - /Users/bokken/Library/Python/3.7/bin/unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - python -u -m ml-agents.tests.yamato.standalone_build_tests
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Basic/Scenes/Basic.unity
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/Bouncer/Scenes/Bouncer.unity
     - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/Examples/WallJump/Scenes/WallJump.unity
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/TestScenes/TestCompressedGrid/TestGridCompressed.unity
+    - python -u -m ml-agents.tests.yamato.standalone_build_tests --scene=Assets/ML-Agents/TestScenes/TestCompressedTexture/TestTextureCompressed.unity
   triggers:
     cancel_old_ci: true
     expression: |

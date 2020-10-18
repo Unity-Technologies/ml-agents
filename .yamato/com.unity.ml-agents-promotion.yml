@@ -1,3 +1,44 @@
+test_editors:
+  - version: 2019.3
+test_platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+---
+
+{% for editor in test_editors %}
+{% for platform in test_platforms %}
+promotion_test_{{ platform.name }}_{{ editor.version }}:
+  name : Promotion Test {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  variables:
+    UPMCI_PROMOTION: 1
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package test --unity-version {{ editor.version }} --package-path com.unity.ml-agents
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/com.unity.ml-agents-pack.yml#pack
+{% endfor %}
+{% endfor %}
+
+promotion_test_trigger:
+  name: Promotion Tests Trigger
+  dependencies:
+{% for editor in test_editors %}
+{% for platform in test_platforms %}
+    - .yamato/com.unity.ml-agents-promotion.yml#promotion_test_{{platform.name}}_{{editor.version}}
+{% endfor %}
+{% endfor %}
+
+
 promote:
   name: Promote to Production
   agent:
@@ -19,4 +60,8 @@ promote:
         - "upm-ci~/packages/*.tgz"
   dependencies:
     - .yamato/com.unity.ml-agents-pack.yml#pack
-    - .yamato/com.unity.ml-agents-test.yml#all_package_tests
+{% for editor in test_editors %}
+{% for platform in test_platforms %}
+    - .yamato/com.unity.ml-agents-promotion.yml#promotion_test_{{ platform.name }}_{{ editor.version }}
+{% endfor %}
+{% endfor %}

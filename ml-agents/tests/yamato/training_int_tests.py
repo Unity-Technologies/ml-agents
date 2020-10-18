@@ -144,7 +144,9 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
         "--mlagents-override-model-extension",
         model_extension,
     ]
-    res = subprocess.run(args)
+    print(f"Starting inference with args {' '.join(args)}")
+    timeout = 15 * 60  # 15 minutes for inference is more than enough
+    res = subprocess.run(args, timeout=timeout)
     end_time = time.time()
     if res.returncode != 0:
         print("Error running inference!")

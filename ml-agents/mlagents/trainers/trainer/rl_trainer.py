@@ -5,15 +5,18 @@ import abc
 import time
 import attr
 from mlagents.trainers.policy.checkpoint_manager import (
-    NNCheckpoint,
-    NNCheckpointManager,
+    ModelCheckpoint,
+    ModelCheckpointManager,
 )
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.components.reward_signals import RewardSignalResult, RewardSignal
+from mlagents.trainers.tf.components.reward_signals import (
+    RewardSignalResult,
+    RewardSignal,
+)
 from mlagents_envs.timers import hierarchical_timer
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy.policy import Policy
@@ -176,7 +179,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             return sum(rewards) / len(rewards)
 
     @timed
-    def _checkpoint(self) -> NNCheckpoint:
+    def _checkpoint(self) -> ModelCheckpoint:
         """
         Checkpoints the policy associated with this trainer.
         """
@@ -187,13 +190,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             )
         checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self.step)
         export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
-        new_checkpoint = NNCheckpoint(
+        new_checkpoint = ModelCheckpoint(
             int(self.step),
             f"{checkpoint_path}.{export_ext}",
             self._policy_mean_reward(),
             time.time(),
         )
-        NNCheckpointManager.add_checkpoint(
+        ModelCheckpointManager.add_checkpoint(
             self.brain_name, new_checkpoint, self.trainer_settings.keep_checkpoints
         )
         return new_checkpoint
@@ -217,7 +220,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{self.model_saver.model_path}.{export_ext}"
         )
-        NNCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
+        ModelCheckpointManager.track_final_checkpoint(self.brain_name, final_checkpoint)
 
     @abc.abstractmethod
     def _update_policy(self) -> bool:

@@ -70,7 +70,7 @@ workflows:
           filters:
             tags:
               # Matches e.g. "release_123"
-              only: /^release_[0-9]+$/
+              only: /^DEPRECATED_release_[0-9]+$/
             branches:
               ignore: /.*/
       - deploy:
@@ -79,7 +79,7 @@ workflows:
           filters:
             tags:
               # Matches e.g. "release_123"
-              only: /^release_[0-9]+$/
+              only: /^DEPRECATED_release_[0-9]+$/
             branches:
               ignore: /.*/
       - deploy:
@@ -88,7 +88,7 @@ workflows:
           filters:
             tags:
               # Matches e.g. "release_123"
-              only: /^release_[0-9]+$/
+              only: /^DEPRECATED_release_[0-9]+$/
             branches:
               ignore: /.*/
       # These deploy jobs upload to the pypi test repo. They have different tag triggers than the real ones.
@@ -100,7 +100,7 @@ workflows:
           filters:
             tags:
               # Matches e.g. "release_123_test456
-              only: /^release_[0-9]+_test[0-9]+$/
+              only: /^DEPRECATED_release_[0-9]+_test[0-9]+$/
             branches:
               ignore: /.*/
       - deploy:
@@ -111,7 +111,7 @@ workflows:
           filters:
             tags:
               # Matches e.g. "release_123_test456
-              only: /^release_[0-9]+_test[0-9]+$/
+              only: /^DEPRECATED_release_[0-9]+_test[0-9]+$/
             branches:
               ignore: /.*/
       - deploy:
@@ -122,6 +122,6 @@ workflows:
           filters:
             tags:
               # Matches e.g. "release_123_test456
-              only: /^release_[0-9]+_test[0-9]+$/
+              only: /^DEPRECATED_release_[0-9]+_test[0-9]+$/
             branches:
               ignore: /.*/

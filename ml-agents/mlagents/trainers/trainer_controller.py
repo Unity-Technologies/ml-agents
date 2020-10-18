@@ -25,7 +25,7 @@ from mlagents_envs.timers import (
 )
 from mlagents.trainers.trainer import Trainer
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.trainer_util import TrainerFactory
+from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 from mlagents.tf_utils.globals import get_rank
