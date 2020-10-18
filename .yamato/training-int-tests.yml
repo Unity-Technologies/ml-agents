@@ -1,7 +1,4 @@
-test_editors:
-  - version: 2018.4
-  - version: 2019.4
-  - version: 2020.1
+{% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
 test_mac_training_int_{{ editor.version }}:
@@ -14,6 +11,9 @@ test_mac_training_int_{{ editor.version }}:
     UNITY_VERSION: {{ editor.version }}
   commands:
     - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    # TODO remove the "--user" command and the path prefix when we can migrate away from the custom bokken image
+    - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade --user
+    - /Users/bokken/Library/Python/3.7/bin/unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
     - python -u -m ml-agents.tests.yamato.training_int_tests
     # Backwards-compatibility tests.
     # If we make a breaking change to the communication protocol, these will need

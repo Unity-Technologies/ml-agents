@@ -932,28 +932,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0456c89e8c9c243d595b039fe7aa0bf9, type: 3}
---- !u!1 &441460235 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4845971001715176661, guid: 0456c89e8c9c243d595b039fe7aa0bf9,
-    type: 3}
-  m_PrefabInstance: {fileID: 71447557}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &441460236
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 441460235}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Record: 1
-  NumStepsToRecord: 10000
-  DemonstrationName: ExpCrawlerStaVS
-  DemonstrationDirectory: 
 --- !u!1001 &455366880
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1336,6 +1314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1053322438}
+  smoothingTime: 0
 --- !u!81 &914210116
 AudioListener:
   m_ObjectHideFlags: 0
