@@ -26,7 +26,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
-        force_torch: bool = False,
+        force_tensorflow: bool = False,
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -56,7 +56,7 @@ class TrainerFactory:
         self.param_manager = param_manager
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
-        self._force_torch = force_torch
+        self._force_tf = force_tensorflow
 
     def generate(self, behavior_name: str) -> Trainer:
         if behavior_name not in self.trainer_config.keys():
@@ -65,8 +65,8 @@ class TrainerFactory:
                 f"in the trainer configuration file: {sorted(self.trainer_config.keys())}"
             )
         trainer_settings = self.trainer_config[behavior_name]
-        if self._force_torch:
-            trainer_settings.framework = FrameworkType.PYTORCH
+        if self._force_tf:
+            trainer_settings.framework = FrameworkType.TENSORFLOW
         return TrainerFactory._initialize_trainer(
             trainer_settings,
             behavior_name,

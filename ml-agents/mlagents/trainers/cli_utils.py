@@ -169,10 +169,10 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Forces training using CPU only",
     )
     argparser.add_argument(
-        "--torch",
+        "--tensorflow",
         default=False,
         action=DetectDefaultStoreTrue,
-        help="(Experimental) Use the PyTorch framework instead of TensorFlow. Install PyTorch "
+        help="(Deprecated) Use the TensorFlow framework instead of PyTorch. Install TensorFlow "
         "before using this option",
     )
 
