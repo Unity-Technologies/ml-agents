@@ -81,7 +81,7 @@ class TrainerFactory:
             )
             if self._force_torch:
                 logger.warning(
-                    "Both Torch and TensorFlow CLI options were specified. Using TensorFlow."
+                    "Both --torch and --tensorflow CLI options were specified. Using TensorFlow."
                 )
         return TrainerFactory._initialize_trainer(
             trainer_settings,
