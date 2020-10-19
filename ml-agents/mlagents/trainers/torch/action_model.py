@@ -7,6 +7,7 @@ from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance, GaussianDistribution, MultiCategoricalDistribution
 
 from mlagents.trainers.torch.utils import ModelUtils
+from mlagents_envs.base_env import ActionSpec
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -14,31 +15,32 @@ class ActionModel(nn.Module):
     def __init__(
         self,
         hidden_size: int,
-        continuous_act_size: int,
-        discrete_act_size: List[int],
+        action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
         super().__init__()
         self.encoding_size = hidden_size
-        self.continuous_act_size = continuous_act_size
-        self.discrete_act_size = discrete_act_size
+        self.continuous_act_size = action_spec.continuous_action_size
+        self.discrete_act_branches = action_spec.discrete_action_branches
+        self.discrete_act_size = action_spec.discrete_action_size
+        self.action_spec = action_spec
 
         self._split_list : List[int] = []
         self._distributions = torch.nn.ModuleList()
-        if continuous_act_size > 0:
+        if self.continuous_act_size > 0:
             self._distributions.append(GaussianDistribution(
                     self.encoding_size,
-                    continuous_act_size,
+                    self.continuous_act_size,
                     conditional_sigma=conditional_sigma,
                     tanh_squash=tanh_squash,
                 )
             )
-            self._split_list.append(continuous_act_size)
+            self._split_list.append(self.continuous_act_size)
 
-        if len(discrete_act_size) > 0:
-            self._distributions.append(MultiCategoricalDistribution(self.encoding_size, discrete_act_size))
-            self._split_list += [1 for _ in range(len(discrete_act_size))]
+        if self.discrete_act_size > 0:
+            self._distributions.append(MultiCategoricalDistribution(self.encoding_size, self.discrete_act_branches))
+            self._split_list += [1 for _ in range(self.discrete_act_size)]
 
     def _sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
         """

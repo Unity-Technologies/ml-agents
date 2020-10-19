@@ -36,7 +36,7 @@ AgentId = int
 BehaviorName = str
 
 
-class HybridAction(NamedTuple):
+class ActionBuffer(NamedTuple):
     """
     Contains continuous and discrete actions as numpy arrays.
     """
@@ -258,12 +258,10 @@ class ActionType(Enum):
     CONTINUOUS = 1
     HYBRID = 2
 
+class ActionSpec(NamedTuple):
+    num_continuous_actions: int
+    discrete_branch_sizes: Tuple[int]
 
-class BehaviorSpec(NamedTuple):
-    observation_shapes: List[Tuple]
-    continuous_action_shape: int
-    discrete_action_shape: Tuple[int]
-    
     # For backwards compatibility
     def is_action_discrete(self) -> bool:
         """
@@ -279,23 +277,23 @@ class BehaviorSpec(NamedTuple):
         return self.continuous_action_size > 0
 
     @property
+    def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
+        return self.discrete_branch_sizes  # type: ignore
+
+    @property
     def discrete_action_size(self) -> int:
-        return len(self.discrete_action_shape)
+        return len(self.discrete_branch_sizes)
 
     @property
     def continuous_action_size(self) -> int:
-        return self.continuous_action_shape
+        return self.num_continuous_actions
 
     @property
     def action_size(self) -> int:
         return self.discrete_action_size + self.continuous_action_size
 
-    @property
-    def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
-        return self.discrete_action_shape  # type: ignore
-
     def create_empty_action(self, n_agents: int) -> Tuple[np.ndarray, np.ndarray]:
-        return HybridAction(
+        return ActionBuffer(
             np.zeros((n_agents, self.continuous_action_size), dtype=np.float32),
             np.zeros((n_agents, self.discrete_action_size), dtype=np.int32),
         )
@@ -317,8 +315,13 @@ class BehaviorSpec(NamedTuple):
                 for i in range(self.discrete_action_size)
             ]
         )
-        return HybridAction(continuous_action, discrete_action)
+        return ActionBuffer(continuous_action, discrete_action)
 
+class BehaviorSpec(NamedTuple):
+    observation_shapes: List[Tuple]
+    action_spec: ActionSpec
+    
+    
 class BehaviorMapping(Mapping):
     def __init__(self, specs: Dict[BehaviorName, BehaviorSpec]):
         self._dict = specs
@@ -366,7 +369,7 @@ class BaseEnv(ABC):
 
     @abstractmethod
     def set_actions(
-        self, behavior_name: BehaviorName, action: Union[HybridAction, np.ndarray]
+        self, behavior_name: BehaviorName, action: Union[ActionBuffer, np.ndarray]
     ) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
@@ -382,7 +385,7 @@ class BaseEnv(ABC):
         self,
         behavior_name: BehaviorName,
         agent_id: AgentId,
-        action: Union[HybridAction, np.ndarray],
+        action: Union[ActionBuffer, np.ndarray],
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next

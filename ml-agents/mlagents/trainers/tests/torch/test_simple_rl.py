@@ -72,10 +72,8 @@ def test_dischybrid_ppo():
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
-def test_3chybrid_ppo():
-    env = HybridEnvironment(
-        [BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8
-    )
+def test_3cdhybrid_ppo():
+    env = HybridEnvironment([BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8)
     new_hyperparams = attr.evolve(
         PPO_TORCH_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.01
     )
@@ -88,7 +86,7 @@ def test_3ddhybrid_ppo():
         [BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8
     )
     new_hyperparams = attr.evolve(
-        PPO_TORCH_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.05
+        PPO_TORCH_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.01
     )
     config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
     check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)

@@ -278,8 +278,7 @@ class ModelUtils:
             log_prob = action_dist.log_prob(action)
             log_probs_list.append(log_prob)
             entropy = action_dist.entropy()
-            entropies_list.append(torch.mean(entropy).unsqueeze(-1).unsqueeze(-1))
-            # entropies_list.append(entropy)
+            entropies_list.append(entropy)
             if isinstance(action_dist, DiscreteDistInstance):
                 all_probs_list.append(action_dist.all_log_prob())
         log_probs = torch.cat(log_probs_list, dim=1)

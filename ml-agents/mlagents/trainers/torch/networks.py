@@ -3,7 +3,7 @@ import abc
 
 from mlagents.torch_utils import torch, nn
 
-from mlagents_envs.base_env import ActionType
+from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.torch.distributions import DistInstance
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.settings import NetworkSettings
@@ -224,17 +224,17 @@ class SimpleActor(nn.Module, Actor):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        continuous_act_size: List[int],
-        discrete_act_size: List[int],
+        action_spec: ActionSpec, 
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
         super().__init__()
-        self.discrete_act_size = discrete_act_size
-        self.continuous_act_size = continuous_act_size
+        self.discrete_act_size = action_spec.discrete_action_size
+        self.discrete_act_branches = action_spec.discrete_action_branches
+        self.continuous_act_size = action_spec.continuous_action_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
         self.act_size_vector = torch.nn.Parameter(
-            torch.Tensor(continuous_act_size + len(discrete_act_size))
+            torch.Tensor(action_spec.action_size)
         )
         self.is_continuous_int = torch.nn.Parameter(
             torch.Tensor([int(self.continuous_act_size > 0)])
@@ -247,8 +247,7 @@ class SimpleActor(nn.Module, Actor):
 
         self.action_model = ActionModel(
             self.encoding_size,
-            continuous_act_size,
-            discrete_act_size,
+            action_spec,
             conditional_sigma=conditional_sigma,
             tanh_squash=tanh_squash,
         )
@@ -290,8 +289,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        continuous_act_size: List[int],
-        discrete_act_size: List[int],
+        action_spec: ActionSpec, 
         stream_names: List[str],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
@@ -300,8 +298,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         super().__init__(
             observation_shapes,
             network_settings,
-            continuous_act_size,
-            discrete_act_size,
+            action_spec,
             conditional_sigma,
             tanh_squash,
         )
@@ -358,8 +355,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        continuous_act_size: List[int],
-        discrete_act_size: List[int],
+        action_spec: ActionSpec, 
         stream_names: List[str],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
@@ -368,8 +364,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         super().__init__(
             observation_shapes,
             network_settings,
-            continuous_act_size,
-            discrete_act_size,
+            action_spec,
             conditional_sigma,
             tanh_squash,
         )
