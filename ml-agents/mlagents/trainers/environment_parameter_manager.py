@@ -128,10 +128,11 @@ class EnvironmentParameterManager:
             lesson_num = GlobalTrainingStatus.get_parameter_state(
                 param_name, StatusType.LESSON_NUM
             )
+            next_lesson_num = lesson_num + 1
             lesson = settings.curriculum[lesson_num]
             if (
                 lesson.completion_criteria is not None
-                and len(settings.curriculum) > lesson_num + 1
+                and len(settings.curriculum) > next_lesson_num
             ):
                 behavior_to_consider = lesson.completion_criteria.behavior
                 if behavior_to_consider in trainer_steps:
@@ -144,11 +145,14 @@ class EnvironmentParameterManager:
                     self._smoothed_values[param_name] = new_smoothing
                     if must_increment:
                         GlobalTrainingStatus.set_parameter_state(
-                            param_name, StatusType.LESSON_NUM, lesson_num + 1
+                            param_name, StatusType.LESSON_NUM, next_lesson_num
                         )
-                        new_lesson_name = settings.curriculum[lesson_num + 1].name
+                        new_lesson_name = settings.curriculum[next_lesson_num].name
+                        new_lesson_value = settings.curriculum[next_lesson_num].value
+
                         logger.info(
-                            f"Parameter '{param_name}' has changed. Now in lesson '{new_lesson_name}'"
+                            f"Parameter '{param_name}' has been updated to {new_lesson_value}."
+                            + f" Now in lesson '{new_lesson_name}'"
                         )
                         updated = True
                         if lesson.completion_criteria.require_reset:

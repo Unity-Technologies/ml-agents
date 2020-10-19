@@ -19,4 +19,5 @@ message ObservationProto {
         bytes compressed_data = 3;
         FloatData float_data = 4;
     }
+    repeated int32 compressed_channel_mapping = 5;
 }

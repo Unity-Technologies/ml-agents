@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import Enum
-from typing import List, Dict, NamedTuple, Any, Optional
+from typing import List, Dict, NamedTuple, Any
 import numpy as np
 import abc
 import os
@@ -9,11 +9,32 @@ from threading import RLock
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import set_gauge
-from mlagents.tf_utils import tf, generate_session_config
+from torch.utils.tensorboard import SummaryWriter
 from mlagents.tf_utils.globals import get_rank
 
 
 logger = get_logger(__name__)
+
+
+def _dict_to_str(param_dict: Dict[str, Any], num_tabs: int) -> str:
+    """
+    Takes a parameter dictionary and converts it to a human-readable string.
+    Recurses if there are multiple levels of dict. Used to print out hyperparameters.
+    param: param_dict: A Dictionary of key, value parameters.
+    return: A string version of this dictionary.
+    """
+    if not isinstance(param_dict, dict):
+        return str(param_dict)
+    else:
+        append_newline = "\n" if num_tabs > 0 else ""
+        return append_newline + "\n".join(
+            [
+                "\t"
+                + "  " * num_tabs
+                + "{}:\t{}".format(x, _dict_to_str(param_dict[x], num_tabs + 1))
+                for x in param_dict
+            ]
+        )
 
 
 class StatsSummary(NamedTuple):
@@ -123,34 +144,12 @@ class ConsoleWriter(StatsWriter):
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             logger.info(
                 """Hyperparameters for behavior name {}: \n{}""".format(
-                    category, self._dict_to_str(value, 0)
+                    category, _dict_to_str(value, 0)
                 )
             )
         elif property_type == StatsPropertyType.SELF_PLAY:
             assert isinstance(value, bool)
             self.self_play = value
-
-    def _dict_to_str(self, param_dict: Dict[str, Any], num_tabs: int) -> str:
-        """
-        Takes a parameter dictionary and converts it to a human-readable string.
-        Recurses if there are multiple levels of dict. Used to print out hyperparameters.
-        param: param_dict: A Dictionary of key, value parameters.
-        return: A string version of this dictionary.
-        """
-        if not isinstance(param_dict, dict):
-            return str(param_dict)
-        else:
-            append_newline = "\n" if num_tabs > 0 else ""
-            return append_newline + "\n".join(
-                [
-                    "\t"
-                    + "  " * num_tabs
-                    + "{}:\t{}".format(
-                        x, self._dict_to_str(param_dict[x], num_tabs + 1)
-                    )
-                    for x in param_dict
-                ]
-            )
 
 
 class TensorboardWriter(StatsWriter):
@@ -162,7 +161,7 @@ class TensorboardWriter(StatsWriter):
         :param clear_past_data: Whether or not to clean up existing Tensorboard files associated with the base_dir and
             category.
         """
-        self.summary_writers: Dict[str, tf.summary.FileWriter] = {}
+        self.summary_writers: Dict[str, SummaryWriter] = {}
         self.base_dir: str = base_dir
         self._clear_past_data = clear_past_data
 
@@ -171,9 +170,7 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         self._maybe_create_summary_writer(category)
         for key, value in values.items():
-            summary = tf.Summary()
-            summary.value.add(tag=f"{key}", simple_value=value.mean)
-            self.summary_writers[category].add_summary(summary, step)
+            self.summary_writers[category].add_scalar(f"{key}", value.mean, step)
             self.summary_writers[category].flush()
 
     def _maybe_create_summary_writer(self, category: str) -> None:
@@ -184,7 +181,7 @@ class TensorboardWriter(StatsWriter):
             os.makedirs(filewriter_dir, exist_ok=True)
             if self._clear_past_data:
                 self._delete_all_events_files(filewriter_dir)
-            self.summary_writers[category] = tf.summary.FileWriter(filewriter_dir)
+            self.summary_writers[category] = SummaryWriter(filewriter_dir)
 
     def _delete_all_events_files(self, directory_name: str) -> None:
         for file_name in os.listdir(directory_name):
@@ -206,34 +203,11 @@ class TensorboardWriter(StatsWriter):
     ) -> None:
         if property_type == StatsPropertyType.HYPERPARAMETERS:
             assert isinstance(value, dict)
-            summary = self._dict_to_tensorboard("Hyperparameters", value)
+            summary = _dict_to_str(value, 0)
             self._maybe_create_summary_writer(category)
             if summary is not None:
-                self.summary_writers[category].add_summary(summary, 0)
-
-    def _dict_to_tensorboard(
-        self, name: str, input_dict: Dict[str, Any]
-    ) -> Optional[bytes]:
-        """
-        Convert a dict to a Tensorboard-encoded string.
-        :param name: The name of the text.
-        :param input_dict: A dictionary that will be displayed in a table on Tensorboard.
-        """
-        try:
-            with tf.Session(config=generate_session_config()) as sess:
-                s_op = tf.summary.text(
-                    name,
-                    tf.convert_to_tensor(
-                        [[str(x), str(input_dict[x])] for x in input_dict]
-                    ),
-                )
-                s = sess.run(s_op)
-                return s
-        except Exception:
-            logger.warning(
-                f"Could not write {name} summary for Tensorboard: {input_dict}"
-            )
-            return None
+                self.summary_writers[category].add_text("Hyperparameters", summary)
+                self.summary_writers[category].flush()
 
 
 class StatsReporter:

@@ -5,3 +5,4 @@ Pillow==4.2.1
 protobuf==3.6
 tensorflow==1.14.0
 h5py==2.9.0
+tensorboard==1.15.0

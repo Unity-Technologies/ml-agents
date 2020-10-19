@@ -13,4 +13,7 @@ message UnityRLCapabilitiesProto {
 
     // concatenated PNG files for compressed visual observations with >3 channels.
     bool concatenatedPngObservations = 2;
+
+    // compression mapping for stacking compressed observations.
+    bool compressedChannelMapping = 3;
 }

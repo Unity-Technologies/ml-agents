@@ -1,11 +1,8 @@
 import os
 import sys
-import pkg_resources
-from distutils.version import LooseVersion
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-from setuptools.command.develop import develop
 import mlagents.trainers
 
 VERSION = mlagents.trainers.__version__
@@ -17,51 +14,20 @@ here = os.path.abspath(os.path.dirname(__file__))
 class VerifyVersionCommand(install):
     """
     Custom command to verify that the git tag is the expected one for the release.
-    Based on https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
+    Originally based on https://circleci.com/blog/continuously-deploying-python-packages-to-pypi-with-circleci/
     This differs slightly because our tags and versions are different.
     """
 
     description = "verify that the git tag matches our version"
 
     def run(self):
-        tag = os.getenv("CIRCLE_TAG")
+        tag = os.getenv("GITHUB_REF", "NO GITHUB TAG!").replace("refs/tags/", "")
 
         if tag != EXPECTED_TAG:
             info = "Git tag: {} does not match the expected tag of this app: {}".format(
                 tag, EXPECTED_TAG
             )
             sys.exit(info)
-
-
-def verify_torch_installed():
-    # Check that torch version 1.6.0 or later has been installed. If not, refer
-    # user to the PyTorch webpage for install instructions.
-    torch_pkg = None
-    try:
-        torch_pkg = pkg_resources.get_distribution("torch")
-    except pkg_resources.DistributionNotFound:
-        pass
-    assert torch_pkg is not None and LooseVersion(torch_pkg.version) >= LooseVersion(
-        "1.6.0"
-    ), (
-        "A compatible version of PyTorch was not installed. Please visit the PyTorch homepage ",
-        "(https://pytorch.org/get-started/locally/) and follow the instructions to install. ",
-        "Version 1.6.0 and later are supported.",
-    )
-
-
-class VerifyTorchInstallCommand(install):
-    description = "verify that Torch is installed"
-
-    def run(self):
-        verify_torch_installed()
-
-
-class VerifyTorchDevelopCommand(develop):
-    description = "verify that Torch is installed"
-
-    def run(self):
-        verify_torch_installed()
 
 
 # Get the long description from the README file
@@ -99,7 +65,7 @@ setup(
         "pyyaml>=3.1.0",
         # Windows ver. of PyTorch doesn't work from PyPi
         'torch>=1.6.0;platform_system!="Windows"',
-        "tensorboard>=1.14",
+        "tensorboard>=1.15",
         "cattrs>=1.0.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
@@ -111,10 +77,6 @@ setup(
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
         ]
     },
-    cmdclass={
-        "verify": VerifyVersionCommand,
-        "install": VerifyTorchInstallCommand,
-        "develop": VerifyTorchDevelopCommand,
-    },
+    cmdclass={"verify": VerifyVersionCommand},
     extras_require={"tensorflow": ["tensorflow>=1.14,<3.0", "six>=1.12.0"]},
 )

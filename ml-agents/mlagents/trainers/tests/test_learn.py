@@ -47,7 +47,7 @@ MOCK_PARAMETER_YAML = """
 
 @patch("mlagents.trainers.learn.write_timing_tree")
 @patch("mlagents.trainers.learn.write_run_options")
-@patch("mlagents.trainers.learn.handle_existing_directories")
+@patch("mlagents.trainers.learn.validate_existing_directories")
 @patch("mlagents.trainers.learn.TrainerFactory")
 @patch("mlagents.trainers.learn.SubprocessEnvManager")
 @patch("mlagents.trainers.learn.create_environment_factory")

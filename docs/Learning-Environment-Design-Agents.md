@@ -719,7 +719,7 @@ if (hitObjects.Where(col => col.gameObject.tag == "goal").ToArray().Length == 1)
     AddReward(1.0f);
     EndEpisode();
 }
-if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
+else if (hitObjects.Where(col => col.gameObject.tag == "pit").ToArray().Length == 1)
 {
     AddReward(-1f);
     EndEpisode();

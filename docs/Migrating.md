@@ -14,7 +14,21 @@ double-check that the versions are in the same. The versions can be found in
 
 # Migrating
 
-## Migrating from Release 3 to latest
+## Migrating from Release 7 to latest
+
+### Important changes
+- Some trainer files were moved. If you were using the `TrainerFactory` class, it was moved to
+the `trainers/trainer` folder.
+- The `components` folder containing `bc` and `reward_signals` code was moved to the `trainers/tf`
+folder
+
+### Steps to Migrate
+- Replace calls to `from mlagents.trainers.trainer_util import TrainerFactory` to `from mlagents.trainers.trainer import TrainerFactory`
+- Replace calls to `from mlagents.trainers.trainer_util import handle_existing_directories` to `from mlagents.trainers.directory_utils import validate_existing_directories`
+- Replace `mlagents.trainers.components` with `mlagents.trainers.tf.components` in your import statements.
+
+
+## Migrating from Release 3 to Release 7
 
 ### Important changes
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
