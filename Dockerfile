@@ -1,140 +1,29 @@
-# Based off of python:3.6-slim, except that we are using ubuntu instead of debian.
-FROM ubuntu:16.04
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
+RUN yes | unminimize
 
-# ensure local python is preferred over distribution python
-ENV PATH /usr/local/bin:$PATH
+RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-xenial main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN wget https://packages.cloud.google.com/apt/doc/apt-key.gpg && apt-key add apt-key.gpg
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends wget curl tmux vim git gdebi-core \
+  build-essential python3-pip unzip google-cloud-sdk htop mesa-utils xorg-dev xorg \
+  libglvnd-dev libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev && \
+  wget http://security.ubuntu.com/ubuntu/pool/main/libx/libxfont/libxfont1_1.5.1-1ubuntu0.16.04.4_amd64.deb && \
+  wget http://security.ubuntu.com/ubuntu/pool/universe/x/xorg-server/xvfb_1.18.4-0ubuntu0.10_amd64.deb && \
+  yes | gdebi libxfont1_1.5.1-1ubuntu0.16.04.4_amd64.deb && \
+  yes | gdebi xvfb_1.18.4-0ubuntu0.10_amd64.deb
+RUN python3 -m pip install --upgrade pip
+RUN pip install setuptools==41.0.0
 
-# http://bugs.python.org/issue19846
-# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
-ENV LANG C.UTF-8
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
-# runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-		ca-certificates \
-		libexpat1 \
-		libffi6 \
-		libgdbm3 \
-		libreadline6 \
-		libsqlite3-0 \
-		libssl1.0.0 \
-	&& rm -rf /var/lib/apt/lists/*
-
-ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-ENV PYTHON_VERSION 3.6.4
-
-RUN set -ex \
-	&& buildDeps=" \
-		dpkg-dev \
-		gcc \
-		libbz2-dev \
-		libc6-dev \
-		libexpat1-dev \
-		libffi-dev \
-		libgdbm-dev \
-		liblzma-dev \
-		libncursesw5-dev \
-		libreadline-dev \
-		libsqlite3-dev \
-		libssl-dev \
-		make \
-		tcl-dev \
-		tk-dev \
-		wget \
-		xz-utils \
-		zlib1g-dev \
-# as of Stretch, "gpg" is no longer included by default
-		$(command -v gpg > /dev/null || echo 'gnupg dirmngr') \
-	" \
-	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
-	\
-	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
-	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
-	&& gpg --batch --verify python.tar.xz.asc python.tar.xz \
-	&& rm -rf "$GNUPGHOME" python.tar.xz.asc \
-	&& mkdir -p /usr/src/python \
-	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
-	&& rm python.tar.xz \
-	\
-	&& cd /usr/src/python \
-	&& gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
-	&& ./configure \
-		--build="$gnuArch" \
-		--enable-loadable-sqlite-extensions \
-		--enable-shared \
-		--with-system-expat \
-		--with-system-ffi \
-		--without-ensurepip \
-	&& make -j "$(nproc)" \
-	&& make install \
-	&& ldconfig \
-	\
-	&& apt-get purge -y --auto-remove $buildDeps \
-	\
-	&& find /usr/local -depth \
-		\( \
-			\( -type d -a \( -name test -o -name tests \) \) \
-			-o \
-			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
-		\) -exec rm -rf '{}' + \
-	&& rm -rf /usr/src/python
-
-# make some useful symlinks that are expected to exist
-RUN cd /usr/local/bin \
-	&& ln -s idle3 idle \
-	&& ln -s pydoc3 pydoc \
-	&& ln -s python3 python \
-	&& ln -s python3-config python-config
-
-# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
-ENV PYTHON_PIP_VERSION 9.0.3
-
-RUN set -ex; \
-	\
-	apt-get update; \
-	apt-get install -y --no-install-recommends wget; \
-	rm -rf /var/lib/apt/lists/*; \
-	\
-	wget -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
-	\
-	apt-get purge -y --auto-remove wget; \
-	\
-	python get-pip.py \
-		--disable-pip-version-check \
-		--no-cache-dir \
-		"pip==$PYTHON_PIP_VERSION" \
-	; \
-	pip --version; \
-	\
-	find /usr/local -depth \
-		\( \
-			\( -type d -a \( -name test -o -name tests \) \) \
-			-o \
-			\( -type f -a \( -name '*.pyc' -o -name '*.pyo' \) \) \
-		\) -exec rm -rf '{}' +; \
-	rm -f get-pip.py
-
-
-RUN apt-get update && apt-get -y upgrade
-
-# xvfb is used to do CPU based rendering of Unity
-RUN apt-get install -y xvfb
-
-# Install ml-agents-envs package locally
-COPY ml-agents-envs /ml-agents-envs
-WORKDIR /ml-agents-envs
-RUN pip install -e .
-
-# Install ml-agents package next
-COPY ml-agents /ml-agents
+#checkout ml-agents for SHA
+RUN mkdir /ml-agents
 WORKDIR /ml-agents
-RUN pip install -e .
-
-# Port 5004 is the port used in Editor training.
-# Environments will start from port 5005, 
-# so allow enough ports for several environments.
-EXPOSE 5004-5050
-
-ENTRYPOINT ["xvfb-run", "--auto-servernum", "--server-args='-screen 0 640x480x24'", "mlagents-learn"]
+ARG SHA
+RUN git init
+RUN git remote add origin https://github.com/Unity-Technologies/ml-agents.git
+RUN git fetch --depth 1 origin $SHA
+RUN git checkout FETCH_HEAD
+RUN pip install -e /ml-agents/ml-agents-envs
+RUN pip install -e /ml-agents/ml-agents
