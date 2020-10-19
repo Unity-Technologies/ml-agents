@@ -283,6 +283,9 @@ namespace Unity.MLAgents
         /// </summary>
         internal VectorSensor collectObservationsSensor;
 
+        private RecursionChecker m_CollectObservationsChecker = new RecursionChecker("CollectObservations");
+        private RecursionChecker m_OnEpisodeBeginChecker = new RecursionChecker("OnEpisodeBegin");
+
         /// <summary>
         /// List of IActuators that this Agent will delegate actions to if any exist.
         /// </summary>
@@ -435,7 +438,10 @@ namespace Unity.MLAgents
             // episode when initializing until after the Academy had its first reset.
             if (Academy.Instance.TotalStepCount != 0)
             {
-                OnEpisodeBegin();
+                using (m_OnEpisodeBeginChecker.Start())
+                {
+                    OnEpisodeBegin();
+                }
             }
         }
 
@@ -512,7 +518,10 @@ namespace Unity.MLAgents
             {
                 // Make sure the latest observations are being passed to training.
                 collectObservationsSensor.Reset();
-                CollectObservations(collectObservationsSensor);
+                using (m_CollectObservationsChecker.Start())
+                {
+                    CollectObservations(collectObservationsSensor);
+                }
             }
             // Request the last decision with no callbacks
             // We request a decision so Python knows the Agent is done immediately
@@ -1006,7 +1015,10 @@ namespace Unity.MLAgents
             UpdateSensors();
             using (TimerStack.Instance.Scoped("CollectObservations"))
             {
-                CollectObservations(collectObservationsSensor);
+                using (m_CollectObservationsChecker.Start())
+                {
+                    CollectObservations(collectObservationsSensor);
+                }
             }
             using (TimerStack.Instance.Scoped("CollectDiscreteActionMasks"))
             {
@@ -1229,7 +1241,11 @@ namespace Unity.MLAgents
         {
             ResetData();
             m_StepCount = 0;
-            OnEpisodeBegin();
+            using (m_OnEpisodeBeginChecker.Start())
+            {
+                OnEpisodeBegin();
+            }
+
         }
 
         /// <summary>

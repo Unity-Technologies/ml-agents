@@ -19,6 +19,9 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
+- `Agent.CollectObservations()` and `Agent.EndEpisode()` will now throw an exception
+if they are called recursively (for example, if they call `Agent.EndEpisode()`).
+Previously, this would result in an infinite loop and cause the editor to hang. (#4573)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 
