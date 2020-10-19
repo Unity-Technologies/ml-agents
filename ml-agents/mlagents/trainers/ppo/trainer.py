@@ -16,7 +16,7 @@ from mlagents.trainers.ppo.optimizer_tf import PPOOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, PPOSettings, FrameworkType
-from mlagents.trainers.components.reward_signals import RewardSignal
+from mlagents.trainers.tf.components.reward_signals import RewardSignal
 from mlagents import torch_utils
 
 if torch_utils.is_available():

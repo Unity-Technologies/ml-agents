@@ -1,0 +1,32 @@
+{% metadata_file .yamato/test_versions.metafile %}
+---
+{% for editor in test_editors %}
+test_compressed_obs_{{ editor.version }}:
+  name: Test Compressed Sensor Observation {{ editor.version }}
+  agent:
+    type: Unity::VM::osx
+    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
+    flavor: b1.small
+  variables:
+    UNITY_VERSION: {{ editor.version }}
+  commands:
+    - pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+    - python -u -m ml-agents.tests.yamato.setup_venv
+    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestGridCompressed
+    - ./venv/bin/python ml-agents/tests/yamato/scripts/run_compressed_sensor.py --env=artifacts/testPlayer-TestTextureCompressed
+  dependencies:
+    - .yamato/standalone-build-test.yml#test_mac_standalone_{{ editor.version }}
+  triggers:
+    cancel_old_ci: true
+    expression: |
+      (pull_request.target eq "master" OR
+      pull_request.target match "release.+") AND
+      NOT pull_request.draft AND
+      (pull_request.changes.any match "com.unity.ml-agents/**" OR
+      pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
+      pull_request.changes.any match "Project/**" OR
+      pull_request.changes.any match "ml-agents/**" OR
+      pull_request.changes.any match "ml-agents-envs/**" OR
+      pull_request.changes.any match ".yamato/compressed-sensor-test.yml") AND
+      NOT pull_request.changes.all match "**/*.md"
+{% endfor %}

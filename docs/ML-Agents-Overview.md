@@ -13,6 +13,7 @@
   - [A Quick Note on Reward Signals](#a-quick-note-on-reward-signals)
   - [Deep Reinforcement Learning](#deep-reinforcement-learning)
     - [Curiosity for Sparse-reward Environments](#curiosity-for-sparse-reward-environments)
+    - [RND for Sparse-reward Environments](#rnd-for-sparse-reward-environments)
   - [Imitation Learning](#imitation-learning)
     - [GAIL (Generative Adversarial Imitation Learning)](#gail-generative-adversarial-imitation-learning)
     - [Behavioral Cloning (BC)](#behavioral-cloning-bc)
@@ -359,7 +360,7 @@ The total reward that the agent will learn to maximize can be a mix of extrinsic
 and intrinsic reward signals.
 
 The ML-Agents Toolkit allows reward signals to be defined in a modular way, and
-we provide three reward signals that can the mixed and matched to help shape
+we provide four reward signals that can the mixed and matched to help shape
 your agent's behavior:
 
 - `extrinsic`: represents the rewards defined in your environment, and is
@@ -369,6 +370,9 @@ your agent's behavior:
 - `curiosity`: represents an intrinsic reward signal that encourages exploration
   in sparse-reward environments that is defined by the Curiosity module (see
   below).
+- `rnd`: represents an intrinsic reward signal that encourages exploration
+  in sparse-reward environments that is defined by the Curiosity module (see
+  below). (Not available for TensorFlow trainers)
 
 ### Deep Reinforcement Learning
 
@@ -416,6 +420,24 @@ model is, the larger the reward will be.
 
 For more information, see our dedicated
 [blog post on the Curiosity module](https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/).
+
+#### RND for Sparse-reward Environments
+
+Similarly to Curiosity, Random Network Distillation (RND) is useful in sparse or rare
+reward environments as it helps the Agent explore. The RND Module is implemented following
+the paper [Exploration by Random Network Distillation](https://arxiv.org/abs/1810.12894).
+RND uses two networks:
+ - The first is a network with fixed random weights that takes observations as inputs and
+ generates an encoding
+ - The second is a network with similar architecture that is trained to predict the
+ outputs of the first network and uses the observations the Agent collects as training data.
+
+The loss (the squared difference between the predicted and actual encoded observations)
+of the trained model is used as intrinsic reward. The more an Agent visits a state, the
+more accurate the predictions and the lower the rewards which encourages the Agent to
+explore new states with higher prediction errors.
+
+__Note:__ RND is not available for TensorFlow trainers (only PyTorch trainers)
 
 ### Imitation Learning
 

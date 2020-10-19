@@ -244,6 +244,22 @@ def test_env_parameter_structure():
     assert isinstance(
         env_param_settings["length"].curriculum[0].value, MultiRangeUniformSettings
     )
+
+    # Check __str__ is correct
+    assert (
+        str(env_param_settings["mass"].curriculum[0].value)
+        == "Uniform sampler: min=1.0, max=2.0"
+    )
+    assert (
+        str(env_param_settings["scale"].curriculum[0].value)
+        == "Gaussian sampler: mean=1.0, stddev=2.0"
+    )
+    assert (
+        str(env_param_settings["length"].curriculum[0].value)
+        == "MultiRangeUniform sampler: intervals=[(1.0, 2.0), (3.0, 4.0)]"
+    )
+    assert str(env_param_settings["gravity"].curriculum[0].value) == "Float: value=1"
+
     assert isinstance(
         env_param_settings["wall_height"].curriculum[0].value, ConstantSettings
     )
