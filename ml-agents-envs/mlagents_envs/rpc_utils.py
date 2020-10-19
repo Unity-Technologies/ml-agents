@@ -33,15 +33,15 @@ def behavior_spec_from_proto(
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
     action_type = (
         ActionType.DISCRETE
-        if brain_param_proto.vector_action_space_type == 0
+        if brain_param_proto.vector_action_space_type_deprecated == 0
         else ActionType.CONTINUOUS
     )
     if action_type == ActionType.CONTINUOUS:
         action_shape: Union[
             int, Tuple[int, ...]
-        ] = brain_param_proto.vector_action_size[0]
+        ] = brain_param_proto.vector_action_size_deprecated[0]
     else:
-        action_shape = tuple(brain_param_proto.vector_action_size)
+        action_shape = tuple(brain_param_proto.vector_action_size_deprecated)
     return BehaviorSpec(observation_shape, action_type, action_shape)
 
 

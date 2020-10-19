@@ -58,9 +58,9 @@ class ActionSpecProto(google___protobuf___message___Message):
 
 class BrainParametersProto(google___protobuf___message___Message):
     DESCRIPTOR: google___protobuf___descriptor___Descriptor = ...
-    vector_action_size = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
-    vector_action_descriptions = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
-    vector_action_space_type = ... # type: mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto
+    vector_action_size_deprecated = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[builtin___int]
+    vector_action_descriptions_deprecated = ... # type: google___protobuf___internal___containers___RepeatedScalarFieldContainer[typing___Text]
+    vector_action_space_type_deprecated = ... # type: mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto
     brain_name = ... # type: typing___Text
     is_training = ... # type: builtin___bool
 
@@ -69,9 +69,9 @@ class BrainParametersProto(google___protobuf___message___Message):
 
     def __init__(self,
         *,
-        vector_action_size : typing___Optional[typing___Iterable[builtin___int]] = None,
-        vector_action_descriptions : typing___Optional[typing___Iterable[typing___Text]] = None,
-        vector_action_space_type : typing___Optional[mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
+        vector_action_size_deprecated : typing___Optional[typing___Iterable[builtin___int]] = None,
+        vector_action_descriptions_deprecated : typing___Optional[typing___Iterable[typing___Text]] = None,
+        vector_action_space_type_deprecated : typing___Optional[mlagents_envs___communicator_objects___space_type_pb2___SpaceTypeProto] = None,
         brain_name : typing___Optional[typing___Text] = None,
         is_training : typing___Optional[builtin___bool] = None,
         action_spec : typing___Optional[ActionSpecProto] = None,
@@ -82,7 +82,7 @@ class BrainParametersProto(google___protobuf___message___Message):
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
         def HasField(self, field_name: typing_extensions___Literal[u"action_spec"]) -> builtin___bool: ...
-        def ClearField(self, field_name: typing_extensions___Literal[u"action_spec",u"brain_name",u"is_training",u"vector_action_descriptions",u"vector_action_size",u"vector_action_space_type"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"action_spec",u"brain_name",u"is_training",u"vector_action_descriptions_deprecated",u"vector_action_size_deprecated",u"vector_action_space_type_deprecated"]) -> None: ...
     else:
         def HasField(self, field_name: typing_extensions___Literal[u"action_spec",b"action_spec"]) -> builtin___bool: ...
-        def ClearField(self, field_name: typing_extensions___Literal[u"action_spec",b"action_spec",u"brain_name",b"brain_name",u"is_training",b"is_training",u"vector_action_descriptions",b"vector_action_descriptions",u"vector_action_size",b"vector_action_size",u"vector_action_space_type",b"vector_action_space_type"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"action_spec",b"action_spec",u"brain_name",b"brain_name",u"is_training",b"is_training",u"vector_action_descriptions_deprecated",b"vector_action_descriptions_deprecated",u"vector_action_size_deprecated",b"vector_action_size_deprecated",u"vector_action_space_type_deprecated",b"vector_action_space_type_deprecated"]) -> None: ...

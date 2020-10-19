@@ -30,19 +30,20 @@ namespace Unity.MLAgents.CommunicatorObjects {
             "iwEKD0FjdGlvblNwZWNQcm90bxIeChZudW1fY29udGludW91c19hY3Rpb25z",
             "GAEgASgFEhwKFG51bV9kaXNjcmV0ZV9hY3Rpb25zGAIgASgFEh0KFWRpc2Ny",
             "ZXRlX2JyYW5jaF9zaXplcxgDIAMoBRIbChNhY3Rpb25fZGVzY3JpcHRpb25z",
-            "GAQgAygJIpUCChRCcmFpblBhcmFtZXRlcnNQcm90bxIaChJ2ZWN0b3JfYWN0",
-            "aW9uX3NpemUYAyADKAUSIgoadmVjdG9yX2FjdGlvbl9kZXNjcmlwdGlvbnMY",
-            "BSADKAkSRgoYdmVjdG9yX2FjdGlvbl9zcGFjZV90eXBlGAYgASgOMiQuY29t",
-            "bXVuaWNhdG9yX29iamVjdHMuU3BhY2VUeXBlUHJvdG8SEgoKYnJhaW5fbmFt",
-            "ZRgHIAEoCRITCgtpc190cmFpbmluZxgIIAEoCBI6CgthY3Rpb25fc3BlYxgJ",
-            "IAEoCzIlLmNvbW11bmljYXRvcl9vYmplY3RzLkFjdGlvblNwZWNQcm90b0oE",
-            "CAEQAkoECAIQA0oECAQQBUIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNh",
-            "dG9yT2JqZWN0c2IGcHJvdG8z"));
+            "GAQgAygJIrYCChRCcmFpblBhcmFtZXRlcnNQcm90bxIlCh12ZWN0b3JfYWN0",
+            "aW9uX3NpemVfZGVwcmVjYXRlZBgDIAMoBRItCiV2ZWN0b3JfYWN0aW9uX2Rl",
+            "c2NyaXB0aW9uc19kZXByZWNhdGVkGAUgAygJElEKI3ZlY3Rvcl9hY3Rpb25f",
+            "c3BhY2VfdHlwZV9kZXByZWNhdGVkGAYgASgOMiQuY29tbXVuaWNhdG9yX29i",
+            "amVjdHMuU3BhY2VUeXBlUHJvdG8SEgoKYnJhaW5fbmFtZRgHIAEoCRITCgtp",
+            "c190cmFpbmluZxgIIAEoCBI6CgthY3Rpb25fc3BlYxgJIAEoCzIlLmNvbW11",
+            "bmljYXRvcl9vYmplY3RzLkFjdGlvblNwZWNQcm90b0oECAEQAkoECAIQA0oE",
+            "CAQQBUIlqgIiVW5pdHkuTUxBZ2VudHMuQ29tbXVuaWNhdG9yT2JqZWN0c2IG",
+            "cHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Unity.MLAgents.CommunicatorObjects.SpaceTypeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto), global::Unity.MLAgents.CommunicatorObjects.ActionSpecProto.Parser, new[]{ "NumContinuousActions", "NumDiscreteActions", "DiscreteBranchSizes", "ActionDescriptions" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto), global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorActionSize", "VectorActionDescriptions", "VectorActionSpaceType", "BrainName", "IsTraining", "ActionSpec" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto), global::Unity.MLAgents.CommunicatorObjects.BrainParametersProto.Parser, new[]{ "VectorActionSizeDeprecated", "VectorActionDescriptionsDeprecated", "VectorActionSpaceTypeDeprecated", "BrainName", "IsTraining", "ActionSpec" }, null, null, null)
           }));
     }
     #endregion
@@ -272,9 +273,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public BrainParametersProto(BrainParametersProto other) : this() {
-      vectorActionSize_ = other.vectorActionSize_.Clone();
-      vectorActionDescriptions_ = other.vectorActionDescriptions_.Clone();
-      vectorActionSpaceType_ = other.vectorActionSpaceType_;
+      vectorActionSizeDeprecated_ = other.vectorActionSizeDeprecated_.Clone();
+      vectorActionDescriptionsDeprecated_ = other.vectorActionDescriptionsDeprecated_.Clone();
+      vectorActionSpaceTypeDeprecated_ = other.vectorActionSpaceTypeDeprecated_;
       brainName_ = other.brainName_;
       isTraining_ = other.isTraining_;
       ActionSpec = other.actionSpec_ != null ? other.ActionSpec.Clone() : null;
@@ -286,34 +287,43 @@ namespace Unity.MLAgents.CommunicatorObjects {
       return new BrainParametersProto(this);
     }
 
-    /// <summary>Field number for the "vector_action_size" field.</summary>
-    public const int VectorActionSizeFieldNumber = 3;
-    private static readonly pb::FieldCodec<int> _repeated_vectorActionSize_codec
+    /// <summary>Field number for the "vector_action_size_deprecated" field.</summary>
+    public const int VectorActionSizeDeprecatedFieldNumber = 3;
+    private static readonly pb::FieldCodec<int> _repeated_vectorActionSizeDeprecated_codec
         = pb::FieldCodec.ForInt32(26);
-    private readonly pbc::RepeatedField<int> vectorActionSize_ = new pbc::RepeatedField<int>();
+    private readonly pbc::RepeatedField<int> vectorActionSizeDeprecated_ = new pbc::RepeatedField<int>();
+    /// <summary>
+    /// mark as deprecated in communicator v0.22.0
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<int> VectorActionSize {
-      get { return vectorActionSize_; }
+    public pbc::RepeatedField<int> VectorActionSizeDeprecated {
+      get { return vectorActionSizeDeprecated_; }
     }
 
-    /// <summary>Field number for the "vector_action_descriptions" field.</summary>
-    public const int VectorActionDescriptionsFieldNumber = 5;
-    private static readonly pb::FieldCodec<string> _repeated_vectorActionDescriptions_codec
+    /// <summary>Field number for the "vector_action_descriptions_deprecated" field.</summary>
+    public const int VectorActionDescriptionsDeprecatedFieldNumber = 5;
+    private static readonly pb::FieldCodec<string> _repeated_vectorActionDescriptionsDeprecated_codec
         = pb::FieldCodec.ForString(42);
-    private readonly pbc::RepeatedField<string> vectorActionDescriptions_ = new pbc::RepeatedField<string>();
+    private readonly pbc::RepeatedField<string> vectorActionDescriptionsDeprecated_ = new pbc::RepeatedField<string>();
+    /// <summary>
+    /// mark as deprecated in communicator v0.22.0
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<string> VectorActionDescriptions {
-      get { return vectorActionDescriptions_; }
+    public pbc::RepeatedField<string> VectorActionDescriptionsDeprecated {
+      get { return vectorActionDescriptionsDeprecated_; }
     }
 
-    /// <summary>Field number for the "vector_action_space_type" field.</summary>
-    public const int VectorActionSpaceTypeFieldNumber = 6;
-    private global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto vectorActionSpaceType_ = 0;
+    /// <summary>Field number for the "vector_action_space_type_deprecated" field.</summary>
+    public const int VectorActionSpaceTypeDeprecatedFieldNumber = 6;
+    private global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto vectorActionSpaceTypeDeprecated_ = 0;
+    /// <summary>
+    /// mark as deprecated in communicator v0.22.0
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto VectorActionSpaceType {
-      get { return vectorActionSpaceType_; }
+    public global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto VectorActionSpaceTypeDeprecated {
+      get { return vectorActionSpaceTypeDeprecated_; }
       set {
-        vectorActionSpaceType_ = value;
+        vectorActionSpaceTypeDeprecated_ = value;
       }
     }
 
@@ -363,9 +373,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!vectorActionSize_.Equals(other.vectorActionSize_)) return false;
-      if(!vectorActionDescriptions_.Equals(other.vectorActionDescriptions_)) return false;
-      if (VectorActionSpaceType != other.VectorActionSpaceType) return false;
+      if(!vectorActionSizeDeprecated_.Equals(other.vectorActionSizeDeprecated_)) return false;
+      if(!vectorActionDescriptionsDeprecated_.Equals(other.vectorActionDescriptionsDeprecated_)) return false;
+      if (VectorActionSpaceTypeDeprecated != other.VectorActionSpaceTypeDeprecated) return false;
       if (BrainName != other.BrainName) return false;
       if (IsTraining != other.IsTraining) return false;
       if (!object.Equals(ActionSpec, other.ActionSpec)) return false;
@@ -375,9 +385,9 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= vectorActionSize_.GetHashCode();
-      hash ^= vectorActionDescriptions_.GetHashCode();
-      if (VectorActionSpaceType != 0) hash ^= VectorActionSpaceType.GetHashCode();
+      hash ^= vectorActionSizeDeprecated_.GetHashCode();
+      hash ^= vectorActionDescriptionsDeprecated_.GetHashCode();
+      if (VectorActionSpaceTypeDeprecated != 0) hash ^= VectorActionSpaceTypeDeprecated.GetHashCode();
       if (BrainName.Length != 0) hash ^= BrainName.GetHashCode();
       if (IsTraining != false) hash ^= IsTraining.GetHashCode();
       if (actionSpec_ != null) hash ^= ActionSpec.GetHashCode();
@@ -394,11 +404,11 @@ namespace Unity.MLAgents.CommunicatorObjects {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      vectorActionSize_.WriteTo(output, _repeated_vectorActionSize_codec);
-      vectorActionDescriptions_.WriteTo(output, _repeated_vectorActionDescriptions_codec);
-      if (VectorActionSpaceType != 0) {
+      vectorActionSizeDeprecated_.WriteTo(output, _repeated_vectorActionSizeDeprecated_codec);
+      vectorActionDescriptionsDeprecated_.WriteTo(output, _repeated_vectorActionDescriptionsDeprecated_codec);
+      if (VectorActionSpaceTypeDeprecated != 0) {
         output.WriteRawTag(48);
-        output.WriteEnum((int) VectorActionSpaceType);
+        output.WriteEnum((int) VectorActionSpaceTypeDeprecated);
       }
       if (BrainName.Length != 0) {
         output.WriteRawTag(58);
@@ -420,10 +430,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      size += vectorActionSize_.CalculateSize(_repeated_vectorActionSize_codec);
-      size += vectorActionDescriptions_.CalculateSize(_repeated_vectorActionDescriptions_codec);
-      if (VectorActionSpaceType != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) VectorActionSpaceType);
+      size += vectorActionSizeDeprecated_.CalculateSize(_repeated_vectorActionSizeDeprecated_codec);
+      size += vectorActionDescriptionsDeprecated_.CalculateSize(_repeated_vectorActionDescriptionsDeprecated_codec);
+      if (VectorActionSpaceTypeDeprecated != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) VectorActionSpaceTypeDeprecated);
       }
       if (BrainName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(BrainName);
@@ -445,10 +455,10 @@ namespace Unity.MLAgents.CommunicatorObjects {
       if (other == null) {
         return;
       }
-      vectorActionSize_.Add(other.vectorActionSize_);
-      vectorActionDescriptions_.Add(other.vectorActionDescriptions_);
-      if (other.VectorActionSpaceType != 0) {
-        VectorActionSpaceType = other.VectorActionSpaceType;
+      vectorActionSizeDeprecated_.Add(other.vectorActionSizeDeprecated_);
+      vectorActionDescriptionsDeprecated_.Add(other.vectorActionDescriptionsDeprecated_);
+      if (other.VectorActionSpaceTypeDeprecated != 0) {
+        VectorActionSpaceTypeDeprecated = other.VectorActionSpaceTypeDeprecated;
       }
       if (other.BrainName.Length != 0) {
         BrainName = other.BrainName;
@@ -475,15 +485,15 @@ namespace Unity.MLAgents.CommunicatorObjects {
             break;
           case 26:
           case 24: {
-            vectorActionSize_.AddEntriesFrom(input, _repeated_vectorActionSize_codec);
+            vectorActionSizeDeprecated_.AddEntriesFrom(input, _repeated_vectorActionSizeDeprecated_codec);
             break;
           }
           case 42: {
-            vectorActionDescriptions_.AddEntriesFrom(input, _repeated_vectorActionDescriptions_codec);
+            vectorActionDescriptionsDeprecated_.AddEntriesFrom(input, _repeated_vectorActionDescriptionsDeprecated_codec);
             break;
           }
           case 48: {
-            vectorActionSpaceType_ = (global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
+            vectorActionSpaceTypeDeprecated_ = (global::Unity.MLAgents.CommunicatorObjects.SpaceTypeProto) input.ReadEnum();
             break;
           }
           case 58: {
