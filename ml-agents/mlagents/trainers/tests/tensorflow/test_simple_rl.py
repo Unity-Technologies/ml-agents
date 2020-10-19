@@ -432,9 +432,11 @@ def simple_record(tmpdir_factory):
         agent_info_protos = env.demonstration_protos[BRAIN_NAME]
         meta_data_proto = DemonstrationMetaProto()
         brain_param_proto = BrainParametersProto(
-            vector_action_size=[2] if use_discrete else [1],
-            vector_action_descriptions=[""],
-            vector_action_space_type=discrete if use_discrete else continuous,
+            vector_action_size_deprecated=[2] if use_discrete else [1],
+            vector_action_descriptions_deprecated=[""],
+            vector_action_space_type_deprecated=discrete
+            if use_discrete
+            else continuous,
             brain_name=BRAIN_NAME,
             is_training=True,
         )
