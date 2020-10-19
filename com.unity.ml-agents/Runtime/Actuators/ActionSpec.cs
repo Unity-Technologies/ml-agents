@@ -81,7 +81,8 @@ namespace Unity.MLAgents.Actuators
         {
             if (NumContinuousActions > 0 && NumDiscreteActions > 0)
             {
-                throw new UnityAgentsException("ActionSpecs must be all continuous or all discrete.");
+                throw new UnityAgentsException("Hybrid action spaces not supported by the trainer. " +
+                    "ActionSpecs must be all continuous or all discrete.");
             }
         }
     }

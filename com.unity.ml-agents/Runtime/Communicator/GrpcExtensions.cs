@@ -117,22 +117,33 @@ namespace Unity.MLAgents
         /// <param name="isTraining">Whether or not the Brain is training.</param>
         public static BrainParametersProto ToBrainParametersProto(this ActionSpec actionSpec, string name, bool isTraining)
         {
-            actionSpec.CheckNotHybrid();
-
             var brainParametersProto = new BrainParametersProto
             {
                 BrainName = name,
                 IsTraining = isTraining
             };
-            if (actionSpec.NumContinuousActions > 0)
+            var actionSpecProto = new ActionSpecProto
             {
-                brainParametersProto.VectorActionSizeDeprecated.Add(actionSpec.NumContinuousActions);
-                brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Continuous;
-            }
-            else if (actionSpec.NumDiscreteActions > 0)
+                NumContinuousActions = actionSpec.NumContinuousActions,
+                NumDiscreteActions = actionSpec.NumDiscreteActions,
+                DiscreteBranchSizes = { actionSpec.BranchSizes },
+            };
+            brainParametersProto.ActionSpec = actionSpecProto;
+
+            var supportHybrid = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.HybridActions;
+            if (!supportHybrid)
             {
-                brainParametersProto.VectorActionSizeDeprecated.AddRange(actionSpec.BranchSizes);
-                brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Discrete;
+                actionSpec.CheckNotHybrid();
+                if (actionSpec.NumContinuousActions > 0)
+                {
+                    brainParametersProto.VectorActionSizeDeprecated.Add(actionSpec.NumContinuousActions);
+                    brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Continuous;
+                }
+                else if (actionSpec.NumDiscreteActions > 0)
+                {
+                    brainParametersProto.VectorActionSizeDeprecated.AddRange(actionSpec.BranchSizes);
+                    brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Discrete;
+                }
             }
 
             // TODO handle ActionDescriptions?
