@@ -15,10 +15,10 @@ message ActionSpecProto {
 message BrainParametersProto {
     reserved 1; // deprecated int32 vector_observation_size = 1;
     reserved 2; // deprecated int32 num_stacked_vector_observations = 2;
-    repeated int32 vector_action_size_deprecated = 3; // mark as deprecated in communicator v0.22.0
+    repeated int32 vector_action_size_deprecated = 3; // mark as deprecated in communicator v1.3.0
     reserved 4; // deprecated repeated ResolutionProto camera_resolutions
-    repeated string vector_action_descriptions_deprecated = 5; // mark as deprecated in communicator v0.22.0
-    SpaceTypeProto vector_action_space_type_deprecated = 6; // mark as deprecated in communicator v0.22.0
+    repeated string vector_action_descriptions_deprecated = 5; // mark as deprecated in communicator v1.3.0
+    SpaceTypeProto vector_action_space_type_deprecated = 6; // mark as deprecated in communicator v1.3.0
     string brain_name = 7;
     bool is_training = 8;
     ActionSpecProto action_spec = 9;
