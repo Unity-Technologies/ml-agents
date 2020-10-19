@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Sensors
             using (TimerStack.Instance.Scoped("RenderTextureSensor.Write"))
             {
                 var texture = ObservationToTexture(m_RenderTexture);
-                var numWritten = Utilities.TextureToTensorProxy(texture, writer, m_Grayscale);
+                var numWritten = writer.WriteTexture(texture, m_Grayscale);
                 DestroyTexture(texture);
                 return numWritten;
             }

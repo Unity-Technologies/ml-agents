@@ -100,7 +100,7 @@ namespace Unity.MLAgents.Sensors
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
                 var texture = ObservationToTexture(m_Camera, m_Width, m_Height);
-                var numWritten = Utilities.TextureToTensorProxy(texture, writer, m_Grayscale);
+                var numWritten = writer.WriteTexture(texture, m_Grayscale);
                 DestroyTexture(texture);
                 return numWritten;
             }

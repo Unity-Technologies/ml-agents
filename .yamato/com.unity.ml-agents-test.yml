@@ -2,15 +2,23 @@ test_editors:
   - version: 2018.4
     # 2018.4 doesn't support code-coverage
     enableCodeCoverage: !!bool false
+    # We want some scene tests to run in the DevProject, but packages there only support 2019+
+    testProject: Project
   - version: 2019.4
     enableCodeCoverage: !!bool true
+    testProject: DevProject
   - version: 2020.1
     enableCodeCoverage: !!bool true
+    testProject: DevProject
   - version: 2020.2
     enableCodeCoverage: !!bool true
+    testProject: DevProject
+
 trunk_editor:
   - version: trunk
     enableCodeCoverage: !!bool true
+    testProject: DevProject
+
 test_platforms:
   - name: win
     type: Unity::VM
@@ -24,6 +32,7 @@ test_platforms:
     type: Unity::VM
     image: package-ci/ubuntu:stable
     flavor: b1.medium
+
 packages:
   - name: com.unity.ml-agents
     assembly: Unity.ML-Agents
@@ -70,7 +79,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
+    - upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
     {% if editor.enableCodeCoverage %}
     - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}
@@ -88,6 +97,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
+       pull_request.changes.any match " {{ editor.testProject }}/**" OR
       {% if package.name == "com.unity.ml-agents.extensions" %}
         pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       {% endif %}
@@ -116,7 +126,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
     - python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
     - unity-downloader-cli -u trunk -c editor --wait --fast
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - upm-ci project test -u {{ editor.version }} --project-path Project --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
+    - upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
     {% if editor.enableCodeCoverage %}
     - python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
     {% endif %}

@@ -1,0 +1,47 @@
+# Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+name: publish to PyPI (or TestPyPI)
+
+on:
+  push:
+    tags:
+      - "release_[0-9]+_test[0-9]+"
+      - "release_[0-9]+"
+
+jobs:
+  build-and-publish:
+    name: publish to PyPI (or TestPyPI)
+    runs-on: ubuntu-18.04
+    strategy:
+        matrix:
+            package-path: [ml-agents, ml-agents-envs, gym-unity]
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+    - name: Install dependencies
+      run: pip install setuptools wheel twine --user
+    - name: verify git tag vs. version
+      run: |
+        cd ${{ matrix.package-path }}
+        python setup.py verify
+    - name: Build package
+      run: |
+        cd ${{ matrix.package-path }}
+        python setup.py sdist
+        python setup.py bdist_wheel
+    - name: Publish distribution 📦 to Test PyPI
+      if: startsWith(github.ref, 'refs/tags') && contains(github.ref, 'test')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.test_pypi_password }}
+        repository_url: https://test.pypi.org/legacy/
+        packages_dir: ${{ matrix.package-path }}/dist/
+    - name: Publish distribution 📦 to Production PyPI
+      if: startsWith(github.ref, 'refs/tags') && !contains(github.ref, 'test')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.pypi_password }}
+        packages_dir: ${{ matrix.package-path }}/dist/

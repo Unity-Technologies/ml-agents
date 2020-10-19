@@ -226,6 +226,8 @@ namespace Unity.MLAgents.Extensions.Sensors
         [Tooltip("Whether to show gizmos or not")]
         public bool ShowGizmos = false;
 
+        public SensorCompressionType CompressionType = SensorCompressionType.PNG;
+
         /// <summary>
         /// Array of colors displaying the DebugColors for each cell in OnDrawGizmos. Only updated if ShowGizmos.
         /// </summary>
@@ -469,7 +471,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         public virtual SensorCompressionType GetCompressionType()
         {
-            return SensorCompressionType.PNG;
+            return CompressionType;
         }
 
         /// <summary>

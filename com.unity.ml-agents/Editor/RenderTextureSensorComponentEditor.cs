@@ -20,6 +20,7 @@ namespace Unity.MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_RenderTexture"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_SensorName"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Grayscale"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
             }
             EditorGUI.EndDisabledGroup();
 

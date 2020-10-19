@@ -514,7 +514,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1145096862361766}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -624,17 +624,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000300000002000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+    VectorObservationSize: 1
+    NumStackedVectorObservations: 1
+    VectorActionSize: 03000000030000000300000002000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114380897261200276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -647,7 +649,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -658,6 +663,7 @@ MonoBehaviour:
   myLaser: {fileID: 1900094563283840}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 1
 --- !u!114 &114326390494230518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -670,12 +676,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20380145723616022}
-  sensorName: CameraSensor
-  width: 84
-  height: 84
-  grayscale: 0
-  compression: 1
+  m_Camera: {fileID: 20380145723616022}
+  m_SensorName: CameraSensor
+  m_Width: 84
+  m_Height: 84
+  m_Grayscale: 0
+  m_ObservationStacks: 1
+  m_Compression: 1
 --- !u!114 &4034342608499629224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,8 +696,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
-  offsetStep: 0
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &1179319070824364
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,17 +1208,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000300000002000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+    VectorObservationSize: 1
+    NumStackedVectorObservations: 1
+    VectorActionSize: 03000000030000000300000002000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114869844339180154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1225,7 +1233,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -1236,6 +1247,7 @@ MonoBehaviour:
   myLaser: {fileID: 1307818939507544}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 1
 --- !u!114 &114429222608880102
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1248,12 +1260,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20863703825242712}
-  sensorName: CameraSensor
-  width: 84
-  height: 84
-  grayscale: 0
-  compression: 1
+  m_Camera: {fileID: 20863703825242712}
+  m_SensorName: CameraSensor
+  m_Width: 84
+  m_Height: 84
+  m_Grayscale: 0
+  m_ObservationStacks: 1
+  m_Compression: 1
 --- !u!114 &7234640249101665162
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1267,8 +1280,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
-  offsetStep: 0
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &1353209702154624
 GameObject:
   m_ObjectHideFlags: 0
@@ -1594,17 +1606,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000300000002000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+    VectorObservationSize: 1
+    NumStackedVectorObservations: 1
+    VectorActionSize: 03000000030000000300000002000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114484596947519388
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1617,7 +1631,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -1628,6 +1645,7 @@ MonoBehaviour:
   myLaser: {fileID: 1898252046043334}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 1
 --- !u!114 &114036270357198286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1640,12 +1658,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20696931947702132}
-  sensorName: CameraSensor
-  width: 84
-  height: 84
-  grayscale: 0
-  compression: 1
+  m_Camera: {fileID: 20696931947702132}
+  m_SensorName: CameraSensor
+  m_Width: 84
+  m_Height: 84
+  m_Grayscale: 0
+  m_ObservationStacks: 1
+  m_Compression: 1
 --- !u!114 &3164735207755090463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1659,8 +1678,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
-  offsetStep: 0
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &1399553220224106
 GameObject:
   m_ObjectHideFlags: 0
@@ -3406,17 +3424,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    vectorObservationSize: 0
-    numStackedVectorObservations: 1
-    vectorActionSize: 03000000030000000300000002000000
-    vectorActionDescriptions: []
-    vectorActionSpaceType: 0
-  m_Model: {fileID: 0}
+    VectorObservationSize: 1
+    NumStackedVectorObservations: 1
+    VectorActionSize: 03000000030000000300000002000000
+    VectorActionDescriptions: []
+    VectorActionSpaceType: 0
+  m_Model: {fileID: 11400000, guid: c3b1eb0bcf06b4c0488599c7ab806de7, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: VisualFoodCollector
-  m_TeamID: 0
+  TeamId: 0
   m_UseChildSensors: 1
+  m_UseChildActuators: 1
+  m_ObservableAttributeHandling: 0
 --- !u!114 &114729119221978826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3429,7 +3449,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c66e6845309d241c78a6d77ee2567928, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStep: 5000
+  agentParameters:
+    maxStep: 0
+  hasUpgradedFromAgentParameters: 1
+  MaxStep: 5000
   area: {fileID: 1145096862361766}
   turnSpeed: 300
   moveSpeed: 2
@@ -3440,6 +3463,7 @@ MonoBehaviour:
   myLaser: {fileID: 1779831409734062}
   contribute: 0
   useVectorObs: 0
+  useVectorFrozenFlag: 1
 --- !u!114 &114322691115031348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3452,12 +3476,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 282f342c2ab144bf38be65d4d0c4e07d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camera: {fileID: 20363738094913048}
-  sensorName: CameraSensor
-  width: 84
-  height: 84
-  grayscale: 0
-  compression: 1
+  m_Camera: {fileID: 20363738094913048}
+  m_SensorName: CameraSensor
+  m_Width: 84
+  m_Height: 84
+  m_Grayscale: 0
+  m_ObservationStacks: 1
+  m_Compression: 1
 --- !u!114 &5903164052970896384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3471,8 +3496,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
-  RepeatAction: 1
-  offsetStep: 0
+  TakeActionsBetweenDecisions: 1
 --- !u!1 &1971119195936814
 GameObject:
   m_ObjectHideFlags: 0

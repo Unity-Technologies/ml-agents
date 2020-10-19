@@ -6,11 +6,11 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.components.reward_signals.reward_signal_factory import (
+from mlagents.trainers.tf.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
 from mlagents.trainers.settings import TrainerSettings, RewardSignalType
-from mlagents.trainers.components.bc.module import BCModule
+from mlagents.trainers.tf.components.bc.module import BCModule
 
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
