@@ -39,9 +39,11 @@ class MockCommunicator(Communicator):
 
     def initialize(self, inputs: UnityInputProto) -> UnityOutputProto:
         bp = BrainParametersProto(
-            vector_action_size=[2],
-            vector_action_descriptions=["", ""],
-            vector_action_space_type=discrete if self.is_discrete else continuous,
+            vector_action_size_deprecated=[2],
+            vector_action_descriptions_deprecated=["", ""],
+            vector_action_space_type_deprecated=discrete
+            if self.is_discrete
+            else continuous,
             brain_name=self.brain_name,
             is_training=True,
         )

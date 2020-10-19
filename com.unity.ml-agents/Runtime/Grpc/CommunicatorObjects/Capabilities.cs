@@ -129,7 +129,7 @@ namespace Unity.MLAgents.CommunicatorObjects {
     public const int HybridActionsFieldNumber = 4;
     private bool hybridActions_;
     /// <summary>
-    /// support for mixed (discrete + continuous) actions
+    /// support for hybrid action spaces (discrete + continuous)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HybridActions {

@@ -96,14 +96,14 @@ namespace Unity.MLAgents
         {
             var brainParametersProto = new BrainParametersProto
             {
-                VectorActionSize = { bp.VectorActionSize },
-                VectorActionSpaceType = (SpaceTypeProto)bp.VectorActionSpaceType,
+                VectorActionSizeDeprecated = { bp.VectorActionSize },
+                VectorActionSpaceTypeDeprecated = (SpaceTypeProto)bp.VectorActionSpaceType,
                 BrainName = name,
                 IsTraining = isTraining
             };
             if (bp.VectorActionDescriptions != null)
             {
-                brainParametersProto.VectorActionDescriptions.AddRange(bp.VectorActionDescriptions);
+                brainParametersProto.VectorActionDescriptionsDeprecated.AddRange(bp.VectorActionDescriptions);
             }
             return brainParametersProto;
         }
@@ -126,13 +126,13 @@ namespace Unity.MLAgents
             };
             if (actionSpec.NumContinuousActions > 0)
             {
-                brainParametersProto.VectorActionSize.Add(actionSpec.NumContinuousActions);
-                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Continuous;
+                brainParametersProto.VectorActionSizeDeprecated.Add(actionSpec.NumContinuousActions);
+                brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Continuous;
             }
             else if (actionSpec.NumDiscreteActions > 0)
             {
-                brainParametersProto.VectorActionSize.AddRange(actionSpec.BranchSizes);
-                brainParametersProto.VectorActionSpaceType = SpaceTypeProto.Discrete;
+                brainParametersProto.VectorActionSizeDeprecated.AddRange(actionSpec.BranchSizes);
+                brainParametersProto.VectorActionSpaceTypeDeprecated = SpaceTypeProto.Discrete;
             }
 
             // TODO handle ActionDescriptions?
@@ -148,9 +148,9 @@ namespace Unity.MLAgents
         {
             var bp = new BrainParameters
             {
-                VectorActionSize = bpp.VectorActionSize.ToArray(),
-                VectorActionDescriptions = bpp.VectorActionDescriptions.ToArray(),
-                VectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceType
+                VectorActionSize = bpp.VectorActionSizeDeprecated.ToArray(),
+                VectorActionDescriptions = bpp.VectorActionDescriptionsDeprecated.ToArray(),
+                VectorActionSpaceType = (SpaceType)bpp.VectorActionSpaceTypeDeprecated
             };
             return bp;
         }
