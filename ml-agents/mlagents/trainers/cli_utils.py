@@ -169,11 +169,18 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Forces training using CPU only",
     )
     argparser.add_argument(
+        "--torch",
+        default=False,
+        action=DetectDefaultStoreTrue,
+        help="Use the PyTorch framework. Note that this option is not required anymore as PyTorch is the"
+        "default framework, and will be removed in the next release.",
+    )
+    argparser.add_argument(
         "--tensorflow",
         default=False,
         action=DetectDefaultStoreTrue,
         help="(Deprecated) Use the TensorFlow framework instead of PyTorch. Install TensorFlow "
-        "before using this option",
+        "before using this option.",
     )
 
     eng_conf = argparser.add_argument_group(title="Engine Configuration")
