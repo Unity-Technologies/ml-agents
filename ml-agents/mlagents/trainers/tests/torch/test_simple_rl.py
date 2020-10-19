@@ -41,7 +41,7 @@ SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTOR
 # @pytest.mark.parametrize("use_discrete", [True, False])
 # def test_simple_ppo(use_discrete):
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-#    config = attr.evolve(PPO_CONFIG)
+#    config = attr.evolve(PPO_TORCH_CONFIG)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 
 
@@ -50,26 +50,26 @@ def test_hybrid_ppo():
         [BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8
     )
     new_hyperparams = attr.evolve(
-        PPO_CONFIG.hyperparameters, batch_size=32, buffer_size=1280
+        PPO_TORCH_CONFIG.hyperparameters, batch_size=32, buffer_size=1280
     )
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 def test_conthybrid_ppo():
     env = HybridEnvironment(
         [BRAIN_NAME], continuous_action_size=1, discrete_action_size=0, step_size=0.8
     )
-    config = attr.evolve(PPO_CONFIG)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+    config = attr.evolve(PPO_TORCH_CONFIG)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 def test_dischybrid_ppo():
     env = HybridEnvironment(
         [BRAIN_NAME], continuous_action_size=0, discrete_action_size=1, step_size=0.8
     )
-    config = attr.evolve(PPO_CONFIG)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+    config = attr.evolve(PPO_TORCH_CONFIG)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 def test_3chybrid_ppo():
@@ -77,10 +77,10 @@ def test_3chybrid_ppo():
         [BRAIN_NAME], continuous_action_size=2, discrete_action_size=1, step_size=0.8
     )
     new_hyperparams = attr.evolve(
-        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.01
+        PPO_TORCH_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.01
     )
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 def test_3ddhybrid_ppo():
@@ -88,10 +88,10 @@ def test_3ddhybrid_ppo():
         [BRAIN_NAME], continuous_action_size=1, discrete_action_size=2, step_size=0.8
     )
     new_hyperparams = attr.evolve(
-        PPO_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.05
+        PPO_TORCH_CONFIG.hyperparameters, batch_size=128, buffer_size=1280, beta=0.05
     )
-    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
-    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
+    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=1.0)
 
 
 # @pytest.mark.parametrize("use_discrete", [True, False])
@@ -100,9 +100,9 @@ def test_3ddhybrid_ppo():
 #        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
 #    )
 #    new_hyperparams = attr.evolve(
-#        PPO_CONFIG.hyperparameters, batch_size=64, buffer_size=640
+#        PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=640
 #    )
-#    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+#    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
@@ -116,8 +116,8 @@ def test_3ddhybrid_ppo():
 #        num_vector=0,
 #        step_size=0.2,
 #    )
-#    new_hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3.0e-4)
-#    config = attr.evolve(PPO_CONFIG, hyperparameters=new_hyperparams)
+#    new_hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4)
+#    config = attr.evolve(PPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
@@ -133,11 +133,11 @@ def test_3ddhybrid_ppo():
 #        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (36, 36, 3),
 #    )
 #    new_networksettings = attr.evolve(
-#        SAC_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
+#        SAC_TORCH_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
 #    )
-#    new_hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3.0e-4)
+#    new_hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4)
 #    config = attr.evolve(
-#        PPO_CONFIG,
+#        PPO_TORCH_CONFIG,
 #        hyperparameters=new_hyperparams,
 #        network_settings=new_networksettings,
 #        max_steps=700,
@@ -151,14 +151,14 @@ def test_3ddhybrid_ppo():
 # def test_recurrent_ppo(use_discrete):
 #    env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
 #    new_network_settings = attr.evolve(
-#        PPO_CONFIG.network_settings,
+#        PPO_TORCH_CONFIG.network_settings,
 #        memory=NetworkSettings.MemorySettings(memory_size=16),
 #    )
 #    new_hyperparams = attr.evolve(
-#        PPO_CONFIG.hyperparameters, learning_rate=1.0e-3, batch_size=64, buffer_size=128
+#        PPO_TORCH_CONFIG.hyperparameters, learning_rate=1.0e-3, batch_size=64, buffer_size=128
 #    )
 #    config = attr.evolve(
-#        PPO_CONFIG,
+#        PPO_TORCH_CONFIG,
 #        hyperparameters=new_hyperparams,
 #        network_settings=new_network_settings,
 #        max_steps=5000,
@@ -169,7 +169,7 @@ def test_3ddhybrid_ppo():
 # @pytest.mark.parametrize("use_discrete", [True, False])
 # def test_simple_sac(use_discrete):
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
-#    config = attr.evolve(SAC_CONFIG)
+#    config = attr.evolve(SAC_TORCH_CONFIG)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
@@ -178,8 +178,8 @@ def test_3ddhybrid_ppo():
 #    env = SimpleEnvironment(
 #        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
 #    )
-#    new_hyperparams = attr.evolve(SAC_CONFIG.hyperparameters, buffer_init_steps=2000)
-#    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
+#    new_hyperparams = attr.evolve(SAC_TORCH_CONFIG.hyperparameters, buffer_init_steps=2000)
+#    config = attr.evolve(SAC_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000)
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.8)
 #
 #
@@ -194,9 +194,9 @@ def test_3ddhybrid_ppo():
 #        step_size=0.2,
 #    )
 #    new_hyperparams = attr.evolve(
-#        SAC_CONFIG.hyperparameters, batch_size=16, learning_rate=3e-4
+#        SAC_TORCH_CONFIG.hyperparameters, batch_size=16, learning_rate=3e-4
 #    )
-#    config = attr.evolve(SAC_CONFIG, hyperparameters=new_hyperparams)
+#    config = attr.evolve(SAC_TORCH_CONFIG, hyperparameters=new_hyperparams)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
@@ -212,16 +212,16 @@ def test_3ddhybrid_ppo():
 #        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (36, 36, 3),
 #    )
 #    new_networksettings = attr.evolve(
-#        SAC_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
+#        SAC_TORCH_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
 #    )
 #    new_hyperparams = attr.evolve(
-#        SAC_CONFIG.hyperparameters,
+#        SAC_TORCH_CONFIG.hyperparameters,
 #        batch_size=16,
 #        learning_rate=3e-4,
 #        buffer_init_steps=0,
 #    )
 #    config = attr.evolve(
-#        SAC_CONFIG,
+#        SAC_TORCH_CONFIG,
 #        hyperparameters=new_hyperparams,
 #        network_settings=new_networksettings,
 #        max_steps=100,
@@ -237,18 +237,18 @@ def test_3ddhybrid_ppo():
 #        [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
 #    )
 #    new_networksettings = attr.evolve(
-#        SAC_CONFIG.network_settings,
+#        SAC_TORCH_CONFIG.network_settings,
 #        memory=NetworkSettings.MemorySettings(memory_size=16, sequence_length=16),
 #    )
 #    new_hyperparams = attr.evolve(
-#        SAC_CONFIG.hyperparameters,
+#        SAC_TORCH_CONFIG.hyperparameters,
 #        batch_size=128,
 #        learning_rate=1e-3,
 #        buffer_init_steps=1000,
 #        steps_per_update=2,
 #    )
 #    config = attr.evolve(
-#        SAC_CONFIG,
+#        SAC_TORCH_CONFIG,
 #        hyperparameters=new_hyperparams,
 #        network_settings=new_networksettings,
 #        max_steps=5000,
@@ -264,7 +264,7 @@ def test_3ddhybrid_ppo():
 #    self_play_settings = SelfPlaySettings(
 #        play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=2000
 #    )
-#    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2500)
+#    config = attr.evolve(PPO_TORCH_CONFIG, self_play=self_play_settings, max_steps=2500)
 #    _check_environment_trains(env, {BRAIN_NAME: config})
 #
 #
@@ -278,7 +278,7 @@ def test_3ddhybrid_ppo():
 #    self_play_settings = SelfPlaySettings(
 #        play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=4000
 #    )
-#    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=2500)
+#    config = attr.evolve(PPO_TORCH_CONFIG, self_play=self_play_settings, max_steps=2500)
 #    _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=None)
 #    processed_rewards = [
 #        default_reward_processor(rewards) for rewards in env.final_rewards.values()
@@ -302,7 +302,7 @@ def test_3ddhybrid_ppo():
 #        swap_steps=10000,
 #        team_change=400,
 #    )
-#    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=4000)
+#    config = attr.evolve(PPO_TORCH_CONFIG, self_play=self_play_settings, max_steps=4000)
 #    _check_environment_trains(env, {BRAIN_NAME: config, brain_name_opp: config})
 #
 #
@@ -321,7 +321,7 @@ def test_3ddhybrid_ppo():
 #        swap_steps=5000,
 #        team_change=2000,
 #    )
-#    config = attr.evolve(PPO_CONFIG, self_play=self_play_settings, max_steps=3000)
+#    config = attr.evolve(PPO_TORCH_CONFIG, self_play=self_play_settings, max_steps=3000)
 #    _check_environment_trains(
 #        env, {BRAIN_NAME: config, brain_name_opp: config}, success_threshold=None
 #    )
@@ -366,7 +366,7 @@ def test_3ddhybrid_ppo():
 #
 #
 # @pytest.mark.parametrize("use_discrete", [True, False])
-# @pytest.mark.parametrize("trainer_config", [PPO_CONFIG, SAC_CONFIG])
+# @pytest.mark.parametrize("trainer_config", [PPO_TORCH_CONFIG, SAC_TORCH_CONFIG])
 # def test_gail(simple_record, use_discrete, trainer_config):
 #    demo_path = simple_record(use_discrete)
 #    env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete, step_size=0.2)
@@ -397,9 +397,9 @@ def test_3ddhybrid_ppo():
 #    reward_signals = {
 #        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
 #    }
-#    hyperparams = attr.evolve(PPO_CONFIG.hyperparameters, learning_rate=3e-4)
+#    hyperparams = attr.evolve(PPO_TORCH_CONFIG.hyperparameters, learning_rate=3e-4)
 #    config = attr.evolve(
-#        PPO_CONFIG,
+#        PPO_TORCH_CONFIG,
 #        reward_signals=reward_signals,
 #        hyperparameters=hyperparams,
 #        behavioral_cloning=bc_settings,
@@ -423,10 +423,10 @@ def test_3ddhybrid_ppo():
 #        RewardSignalType.GAIL: GAILSettings(encoding_size=32, demo_path=demo_path)
 #    }
 #    hyperparams = attr.evolve(
-#        SAC_CONFIG.hyperparameters, learning_rate=3e-4, batch_size=16
+#        SAC_TORCH_CONFIG.hyperparameters, learning_rate=3e-4, batch_size=16
 #    )
 #    config = attr.evolve(
-#        SAC_CONFIG,
+#        SAC_TORCH_CONFIG,
 #        reward_signals=reward_signals,
 #        hyperparameters=hyperparams,
 #        behavioral_cloning=bc_settings,
