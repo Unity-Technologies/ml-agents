@@ -77,7 +77,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._action_flattener = ModelUtils.ActionFlattener(specs)
+        self._action_flattener = ModelUtils.ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
         )  # +1 is for dones

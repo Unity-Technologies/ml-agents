@@ -14,7 +14,10 @@ def create_agent_buffer(
     next_observations = [
         np.random.normal(size=shape) for shape in behavior_spec.observation_shapes
     ]
-    action = behavior_spec.create_random_action(1)[0, :]
+    action_buffer = behavior_spec.action_spec.create_random_action(1)
+    #action = behavior_spec.action_spec.create_random_action(1)[0, :]
+    action = np.concatenate([action_buffer.continuous, action_buffer.discrete], axis=1)
+    print(action)
     for _ in range(number):
         curr_split_obs = SplitObservations.from_observations(curr_observations)
         next_split_obs = SplitObservations.from_observations(next_observations)

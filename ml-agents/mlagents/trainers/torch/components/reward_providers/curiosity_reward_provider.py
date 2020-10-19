@@ -73,7 +73,7 @@ class CuriosityNetwork(torch.nn.Module):
             specs.observation_shapes, state_encoder_settings
         )
 
-        self._action_flattener = ModelUtils.ActionFlattener(specs)
+        self._action_flattener = ModelUtils.ActionFlattener(specs.action_spec)
 
         self.inverse_model_action_prediction = torch.nn.Sequential(
             LinearEncoder(2 * settings.encoding_size, 1, 256),
