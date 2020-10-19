@@ -29,9 +29,9 @@ There are currently two supported model formats:
   [industry-standard open format](https://onnx.ai/about.html) produced by the
   [tf2onnx package](https://github.com/onnx/tensorflow-onnx).
 
-Export to ONNX is currently considered beta. To enable it, make sure
-`tf2onnx>=1.5.5` is installed in pip. tf2onnx does not currently support
-tensorflow 2.0.0 or later, or earlier than 1.12.0.
+Export to ONNX is used if using PyTorch (the default). To enable it
+while using TensorFlow, make sure `tf2onnx>=1.5.5` is installed in pip.
+tf2onnx does not currently support tensorflow 2.0.0 or later, or earlier than 1.12.0.
 
 ## Using the Unity Inference Engine
 
