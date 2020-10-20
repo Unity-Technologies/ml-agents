@@ -1,4 +1,5 @@
 using Unity.MLAgents.Extensions.Match3;
+using UnityEngine;
 
 namespace Unity.MLAgentsExamples
 {
@@ -9,6 +10,14 @@ namespace Unity.MLAgentsExamples
         public int RandomSeed = -1;
 
         public const int k_EmptyCell = -1;
+        [Tooltip("Points earned for clearing a basic cell (cube)")]
+        public int BasicCellPoints = 1;
+
+        [Tooltip("Points earned for clearing a special cell (sphere)")]
+        public int SpecialCell1Points = 2;
+
+        [Tooltip("Points earned for clearing an extra special cell (plus)")]
+        public int SpecialCell2Points = 3;
 
         (int, int)[,] m_Cells;
         bool[,] m_Matched;
@@ -117,23 +126,29 @@ namespace Unity.MLAgentsExamples
             return madeMatch;
         }
 
+        /// <summary>
+        /// Sets cells that are matched to the empty cell, and returns the score earned.
+        /// </summary>
+        /// <returns></returns>
         public int ClearMatchedCells()
         {
-            int numMatchedCells = 0;
+            var pointsByType = new[] { BasicCellPoints, SpecialCell1Points, SpecialCell2Points };
+            int pointsEarned = 0;
             for (var i = 0; i < Rows; i++)
             {
                 for (var j = 0; j < Columns; j++)
                 {
                     if (m_Matched[j, i])
                     {
-                        numMatchedCells++;
+                        var speciaType = GetSpecialType(i, j);
+                        pointsEarned += pointsByType[speciaType];
                         m_Cells[j, i] = (k_EmptyCell, 0);
                     }
                 }
             }
 
             ClearMarked(); // TODO clear here or at start of matching?
-            return numMatchedCells;
+            return pointsEarned;
         }
 
         public bool DropCells()
@@ -238,8 +253,8 @@ namespace Unity.MLAgentsExamples
 
         int GetRandomSpecialType()
         {
-            // 1/N chance to get a type-2 special
-            // 2/N chance to get a type-1 special
+            // 1 in N chance to get a type-2 special
+            // 2 in N chance to get a type-1 special
             // otherwise 0 (boring)
             var N = 10;
             var val = m_Random.Next(0, N);

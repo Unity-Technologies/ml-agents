@@ -79,8 +79,8 @@ namespace Unity.MLAgentsExamples
                 {
                     break;
                 }
-                var numMatched = Board.ClearMatchedCells();
-                AddReward(k_RewardMultiplier * numMatched);
+                var pointsEarned = Board.ClearMatchedCells();
+                AddReward(k_RewardMultiplier * pointsEarned);
                 Board.DropCells();
                 Board.FillFromAbove();
             }
@@ -121,8 +121,8 @@ namespace Unity.MLAgentsExamples
                     }
                     break;
                 case State.ClearMatched:
-                    var numMatched = Board.ClearMatchedCells();
-                    AddReward(k_RewardMultiplier * numMatched);
+                    var pointsEarned = Board.ClearMatchedCells();
+                    AddReward(k_RewardMultiplier * pointsEarned);
                     nextState = State.Drop;
                     break;
                 case State.Drop:
@@ -165,11 +165,151 @@ namespace Unity.MLAgentsExamples
             return false;
         }
 
-
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             var discreteActions = actionsOut.DiscreteActions;
-            discreteActions[0] = Board.GetRandomValidMoveIndex(m_Random);
+            discreteActions[0] = GreedyBestMove();
+        }
+
+        int GreedyBestMove()
+        {
+            var pointsByType = new[] { Board.BasicCellPoints, Board.SpecialCell1Points, Board.SpecialCell2Points };
+
+            var bestMoveIndex = 0;
+            var bestMovePoints = -1;
+            var numMovesAtCurrentScore = 0;
+
+            foreach (var move in Board.ValidMoves())
+            {
+                var movePoints = EvalMovePoints(move, pointsByType);
+                if (movePoints < bestMovePoints)
+                {
+                    // Worse, skip
+                    continue;
+                }
+
+                if (movePoints > bestMovePoints)
+                {
+                    // Better, keep
+                    bestMovePoints = movePoints;
+                    bestMoveIndex = move.MoveIndex;
+                    numMovesAtCurrentScore = 1;
+                }
+                else
+                {
+                    // Tied for best - use reservoir sampling to make sure we select from equal moves uniformly.
+                    // See https://en.wikipedia.org/wiki/Reservoir_sampling#Simple_algorithm
+                    numMovesAtCurrentScore++;
+                    var randVal = m_Random.Next(0, numMovesAtCurrentScore);
+                    if (randVal == 0)
+                    {
+                        // Keep the new one
+                        bestMoveIndex = move.MoveIndex;
+                    }
+                }
+            }
+
+            return bestMoveIndex;
+        }
+
+        int EvalMovePoints(Move move, int[] pointsByType)
+        {
+            // Counts the expected points for making the move.
+            var moveVal = Board.GetCellType(move.Row, move.Column);
+            var moveSpecial = Board.GetSpecialType(move.Row, move.Column);
+            var (otherRow, otherCol) = move.OtherCell();
+            var oppositeVal = Board.GetCellType(otherRow, otherCol);
+            var oppositeSpecial = Board.GetSpecialType(otherRow, otherCol);
+
+
+            int movePoints = EvalHalfMove(
+                otherRow, otherCol, moveVal, moveSpecial, move.Direction, pointsByType
+            );
+            int otherPoints = EvalHalfMove(
+                move.Row, move.Column, oppositeVal, oppositeSpecial, move.OtherDirection(), pointsByType
+            );
+            return movePoints + otherPoints;
+        }
+
+        int EvalHalfMove(int newRow, int newCol, int newValue, int newSpecial, Direction incomingDirection, int[] pointsByType)
+        {
+            // This is a essentially a duplicate of AbstractBoard.CheckHalfMove but also counts the points for the move.
+            int matchedLeft = 0, matchedRight = 0, matchedUp = 0, matchedDown = 0;
+            int scoreLeft = 0, scoreRight = 0, scoreUp = 0, scoreDown = 0;
+
+            if (incomingDirection != Direction.Right)
+            {
+                for (var c = newCol - 1; c >= 0; c--)
+                {
+                    if (Board.GetCellType(newRow, c) == newValue)
+                    {
+                        matchedLeft++;
+                        scoreLeft += pointsByType[Board.GetSpecialType(newRow, c)];
+                    }
+                    else
+                        break;
+                }
+            }
+
+            if (incomingDirection != Direction.Left)
+            {
+                for (var c = newCol + 1; c < Board.Columns; c++)
+                {
+                    if (Board.GetCellType(newRow, c) == newValue)
+                    {
+                        matchedRight++;
+                        scoreRight += pointsByType[Board.GetSpecialType(newRow, c)];
+                    }
+                    else
+                        break;
+                }
+            }
+
+            if (incomingDirection != Direction.Down)
+            {
+                for (var r = newRow + 1; r < Board.Rows; r++)
+                {
+                    if (Board.GetCellType(r, newCol) == newValue)
+                    {
+                        matchedUp++;
+                        scoreUp += pointsByType[Board.GetSpecialType(r, newCol)];
+                    }
+                    else
+                        break;
+                }
+            }
+
+            if (incomingDirection != Direction.Up)
+            {
+                for (var r = newRow - 1; r >= 0; r--)
+                {
+                    if (Board.GetCellType(r, newCol) == newValue)
+                    {
+                        matchedDown++;
+                        scoreDown += pointsByType[Board.GetSpecialType(r, newCol)];
+                    }
+                    else
+                        break;
+                }
+            }
+
+            if ((matchedUp + matchedDown >= 2) || (matchedLeft + matchedRight >= 2))
+            {
+                // It's a match. Start from counting the piece being moved
+                var totalScore = pointsByType[newSpecial];
+                if (matchedUp + matchedDown >= 2)
+                {
+                    totalScore += scoreUp + scoreDown;
+                }
+
+                if (matchedLeft + matchedRight >= 2)
+                {
+                    totalScore += scoreLeft + scoreRight;
+                }
+                return totalScore;
+            }
+
+            return 0;
         }
     }
 
