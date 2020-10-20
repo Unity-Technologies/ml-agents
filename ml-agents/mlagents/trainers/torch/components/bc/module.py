@@ -26,6 +26,7 @@ class BCModule:
             for the pretrainer.
         """
         self.policy = policy
+        self.action_spec = policy.action_spec
         self._anneal_steps = settings.steps
         self.current_lr = policy_learning_rate * settings.strength
 
@@ -142,7 +143,7 @@ class BCModule:
                 np.ones(
                     (
                         self.n_sequences * self.policy.sequence_length,
-                        sum(self.policy.behavior_spec.discrete_action_branches),
+                        sum(self.action_spec.discrete_action_branches),
                     ),
                     dtype=np.float32,
                 )

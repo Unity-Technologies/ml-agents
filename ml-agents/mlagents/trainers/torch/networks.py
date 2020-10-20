@@ -3,7 +3,7 @@ import abc
 
 from mlagents.torch_utils import torch, nn
 
-from mlagents_envs.base_env import ActionType
+from mlagents_envs.base_env import ActionType, ActionSpec
 from mlagents.trainers.torch.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
@@ -256,20 +256,23 @@ class SimpleActor(nn.Module, Actor):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        act_type: ActionType,
-        act_size: List[int],
+        action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
         super().__init__()
-        self.act_type = act_type
-        self.act_size = act_size
+        self.action_spec = action_spec
+        if self.action_spec.is_action_continuous():
+            self.act_type = ActionType.CONTINUOUS
+        else:
+            self.act_type = ActionType.DISCRETE
+        self.act_size = self.action_spec.action_size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
         self.is_continuous_int = torch.nn.Parameter(
-            torch.Tensor([int(act_type == ActionType.CONTINUOUS)])
+            torch.Tensor([int(self.act_type == ActionType.CONTINUOUS)])
         )
         self.act_size_vector = torch.nn.Parameter(
-            torch.Tensor([sum(act_size)]), requires_grad=False
+            torch.Tensor([self.action_spec.action_size]), requires_grad=False
         )
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
@@ -280,13 +283,13 @@ class SimpleActor(nn.Module, Actor):
         if self.act_type == ActionType.CONTINUOUS:
             self.distribution = GaussianDistribution(
                 self.encoding_size,
-                act_size[0],
+                self.action_spec.continuous_action_size,
                 conditional_sigma=conditional_sigma,
                 tanh_squash=tanh_squash,
             )
         else:
             self.distribution = MultiCategoricalDistribution(
-                self.encoding_size, act_size
+                self.encoding_size, self.action_spec.discrete_action_branches
             )
 
     @property
@@ -351,8 +354,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        act_type: ActionType,
-        act_size: List[int],
+        action_spec: ActionSpec,
         stream_names: List[str],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
@@ -360,8 +362,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         super().__init__(
             observation_shapes,
             network_settings,
-            act_type,
-            act_size,
+            action_spec,
             conditional_sigma,
             tanh_squash,
         )
@@ -405,8 +406,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        act_type: ActionType,
-        act_size: List[int],
+        action_spec: ActionSpec,
         stream_names: List[str],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
@@ -417,8 +417,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         super().__init__(
             observation_shapes,
             network_settings,
-            act_type,
-            act_size,
+            action_spec,
             conditional_sigma,
             tanh_squash,
         )

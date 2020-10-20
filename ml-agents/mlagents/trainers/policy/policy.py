@@ -33,10 +33,11 @@ class Policy:
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        # For mixed action spaces
-        self.continuous_act_size = self.action_spec.continuous_action_size
-        self.discrete_act_size = self.action_spec.discrete_action_size
-        self.discrete_act_branches = self.action_spec.discrete_action_branches
+        if (
+            self.action_spec.continuous_action_size > 0
+            and self.action_spec.discrete_action_size > 0
+        ):
+            raise UnityPolicyException("Trainers do not support mixed action spaces.")
         self.act_size = (
             list(self.action_spec.discrete_action_branches)
             if self.action_spec.is_action_discrete()

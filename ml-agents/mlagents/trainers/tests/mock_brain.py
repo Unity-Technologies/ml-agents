@@ -8,7 +8,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
-    ActionType,
+    ActionSpec,
 )
 
 
@@ -45,11 +45,11 @@ def create_mock_steps(
     reward = np.array(num_agents * [1.0], dtype=np.float32)
     interrupted = np.array(num_agents * [False], dtype=np.bool)
     agent_id = np.arange(num_agents, dtype=np.int32)
-    behavior_spec = BehaviorSpec(
-        observation_shapes,
-        ActionType.DISCRETE if discrete else ActionType.CONTINUOUS,
-        action_shape,
-    )
+    if discrete:
+        action_spec = ActionSpec(0, action_shape)
+    else:
+        action_spec = ActionSpec(action_shape, ())
+    behavior_spec = BehaviorSpec(observation_shapes, action_spec)
     if done:
         return (
             DecisionSteps.empty(behavior_spec),
@@ -65,11 +65,15 @@ def create_mock_steps(
 def create_steps_from_behavior_spec(
     behavior_spec: BehaviorSpec, num_agents: int = 1
 ) -> Tuple[DecisionSteps, TerminalSteps]:
+    action_spec = behavior_spec.action_spec
+    is_discrete = action_spec.is_action_discrete()
     return create_mock_steps(
         num_agents=num_agents,
         observation_shapes=behavior_spec.observation_shapes,
-        action_shape=behavior_spec.action_shape,
-        discrete=behavior_spec.is_action_discrete(),
+        action_shape=action_spec.discrete_action_branches
+        if is_discrete
+        else action_spec.continuous_action_size,
+        discrete=is_discrete,
     )
 
 
@@ -150,9 +154,11 @@ def simulate_rollout(
     memory_size: int = 10,
     exclude_key_list: List[str] = None,
 ) -> AgentBuffer:
-    action_space = behavior_spec.action_shape
-    is_discrete = behavior_spec.is_action_discrete()
-
+    is_discrete = behavior_spec.action_spec.is_action_discrete()
+    if is_discrete:
+        action_space = behavior_spec.action_spec.discrete_action_branches
+    else:
+        action_space = behavior_spec.action_spec.continuous_action_size
     trajectory = make_fake_trajectory(
         length,
         behavior_spec.observation_shapes,
@@ -172,10 +178,12 @@ def simulate_rollout(
 def setup_test_behavior_specs(
     use_discrete=True, use_visual=False, vector_action_space=2, vector_obs_space=8
 ):
+    if use_discrete:
+        action_spec = ActionSpec(0, tuple(vector_action_space))
+    else:
+        action_spec = ActionSpec(vector_action_space, ())
     behavior_spec = BehaviorSpec(
-        [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)],
-        ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS,
-        tuple(vector_action_space) if use_discrete else vector_action_space,
+        [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)], action_spec
     )
     return behavior_spec
 

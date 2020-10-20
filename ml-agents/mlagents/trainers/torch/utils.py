@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
@@ -26,8 +26,8 @@ class ModelUtils:
     }
 
     class ActionFlattener:
-        def __init__(self, behavior_spec: BehaviorSpec):
-            self._specs = behavior_spec
+        def __init__(self, action_spec: ActionSpec):
+            self._specs = action_spec
 
         @property
         def flattened_size(self) -> int:

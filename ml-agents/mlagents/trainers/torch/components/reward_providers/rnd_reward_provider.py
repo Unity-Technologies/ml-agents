@@ -57,7 +57,6 @@ class RNDNetwork(torch.nn.Module):
 
     def __init__(self, specs: BehaviorSpec, settings: RNDSettings) -> None:
         super().__init__()
-        self._policy_specs = specs
         state_encoder_settings = NetworkSettings(
             normalize=True,
             hidden_units=settings.encoding_size,
