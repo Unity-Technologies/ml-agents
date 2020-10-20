@@ -23,7 +23,6 @@ from typing import (
     NamedTuple,
     Tuple,
     Optional,
-    Union,
     Dict,
     Iterator,
     Any,
@@ -361,9 +360,7 @@ class BaseEnv(ABC):
         """
 
     @abstractmethod
-    def set_actions(
-        self, behavior_name: BehaviorName, action: Union[np.ndarray]
-    ) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in
@@ -375,7 +372,7 @@ class BaseEnv(ABC):
 
     @abstractmethod
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: Union[np.ndarray]
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next
