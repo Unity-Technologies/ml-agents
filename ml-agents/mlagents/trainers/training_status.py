@@ -6,7 +6,7 @@ import attr
 import cattr
 
 from mlagents.torch_utils import torch
-from mlagents.tf_utils import tf, is_available
+from mlagents.tf_utils import tf, is_available as tf_is_available
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers import __version__
 from mlagents.trainers.exception import TrainerError
@@ -28,7 +28,7 @@ class StatusMetaData:
     stats_format_version: str = STATUS_FORMAT_VERSION
     mlagents_version: str = __version__
     torch_version: str = torch.__version__
-    tensorflow_version: str = tf.__version__ if is_available() else -1
+    tensorflow_version: str = tf.__version__ if tf_is_available() else -1
 
     def to_dict(self) -> Dict[str, str]:
         return cattr.unstructure(self)
