@@ -314,7 +314,7 @@ class UnityEnvironment(BaseEnv):
                     n_agents = len(self._env_state[group_name][0])
                 self._env_actions[group_name] = self._env_specs[
                     group_name
-                ].create_empty_action(n_agents)
+                ].action_spec.create_empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
             outputs = self._communicator.exchange(step_input)
@@ -341,8 +341,13 @@ class UnityEnvironment(BaseEnv):
         if behavior_name not in self._env_state:
             return
         spec = self._env_specs[behavior_name]
-        expected_type = np.float32 if spec.is_action_continuous() else np.int32
-        expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
+        expected_type = (
+            np.float32 if spec.action_spec.is_action_continuous() else np.int32
+        )
+        expected_shape = (
+            len(self._env_state[behavior_name][0]),
+            spec.action_spec.action_size,
+        )
         if action.shape != expected_shape:
             raise UnityActionException(
                 f"The behavior {behavior_name} needs an input of dimension "
@@ -360,19 +365,21 @@ class UnityEnvironment(BaseEnv):
         if behavior_name not in self._env_state:
             return
         spec = self._env_specs[behavior_name]
-        expected_shape = (spec.action_size,)
+        expected_shape = (spec.action_spec.action_size,)
         if action.shape != expected_shape:
             raise UnityActionException(
                 f"The Agent {agent_id} with BehaviorName {behavior_name} needs "
                 f"an input of dimension {expected_shape} but received input of "
                 f"dimension {action.shape}"
             )
-        expected_type = np.float32 if spec.is_action_continuous() else np.int32
+        expected_type = (
+            np.float32 if spec.action_spec.is_action_continuous() else np.int32
+        )
         if action.dtype != expected_type:
             action = action.astype(expected_type)
 
         if behavior_name not in self._env_actions:
-            self._env_actions[behavior_name] = spec.create_empty_action(
+            self._env_actions[behavior_name] = spec.action_spec.create_empty_action(
                 len(self._env_state[behavior_name][0])
             )
         try:
