@@ -149,12 +149,13 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory["environment_rewards"]
         )
         for name, reward_signal in self.optimizer.reward_signals.items():
+            # BaseRewardProvider is a PyTorch-based reward signal
             if isinstance(reward_signal, BaseRewardProvider):
                 evaluate_result = (
                     reward_signal.evaluate(agent_buffer_trajectory)
                     * reward_signal.strength
                 )
-            else:
+            else:  # reward_signal uses TensorFlow
                 evaluate_result = reward_signal.evaluate_batch(
                     agent_buffer_trajectory
                 ).scaled_reward
@@ -167,12 +168,13 @@ class SACTrainer(RLTrainer):
             agent_buffer_trajectory, trajectory.next_obs, trajectory.done_reached
         )
         for name, v in value_estimates.items():
+            # BaseRewardProvider is a PyTorch-based reward signal
             if isinstance(self.optimizer.reward_signals[name], BaseRewardProvider):
                 self._stats_reporter.add_stat(
                     f"Policy/{self.optimizer.reward_signals[name].name.capitalize()} Value",
                     np.mean(v),
                 )
-            else:
+            else:  # TensorFlow reward signal
                 self._stats_reporter.add_stat(
                     self.optimizer.reward_signals[name].value_name, np.mean(v)
                 )
@@ -357,6 +359,7 @@ class SACTrainer(RLTrainer):
             reward_signal_minibatches = {}
             for name, signal in self.optimizer.reward_signals.items():
                 logger.debug(f"Updating {name} at step {self.step}")
+                # BaseRewardProvider is a PyTorch-based reward signal
                 if not isinstance(signal, BaseRewardProvider):
                     # Some signals don't need a minibatch to be sampled - so we don't!
                     if signal.update_dict:
@@ -364,7 +367,7 @@ class SACTrainer(RLTrainer):
                             self.hyperparameters.batch_size,
                             sequence_length=self.policy.sequence_length,
                         )
-                else:
+                else:  # TensorFlow reward signal
                     if name != "extrinsic":
                         reward_signal_minibatches[name] = buffer.sample_mini_batch(
                             self.hyperparameters.batch_size,
