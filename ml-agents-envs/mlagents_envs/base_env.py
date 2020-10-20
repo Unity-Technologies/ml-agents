@@ -36,7 +36,7 @@ AgentId = int
 BehaviorName = str
 
 
-class ActionBuffer(NamedTuple):
+class ActionBuffers(NamedTuple):
     """
     Contains continuous and discrete actions as numpy arrays.
     """
@@ -293,7 +293,7 @@ class ActionSpec(NamedTuple):
         return self.discrete_action_size + self.continuous_action_size
 
     def create_empty_action(self, n_agents: int) -> Tuple[np.ndarray, np.ndarray]:
-        return ActionBuffer(
+        return ActionBuffers(
             np.zeros((n_agents, self.continuous_action_size), dtype=np.float32),
             np.zeros((n_agents, self.discrete_action_size), dtype=np.int32),
         )
@@ -315,7 +315,7 @@ class ActionSpec(NamedTuple):
                 for i in range(self.discrete_action_size)
             ]
         )
-        return ActionBuffer(continuous_action, discrete_action)
+        return ActionBuffers(continuous_action, discrete_action)
 
 class BehaviorSpec(NamedTuple):
     observation_shapes: List[Tuple]
@@ -369,7 +369,7 @@ class BaseEnv(ABC):
 
     @abstractmethod
     def set_actions(
-        self, behavior_name: BehaviorName, action: Union[ActionBuffer, np.ndarray]
+        self, behavior_name: BehaviorName, action: Union[ActionBuffers, np.ndarray]
     ) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
@@ -385,7 +385,7 @@ class BaseEnv(ABC):
         self,
         behavior_name: BehaviorName,
         agent_id: AgentId,
-        action: Union[ActionBuffer, np.ndarray],
+        action: Union[ActionBuffers, np.ndarray],
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next

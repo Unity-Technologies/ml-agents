@@ -11,7 +11,7 @@ from mlagents_envs.base_env import (
     ActionType,
     BehaviorMapping,
     BehaviorName,
-    ActionBuffer,
+    ActionBuffers,
 )
 from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
@@ -304,8 +304,11 @@ class HybridEnvironment(SimpleEnvironment):
 
     def set_actions(self, behavior_name: BehaviorName, action) -> None:
         # print(action, self.goal[behavior_name])
-        continuous_action = action[:, : self.continuous_action_size]
-        discrete_action = action[:, self.continuous_action_size :]
+        #continuous_action = action[:, : self.continuous_action_size]
+        #discrete_action = action[:, self.continuous_action_size :]
+        continuous_action = action.continuous
+        discrete_action = action.discrete
+
         self.continuous_env.set_actions(behavior_name, continuous_action)
         self.discrete_env.set_actions(behavior_name, discrete_action)
 

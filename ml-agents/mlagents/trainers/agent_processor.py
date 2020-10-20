@@ -136,7 +136,8 @@ class AgentProcessor:
                 action_pre = None
             action_probs = stored_take_action_outputs["log_probs"][idx]
             action_mask = stored_decision_step.action_mask
-            prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
+            #prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
+            prev_action = self.policy.retrieve_previous_action([global_id])
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,

@@ -125,7 +125,7 @@ class Policy:
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.previous_action_dict:
                 action_matrix[index, :] = self.previous_action_dict[agent_id]
-        return action_matrix
+        return action_matrix[0, :]
 
     def remove_previous_action(self, agent_ids):
         for agent_id in agent_ids:

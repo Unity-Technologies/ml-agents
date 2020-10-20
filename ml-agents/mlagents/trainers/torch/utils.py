@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import BehaviorSpec
+from mlagents_envs.base_env import BehaviorSpec, ActionSpec, ActionBuffers
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
@@ -191,6 +191,34 @@ class ModelUtils:
             nn.ModuleList(vector_encoders),
             total_processed_size,
         )
+
+    @staticmethod
+    def to_action_buffers(actions: List[torch.Tensor], action_spec : ActionSpec) -> ActionBuffers:
+        """
+        Converts a list of action Tensors to an ActionBuffers tuple. Implicitly
+        assumes order of actions in 'actions' is continuous, discrete 
+        """
+        continuous_action = None
+        discrete_action = []
+        # offset to index discrete actions depending on presence of continuous actions
+        _offset = 0
+        if action_spec.continuous_action_size > 0:
+            continuous_action = actions[0].detach().cpu().numpy()
+            _offset = 1
+        if action_spec.discrete_action_size > 0:
+            for _disc in range(action_spec.discrete_action_size):
+                discrete_action.append(actions[_disc + _offset].detach().cpu().numpy())
+        return ActionBuffers(continuous_action, discrete_action)
+
+    @staticmethod
+    def action_buffers_to_tensor_list(
+        action_buffers : ActionBuffers, action_spec : ActionSpec, dtype: Optional[torch.dtype] = None
+    ) -> List[torch.Tensor]:
+        """
+        Converts an ActionBuffer of numpy arrays into a List of tensors.
+        """
+        print(action_buffers)
+        #return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype)
 
     @staticmethod
     def list_to_tensor(

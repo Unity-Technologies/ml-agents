@@ -60,13 +60,13 @@ class ActionModel(nn.Module):
                 distribution_instances.append(dist_instance)
         return distribution_instances
 
-    def evaluate(self, inputs: torch.Tensor, masks: torch.Tensor, actions: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    def evaluate(self, inputs: torch.Tensor, masks: torch.Tensor, actions: List[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
         dists = self._get_dists(inputs, masks)
-        split_actions = torch.split(actions, self._split_list, dim=1) 
-        action_lists : List[torch.Tensor] = []
-        for split_action in split_actions:
-            action_list = [split_action[..., i] for i in range(split_action.shape[-1])]
-            action_lists += action_list
+        #split_actions = torch.split(actions, self._split_list, dim=1) 
+        #action_lists : List[torch.Tensor] = []
+        #for split_action in split_actions:
+        #    action_list = [split_action[..., i] for i in range(split_action.shape[-1])]
+        #    action_lists += action_list
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_lists, dists)
         return log_probs, entropies
 
@@ -75,7 +75,7 @@ class ActionModel(nn.Module):
         return torch.cat([dist.exported_model_output() for dist in dists], dim=1)
 
     
-    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+    def forward(self, inputs: torch.Tensor, masks: torch.Tensor) -> Tuple[List[torch.Tensor], torch.Tensor, torch.Tensor]:
         dists = self._get_dists(inputs, masks)
         action_outs : List[torch.Tensor] = []
         action_lists = self._sample_action(dists)
@@ -83,5 +83,5 @@ class ActionModel(nn.Module):
             action_out = action_list.unsqueeze(-1)
             action_outs.append(dist.structure_action(action_out))
         log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_lists, dists)
-        action = torch.cat(action_outs, dim=1) 
-        return (action, log_probs, entropies)
+        #action = torch.cat(action_outs, dim=1) 
+        return (action_outs, log_probs, entropies)

@@ -196,7 +196,7 @@ class ActorCritic(Actor):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
         """
         Returns distributions, from which actions can be sampled, and value estimates.
         If memory is enabled, return the memories as well.
@@ -321,7 +321,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
-        actions: torch.Tensor,
+        actions: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
