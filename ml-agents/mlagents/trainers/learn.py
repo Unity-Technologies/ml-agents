@@ -136,6 +136,7 @@ def run_training(run_seed: int, options: RunOptions) -> None:
             init_path=maybe_init_path,
             multi_gpu=False,
             force_torch="torch" in DetectDefault.non_default_args,
+            force_tensorflow="tensorflow" in DetectDefault.non_default_args,
         )
         # Create controller and begin training.
         tc = TrainerController(
