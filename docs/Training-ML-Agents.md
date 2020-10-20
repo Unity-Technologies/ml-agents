@@ -87,7 +87,7 @@ in the `results/<run-identifier>` folder:
    values. See [Using TensorBoard](Using-Tensorboard.md) for more details on how
    to visualize the training metrics.
 1. Models: these contain the model checkpoints that
-   are updated throughout training and the final model file (`.nn`). This final
+   are updated throughout training and the final model file (`.onnx`). This final
    model file is generated once either when training completes or is
    interrupted.
 1. Timers file (under `results/<run-identifier>/run_logs`): this contains aggregated
