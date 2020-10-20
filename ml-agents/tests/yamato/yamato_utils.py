@@ -150,10 +150,11 @@ def checkout_csharp_version(csharp_version):
         return
 
     csharp_tag = f"com.unity.ml-agents_{csharp_version}"
-    csharp_dirs = ["com.unity.ml-agents", "Project"]
+    csharp_dirs = ["com.unity.ml-agents", "com.unity.ml-agents.extensions", "Project"]
     for csharp_dir in csharp_dirs:
         subprocess.check_call(f"rm -rf {csharp_dir}", shell=True)
-        subprocess.check_call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
+        # Allow the checkout to fail, since the extensions folder isn't availabe in 1.0.0
+        subprocess.call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
 
 
 def undo_git_checkout():
