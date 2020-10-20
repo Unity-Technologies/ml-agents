@@ -1641,7 +1641,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: BattleFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -1911,7 +1911,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: BattleFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -2245,7 +2245,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: BattleFoodCollector
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -2688,7 +2688,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: BattleFoodCollector
   TeamId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -3008,7 +3008,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: BattleFoodCollector
   TeamId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -3384,7 +3384,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   food: {fileID: 1699568242032636, guid: b59e4a7fd76af471cadd16e90133a084, type: 3}
   badFood: {fileID: 1853821981215314, guid: 350871b865967466daa1f596193cc22e, type: 3}
-  numFood: 3
+  numFood: 1
   numBadFood: 0
   respawnFood: 1
   range: 45
@@ -4558,7 +4558,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: FoodCollector
+  m_BehaviorName: BattleFoodCollector
   TeamId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -4989,7 +4989,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agents: []
   listArea: []
-  WinningScore: 3
+  WinningScore: 1
   scoreText: {fileID: 0}
   playerStates: []
 --- !u!1 &7442880647489548527
