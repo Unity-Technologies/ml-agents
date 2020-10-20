@@ -272,7 +272,7 @@ class SimpleActor(nn.Module, Actor):
             torch.Tensor([int(self.act_type == ActionType.CONTINUOUS)])
         )
         self.act_size_vector = torch.nn.Parameter(
-            torch.Tensor([self.action_spec.action_size]), requires_grad=False
+            torch.Tensor([self.action_spec.total_action_size]), requires_grad=False
         )
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:

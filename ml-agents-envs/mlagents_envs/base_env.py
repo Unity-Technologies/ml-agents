@@ -268,7 +268,7 @@ class ActionSpec(NamedTuple):
         return self.continuous_action_size > 0
 
     @property
-    def discrete_action_branches(self) -> Optional[Tuple[int, ...]]:
+    def discrete_action_branches(self) -> Tuple[int, ...]:
         return self.discrete_branch_sizes  # type: ignore
 
     @property
@@ -282,6 +282,10 @@ class ActionSpec(NamedTuple):
     @property
     def action_size(self) -> int:
         return self.discrete_action_size + self.continuous_action_size
+
+    @property
+    def total_action_size(self) -> int:
+        return sum(self.discrete_action_branches) + self.continuous_action_size
 
     def create_empty_action(self, n_agents: int) -> np.ndarray:
         if self.is_action_continuous():
