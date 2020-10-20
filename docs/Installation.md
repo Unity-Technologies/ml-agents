@@ -128,8 +128,10 @@ installing ML-Agents. Activate your virtual environment and run from the command
 pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
-See the [PyTorch installation guide](https://pytorch.org/get-started/locally/) for
-more installation options and versions.
+Note that on Windows, you may also need Microsoft's
+[Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+if you don't have it already. See the [PyTorch installation guide](https://pytorch.org/get-started/locally/)
+for more installation options and versions.
 
 #### Installing `mlagents`
 
