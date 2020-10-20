@@ -119,11 +119,24 @@ Virtual Environments. Virtual Environments provide a mechanism for isolating the
 dependencies for each project and are supported on Mac / Windows / Linux. We
 offer a dedicated [guide on Virtual Environments](Using-Virtual-Environment.md).
 
+#### (Windows) Installing PyTorch
+
+On Windows, you'll have to install the PyTorch package separately prior to
+installing ML-Agents. Activate your virtual environment and run from the command line:
+
+```sh
+pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
+```
+
+See the [PyTorch installation guide](https://pytorch.org/get-started/locally/) for
+more installation options and versions.
+
+#### Installing `mlagents`
+
 To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
 ```sh
-pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
 pip3 install mlagents
 ```
 
