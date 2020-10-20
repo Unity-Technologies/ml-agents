@@ -103,10 +103,9 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     if csharp_version is None and python_version is None:
         # Use abs path so that loading doesn't get confused
         model_path = os.path.abspath(os.path.dirname(onnx_file_expected))
-        for extension in ["nn", "onnx"]:
-            inference_ok = run_inference(env_path, model_path, extension)
-            if not inference_ok:
-                return False
+        inference_ok = run_inference(env_path, model_path, "onnx")
+        if not inference_ok:
+            return False
 
     print("mlagents-learn run SUCCEEDED!")
     return True
