@@ -1,153 +1,85 @@
-# Getting Started Guide
+# Başlangıç Rehberi
 
-This guide walks through the end-to-end process of opening one of our
-[example environments](Learning-Environment-Examples.md) in Unity, training an
-Agent in it, and embedding the trained model into the Unity environment. After
-reading this tutorial, you should be able to train any of the example
-environments. If you are not familiar with the
-[Unity Engine](https://unity3d.com/unity), view our
-[Background: Unity](Background-Unity.md) page for helpful pointers.
-Additionally, if you're not familiar with machine learning, view our
-[Background: Machine Learning](Background-Machine-Learning.md) page for a brief
-overview and helpful pointers.
+Bu rehber, Unity'de [örnek ortamlarımızdan](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Learning-Environment-Examples.md) birini açma, içinde bir Agent 'i eğitme ve eğitilmiş modeli Unity ortamına yerleştirme sürecini baştan sona anlatır. Bu rehberi bitirdikten sonra örnek ortamlardan herhangi birini kullanabilecek hale geleceksiniz. [Unity Engine](https://unity.com/products) 'e aşina değilseniz, [Background: Unity](https://unity.com/products) sayfasına bakarak yararlı noktaları öğrenebilirsiniz. Ek olarak, makine öğrenimine aşina değilseniz, kısa bir genel bakış ve ipuçları için [Background: Machine Learning](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Background-Machine-Learning.md) sayfamızı görüntüleyin.
 
 ![3D Balance Ball](images/balance.png)
 
-For this guide, we'll use the **3D Balance Ball** environment which contains a
-number of agent cubes and balls (which are all copies of each other). Each agent
-cube tries to keep its ball from falling by rotating either horizontally or
-vertically. In this environment, an agent cube is an **Agent** that receives a
-reward for every step that it balances the ball. An agent is also penalized with
-a negative reward for dropping the ball. The goal of the training process is to
-have the agents learn to balance the ball on their head.
+Bu rehber için, biz bir dizi `agent(temsilci)` küpleri ve topları içeren **3D Balance Ball** ortamını kullanacağız (hepsi birbirinin kopyası). Her ajan(agent - temsilci) küpü yatay ve dikey olarak dönerek topun düşmesini önlemeye çalışır. Bu Unity ortamında, ajan **Agent** küp her adımında topu dengelediğinde ödül kazanacaktır. Bir temsilci`(agent)` ayrıca, topu düşürdüğü için olumsuz bir ödülle cezalandırılır. Eğitim sürecinin amacı, temsilcilerin topu kafalarında dengelemeyi öğrenmelerini sağlamaktır. Ödül - ceza mekanizmasıyla yapay zekayı eğitmeyi amaçlıyoruz.
 
-Let's get started!
+Hadi başlayalım!
 
-## Installation
+## Kurulum
 
-If you haven't already, follow the [installation instructions](Installation.md).
-Afterwards, open the Unity Project that contains all the example environments:
+Henüz yapmadıysanız, [kurulum talimatlarını](Installation.md) izleyin. Daha sonra Unity ortamlarını içeren `Project` klasörünü açın:
 
-1. Launch Unity Hub
-1. On the Projects dialog, choose the **Add** option at the top of the window.
-1. Using the file dialog that opens, locate the `Project` folder within the
-   ML-Agents Toolkit and click **Open**.
-1. In the **Project** window, go to the
-   `Assets/ML-Agents/Examples/3DBall/Scenes` folder and open the `3DBall` scene
-   file.
+1. Unity Hub'ı başlatın.
+1. Projects iletişim kutusunda, pencerenin üst kısmındaki `Add` seçeneğini seçin.
+1. Açılan dosya diyalog penceresini kullanarak indirdiğiniz ML-Agents Toolkit içindeki `Project` klasörünü bulun ve `Open`'a tıklayın. Açılması için güncelleme isterse, projeyi güncelleyin.
+1. Unity içerisinde **Project** penceresinde
+   `Assets/ML-Agents/Examples/3DBall/Scenes` dosyasını bulun ve  `3DBall` sahne dosyasını açın.
 
-## Understanding a Unity Environment
+## Unity Ortamlarını Anlamak
 
-An agent is an autonomous actor that observes and interacts with an
-_environment_. In the context of Unity, an environment is a scene containing one
-or more Agent objects, and, of course, the other entities that an agent
-interacts with.
+Bir ajan`(agent)`, çevreyi gözlemleyen ve onunla etkileşime giren özerk bir aktördür. Unity bağlamında, ortam, bir veya daha fazla Ajan nesnesini ve tabii ki bir ajanın etkileşimde bulunduğu diğer varlıkları içeren bir sahnedir.
 
 ![Unity Editor](images/mlagents-3DBallHierarchy.png)
 
-**Note:** In Unity, the base object of everything in a scene is the
-_GameObject_. The GameObject is essentially a container for everything else,
-including behaviors, graphics, physics, etc. To see the components that make up
-a GameObject, select the GameObject in the Scene window, and open the Inspector
-window. The Inspector shows every component on a GameObject.
+**Note:** Unity'de, bir sahnedeki her şeyin temel nesnesi _GameObject_'tir. GameObject, temelde davranışlar, grafikler, fizik vb. dahil diğer her şey için bir kapsayıcıdır. Bir GameObject'i oluşturan bileşenleri görmek için, Sahne penceresinde GameObject'i seçin ve Inspector penceresini açın. Inspector penceresi, GameObject üzerindeki her bileşeni gösterir.
 
-The first thing you may notice after opening the 3D Balance Ball scene is that
-it contains not one, but several agent cubes. Each agent cube in the scene is an
-independent agent, but they all share the same Behavior. 3D Balance Ball does
-this to speed up training since all twelve agents contribute to training in
-parallel.
+3D Balance Ball sahnesini açtıktan sonra fark edebileceğiniz ilk şey, bir değil, birkaç ajan küpü içermesidir. Sahnedeki her ajan küpü bağımsız bir ajandır, ancak hepsi aynı davranışı paylaşır. On iki temsilcinin tümü eğitime paralel olarak katkıda bulunduğundan, 3D Balance Ball eğitimini bu şekilde hızlandırabilirsiniz.
 
 ### Agent
 
-The Agent is the actor that observes and takes actions in the environment. In
-the 3D Balance Ball environment, the Agent components are placed on the twelve
-"Agent" GameObjects. The base Agent object has a few properties that affect its
-behavior:
+Temsilci`(agent - ajan)`, ortamı gözlemleyen ve çevreyi harekete geçiren aktördür. 3B Balance Ball sahne ortamında, Agent bileşenleri on iki `Agent` GameObject'e yerleştirilir. Temel Agent nesnesinin davranışını etkileyen birkaç özelliği vardır:
 
-- **Behavior Parameters** — Every Agent must have a Behavior. The Behavior
-  determines how an Agent makes decisions.
-- **Max Step** — Defines how many simulation steps can occur before the Agent's
-  episode ends. In 3D Balance Ball, an Agent restarts after 5000 steps.
+- **Behavior Parameters** — Her Agent'in bir Behavior(Davranış Modeli) olmalıdır. Davranış`(Behavior)` ajanın nasıl karar vereceğini belirler.
+- **Max Step** — Agent'ın bölümü bitirmeden önce kaç simülasyon adımı gerçekleştireceğini belirler. 3D Balance Ball'da, bir Ajan 5000 adımdan sonra yeniden başlatılır.
 
-#### Behavior Parameters : Vector Observation Space
+#### Davranış Parametreleri(Behavior Parameters): Vektör Gözlem Uzayı(Vector Observation Space)
 
-Before making a decision, an agent collects its observation about its state in
-the world. The vector observation is a vector of floating point numbers which
-contain relevant information for the agent to make decisions.
+Bir karar vermeden önce, bir temsilci dünyadaki durumu hakkındaki gözlemini toplar. Vektör gözlemi, ajanın karar vermesi için ilgili bilgileri içeren kayan nokta sayılarının bir vektörüdür.
 
-The Behavior Parameters of the 3D Balance Ball example uses a `Space Size` of 8.
-This means that the feature vector containing the Agent's observations contains
-eight elements: the `x` and `z` components of the agent cube's rotation and the
-`x`, `y`, and `z` components of the ball's relative position and velocity.
+3D Balance Ball örneğinin davranış(behavior) parametreleri, 8 Uzay Boyutu`(Space Size)` kullanır.
+Bu, Ajanın gözlemlerini içeren özellik vektörünün sekiz öğe içerdiği anlamına gelir: agent küpün dönüşünün `x` ve `z` bileşenleri ve topun göreceli konumu ve hızının `x`, `y` ve `z` bileşenleri.
 
-#### Behavior Parameters : Vector Action Space
+#### Davranış parametreleri : Vektör Eylem Alanı - (Behavior Parameters: Vector Action Space)
 
-An Agent is given instructions in the form of a float array of _actions_.
-ML-Agents Toolkit classifies actions into two types: continuous and discrete.
-The 3D Balance Ball example is programmed to use continuous action space which
-is a a vector of numbers that can vary continuously. More specifically, it uses
-a `Space Size` of 2 to control the amount of `x` and `z` rotations to apply to
-itself to keep the ball balanced on its head.
+Bir Ajana çeşitli değerler dizisi şeklinde talimatlar verilir.
+ML-Agent Toolkit, eylemleri iki türe sınıflandırır: sürekli ve ayrık(continuous and discrete). 3D Balance Ball örneği, sürekli olarak değişebilen bir sayı vektörü olan sürekli eylem alanını kullanmak üzere programlanmıştır. Daha spesifik olarak, topu kafasında dengede tutmak için kendisine uygulanacak `x` ve `z` dönüşlerinin miktarını kontrol etmek için 2 Uzay Boyutu`(Space Size)` kullanılabilir.
 
-## Running a pre-trained model
+## Önceden eğitilmiş modeli çalıştırma
 
-We include pre-trained models for our agents (`.nn` files) and we use the
-[Unity Inference Engine](Unity-Inference-Engine.md) to run these models inside
-Unity. In this section, we will use the pre-trained model for the 3D Ball
-example.
+Ajanlarımız (`.nn` dosyaları) için önceden eğitilmiş modeller ortamımıza ekliyoruz  ve bu modelleri Unity içinde çalıştırmak için [Unity Inference Engine]([Unity Inference Engine](Unity-Inference-Engine.md)'i kullanıyoruz. Bu bölümde, 3D Ball örneği için önceden eğitilmiş modeli bir sinir ağı kullanacağız.
 
-1. In the **Project** window, go to the
-   `Assets/ML-Agents/Examples/3DBall/Prefabs` folder. Expand `3DBall` and click
-   on the `Agent` prefab. You should see the `Agent` prefab in the **Inspector**
-   window.
+1. **Project** penceresinde `Assets/ML-Agents/Examples/3DBall/Prefabs` klasörüne gidin. `3DBall`'ın içerisini genişletin ve `Agent` hazır yapısına tıklayın. `Agent` hazır yapısını **Inspector** penceresinde görmelisiniz.
 
-   **Note**: The platforms in the `3DBall` scene were created using the `3DBall`
-   prefab. Instead of updating all 12 platforms individually, you can update the
-   `3DBall` prefab instead.
+   **Not**: `3DBall` sahnesindeki platformlar, `3DBall` prefab kullanılarak oluşturuldu. 12 platformu tek tek güncellemek yerine, `3DBall` prefabını değiştirerek diğer platformların da yapısını güncelleyebilirsiniz.
 
    ![Platform Prefab](images/platform_prefab.png)
 
-1. In the **Project** window, drag the **3DBall** Model located in
-   `Assets/ML-Agents/Examples/3DBall/TFModels` into the `Model` property under
-   `Behavior Parameters (Script)` component in the Agent GameObject
-   **Inspector** window.
+1. **Project** penceresinde, `Assets/ML-Agents/Examples/3DBall/TFModels`'te bulunan `3DBall` sinir ağı modelini(`.nn` uzantılı dosya), **Agent** GameObject **Inspector** penceresindeki `Behavior Parameters (Script)` bileşeni altındaki `Model` özelliğine sürükleyin.
 
    ![3dball learning brain](images/3dball_learning_brain.png)
 
-1. You should notice that each `Agent` under each `3DBall` in the **Hierarchy**
-   windows now contains **3DBall** as `Model` on the `Behavior Parameters`.
-   **Note** : You can modify multiple game objects in a scene by selecting them
-   all at once using the search bar in the Scene Hierarchy.
-1. Set the **Inference Device** to use for this model as `CPU`.
-1. Click the **Play** button in the Unity Editor and you will see the platforms
-   balance the balls using the pre-trained model.
+1. **Hierarchy** pencerelerindeki her bir `3DBall` altındaki her Agent'ın artık `Behavior Parameters`'inde `Model` olarak `3DBall`'ı içerdiğini fark etmelisiniz. Prefab'daki modeli değiştirdiğimizde bütün nesneleri etkiledik.
+   **Not** : Sahne **Hierarchy**'deki arama çubuğunu kullanarak bir sahnedeki birden fazla oyun nesnesini aynı anda seçerek değiştirebilirsiniz.
+1. **Inference Device**'yi bu model için `CPU` olarak kullanılacak şekilde ayarlayın.
+1. Unity editöründeki **Oynat(Play)** düğmesine tıklayın ve platformların önceden eğitilmiş modeli kullanarak topları dengelediğini göreceksiniz.
 
-## Training a new model with Reinforcement Learning
+## Pekiştirmeli(Reinforcement) Öğrenme ile yeni bir model eğitmek
 
-While we provide pre-trained `.nn` files for the agents in this environment, any
-environment you make yourself will require training agents from scratch to
-generate a new model file. In this section we will demonstrate how to use the
-reinforcement learning algorithms that are part of the ML-Agents Python package
-to accomplish this. We have provided a convenient command `mlagents-learn` which
-accepts arguments used to configure both training and inference phases.
+Bu ortamdaki aracılar için önceden eğitilmiş `.nn` dosyaları sağlasak da, kendi oluşturduğunuz herhangi bir ortamda yeni bir model dosyası oluşturmak için sıfırdan eğitim aracıları gerekir. Bu bölümde, bunu başarmak için ML-Agents Python paketinin parçası olan pekiştirmeli öğrenme algoritmalarının nasıl kullanılacağını göstereceğiz. Hem eğitim hem de çıkarım aşamalarını yapılandırmak için kullanılan argümanları kabul eden uygun bir `mlagents-learn` komutu sağladık.
 
-### Training the environment
+### Ortamı eğitmek
 
-1. Open a command or terminal window.
-1. Navigate to the folder where you cloned the `ml-agents` repository. **Note**:
-   If you followed the default [installation](Installation.md), then you should
-   be able to run `mlagents-learn` from any directory.
-1. Run `mlagents-learn config/ppo/3DBall.yaml --run-id=first3DBallRun`.
-   - `config/ppo/3DBall.yaml` is the path to a default training
-     configuration file that we provide. The `config/ppo` folder includes training configuration
-     files for all our example environments, including 3DBall.
-   - `run-id` is a unique name for this training session.
-1. When the message _"Start training by pressing the Play button in the Unity
-   Editor"_ is displayed on the screen, you can press the **Play** button in
-   Unity to start training in the Editor.
+1. Bir komut veya terminal penceresi açın.
+1. Terminalde `ml-agent` deposunu klonladığınız klasöre gidin. **Not**: [Varsayılan kurulumu](Installation.md) izlediyseniz, `mlagents-learn`'ü herhangi bir dizinden çalıştırabilmelisiniz.
+1. `mlagents-learn config/ppo/3DBall.yaml --run-id=first3DBallRun` komutunu çalıştırın.
+   - `config/ppo/3DBall.yaml` sağladığımız varsayılan eğitimin konfigürasyon dosyasıdır. `config/ppo` klasörü, 3DBall dahil tüm örnek ortamlarımız için eğitim yapılandırma dosyalarını içerir.
+   - `run-id` bu eğitime özel benzersiz bir addır.
+1. Ekranda _"Start training by pressing the Play button in the Unity Editor"_ mesajı görüntülendiğinde, editör'de eğitime başlamak için Unity'deki **Play(Oynat)** düğmesine basabilirsiniz.
 
-If `mlagents-learn` runs correctly and starts training, you should see something
-like this:
+`mlagents-learn` doğru şekilde çalışırsa ve eğitime başlarsa, şuna benzer bir şey görmelisiniz:
 
 ```console
 INFO:mlagents_envs:
@@ -196,73 +128,51 @@ INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 9000. Mean Reward:
 INFO:mlagents.trainers: first3DBallRun: 3DBallLearning: Step: 10000. Mean Reward: 27.284. Std of Reward: 28.667. Training.
 ```
 
-Note how the `Mean Reward` value printed to the screen increases as training
-progresses. This is a positive sign that training is succeeding.
+Eğitim ilerledikçe ekrana yazdırılan `Mean Reward` değerinin nasıl arttığına dikkat edin. Bu, eğitimin başarılı olduğunun olumlu bir işaretidir.
 
-**Note**: You can train using an executable rather than the Editor. To do so,
-follow the instructions in
-[Using an Executable](Learning-Environment-Executable.md).
+**Not**: Editör yerine yürütülebilir bir dosya kullanarak eğitim yapabilirsiniz. Bunu yapmak için, [Using an Executable](Learning-Environment-Executable.md) bölümündeki talimatları izleyin.
 
-### Observing Training Progress
+### Eğitim İlerlemesini Gözlemlemek
 
-Once you start training using `mlagents-learn` in the way described in the
-previous section, the `ml-agents` directory will contain a `results`
-directory. In order to observe the training process in more detail, you can use
-TensorBoard. From the command line run:
+`mlagents-learn` kullanarak eğitime başladığınızda, önceki bölümde anlatıldığı şekilde `ml-agent` dizini bir `results` dizini içerecektir. Eğitim sürecini daha detaylı gözlemlemek için TensorBoard'u kullanabilirsiniz. Komut satırından şunu çalıştırın:
 
 ```sh
 tensorboard --logdir results
 ```
 
-Then navigate to `localhost:6006` in your browser to view the TensorBoard
-summary statistics as shown below. For the purposes of this section, the most
-important statistic is `Environment/Cumulative Reward` which should increase
-throughout training, eventually converging close to `100` which is the maximum
-reward the agent can accumulate.
+Ardından, aşağıda gösterildiği gibi TensorBoard özet istatistiklerini görüntülemek için tarayıcınızda `localhost:6006` adresine gidin. Bu bölümün amaçları doğrultusunda, en önemli istatistik, eğitim boyunca artması gereken ve sonunda temsilcinin toplayabileceği maksimum ödül olan `100`'e yaklaşan `Environment/Cumulative` ödülüdür.
 
 ![Example TensorBoard Run](images/mlagents-TensorBoard.png)
 
-## Embedding the model into the Unity Environment
+## Modeli Unity Ortamına yerleştirme
 
-Once the training process completes, and the training process saves the model
-(denoted by the `Saved Model` message) you can add it to the Unity project and
-use it with compatible Agents (the Agents that generated the model). **Note:**
-Do not just close the Unity Window once the `Saved Model` message appears.
-Either wait for the training process to close the window or press `Ctrl+C` at
-the command-line prompt. If you close the window manually, the `.nn` file
-containing the trained model is not exported into the ml-agents folder.
+Eğitim süreci tamamlandığında ve eğitim süreci modeli (`Saved Model` mesajı ile gösterilir) kaydedildikten sonra, onu Unity projesine ekleyebilir ve uyumlu Agents'lar ile (modeli oluşturan ajanlar) kullanabilirsiniz. **Not:**
+`Saved Model` mesajı görünmeden Unity penceresini kapatmayın. Eğitim sürecinin pencereyi kapatmasını bekleyin veya komut satırı isteminde **<kbd>Ctrl</kbd> + <kbd>C</kbd>** tuşlarına basın. Pencereyi manuel olarak kapatırsanız, eğitimli modeli içeren `.nn` dosyası `ml-agents` klasörüne aktarılmaz.
 
-If you've quit the training early using `Ctrl+C` and want to resume training,
-run the same command again, appending the `--resume` flag:
+`Ctrl + C` kullanarak eğitimden erken çıkarsanız ve eğitime tekrar kaldığı yerden devam etmek isterseniz, aynı komutu yeniden çalıştırın ve aşağıdaki gibi `--resume` işaretini ekleyin:
 
 ```sh
 mlagents-learn config/ppo/3DBall.yaml --run-id=first3DBallRun --resume
 ```
 
-Your trained model will be at `results/<run-identifier>/<behavior_name>.nn` where
-`<behavior_name>` is the name of the `Behavior Name` of the agents corresponding
-to the model. This file corresponds to your model's latest checkpoint. You can
-now embed this trained model into your Agents by following the steps below,
-which is similar to the steps described [above](#running-a-pre-trained-model).
+Eğitimli modeliniz `results/<run-identifier>/<behavior_name>.nn` konumunda olacaktır; burada `<behavior_name>`, modele karşılık gelen aracıların Davranış Adının`(Behavior Name)` adıdır. Bu dosya, modelinizin en son kontrol noktasına karşılık gelir. Artık bu eğitimli modeli, yukarıda açıklanan adımlara benzer şekilde aşağıdaki adımları izleyerek Ajanlarınıza`(Agents)` yerleştirebilirsiniz.
 
-1. Move your model file into
-   `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
-1. Open the Unity Editor, and select the **3DBall** scene as described above.
-1. Select the **3DBall** prefab Agent object.
-1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
-   the **Model** placeholder in the **Ball3DAgent** inspector window.
-1. Press the **Play** button at the top of the Editor.
+1. Model dosyanızı `Project/Assets/ML-Agents/Examples/3DBall/TFModels/` içine taşıyın.
+1. Unity Editor'ü açın ve yukarıda açıklandığı gibi **3DBall** sahnesini seçin.
+1. **3DBall** prefab Agents nesnesini seçin.
+1. `<behavior_name(davranış_adı)>.nn` dosyasını editörün Proje penceresinden **Ball3DAgent** inspector penceresindeki **Model** yer tutucusuna sürükleyin.
+1. Editörün üst kısmındaki **Oynat** düğmesine basın.
 
-## Next Steps
-
+## Sonraki adımlar
+<!--
 - For more information on the ML-Agents Toolkit, in addition to helpful
   background, check out the [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
-  page.
-- For a "Hello World" introduction to creating your own Learning Environment,
-  check out the
-  [Making a New Learning Environment](Learning-Environment-Create-New.md) page.
+  page. -->
+- Kendi Öğrenme Ortamınızı oluşturmaya yönelik "Merhaba Dünya" tanıtımı için [Making a New Learning Environment](https://github.com/Unity-Technologies/ml-agents/blob/release_8_docs/docs/Learning-Environment-Create-New.md) sayfasına göz atın.
+<!--
 - For an overview on the more complex example environments that are provided in
   this toolkit, check out the
   [Example Environments](Learning-Environment-Examples.md) page.
 - For more information on the various training options available, check out the
   [Training ML-Agents](Training-ML-Agents.md) page.
+-->
