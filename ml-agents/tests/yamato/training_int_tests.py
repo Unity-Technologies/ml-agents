@@ -28,7 +28,6 @@ def run_training(python_version: str, csharp_version: str) -> bool:
     output_dir = "models" if python_version else "results"
     nn_file_expected = f"./{output_dir}/{run_id}/3DBall.nn"
     onnx_file_expected = f"./{output_dir}/{run_id}/3DBall.onnx"
-    frozen_graph_file_expected = f"./{output_dir}/{run_id}/3DBall/frozen_graph_def.pb"
 
     if os.path.exists(nn_file_expected):
         # Should never happen - make sure nothing leftover from an old test.
@@ -98,7 +97,6 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         os.makedirs(model_artifacts_dir, exist_ok=True)
         shutil.copy(nn_file_expected, model_artifacts_dir)
         shutil.copy(onnx_file_expected, model_artifacts_dir)
-        shutil.copy(frozen_graph_file_expected, model_artifacts_dir)
 
     if (
         res.returncode != 0
