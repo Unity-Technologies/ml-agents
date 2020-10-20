@@ -302,11 +302,12 @@ class SACTrainer(RLTrainer):
                 )
                 # Get rewards for each reward
                 for name, signal in self.optimizer.reward_signals.items():
+                    # BaseRewardProvider is a PyTorch-based reward signal
                     if isinstance(signal, BaseRewardProvider):
                         sampled_minibatch[f"{name}_rewards"] = (
                             signal.evaluate(sampled_minibatch) * signal.strength
                         )
-                    else:
+                    else:  # reward_signal is a TensorFlow-based RewardSignal class
                         sampled_minibatch[f"{name}_rewards"] = signal.evaluate_batch(
                             sampled_minibatch
                         ).scaled_reward
