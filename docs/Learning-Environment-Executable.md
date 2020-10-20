@@ -171,7 +171,7 @@ INFO:mlagents.trainers: first-run-0: Ball3DLearning: Step: 10000. Mean Reward: 2
 ```
 
 You can press Ctrl+C to stop the training, and your trained model will be at
-`results/<run-identifier>/<behavior_name>.nn`, which corresponds to your model's
+`results/<run-identifier>/<behavior_name>.onnx`, which corresponds to your model's
 latest checkpoint. (**Note:** There is a known bug on Windows that causes the
 saving of the model to fail when you early terminate the training, it's
 recommended to wait until Step has reached the max_steps parameter you set in
@@ -182,6 +182,6 @@ following the steps below:
    `Project/Assets/ML-Agents/Examples/3DBall/TFModels/`.
 1. Open the Unity Editor, and select the **3DBall** scene as described above.
 1. Select the **3DBall** prefab from the Project window and select **Agent**.
-1. Drag the `<behavior_name>.nn` file from the Project window of the Editor to
+1. Drag the `<behavior_name>.onnx` file from the Project window of the Editor to
    the **Model** placeholder in the **Ball3DAgent** inspector window.
 1. Press the **Play** button at the top of the Editor.

@@ -44,11 +44,6 @@ If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
 on installing it.
 
-Although we do not provide support for Anaconda installation on Windows, the
-previous
-[Windows Anaconda Installation (Deprecated) guide](Installation-Anaconda-Windows.md)
-is still available.
-
 ### Clone the ML-Agents Toolkit Repository (Optional)
 
 Now that you have installed Unity and Python, you can now install the Unity and
@@ -128,6 +123,7 @@ To install the `mlagents` Python package, activate your virtual environment and
 run from the command line:
 
 ```sh
+pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
 pip3 install mlagents
 ```
 
@@ -138,7 +134,7 @@ line parameters you can use with `mlagents-learn`.
 
 By installing the `mlagents` package, the dependencies listed in the
 [setup.py file](../ml-agents/setup.py) are also installed. These include
-[TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support).
+[PyTorch](Background-PyTorch.md) (Requires a CPU w/ AVX support).
 
 #### Advanced: Local Installation for Development
 
@@ -148,6 +144,7 @@ this, you will need to install `mlagents` and `mlagents_envs` separately. From
 the repository's root directory, run:
 
 ```sh
+pip3 install torch -f https://download.pytorch.org/whl/torch_stable.html
 pip3 install -e ./ml-agents-envs
 pip3 install -e ./ml-agents
 ```
