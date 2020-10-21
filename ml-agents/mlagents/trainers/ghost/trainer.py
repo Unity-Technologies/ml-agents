@@ -319,9 +319,6 @@ class GhostTrainer(Trainer):
         policy = self.trainer.create_policy(
             parsed_behavior_id, behavior_spec, create_graph=True
         )
-        # Initialize policy. You never want to load it, since that should only
-        # be done to the wrapped policy
-        policy.initialize()
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
 
