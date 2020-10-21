@@ -69,6 +69,11 @@ namespace Unity.MLAgents.Actuators
         /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="ActionSpec"/> and a float array.
         public static ActionBuffers FromActionSpec(ActionSpec actionSpec, float[] actions)
         {
+            if (actions == null)
+            {
+                return new ActionBuffers(ActionSegment<float>.Empty, ActionSegment<int>.Empty);
+            }
+
             Debug.Assert(actions.Length == actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions,
                 $"The length of '{nameof(actions)}' does not match the total size of ActionSpec.\n" +
                 $"{nameof(actions)}.Length: {actions.Length}\n" +
