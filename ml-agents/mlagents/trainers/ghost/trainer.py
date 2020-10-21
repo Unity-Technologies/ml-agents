@@ -146,11 +146,11 @@ class GhostTrainer(Trainer):
     @property
     def reward_buffer(self) -> Deque[float]:
         """
-         Returns the reward buffer. The reward buffer contains the cumulative
-         rewards of the most recent episodes completed by agents using this
-         trainer.
-         :return: the reward buffer.
-         """
+        Returns the reward buffer. The reward buffer contains the cumulative
+        rewards of the most recent episodes completed by agents using this
+        trainer.
+        :return: the reward buffer.
+        """
         return self.trainer.reward_buffer
 
     @property
@@ -339,6 +339,11 @@ class GhostTrainer(Trainer):
             self._save_snapshot()  # Need to save after trainer initializes policy
             self._learning_team = self.controller.get_learning_team
             self.wrapped_trainer_team = team_id
+        else:
+            # Load the weights of the ghost policy from the wrapped one
+            policy.load_weights(
+                self.trainer.get_policy(parsed_behavior_id).get_weights()
+            )
         return policy
 
     def add_policy(
