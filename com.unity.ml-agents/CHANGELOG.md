@@ -12,6 +12,11 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+ - PyTorch trainers are now the default. See the
+ [installation docs](https://github.com/Unity-Technologies/ml-agents/blob/mastere/docs/Installation.md) for
+ more information on installing PyTorch. For the time being, TensorFlow is still available;
+ you can use the TensorFlow backend by adding `--tensorflow` to the CLI, or
+ adding `framework: tensorflow` in the configuration YAML. (#4517)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)

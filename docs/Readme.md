@@ -11,7 +11,7 @@
 - [ML-Agents Toolkit Overview](ML-Agents-Overview.md)
   - [Background: Unity](Background-Unity.md)
   - [Background: Machine Learning](Background-Machine-Learning.md)
-  - [Background: TensorFlow](Background-TensorFlow.md)
+  - [Background: PyTorch](Background-PyTorch.md)
 - [Example Environments](Learning-Environment-Examples.md)
 
 ## Creating Learning Environments
