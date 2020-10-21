@@ -62,6 +62,31 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
+        /// Create an <see cref="ActionBuffers"/> instance with ActionSpec and all actions stored as a float array.
+        /// </summary>
+        /// <param name="actionSpec"><see cref="ActionSpec"/> of the <see cref="ActionBuffers"/></param>
+        /// <param name="actions">The float array of all actions, including discrete and continuous actions.</param>
+        /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="ActionSpec"/> and a float array.
+        public static ActionBuffers FromActionSpec(ActionSpec actionSpec, float[] actions)
+        {
+            Debug.Assert(actions.Length == actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions,
+                $"The length of '{nameof(actions)}' does not match the total size of ActionSpec.\n" +
+                $"{nameof(actions)}.Length: {actions.Length}\n" +
+                $"{nameof(actionSpec)}: {actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions}");
+
+            float[] continuousActions = new float[actionSpec.NumContinuousActions];
+            int[] discreteActions = new int[actionSpec.NumDiscreteActions];
+            int offset = 0;
+            Array.Copy(actions, continuousActions, actionSpec.NumContinuousActions);
+            offset += actionSpec.NumContinuousActions;
+            for (var i = 0; i < actionSpec.NumDiscreteActions; i++)
+            {
+                discreteActions[i] = (int)actions[i + offset];
+            }
+            return new ActionBuffers(continuousActions, discreteActions);
+        }
+
+        /// <summary>
         /// Clear the <see cref="ContinuousActions"/> and <see cref="DiscreteActions"/> segments to be all zeros.
         /// </summary>
         public void Clear()
