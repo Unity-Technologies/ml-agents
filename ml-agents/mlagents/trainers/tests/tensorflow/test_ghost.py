@@ -57,6 +57,51 @@ def test_load_and_set(dummy_config, use_discrete):
         np.testing.assert_array_equal(w, lw)
 
 
+def test_resume(dummy_config, tmp_path):
+    mock_specs = mb.setup_test_behavior_specs(
+        True, False, vector_action_space=[2], vector_obs_space=1
+    )
+    behavior_id_team0 = "test_brain?team=0"
+    behavior_id_team1 = "test_brain?team=1"
+    brain_name = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0).brain_name
+
+    ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, tmp_path)
+    controller = GhostController(100)
+    trainer = GhostTrainer(
+        ppo_trainer, brain_name, controller, 0, dummy_config, True, tmp_path
+    )
+
+    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0)
+    policy = trainer.create_policy(parsed_behavior_id0, mock_specs)
+    trainer.add_policy(parsed_behavior_id0, policy)
+
+    parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team1)
+    policy = trainer.create_policy(parsed_behavior_id1, mock_specs)
+    trainer.add_policy(parsed_behavior_id1, policy)
+
+    trainer.save_model()
+
+    # Make a new trainer, check that the policies are the same
+    trainer2 = GhostTrainer(
+        ppo_trainer, brain_name, controller, 0, dummy_config, True, tmp_path
+    )
+    policy = trainer2.create_policy(parsed_behavior_id0, mock_specs)
+    trainer2.add_policy(parsed_behavior_id0, policy)
+
+    policy = trainer2.create_policy(parsed_behavior_id1, mock_specs)
+    trainer2.add_policy(parsed_behavior_id1, policy)
+
+    trainer1_policy = trainer.get_policy(parsed_behavior_id1)
+    trainer2_policy = trainer2.get_policy(parsed_behavior_id1)
+    weights = trainer1_policy.get_weights()
+    weights2 = trainer2_policy.get_weights()
+    try:
+        for w, lw in zip(weights, weights2):
+            np.testing.assert_array_equal(w, lw)
+    except AssertionError:
+        pass
+
+
 def test_process_trajectory(dummy_config):
     mock_specs = mb.setup_test_behavior_specs(
         True, False, vector_action_space=[2], vector_obs_space=1
