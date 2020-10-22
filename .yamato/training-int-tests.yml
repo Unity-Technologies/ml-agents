@@ -4,9 +4,9 @@
 test_training_int_{{ config.name }}:
   name: Test {{ config.name }} Fast Training
   agent:
-    type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
-    flavor: b1.small
+    type: {{ config.type }}
+    image: {{ config.image }}
+    flavor: {{ config.flavor}}
   variables:
     UNITY_VERSION: {{ config.version }}
   commands:
