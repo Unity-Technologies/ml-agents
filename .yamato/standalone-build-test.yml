@@ -2,7 +2,7 @@
 ---
 {% for config in test_configs %}
 test_standalone_{{ config.name }}:
-  name: Test Mac Standalone {{ config.version }}
+  name: Test {{ config.name }} Standalone
   agent:
     type: {{ config.type }}
     image: {{ config.image }}
