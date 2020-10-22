@@ -4,9 +4,9 @@
 test_standalone_{{ config.name }}:
   name: Test Mac Standalone {{ config.version }}
   agent:
-    type: Unity::VM::osx
-    image: ml-agents/ml-agents-bokken-mac:0.1.4-492264
-    flavor: i1.small
+    type: {{ config.type }}
+    image: {{ config.image }}
+    flavor: {{ config.flavor}}
   variables:
     UNITY_VERSION: {{ config.version }}
   commands:
