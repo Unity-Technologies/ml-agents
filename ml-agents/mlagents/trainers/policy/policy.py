@@ -29,16 +29,18 @@ class Policy:
         condition_sigma_on_obs: bool = True,
     ):
         self.behavior_spec = behavior_spec
-        self.action_spec = behavior_spec.action_spec
         self.trainer_settings = trainer_settings
         self.network_settings: NetworkSettings = trainer_settings.network_settings
         self.seed = seed
-        if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
+        if (
+            self.behavior_spec.action_spec.continuous_size > 0
+            and self.behavior_spec.action_spec.discrete_size > 0
+        ):
             raise UnityPolicyException("Trainers do not support mixed action spaces.")
         self.act_size = (
-            list(self.action_spec.discrete_branches)
-            if self.action_spec.is_discrete()
-            else [self.action_spec.size]
+            list(self.behavior_spec.action_spec.discrete_branches)
+            if self.behavior_spec.action_spec.is_discrete()
+            else [self.behavior_spec.action_spec.size]
         )
         self.vec_obs_size = sum(
             shape[0] for shape in behavior_spec.observation_shapes if len(shape) == 1
@@ -46,8 +48,8 @@ class Policy:
         self.vis_obs_size = sum(
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
-        self.use_continuous_act = self.action_spec.is_continuous()
-        self.num_branches = self.action_spec.size
+        self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
+        self.num_branches = self.behavior_spec.action_spec.size
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize
