@@ -359,6 +359,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BattleFoodArea (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -673,6 +677,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BattleFoodArea (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -729,6 +737,10 @@ PrefabInstance:
     - target: {fileID: 1819751139121548, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
       propertyPath: m_Name
       value: BattleFoodArea (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819751139121548, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4688212428263696, guid: 4a2d272a60b4a453d9ec0f6e5708bd73, type: 3}
       propertyPath: m_LocalPosition.x

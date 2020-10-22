@@ -42,6 +42,8 @@ public class BattleFoodAgent : Agent
 
     EnvironmentParameters m_ResetParams;
 
+    string m_TeamTag;
+
     public override void Initialize()
     {
         m_AgentRb = GetComponent<Rigidbody>();
@@ -50,6 +52,8 @@ public class BattleFoodAgent : Agent
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
         m_BehaviorParameters = gameObject.GetComponent<BehaviorParameters>();
+        m_TeamTag = $"agent{m_BehaviorParameters.TeamId}";
+        gameObject.tag = m_TeamTag;
         BattleAgentState playerState = new BattleAgentState
         {
             teamId = m_BehaviorParameters.TeamId,
@@ -172,9 +176,14 @@ public class BattleFoodAgent : Agent
             RaycastHit hit;
             if (Physics.SphereCast(transform.position, 2f, rayDir, out hit, 25f))
             {
-                if (hit.collider.gameObject.CompareTag("agent"))
+                if (hit.collider.gameObject.tag.StartsWith("agent"))
                 {
-                    hit.collider.gameObject.GetComponent<BattleFoodAgent>().Freeze();
+                    // Disable friendly fire
+                    BattleFoodAgent b_agent = hit.collider.gameObject.GetComponent<BattleFoodAgent>();
+                    if (b_agent.m_BehaviorParameters.TeamId != m_BehaviorParameters.TeamId)
+                    {
+                        b_agent.Freeze();
+                    }
                 }
             }
         }
@@ -195,7 +204,7 @@ public class BattleFoodAgent : Agent
     void Unfreeze()
     {
         m_Frozen = false;
-        gameObject.tag = "agent";
+        gameObject.tag = m_TeamTag;
         gameObject.GetComponentInChildren<Renderer>().material = normalMaterial;
     }
 
@@ -273,23 +282,26 @@ public class BattleFoodAgent : Agent
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("food"))
+        if (!m_Frozen)
         {
-            Satiate();
-            collision.gameObject.GetComponent<FoodLogic>().OnEaten();
-            if (contribute)
+            if (collision.gameObject.CompareTag("food"))
             {
-                areaScoring.AddScore(m_BehaviorParameters.TeamId, 1);
+                Satiate();
+                collision.gameObject.GetComponent<FoodLogic>().OnEaten();
+                if (contribute)
+                {
+                    areaScoring.AddScore(m_BehaviorParameters.TeamId, 1);
+                }
             }
-        }
-        if (collision.gameObject.CompareTag("badFood"))
-        {
-            Poison();
-            collision.gameObject.GetComponent<FoodLogic>().OnEaten();
-
-            if (contribute)
+            if (collision.gameObject.CompareTag("badFood"))
             {
-                areaScoring.AddScore(m_BehaviorParameters.TeamId, -1);
+                Poison();
+                collision.gameObject.GetComponent<FoodLogic>().OnEaten();
+
+                if (contribute)
+                {
+                    areaScoring.AddScore(m_BehaviorParameters.TeamId, -1);
+                }
             }
         }
     }

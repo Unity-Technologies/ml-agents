@@ -30,7 +30,7 @@ Transform:
   - {fileID: 4628244018821590}
   - {fileID: 4942777147710886}
   m_Father: {fileID: 4137908820211030}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1050257840814314
 GameObject:
@@ -1570,7 +1570,7 @@ GameObject:
   - component: {fileID: 1395479059576541845}
   m_Layer: 0
   m_Name: Agent
-  m_TagString: agent
+  m_TagString: agent0
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1638,7 +1638,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
+  m_Model: {fileID: 11400000, guid: e7db8916ced8546458dcbe028486a23d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1661,9 +1661,9 @@ MonoBehaviour:
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
   - food
-  - agent
+  - agent0
   - wall
-  - badFood
+  - agent1
   - frozenAgent
   m_RaysPerDirection: 3
   m_MaxRayDegrees: 70
@@ -1840,7 +1840,7 @@ GameObject:
   - component: {fileID: 596851408027241538}
   m_Layer: 0
   m_Name: Agent (1)
-  m_TagString: agent
+  m_TagString: agent0
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1908,7 +1908,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
+  m_Model: {fileID: 11400000, guid: e7db8916ced8546458dcbe028486a23d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1931,14 +1931,14 @@ MonoBehaviour:
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
   - food
-  - agent
+  - agent0
   - wall
-  - badFood
+  - agent1
   - frozenAgent
-  m_RaysPerDirection: 3
+  m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
-  m_RayLength: 50
+  m_RayLength: 100
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -2174,7 +2174,7 @@ GameObject:
   - component: {fileID: 135878393583328510}
   m_Layer: 0
   m_Name: Agent (2)
-  m_TagString: agent
+  m_TagString: agent0
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2242,7 +2242,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
+  m_Model: {fileID: 11400000, guid: e7db8916ced8546458dcbe028486a23d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -2265,14 +2265,14 @@ MonoBehaviour:
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
   - food
-  - agent
+  - agent0
   - wall
-  - badFood
+  - agent1
   - frozenAgent
-  m_RaysPerDirection: 3
+  m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
-  m_RayLength: 50
+  m_RayLength: 100
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -2353,7 +2353,7 @@ Transform:
   - {fileID: 4582932118026694}
   - {fileID: 4599271014211466}
   m_Father: {fileID: 4259834826122778}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1618648442086682
 GameObject:
@@ -2617,7 +2617,7 @@ GameObject:
   - component: {fileID: 5202286717433172320}
   m_Layer: 0
   m_Name: Agent (4)
-  m_TagString: agent
+  m_TagString: agent1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2633,8 +2633,8 @@ Transform:
   m_LocalPosition: {x: -34.2, y: 2, z: -9.559753}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4937005382015814}
   - {fileID: 5666323144963518616}
+  - {fileID: 4937005382015814}
   m_Father: {fileID: 4688212428263696}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2685,7 +2685,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
+  m_Model: {fileID: 11400000, guid: e7db8916ced8546458dcbe028486a23d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -2708,14 +2708,14 @@ MonoBehaviour:
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
   - food
-  - agent
+  - agent1
   - wall
-  - badFood
+  - agent0
   - frozenAgent
-  m_RaysPerDirection: 3
+  m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
-  m_RayLength: 50
+  m_RayLength: 100
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -2937,7 +2937,7 @@ GameObject:
   - component: {fileID: 2100224384926082249}
   m_Layer: 0
   m_Name: Agent (3)
-  m_TagString: agent
+  m_TagString: agent1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2953,8 +2953,8 @@ Transform:
   m_LocalPosition: {x: -34.2, y: 2, z: -9.559753}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4522727213527220}
   - {fileID: 3664446744382446953}
+  - {fileID: 4522727213527220}
   m_Father: {fileID: 4688212428263696}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3005,7 +3005,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
+  m_Model: {fileID: 11400000, guid: e7db8916ced8546458dcbe028486a23d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -3028,14 +3028,14 @@ MonoBehaviour:
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
   - food
-  - agent
+  - agent1
   - wall
-  - badFood
+  - agent0
   - frozenAgent
-  m_RaysPerDirection: 3
+  m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
-  m_RayLength: 50
+  m_RayLength: 100
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -4006,7 +4006,7 @@ Transform:
   - {fileID: 5144359137687826278}
   - {fileID: 8786814285906777632}
   m_Father: {fileID: 4137908820211030}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4127280669871741008
 MeshFilter:
@@ -4487,7 +4487,7 @@ GameObject:
   - component: {fileID: 5958959395267594444}
   m_Layer: 0
   m_Name: Agent (5)
-  m_TagString: agent
+  m_TagString: agent1
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4555,7 +4555,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 36ab3e93020504f48858d0856f939685, type: 3}
+  m_Model: {fileID: 11400000, guid: e7db8916ced8546458dcbe028486a23d, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -4578,14 +4578,14 @@ MonoBehaviour:
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
   - food
-  - agent
+  - agent1
   - wall
-  - badFood
+  - agent0
   - frozenAgent
-  m_RaysPerDirection: 3
+  m_RaysPerDirection: 6
   m_MaxRayDegrees: 70
   m_SphereCastRadius: 0.5
-  m_RayLength: 50
+  m_RayLength: 100
   m_RayLayerMask:
     serializedVersion: 2
     m_Bits: 4294967291
@@ -5100,7 +5100,7 @@ Transform:
   - {fileID: 875547865878971364}
   - {fileID: 8034823852301353004}
   m_Father: {fileID: 4259834826122778}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &4512386870509477965
 MeshFilter:
