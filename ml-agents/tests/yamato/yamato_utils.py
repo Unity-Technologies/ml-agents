@@ -132,8 +132,9 @@ def init_venv(
         pip_commands += extra_packages
     for cmd in pip_commands:
         pip_index_url = "--index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple"
+        # TODO fix venv activate command for windows (or just don't run it)
         subprocess.check_call(
-            f"source {venv_path}/bin/activate; python -m pip install -q {cmd} {pip_index_url}",
+            f"source {venv_path}/bin/activate; python3 -m pip install -q {cmd} {pip_index_url}",
             shell=True,
         )
     return venv_path
