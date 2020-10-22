@@ -131,7 +131,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
-            self.policy.action_spec,
+            self.policy.behavior_spec.action_spec,
         )
 
         self.target_network = ValueNetwork(
