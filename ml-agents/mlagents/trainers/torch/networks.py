@@ -262,13 +262,18 @@ class SimpleActor(nn.Module, Actor):
     ):
         super().__init__()
         self.action_spec = action_spec
-        self.act_size = self.action_spec.size
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
         self.is_continuous_int = torch.nn.Parameter(
             torch.Tensor([int(self.action_spec.is_continuous())])
         )
         self.act_size_vector = torch.nn.Parameter(
-            torch.Tensor([self.action_spec.total_size]), requires_grad=False
+            torch.Tensor(
+                [
+                    self.action_spec.continuous_size
+                    + sum(self.action_spec.discrete_branches)
+                ]
+            ),
+            requires_grad=False,
         )
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:

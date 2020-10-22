@@ -311,7 +311,7 @@ def steps_from_proto(
         [agent_info.id for agent_info in terminal_agent_info_list], dtype=np.int32
     )
     action_mask = None
-    if behavior_spec.action_spec.is_discrete():
+    if behavior_spec.action_spec.discrete_size > 0:
         if any(
             [agent_info.action_mask is not None]
             for agent_info in decision_agent_info_list

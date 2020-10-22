@@ -1,13 +1,14 @@
 from mlagents.trainers.policy.tf_policy import TFPolicy
-from mlagents_envs.base_env import ActionSpec, DecisionSteps, BehaviorSpec
+from mlagents_envs.base_env import DecisionSteps, BehaviorSpec
 from mlagents.trainers.action_info import ActionInfo
 from unittest.mock import MagicMock
 from mlagents.trainers.settings import TrainerSettings
 import numpy as np
+from mlagents_envs.base_env import ActionSpec
 
 
 def basic_behavior_spec():
-    dummy_actionspec = ActionSpec(1, ())
+    dummy_actionspec = ActionSpec.make_continuous(1)
     dummy_groupspec = BehaviorSpec([(1,)], dummy_actionspec)
     return dummy_groupspec
 

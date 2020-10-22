@@ -294,10 +294,6 @@ class ActionSpec(NamedTuple):
     def size(self) -> int:
         return self.discrete_size + self.continuous_size
 
-    @property
-    def total_size(self) -> int:
-        return sum(self.discrete_branches) + self.continuous_size
-
     def create_empty(self, n_agents: int) -> np.ndarray:
         if self.is_continuous():
             return np.zeros((n_agents, self.continuous_size), dtype=np.float32)
@@ -322,6 +318,20 @@ class ActionSpec(NamedTuple):
                 ]
             )
         return action
+
+    @staticmethod
+    def make_continuous(continuous_size: int) -> "ActionSpec":
+        """
+        Creates an ActionSpec that is homogenously continuous
+        """
+        return ActionSpec(continuous_size, ())
+
+    @staticmethod
+    def make_discrete(discrete_branches: Tuple[int]) -> "ActionSpec":
+        """
+        Creates an ActionSpec that is homogenously discrete
+        """
+        return ActionSpec(0, discrete_branches)
 
 
 class BehaviorSpec(NamedTuple):

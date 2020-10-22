@@ -17,6 +17,7 @@ from mlagents.trainers.torch.components.reward_providers.gail_reward_provider im
     DiscriminatorNetwork,
 )
 
+
 CONTINUOUS_PATH = (
     os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, os.pardir)
     + "/test.demo"
@@ -27,9 +28,9 @@ DISCRETE_PATH = (
 )
 SEED = [42]
 
-ACTIONSPEC_CONTINUOUS = ActionSpec(2, ())
-ACTIONSPEC_FOURDISCRETE = ActionSpec(0, (2, 3, 3, 3))
-ACTIONSPEC_DISCRETE = ActionSpec(0, (20,))
+ACTIONSPEC_CONTINUOUS = ActionSpec.make_continuous(2)
+ACTIONSPEC_FOURDISCRETE = ActionSpec.make_discrete((2, 3, 3, 3))
+ACTIONSPEC_DISCRETE = ActionSpec.make_discrete((20,))
 
 
 @pytest.mark.parametrize("behavior_spec", [BehaviorSpec([(8,)], ACTIONSPEC_CONTINUOUS)])

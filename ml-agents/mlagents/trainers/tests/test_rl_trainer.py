@@ -7,6 +7,7 @@ from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings, FrameworkType
+
 from mlagents_envs.base_env import ActionSpec
 
 
@@ -93,7 +94,7 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model):
         length=time_horizon,
         observation_shapes=[(1,)],
         max_step_complete=True,
-        action_spec=ActionSpec(0, (2,)),
+        action_spec=ActionSpec.make_discrete((2,)),
     )
     trajectory_queue.put(trajectory)
 
@@ -145,7 +146,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
         length=time_horizon,
         observation_shapes=[(1,)],
         max_step_complete=True,
-        action_spec=ActionSpec(0, (2,)),
+        action_spec=ActionSpec.make_discrete((2,)),
     )
     # Check that we can turn off the trainer and that the buffer is cleared
     num_trajectories = 5

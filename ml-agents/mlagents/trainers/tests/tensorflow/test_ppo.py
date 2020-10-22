@@ -34,8 +34,8 @@ DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
 
-CONTINUOUS_ACTION_SPEC = ActionSpec(VECTOR_ACTION_SPACE, ())
-DISCRETE_ACTION_SPEC = ActionSpec(0, tuple(DISCRETE_ACTION_SPACE))
+CONTINUOUS_ACTION_SPEC = ActionSpec.make_continuous(VECTOR_ACTION_SPACE)
+DISCRETE_ACTION_SPEC = ActionSpec.make_discrete(tuple(DISCRETE_ACTION_SPACE))
 
 
 def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visual):

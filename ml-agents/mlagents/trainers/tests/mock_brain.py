@@ -76,7 +76,10 @@ def make_fake_trajectory(
     """
     steps_list = []
     action_size = action_spec.size
-    action_probs = np.ones(np.sum(action_spec.total_size), dtype=np.float32)
+    action_probs = np.ones(
+        int(np.sum(action_spec.discrete_branches) + action_spec.continuous_size),
+        dtype=np.float32,
+    )
     for _i in range(length - 1):
         obs = []
         for _shape in observation_shapes:
@@ -157,9 +160,9 @@ def setup_test_behavior_specs(
     use_discrete=True, use_visual=False, vector_action_space=2, vector_obs_space=8
 ):
     if use_discrete:
-        action_spec = ActionSpec(0, tuple(vector_action_space))
+        action_spec = ActionSpec.make_discrete(tuple(vector_action_space))
     else:
-        action_spec = ActionSpec(vector_action_space, ())
+        action_spec = ActionSpec.make_continuous(vector_action_space)
     behavior_spec = BehaviorSpec(
         [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)], action_spec
     )
