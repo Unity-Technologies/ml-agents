@@ -93,25 +93,10 @@ def demo_to_buffer(
     demo_buffer = make_demo_buffer(info_action_pair, behavior_spec, sequence_length)
     if expected_behavior_spec:
         # check action dimensions in demonstration match
-        if (
-            behavior_spec.action_spec.continuous_size
-            != expected_behavior_spec.action_spec.continuous_size
-        ):
+        if behavior_spec.action_spec != expected_behavior_spec.action_spec:
             raise RuntimeError(
-                "The continuous action dimensions {} in demonstration do not match the policy's {}.".format(
-                    behavior_spec.action_spec.continuous_size,
-                    expected_behavior_spec.action_spec.continuous_size,
-                )
-            )
-
-        if (
-            behavior_spec.action_spec.discrete_branches
-            != expected_behavior_spec.action_spec.discrete_branches
-        ):
-            raise RuntimeError(
-                "The discrete action dimensions {} in demonstration do not match the policy's {}.".format(
-                    behavior_spec.action_spec.discrete_branches,
-                    expected_behavior_spec.action_spec.discrete_branches,
+                "The action spaces {} in demonstration do not match the policy's {}.".format(
+                    behavior_spec.action_spec, expected_behavior_spec.action_spec
                 )
             )
         # check observations match

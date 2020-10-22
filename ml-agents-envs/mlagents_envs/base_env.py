@@ -255,6 +255,15 @@ class ActionSpec(NamedTuple):
     num_continuous_actions: int
     discrete_branch_sizes: Tuple[int, ...]
 
+    def __eq__(self, other):
+        return (
+            self.continuous_size == other.continuous_size
+            and self.discrete_branches == other.discrete_branches
+        )
+
+    def __str__(self):
+        return f"Continuous: {self.continuous_size}, Discrete: {self.discrete_branches}"
+
     # For backwards compatibility
     def is_discrete(self) -> bool:
         """
