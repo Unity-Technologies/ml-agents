@@ -30,7 +30,7 @@ public class BattleFoodAgent : Agent
     public Material badMaterial;
     public Material goodMaterial;
     public Material frozenMaterial;
-    public GameObject myLaser;
+    Laser m_Laser;
     public bool contribute;
     public bool useVectorObs;
     [Tooltip("Use only the frozen flag in vector observations. If \"Use Vector Obs\" " +
@@ -60,6 +60,8 @@ public class BattleFoodAgent : Agent
             agent = this,
         };
         areaScoring.playerStates.Add(playerState);
+        m_Laser = GetComponentInChildren<Laser>();
+        m_Laser.maxLength = m_LaserLength * 25f;
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -170,7 +172,8 @@ public class BattleFoodAgent : Agent
         if (m_Shoot)
         {
             var myTransform = transform;
-            myLaser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
+            //m_Laser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
+            m_Laser.isFired = true;
             var rayDir = 25.0f * myTransform.forward;
             Debug.DrawRay(myTransform.position, rayDir, Color.red, 0f, true);
             RaycastHit hit;
@@ -189,7 +192,8 @@ public class BattleFoodAgent : Agent
         }
         else
         {
-            myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+            // m_Laser.transform.localScale = new Vector3(0f, 0f, 0f);
+            m_Laser.isFired = false;
         }
     }
 
@@ -272,7 +276,8 @@ public class BattleFoodAgent : Agent
         Unsatiate();
         m_Shoot = false;
         m_AgentRb.velocity = Vector3.zero;
-        myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
+        m_Laser.isFired = false;
+        //m_Laser.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
             2f, Random.Range(-m_MyArea.range, m_MyArea.range))
             + area.transform.position;
