@@ -3,7 +3,7 @@ from typing import Dict, List, Mapping, cast, Tuple, Optional
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.base_env import ActionType, ActionSpec
+from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
@@ -32,13 +32,11 @@ class TorchSACOptimizer(TorchOptimizer):
             super().__init__()
             self.action_spec = action_spec
             if self.action_spec.is_continuous():
-                self.act_type = ActionType.CONTINUOUS
                 self.act_size = self.action_spec.continuous_size
                 num_value_outs = 1
                 num_action_ins = self.act_size
 
             else:
-                self.act_type = ActionType.DISCRETE
                 self.act_size = self.action_spec.discrete_branches
                 num_value_outs = sum(self.act_size)
                 num_action_ins = 0

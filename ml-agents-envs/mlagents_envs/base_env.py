@@ -29,7 +29,6 @@ from typing import (
     Mapping as MappingType,
 )
 import numpy as np
-from enum import Enum
 
 AgentId = int
 BehaviorName = str
@@ -241,11 +240,6 @@ class TerminalSteps(Mapping):
             interrupted=np.zeros(0, dtype=np.bool),
             agent_id=np.zeros(0, dtype=np.int32),
         )
-
-
-class ActionType(Enum):
-    DISCRETE = 0
-    CONTINUOUS = 1
 
 
 class ActionSpec(NamedTuple):
