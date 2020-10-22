@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -64,22 +65,43 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public abstract bool MakeMove(Move m);
 
+        /// <summary>
+        /// Return the total number of moves possible for the board.
+        /// </summary>
+        /// <returns></returns>
+        public int NumMoves()
+        {
+            return Move.NumPotentialMoves(Rows, Columns);
+        }
+
+        /// <summary>
+        /// An optional callback for when the all moves are invalid. Ideally, the game state should
+        /// be changed before this happens, but this is a way to get notified if not.
+        /// </summary>
+        public Action NoValidMoves;
+
+        /// <summary>
+        /// Iterate through all Moves on the board.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Move> AllMoves()
         {
             var currentMove = Move.FromMoveIndex(0, Rows, Columns);
-            var numMoves = Move.NumPotentialMoves(Rows, Columns);
-            for (var i = 0; i < numMoves; i++)
+            for (var i = 0; i < NumMoves(); i++)
             {
                 yield return currentMove;
                 currentMove.Advance(Rows, Columns);
             }
         }
 
+        /// <summary>
+        /// Iterate through all valid Moves on the board.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Move> ValidMoves()
         {
             var currentMove = Move.FromMoveIndex(0, Rows, Columns);
-            var numMoves = Move.NumPotentialMoves(Rows, Columns);
-            for (var i = 0; i < numMoves; i++)
+            for (var i = 0; i < NumMoves(); i++)
             {
                 if (IsMoveValid(currentMove))
                 {
@@ -89,11 +111,14 @@ namespace Unity.MLAgents.Extensions.Match3
             }
         }
 
+        /// <summary>
+        /// Iterate through all invalid Moves on the board.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<Move> InvalidMoves()
         {
             var currentMove = Move.FromMoveIndex(0, Rows, Columns);
-            var numMoves = Move.NumPotentialMoves(Rows, Columns);
-            for (var i = 0; i < numMoves; i++)
+            for (var i = 0; i < NumMoves(); i++)
             {
                 if (!IsMoveValid(currentMove))
                 {
