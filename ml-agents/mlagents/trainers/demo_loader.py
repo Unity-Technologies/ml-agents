@@ -109,12 +109,12 @@ def demo_to_buffer(
             != expected_behavior_spec.action_spec.discrete_branches
         ):
             raise RuntimeError(
-                "The continuous action dimensions {} in demonstration do not match the policy's {}.".format(
+                "The discrete action dimensions {} in demonstration do not match the policy's {}.".format(
                     behavior_spec.action_spec.discrete_branches,
                     expected_behavior_spec.action_spec.discrete_branches,
                 )
             )
-            # check observations match
+        # check observations match
         if len(behavior_spec.observation_shapes) != len(
             expected_behavior_spec.observation_shapes
         ):

@@ -168,8 +168,7 @@ def test_advance(dummy_config):
         length=15,
         observation_shapes=specs.observation_shapes,
         max_step_complete=True,
-        action_space=2,
-        is_discrete=False,
+        action_spec=specs.action_spec,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -187,8 +186,7 @@ def test_advance(dummy_config):
         length=6,
         observation_shapes=specs.observation_shapes,
         max_step_complete=False,
-        action_space=2,
-        is_discrete=False,
+        action_spec=specs.action_spec,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -211,9 +209,8 @@ def test_advance(dummy_config):
     trajectory = make_fake_trajectory(
         length=5,
         observation_shapes=specs.observation_shapes,
+        action_spec=specs.action_spec,
         max_step_complete=False,
-        action_space=2,
-        is_discrete=False,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
