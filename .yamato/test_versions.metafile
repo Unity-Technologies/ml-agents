@@ -1,6 +1,7 @@
 # List of configurations for standalone-build-test and its dependencies.
 # csharp_backcompat_version is used in training-int-tests to determine the
 # older package version to run the backwards compat tests against.
+# TODO either separate dictionary for platforms (type, image, flavor), or list the versions to test by platform.
 test_configs:
   - name: Mac_2018.4
     version: 2018.4
@@ -29,6 +30,7 @@ test_configs:
  #   # but we didn't handle this until 1.2.0
  #   csharp_backcompat_version: 1.2.0
 
+ # TODO skip some tests on Windows based on their triggers.
   - name: Win_2019.4
     version: 2019.4
     type: Unity::VM
