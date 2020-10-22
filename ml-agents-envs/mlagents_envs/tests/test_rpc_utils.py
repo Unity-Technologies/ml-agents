@@ -411,18 +411,18 @@ def test_agent_behavior_spec_from_proto():
     bp.vector_action_size.extend([5, 4])
     bp.vector_action_space_type = 0
     behavior_spec = behavior_spec_from_proto(bp, agent_proto)
-    assert behavior_spec.action_spec.is_action_discrete()
-    assert not behavior_spec.action_spec.is_action_continuous()
+    assert behavior_spec.action_spec.is_discrete()
+    assert not behavior_spec.action_spec.is_continuous()
     assert behavior_spec.observation_shapes == [(3,), (4,)]
-    assert behavior_spec.action_spec.discrete_action_branches == (5, 4)
-    assert behavior_spec.action_spec.action_size == 2
+    assert behavior_spec.action_spec.discrete_branches == (5, 4)
+    assert behavior_spec.action_spec.size == 2
     bp = BrainParametersProto()
     bp.vector_action_size.extend([6])
     bp.vector_action_space_type = 1
     behavior_spec = behavior_spec_from_proto(bp, agent_proto)
-    assert not behavior_spec.action_spec.is_action_discrete()
-    assert behavior_spec.action_spec.is_action_continuous()
-    assert behavior_spec.action_spec.action_size == 6
+    assert not behavior_spec.action_spec.is_discrete()
+    assert behavior_spec.action_spec.is_continuous()
+    assert behavior_spec.action_spec.size == 6
 
 
 def test_batched_step_result_from_proto_raises_on_infinite():

@@ -66,13 +66,13 @@ def create_steps_from_behavior_spec(
     behavior_spec: BehaviorSpec, num_agents: int = 1
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     action_spec = behavior_spec.action_spec
-    is_discrete = action_spec.is_action_discrete()
+    is_discrete = action_spec.is_discrete()
     return create_mock_steps(
         num_agents=num_agents,
         observation_shapes=behavior_spec.observation_shapes,
-        action_shape=action_spec.discrete_action_branches
+        action_shape=action_spec.discrete_branches
         if is_discrete
-        else action_spec.continuous_action_size,
+        else action_spec.continuous_size,
         discrete=is_discrete,
     )
 
@@ -154,11 +154,11 @@ def simulate_rollout(
     memory_size: int = 10,
     exclude_key_list: List[str] = None,
 ) -> AgentBuffer:
-    is_discrete = behavior_spec.action_spec.is_action_discrete()
+    is_discrete = behavior_spec.action_spec.is_discrete()
     if is_discrete:
-        action_space = behavior_spec.action_spec.discrete_action_branches
+        action_space = behavior_spec.action_spec.discrete_branches
     else:
-        action_space = behavior_spec.action_spec.continuous_action_size
+        action_space = behavior_spec.action_spec.continuous_size
     trajectory = make_fake_trajectory(
         length,
         behavior_spec.observation_shapes,

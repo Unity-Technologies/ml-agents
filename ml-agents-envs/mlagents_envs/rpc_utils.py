@@ -311,13 +311,13 @@ def steps_from_proto(
         [agent_info.id for agent_info in terminal_agent_info_list], dtype=np.int32
     )
     action_mask = None
-    if behavior_spec.action_spec.is_action_discrete():
+    if behavior_spec.action_spec.is_discrete():
         if any(
             [agent_info.action_mask is not None]
             for agent_info in decision_agent_info_list
         ):
             n_agents = len(decision_agent_info_list)
-            a_size = np.sum(behavior_spec.action_spec.discrete_action_branches)
+            a_size = np.sum(behavior_spec.action_spec.discrete_branches)
             mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
             for agent_index, agent_info in enumerate(decision_agent_info_list):
                 if agent_info.action_mask is not None:
@@ -328,7 +328,7 @@ def steps_from_proto(
                         ]
             action_mask = (1 - mask_matrix).astype(np.bool)
             indices = _generate_split_indices(
-                behavior_spec.action_spec.discrete_action_branches
+                behavior_spec.action_spec.discrete_branches
             )
             action_mask = np.split(action_mask, indices, axis=1)
     return (

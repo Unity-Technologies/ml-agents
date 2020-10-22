@@ -305,10 +305,7 @@ class TFPolicy(Policy):
             feed_dict[self.vector_in] = vec_vis_obs.vector_observations
         if not self.use_continuous_act:
             mask = np.ones(
-                (
-                    len(batched_step_result),
-                    sum(self.action_spec.discrete_action_branches),
-                ),
+                (len(batched_step_result), sum(self.action_spec.discrete_branches)),
                 dtype=np.float32,
             )
             if batched_step_result.action_mask is not None:
@@ -445,7 +442,7 @@ class TFPolicy(Policy):
             self.mask = tf.cast(self.mask_input, tf.int32)
 
             tf.Variable(
-                int(self.action_spec.is_action_continuous()),
+                int(self.action_spec.is_continuous()),
                 name="is_continuous_control",
                 trainable=False,
                 dtype=tf.int32,
@@ -479,7 +476,7 @@ class TFPolicy(Policy):
             tf.Variable(
                 self.m_size, name="memory_size", trainable=False, dtype=tf.int32
             )
-            if self.action_spec.is_action_continuous():
+            if self.action_spec.is_continuous():
                 tf.Variable(
                     self.act_size[0],
                     name="action_output_shape",

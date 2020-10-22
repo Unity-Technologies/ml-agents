@@ -78,25 +78,25 @@ def test_empty_terminal_steps():
 
 def test_specs():
     specs = ActionSpec(3, ())
-    assert specs.discrete_action_branches == ()
-    assert specs.action_size == 3
-    assert specs.create_empty_action(5).shape == (5, 3)
-    assert specs.create_empty_action(5).dtype == np.float32
+    assert specs.discrete_branches == ()
+    assert specs.size == 3
+    assert specs.create_empty(5).shape == (5, 3)
+    assert specs.create_empty(5).dtype == np.float32
 
     specs = ActionSpec(0, (3,))
-    assert specs.discrete_action_branches == (3,)
-    assert specs.action_size == 1
-    assert specs.create_empty_action(5).shape == (5, 1)
-    assert specs.create_empty_action(5).dtype == np.int32
+    assert specs.discrete_branches == (3,)
+    assert specs.size == 1
+    assert specs.create_empty(5).shape == (5, 1)
+    assert specs.create_empty(5).dtype == np.int32
 
 
 def test_action_generator():
     # Continuous
     action_len = 30
     specs = ActionSpec(action_len, ())
-    zero_action = specs.create_empty_action(4)
+    zero_action = specs.create_empty(4)
     assert np.array_equal(zero_action, np.zeros((4, action_len), dtype=np.float32))
-    random_action = specs.create_random_action(4)
+    random_action = specs.create_random(4)
     assert random_action.dtype == np.float32
     assert random_action.shape == (4, action_len)
     assert np.min(random_action) >= -1
@@ -105,10 +105,10 @@ def test_action_generator():
     # Discrete
     action_shape = (10, 20, 30)
     specs = ActionSpec(0, action_shape)
-    zero_action = specs.create_empty_action(4)
+    zero_action = specs.create_empty(4)
     assert np.array_equal(zero_action, np.zeros((4, len(action_shape)), dtype=np.int32))
 
-    random_action = specs.create_random_action(4)
+    random_action = specs.create_random(4)
     assert random_action.dtype == np.int32
     assert random_action.shape == (4, len(action_shape))
     assert np.min(random_action) >= 0

@@ -31,15 +31,15 @@ class TorchSACOptimizer(TorchOptimizer):
         ):
             super().__init__()
             self.action_spec = action_spec
-            if self.action_spec.is_action_continuous():
+            if self.action_spec.is_continuous():
                 self.act_type = ActionType.CONTINUOUS
-                self.act_size = self.action_spec.continuous_action_size
+                self.act_size = self.action_spec.continuous_size
                 num_value_outs = 1
                 num_action_ins = self.act_size
 
             else:
                 self.act_type = ActionType.DISCRETE
-                self.act_size = self.action_spec.discrete_action_branches
+                self.act_size = self.action_spec.discrete_branches
                 num_value_outs = sum(self.act_size)
                 num_action_ins = 0
             self.q1_network = ValueNetwork(

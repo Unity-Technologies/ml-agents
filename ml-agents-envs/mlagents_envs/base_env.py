@@ -246,59 +246,67 @@ class TerminalSteps(Mapping):
 class ActionType(Enum):
     DISCRETE = 0
     CONTINUOUS = 1
-    HYBRID = 2
 
 
 class ActionSpec(NamedTuple):
+    """
+    A NamedTuple containing utility functions and information about the action spaces
+    for a group of Agents under the same behavior.
+    - num_continuous_actions is an int corresponding to the number of floats which
+    constitute the action.
+    - discrete_branch_sizes is a Tuple of int where each int corresponds to
+    the number of discrete actions available to the agent on an independent action branch.
+    """
+
     num_continuous_actions: int
     discrete_branch_sizes: Tuple[int, ...]
 
     # For backwards compatibility
-    def is_action_discrete(self) -> bool:
+    def is_discrete(self) -> bool:
         """
         Returns true if this Behavior uses discrete actions
         """
-        return self.discrete_action_size > 0
+        return self.discrete_size > 0
 
     # For backwards compatibility
-    def is_action_continuous(self) -> bool:
+    def is_continuous(self) -> bool:
         """
         Returns true if this Behavior uses continuous actions
         """
-        return self.continuous_action_size > 0
+        return self.continuous_size > 0
 
     @property
-    def discrete_action_branches(self) -> Tuple[int, ...]:
+    def discrete_branches(self) -> Tuple[int, ...]:
         return self.discrete_branch_sizes  # type: ignore
 
     @property
-    def discrete_action_size(self) -> int:
+    def discrete_size(self) -> int:
         return len(self.discrete_branch_sizes)
 
     @property
-    def continuous_action_size(self) -> int:
+    def continuous_size(self) -> int:
         return self.num_continuous_actions
 
     @property
-    def action_size(self) -> int:
-        return self.discrete_action_size + self.continuous_action_size
+    def size(self) -> int:
+        return self.discrete_size + self.continuous_size
 
     @property
-    def total_action_size(self) -> int:
-        return sum(self.discrete_action_branches) + self.continuous_action_size
+    def total_size(self) -> int:
+        return sum(self.discrete_branches) + self.continuous_size
 
-    def create_empty_action(self, n_agents: int) -> np.ndarray:
-        if self.is_action_continuous():
-            return np.zeros((n_agents, self.continuous_action_size), dtype=np.float32)
-        return np.zeros((n_agents, self.discrete_action_size), dtype=np.int32)
+    def create_empty(self, n_agents: int) -> np.ndarray:
+        if self.is_continuous():
+            return np.zeros((n_agents, self.continuous_size), dtype=np.float32)
+        return np.zeros((n_agents, self.discrete_size), dtype=np.int32)
 
-    def create_random_action(self, n_agents: int) -> np.ndarray:
-        if self.is_action_continuous():
+    def create_random(self, n_agents: int) -> np.ndarray:
+        if self.is_continuous():
             action = np.random.uniform(
-                low=-1.0, high=1.0, size=(n_agents, self.continuous_action_size)
+                low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
             ).astype(np.float32)
         else:
-            branch_size = self.discrete_action_branches
+            branch_size = self.discrete_branches
             action = np.column_stack(
                 [
                     np.random.randint(
@@ -307,13 +315,22 @@ class ActionSpec(NamedTuple):
                         size=(n_agents),
                         dtype=np.int32,
                     )
-                    for i in range(self.discrete_action_size)
+                    for i in range(self.discrete_size)
                 ]
             )
         return action
 
 
 class BehaviorSpec(NamedTuple):
+    """
+    A NamedTuple containing information about the observation and action
+    spaces for a group of Agents under the same behavior.
+    - observation_shapes is a List of Tuples of int : Each Tuple corresponds
+    to an observation's dimensions. The shape tuples have the same ordering as
+    the ordering of the DecisionSteps and TerminalSteps.
+    - action_spec is an ActionSpec NamedTuple
+    """
+
     observation_shapes: List[Tuple]
     action_spec: ActionSpec
 

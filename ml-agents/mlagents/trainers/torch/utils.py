@@ -31,19 +31,19 @@ class ModelUtils:
 
         @property
         def flattened_size(self) -> int:
-            if self._specs.is_action_continuous():
-                return self._specs.action_size
+            if self._specs.is_continuous():
+                return self._specs.size
             else:
-                return sum(self._specs.discrete_action_branches)
+                return sum(self._specs.discrete_branches)
 
         def forward(self, action: torch.Tensor) -> torch.Tensor:
-            if self._specs.is_action_continuous():
+            if self._specs.is_continuous():
                 return action
             else:
                 return torch.cat(
                     ModelUtils.actions_to_onehot(
                         torch.as_tensor(action, dtype=torch.long),
-                        self._specs.discrete_action_branches,
+                        self._specs.discrete_branches,
                     ),
                     dim=1,
                 )

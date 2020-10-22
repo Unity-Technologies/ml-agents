@@ -94,24 +94,24 @@ def demo_to_buffer(
     if expected_behavior_spec:
         # check action dimensions in demonstration match
         if (
-            behavior_spec.action_spec.continuous_action_size
-            != expected_behavior_spec.action_spec.continuous_action_size
+            behavior_spec.action_spec.continuous_size
+            != expected_behavior_spec.action_spec.continuous_size
         ):
             raise RuntimeError(
                 "The continuous action dimensions {} in demonstration do not match the policy's {}.".format(
-                    behavior_spec.action_spec.continuous_action_size,
-                    expected_behavior_spec.action_spec.continuous_action_size,
+                    behavior_spec.action_spec.continuous_size,
+                    expected_behavior_spec.action_spec.continuous_size,
                 )
             )
 
         if (
-            behavior_spec.action_spec.discrete_action_branches
-            != expected_behavior_spec.action_spec.discrete_action_branches
+            behavior_spec.action_spec.discrete_branches
+            != expected_behavior_spec.action_spec.discrete_branches
         ):
             raise RuntimeError(
                 "The continuous action dimensions {} in demonstration do not match the policy's {}.".format(
-                    behavior_spec.action_spec.discrete_action_branches,
-                    expected_behavior_spec.action_spec.discrete_action_branches,
+                    behavior_spec.action_spec.discrete_branches,
+                    expected_behavior_spec.action_spec.discrete_branches,
                 )
             )
             # check observations match

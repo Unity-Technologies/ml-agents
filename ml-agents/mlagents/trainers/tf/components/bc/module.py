@@ -107,11 +107,11 @@ class BCModule:
             self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         feed_dict[self.model.action_in_expert] = mini_batch_demo["actions"]
-        if self.policy.action_spec.is_action_discrete():
+        if self.policy.action_spec.is_discrete():
             feed_dict[self.policy.action_masks] = np.ones(
                 (
                     self.n_sequences * self.policy.sequence_length,
-                    sum(self.policy.action_spec.discrete_action_branches),
+                    sum(self.policy.action_spec.discrete_branches),
                 ),
                 dtype=np.float32,
             )
