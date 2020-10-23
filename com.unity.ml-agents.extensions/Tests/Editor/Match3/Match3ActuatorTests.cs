@@ -1,5 +1,4 @@
 using NUnit.Framework;
-using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Match3;
 using UnityEngine;
 
@@ -82,6 +81,34 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 Assert.IsTrue(board.CallbackCalled);
             }
             Assert.AreNotEqual(-1, board.LastMoveIndex);
+        }
+
+        [Test]
+        public void TestActionSpec()
+        {
+            var gameObj = new GameObject();
+            var board = gameObj.AddComponent<SimpleBoard>();
+            var actuator = gameObj.AddComponent<Match3ActuatorComponent>();
+
+            board.Rows = 5;
+            board.Columns = 5;
+            board.NumCellTypes = 5;
+            board.NumSpecialTypes = 0;
+
+            var actionSpec = actuator.ActionSpec;
+            Assert.AreEqual(1, actionSpec.NumDiscreteActions);
+            Assert.AreEqual(board.NumMoves(), actionSpec.BranchSizes[0]);
+        }
+
+        [Test]
+        public void TestActionSpecNullBoard()
+        {
+            var gameObj = new GameObject();
+            var actuator = gameObj.AddComponent<Match3ActuatorComponent>();
+
+            var actionSpec = actuator.ActionSpec;
+            Assert.AreEqual(0, actionSpec.NumDiscreteActions);
+            Assert.AreEqual(0, actionSpec.NumContinuousActions);
         }
 
     }

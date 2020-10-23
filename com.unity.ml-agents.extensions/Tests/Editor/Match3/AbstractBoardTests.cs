@@ -9,6 +9,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
     internal class StringBoard : AbstractBoard
     {
         private string[] m_Board;
+        private string[] m_Special;
 
         /// <summary>
         /// Convert a string like "000\n010\n000" to a board representation
@@ -30,6 +31,22 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             }
         }
 
+        public void SetSpecial(string newSpecial)
+        {
+            m_Special = newSpecial.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(Rows == m_Special.Length);
+            Debug.Assert(Columns == m_Special[0].Length);
+            NumSpecialTypes = 0;
+            for (var r = 0; r < Rows; r++)
+            {
+                for (var c = 0; c < Columns; c++)
+                {
+                    NumSpecialTypes = Mathf.Max(NumSpecialTypes, GetSpecialType(r, c));
+                }
+            }
+
+        }
+
         public override bool MakeMove(Move m)
         {
             return true;
@@ -48,7 +65,8 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
 
         public override int GetSpecialType(int row, int col)
         {
-            return 0;
+            var character = m_Special[m_Board.Length - 1 - row][col];
+            return (int)(character - '0');
         }
 
     }
@@ -116,13 +134,18 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 validIndices.Add(m.MoveIndex);
             }
 
-            var numPotentialMoves = Move.NumPotentialMoves(board.Rows, board.Columns);
-            for (var i = 0; i < numPotentialMoves; i++)
+            foreach (var move in board.AllMoves())
             {
-                var move = Move.FromMoveIndex(i, board.Rows, board.Columns);
                 var expected = validIndices.Contains(move.MoveIndex);
                 Assert.AreEqual(expected, board.IsMoveValid(move), $"({move.Row}, {move.Column}, {move.Direction})");
             }
+
+            HashSet<int> validIndicesFromIterator = new HashSet<int>();
+            foreach (var move in board.ValidMoves())
+            {
+                validIndicesFromIterator.Add(move.MoveIndex);
+            }
+            Assert.IsTrue(validIndices.SetEquals(validIndicesFromIterator));
         }
 
     }
