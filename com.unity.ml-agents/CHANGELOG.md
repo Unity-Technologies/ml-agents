@@ -12,9 +12,15 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+ - PyTorch trainers are now the default. See the
+ [installation docs](https://github.com/Unity-Technologies/ml-agents/blob/mastere/docs/Installation.md) for
+ more information on installing PyTorch. For the time being, TensorFlow is still available;
+ you can use the TensorFlow backend by adding `--tensorflow` to the CLI, or
+ adding `framework: tensorflow` in the configuration YAML. (#4517)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
+- The Barracuda dependency was upgraded to 1.1.2 (#4571)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
 
 ### Bug Fixes
@@ -23,6 +29,7 @@ and this project adheres to
 if they are called recursively (for example, if they call `Agent.EndEpisode()`).
 Previously, this would result in an infinite loop and cause the editor to hang. (#4573)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
 
 
 ## [1.5.0-preview] - 2020-10-14

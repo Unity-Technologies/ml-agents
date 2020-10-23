@@ -92,6 +92,7 @@ def test_evaluate_actions(rnn, visual, discrete):
         memories=memories,
         seq_len=policy.sequence_length,
     )
+
     assert log_probs.shape == (64, policy.behavior_spec.action_spec.size)
     assert entropy.shape == (64,)
     for val in values.values():
