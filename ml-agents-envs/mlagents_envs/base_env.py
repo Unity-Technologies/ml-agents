@@ -30,6 +30,8 @@ from typing import (
 )
 import numpy as np
 
+from mlagents_envs.exception import UnityActionException
+
 AgentId = int
 BehaviorName = str
 
@@ -318,6 +320,31 @@ class ActionSpec(NamedTuple):
                 ]
             )
         return action
+
+    def validate_action_shape(
+        self, actions: np.ndarray, n_agents: int, name: str
+    ) -> None:
+        """
+        Validates that action has the correct action dim
+        for the correct number of agents.
+        """
+        _expected_shape = (n_agents, self.size)
+        if actions.shape != _expected_shape:
+            raise UnityActionException(
+                f"The behavior {name} needs an input of dimension "
+                f"{_expected_shape} for (<number of agents>, <action size>) but "
+                f"received input of dimension {actions.shape}"
+            )
+
+    def validate_action_type(self, actions: np.ndarray) -> np.ndarray:
+        """
+        Checks action has the correct expected type and if not
+        casts it to the correct type.
+        """
+        _expected_type = np.float32 if self.is_continuous() else np.int32
+        if actions.dtype != _expected_type:
+            actions = actions.astype(_expected_type)
+        return actions
 
     @staticmethod
     def make_continuous(continuous_size: int) -> "ActionSpec":
