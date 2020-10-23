@@ -1135,7 +1135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
@@ -1225,6 +1225,7 @@ MonoBehaviour:
   area: {fileID: 7136043490825593518}
   turnSpeed: 300
   moveSpeed: 2
+  cooldownTime: 0.5
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   badMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -1313,7 +1314,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
@@ -1390,6 +1391,7 @@ MonoBehaviour:
   area: {fileID: 7136043490825593518}
   turnSpeed: 300
   moveSpeed: 2
+  cooldownTime: 0.5
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   badMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -1555,7 +1557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
@@ -1632,6 +1634,7 @@ MonoBehaviour:
   area: {fileID: 7136043490825593518}
   turnSpeed: 300
   moveSpeed: 2
+  cooldownTime: 0.5
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   badMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -1922,7 +1925,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
@@ -1999,6 +2002,7 @@ MonoBehaviour:
   area: {fileID: 2458225129383339183}
   turnSpeed: 300
   moveSpeed: 2
+  cooldownTime: 0.5
   normalMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   badMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -2241,7 +2245,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
@@ -2318,6 +2322,7 @@ MonoBehaviour:
   area: {fileID: 2458225129383339183}
   turnSpeed: 300
   moveSpeed: 2
+  cooldownTime: 0.5
   normalMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   badMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -4554,7 +4559,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 4
+    VectorObservationSize: 5
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
@@ -4631,6 +4636,7 @@ MonoBehaviour:
   area: {fileID: 2458225129383339183}
   turnSpeed: 300
   moveSpeed: 2
+  cooldownTime: 0.5
   normalMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   badMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
