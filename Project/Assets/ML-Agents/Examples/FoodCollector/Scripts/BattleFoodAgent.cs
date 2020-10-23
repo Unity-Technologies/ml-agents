@@ -17,6 +17,7 @@ public class BattleFoodAgent : Agent
     bool m_Shoot;
     float m_FrozenTime;
     float m_EffectTime;
+    float m_CooldownTime;
     Rigidbody m_AgentRb;
     float m_LaserLength;
     // Speed of agent rotation.
@@ -26,6 +27,8 @@ public class BattleFoodAgent : Agent
 
     // Speed of agent movement.
     public float moveSpeed = 2;
+
+    public float cooldownTime = 0.5f;
     public Material normalMaterial;
     public Material badMaterial;
     public Material goodMaterial;
@@ -73,10 +76,12 @@ public class BattleFoodAgent : Agent
             sensor.AddObservation(localVelocity.z);
             sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_Shoot);
+            sensor.AddObservation((Time.time - m_CooldownTime) / cooldownTime);
         }
         else if (useVectorFrozenFlag)
         {
             sensor.AddObservation(m_Frozen);
+            sensor.AddObservation((Time.time - m_CooldownTime) / cooldownTime);
         }
     }
 
@@ -169,7 +174,7 @@ public class BattleFoodAgent : Agent
             m_AgentRb.velocity *= 0.95f;
         }
 
-        if (m_Shoot)
+        if (m_Shoot && (Time.time > m_CooldownTime + cooldownTime))
         {
             var myTransform = transform;
             //m_Laser.transform.localScale = new Vector3(1f, 1f, m_LaserLength);
@@ -189,6 +194,7 @@ public class BattleFoodAgent : Agent
                     }
                 }
             }
+            m_CooldownTime = Time.time;
         }
         else
         {
