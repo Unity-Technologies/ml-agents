@@ -17,6 +17,9 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - Fixed a bug with visual observations using .onnx model files and newer versions of Barracuda (1.1.0 or later). (#4533)
 
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
+
 ## [1.0.5] - 2020-09-23
 ### Minor Changes
 #### com.unity.ml-agents (C#)

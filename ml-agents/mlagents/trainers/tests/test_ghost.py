@@ -95,6 +95,70 @@ def test_load_and_set(dummy_config, use_discrete):
         np.testing.assert_array_equal(w, lw)
 
 
+def test_resume(dummy_config, tmp_path):
+    brain_params_team0 = BrainParameters(
+        brain_name="test_brain?team=0",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+
+    brain_name = BehaviorIdentifiers.from_name_behavior_id(
+        brain_params_team0.brain_name
+    ).brain_name
+
+    brain_params_team1 = BrainParameters(
+        brain_name="test_brain?team=1",
+        vector_observation_space_size=1,
+        camera_resolutions=[],
+        vector_action_space_size=[2],
+        vector_action_descriptions=[],
+        vector_action_space_type=0,
+    )
+
+    tmp_path = tmp_path.as_posix()
+    ppo_trainer = PPOTrainer(brain_name, 0, dummy_config, True, False, 0, tmp_path)
+    controller = GhostController(100)
+    trainer = GhostTrainer(
+        ppo_trainer, brain_name, controller, 0, dummy_config, True, tmp_path
+    )
+
+    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(
+        brain_params_team0.brain_name
+    )
+    policy = trainer.create_policy(parsed_behavior_id0, brain_params_team0)
+    trainer.add_policy(parsed_behavior_id0, policy)
+
+    parsed_behavior_id1 = BehaviorIdentifiers.from_name_behavior_id(
+        brain_params_team1.brain_name
+    )
+    policy = trainer.create_policy(parsed_behavior_id1, brain_params_team1)
+    trainer.add_policy(parsed_behavior_id1, policy)
+
+    trainer.save_model(parsed_behavior_id0.behavior_id)
+
+    # Make a new trainer, check that the policies are the same
+    ppo_trainer2 = PPOTrainer(brain_name, 0, dummy_config, True, True, 0, tmp_path)
+    trainer2 = GhostTrainer(
+        ppo_trainer2, brain_name, controller, 0, dummy_config, True, tmp_path
+    )
+    policy = trainer2.create_policy(parsed_behavior_id0, brain_params_team0)
+    trainer2.add_policy(parsed_behavior_id0, policy)
+
+    policy = trainer2.create_policy(parsed_behavior_id1, brain_params_team1)
+    trainer2.add_policy(parsed_behavior_id1, policy)
+
+    trainer1_policy = trainer.get_policy(parsed_behavior_id1.behavior_id)
+    trainer2_policy = trainer2.get_policy(parsed_behavior_id1.behavior_id)
+    weights = trainer1_policy.get_weights()
+    weights2 = trainer2_policy.get_weights()
+
+    for w, lw in zip(weights, weights2):
+        np.testing.assert_array_equal(w, lw)
+
+
 def test_process_trajectory(dummy_config):
     brain_params_team0 = BrainParameters(
         brain_name="test_brain?team=0",
