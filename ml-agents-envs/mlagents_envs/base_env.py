@@ -282,22 +282,43 @@ class ActionSpec(NamedTuple):
 
     @property
     def discrete_branches(self) -> Tuple[int, ...]:
+        """
+        Returns a Tuple of int corresponding to the number of possible actions
+        for each branch (only for discrete actions). Will return None in
+        for continuous actions.
+        """
         return self.discrete_branch_sizes  # type: ignore
 
     @property
     def discrete_size(self) -> int:
+        """
+        Returns a an int corresponding to the number of discrete branches.
+        """
         return len(self.discrete_branch_sizes)
 
     @property
     def continuous_size(self) -> int:
+        """
+        Returns a an int corresponding to the number of continuous actions.
+        """
         return self.num_continuous_actions
 
     def create_empty(self, n_agents: int) -> np.ndarray:
+        """
+        Generates a numpy array corresponding to an empty action (all zeros)
+        for a number of agents.
+        :param n_agents: The number of agents that will have actions generated
+        """
         if self.is_continuous():
             return np.zeros((n_agents, self.continuous_size), dtype=np.float32)
         return np.zeros((n_agents, self.discrete_size), dtype=np.int32)
 
     def create_random(self, n_agents: int) -> np.ndarray:
+        """
+        Generates a numpy array corresponding to a random action (either discrete
+        or continuous) for a number of agents.
+        :param n_agents: The number of agents that will have actions generated
+        """
         if self.is_continuous():
             action = np.random.uniform(
                 low=-1.0, high=1.0, size=(n_agents, self.continuous_size)

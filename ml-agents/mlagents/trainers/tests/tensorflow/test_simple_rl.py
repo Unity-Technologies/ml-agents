@@ -186,7 +186,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_TF_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=500,
+        max_steps=450,
         summary_freq=100,
         framework=FrameworkType.TENSORFLOW,
     )
