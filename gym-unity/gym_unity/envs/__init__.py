@@ -114,15 +114,21 @@ class UnityToGymWrapper(gym.Env):
                 else:
                     self._action_space = spaces.MultiDiscrete(branches)
 
-        else:
+        elif self.group_spec.action_spec.is_continuous():
             if flatten_branched:
                 logger.warning(
                     "The environment has a non-discrete action space. It will "
                     "not be flattened."
                 )
+
             self.action_size = self.group_spec.action_spec.continuous_size
             high = np.array([1] * self.group_spec.action_spec.continuous_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
+        else:
+            raise UnityGymException(
+                "The gym wrapper does not provide explicit support for both discrete "
+                "and continuous actions."
+            )
 
         # Set observations space
         list_spaces: List[gym.Space] = []

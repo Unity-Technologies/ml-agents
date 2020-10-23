@@ -271,14 +271,14 @@ class ActionSpec(NamedTuple):
         """
         Returns true if this Behavior uses discrete actions
         """
-        return self.discrete_size > 0
+        return self.discrete_size > 0 and self.continuous_size == 0
 
     # For backwards compatibility
     def is_continuous(self) -> bool:
         """
         Returns true if this Behavior uses continuous actions
         """
-        return self.continuous_size > 0
+        return self.discrete_size == 0 and self.continuous_size > 0
 
     @property
     def discrete_branches(self) -> Tuple[int, ...]:
