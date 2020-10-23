@@ -43,6 +43,8 @@ public class BattleFoodAgent : Agent
     public bool useVectorFrozenFlag;
     public bool useCooldownObs = true;
 
+    public float freezeTime = 10f;
+
     public BattleFoodScoring areaScoring;
 
     EnvironmentParameters m_ResetParams;
@@ -107,7 +109,7 @@ public class BattleFoodAgent : Agent
         AddReward(timePenalty);
         m_Shoot = false;
 
-        if (Time.time > m_FrozenTime + 10f && m_Frozen)
+        if (Time.time > m_FrozenTime + freezeTime && m_Frozen)
         {
             Unfreeze();
         }

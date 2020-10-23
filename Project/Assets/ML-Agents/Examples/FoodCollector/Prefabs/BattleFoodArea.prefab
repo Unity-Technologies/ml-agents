@@ -1135,12 +1135,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
+  m_Model: {fileID: 11400000, guid: ab5b2af686f124006bdd14e53aeed779, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1221,11 +1221,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2000
   area: {fileID: 7136043490825593518}
   turnSpeed: 300
   moveSpeed: 2
-  cooldownTime: 0.5
+  cooldownTime: 0
+  timePenalty: 0
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   badMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -1233,6 +1234,7 @@ MonoBehaviour:
   contribute: 1
   useVectorObs: 1
   useVectorFrozenFlag: 0
+  useCooldownObs: 0
   areaScoring: {fileID: 8193433416055547570}
 --- !u!1 &1495617568563208
 GameObject:
@@ -1314,12 +1316,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
+  m_Model: {fileID: 11400000, guid: ab5b2af686f124006bdd14e53aeed779, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1387,11 +1389,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2000
   area: {fileID: 7136043490825593518}
   turnSpeed: 300
   moveSpeed: 2
-  cooldownTime: 0.5
+  cooldownTime: 0
+  timePenalty: 0
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   badMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -1399,6 +1402,7 @@ MonoBehaviour:
   contribute: 1
   useVectorObs: 1
   useVectorFrozenFlag: 0
+  useCooldownObs: 0
   areaScoring: {fileID: 8193433416055547570}
 --- !u!1 &1574067311314706
 GameObject:
@@ -1557,12 +1561,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
+  m_Model: {fileID: 11400000, guid: ab5b2af686f124006bdd14e53aeed779, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1630,11 +1634,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2000
   area: {fileID: 7136043490825593518}
   turnSpeed: 300
   moveSpeed: 2
-  cooldownTime: 0.5
+  cooldownTime: 0
+  timePenalty: 0
   normalMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   badMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -1642,6 +1647,7 @@ MonoBehaviour:
   contribute: 1
   useVectorObs: 1
   useVectorFrozenFlag: 0
+  useCooldownObs: 0
   areaScoring: {fileID: 8193433416055547570}
 --- !u!1 &1617924810425504
 GameObject:
@@ -1925,12 +1931,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
+  m_Model: {fileID: 11400000, guid: ab5b2af686f124006bdd14e53aeed779, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1998,11 +2004,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2000
   area: {fileID: 2458225129383339183}
   turnSpeed: 300
   moveSpeed: 2
-  cooldownTime: 0.5
+  cooldownTime: 0
+  timePenalty: 0
   normalMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   badMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -2010,6 +2017,7 @@ MonoBehaviour:
   contribute: 1
   useVectorObs: 1
   useVectorFrozenFlag: 0
+  useCooldownObs: 0
   areaScoring: {fileID: 8193433416055547570}
 --- !u!1 &1688105343773098
 GameObject:
@@ -2245,12 +2253,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
+  m_Model: {fileID: 11400000, guid: ab5b2af686f124006bdd14e53aeed779, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -2318,11 +2326,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2000
   area: {fileID: 2458225129383339183}
   turnSpeed: 300
   moveSpeed: 2
-  cooldownTime: 0.5
+  cooldownTime: 0
+  timePenalty: 0
   normalMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   badMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -2330,6 +2339,7 @@ MonoBehaviour:
   contribute: 1
   useVectorObs: 1
   useVectorFrozenFlag: 0
+  useCooldownObs: 0
   areaScoring: {fileID: 8193433416055547570}
 --- !u!1 &1729825611722018
 GameObject:
@@ -4559,12 +4569,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    VectorObservationSize: 5
+    VectorObservationSize: 4
     NumStackedVectorObservations: 1
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
+  m_Model: {fileID: 11400000, guid: ab5b2af686f124006bdd14e53aeed779, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -4632,11 +4642,12 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 2000
   area: {fileID: 2458225129383339183}
   turnSpeed: 300
   moveSpeed: 2
-  cooldownTime: 0.5
+  cooldownTime: 0
+  timePenalty: 0
   normalMaterial: {fileID: 2100000, guid: b0da1813c36914e678ba57f2790424e1, type: 2}
   badMaterial: {fileID: 2100000, guid: c9fa44c2c3f8ce74ca39a3355ea42631, type: 2}
   goodMaterial: {fileID: 2100000, guid: c67450f290f3e4897bc40276a619e78d, type: 2}
@@ -4644,6 +4655,7 @@ MonoBehaviour:
   contribute: 1
   useVectorObs: 1
   useVectorFrozenFlag: 0
+  useCooldownObs: 0
   areaScoring: {fileID: 8193433416055547570}
 --- !u!1 &5100791406091554310
 GameObject:
