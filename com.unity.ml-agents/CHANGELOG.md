@@ -41,6 +41,7 @@ and this project adheres to
  - Fixed a bug where accessing the Academy outside of play mode would cause the
  Academy to get stepped multiple times when in play mode. (#4532)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+ - Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
 
 
 ## [1.4.0-preview] - 2020-09-16
