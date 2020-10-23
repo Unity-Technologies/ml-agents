@@ -86,9 +86,9 @@ namespace Unity.MLAgents.Extensions.Match3
                     // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
                     // (or log a warning if not) and leave the last action unmasked. This isn't great, but
                     // an invalid move should be easier to handle than an exception..
-                    if (m_Board.NoValidMoves != null)
+                    if (m_Board.OnNoValidMovesAction != null)
                     {
-                        m_Board.NoValidMoves();
+                        m_Board.OnNoValidMovesAction();
                     }
                     else
                     {

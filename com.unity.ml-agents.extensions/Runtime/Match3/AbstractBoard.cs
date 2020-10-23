@@ -78,7 +78,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// An optional callback for when the all moves are invalid. Ideally, the game state should
         /// be changed before this happens, but this is a way to get notified if not.
         /// </summary>
-        public Action NoValidMoves;
+        public Action OnNoValidMovesAction;
 
         /// <summary>
         /// Iterate through all Moves on the board.

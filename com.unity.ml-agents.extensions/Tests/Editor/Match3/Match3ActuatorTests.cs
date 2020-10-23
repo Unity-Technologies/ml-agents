@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
             board.NumSpecialTypes = 0;
 
             board.MovesAreValid = movesAreValid;
-            board.NoValidMoves = board.Callback;
+            board.OnNoValidMovesAction = board.Callback;
             board.LastMoveIndex = -1;
 
             agent.LazyInitialize();
