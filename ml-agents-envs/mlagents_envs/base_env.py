@@ -317,12 +317,12 @@ class ActionSpec(NamedTuple):
             )
         return action
 
-    def validate_action_shape(
+    def validate_action(
         self, actions: np.ndarray, n_agents: int, name: str
-    ) -> None:
+    ) -> np.ndarray:
         """
         Validates that action has the correct action dim
-        for the correct number of agents.
+        for the correct number of agents and ensures the type.
         """
         if self.continuous_size > 0:
             _size = self.continuous_size
@@ -335,12 +335,6 @@ class ActionSpec(NamedTuple):
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.shape}"
             )
-
-    def validate_action_type(self, actions: np.ndarray) -> np.ndarray:
-        """
-        Checks action has the correct expected type and if not
-        casts it to the correct type.
-        """
         _expected_type = np.float32 if self.is_continuous() else np.int32
         if actions.dtype != _expected_type:
             actions = actions.astype(_expected_type)

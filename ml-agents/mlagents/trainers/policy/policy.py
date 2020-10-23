@@ -49,7 +49,11 @@ class Policy:
             1 for shape in behavior_spec.observation_shapes if len(shape) == 3
         )
         self.use_continuous_act = self.behavior_spec.action_spec.is_continuous()
-        self.num_branches = self.behavior_spec.action_spec.discrete_size
+        # This line will be removed in the ActionBuffer change
+        self.num_branches = (
+            self.behavior_spec.action_spec.continuous_size
+            + self.behavior_spec.action_spec.discrete_size
+        )
         self.previous_action_dict: Dict[str, np.array] = {}
         self.memory_dict: Dict[str, np.ndarray] = {}
         self.normalize = trainer_settings.network_settings.normalize

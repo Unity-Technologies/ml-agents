@@ -341,10 +341,8 @@ class UnityEnvironment(BaseEnv):
         if behavior_name not in self._env_state:
             return
         action_spec = self._env_specs[behavior_name].action_spec
-        action_spec.validate_action_shape(
-            action, len(self._env_state[behavior_name][0]), behavior_name
-        )
-        action = action_spec.validate_action_type(action)
+        num_agents = len(self._env_state[behavior_name][0])
+        action = action_spec.validate_action(action, num_agents, behavior_name)
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
@@ -354,15 +352,10 @@ class UnityEnvironment(BaseEnv):
         if behavior_name not in self._env_state:
             return
         action_spec = self._env_specs[behavior_name].action_spec
-        action_spec.validate_action_shape(
-            action, len(self._env_state[behavior_name][0]), behavior_name
-        )
-        action = action_spec.validate_action_type(action)
-
+        num_agents = len(self._env_state[behavior_name][0])
+        action = action_spec.validate_action(action, num_agents, behavior_name)
         if behavior_name not in self._env_actions:
-            self._env_actions[behavior_name] = action_spec.create_empty(
-                len(self._env_state[behavior_name][0])
-            )
+            self._env_actions[behavior_name] = action_spec.create_empty(num_agents)
         try:
             index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
                 0
