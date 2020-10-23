@@ -43,7 +43,7 @@ contains the following:
 We are currently not accepting environment contributions directly into ML-Agents.
 However, we believe community created enviornments have a lot of value to the
 community. If you have an interesting enviornment and are willing to share,
-feel free to showcase it and share any relevant files in the 
+feel free to showcase it and share any relevant files in the
 [ML-Agents forum](https://forum.unity.com/forums/ml-agents.453/).
 
 ## Continuous Integration (CI)
