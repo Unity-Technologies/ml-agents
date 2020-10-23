@@ -29,6 +29,7 @@ and this project adheres to
 if they are called recursively (for example, if they call `Agent.EndEpisode()`).
 Previously, this would result in an infinite loop and cause the editor to hang. (#4573)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
 
 
 ## [1.5.0-preview] - 2020-10-14
