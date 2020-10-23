@@ -26,6 +26,9 @@ namespace Unity.MLAgentsExamples
         public float MoveTime = 1.0f;
         public int MaxMoves = 500;
 
+        [Tooltip("If selected, will pick the move that makes the most points. Otherwise, will pick a random valid move.")]
+        public bool UseSmartHeuristic = false;
+
         State m_CurrentState = State.WaitForMove;
         float m_TimeUntilMove;
         private int m_MovesMade;
@@ -181,7 +184,7 @@ namespace Unity.MLAgentsExamples
 
             foreach (var move in Board.ValidMoves())
             {
-                var movePoints = EvalMovePoints(move, pointsByType);
+                var movePoints = UseSmartHeuristic ? EvalMovePoints(move, pointsByType) : 1;
                 if (movePoints < bestMovePoints)
                 {
                     // Worse, skip

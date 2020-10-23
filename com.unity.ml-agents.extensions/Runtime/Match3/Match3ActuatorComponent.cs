@@ -1,20 +1,20 @@
 using Unity.MLAgents.Actuators;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
     public class Match3ActuatorComponent : ActuatorComponent
     {
-        public bool ForceRandom = false;
+        [FormerlySerializedAs("ForceRandom")]
+        [Tooltip("Force using the Agent's Heuristic() method to decide the action. This should only be used in testing.")]
+        public bool ForceHeuristic = false;
+
         public override IActuator CreateActuator()
         {
-            var randomSeed = 0;
-            if (ForceRandom)
-            {
-                randomSeed = this.gameObject.GetInstanceID();
-            }
-
             var board = GetComponent<AbstractBoard>();
-            return new Match3Actuator(board, ForceRandom, randomSeed);
+            var agent = GetComponentInParent<Agent>();
+            return new Match3Actuator(board, ForceHeuristic, agent);
         }
 
         public override ActionSpec ActionSpec

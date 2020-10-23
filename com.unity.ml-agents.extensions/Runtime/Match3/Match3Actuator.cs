@@ -9,25 +9,24 @@ namespace Unity.MLAgents.Extensions.Match3
     {
         private AbstractBoard m_Board;
         private ActionSpec m_ActionSpec;
-        private bool m_ForceRandom;
+        private bool m_ForceHeuristic;
         private System.Random m_Random;
+        private Agent m_Agent;
 
         private int m_Rows;
         private int m_Columns;
         private int m_NumCellTypes;
 
-        public Match3Actuator(AbstractBoard board, bool forceRandom, int randomSeed)
+        public Match3Actuator(AbstractBoard board, bool forceHeuristic, Agent agent)
         {
             m_Board = board;
             m_Rows = board.Rows;
             m_Columns = board.Columns;
             m_NumCellTypes = board.NumCellTypes;
 
-            m_ForceRandom = forceRandom;
-            if (forceRandom)
-            {
-                m_Random = new System.Random(randomSeed);
-            }
+            m_ForceHeuristic = forceHeuristic;
+            m_Agent = agent;
+
             var numMoves = Move.NumPotentialMoves(m_Board.Rows, m_Board.Columns);
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
         }
@@ -36,15 +35,11 @@ namespace Unity.MLAgents.Extensions.Match3
 
         public void OnActionReceived(ActionBuffers actions)
         {
-            int moveIndex = 0;
-            if (m_ForceRandom)
+            if (m_ForceHeuristic)
             {
-                moveIndex = m_Board.GetRandomValidMoveIndex(m_Random);
+                m_Agent.Heuristic(actions);
             }
-            else
-            {
-                moveIndex = actions.DiscreteActions[0];
-            }
+            var moveIndex = actions.DiscreteActions[0];
 
             if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
             {

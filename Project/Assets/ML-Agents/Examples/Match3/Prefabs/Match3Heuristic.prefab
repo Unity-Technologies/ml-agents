@@ -81,6 +81,7 @@ MonoBehaviour:
   Board: {fileID: 0}
   MoveTime: 0.25
   MaxMoves: 500
+  UseSmartHeuristic: 1
 --- !u!114 &3508723250470608011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,6 +112,9 @@ MonoBehaviour:
   NumCellTypes: 6
   NumSpecialTypes: 2
   RandomSeed: -1
+  BasicCellPoints: 1
+  SpecialCell1Points: 2
+  SpecialCell2Points: 3
 --- !u!114 &3508723250470608013
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4b0da54cb4d56bfcbae22dd49ab8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ForceRandom: 1
+  ForceHeuristic: 1
 --- !u!114 &3508723250470608014
 MonoBehaviour:
   m_ObjectHideFlags: 0
