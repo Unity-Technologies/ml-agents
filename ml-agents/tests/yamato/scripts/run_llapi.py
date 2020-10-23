@@ -53,13 +53,11 @@ def test_run_environment(env_name):
             episode_rewards = 0
             tracked_agent = -1
             while not done:
-                if group_spec.is_action_continuous():
-                    action = np.random.randn(
-                        len(decision_steps), group_spec.action_size
-                    )
+                if group_spec.is_continuous():
+                    action = np.random.randn(len(decision_steps), group_spec.size)
 
-                elif group_spec.is_action_discrete():
-                    branch_size = group_spec.discrete_action_branches
+                elif group_spec.is_discrete():
+                    branch_size = group_spec.discrete_branches
                     action = np.column_stack(
                         [
                             np.random.randint(
