@@ -32,7 +32,7 @@ class ModelUtils:
         @property
         def flattened_size(self) -> int:
             if self._specs.is_continuous():
-                return self._specs.size
+                return self._specs.continuous_size
             else:
                 return sum(self._specs.discrete_branches)
 
