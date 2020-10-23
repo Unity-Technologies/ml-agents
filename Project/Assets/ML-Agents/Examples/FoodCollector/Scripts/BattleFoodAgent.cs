@@ -28,6 +28,8 @@ public class BattleFoodAgent : Agent
     public float moveSpeed = 2;
 
     public float cooldownTime = 0.5f;
+
+    public float timePenalty = 0f;
     public Material normalMaterial;
     public Material badMaterial;
     public Material goodMaterial;
@@ -39,6 +41,7 @@ public class BattleFoodAgent : Agent
              "is checked, this option has no effect. This option is necessary for the " +
              "VisualFoodCollector scene.")]
     public bool useVectorFrozenFlag;
+    public bool useCooldownObs = true;
 
     public BattleFoodScoring areaScoring;
 
@@ -75,12 +78,19 @@ public class BattleFoodAgent : Agent
             sensor.AddObservation(localVelocity.z);
             sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_Shoot);
-            sensor.AddObservation((Time.time - m_CooldownTime) / cooldownTime);
+            if (useCooldownObs)
+            {
+                sensor.AddObservation((Time.time - m_CooldownTime) / cooldownTime);
+            }
         }
         else if (useVectorFrozenFlag)
         {
             sensor.AddObservation(m_Frozen);
-            sensor.AddObservation((Time.time - m_CooldownTime) / cooldownTime);
+            if (useCooldownObs)
+            {
+                sensor.AddObservation((Time.time - m_CooldownTime) / cooldownTime);
+
+            }
         }
     }
 
@@ -94,6 +104,7 @@ public class BattleFoodAgent : Agent
 
     public void MoveAgent(ActionSegment<int> act)
     {
+        AddReward(timePenalty);
         m_Shoot = false;
 
         if (Time.time > m_FrozenTime + 10f && m_Frozen)

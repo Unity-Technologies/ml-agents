@@ -1140,7 +1140,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e534a7c85d86946a2af07f4574a22304, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1319,7 +1319,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e534a7c85d86946a2af07f4574a22304, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1562,7 +1562,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e534a7c85d86946a2af07f4574a22304, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -1930,7 +1930,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e534a7c85d86946a2af07f4574a22304, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -2250,7 +2250,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e534a7c85d86946a2af07f4574a22304, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
@@ -4564,7 +4564,7 @@ MonoBehaviour:
     VectorActionSize: 03000000030000000300000002000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: e534a7c85d86946a2af07f4574a22304, type: 3}
+  m_Model: {fileID: 11400000, guid: 1d729ccfce8984433bd70af61870fb24, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: BattleFoodCollector
