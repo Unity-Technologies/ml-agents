@@ -75,8 +75,31 @@ namespace Unity.MLAgents.Extensions.Match3
 
         IEnumerable<int> InvalidMoveIndices()
         {
+            var numValidMoves = m_Board.NumMoves();
+
             foreach (var move in m_Board.InvalidMoves())
             {
+                numValidMoves--;
+                if (numValidMoves == 0)
+                {
+                    // If all the moves are invalid and we mask all the actions out, this will cause an assert
+                    // later on in IDiscreteActionMask. Instead, fire a callback to the user if they provided one,
+                    // (or log a warning if not) and leave the last action unmasked. This isn't great, but
+                    // an invalid move should be easier to handle than an exception..
+                    if (m_Board.OnNoValidMovesAction != null)
+                    {
+                        m_Board.OnNoValidMovesAction();
+                    }
+                    else
+                    {
+                        Debug.LogWarning(
+                            "No valid moves are available. The last action will be left unmasked, so " +
+                            "an invalid move will be passed to AbstractBoard.MakeMove()."
+                        );
+                    }
+                    // This means the last move won't be returned as an invalid index.
+                    yield break;
+                }
                 yield return move.MoveIndex;
             }
         }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
-using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgents.Extensions.Tests.Match3
