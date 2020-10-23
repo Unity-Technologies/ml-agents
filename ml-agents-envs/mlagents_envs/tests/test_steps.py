@@ -79,13 +79,15 @@ def test_empty_terminal_steps():
 def test_specs():
     specs = ActionSpec.make_continuous(3)
     assert specs.discrete_branches == ()
-    assert specs.size == 3
+    assert specs.discrete_size == 0
+    assert specs.continuous_size == 3
     assert specs.create_empty(5).shape == (5, 3)
     assert specs.create_empty(5).dtype == np.float32
 
     specs = ActionSpec.make_discrete((3,))
     assert specs.discrete_branches == (3,)
-    assert specs.size == 1
+    assert specs.discrete_size == 1
+    assert specs.continuous_size == 0
     assert specs.create_empty(5).shape == (5, 1)
     assert specs.create_empty(5).dtype == np.int32
 

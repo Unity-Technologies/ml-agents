@@ -55,7 +55,7 @@ def test_run_environment(env_name):
             while not done:
                 if group_spec.action_spec.is_continuous():
                     action = np.random.randn(
-                        len(decision_steps), group_spec.action_spec.size
+                        len(decision_steps), group_spec.action_spec.continuous_size
                     )
 
                 elif group_spec.action_spec.is_discrete():

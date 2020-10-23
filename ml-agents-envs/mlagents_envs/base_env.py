@@ -292,10 +292,6 @@ class ActionSpec(NamedTuple):
     def continuous_size(self) -> int:
         return self.num_continuous_actions
 
-    @property
-    def size(self) -> int:
-        return self.discrete_size + self.continuous_size
-
     def create_empty(self, n_agents: int) -> np.ndarray:
         if self.is_continuous():
             return np.zeros((n_agents, self.continuous_size), dtype=np.float32)
@@ -328,7 +324,11 @@ class ActionSpec(NamedTuple):
         Validates that action has the correct action dim
         for the correct number of agents.
         """
-        _expected_shape = (n_agents, self.size)
+        if self.continuous_size > 0:
+            _size = self.continuous_size
+        else:
+            _size = self.discrete_size
+        _expected_shape = (n_agents, _size)
         if actions.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs an input of dimension "

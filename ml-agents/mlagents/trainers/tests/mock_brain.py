@@ -75,7 +75,8 @@ def make_fake_trajectory(
     the trajectory is terminated by a max step rather than a done.
     """
     steps_list = []
-    action_size = action_spec.size
+
+    action_size = action_spec.discrete_size + action_spec.continuous_size
     action_probs = np.ones(
         int(np.sum(action_spec.discrete_branches) + action_spec.continuous_size),
         dtype=np.float32,
