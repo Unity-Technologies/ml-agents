@@ -20,6 +20,8 @@ public class BattleFoodScoring : MonoBehaviour
     public FoodCollectorArea[] listArea;
 
     public int WinningScore;
+    public bool foodScore = true;
+    public bool freezeScore = false;
     public Text scoreText;
     public List<BattleAgentState> playerStates = new List<BattleAgentState>();
 

@@ -8,7 +8,6 @@ using Random = UnityEngine.Random;
 
 public class BattleFoodAgent : Agent
 {
-    BattleFoodScoring m_Scoring;
     public GameObject area;
     FoodCollectorArea m_MyArea;
     bool m_Frozen;
@@ -191,6 +190,11 @@ public class BattleFoodAgent : Agent
                     if (b_agent.m_BehaviorParameters.TeamId != m_BehaviorParameters.TeamId)
                     {
                         b_agent.Freeze();
+                        if (areaScoring.freezeScore)
+                        {
+                            AddReward(0.1f);
+                            areaScoring.AddScore(m_BehaviorParameters.TeamId, 1);
+                        }
                     }
                 }
             }
@@ -299,7 +303,7 @@ public class BattleFoodAgent : Agent
             {
                 Satiate();
                 collision.gameObject.GetComponent<FoodLogic>().OnEaten();
-                if (contribute)
+                if (contribute && areaScoring.foodScore)
                 {
                     areaScoring.AddScore(m_BehaviorParameters.TeamId, 1);
                 }
@@ -309,7 +313,7 @@ public class BattleFoodAgent : Agent
                 Poison();
                 collision.gameObject.GetComponent<FoodLogic>().OnEaten();
 
-                if (contribute)
+                if (contribute && areaScoring.foodScore)
                 {
                     areaScoring.AddScore(m_BehaviorParameters.TeamId, -1);
                 }
