@@ -10,8 +10,8 @@ from mlagents.trainers.tests.torch.test_reward_providers.utils import (
 )
 
 
-ACTIONSPEC_CONTINUOUS = ActionSpec.make_continuous(5)
-ACTIONSPEC_TWODISCRETE = ActionSpec.make_discrete((2, 3))
+ACTIONSPEC_CONTINUOUS = ActionSpec.create_continuous(5)
+ACTIONSPEC_TWODISCRETE = ActionSpec.create_discrete((2, 3))
 
 
 @pytest.mark.parametrize(

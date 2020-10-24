@@ -254,8 +254,8 @@ class ActionSpec(NamedTuple):
     the number of discrete actions available to the agent on an independent action branch.
     """
 
-    num_continuous_actions: int
-    discrete_branch_sizes: Tuple[int, ...]
+    continuous_size: int
+    discrete_branches: Tuple[int, ...]
 
     def __eq__(self, other):
         return (
@@ -281,27 +281,11 @@ class ActionSpec(NamedTuple):
         return self.discrete_size == 0 and self.continuous_size > 0
 
     @property
-    def discrete_branches(self) -> Tuple[int, ...]:
-        """
-        Returns a Tuple of int corresponding to the number of possible actions
-        for each branch (only for discrete actions). Will return None in
-        for continuous actions.
-        """
-        return self.discrete_branch_sizes  # type: ignore
-
-    @property
     def discrete_size(self) -> int:
         """
         Returns a an int corresponding to the number of discrete branches.
         """
-        return len(self.discrete_branch_sizes)
-
-    @property
-    def continuous_size(self) -> int:
-        """
-        Returns a an int corresponding to the number of continuous actions.
-        """
-        return self.num_continuous_actions
+        return len(self.discrete_branches)
 
     def create_empty(self, n_agents: int) -> np.ndarray:
         """
@@ -362,14 +346,14 @@ class ActionSpec(NamedTuple):
         return actions
 
     @staticmethod
-    def make_continuous(continuous_size: int) -> "ActionSpec":
+    def create_continuous(continuous_size: int) -> "ActionSpec":
         """
         Creates an ActionSpec that is homogenously continuous
         """
         return ActionSpec(continuous_size, ())
 
     @staticmethod
-    def make_discrete(discrete_branches: Tuple[int]) -> "ActionSpec":
+    def create_discrete(discrete_branches: Tuple[int]) -> "ActionSpec":
         """
         Creates an ActionSpec that is homogenously discrete
         """

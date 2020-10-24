@@ -35,7 +35,7 @@ def test_decision_steps():
 
 def test_empty_decision_steps():
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.make_continuous(3)
+        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
     )
     ds = DecisionSteps.empty(specs)
     assert len(ds.obs) == 2
@@ -68,7 +68,7 @@ def test_terminal_steps():
 
 def test_empty_terminal_steps():
     specs = BehaviorSpec(
-        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.make_continuous(3)
+        observation_shapes=[(3, 2), (5,)], action_spec=ActionSpec.create_continuous(3)
     )
     ts = TerminalSteps.empty(specs)
     assert len(ts.obs) == 2
@@ -77,14 +77,14 @@ def test_empty_terminal_steps():
 
 
 def test_specs():
-    specs = ActionSpec.make_continuous(3)
+    specs = ActionSpec.create_continuous(3)
     assert specs.discrete_branches == ()
     assert specs.discrete_size == 0
     assert specs.continuous_size == 3
     assert specs.create_empty(5).shape == (5, 3)
     assert specs.create_empty(5).dtype == np.float32
 
-    specs = ActionSpec.make_discrete((3,))
+    specs = ActionSpec.create_discrete((3,))
     assert specs.discrete_branches == (3,)
     assert specs.discrete_size == 1
     assert specs.continuous_size == 0
@@ -95,7 +95,7 @@ def test_specs():
 def test_action_generator():
     # Continuous
     action_len = 30
-    specs = ActionSpec.make_continuous(action_len)
+    specs = ActionSpec.create_continuous(action_len)
     zero_action = specs.create_empty(4)
     assert np.array_equal(zero_action, np.zeros((4, action_len), dtype=np.float32))
     random_action = specs.create_random(4)
@@ -106,7 +106,7 @@ def test_action_generator():
 
     # Discrete
     action_shape = (10, 20, 30)
-    specs = ActionSpec.make_discrete(action_shape)
+    specs = ActionSpec.create_discrete(action_shape)
     zero_action = specs.create_empty(4)
     assert np.array_equal(zero_action, np.zeros((4, len(action_shape)), dtype=np.int32))
 

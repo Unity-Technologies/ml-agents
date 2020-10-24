@@ -8,7 +8,7 @@ from mlagents_envs.base_env import ActionSpec
 
 
 def basic_behavior_spec():
-    dummy_actionspec = ActionSpec.make_continuous(1)
+    dummy_actionspec = ActionSpec.create_continuous(1)
     dummy_groupspec = BehaviorSpec([(1,)], dummy_actionspec)
     return dummy_groupspec
 

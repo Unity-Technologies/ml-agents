@@ -216,13 +216,13 @@ def create_mock_group_spec(
             vector_action_space_size = 2
         else:
             vector_action_space_size = vector_action_space_size[0]
-        action_spec = ActionSpec.make_continuous(vector_action_space_size)
+        action_spec = ActionSpec.create_continuous(vector_action_space_size)
     else:
         if vector_action_space_size is None:
             vector_action_space_size = (2,)
         else:
             vector_action_space_size = tuple(vector_action_space_size)
-        action_spec = ActionSpec.make_discrete(vector_action_space_size)
+        action_spec = ActionSpec.create_discrete(vector_action_space_size)
     obs_shapes = [(vector_observation_space_size,)]
     for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]

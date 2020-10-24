@@ -161,9 +161,9 @@ def setup_test_behavior_specs(
     use_discrete=True, use_visual=False, vector_action_space=2, vector_obs_space=8
 ):
     if use_discrete:
-        action_spec = ActionSpec.make_discrete(tuple(vector_action_space))
+        action_spec = ActionSpec.create_discrete(tuple(vector_action_space))
     else:
-        action_spec = ActionSpec.make_continuous(vector_action_space)
+        action_spec = ActionSpec.create_continuous(vector_action_space)
     behavior_spec = BehaviorSpec(
         [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)], action_spec
     )

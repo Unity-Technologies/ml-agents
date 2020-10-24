@@ -8,7 +8,7 @@ from mlagents_envs.base_env import BehaviorSpec, ActionSpec
 def create_behavior_spec(num_visual, num_vector, vector_size):
     behavior_spec = BehaviorSpec(
         [(84, 84, 3)] * int(num_visual) + [(vector_size,)] * int(num_vector),
-        ActionSpec.make_discrete((1,)),
+        ActionSpec.create_discrete((1,)),
     )
     return behavior_spec
 

@@ -52,9 +52,11 @@ class SimpleEnvironment(BaseEnv):
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
         if use_discrete:
-            action_spec = ActionSpec.make_discrete(tuple(2 for _ in range(action_size)))
+            action_spec = ActionSpec.create_discrete(
+                tuple(2 for _ in range(action_size))
+            )
         else:
-            action_spec = ActionSpec.make_continuous(action_size)
+            action_spec = ActionSpec.create_continuous(action_size)
         self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
         self.action_size = action_size
         self.names = brain_names

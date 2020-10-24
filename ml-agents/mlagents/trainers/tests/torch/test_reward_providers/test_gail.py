@@ -28,9 +28,9 @@ DISCRETE_PATH = (
 )
 SEED = [42]
 
-ACTIONSPEC_CONTINUOUS = ActionSpec.make_continuous(2)
-ACTIONSPEC_FOURDISCRETE = ActionSpec.make_discrete((2, 3, 3, 3))
-ACTIONSPEC_DISCRETE = ActionSpec.make_discrete((20,))
+ACTIONSPEC_CONTINUOUS = ActionSpec.create_continuous(2)
+ACTIONSPEC_FOURDISCRETE = ActionSpec.create_discrete((2, 3, 3, 3))
+ACTIONSPEC_DISCRETE = ActionSpec.create_discrete((20,))
 
 
 @pytest.mark.parametrize("behavior_spec", [BehaviorSpec([(8,)], ACTIONSPEC_CONTINUOUS)])
