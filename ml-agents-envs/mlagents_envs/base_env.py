@@ -322,7 +322,7 @@ class ActionSpec(NamedTuple):
             )
         return action
 
-    def validate_action(
+    def _validate_action(
         self, actions: np.ndarray, n_agents: int, name: str
     ) -> np.ndarray:
         """

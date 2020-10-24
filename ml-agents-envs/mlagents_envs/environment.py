@@ -342,7 +342,7 @@ class UnityEnvironment(BaseEnv):
             return
         action_spec = self._env_specs[behavior_name].action_spec
         num_agents = len(self._env_state[behavior_name][0])
-        action = action_spec.validate_action(action, num_agents, behavior_name)
+        action = action_spec._validate_action(action, num_agents, behavior_name)
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
@@ -353,7 +353,7 @@ class UnityEnvironment(BaseEnv):
             return
         action_spec = self._env_specs[behavior_name].action_spec
         num_agents = len(self._env_state[behavior_name][0])
-        action = action_spec.validate_action(action, num_agents, behavior_name)
+        action = action_spec._validate_action(action, num_agents, behavior_name)
         if behavior_name not in self._env_actions:
             self._env_actions[behavior_name] = action_spec.create_empty(num_agents)
         try:
