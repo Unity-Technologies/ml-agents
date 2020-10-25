@@ -18,6 +18,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
+    ActionBuffers,
     BehaviorName,
     AgentId,
     BehaviorMapping,
@@ -236,7 +237,7 @@ class UnityEnvironment(BaseEnv):
 
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
-        self._env_actions: Dict[str, np.ndarray] = {}
+        self._env_actions: Dict[str, ActionBuffers] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
 
@@ -336,7 +337,7 @@ class UnityEnvironment(BaseEnv):
                 f"agent group in the environment"
             )
 
-    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: ActionBuffers) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
@@ -346,7 +347,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionBuffers
     ) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
@@ -410,7 +411,7 @@ class UnityEnvironment(BaseEnv):
 
     @timed
     def _generate_step_input(
-        self, vector_action: Dict[str, np.ndarray]
+        self, vector_action: Dict[str, ActionBuffers]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -418,6 +419,7 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
+                #TODO: extend to AgentBuffers
                 action = AgentActionProto(vector_actions=vector_action[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP

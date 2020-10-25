@@ -4,6 +4,7 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
+    ActionBuffers,
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
@@ -114,11 +115,11 @@ class SimpleEnvironment(BaseEnv):
 
     def _take_action(self, name: str) -> bool:
         deltas = []
-        for _act in self.action[name][0]:
-            if self.discrete:
-                deltas.append(1 if _act else -1)
-            else:
-                deltas.append(_act)
+        _act = self.action[name]
+        for _disc in _act.discrete:
+            deltas.append(1 if _disc else -1)
+        for _cont in _act.continuous:
+            deltas.append(_cont)
         for i, _delta in enumerate(deltas):
             _delta = clamp(_delta, -self.step_size, self.step_size)
             self.positions[name][i] += _delta

@@ -123,7 +123,7 @@ class TorchPolicy(Policy):
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
         all_log_probs: bool = False,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[List[torch.Tensor], torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         :param vec_obs: List of vector observations.
         :param vis_obs: List of visual observations.
@@ -147,15 +147,15 @@ class TorchPolicy(Policy):
         log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists
         )
-        actions = torch.stack(action_list, dim=-1)
-        if self.use_continuous_act:
-            actions = actions[:, :, 0]
-        else:
-            actions = actions[:, 0, :]
+#        actions = torch.stack(action_list, dim=-1)
+#        if self.use_continuous_act:
+#            actions = actions[:, :, 0]
+#        else:
+#            actions = actions[:, 0, :]
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return (
-            actions,
+            action_list,
             all_logs if all_log_probs else log_probs,
             entropy_sum,
             memories,
@@ -165,7 +165,7 @@ class TorchPolicy(Policy):
         self,
         vec_obs: torch.Tensor,
         vis_obs: torch.Tensor,
-        actions: torch.Tensor,
+        actions: List[torch.Tensor],
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
@@ -173,8 +173,9 @@ class TorchPolicy(Policy):
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        action_list = [actions[..., i] for i in range(actions.shape[-1])]
-        log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
+        #action_list = [actions[..., i] for i in range(actions.shape[-1])]
+        #log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
+        log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(actions, dists)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return log_probs, entropy_sum, value_heads
@@ -203,8 +204,8 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = ModelUtils.to_numpy(action)
-        run_out["pre_action"] = ModelUtils.to_numpy(action)
+        run_out["action"] = ModelUtils.to_action_buffers(action, self.behavior_spec.action_spec)
+        run_out["pre_action"] = ModelUtils.to_action_buffers(action, self.behavior_spec.action_spec)
         # Todo - make pre_action difference
         run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
         run_out["entropy"] = ModelUtils.to_numpy(entropy)

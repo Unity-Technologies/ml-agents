@@ -11,7 +11,7 @@ from mlagents.trainers.torch.encoders import (
 )
 from mlagents.trainers.settings import EncoderType, ScheduleType
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents_envs.base_env import ActionSpec
+from mlagents_envs.base_env import ActionSpec, ActionBuffers
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
 
@@ -191,6 +191,43 @@ class ModelUtils:
             nn.ModuleList(vector_encoders),
             total_processed_size,
         )
+
+    @staticmethod
+    def to_action_buffers(actions: List[torch.Tensor], action_spec: ActionSpec) -> ActionBuffers:
+        """
+        Converts a list of action Tensors to an ActionBuffers tuple. Implicitly
+        assumes order of actions in 'actions' is continuous, discrete
+        """
+        continuous_action: np.ndarray = np.array([])
+        discrete_action_list: List[np.ndarray] = []
+        discrete_action: np.ndarray = np.array([])
+        # offset to index discrete actions depending on presence of continuous actions
+        _offset = 0
+        if action_spec.continuous_size > 0:
+            continuous_action = actions[0].detach().cpu().numpy()
+            _offset = 1
+        if action_spec.discrete_size > 0:
+            for _disc in range(action_spec.discrete_size):
+                discrete_action_list.append(actions[_disc + _offset].detach().cpu().numpy())
+            #print(discrete_action_list)
+            discrete_action = np.array(discrete_action_list)
+        return ActionBuffers(continuous_action, discrete_action)
+
+    @staticmethod
+    def action_buffers_to_tensor_list(
+        action_buffers: ActionBuffers, action_spec: ActionSpec, dtype: Optional[torch.dtype] = None
+    ) -> List[torch.Tensor]:
+        """
+        Converts ActionBuffers fields into a List of tensors.
+        """
+        #print(action_buffers)
+        action_tensors: List[torch.Tensor] = []
+        if action_spec.continuous_size > 0:
+            action_tensors.append(torch.as_tensor(np.asanyarray(action_buffers.continuous), dtype=dtype))
+        if action_spec.discrete_size > 0:
+            for _disc in range(action_buffers.discrete):
+                action_tensors.append(torch.as_tensor(np.asanyarray(_disc), dtype=dtype))
+        return actiion_tensors 
 
     @staticmethod
     def list_to_tensor(

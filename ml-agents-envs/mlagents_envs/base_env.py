@@ -244,6 +244,15 @@ class TerminalSteps(Mapping):
         )
 
 
+class ActionBuffers(NamedTuple):
+    """
+    A NamedTuple whose fields correspond to actions of different types.
+    Continuous and discrete actions are numpy arrays.
+    """
+    continuous: np.ndarray
+    discrete: np.ndarray
+
+
 class ActionSpec(NamedTuple):
     """
     A NamedTuple containing utility functions and information about the action spaces
@@ -287,62 +296,64 @@ class ActionSpec(NamedTuple):
         """
         return len(self.discrete_branches)
 
-    def create_empty(self, n_agents: int) -> np.ndarray:
+    def create_empty(self, n_agents: int) -> ActionBuffers:
         """
-        Generates a numpy array corresponding to an empty action (all zeros)
+        Generates ActionBuffers corresponding to an empty action (all zeros)
         for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        if self.is_continuous():
-            return np.zeros((n_agents, self.continuous_size), dtype=np.float32)
-        return np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+        return ActionBuffers(np.zeros((n_agents, self.continuous_size), dtype=np.float32),
+            np.zeros((n_agents, self.discrete_size), dtype=np.int32))
 
-    def create_random(self, n_agents: int) -> np.ndarray:
+    def create_random(self, n_agents: int) -> ActionBuffers:
         """
-        Generates a numpy array corresponding to a random action (either discrete
+        Generates ActionBuffers corresponding to a random action (either discrete
         or continuous) for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        if self.is_continuous():
-            action = np.random.uniform(
-                low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
-            ).astype(np.float32)
-        else:
-            branch_size = self.discrete_branches
-            action = np.column_stack(
+        continuous_action = np.random.uniform(
+            low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
+        ).astype(np.float32)
+
+        discrete_action = np.column_stack(
                 [
                     np.random.randint(
                         0,
-                        branch_size[i],  # type: ignore
+                        self.discrete_branches[i],  # type: ignore
                         size=(n_agents),
                         dtype=np.int32,
                     )
                     for i in range(self.discrete_size)
                 ]
             )
-        return action
+        return ActionBuffers(continuous_action, discrete_action)
 
     def _validate_action(
-        self, actions: np.ndarray, n_agents: int, name: str
-    ) -> np.ndarray:
+        self, actions: ActionBuffers, n_agents: int, name: str
+    ) -> ActionBuffers:
         """
         Validates that action has the correct action dim
         for the correct number of agents and ensures the type.
         """
-        if self.continuous_size > 0:
-            _size = self.continuous_size
-        else:
-            _size = self.discrete_size
-        _expected_shape = (n_agents, _size)
-        if actions.shape != _expected_shape:
+        _expected_shape = (n_agents, self.continuous_size)
+        if actions.continuous.shape != _expected_shape:
             raise UnityActionException(
-                f"The behavior {name} needs an input of dimension "
+                f"The behavior {name} needs a continuous input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.shape}"
             )
-        _expected_type = np.float32 if self.is_continuous() else np.int32
-        if actions.dtype != _expected_type:
-            actions = actions.astype(_expected_type)
+        _expected_shape = (n_agents, self.discrete_size)
+        if actions.discrete.shape != _expected_shape:
+            raise UnityActionException(
+                f"The behavior {name} needs a discrete input of dimension "
+                f"{_expected_shape} for (<number of agents>, <action size>) but "
+                f"received input of dimension {actions.shape}"
+            )
+        if actions.continuous.dtype != np.float32:
+            actions.continuous = actions.continuous.astype(np.float32)
+        if actions.discrete.dtype != np.int32:
+            actions.discrete = actions.discrete.astype(np.int32)
+
         return actions
 
     @staticmethod
@@ -420,27 +431,25 @@ class BaseEnv(ABC):
         """
 
     @abstractmethod
-    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: ActionBuffers) -> None:
         """
         Sets the action for all of the agents in the simulation for the next
         step. The Actions must be in the same order as the order received in
         the DecisionSteps.
         :param behavior_name: The name of the behavior the agents are part of
-        :param action: A two dimensional np.ndarray corresponding to the action
-        (either int or float)
+        :param action: ActionBuffers tuple of continuous and/or discrete action
         """
 
     @abstractmethod
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionBuffers
     ) -> None:
         """
         Sets the action for one of the agents in the simulation for the next
         step.
         :param behavior_name: The name of the behavior the agent is part of
         :param agent_id: The id of the agent the action is set for
-        :param action: A one dimensional np.ndarray corresponding to the action
-        (either int or float)
+        :param action: ActionBuffers tuple of continuous and/or discrete action
         """
 
     @abstractmethod

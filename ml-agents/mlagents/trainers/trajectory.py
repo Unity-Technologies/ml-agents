@@ -3,14 +3,16 @@ import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
 
+from mlagents_envs.base_env import ActionBuffers
+
 
 class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
     reward: float
     done: bool
-    action: np.ndarray
+    action: ActionBuffers
     action_probs: np.ndarray
-    action_pre: np.ndarray  # TODO: Remove this
+    action_pre: ActionBuffers # TODO: Remove this
     action_mask: np.ndarray
     prev_action: np.ndarray
     interrupted: bool
