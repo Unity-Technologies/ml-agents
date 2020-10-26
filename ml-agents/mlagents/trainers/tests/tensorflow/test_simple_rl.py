@@ -303,10 +303,10 @@ def test_recurrent_sac(use_discrete):
     )
     new_hyperparams = attr.evolve(
         SAC_TF_CONFIG.hyperparameters,
-        batch_size=256,
+        batch_size=128,
         learning_rate=1e-3,
         buffer_init_steps=1000,
-        steps_per_update=2,
+        steps_per_update=1,
     )
     config = attr.evolve(
         SAC_TF_CONFIG,
