@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Model: {fileID: 11400000, guid: c34da50737a3c4a50918002b20b2b927, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Match3Heuristic
+  m_BehaviorName: Match3SmartHeuristic
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
