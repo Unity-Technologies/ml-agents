@@ -270,7 +270,16 @@ namespace Unity.MLAgentsExamples
             var bp = m_Agent.GetComponent<BehaviorParameters>();
             var behaviorName = bp.BehaviorName;
 
-            var nnModel = GetModelForBehaviorName(behaviorName);
+            NNModel nnModel = null;
+            try
+            {
+                nnModel = GetModelForBehaviorName(behaviorName);
+            }
+            catch (Exception e)
+            {
+                overrideError = $"Exception calling GetModelForBehaviorName: {e}";
+            }
+
             if (nnModel == null)
             {
                 overrideError =
