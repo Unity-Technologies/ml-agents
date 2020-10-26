@@ -303,16 +303,16 @@ def test_recurrent_sac(use_discrete):
     )
     new_hyperparams = attr.evolve(
         SAC_TF_CONFIG.hyperparameters,
-        batch_size=128,
+        batch_size=256,
         learning_rate=1e-3,
-        buffer_init_steps=1000,
-        steps_per_update=1,
+        buffer_init_steps=2000,
+        steps_per_update=2,
     )
     config = attr.evolve(
         SAC_TF_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=2000,
+        max_steps=4000,
         framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config})
