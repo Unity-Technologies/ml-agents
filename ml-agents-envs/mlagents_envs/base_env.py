@@ -357,7 +357,7 @@ class ActionSpec(NamedTuple):
         if actions.discrete.dtype != np.int32:
             actions.discrete = actions.discrete.astype(np.int32)
 
-        return actions
+        return action
 
     @staticmethod
     def create_continuous(continuous_size: int) -> "ActionSpec":

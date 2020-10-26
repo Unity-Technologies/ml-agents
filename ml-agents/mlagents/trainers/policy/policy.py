@@ -109,7 +109,7 @@ class Policy:
         :param num_agents: Number of agents.
         :return: ActionBuffers .
         """
-        return self.behavior_spec.action_spec.create_empty(num_agents)
+        return self.behavior_spec.action_spec.empty_action(num_agents)
 
     def save_previous_action(
         self, agent_ids: List[str], action_buffers: Optional[ActionBuffers]
