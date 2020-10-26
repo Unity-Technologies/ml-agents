@@ -154,7 +154,9 @@ class GaussianDistribution(nn.Module):
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             # Expand so that entropy matches batch size
-            log_sigma = self.log_sigma.expand(inputs.shape[0], -1)
+            log_sigma = self.log_sigma * torch.ones(
+                inputs.shape[0], self.log_sigma.shape[0]
+            )
         if self.tanh_squash:
             return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
         else:
