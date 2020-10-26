@@ -102,9 +102,10 @@ class UnityToGymWrapper(gym.Env):
         self._previous_decision_step = decision_steps
 
         # Set action spaces
-        if self.group_spec.is_action_discrete():
-            branches = self.group_spec.discrete_action_branches
-            if self.group_spec.action_size == 1:
+        if self.group_spec.action_spec.is_discrete():
+            self.action_size = self.group_spec.action_spec.discrete_size
+            branches = self.group_spec.action_spec.discrete_branches
+            if self.group_spec.action_spec.discrete_size == 1:
                 self._action_space = spaces.Discrete(branches[0])
             else:
                 if flatten_branched:
@@ -113,14 +114,21 @@ class UnityToGymWrapper(gym.Env):
                 else:
                     self._action_space = spaces.MultiDiscrete(branches)
 
-        else:
+        elif self.group_spec.action_spec.is_continuous():
             if flatten_branched:
                 logger.warning(
                     "The environment has a non-discrete action space. It will "
                     "not be flattened."
                 )
-            high = np.array([1] * self.group_spec.action_shape)
+
+            self.action_size = self.group_spec.action_spec.continuous_size
+            high = np.array([1] * self.group_spec.action_spec.continuous_size)
             self._action_space = spaces.Box(-high, high, dtype=np.float32)
+        else:
+            raise UnityGymException(
+                "The gym wrapper does not provide explicit support for both discrete "
+                "and continuous actions."
+            )
 
         # Set observations space
         list_spaces: List[gym.Space] = []
@@ -170,8 +178,7 @@ class UnityToGymWrapper(gym.Env):
             # Translate action into list
             action = self._flattener.lookup_action(action)
 
-        spec = self.group_spec
-        action = np.array(action).reshape((1, spec.action_size))
+        action = np.array(action).reshape((1, self.action_size))
         self._env.set_actions(self.name, action)
 
         self._env.step()

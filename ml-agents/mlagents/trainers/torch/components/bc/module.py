@@ -142,7 +142,7 @@ class BCModule:
                 np.ones(
                     (
                         self.n_sequences * self.policy.sequence_length,
-                        sum(self.policy.behavior_spec.discrete_action_branches),
+                        sum(self.policy.behavior_spec.action_spec.discrete_branches),
                     ),
                     dtype=np.float32,
                 )

@@ -3,7 +3,7 @@ from typing import Dict, List, Mapping, cast, Tuple, Optional
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.base_env import ActionType
+from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
@@ -27,15 +27,18 @@ class TorchSACOptimizer(TorchOptimizer):
             stream_names: List[str],
             observation_shapes: List[Tuple[int, ...]],
             network_settings: NetworkSettings,
-            act_type: ActionType,
-            act_size: List[int],
+            action_spec: ActionSpec,
         ):
             super().__init__()
-            if act_type == ActionType.CONTINUOUS:
+            self.action_spec = action_spec
+            if self.action_spec.is_continuous():
+                self.act_size = self.action_spec.continuous_size
                 num_value_outs = 1
-                num_action_ins = sum(act_size)
+                num_action_ins = self.act_size
+
             else:
-                num_value_outs = sum(act_size)
+                self.act_size = self.action_spec.discrete_branches
+                num_value_outs = sum(self.act_size)
                 num_action_ins = 0
             self.q1_network = ValueNetwork(
                 stream_names,
@@ -128,8 +131,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
-            self.policy.behavior_spec.action_type,
-            self.act_size,
+            self.policy.behavior_spec.action_spec,
         )
 
         self.target_network = ValueNetwork(

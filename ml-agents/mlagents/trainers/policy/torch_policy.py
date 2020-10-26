@@ -72,8 +72,7 @@ class TorchPolicy(Policy):
         self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
-            act_type=behavior_spec.action_type,
-            act_size=self.act_size,
+            action_spec=behavior_spec.action_spec,
             stream_names=reward_signal_names,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,

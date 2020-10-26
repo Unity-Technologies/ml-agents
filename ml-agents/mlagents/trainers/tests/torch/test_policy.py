@@ -92,7 +92,12 @@ def test_evaluate_actions(rnn, visual, discrete):
         memories=memories,
         seq_len=policy.sequence_length,
     )
-    assert log_probs.shape == (64, policy.behavior_spec.action_size)
+    if discrete:
+        _size = policy.behavior_spec.action_spec.discrete_size
+    else:
+        _size = policy.behavior_spec.action_spec.continuous_size
+
+    assert log_probs.shape == (64, _size)
     assert entropy.shape == (64,)
     for val in values.values():
         assert val.shape == (64,)
@@ -132,10 +137,10 @@ def test_sample_actions(rnn, visual, discrete):
     if discrete:
         assert log_probs.shape == (
             64,
-            sum(policy.behavior_spec.discrete_action_branches),
+            sum(policy.behavior_spec.action_spec.discrete_branches),
         )
     else:
-        assert log_probs.shape == (64, policy.behavior_spec.action_shape)
+        assert log_probs.shape == (64, policy.behavior_spec.action_spec.continuous_size)
     assert entropies.shape == (64,)
 
     if rnn:

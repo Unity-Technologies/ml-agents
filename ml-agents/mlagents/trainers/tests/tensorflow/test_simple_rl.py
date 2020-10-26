@@ -186,7 +186,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_TF_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=500,
+        max_steps=300,
         summary_freq=100,
         framework=FrameworkType.TENSORFLOW,
     )
@@ -293,13 +293,13 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
 
 @pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_sac(use_discrete):
-    step_size = 0.5 if use_discrete else 0.2
+    step_size = 0.2 if use_discrete else 0.5
     env = MemoryEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, step_size=step_size
     )
     new_networksettings = attr.evolve(
         SAC_TF_CONFIG.network_settings,
-        memory=NetworkSettings.MemorySettings(memory_size=16, sequence_length=16),
+        memory=NetworkSettings.MemorySettings(memory_size=16),
     )
     new_hyperparams = attr.evolve(
         SAC_TF_CONFIG.hyperparameters,
@@ -312,7 +312,7 @@ def test_recurrent_sac(use_discrete):
         SAC_TF_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=5000,
+        max_steps=4000,
         framework=FrameworkType.TENSORFLOW,
     )
     _check_environment_trains(env, {BRAIN_NAME: config})
