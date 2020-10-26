@@ -12,9 +12,9 @@ class AgentExperience(NamedTuple):
     done: bool
     action: ActionBuffers
     action_probs: np.ndarray
-    action_pre: ActionBuffers # TODO: Remove this
+    action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
-    prev_action: np.ndarray
+    prev_action: ActionBuffers
     interrupted: bool
     memory: np.ndarray
 
