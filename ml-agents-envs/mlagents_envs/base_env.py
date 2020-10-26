@@ -297,7 +297,7 @@ class ActionSpec(NamedTuple):
             return np.zeros((n_agents, self.continuous_size), dtype=np.float32)
         return np.zeros((n_agents, self.discrete_size), dtype=np.int32)
 
-    def create_random(self, n_agents: int) -> np.ndarray:
+    def random_action(self, n_agents: int) -> np.ndarray:
         """
         Generates a numpy array corresponding to a random action (either discrete
         or continuous) for a number of agents.
