@@ -315,7 +315,7 @@ class UnityEnvironment(BaseEnv):
                     n_agents = len(self._env_state[group_name][0])
                 self._env_actions[group_name] = self._env_specs[
                     group_name
-                ].action_spec.create_empty(n_agents)
+                ].action_spec.empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
             outputs = self._communicator.exchange(step_input)
@@ -356,7 +356,7 @@ class UnityEnvironment(BaseEnv):
         num_agents = len(self._env_state[behavior_name][0])
         action = action_spec._validate_action(action, num_agents, behavior_name)
         if behavior_name not in self._env_actions:
-            self._env_actions[behavior_name] = action_spec.create_empty(num_agents)
+            self._env_actions[behavior_name] = action_spec.empty_action(num_agents)
         try:
             index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
                 0
@@ -419,7 +419,7 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
-                #TODO: extend to AgentBuffers
+                # TODO: extend to AgentBuffers
                 action = AgentActionProto(vector_actions=vector_action[b][i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP

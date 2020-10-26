@@ -249,6 +249,7 @@ class ActionBuffers(NamedTuple):
     A NamedTuple whose fields correspond to actions of different types.
     Continuous and discrete actions are numpy arrays.
     """
+
     continuous: np.ndarray
     discrete: np.ndarray
 
@@ -296,16 +297,18 @@ class ActionSpec(NamedTuple):
         """
         return len(self.discrete_branches)
 
-    def create_empty(self, n_agents: int) -> ActionBuffers:
+    def empty_action(self, n_agents: int) -> ActionBuffers:
         """
         Generates ActionBuffers corresponding to an empty action (all zeros)
         for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        return ActionBuffers(np.zeros((n_agents, self.continuous_size), dtype=np.float32),
-            np.zeros((n_agents, self.discrete_size), dtype=np.int32))
+        return ActionBuffers(
+            np.zeros((n_agents, self.continuous_size), dtype=np.float32),
+            np.zeros((n_agents, self.discrete_size), dtype=np.int32),
+        )
 
-    def create_random(self, n_agents: int) -> ActionBuffers:
+    def random_action(self, n_agents: int) -> ActionBuffers:
         """
         Generates ActionBuffers corresponding to a random action (either discrete
         or continuous) for a number of agents.
@@ -316,16 +319,16 @@ class ActionSpec(NamedTuple):
         ).astype(np.float32)
 
         discrete_action = np.column_stack(
-                [
-                    np.random.randint(
-                        0,
-                        self.discrete_branches[i],  # type: ignore
-                        size=(n_agents),
-                        dtype=np.int32,
-                    )
-                    for i in range(self.discrete_size)
-                ]
-            )
+            [
+                np.random.randint(
+                    0,
+                    self.discrete_branches[i],  # type: ignore
+                    size=(n_agents),
+                    dtype=np.int32,
+                )
+                for i in range(self.discrete_size)
+            ]
+        )
         return ActionBuffers(continuous_action, discrete_action)
 
     def _validate_action(
