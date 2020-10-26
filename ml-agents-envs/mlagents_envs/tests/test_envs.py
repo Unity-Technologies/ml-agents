@@ -93,13 +93,13 @@ def test_step(mock_communicator, mock_launcher):
     env.step()
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
-    env.set_actions("RealFakeBrain", spec.action_spec.create_empty(n_agents))
+    env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents))
     env.step()
     with pytest.raises(UnityActionException):
-        env.set_actions("RealFakeBrain", spec.action_spec.create_empty(n_agents - 1))
+        env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents - 1))
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
-    env.set_actions("RealFakeBrain", spec.action_spec.create_empty(n_agents) - 1)
+    env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents) - 1)
     env.step()
 
     env.close()

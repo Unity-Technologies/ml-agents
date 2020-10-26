@@ -287,7 +287,7 @@ class ActionSpec(NamedTuple):
         """
         return len(self.discrete_branches)
 
-    def create_empty(self, n_agents: int) -> np.ndarray:
+    def empty_action(self, n_agents: int) -> np.ndarray:
         """
         Generates a numpy array corresponding to an empty action (all zeros)
         for a number of agents.
