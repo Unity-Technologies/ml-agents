@@ -116,9 +116,9 @@ class SimpleEnvironment(BaseEnv):
     def _take_action(self, name: str) -> bool:
         deltas = []
         _act = self.action[name]
-        for _disc in _act.discrete:
+        for _disc in _act.discrete[0]:
             deltas.append(1 if _disc else -1)
-        for _cont in _act.continuous:
+        for _cont in _act.continuous[0]:
             deltas.append(_cont)
         for i, _delta in enumerate(deltas):
             _delta = clamp(_delta, -self.step_size, self.step_size)

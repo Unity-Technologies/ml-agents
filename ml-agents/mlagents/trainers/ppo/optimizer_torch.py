@@ -163,6 +163,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         )
         old_log_probs = ActionLogProbs.extract_action_log_probs(batch).flatten()
         log_probs = log_probs.flatten()
+        print(log_probs)
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks

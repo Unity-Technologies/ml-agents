@@ -305,7 +305,7 @@ class SimpleActor(nn.Module, Actor):
         for action_dist in dists:
             action = action_dist.sample()
             actions.append(action)
-        return AgentAction.create_agent_action(actions, self.action_spec)
+        return actions
 
     def get_dists(
         self,

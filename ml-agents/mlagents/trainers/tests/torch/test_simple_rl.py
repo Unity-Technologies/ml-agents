@@ -38,25 +38,27 @@ PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTOR
 SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
+@pytest.mark.parametrize("use_discrete", [True])
 def test_simple_ppo(use_discrete):
     env = SimpleEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     config = attr.evolve(PPO_TORCH_CONFIG)
     check_environment_trains(env, {BRAIN_NAME: config})
+    assert False
 
 
-#@pytest.mark.parametrize("use_discrete", [True, False])
-#def test_2d_ppo(use_discrete):
-#    env = SimpleEnvironment(
-#        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
-#    )
-#    new_hyperparams = attr.evolve(
-#        PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=640
-#    )
-#    config = attr.evolve(
-#        PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000
-#    )
-#    check_environment_trains(env, {BRAIN_NAME: config})
+@pytest.mark.parametrize("use_discrete", [True])
+def test_2d_ppo(use_discrete):
+    env = SimpleEnvironment(
+        [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8
+    )
+    new_hyperparams = attr.evolve(
+        PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=640
+    )
+    config = attr.evolve(
+        PPO_TORCH_CONFIG, hyperparameters=new_hyperparams, max_steps=10000
+    )
+    check_environment_trains(env, {BRAIN_NAME: config})
+    assert False
 
 
 #@pytest.mark.parametrize("use_discrete", [True, False])

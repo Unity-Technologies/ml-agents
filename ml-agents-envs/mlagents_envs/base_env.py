@@ -250,13 +250,13 @@ class ActionBuffers(NamedTuple):
     Continuous and discrete actions are numpy arrays.
     """
 
-    continuous: np.ndarray
-    discrete: np.ndarray
+    continuous: List[np.ndarray]
+    discrete: List[np.ndarray]
 
     @staticmethod
     def from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> "ActionBuffers":
-        continuous: np.ndarray = []
-        discrete: np.ndarray = []
+        continuous: List[np.ndarray] = [[]]
+        discrete: List[np.ndarray] = [[]]
         if "continuous_action" in action_dict:
             continuous = action_dict["continuous_action"]
         if "discrete_action" in action_dict:
