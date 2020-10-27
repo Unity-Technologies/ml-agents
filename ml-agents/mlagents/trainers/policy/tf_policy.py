@@ -273,10 +273,11 @@ class TFPolicy(Policy):
         action = run_out.get("action")
         # Fast NaN check on the action
         # See https://stackoverflow.com/questions/6736590/fast-check-for-nan-in-numpy for background.
-        d = np.sum(action)
-        has_nan = np.isnan(d)
-        if has_nan:
-            raise RuntimeError("NaN action detected.")
+        if action is not None:
+            d = np.sum(action)
+            has_nan = np.isnan(d)
+            if has_nan:
+                raise RuntimeError("NaN action detected.")
 
         return ActionInfo(
             action=action,
