@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
+from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec, ActionBuffers
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import timed
 from mlagents.trainers.action_info import ActionInfo
@@ -28,7 +28,8 @@ class SimpleEnvManager(EnvManager):
         self.previous_all_action_info = all_action_info
 
         for brain_name, action_info in all_action_info.items():
-            self.env.set_actions(brain_name, action_info.action)
+            _action = ActionBuffers.from_numpy_dict(action_info.action)
+            self.env.set_actions(brain_name, _action)
         self.env.step()
         all_step_result = self._generate_all_results()
 

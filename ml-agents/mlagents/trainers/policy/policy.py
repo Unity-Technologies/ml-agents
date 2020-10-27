@@ -112,20 +112,20 @@ class Policy:
         return self.behavior_spec.action_spec.empty_action(num_agents)
 
     def save_previous_action(
-        self, agent_ids: List[str], action_buffers: Optional[ActionBuffers]
+        self, agent_ids: List[str], action_dict: Dict[str, np.ndarray]
     ) -> None:
-        if action_buffers is None:
+        if action_dict is None:
             return
         for index, agent_id in enumerate(agent_ids):
-            self.previous_action_dict[agent_id] = action_buffers
+            self.previous_action_dict[agent_id] = action_dict
 
-    def retrieve_previous_action(self, agent_ids: List[str]) -> ActionBuffers:
-        action_buffers = self.behavior_spec.action_spec.create_empty(len(agent_ids))
+    def retrieve_previous_action(self, agent_ids: List[str]) -> Dict[str, np.ndarray]:
+        action_dict = self.behavior_spec.action_spec.empty_action(len(agent_ids))
         for index, agent_id in enumerate(agent_ids):
             if agent_id in self.previous_action_dict:
-                for action, previous_action in zip(action_buffers, self.previous_action_dict[agent_id]):
-                    action[index, :] = previous_action
-        return action_buffers
+                for act_type in action_dict:
+                    action_dict[act_type][index, :] = self.previous_action_dict[agent_id][act_type]
+        return action_dict
 
     def remove_previous_action(self, agent_ids):
         for agent_id in agent_ids:

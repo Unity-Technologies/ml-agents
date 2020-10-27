@@ -7,7 +7,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -135,7 +135,7 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        actions = ModelUtils.action_buffers_to_tensor_list(batch["actions"], self.policy.behavior_spec.action_spec)
+        actions = AgentAction.extract_agent_action(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -161,6 +161,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
+        old_log_probs = ActionLogProbs.extract_action_log_probs(batch).flatten()
+        log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
@@ -168,7 +170,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
-            ModelUtils.list_to_tensor(batch["action_probs"]),
+            old_log_probs,
             loss_masks,
         )
         loss = (

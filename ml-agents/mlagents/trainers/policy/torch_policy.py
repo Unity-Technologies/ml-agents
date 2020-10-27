@@ -16,7 +16,8 @@ from mlagents.trainers.torch.networks import (
     SeparateActorCritic,
     GlobalSteps,
 )
-from mlagents.trainers.torch.utils import ModelUtils
+
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -144,9 +145,10 @@ class TorchPolicy(Policy):
                 vec_obs, vis_obs, masks, memories, seq_len
             )
         action_list = self.actor_critic.sample_action(dists)
-        log_probs, entropies, all_logs = ModelUtils.get_probs_and_entropy(
+        log_probs_list, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists
         )
+        log_probs = ActionLogProbs.create_action_log_probs(log_probs_list, self.behavior_spec.action_spec)
 #        actions = torch.stack(action_list, dim=-1)
 #        if self.use_continuous_act:
 #            actions = actions[:, :, 0]
@@ -165,7 +167,7 @@ class TorchPolicy(Policy):
         self,
         vec_obs: torch.Tensor,
         vis_obs: torch.Tensor,
-        actions: List[torch.Tensor],
+        actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
@@ -173,9 +175,8 @@ class TorchPolicy(Policy):
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        #action_list = [actions[..., i] for i in range(actions.shape[-1])]
-        #log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
-        log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(actions, dists)
+        log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(actions, dists)
+        log_probs = ActionLogProbs.create_action_log_probs(log_probs_list, self.behavior_spec.action_spec)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return log_probs, entropy_sum, value_heads
@@ -204,10 +205,9 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = ModelUtils.to_action_buffers(action, self.behavior_spec.action_spec)
-        run_out["pre_action"] = ModelUtils.to_action_buffers(action, self.behavior_spec.action_spec)
-        # Todo - make pre_action difference
-        run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
+        run_out["action"] = action.to_numpy_dict()
+        run_out["pre_action"] = action.to_numpy_dict()["continuous_action"] # Todo - make pre_action difference
+        run_out["log_probs"] = log_probs.to_numpy_dict()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:

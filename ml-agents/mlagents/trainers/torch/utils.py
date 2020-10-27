@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, NamedTuple, Dict
 from mlagents.torch_utils import torch, nn
 import numpy as np
 
@@ -14,6 +14,96 @@ from mlagents.trainers.exception import UnityTrainerException
 from mlagents_envs.base_env import ActionSpec, ActionBuffers
 from mlagents.trainers.torch.distributions import DistInstance, DiscreteDistInstance
 
+
+class AgentAction(NamedTuple):
+    continuous: torch.Tensor
+    discrete: List[torch.Tensor]
+
+    def to_numpy_dict(self) -> Dict[str, np.ndarray]:
+        action_arrays_dict: Dict[str, np.ndarray] = {}
+        if self.continuous is not None:
+            action_arrays_dict["continuous_action"] = ModelUtils.to_numpy(self.continuous)
+        if self.discrete is not None:
+            action_arrays_dict["discrete_action"] = ModelUtils.to_numpy(self.discrete)
+        return action_arrays_dict
+
+    def to_tensor_list(self) -> List[torch.Tensor]:
+        tensor_list: List[torch.Tensor] = []
+        if self.continuous is not None:
+            tensor_list.append(self.continuous)
+        if self.discrete is not None:
+            tensor_list += self.discrete
+        return tensor_list
+
+    def flatten(self) -> torch.Tensor:
+        return torch.stack(self.to_tensor_list(), dim=-1)
+
+    @staticmethod    
+    def extract_agent_action(buff: Dict[str, np.ndarray]) -> "AgentAction":
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None
+        if "continuous_action" in buff:
+            continuous = ModelUtils.list_to_tensor(buff["continuous_action"])
+        if "discrete_action" in buff:
+            discrete = ModelUtils.list_to_tensor(buff["discrete_action"])
+        return AgentAction(continuous, discrete)
+            
+    @staticmethod    
+    def create_agent_action(action_tensors: List[torch.Tensor], action_spec: ActionSpec) -> "AgentAction":
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None
+        _offset = 0
+        if action_spec.continuous_size > 0:
+            continuous = action_tensors[0]
+            _offset = 1
+        if action_spec.discrete_size > 0:
+            discrete = action_tensors[_offset:]
+        return AgentAction(continuous, discrete)
+
+class ActionLogProbs(NamedTuple):
+    continuous: torch.Tensor
+    discrete: List[torch.Tensor]
+
+    def to_numpy_dict(self) -> Dict[str, np.ndarray]:
+        log_prob_arrays_dict: Dict[str, np.ndarray] = {}
+        if self.continuous is not None:
+            log_prob_arrays_dict["continuous_log_probs"] = ModelUtils.to_numpy(self.continuous)
+        if self.discrete is not None:
+            log_prob_arrays_dict["discrete_log_probs"] = ModelUtils.to_numpy(self.discrete)
+        return log_prob_arrays_dict
+
+    def to_tensor_list(self) -> List[torch.Tensor]:
+        tensor_list: List[torch.Tensor] = []
+        if self.continuous is not None:
+            tensor_list.append(self.continuous)
+        if self.discrete is not None:
+            tensor_list += self.discrete
+        return tensor_list
+
+    def flatten(self) -> torch.Tensor:
+        return torch.stack(self.to_tensor_list(), dim=-1)
+
+    @staticmethod    
+    def extract_action_log_probs(buff: Dict[str, np.ndarray]) -> "AgentAction":
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None
+        if "continuous_action" in buff:
+            continuous = ModelUtils.list_to_tensor(buff["continuous_log_probs"])
+        if "discrete_action" in buff:
+            discrete = ModelUtils.list_to_tensor(buff["discrete_log_probs"])
+        return ActionLogProbs(continuous, discrete)
+
+    @staticmethod    
+    def create_action_log_probs(log_prob_tensors: List[torch.Tensor], action_spec: ActionSpec) -> "AgentAction":
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None
+        _offset = 0
+        if action_spec.continuous_size > 0:
+            continuous = log_prob_tensors[0]
+            _offset = 1
+        if action_spec.discrete_size > 0:
+            discrete = log_prob_tensors[_offset:]
+        return ActionLogProbs(continuous, discrete)
 
 class ModelUtils:
     # Minimum supported side for each encoder type. If refactoring an encoder, please
@@ -193,41 +283,23 @@ class ModelUtils:
         )
 
     @staticmethod
-    def to_action_buffers(actions: List[torch.Tensor], action_spec: ActionSpec) -> ActionBuffers:
+    def to_action_buffers(agent_actions: AgentAction, action_spec: ActionSpec) -> ActionBuffers:
         """
         Converts a list of action Tensors to an ActionBuffers tuple. Implicitly
         assumes order of actions in 'actions' is continuous, discrete
         """
-        continuous_action: np.ndarray = np.array([])
-        discrete_action_list: List[np.ndarray] = []
-        discrete_action: np.ndarray = np.array([])
-        # offset to index discrete actions depending on presence of continuous actions
-        _offset = 0
-        if action_spec.continuous_size > 0:
-            continuous_action = actions[0].detach().cpu().numpy()
-            _offset = 1
-        if action_spec.discrete_size > 0:
-            for _disc in range(action_spec.discrete_size):
-                discrete_action_list.append(actions[_disc + _offset].detach().cpu().numpy())
-            #print(discrete_action_list)
-            discrete_action = np.array(discrete_action_list)
-        return ActionBuffers(continuous_action, discrete_action)
+        
+        return ActionBuffers(agent_actions.continuous.detach().cpu().numpy(), agent_actions.discrete.detach().cpu().numpy())
 
-    @staticmethod
-    def action_buffers_to_tensor_list(
-        action_buffers: ActionBuffers, action_spec: ActionSpec, dtype: Optional[torch.dtype] = None
-    ) -> List[torch.Tensor]:
-        """
-        Converts ActionBuffers fields into a List of tensors.
-        """
-        #print(action_buffers)
-        action_tensors: List[torch.Tensor] = []
-        if action_spec.continuous_size > 0:
-            action_tensors.append(torch.as_tensor(np.asanyarray(action_buffers.continuous), dtype=dtype))
-        if action_spec.discrete_size > 0:
-            for _disc in range(action_buffers.discrete):
-                action_tensors.append(torch.as_tensor(np.asanyarray(_disc), dtype=dtype))
-        return actiion_tensors 
+    #@staticmethod
+    #def action_buffers_to_agent_action(
+    #    action_buffers: ActionBuffers, dtype: Optional[torch.dtype] = None
+    #) -> AgentAction:
+    #    """
+    #    Converts ActionBuffers fields into a AgentAction fields
+    #    """
+    #    return AgentAction(torch.as_tensor(np.asanyarray(action_buffers.continuous), dtype=dtype),
+                                    #torch.as_tensor(np.asanyarray(_disc), dtype=dtype))
 
     @staticmethod
     def list_to_tensor(
@@ -306,26 +378,27 @@ class ModelUtils:
 
     @staticmethod
     def get_probs_and_entropy(
-        action_list: List[torch.Tensor], dists: List[DistInstance]
-    ) -> Tuple[torch.Tensor, torch.Tensor, Optional[torch.Tensor]]:
+        agent_action: AgentAction, dists: List[DistInstance]
+    ) -> Tuple[List[torch.Tensor], torch.Tensor, Optional[torch.Tensor]]:
         log_probs_list = []
         all_probs_list = []
         entropies_list = []
+        action_list = agent_action.to_tensor_list()
         for action, action_dist in zip(action_list, dists):
             log_prob = action_dist.log_prob(action)
             log_probs_list.append(log_prob)
             entropies_list.append(action_dist.entropy())
             if isinstance(action_dist, DiscreteDistInstance):
                 all_probs_list.append(action_dist.all_log_prob())
-        log_probs = torch.stack(log_probs_list, dim=-1)
+        #log_probs = torch.stack(log_probs_list, dim=-1)
         entropies = torch.stack(entropies_list, dim=-1)
         if not all_probs_list:
-            log_probs = log_probs.squeeze(-1)
+        #    log_probs = log_probs.squeeze(-1)
             entropies = entropies.squeeze(-1)
             all_probs = None
         else:
             all_probs = torch.cat(all_probs_list, dim=-1)
-        return log_probs, entropies, all_probs
+        return log_probs_list, entropies, all_probs
 
     @staticmethod
     def masked_mean(tensor: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
@@ -362,3 +435,5 @@ class ModelUtils:
                     alpha=tau,
                     out=target_param.data,
                 )
+
+

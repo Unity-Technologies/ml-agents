@@ -10,7 +10,7 @@ from mlagents.trainers.torch.distributions import (
     DistInstance,
 )
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
@@ -300,12 +300,12 @@ class SimpleActor(nn.Module, Actor):
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
         self.network_body.update_normalization(vector_obs)
 
-    def sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
+    def sample_action(self, dists: List[DistInstance]) -> AgentAction:
         actions = []
         for action_dist in dists:
             action = action_dist.sample()
             actions.append(action)
-        return actions
+        return AgentAction.create_agent_action(actions, self.action_spec)
 
     def get_dists(
         self,
@@ -337,8 +337,8 @@ class SimpleActor(nn.Module, Actor):
         """
         dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
         if self.action_spec.is_continuous():
-            action_list = self.sample_action(dists)
-            action_out = torch.stack(action_list, dim=-1)
+            agent_action = self.sample_action(dists)
+            action_out = agent_action.flatten()#torch.stack(action_list, dim=-1)
         else:
             action_out = torch.cat([dist.all_log_prob() for dist in dists], dim=1)
         return (

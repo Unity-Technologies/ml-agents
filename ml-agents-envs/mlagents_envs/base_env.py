@@ -253,6 +253,16 @@ class ActionBuffers(NamedTuple):
     continuous: np.ndarray
     discrete: np.ndarray
 
+    @staticmethod
+    def from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> "ActionBuffers":
+        continuous: np.ndarray = []
+        discrete: np.ndarray = []
+        if "continuous_action" in action_dict:
+            continuous = action_dict["continuous_action"]
+        if "discrete_action" in action_dict:
+            discrete = action_dict["discrete_action"]
+        return ActionBuffers(continuous, discrete)
+
 
 class ActionSpec(NamedTuple):
     """
@@ -297,39 +307,53 @@ class ActionSpec(NamedTuple):
         """
         return len(self.discrete_branches)
 
-    def empty_action(self, n_agents: int) -> ActionBuffers:
+    def empty_action(self, n_agents: int) -> Dict[str, np.ndarray]:
         """
         Generates ActionBuffers corresponding to an empty action (all zeros)
         for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        return ActionBuffers(
-            np.zeros((n_agents, self.continuous_size), dtype=np.float32),
-            np.zeros((n_agents, self.discrete_size), dtype=np.int32),
-        )
+        action_dict: Dict[str, np.ndarray] = {}
+        if self.continuous_size > 0:
+            action_dict["continuous_action"] = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
 
-    def random_action(self, n_agents: int) -> ActionBuffers:
+        if self.discrete_size > 0:
+            action_dict["discrete_action"] = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+        return action_dict
+
+       # return ActionBuffers(
+       #     np.zeros((n_agents, self.continuous_size), dtype=np.float32),
+       #     np.zeros((n_agents, self.discrete_size), dtype=np.int32),
+       # )
+
+    def random_action(self, n_agents: int) -> Dict[str, np.ndarray]:
         """
         Generates ActionBuffers corresponding to a random action (either discrete
         or continuous) for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        continuous_action = np.random.uniform(
-            low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
-        ).astype(np.float32)
+        action_dict: Dict[str, np.ndarray] = {}
+        if self.continuous_size > 0:
+            continuous_action = np.random.uniform(
+                low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
+            ).astype(np.float32)
+            action_dict["continuous_action"] = continuous_action
 
-        discrete_action = np.column_stack(
-            [
-                np.random.randint(
-                    0,
-                    self.discrete_branches[i],  # type: ignore
-                    size=(n_agents),
-                    dtype=np.int32,
-                )
-                for i in range(self.discrete_size)
-            ]
-        )
-        return ActionBuffers(continuous_action, discrete_action)
+        if self.discrete_size > 0:
+            discrete_action = np.column_stack(
+                [
+                    np.random.randint(
+                        0,
+                        self.discrete_branches[i],  # type: ignore
+                        size=(n_agents),
+                        dtype=np.int32,
+                    )
+                    for i in range(self.discrete_size)
+                ]
+            )
+            action_dict["discrete_action"] = discrete_action
+        return action_dict
+        #return ActionBuffers(continuous_action, discrete_action)
 
     def _validate_action(
         self, actions: ActionBuffers, n_agents: int, name: str
