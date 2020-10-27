@@ -270,13 +270,25 @@ namespace Unity.MLAgentsExamples
             var bp = m_Agent.GetComponent<BehaviorParameters>();
             var behaviorName = bp.BehaviorName;
 
-            var nnModel = GetModelForBehaviorName(behaviorName);
+            NNModel nnModel = null;
+            try
+            {
+                nnModel = GetModelForBehaviorName(behaviorName);
+            }
+            catch (Exception e)
+            {
+                overrideError = $"Exception calling GetModelForBehaviorName: {e}";
+            }
+
             if (nnModel == null)
             {
-                overrideError =
-                    $"Didn't find a model for behaviorName {behaviorName}. Make " +
-                    $"sure the behaviorName is set correctly in the commandline " +
-                    $"and that the model file exists";
+                if (string.IsNullOrEmpty(overrideError))
+                {
+                    overrideError =
+                        $"Didn't find a model for behaviorName {behaviorName}. Make " +
+                        "sure the behaviorName is set correctly in the commandline " +
+                        "and that the model file exists";
+                }
             }
             else
             {
