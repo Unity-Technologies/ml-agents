@@ -300,7 +300,7 @@ class SimpleActor(nn.Module, Actor):
     def update_normalization(self, vector_obs: List[torch.Tensor]) -> None:
         self.network_body.update_normalization(vector_obs)
 
-    def sample_action(self, dists: List[DistInstance]) -> AgentAction:
+    def sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
         actions = []
         for action_dist in dists:
             action = action_dist.sample()
@@ -337,8 +337,8 @@ class SimpleActor(nn.Module, Actor):
         """
         dists, _ = self.get_dists(vec_inputs, vis_inputs, masks, memories, 1)
         if self.action_spec.is_continuous():
-            agent_action = self.sample_action(dists)
-            action_out = agent_action.flatten()#torch.stack(action_list, dim=-1)
+            action_list = self.sample_action(dists)
+            action_out = torch.stack(action_list, dim=-1)
         else:
             action_out = torch.cat([dist.all_log_prob() for dist in dists], dim=1)
         return (

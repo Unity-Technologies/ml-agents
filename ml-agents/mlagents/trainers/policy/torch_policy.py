@@ -145,11 +145,11 @@ class TorchPolicy(Policy):
                 vec_obs, vis_obs, masks, memories, seq_len
             )
         action_list = self.actor_critic.sample_action(dists)
-        actions = AgentAction.create_agent_action(action_list, self.behavior_spec.action_spec)
         log_probs_list, entropies, all_logs = ModelUtils.get_probs_and_entropy(
             action_list, dists
         )
-        log_probs = ActionLogProbs.create_action_log_probs(log_probs_list, self.behavior_spec.action_spec)
+        actions = AgentAction.create(action_list, self.behavior_spec.action_spec)
+        log_probs = ActionLogProbs.create(log_probs_list, self.behavior_spec.action_spec)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return (
@@ -163,7 +163,7 @@ class TorchPolicy(Policy):
         self,
         vec_obs: torch.Tensor,
         vis_obs: torch.Tensor,
-        actions: List[torch.Tensor],
+        actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
@@ -171,10 +171,9 @@ class TorchPolicy(Policy):
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        print(actions)
-        log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(actions, dists)
-        log_probs = ActionLogProbs.create_action_log_probs(log_probs_list, self.behavior_spec.action_spec)
-        print(log_probs)
+        action_list = actions.to_tensor_list()
+        log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
+        log_probs = ActionLogProbs.create(log_probs_list, self.behavior_spec.action_spec)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return log_probs, entropy_sum, value_heads
