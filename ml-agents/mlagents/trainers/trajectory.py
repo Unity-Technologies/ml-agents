@@ -109,8 +109,7 @@ class Trajectory(NamedTuple):
             agent_buffer_trajectory["done"].append(exp.done)
             # Add the outputs of the last eval
             if exp.action_pre is not None:
-                actions_pre = exp.action_pre
-                agent_buffer_trajectory["actions_pre"].append(actions_pre)
+                agent_buffer_trajectory["actions_pre"].append(exp.action_pre)
 
             # Adds the log prob and action of continuous/discrete separately 
             for act_type, act_array in exp.action.items():

@@ -24,7 +24,7 @@ class AgentAction(NamedTuple):
         if self.continuous is not None:
             action_arrays_dict["continuous_action"] = ModelUtils.to_numpy(self.continuous)
         if self.discrete is not None:
-            action_arrays_dict["discrete_action"] = ModelUtils.to_numpy(self.discrete)
+            action_arrays_dict["discrete_action"] = np.array([ModelUtils.to_numpy(_disc) for _disc in self.discrete])
         return action_arrays_dict
 
     def to_tensor_list(self) -> List[torch.Tensor]:
@@ -69,7 +69,7 @@ class ActionLogProbs(NamedTuple):
         if self.continuous is not None:
             log_prob_arrays_dict["continuous_log_probs"] = ModelUtils.to_numpy(self.continuous)
         if self.discrete is not None:
-            log_prob_arrays_dict["discrete_log_probs"] = ModelUtils.to_numpy(self.discrete)
+            log_prob_arrays_dict["discrete_log_probs"] = np.array([ModelUtils.to_numpy(_disc) for _disc in self.discrete])
         return log_prob_arrays_dict
 
     def to_tensor_list(self) -> List[torch.Tensor]:

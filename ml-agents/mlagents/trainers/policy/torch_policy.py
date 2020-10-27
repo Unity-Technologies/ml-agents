@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional, Union
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 import copy
@@ -124,7 +124,7 @@ class TorchPolicy(Policy):
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
         all_log_probs: bool = False,
-    ) -> Tuple[List[torch.Tensor], torch.Tensor, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[List[torch.Tensor], Union[torch.Tensor, List[torch.Tensor]], torch.Tensor, torch.Tensor]:
         """
         :param vec_obs: List of vector observations.
         :param vis_obs: List of visual observations.
@@ -206,7 +206,7 @@ class TorchPolicy(Policy):
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
         run_out["action"] = action.to_numpy_dict()
-        run_out["pre_action"] = action.to_numpy_dict()["continuous_action"] # Todo - make pre_action difference
+        run_out["pre_action"] = action.to_numpy_dict()["continuous_action"] if self.use_continuous_act else None# Todo - make pre_action difference
         run_out["log_probs"] = log_probs.to_numpy_dict()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["learning_rate"] = 0.0
