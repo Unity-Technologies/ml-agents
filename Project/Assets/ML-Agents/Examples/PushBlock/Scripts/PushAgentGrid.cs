@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -54,7 +56,15 @@ public class PushAgentGrid : Agent
     Renderer m_GroundRenderer;
 
     EnvironmentParameters m_ResetParams;
+    public bool useAutoFocus = false;
+    public List<RayPerceptionSensorComponent3D> raySensorsList = new List<RayPerceptionSensorComponent3D>();
+    public float focusAngle = 90;
 
+    public bool canLookAround;
+    public float lookAngle = 0;
+    public float maxLookAngle = 45f;
+
+    //    public float rayHeight = 0;
     void Awake()
     {
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
@@ -90,6 +100,16 @@ public class PushAgentGrid : Agent
             sensor.AddObservation(localVelocity.z);
             //            sensor.AddObservation(transform.localRotation);
             //            sensor.AddObservation(transform.localPosition);
+            if (useAutoFocus)
+            {
+                sensor.AddObservation(focusAngle / 180);
+                //                sensor.AddObservation(rayHeight);
+            }
+            if (canLookAround)
+            {
+                sensor.AddObservation(lookAngle / maxLookAngle);
+                //                sensor.AddObservation(rayHeight);
+            }
         }
     }
 
@@ -108,7 +128,8 @@ public class PushAgentGrid : Agent
             var randomPosZ = Random.Range(-areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier,
                 areaBounds.extents.z * m_PushBlockSettings.spawnAreaMarginMultiplier);
             randomSpawnPos = ground.transform.position + new Vector3(randomPosX, 1f, randomPosZ);
-            if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
+            //            if (Physics.CheckBox(randomSpawnPos, new Vector3(2.5f, 0.01f, 2.5f)) == false)
+            if (Physics.CheckBox(randomSpawnPos, new Vector3(.75f, 0.01f, .75f)) == false)
             {
                 foundNewSpawnLocation = true;
             }
@@ -140,6 +161,131 @@ public class PushAgentGrid : Agent
         yield return new WaitForSeconds(time); // Wait for 2 sec
         m_GroundRenderer.material = m_GroundMaterial;
     }
+
+    //    /// <summary>
+    //    /// Moves the agent according to the selected action.
+    //    /// </summary>
+    //    public void MoveAgent(ActionBuffers actionBuffers)
+    //    {
+    //        var dirToGo = Vector3.zero;
+    //        var rotateDir = Vector3.zero;
+    //
+    ////        var forwardAction = act[0];
+    ////        var lateralAction = act[1];
+    ////        var rotatedAction = act[2];
+    //        var act = actionBuffers.ContinuousActions;
+    //        dirToGo += transform.forward * act[0];
+    //        dirToGo += transform.right * act[1];
+    //
+    //        rotateDir = transform.up * act[2];
+    ////        switch (action)
+    ////        {
+    ////            case 1:
+    ////                dirToGo = transform.forward * 1f;
+    ////                break;
+    ////            case 2:
+    ////                dirToGo = transform.forward * -1f;
+    ////                break;
+    ////            case 3:
+    ////                rotateDir = transform.up * 1f;
+    ////                break;
+    ////            case 4:
+    ////                rotateDir = transform.up * -1f;
+    ////                break;
+    ////            case 5:
+    ////                dirToGo = transform.right * -0.75f;
+    ////                break;
+    ////            case 6:
+    ////                dirToGo = transform.right * 0.75f;
+    ////                break;
+    ////        }
+    //        transform.Rotate(rotateDir.normalized, Time.fixedDeltaTime * 200f);
+    //        m_AgentRb.AddForce(dirToGo.normalized * m_PushBlockSettings.agentRunSpeed,
+    //            ForceMode.VelocityChange);
+    //
+    //
+    ////        if (canLookAround)
+    ////        {
+    ////            var angle = act[1];
+    ////            switch (angle)
+    ////            {
+    ////                case 0:
+    ////                    lookAngle = 0;
+    ////                    break;
+    ////                case 1:
+    ////                    lookAngle = maxLookAngle/3;
+    ////                    break;
+    ////                case 2:
+    ////                    lookAngle = maxLookAngle/2;
+    ////                    break;
+    ////                case 3:
+    ////                    lookAngle = maxLookAngle/1;
+    ////                    break;
+    ////                case 4:
+    ////                    lookAngle = -maxLookAngle/3;
+    ////                    break;
+    ////                case 5:
+    ////                    lookAngle = -maxLookAngle/2;
+    ////                    break;
+    ////                case 6:
+    ////                    lookAngle = -maxLookAngle/1;
+    ////                    break;
+    ////            }
+    ////
+    ////            foreach (var item in raySensorsList)
+    ////            {
+    ////                item.transform.localRotation = Quaternion.Euler(0,lookAngle,0);
+    ////            }
+    ////        }
+    //
+    //
+    //        if (useAutoFocus)
+    //        {
+    //            focusAngle = Mathf.Lerp(0, 180, (act[3] + 1f) * 0.5f);
+    ////            var focus = act[1];
+    ////            var focusAngleTarget = act[1];
+    ////            switch (focus)
+    ////            {
+    ////                case 0:
+    ////                    focusAngle = 0;
+    ////                    break;
+    ////                case 1:
+    ////                    focusAngle = 30;
+    ////                    break;
+    ////                case 2:
+    ////                    focusAngle = 60;
+    ////                    break;
+    ////                case 3:
+    ////                    focusAngle = 90;
+    ////                    break;
+    ////                case 4:
+    ////                    focusAngle = 120;
+    ////                    break;
+    ////                case 5:
+    ////                    focusAngle = 180;
+    ////                    break;
+    ////            }
+    ////                    Mathf.MoveTowards()
+    ////            var height = act[2];
+    ////            switch (height)
+    ////            {
+    ////                case 0:
+    ////                    rayHeight = 0;
+    ////                    break;
+    ////                case 1:
+    ////                    rayHeight = 1;
+    ////                    break;
+    ////            }
+    //
+    //            foreach (var item in raySensorsList)
+    //            {
+    //                item.MaxRayDegrees = focusAngle;
+    ////                item.StartVerticalOffset = rayHeight;
+    ////                item.EndVerticalOffset = rayHeight;
+    //            }
+    //        }
+    //    }
+
 
     /// <summary>
     /// Moves the agent according to the selected action.
@@ -175,6 +321,85 @@ public class PushAgentGrid : Agent
         transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
+
+
+        if (canLookAround)
+        {
+            var angle = act[1];
+            switch (angle)
+            {
+                case 0:
+                    lookAngle = 0;
+                    break;
+                case 1:
+                    lookAngle = maxLookAngle / 3;
+                    break;
+                case 2:
+                    lookAngle = maxLookAngle / 2;
+                    break;
+                case 3:
+                    lookAngle = maxLookAngle / 1;
+                    break;
+                case 4:
+                    lookAngle = -maxLookAngle / 3;
+                    break;
+                case 5:
+                    lookAngle = -maxLookAngle / 2;
+                    break;
+                case 6:
+                    lookAngle = -maxLookAngle / 1;
+                    break;
+            }
+
+            foreach (var item in raySensorsList)
+            {
+                item.transform.localRotation = Quaternion.Euler(0, lookAngle, 0);
+            }
+        }
+
+
+        if (useAutoFocus)
+        {
+            var focus = act[1];
+            switch (focus)
+            {
+                case 0:
+                    focusAngle = 15;
+                    break;
+                case 1:
+                    focusAngle = 30;
+                    break;
+                case 2:
+                    focusAngle = 60;
+                    break;
+                case 3:
+                    focusAngle = 90;
+                    break;
+                case 4:
+                    focusAngle = 120;
+                    break;
+                case 5:
+                    focusAngle = 180;
+                    break;
+            }
+            //            var height = act[2];
+            //            switch (height)
+            //            {
+            //                case 0:
+            //                    rayHeight = 0;
+            //                    break;
+            //                case 1:
+            //                    rayHeight = 1;
+            //                    break;
+            //            }
+
+            foreach (var item in raySensorsList)
+            {
+                item.MaxRayDegrees = focusAngle;
+                //                item.StartVerticalOffset = rayHeight;
+                //                item.EndVerticalOffset = rayHeight;
+            }
+        }
     }
 
     /// <summary>
@@ -184,11 +409,25 @@ public class PushAgentGrid : Agent
 
     {
         // Move the agent using the action.
+        //        MoveAgent(actionBuffers);
         MoveAgent(actionBuffers.DiscreteActions);
 
         // Penalty given each step to encourage agent to finish task quickly.
         AddReward(-1f / MaxStep);
     }
+
+    //    /// <summary>
+    //    /// Called every step of the engine. Here the agent takes an action.
+    //    /// </summary>
+    //    public override void OnActionReceived(ActionBuffers actionBuffers)
+    //
+    //    {
+    //        // Move the agent using the action.
+    //        MoveAgent(actionBuffers.DiscreteActions);
+    //
+    //        // Penalty given each step to encourage agent to finish task quickly.
+    //        AddReward(-1f / MaxStep);
+    //    }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {

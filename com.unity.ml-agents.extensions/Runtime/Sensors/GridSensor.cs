@@ -141,7 +141,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <summary>
         /// Texture where the colors are written to so that they can be compressed in PNG format.
         /// </summary>
-        protected Texture2D m_perceptionTexture2D;
+        public Texture2D m_perceptionTexture2D;
 
         //
         // Utility Constants Calculated on Init
@@ -414,6 +414,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             byteSizesBytesList = new List<byte[]>();
 
             m_perceptionTexture2D = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
+            testTexture = new Texture2D(GridNumSideX, GridNumSideZ, TextureFormat.RGB24, false);
         }
 
         /// <summary>
@@ -476,6 +477,26 @@ namespace Unity.MLAgents.Extensions.Sensors
             return SensorCompressionType.PNG;
         }
 
+
+        //        public Texture aTexture;
+        public Texture2D testTexture;
+        public bool showGridObservationGUI;
+        void OnGUI()
+        {
+            //            if (!aTexture)
+            if (!testTexture)
+            {
+                Debug.LogError("Assign a Texture in the inspector.");
+                return;
+            }
+
+            if (showGridObservationGUI)
+            {
+                //            GUI.DrawTexture(new Rect(10, 10, 60, 60), aTexture, ScaleMode.ScaleToFit, true, 10.0F);
+                GUI.DrawTexture(new Rect(10, 10, 600, 600), testTexture, ScaleMode.ScaleToFit, true, 1f);
+            }
+        }
+
         /// <summary>
         /// GetCompressedObservation - Calls Perceive then puts the data stored on the perception buffer
         /// onto the m_perceptionTexture2D to be converted to a byte array and returned
@@ -521,6 +542,13 @@ namespace Unity.MLAgents.Extensions.Sensors
                 }
             }
             m_perceptionTexture2D.SetPixels(m_PerceptionColors);
+            if (showGridObservationGUI)
+            {
+                testTexture.SetPixels(m_PerceptionColors);
+                //            testTexture.EncodeToPNG();
+                testTexture.Apply();
+
+            }
         }
 
         public float overlapBoxScale = .5f;
@@ -539,7 +567,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 Collider[] foundColliders = null;
                 Vector3 cellCenter = Vector3.zero;
 
-                Vector3 halfCellScale = Vector3.one * overlapBoxScale;
+                Vector3 halfCellScale = Vector3.one * (overlapBoxScale * .5f);
                 //                Vector3 halfCellScale = new Vector3(CellScaleX / 2f, CellScaleY, CellScaleZ / 2f);
 
                 for (int cellIndex = 0; cellIndex < NumCells; cellIndex++)
@@ -849,7 +877,8 @@ namespace Unity.MLAgents.Extensions.Sensors
                     Gizmos.matrix = oldGizmoMatrix * cubeTransform;
                     Gizmos.color = CellActivity[i];
                     //                    Gizmos.DrawCube(Vector3.zero, Vector3.one * .75f);
-                    Gizmos.DrawCube(Vector3.zero, new Vector3(.85f, .15f, .85f));
+                    Gizmos.DrawCube(Vector3.zero, Vector3.one * overlapBoxScale);
+                    //                    Gizmos.DrawCube(Vector3.zero, new Vector3(.85f, .15f, .85f));
                     //                    Gizmos.DrawWireCube(Vector3.zero, Vector3.one * .75f);
                     //                    Gizmos.DrawSphere(Vector3.zero, .5f);
                 }
