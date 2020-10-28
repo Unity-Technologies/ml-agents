@@ -64,7 +64,7 @@ setup(
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
         # Windows ver. of PyTorch doesn't work from PyPi
-        'torch>=1.6.0;platform_system!="Windows"',
+        'torch>=1.6.0,<1.8.0;platform_system!="Windows"',
         "tensorboard>=1.15",
         "cattrs>=1.0.0",
         "attrs>=19.3.0",
