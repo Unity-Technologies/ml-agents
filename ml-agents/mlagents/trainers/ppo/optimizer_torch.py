@@ -102,7 +102,6 @@ class TorchPPOOptimizer(TorchOptimizer):
         advantage = advantages.unsqueeze(-1)
 
         decay_epsilon = self.hyperparameters.epsilon
-
         r_theta = torch.exp(log_probs - old_log_probs)
         p_opt_a = r_theta * advantage
         p_opt_b = (
