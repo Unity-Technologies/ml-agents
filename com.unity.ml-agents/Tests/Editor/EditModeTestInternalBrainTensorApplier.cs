@@ -33,13 +33,13 @@ namespace Unity.MLAgents.Tests
                 data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
             };
 
-            var applier = new ContinuousActionOutputApplier();
+            // var applier = new ContinuousActionOutputApplier();
 
             var agentIds = new List<int>() { 0, 1 };
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, float[]>() { { 0, null }, { 1, null } };
 
-            applier.Apply(inputTensor, agentIds, actionDict);
+            // applier.Apply(inputTensor, agentIds, actionDict);
 
 
             Assert.AreEqual(actionDict[0][0], 1);
@@ -63,14 +63,14 @@ namespace Unity.MLAgents.Tests
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var alloc = new TensorCachingAllocator();
-            var applier = new DiscreteActionOutputApplier(new[] { 2, 3 }, 0, alloc);
+            // var applier = new DiscreteActionOutputApplier(new[] { 2, 3 }, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, float[]>() { { 0, null }, { 1, null } };
 
 
-            applier.Apply(inputTensor, agentIds, actionDict);
+            // applier.Apply(inputTensor, agentIds, actionDict);
 
             Assert.AreEqual(actionDict[0][0], 1);
             Assert.AreEqual(actionDict[0][1], 1);

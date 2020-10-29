@@ -76,7 +76,24 @@ namespace Unity.MLAgents.Inference
 
 
             // Generators for Outputs
-            m_Dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(allocator);
+            bool useDeprecated = false;
+            if (barracudaModel != null)
+            {
+                var model = (Model)barracudaModel;
+                if (!model.outputs.Contains(TensorNames.ContinuousActionOutput) && !model.outputs.Contains(TensorNames.DiscreteActionOutput))
+                {
+                    useDeprecated = true;
+                }
+            }
+            if (useDeprecated)
+            {
+                m_Dict[TensorNames.ActionOutputDeprecated] = new BiDimensionalOutputGenerator(allocator);
+            }
+            else
+            {
+                m_Dict[TensorNames.ContinuousActionOutput] = new BiDimensionalOutputGenerator(allocator);
+                m_Dict[TensorNames.DiscreteActionOutput] = new BiDimensionalOutputGenerator(allocator);
+            }
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
         }

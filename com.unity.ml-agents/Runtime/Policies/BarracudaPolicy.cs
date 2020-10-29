@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Policies
         /// Sensor shapes for the associated Agents. All Agents must have the same shapes for their Sensors.
         /// </summary>
         List<int[]> m_SensorShapes;
-        SpaceType m_SpaceType;
+        ActionSpec m_ActionSpec;
 
         /// <inheritdoc />
         public BarracudaPolicy(
@@ -49,8 +49,7 @@ namespace Unity.MLAgents.Policies
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
             m_ModelRunner = modelRunner;
-            actionSpec.CheckNotHybrid();
-            m_SpaceType = actionSpec.NumContinuousActions > 0 ? SpaceType.Continuous : SpaceType.Discrete;
+            m_ActionSpec = actionSpec;
         }
 
         /// <inheritdoc />
@@ -64,14 +63,8 @@ namespace Unity.MLAgents.Policies
         public ref readonly ActionBuffers DecideAction()
         {
             m_ModelRunner?.DecideBatch();
-            var actions = m_ModelRunner?.GetAction(m_AgentId);
-            if (m_SpaceType == SpaceType.Continuous)
-            {
-                m_LastActionBuffer = new ActionBuffers(actions, Array.Empty<int>());
-                return ref m_LastActionBuffer;
-            }
-
-            m_LastActionBuffer = ActionBuffers.FromDiscreteActions(actions);
+            var actionbuffer = m_ModelRunner?.GetAction(m_AgentId);
+            m_LastActionBuffer = actionbuffer == null ? ActionBuffers.Empty : (ActionBuffers)actionbuffer;
             return ref m_LastActionBuffer;
         }
 
