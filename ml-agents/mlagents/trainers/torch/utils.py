@@ -194,7 +194,7 @@ class ModelUtils:
 
     @staticmethod
     def list_to_tensor(
-        ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = None
+        ndarray_list: List[np.ndarray], dtype: Optional[torch.dtype] = torch.float32
     ) -> torch.Tensor:
         """
         Converts a list of numpy arrays into a tensor. MUCH faster than

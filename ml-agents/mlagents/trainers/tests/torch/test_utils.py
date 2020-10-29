@@ -101,7 +101,7 @@ def test_polynomial_decay():
 
 def test_list_to_tensor():
     # Test converting pure list
-    unconverted_list = [[1, 2], [1, 3], [1, 4]]
+    unconverted_list = [[1.0, 2], [1, 3], [1, 4]]
     tensor = ModelUtils.list_to_tensor(unconverted_list)
     # Should be equivalent to torch.tensor conversion
     assert torch.equal(tensor, torch.tensor(unconverted_list))
@@ -116,7 +116,7 @@ def test_list_to_tensor():
     list_of_np = [np.asarray(_el) for _el in unconverted_list]
     tensor = ModelUtils.list_to_tensor(list_of_np)
     # Should be equivalent to torch.tensor conversion
-    assert torch.equal(tensor, torch.tensor(unconverted_list))
+    assert torch.equal(tensor, torch.tensor(unconverted_list, dtype=torch.float32))
 
 
 def test_break_into_branches():
