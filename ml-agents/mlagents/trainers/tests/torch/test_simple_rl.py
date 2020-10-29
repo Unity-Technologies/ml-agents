@@ -133,7 +133,7 @@ def test_simple_sac(use_discrete):
     check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.parametrize("use_discrete", [True])
+@pytest.mark.parametrize("use_discrete", [True, False])
 def test_2d_sac(use_discrete):
     env = SimpleEnvironment(
         [BRAIN_NAME], use_discrete=use_discrete, action_size=2, step_size=0.8

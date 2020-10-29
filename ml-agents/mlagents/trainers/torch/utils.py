@@ -21,7 +21,7 @@ class AgentAction(NamedTuple):
 
     @property
     def discrete_tensor(self):
-        return torch.cat([_disc.unsqueeze(-1) for _disc in self.discrete_list], dim=1)
+        return torch.stack(self.discrete_list, dim=-1)
 
     def to_numpy_dict(self) -> Dict[str, np.ndarray]:
         array_dict: Dict[str, np.ndarray] = {}
@@ -40,7 +40,9 @@ class AgentAction(NamedTuple):
         if self.continuous_tensor is not None:
             tensor_list.append(self.continuous_tensor)
         if self.discrete_list is not None:
-            tensor_list.append(self.discrete_tensor)
+            tensor_list += (
+                self.discrete_list
+            )  # Note this is different for ActionLogProbs
         return tensor_list
 
     @staticmethod
@@ -78,6 +80,7 @@ class ActionLogProbs(NamedTuple):
 
     @property
     def discrete_tensor(self):
+        return torch.stack(self.discrete_list, dim=-1)
         return torch.cat([_disc.unsqueeze(-1) for _disc in self.discrete_list], dim=1)
 
     @property
@@ -91,6 +94,7 @@ class ActionLogProbs(NamedTuple):
                 self.continuous_tensor
             )
         if self.discrete_list is not None:
+
             array_dict["discrete_log_probs"] = ModelUtils.to_numpy(self.discrete_tensor)
         return array_dict
 
@@ -99,7 +103,9 @@ class ActionLogProbs(NamedTuple):
         if self.continuous_tensor is not None:
             tensor_list.append(self.continuous_tensor)
         if self.discrete_list is not None:
-            tensor_list.append(self.discrete_tensor)
+            tensor_list.append(
+                self.discrete_tensor
+            )  # Note this is different for AgentActions
         return tensor_list
 
     def flatten(self) -> torch.Tensor:
@@ -403,9 +409,6 @@ class ModelUtils:
         entropies = torch.stack(entropies_list, dim=-1)
         if not all_probs_list:
             entropies = entropies.squeeze(-1)
-            # all_probs = None
-        # else:
-        #    all_probs = torch.cat(all_probs_list, dim=-1)
         return log_probs_list, entropies, all_probs_list
 
     @staticmethod
