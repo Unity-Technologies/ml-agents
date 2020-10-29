@@ -154,12 +154,10 @@ class CuriosityNetwork(torch.nn.Module):
         else:
             action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    actions.discrete_tensor,
-                    self._action_spec.discrete_branches,
+                    actions.discrete_tensor, self._action_spec.discrete_branches
                 ),
                 dim=1,
             )
-        print(self.get_current_state(mini_batch), action)
         forward_model_input = torch.cat(
             (self.get_current_state(mini_batch), action), dim=1
         )
@@ -174,10 +172,7 @@ class CuriosityNetwork(torch.nn.Module):
         predicted_action = self.predict_action(mini_batch)
         actions = AgentAction.extract(mini_batch)
         if self._action_spec.is_continuous():
-            sq_difference = (
-                actions.continuous_tensor
-                - predicted_action
-            ) ** 2
+            sq_difference = (actions.continuous_tensor - predicted_action) ** 2
             sq_difference = torch.sum(sq_difference, dim=1)
             return torch.mean(
                 ModelUtils.dynamic_partition(
@@ -189,8 +184,7 @@ class CuriosityNetwork(torch.nn.Module):
         else:
             true_action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    actions.discrete_tensor,
-                    self._action_spec.discrete_branches,
+                    actions.discrete_tensor, self._action_spec.discrete_branches
                 ),
                 dim=1,
             )

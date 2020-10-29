@@ -156,13 +156,13 @@ class ModelUtils:
             else:
                 return sum(self._specs.discrete_branches)
 
-        def forward(self, action: torch.Tensor) -> torch.Tensor:
+        def forward(self, action: AgentAction) -> torch.Tensor:
             if self._specs.is_continuous():
-                return action
+                return action.continuous_tensor
             else:
                 return torch.cat(
                     ModelUtils.actions_to_onehot(
-                        torch.as_tensor(action, dtype=torch.long),
+                        torch.as_tensor(action.discrete_tensor, dtype=torch.long),
                         self._specs.discrete_branches,
                     ),
                     dim=1,

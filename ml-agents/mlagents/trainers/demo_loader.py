@@ -66,7 +66,14 @@ def make_demo_buffer(
         for i, obs in enumerate(split_obs.visual_observations):
             demo_raw_buffer["visual_obs%d" % i].append(obs)
         demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
+        if behavior_spec.action_spec.is_continuous():
+            demo_raw_buffer["continuous_action"].append(
+                current_pair_info.action_info.vector_actions
+            )
+        else:
+            demo_raw_buffer["discrete_action"].append(
+                current_pair_info.action_info.vector_actions
+            )
         demo_raw_buffer["prev_action"].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(

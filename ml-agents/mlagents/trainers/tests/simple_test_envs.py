@@ -282,8 +282,12 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
+            if self.discrete:
+                action = self.action[name].discrete
+            else:
+                action = self.action[name].continuous
             self.demonstration_protos[name] += proto_from_steps_and_action(
-                self.step_result[name][0], self.step_result[name][1], self.action[name]
+                self.step_result[name][0], self.step_result[name][1], action
             )
             self.demonstration_protos[name] = self.demonstration_protos[name][
                 -self.n_demos :
@@ -294,7 +298,11 @@ class RecordEnvironment(SimpleEnvironment):
         for _ in range(self.n_demos):
             for name in self.names:
                 if self.discrete:
-                    self.action[name] = [[1]] if self.goal[name] > 0 else [[0]]
+                    self.action[name] = ActionBuffers(
+                        [[]], np.array([[1]] if self.goal[name] > 0 else [[0]])
+                    )
                 else:
-                    self.action[name] = [[float(self.goal[name])]]
+                    self.action[name] = ActionBuffers(
+                        np.array([[float(self.goal[name])]]), [[]]
+                    )
             self.step()

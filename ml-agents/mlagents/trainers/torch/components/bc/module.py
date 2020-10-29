@@ -98,12 +98,20 @@ class BCModule:
         update_stats = {"Losses/Pretraining Loss": np.mean(batch_losses)}
         return update_stats
 
-    def _behavioral_cloning_loss(self, selected_actions: AgentAction, log_probs: ActionLogProbs, expert_actions: torch.Tensor):
+    def _behavioral_cloning_loss(
+        self,
+        selected_actions: AgentAction,
+        log_probs: ActionLogProbs,
+        expert_actions: torch.Tensor,
+    ):
         if self.policy.use_continuous_act:
-            bc_loss = torch.nn.functional.mse_loss(selected_actions.continuous_tensor, expert_actions)
+            bc_loss = torch.nn.functional.mse_loss(
+                selected_actions.continuous_tensor, expert_actions
+            )
         else:
             log_prob_branches = ModelUtils.break_into_branches(
-                log_probs.all_discrete_tensor, self.policy.behavior_spec.action_spec.discrete_branches
+                log_probs.all_discrete_tensor,
+                self.policy.behavior_spec.action_spec.discrete_branches,
             )
             bc_loss = torch.mean(
                 torch.stack(
@@ -130,10 +138,12 @@ class BCModule:
         vec_obs = [ModelUtils.list_to_tensor(mini_batch_demo["vector_obs"])]
         act_masks = None
         if self.policy.use_continuous_act:
-            expert_actions = ModelUtils.list_to_tensor(mini_batch_demo["actions"])
+            expert_actions = ModelUtils.list_to_tensor(
+                mini_batch_demo["continuous_action"]
+            )
         else:
             raw_expert_actions = ModelUtils.list_to_tensor(
-                mini_batch_demo["actions"], dtype=torch.long
+                mini_batch_demo["discrete_action"], dtype=torch.long
             )
             expert_actions = ModelUtils.actions_to_onehot(
                 raw_expert_actions, self.policy.act_size
