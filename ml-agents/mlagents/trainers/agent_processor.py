@@ -2,6 +2,7 @@ import sys
 from typing import List, Dict, TypeVar, Generic, Tuple, Any, Union
 from collections import defaultdict, Counter
 import queue
+import numpy as np
 
 from mlagents_envs.base_env import (
     DecisionSteps,
@@ -143,7 +144,7 @@ class AgentProcessor:
                 action_probs[prob_type] = prob_array[idx]
 
             action_mask = stored_decision_step.action_mask
-            prev_action = self.policy.retrieve_previous_action([global_id])#[0, :]
+            prev_action = self.policy.retrieve_previous_action([global_id])  # [0, :]
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,

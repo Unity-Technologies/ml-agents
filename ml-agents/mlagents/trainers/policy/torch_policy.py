@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Tuple, Optional, Union
+from typing import Any, Dict, List, Tuple, Optional
 import numpy as np
 from mlagents.torch_utils import torch, default_device
 import copy
@@ -123,15 +123,13 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        all_log_probs: bool = False,
-    ) -> Tuple[List[torch.Tensor], Union[torch.Tensor, List[torch.Tensor]], torch.Tensor, torch.Tensor]:
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
         :param vec_obs: List of vector observations.
         :param vis_obs: List of visual observations.
         :param masks: Loss masks for RNN, else None.
         :param memories: Input memories when using RNN, else None.
         :param seq_len: Sequence length when using RNN.
-        :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
         :return: Tuple of actions, log probabilities (dependent on all_log_probs), entropies, and
             output memories, all as Torch Tensors.
         """
@@ -145,19 +143,16 @@ class TorchPolicy(Policy):
                 vec_obs, vis_obs, masks, memories, seq_len
             )
         action_list = self.actor_critic.sample_action(dists)
-        log_probs_list, entropies, all_logs = ModelUtils.get_probs_and_entropy(
+        log_probs_list, entropies, all_logs_list = ModelUtils.get_probs_and_entropy(
             action_list, dists
         )
         actions = AgentAction.create(action_list, self.behavior_spec.action_spec)
-        log_probs = ActionLogProbs.create(log_probs_list, self.behavior_spec.action_spec)
+        log_probs = ActionLogProbs.create(
+            log_probs_list, self.behavior_spec.action_spec, all_logs_list
+        )
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
-        return (
-            actions,
-            all_logs if all_log_probs else log_probs,
-            entropy_sum,
-            memories,
-        )
+        return (actions, log_probs, entropy_sum, memories)
 
     def evaluate_actions(
         self,
@@ -167,13 +162,17 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         dists, value_heads, _ = self.actor_critic.get_dist_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
         action_list = actions.to_tensor_list()
-        log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(action_list, dists)
-        log_probs = ActionLogProbs.create(log_probs_list, self.behavior_spec.action_spec)
+        log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(
+            action_list, dists
+        )
+        log_probs = ActionLogProbs.create(
+            log_probs_list, self.behavior_spec.action_spec
+        )
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
         return log_probs, entropy_sum, value_heads
@@ -203,7 +202,11 @@ class TorchPolicy(Policy):
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
         run_out["action"] = action.to_numpy_dict()
-        run_out["pre_action"] = action.to_numpy_dict()["continuous_action"] if self.use_continuous_act else None# Todo - make pre_action difference
+        run_out["pre_action"] = (
+            action.to_numpy_dict()["continuous_action"]
+            if self.use_continuous_act
+            else None
+        )  # Todo - make pre_action difference
         run_out["log_probs"] = log_probs.to_numpy_dict()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["learning_rate"] = 0.0
