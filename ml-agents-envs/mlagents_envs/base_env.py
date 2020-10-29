@@ -250,8 +250,8 @@ class ActionBuffers(NamedTuple):
     Continuous and discrete actions are numpy arrays.
     """
 
-    continuous: List[np.ndarray]
-    discrete: List[np.ndarray]
+    continuous: np.ndarray  # dims (n_agents, cont_size)
+    discrete: np.ndarray  # dims (n_agents, disc_size)
 
     @staticmethod
     def from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> "ActionBuffers":
@@ -315,16 +315,20 @@ class ActionSpec(NamedTuple):
         """
         action_dict: Dict[str, np.ndarray] = {}
         if self.continuous_size > 0:
-            action_dict["continuous_action"] = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
+            action_dict["continuous_action"] = np.zeros(
+                (n_agents, self.continuous_size), dtype=np.float32
+            )
 
         if self.discrete_size > 0:
-            action_dict["discrete_action"] = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+            action_dict["discrete_action"] = np.zeros(
+                (n_agents, self.discrete_size), dtype=np.int32
+            )
         return action_dict
 
-       # return ActionBuffers(
-       #     np.zeros((n_agents, self.continuous_size), dtype=np.float32),
-       #     np.zeros((n_agents, self.discrete_size), dtype=np.int32),
-       # )
+    # return ActionBuffers(
+    #     np.zeros((n_agents, self.continuous_size), dtype=np.float32),
+    #     np.zeros((n_agents, self.discrete_size), dtype=np.int32),
+    # )
 
     def random_action(self, n_agents: int) -> Dict[str, np.ndarray]:
         """
@@ -353,7 +357,7 @@ class ActionSpec(NamedTuple):
             )
             action_dict["discrete_action"] = discrete_action
         return action_dict
-        #return ActionBuffers(continuous_action, discrete_action)
+        # return ActionBuffers(continuous_action, discrete_action)
 
     def _validate_action(
         self, actions: ActionBuffers, n_agents: int, name: str
@@ -381,7 +385,7 @@ class ActionSpec(NamedTuple):
         if actions.discrete.dtype != np.int32:
             actions.discrete = actions.discrete.astype(np.int32)
 
-        return action
+        return actions
 
     @staticmethod
     def create_continuous(continuous_size: int) -> "ActionSpec":

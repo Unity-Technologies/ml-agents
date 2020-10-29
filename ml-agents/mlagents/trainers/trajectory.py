@@ -3,8 +3,6 @@ import numpy as np
 
 from mlagents.trainers.buffer import AgentBuffer
 
-from mlagents_envs.base_env import ActionBuffers
-
 
 class AgentExperience(NamedTuple):
     obs: List[np.ndarray]
@@ -111,9 +109,11 @@ class Trajectory(NamedTuple):
             if exp.action_pre is not None:
                 agent_buffer_trajectory["actions_pre"].append(exp.action_pre)
 
-            # Adds the log prob and action of continuous/discrete separately 
+            # Adds the log prob and action of continuous/discrete separately
+            action_shape = None
             for act_type, act_array in exp.action.items():
                 agent_buffer_trajectory[act_type].append(act_array)
+                action_shape = act_array.shape  # TODO Better way to make mask
             for log_type, log_array in exp.action_probs.items():
                 agent_buffer_trajectory[log_type].append(log_array)
 
@@ -126,10 +126,10 @@ class Trajectory(NamedTuple):
                 # This should never be needed unless the environment somehow doesn't supply the
                 # action mask in a discrete space.
                 agent_buffer_trajectory["action_mask"].append(
-                    np.ones(exp.action_probs["continuous_log_probs"].shape, dtype=np.float32), padding_value=1
+                    np.ones(action_shape, dtype=np.float32), padding_value=1
                 )
 
-            #agent_buffer_trajectory["prev_action"].append(exp.prev_action)
+            # agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             for act_type, act_array in exp.prev_action.items():
                 agent_buffer_trajectory["prev_" + act_type].append(act_array)
 

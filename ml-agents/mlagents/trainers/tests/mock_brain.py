@@ -77,17 +77,22 @@ def make_fake_trajectory(
     steps_list = []
 
     action_size = action_spec.discrete_size + action_spec.continuous_size
-    action_probs = np.ones(
-        int(np.sum(action_spec.discrete_branches) + action_spec.continuous_size),
-        dtype=np.float32,
-    )
+    action_probs = {
+        "action_probs": np.ones(
+            int(np.sum(action_spec.discrete_branches) + action_spec.continuous_size),
+            dtype=np.float32,
+        )
+    }
     for _i in range(length - 1):
         obs = []
         for _shape in observation_shapes:
             obs.append(np.ones(_shape, dtype=np.float32))
         reward = 1.0
         done = False
-        action = np.zeros(action_size, dtype=np.float32)
+        if action_spec.is_continuous():
+            action = {"continuous_action": np.zeros(action_size, dtype=np.float32)}
+        else:
+            action = {"discrete_action": np.zeros(action_size, dtype=np.float32)}
         action_pre = np.zeros(action_size, dtype=np.float32)
         action_mask = (
             [
@@ -97,7 +102,15 @@ def make_fake_trajectory(
             if action_spec.is_discrete()
             else None
         )
-        prev_action = np.ones(action_size, dtype=np.float32)
+        if action_spec.is_continuous():
+            prev_action = {
+                "prev_continuous_action": np.ones(action_size, dtype=np.float32)
+            }
+        else:
+            prev_action = {
+                "prev_discrete_action": np.ones(action_size, dtype=np.float32)
+            }
+
         max_step = False
         memory = np.ones(memory_size, dtype=np.float32)
         agent_id = "test_agent"
