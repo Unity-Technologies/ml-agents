@@ -84,14 +84,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa7155796051b734daa718462081dc5f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BindingMode: 5
+  m_BindingMode: 1
   m_FollowOffset: {x: 0, y: 2, z: -5}
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
   m_AngularDampingMode: 0
   m_PitchDamping: 0
-  m_YawDamping: 0
+  m_YawDamping: 1
   m_RollDamping: 0
   m_AngularDamping: 0
 --- !u!1 &1517390717
@@ -766,7 +766,7 @@ MonoBehaviour:
   groundPoundForceMode: 1
   groundPoundForce: 35
   spinAttackSpeed: 20
-  agentRotationSpeed: 10
+  agentRotationSpeed: 2
   agentJumpVelocity: 15
   agentFallingSpeed: 50
   cam: {fileID: 0}

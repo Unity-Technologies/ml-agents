@@ -125,12 +125,17 @@ namespace MLAgents
             }
             if (lookDir != Vector3.zero)
             {
+                //                var camRotDir = lookDir;
+                //                camRotDir.z = Mathf.Clamp01(camRotDir.z);
+                //                var rot = quaternion.LookRotation(camRotDir, Vector3.up);
+
+
                 var dir = cam.transform.TransformDirection(lookDir);
                 dir.y = 0;
                 var rot = quaternion.LookRotation(dir, Vector3.up);
                 if (!spinAttack)
                 {
-                    rb.rotation = Quaternion.Lerp(rb.rotation, rot, agentRotationSpeed * Time.deltaTime);
+                    rb.rotation = Quaternion.Lerp(rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
                 }
                 //                RunOnGround(rb, dir.normalized);
                 //                var dirToGo = rb.transform.forward;
@@ -142,6 +147,11 @@ namespace MLAgents
                 }
                 else
                 {
+                    //                    var forwardMovement = lookDir;
+                    ////                    forwardMovement.x = 0; //
+                    //                    var walkDir = cam.transform.TransformDirection(forwardMovement);
+                    //                    RunOnGround(rb, walkDir.normalized);
+
                     RunOnGround(rb, dirToGo.normalized);
                 }
                 //                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(agentRotationSpeed, rotationAxis));
