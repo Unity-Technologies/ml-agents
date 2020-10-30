@@ -6,7 +6,7 @@ from enum import Enum
 
 class Swish(torch.nn.Module):
     def forward(self, data: torch.Tensor) -> torch.Tensor:
-        return torch.mul(data, torch.sigmoid(data))
+        return torch.nn.functional.hardswish(data)
 
 
 class Initialization(Enum):
