@@ -239,7 +239,6 @@ namespace Unity.MLAgents.Extensions.Match3
             if (Application.isEditor)
             {
                 // Edit Mode tests complain if we use Destroy()
-                // TODO move to extension methods for UnityEngine.Object?
                 Object.DestroyImmediate(texture);
             }
             else
