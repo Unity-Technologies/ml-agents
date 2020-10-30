@@ -22,6 +22,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - The Barracuda dependency was upgraded to 1.1.2 (#4571)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
+- The `action_probs` node is no longer listed as an output in TensorFlow models (#4613).
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
