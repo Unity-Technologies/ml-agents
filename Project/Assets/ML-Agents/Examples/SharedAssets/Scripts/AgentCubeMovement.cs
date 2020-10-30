@@ -11,13 +11,13 @@ namespace MLAgents
         [Header("RIGIDBODY")] public float maxAngularVel = 50;
         [Header("RUNNING")] public ForceMode runningForceMode = ForceMode.Impulse;
         //speed agent can run if grounded
-        public float agentRunSpeed = 20;
+        public float agentRunSpeed = 10;
         public float agentTerminalVel = 20;
         //speed agent can run if not grounded
-        public float agentRunInAirSpeed = 10f;
+        public float agentRunInAirSpeed = 7f;
 
         [Header("DASH")]
-        public float dashBoostForce = 10f;
+        public float dashBoostForce = 20f;
         public ForceMode dashForceMode = ForceMode.Impulse;
         public bool dashPressed;
 
@@ -27,19 +27,19 @@ namespace MLAgents
         //...and prevent the agent sliding around while grounded
         //0 means it will instantly stop when grounded
         //1 means no drag will be applied
-        public float agentIdleDragVelCoeff = .85f;
+        public float agentIdleDragVelCoeff = .9f;
 
         [Header("GROUND POUND")]
         public ForceMode groundPoundForceMode = ForceMode.Impulse;
         public float groundPoundForce = 35f;
 
         [Header("SPIN ATTACK")]
-        public float spinAttackSpeed = 7f;
+        public float spinAttackSpeed = 20f;
         private bool spinAttack;
 
         [Header("BODY ROTATION")]
         //body rotation speed
-        public float agentRotationSpeed = 7f;
+        public float agentRotationSpeed = 35f;
 
         [Header("JUMPING")]
         //upward jump velocity magnitude

@@ -13,7 +13,7 @@ namespace MLAgents
         public bool debugDrawGizmos;
         public Collider[] hitGroundColliders = new Collider[3];
         public Vector3 groundCheckBoxLocalPos = new Vector3(0, -0.52f, 0);
-        public Vector3 groundCheckBoxSize = new Vector3(0.99f, 0.02f, 0.99f);
+        public Vector3 groundCheckBoxSize = new Vector3(0.99f, 0.1f, 0.99f);
         public bool isGrounded;
         public float ungroundedTime; //amount of time agent hasn't been grounded
         public float groundedTime; //amount of time agent has been grounded
