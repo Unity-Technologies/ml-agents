@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
+    /// <summary>
+    /// Actuator for a Match3 game. It translates valid moves (defined by AbstractBoard.IsMoveValid())
+    /// in action masks, and applies the action to the board via AbstractBoard.MakeMove().
+    /// </summary>
     public class Match3Actuator : IActuator
     {
         private AbstractBoard m_Board;
@@ -17,6 +21,13 @@ namespace Unity.MLAgents.Extensions.Match3
         private int m_Columns;
         private int m_NumCellTypes;
 
+        /// <summary>
+        /// Create a Match3Actuator.
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="forceHeuristic">Whether the inference action should be ignored and the Agent's Heuristic
+        /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
+        /// <param name="agent"></param>
         public Match3Actuator(AbstractBoard board, bool forceHeuristic, Agent agent)
         {
             m_Board = board;
@@ -31,8 +42,10 @@ namespace Unity.MLAgents.Extensions.Match3
             m_ActionSpec = ActionSpec.MakeDiscrete(numMoves);
         }
 
+        /// <inheritdoc/>
         public ActionSpec ActionSpec => m_ActionSpec;
 
+        /// <inheritdoc/>
         public void OnActionReceived(ActionBuffers actions)
         {
             if (m_ForceHeuristic)
@@ -54,6 +67,7 @@ namespace Unity.MLAgents.Extensions.Match3
             m_Board.MakeMove(move);
         }
 
+        /// <inheritdoc/>
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
             using (TimerStack.Instance.Scoped("WriteDiscreteActionMask"))
@@ -62,8 +76,10 @@ namespace Unity.MLAgents.Extensions.Match3
             }
         }
 
+        /// <inheritdoc/>
         public string Name => "Match3Actuator";// TODO pass optional name
 
+        /// <inheritdoc/>
         public void ResetData()
         {
         }

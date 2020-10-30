@@ -2,11 +2,29 @@ using System;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
+    /// <summary>
+    /// Directions for a Move.
+    /// </summary>
     public enum Direction
     {
-        Up, // +row direction
+        /// <summary>
+        /// Move up (increasing row direction).
+        /// </summary>
+        Up,
+
+        /// <summary>
+        /// Move down (decreasing row direction).
+        /// </summary>
         Down, // -row direction
+
+        /// <summary>
+        /// Move left (decreasing column direction).
+        /// </summary>
         Left, // -column direction
+
+        /// <summary>
+        /// Move right (increasing column direction).
+        /// </summary>
         Right, // +column direction
     }
 
@@ -17,14 +35,27 @@ namespace Unity.MLAgents.Extensions.Match3
     /// </summary>
     public struct Move
     {
-        /**
-         * Moves are enumerated as the internal edges of the game grid.
-         * Left/right moves come first. There are (maxCols - 1) * maxRows of these.
-         * Up/down moves are next. There are (maxRows - 1) * maxCols of these.
-         */
+        /// <summary>
+        /// Index of the move, from 0 to NumPotentialMoves-1
+        /// Moves are enumerated as the internal edges of the game grid.
+        /// Left/right moves come first. There are (maxCols - 1) * maxRows of these.
+        /// Up/down moves are next. There are (maxRows - 1) * maxCols of these.
+        /// </summary>
         public int MoveIndex;
+
+        /// <summary>
+        /// Row of the cell that will be moved.
+        /// </summary>
         public int Row;
+
+        /// <summary>
+        /// Column of the cell that will be moved.
+        /// </summary>
         public int Column;
+
+        /// <summary>
+        /// Direction that the cell will be moved.
+        /// </summary>
         public Direction Direction;
 
         /// <summary>
@@ -65,6 +96,11 @@ namespace Unity.MLAgents.Extensions.Match3
             };
         }
 
+        /// <summary>
+        /// Increment the Move to the next MoveIndex.
+        /// </summary>
+        /// <param name="maxRows"></param>
+        /// <param name="maxCols"></param>
         public void Advance(int maxRows, int maxCols)
         {
             var switchoverIndex = (maxCols - 1) * maxRows;
@@ -197,7 +233,5 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             return maxRows * (maxCols - 1) + (maxRows - 1) * (maxCols);
         }
-
-
     }
 }

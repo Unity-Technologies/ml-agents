@@ -4,13 +4,37 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Match3
 {
+    /// <summary>
+    /// Type of observations to generate.
+    ///
+    /// </summary>
     public enum Match3ObservationType
     {
+        /// <summary>
+        /// Generate a one-hot encoding of the cell type for each cell on the board. If there are special types,
+        /// these will also be one-hot encoded.
+        /// </summary>
         Vector,
+
+        /// <summary>
+        /// Generate a one-hot encoding of the cell type for each cell on the board, but arranged as
+        /// a Rows x Columns visual observation. If there are special types, these will also be one-hot encoded.
+        /// </summary>
         UncompressedVisual,
+
+        /// <summary>
+        /// Generate a one-hot encoding of the cell type for each cell on the board, but arranged as
+        /// a Rows x Columns visual observation. If there are special types, these will also be one-hot encoded.
+        /// During training, these will be sent as a concatenated series of PNG images, with 3 channels per image.
+        /// </summary>
         CompressedVisual
     }
 
+    /// <summary>
+    /// Sensor for Match3 games. Can generate either vector, compressed visual,
+    /// or uncompressed visual observations. Uses AbstractBoard.GetCellType()
+    /// and AbstractBoard.GetSpecialType() to determine the observation values.
+    /// </summary>
     public class Match3Sensor : ISparseChannelSensor
     {
         private Match3ObservationType m_ObservationType;
@@ -29,6 +53,11 @@ namespace Unity.MLAgents.Extensions.Match3
             get { return m_NumSpecialTypes == 0 ? 0 : m_NumSpecialTypes + 1; }
         }
 
+        /// <summary>
+        /// Create a sensor for the board with the specified observation type.
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="obsType"></param>
         public Match3Sensor(AbstractBoard board, Match3ObservationType obsType)
         {
             m_Board = board;
@@ -61,14 +90,15 @@ namespace Unity.MLAgents.Extensions.Match3
             {
                 m_SparseChannelMapping[cellTypePaddedSize + i] = i + m_NumCellTypes;
             }
-
         }
 
+        /// <inheritdoc/>
         public int[] GetObservationShape()
         {
             return m_Shape;
         }
 
+        /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
             if (m_Board.Rows != m_Rows || m_Board.Columns != m_Columns || m_Board.NumCellTypes != m_NumCellTypes)
@@ -139,6 +169,7 @@ namespace Unity.MLAgents.Extensions.Match3
             }
         }
 
+        /// <inheritdoc/>
         public byte[] GetCompressedObservation()
         {
             var height = m_Rows;
@@ -170,14 +201,17 @@ namespace Unity.MLAgents.Extensions.Match3
             return bytesOut.ToArray();
         }
 
+        /// <inheritdoc/>
         public void Update()
         {
         }
 
+        /// <inheritdoc/>
         public void Reset()
         {
         }
 
+        /// <inheritdoc/>
         public SensorCompressionType GetCompressionType()
         {
             return m_ObservationType == Match3ObservationType.CompressedVisual ?
@@ -185,11 +219,13 @@ namespace Unity.MLAgents.Extensions.Match3
                 SensorCompressionType.None;
         }
 
+        /// <inheritdoc/>
         public string GetName()
         {
             return "Match3 Sensor";
         }
 
+        /// <inheritdoc/>
         public int[] GetCompressedChannelMapping()
         {
             return m_SparseChannelMapping;
@@ -216,7 +252,7 @@ namespace Unity.MLAgents.Extensions.Match3
     /// Works by encoding 3 values at a time as pixels in the texture, thus it should be
     /// called (maxValue + 2) / 3 times, increasing the channelOffset by 3 each time.
     /// </summary>
-    public class OneHotToTextureUtil
+    internal class OneHotToTextureUtil
     {
         Color[] m_Colors;
         int m_Height;
@@ -255,6 +291,5 @@ namespace Unity.MLAgents.Extensions.Match3
             }
             texture.SetPixels(m_Colors);
         }
-
     }
 }
