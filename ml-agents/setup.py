@@ -67,7 +67,7 @@ setup(
         # https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Installation.md#windows-installing-pytorch
         'torch>=1.6.0,<1.8.0;platform_system!="Windows"',
         "tensorboard>=1.15",
-        "cattrs>=1.0.0",
+        "cattrs>=1.0.0,<1.1.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
     ],
