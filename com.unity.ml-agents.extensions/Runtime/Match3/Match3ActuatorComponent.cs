@@ -10,6 +10,12 @@ namespace Unity.MLAgents.Extensions.Match3
     public class Match3ActuatorComponent : ActuatorComponent
     {
         /// <summary>
+        /// Name of the generated Match3Actuator object.
+        /// Note that changing this at runtime does not affect how the Agent sorts the actuators.
+        /// </summary>
+        public string ActuatorName = "Match3 Actuator";
+
+        /// <summary>
         /// Force using the Agent's Heuristic() method to decide the action. This should only be used in testing.
         /// </summary>
         [FormerlySerializedAs("ForceRandom")]
@@ -21,7 +27,7 @@ namespace Unity.MLAgents.Extensions.Match3
         {
             var board = GetComponent<AbstractBoard>();
             var agent = GetComponentInParent<Agent>();
-            return new Match3Actuator(board, ForceHeuristic, agent);
+            return new Match3Actuator(board, ForceHeuristic, agent, ActuatorName);
         }
 
         /// <inheritdoc/>

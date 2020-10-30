@@ -28,12 +28,14 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <param name="forceHeuristic">Whether the inference action should be ignored and the Agent's Heuristic
         /// should be called. This should only be used for generating comparison stats of the Heuristic.</param>
         /// <param name="agent"></param>
-        public Match3Actuator(AbstractBoard board, bool forceHeuristic, Agent agent)
+        /// <param name="name"></param>
+        public Match3Actuator(AbstractBoard board, bool forceHeuristic, Agent agent, string name)
         {
             m_Board = board;
             m_Rows = board.Rows;
             m_Columns = board.Columns;
             m_NumCellTypes = board.NumCellTypes;
+            Name = name;
 
             m_ForceHeuristic = forceHeuristic;
             m_Agent = agent;
@@ -77,7 +79,7 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <inheritdoc/>
-        public string Name => "Match3Actuator";// TODO pass optional name
+        public string Name { get; }
 
         /// <inheritdoc/>
         public void ResetData()

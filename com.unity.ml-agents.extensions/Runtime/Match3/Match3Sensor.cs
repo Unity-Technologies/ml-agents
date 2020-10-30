@@ -41,6 +41,7 @@ namespace Unity.MLAgents.Extensions.Match3
         private AbstractBoard m_Board;
         private int[] m_Shape;
         private int[] m_SparseChannelMapping;
+        private string m_Name;
 
         private int m_Rows;
         private int m_Columns;
@@ -58,9 +59,11 @@ namespace Unity.MLAgents.Extensions.Match3
         /// </summary>
         /// <param name="board"></param>
         /// <param name="obsType"></param>
-        public Match3Sensor(AbstractBoard board, Match3ObservationType obsType)
+        /// <param name="name"></param>
+        public Match3Sensor(AbstractBoard board, Match3ObservationType obsType, string name)
         {
             m_Board = board;
+            m_Name = name;
             m_Rows = board.Rows;
             m_Columns = board.Columns;
             m_NumCellTypes = board.NumCellTypes;
@@ -222,7 +225,7 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <inheritdoc/>
         public string GetName()
         {
-            return "Match3 Sensor";
+            return m_Name;
         }
 
         /// <inheritdoc/>

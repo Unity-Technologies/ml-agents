@@ -168,7 +168,6 @@ namespace Unity.MLAgentsExamples
                 }
 
                 // Fill in empties at the end
-                // TODO combine with random drops?
                 for (; writeIndex < Rows; writeIndex++)
                 {
                     madeChanges = true;
