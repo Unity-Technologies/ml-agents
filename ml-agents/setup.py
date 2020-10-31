@@ -64,7 +64,8 @@ setup(
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
         "tensorflow>=1.14,<3.0",
-        "cattrs>=1.0.0",
+        # cattrs 1.1.0 dropped support for python 3.6.
+        "cattrs>=1.0.0,<1.1.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
         # We don't actually need six, but tensorflow does, and pip seems
