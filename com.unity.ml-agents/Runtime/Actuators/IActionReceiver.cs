@@ -62,6 +62,15 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
+        /// Construct an <see cref="ActionBuffers"/> instance with <see cref="ActionSpec"/>. All values are initialized to zeros.
+        /// /// </summary>
+        /// <param name="actionSpec">The <see cref="ActionSpec"/>  to send to an <see cref="IActionReceiver"/>.</param>
+        public ActionBuffers(ActionSpec actionSpec)
+            : this(new ActionSegment<float>(new float[actionSpec.NumContinuousActions]),
+            new ActionSegment<int>(new int[actionSpec.BranchSizes.Length]))
+        { }
+
+        /// <summary>
         /// Create an <see cref="ActionBuffers"/> instance with ActionSpec and all actions stored as a float array.
         /// </summary>
         /// <param name="actionSpec"><see cref="ActionSpec"/> of the <see cref="ActionBuffers"/></param>
@@ -108,6 +117,14 @@ namespace Unity.MLAgents.Actuators
         {
             ContinuousActions.Clear();
             DiscreteActions.Clear();
+        }
+
+        /// <summary>
+        /// Check if the <see cref="ActionBuffers"/> is empty.
+        /// </summary>
+        public bool IsEmpty()
+        {
+            return ContinuousActions.IsEmpty() && DiscreteActions.IsEmpty();
         }
 
         /// <inheritdoc/>

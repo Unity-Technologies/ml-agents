@@ -30,10 +30,9 @@ namespace Unity.MLAgents.Inference
                 if (lastActions.ContainsKey(agentId))
                 {
                     var actionBuffer = lastActions[agentId];
-                    if (actionBuffer.Equals(ActionBuffers.Empty))
+                    if (actionBuffer.IsEmpty())
                     {
-                        actionBuffer = new ActionBuffers(new float[m_ActionSpec.NumContinuousActions],
-                            new int[m_ActionSpec.BranchSizes.Length]);
+                        actionBuffer = new ActionBuffers(m_ActionSpec);
                         lastActions[agentId] = actionBuffer;
                     }
                     var continuousBuffer = actionBuffer.ContinuousActions;
@@ -116,10 +115,9 @@ namespace Unity.MLAgents.Inference
                 if (lastActions.ContainsKey(agentId))
                 {
                     var actionBuffer = lastActions[agentId];
-                    if (actionBuffer.Equals(ActionBuffers.Empty))
+                    if (actionBuffer.IsEmpty())
                     {
-                        actionBuffer = new ActionBuffers(new float[m_ActionSpec.NumContinuousActions],
-                            new int[m_ActionSpec.BranchSizes.Length]);
+                        actionBuffer = new ActionBuffers(m_ActionSpec);
                         lastActions[agentId] = actionBuffer;
                     }
                     var discreteBuffer = actionBuffer.DiscreteActions;

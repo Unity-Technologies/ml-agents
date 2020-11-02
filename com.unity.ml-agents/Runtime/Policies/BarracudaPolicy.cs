@@ -62,9 +62,16 @@ namespace Unity.MLAgents.Policies
         /// <inheritdoc />
         public ref readonly ActionBuffers DecideAction()
         {
-            m_ModelRunner?.DecideBatch();
-            var actionbuffer = m_ModelRunner?.GetAction(m_AgentId);
-            m_LastActionBuffer = actionbuffer == null ? ActionBuffers.Empty : (ActionBuffers)actionbuffer;
+
+            if (m_ModelRunner == null)
+            {
+                m_LastActionBuffer = ActionBuffers.Empty;
+            }
+            else
+            {
+                m_ModelRunner?.DecideBatch();
+                m_LastActionBuffer = m_ModelRunner.GetAction(m_AgentId);
+            }
             return ref m_LastActionBuffer;
         }
 
