@@ -126,7 +126,7 @@ def test_normalizer_after_load(tmp_path):
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     # Change half of the obs to 0
     for i in range(3):
@@ -164,7 +164,7 @@ def test_normalizer_after_load(tmp_path):
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     trajectory_buffer = trajectory.to_agentbuffer()
     policy1.update_normalization(trajectory_buffer["vector_obs"])
