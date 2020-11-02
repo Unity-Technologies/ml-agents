@@ -7,7 +7,7 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [1.5.0-preview.1] - 2020-11-04
+## [Unreleased] - 2020-11-04
 ### Major Changes
 #### com.unity.ml-agents (C#)
 #### ml-agents / ml-agents-envs / gym-unity (Python)
