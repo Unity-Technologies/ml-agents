@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 using Unity.MLAgents.Extensions.Match3;
 
@@ -18,11 +19,11 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
         }
 
         [Test]
-        public void TestAdvance()
+        public void TestNext()
         {
             var maxRows = 8;
             var maxCols = 13;
-            // make sure using Advance agrees with FromMoveIndex.
+            // make sure using Next agrees with FromMoveIndex.
             var advanceMove = Move.FromMoveIndex(0, maxRows, maxCols);
             for (var moveIndex = 0; moveIndex < Move.NumPotentialMoves(maxRows, maxCols); moveIndex++)
             {
@@ -32,8 +33,28 @@ namespace Unity.MLAgents.Extensions.Tests.Match3
                 Assert.AreEqual(advanceMove.Column, moveFromIndex.Column);
                 Assert.AreEqual(advanceMove.Direction, moveFromIndex.Direction);
 
-                advanceMove.Advance(maxRows, maxCols);
+                advanceMove.Next(maxRows, maxCols);
             }
+        }
+
+        // These are off the board
+        [TestCase(-1, 5, Direction.Up)]
+        [TestCase(10, 5, Direction.Up)]
+        [TestCase(5, -1, Direction.Up)]
+        [TestCase(5, 10, Direction.Up)]
+        // These are on the board but would move off
+        [TestCase(0, 5, Direction.Down)]
+        [TestCase(9, 5, Direction.Up)]
+        [TestCase(5, 0, Direction.Left)]
+        [TestCase(5, 9, Direction.Right)]
+        public void TestInvalidMove(int row, int col, Direction dir)
+        {
+            int numRows = 10, numCols = 10;
+            Assert.Throws<IndexOutOfRangeException>(() =>
+            {
+                Move.FromPositionAndDirection(row, col, dir, numRows, numCols);
+            });
+
         }
     }
 }

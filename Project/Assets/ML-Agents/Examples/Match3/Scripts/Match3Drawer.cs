@@ -5,7 +5,7 @@ namespace Unity.MLAgentsExamples
 {
     public class Match3Drawer : MonoBehaviour
     {
-        public int DebugEdgeIndex = -1;
+        public int DebugMoveIndex = -1;
 
         static Color[] s_Colors = new[]
         {
@@ -24,6 +24,7 @@ namespace Unity.MLAgentsExamples
 
         void OnDrawGizmos()
         {
+            // TODO replace Gizmos for drawing the game state with proper GameObjects and animations.
             var cubeSize = .5f;
             var cubeSpacing = .75f;
             var matchedWireframeSize = .5f * (cubeSize + cubeSpacing);
@@ -67,10 +68,6 @@ namespace Unity.MLAgentsExamples
                         Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * Vector3.one);
                     }
 
-
-
-
-
                     Gizmos.color = Color.yellow;
                     if (board.Matched != null && board.Matched[j, i])
                     {
@@ -80,10 +77,9 @@ namespace Unity.MLAgentsExamples
             }
 
             // Draw valid moves
-
             foreach (var move in board.AllMoves())
             {
-                if (DebugEdgeIndex >= 0 && move.MoveIndex != DebugEdgeIndex)
+                if (DebugMoveIndex >= 0 && move.MoveIndex != DebugMoveIndex)
                 {
                     continue;
                 }

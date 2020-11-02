@@ -97,11 +97,11 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <summary>
-        /// Increment the Move to the next MoveIndex.
+        /// Increment the Move to the next MoveIndex, and update the Row, Column, and Direction accordingly.
         /// </summary>
         /// <param name="maxRows"></param>
         /// <param name="maxCols"></param>
-        public void Advance(int maxRows, int maxCols)
+        public void Next(int maxRows, int maxCols)
         {
             var switchoverIndex = (maxCols - 1) * maxRows;
 
@@ -144,10 +144,30 @@ namespace Unity.MLAgents.Extensions.Match3
         /// <returns></returns>
         public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)
         {
-            int edgeIndex;
+
+            // Check for out-of-bounds
+            if (row < 0 || row >= maxRows)
+            {
+                throw new IndexOutOfRangeException($"row was {row}, but must be between 0 and {maxRows - 1}.");
+            }
+
+            if (col < 0 || col >= maxCols)
+            {
+                throw new IndexOutOfRangeException($"col was {col}, but must be between 0 and {maxCols - 1}.");
+            }
+
+            // Check moves that would go out of bounds e.g. col == 0 and dir == Left
+            if (
+                row == 0 && dir == Direction.Down ||
+                row == maxRows - 1 && dir == Direction.Up ||
+                col == 0 && dir == Direction.Left ||
+                col == maxCols - 1 && dir == Direction.Right
+            )
+            {
+                throw new IndexOutOfRangeException($"Cannot move cell at row={row} col={col} in Direction={dir}");
+            }
+
             // Normalize - only consider Right and Up
-            // TODO throw if e.g. col == 0 and dir == Left, etc.
-            // TODO throw if row < 0 or row>=maxRows (and same for columns).
             if (dir == Direction.Left)
             {
                 dir = Direction.Right;
@@ -159,14 +179,15 @@ namespace Unity.MLAgents.Extensions.Match3
                 row = row - 1;
             }
 
+            int moveIndex;
             if (dir == Direction.Right)
             {
-                edgeIndex = col + row * (maxCols - 1);
+                moveIndex = col + row * (maxCols - 1);
             }
             else
             {
                 var offset = (maxCols - 1) * maxRows;
-                edgeIndex = offset + col + row * maxCols;
+                moveIndex = offset + col + row * maxCols;
             }
 
             return new Move
@@ -174,7 +195,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 Row = row,
                 Column = col,
                 Direction = dir,
-                MoveIndex = edgeIndex,
+                MoveIndex = moveIndex,
             };
         }
 

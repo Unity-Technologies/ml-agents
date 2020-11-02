@@ -94,7 +94,6 @@ namespace Unity.MLAgentsExamples
                         madeMatch = true;
                         for (var k = 0; k < matchedRows; k++)
                         {
-                            // TODO check whether already matched for scoring
                             m_Matched[j, i + k] = true;
                         }
                     }
@@ -116,7 +115,6 @@ namespace Unity.MLAgentsExamples
                         madeMatch = true;
                         for (var k = 0; k < matchedCols; k++)
                         {
-                            // TODO check whether already matched for scoring
                             m_Matched[j + k, i] = true;
                         }
                     }

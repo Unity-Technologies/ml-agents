@@ -6,15 +6,60 @@ using Unity.MLAgents.Extensions.Match3;
 
 namespace Unity.MLAgentsExamples
 {
+
+    /// <summary>
+    /// State of the "game" when showing all steps of the simulation. This is only used outside of training.
+    /// The state diagram is
+    ///
+    ///      | <--------------------------------------- ^
+    ///      |                                          |
+    ///      v                                          |
+    ///  +--------+      +-------+      +-----+      +------+
+    ///  |Find    | ---> |Clear  | ---> |Drop | ---> |Fill  |
+    ///  |Matches |      |Matched|      |     |      |Empty |
+    ///  +--------+      +-------+      +-----+      +------+
+    ///
+    ///    |     ^
+    ///    |     |
+    ///    v     |
+    ///
+    ///  +--------+
+    ///  |Wait for|
+    ///  |Move    |
+    ///  +--------+
+    ///
+    /// The stats advances each "MoveTime" seconds.
+    /// </summary>
     enum State
     {
+        /// <summary>
+        /// Guard value, should never happen.
+        /// </summary>
         Invalid = -1,
 
+        /// <summary>
+        /// Look for matches. If there are matches, the next state is ClearMatched, otherwise WaitForMove.
+        /// </summary>
         FindMatches = 0,
+
+        /// <summary>
+        /// Remove matched cells and replace them with a placeholder value.
+        /// </summary>
         ClearMatched = 1,
+
+        /// <summary>
+        /// Move cells "down" to fill empty space.
+        /// </summary>
         Drop = 2,
+
+        /// <summary>
+        /// Replace empty cells with new random values.
+        /// </summary>
         FillEmpty = 3,
 
+        /// <summary>
+        /// Request a move from the Agent.
+        /// </summary>
         WaitForMove = 4,
     }
 
@@ -88,14 +133,9 @@ namespace Unity.MLAgentsExamples
                 Board.FillFromAbove();
             }
 
-            while (true)
+            while (HasValidMoves())
             {
                 // Shuffle the board until we have a valid move.
-                bool hasMoves = HasValidMoves();
-                if (hasMoves)
-                {
-                    break;
-                }
                 Board.InitSettled();
             }
             RequestDecision();
@@ -171,10 +211,10 @@ namespace Unity.MLAgentsExamples
         public override void Heuristic(in ActionBuffers actionsOut)
         {
             var discreteActions = actionsOut.DiscreteActions;
-            discreteActions[0] = GreedyBestMove();
+            discreteActions[0] = GreedyMove();
         }
 
-        int GreedyBestMove()
+        int GreedyMove()
         {
             var pointsByType = new[] { Board.BasicCellPoints, Board.SpecialCell1Points, Board.SpecialCell2Points };
 

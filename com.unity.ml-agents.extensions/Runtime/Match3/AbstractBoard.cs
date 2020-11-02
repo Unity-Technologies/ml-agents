@@ -90,7 +90,7 @@ namespace Unity.MLAgents.Extensions.Match3
             for (var i = 0; i < NumMoves(); i++)
             {
                 yield return currentMove;
-                currentMove.Advance(Rows, Columns);
+                currentMove.Next(Rows, Columns);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 {
                     yield return currentMove;
                 }
-                currentMove.Advance(Rows, Columns);
+                currentMove.Next(Rows, Columns);
             }
         }
 
@@ -124,7 +124,7 @@ namespace Unity.MLAgents.Extensions.Match3
                 {
                     yield return currentMove;
                 }
-                currentMove.Advance(Rows, Columns);
+                currentMove.Next(Rows, Columns);
             }
         }
 
@@ -165,7 +165,8 @@ namespace Unity.MLAgents.Extensions.Match3
         }
 
         /// <summary>
-        /// Check if the "half" of a move is matches 3 or more.
+        /// Check if one of the cells that is swapped during a move matches 3 or more.
+        /// Since these checks are similar for each cell, we consider the Move as two "half moves".
         /// </summary>
         /// <param name="newRow"></param>
         /// <param name="newCol"></param>
