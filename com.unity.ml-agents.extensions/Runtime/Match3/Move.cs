@@ -31,15 +31,15 @@ namespace Unity.MLAgents.Extensions.Match3
     /// <summary>
     /// Struct that encapsulates a swap of adjacent cells.
     /// A Move can be constructed from either a starting row, column, and direction,
-    /// or enumerated from 0 to NumPotentialMoves()-1
+    /// or from a "move index" between 0 and NumPotentialMoves()-1.
+    /// Moves are enumerated as the internal edges of the game grid.
+    /// Left/right moves come first. There are (maxCols - 1) * maxRows of these.
+    /// Up/down moves are next. There are (maxRows - 1) * maxCols of these.
     /// </summary>
     public struct Move
     {
         /// <summary>
-        /// Index of the move, from 0 to NumPotentialMoves-1
-        /// Moves are enumerated as the internal edges of the game grid.
-        /// Left/right moves come first. There are (maxCols - 1) * maxRows of these.
-        /// Up/down moves are next. There are (maxRows - 1) * maxCols of these.
+        /// Index of the move, from 0 to NumPotentialMoves-1.
         /// </summary>
         public int MoveIndex;
 
@@ -59,7 +59,9 @@ namespace Unity.MLAgents.Extensions.Match3
         public Direction Direction;
 
         /// <summary>
-        /// Construct a Move from its index and the board size.
+        /// Construct a Move from its move index and the board size.
+        /// This is useful for iterating through all the Moves on a board, or constructing
+        /// the Move corresponding to an Agent decision.
         /// </summary>
         /// <param name="moveIndex">Must be between 0 and NumPotentialMoves(maxRows, maxCols).</param>
         /// <param name="maxRows"></param>
