@@ -4,6 +4,6 @@ pytest-cov==2.6.1
 pytest-xdist==1.34.0
 
 # PyTorch tests are here for the time being, before they are used in the codebase.
-torch>=1.5.0
+torch>=1.5.0, <1.7.0
 
 tf2onnx>=1.5.5

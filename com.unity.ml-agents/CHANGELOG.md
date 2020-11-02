@@ -7,6 +7,20 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
+## [Unreleased] - 2020-11-04
+### Major Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+
+### Bug Fixes
+#### com.unity.ml-agents (C#)
+#### ml-agents / ml-agents-envs / gym-unity (Python)
+ - Fixed an issue where runs could not be resumed when using TensorFlow and Ghost Training. (#4593)
+
 ## [1.5.0-preview] - 2020-10-14
 ### Major Changes
 #### com.unity.ml-agents (C#)
