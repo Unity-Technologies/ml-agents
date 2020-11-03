@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Actuators
         /// <param name="actionSpec">The <see cref="ActionSpec"/>  to send to an <see cref="IActionReceiver"/>.</param>
         public ActionBuffers(ActionSpec actionSpec)
             : this(new ActionSegment<float>(new float[actionSpec.NumContinuousActions]),
-            new ActionSegment<int>(new int[actionSpec.BranchSizes.Length]))
+            new ActionSegment<int>(new int[actionSpec.NumDiscreteActions]))
         { }
 
         /// <summary>

@@ -82,10 +82,10 @@ namespace Unity.MLAgents.Tests
 
             modelRunner.DecideBatch();
 
-            Assert.IsNotNull(modelRunner.GetAction(1));
-            Assert.IsNotNull(modelRunner.GetAction(2));
-            Assert.IsNull(modelRunner.GetAction(3));
-            // Assert.AreEqual(actionSpec.NumDiscreteActions, modelRunner.GetAction(1).Count());
+            Assert.IsFalse(modelRunner.GetAction(1).Equals(ActionBuffers.Empty));
+            Assert.IsFalse(modelRunner.GetAction(2).Equals(ActionBuffers.Empty));
+            Assert.IsTrue(modelRunner.GetAction(3).Equals(ActionBuffers.Empty));
+            Assert.AreEqual(actionSpec.NumDiscreteActions, modelRunner.GetAction(1).DiscreteActions.Length);
             modelRunner.Dispose();
         }
     }
