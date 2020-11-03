@@ -148,7 +148,7 @@ class CuriosityNetwork(torch.nn.Module):
         Uses the current state embedding and the action of the mini_batch to predict
         the next state embedding.
         """
-        actions = AgentAction.extract(mini_batch)
+        actions = AgentAction.from_dict(mini_batch)
         if self._action_spec.is_continuous():
             action = actions.continuous_tensor
         else:
@@ -170,7 +170,7 @@ class CuriosityNetwork(torch.nn.Module):
         action prediction (given the current and next state).
         """
         predicted_action = self.predict_action(mini_batch)
-        actions = AgentAction.extract(mini_batch)
+        actions = AgentAction.from_dict(mini_batch)
         if self._action_spec.is_continuous():
             sq_difference = (actions.continuous_tensor - predicted_action) ** 2
             sq_difference = torch.sum(sq_difference, dim=1)
