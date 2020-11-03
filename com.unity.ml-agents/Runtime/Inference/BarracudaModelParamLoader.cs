@@ -93,20 +93,13 @@ namespace Unity.MLAgents.Inference
                 return names.ToArray();
             }
 
-            if (!model.outputs.Contains(TensorNames.ContinuousActionOutput) && !model.outputs.Contains(TensorNames.DiscreteActionOutput))
+            if (model.HasContinuousOutputs())
             {
-                names.Add(TensorNames.ActionOutputDeprecated);
+                names.Add(model.ContinuousOutputName());
             }
-            else
+            if (model.HasDiscreteOutputs())
             {
-                if (model.outputs.Contains(TensorNames.ContinuousActionOutput))
-                {
-                    names.Add(TensorNames.ContinuousActionOutput);
-                }
-                if (model.outputs.Contains(TensorNames.DiscreteActionOutput))
-                {
-                    names.Add(TensorNames.DiscreteActionOutput);
-                }
+                names.Add(model.DiscreteOutputName());
             }
 
             var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];

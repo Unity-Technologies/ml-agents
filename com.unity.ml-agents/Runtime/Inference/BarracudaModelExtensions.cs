@@ -132,7 +132,7 @@ namespace Unity.MLAgents.Inference
         /// The Barracuda engine model for loading static parameters.
         /// </param>
         /// <returns>True if the model uses deprecated output fields.</returns>
-        private static bool UseDeprecated(this Model model)
+        public static bool UseDeprecated(this Model model)
         {
             return !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
                 !model.outputs.Contains(TensorNames.DiscreteActionOutput);

@@ -56,11 +56,11 @@ namespace Unity.MLAgents.Inference
             if (barracudaModel != null)
             {
                 var model = (Model)barracudaModel;
-                if (!model.outputs.Contains(TensorNames.ContinuousActionOutput) && !model.outputs.Contains(TensorNames.DiscreteActionOutput))
-                {
-                    useDeprecated = true;
-                    actionSpec.CheckNotHybrid();
-                }
+                useDeprecated = model.UseDeprecated();
+            }
+            if (useDeprecated)
+            {
+                actionSpec.CheckNotHybrid();
             }
             if (actionSpec.NumContinuousActions > 0)
             {
