@@ -57,7 +57,7 @@ class GAILRewardSignal(RewardSignal):
 
     def evaluate_batch(self, mini_batch: AgentBuffer) -> RewardSignalResult:
         feed_dict: Dict[tf.Tensor, Any] = {
-            self.policy.batch_size_ph: len(mini_batch["actions"]),
+            self.policy.batch_size_ph: len(mini_batch["vector_obs"]),
             self.policy.sequence_length_ph: self.policy.sequence_length,
         }
         if self.model.use_vail:

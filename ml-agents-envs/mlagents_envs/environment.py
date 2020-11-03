@@ -420,7 +420,11 @@ class UnityEnvironment(BaseEnv):
                 continue
             for i in range(n_agents):
                 # TODO: extend to AgentBuffers
-                action = AgentActionProto(vector_actions=vector_action[b][i])
+                if vector_action[b].continuous is not None:
+                    _act = vector_action[b].continuous[i]
+                else:
+                    _act = vector_action[b].discrete[i]
+                action = AgentActionProto(vector_actions=_act)
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
         rl_in.side_channel = bytes(

@@ -12,7 +12,7 @@ from mlagents_envs.exception import (
 from multiprocessing import Process, Pipe, Queue
 from multiprocessing.connection import Connection
 from queue import Empty as EmptyQueueException
-from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec, ActionBuffers
+from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
 from mlagents_envs.timers import (
@@ -144,7 +144,9 @@ def worker(
                 all_action_info = req.payload
                 for brain_name, action_info in all_action_info.items():
                     if len(action_info.action) != 0:
-                        _action = ActionBuffers.from_numpy_dict(action_info.action)
+                        _action = EnvManager.action_buffers_from_numpy_dict(
+                            action_info.action
+                        )
                         env.set_actions(brain_name, _action)
                 env.step()
                 all_step_result = _generate_all_results()

@@ -14,7 +14,13 @@ def create_agent_buffer(
     next_observations = [
         np.random.normal(size=shape) for shape in behavior_spec.observation_shapes
     ]
-    action = behavior_spec.action_spec.random_action(1)
+    action_buffer = behavior_spec.action_spec.random_action(1)
+    action = {}
+    if action_buffer.continuous is not None:
+        action["continuous_action"] = action_buffer.continuous
+    if action_buffer.discrete is not None:
+        action["discrete_action"] = action_buffer.discrete
+
     for _ in range(number):
         curr_split_obs = SplitObservations.from_observations(curr_observations)
         next_split_obs = SplitObservations.from_observations(next_observations)
