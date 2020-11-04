@@ -134,7 +134,7 @@ def test_process_trajectory(dummy_config):
         length=time_horizon,
         max_step_complete=True,
         observation_shapes=[(1,)],
-        action_space=[2],
+        action_spec=mock_specs.action_spec,
     )
     trajectory_queue0.put(trajectory)
     trainer.advance()

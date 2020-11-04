@@ -15,6 +15,8 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disabl
     gail_dummy_config,
 )
 
+from mlagents_envs.base_env import ActionSpec
+
 
 @pytest.fixture
 def dummy_config():
@@ -26,6 +28,9 @@ VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
+
+CONTINUOUS_ACTION_SPEC = ActionSpec.create_continuous(VECTOR_ACTION_SPACE)
+DISCRETE_ACTION_SPEC = ActionSpec.create_discrete(tuple(DISCRETE_ACTION_SPACE))
 
 
 def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
@@ -176,9 +181,8 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     trajectory = make_fake_trajectory(
         length=time_horizon,
         observation_shapes=optimizer.policy.behavior_spec.observation_shapes,
+        action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
-        action_space=DISCRETE_ACTION_SPACE if discrete else VECTOR_ACTION_SPACE,
-        is_discrete=discrete,
     )
     run_out, final_value_out = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False

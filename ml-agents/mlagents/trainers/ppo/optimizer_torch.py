@@ -187,7 +187,9 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.optimizer.step()
         update_stats = {
-            "Losses/Policy Loss": policy_loss.item(),
+            # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
+            # TODO: After PyTorch is default, change to something more correct.
+            "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,

@@ -3,11 +3,11 @@ from typing import Dict, List, Any, Tuple
 import numpy as np
 
 from mlagents_envs.base_env import (
+    ActionSpec,
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
-    ActionType,
     BehaviorMapping,
 )
 from mlagents_envs.tests.test_rpc_utils import proto_from_steps_and_action
@@ -51,12 +51,13 @@ class SimpleEnvironment(BaseEnv):
         self.num_vector = num_vector
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
-        action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
-        self.behavior_spec = BehaviorSpec(
-            self._make_obs_spec(),
-            action_type,
-            tuple(2 for _ in range(action_size)) if use_discrete else action_size,
-        )
+        if use_discrete:
+            action_spec = ActionSpec.create_discrete(
+                tuple(2 for _ in range(action_size))
+            )
+        else:
+            action_spec = ActionSpec.create_continuous(action_size)
+        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
         self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}

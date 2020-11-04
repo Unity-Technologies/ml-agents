@@ -830,4 +830,60 @@ namespace Unity.MLAgents.Tests
             }
         }
     }
+
+    [TestFixture]
+    public class AgentRecursionTests
+    {
+        [SetUp]
+        public void SetUp()
+        {
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.Dispose();
+            }
+        }
+
+        class CollectObsEndEpisodeAgent : Agent
+        {
+            public override void CollectObservations(VectorSensor sensor)
+            {
+                // NEVER DO THIS IN REAL CODE!
+                EndEpisode();
+            }
+        }
+
+        class OnEpisodeBeginEndEpisodeAgent : Agent
+        {
+            public override void OnEpisodeBegin()
+            {
+                // NEVER DO THIS IN REAL CODE!
+                EndEpisode();
+            }
+        }
+
+        void TestRecursiveThrows<T>() where T : Agent
+        {
+            var gameObj = new GameObject();
+            var agent = gameObj.AddComponent<T>();
+            agent.LazyInitialize();
+            agent.RequestDecision();
+
+            Assert.Throws<UnityAgentsException>(() =>
+            {
+                Academy.Instance.EnvironmentStep();
+            });
+        }
+
+        [Test]
+        public void TestRecursiveCollectObsEndEpisodeThrows()
+        {
+            TestRecursiveThrows<CollectObsEndEpisodeAgent>();
+        }
+
+        [Test]
+        public void TestRecursiveOnEpisodeBeginEndEpisodeThrows()
+        {
+            TestRecursiveThrows<OnEpisodeBeginEndEpisodeAgent>();
+        }
+    }
 }

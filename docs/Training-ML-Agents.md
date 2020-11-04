@@ -16,7 +16,6 @@
     - [Curriculum Learning](#curriculum)
       - [Training with a Curriculum](#training-with-a-curriculum)
   - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
-  - [Using PyTorch (Experimental)](#using-pytorch-experimental)
 
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
@@ -88,7 +87,7 @@ in the `results/<run-identifier>` folder:
    values. See [Using TensorBoard](Using-Tensorboard.md) for more details on how
    to visualize the training metrics.
 1. Models: these contain the model checkpoints that
-   are updated throughout training and the final model file (`.nn`). This final
+   are updated throughout training and the final model file (`.onnx`). This final
    model file is generated once either when training completes or is
    interrupted.
 1. Timers file (under `results/<run-identifier>/run_logs`): this contains aggregated
@@ -556,35 +555,3 @@ Some considerations:
 - **Result Variation Using Concurrent Unity Instances** - If you keep all the
   hyperparameters the same, but change `--num-envs=<n>`, the results and model
   would likely change.
-
-### Using PyTorch (Experimental)
-
-ML-Agents, by default, uses TensorFlow as its backend, but experimental support
-for PyTorch has been added. To use PyTorch, the `torch` Python package must
-be installed, and PyTorch must be enabled for your trainer.
-
-#### Installing PyTorch
-
-If you've already installed ML-Agents, follow the
-[official PyTorch install instructions](https://pytorch.org/get-started/locally/) for
-your platform and configuration. Note that on Windows, you may also need Microsoft's
-[Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) if you don't have it already.
-
-If you're installing or upgrading ML-Agents on Linux or Mac, you can also run
-`pip3 install mlagents[torch]` instead of `pip3 install mlagents`
-during [installation](Installation.md). On Windows, install ML-Agents first and then
-separately install PyTorch.
-
-#### Enabling PyTorch
-
-PyTorch can be enabled in one of two ways. First, by adding `--torch` to the
-`mlagents-learn` command. This will make all behaviors train with PyTorch.
-
-Second, by changing the `framework` option for your agent behavior in the
-configuration YAML as below. This will use PyTorch just for that behavior.
-
-```yaml
-behaviors:
-  YourAgentBehavior:
-    framework: pytorch
-```
