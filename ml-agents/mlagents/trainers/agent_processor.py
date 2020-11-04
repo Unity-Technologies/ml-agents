@@ -144,7 +144,7 @@ class AgentProcessor:
                 action_probs[prob_type] = prob_array[idx]
 
             action_mask = stored_decision_step.action_mask
-            prev_action = self.policy.retrieve_previous_action([global_id])  # [0, :]
+            prev_action = self.policy.retrieve_previous_action([global_id])
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,

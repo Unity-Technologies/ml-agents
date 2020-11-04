@@ -129,7 +129,6 @@ class Trajectory(NamedTuple):
                     np.ones(action_shape, dtype=np.float32), padding_value=1
                 )
 
-            # agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             for act_type, act_array in exp.prev_action.items():
                 agent_buffer_trajectory["prev_" + act_type].append(act_array)
 
