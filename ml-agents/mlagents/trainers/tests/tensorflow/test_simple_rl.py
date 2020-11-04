@@ -194,7 +194,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
     _check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.5)
 
 
-@pytest.mark.parametrize("use_discrete", [True])
+@pytest.mark.parametrize("use_discrete", [True, False])
 def test_recurrent_ppo(use_discrete):
     env = MemoryEnvironment([BRAIN_NAME], use_discrete=use_discrete)
     new_network_settings = attr.evolve(

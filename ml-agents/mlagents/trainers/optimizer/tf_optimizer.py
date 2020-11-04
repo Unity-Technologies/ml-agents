@@ -55,7 +55,7 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
             ]
             feed_dict[self.memory_in] = [np.zeros((self.m_size), dtype=np.float32)]
         if self.policy.prev_action is not None:
-            feed_dict[self.policy.prev_action] = batch["prev_action"]
+            feed_dict[self.policy.prev_action] = batch["prev_discrete_action"]
 
         if self.policy.use_recurrent:
             value_estimates, policy_mem, value_mem = self.sess.run(

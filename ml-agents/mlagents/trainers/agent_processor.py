@@ -145,6 +145,8 @@ class AgentProcessor:
 
             action_mask = stored_decision_step.action_mask
             prev_action = self.policy.retrieve_previous_action([global_id])
+            for _prev_act_type, _prev_act in prev_action.items():
+                prev_action[_prev_act_type] = _prev_act[0, :]
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,
