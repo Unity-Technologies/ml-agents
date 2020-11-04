@@ -63,6 +63,20 @@ namespace Unity.MLAgentsExamples
         WaitForMove = 4,
     }
 
+    public enum HeuristicQuality
+    {
+        /// <summary>
+        /// The heuristic will pick any valid move at random.
+        /// </summary>
+        RandomValidMove,
+
+        /// <summary>
+        /// The heuristic will pick the move that scores the most points.
+        /// This only looks at the immediate move, and doesn't consider where cells will fall.
+        /// </summary>
+        Greedy
+    }
+
     public class Match3Agent : Agent
     {
         [HideInInspector]
@@ -71,8 +85,8 @@ namespace Unity.MLAgentsExamples
         public float MoveTime = 1.0f;
         public int MaxMoves = 500;
 
-        [Tooltip("If selected, will pick the move that makes the most points. Otherwise, will pick a random valid move.")]
-        public bool UseSmartHeuristic = false;
+
+        public HeuristicQuality HeuristicQuality = HeuristicQuality.RandomValidMove;
 
         State m_CurrentState = State.WaitForMove;
         float m_TimeUntilMove;
@@ -133,7 +147,7 @@ namespace Unity.MLAgentsExamples
                 Board.FillFromAbove();
             }
 
-            while (HasValidMoves())
+            while (!HasValidMoves())
             {
                 // Shuffle the board until we have a valid move.
                 Board.InitSettled();
@@ -224,7 +238,7 @@ namespace Unity.MLAgentsExamples
 
             foreach (var move in Board.ValidMoves())
             {
-                var movePoints = UseSmartHeuristic ? EvalMovePoints(move, pointsByType) : 1;
+                var movePoints = HeuristicQuality == HeuristicQuality.Greedy ? EvalMovePoints(move, pointsByType) : 1;
                 if (movePoints < bestMovePoints)
                 {
                     // Worse, skip
