@@ -5,6 +5,7 @@ using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
+using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -65,12 +66,9 @@ namespace Unity.MLAgents.Inference
 
             foreach (var input in model.inputs)
             {
-                if (input.shape.Length == 4)
+                if (input.name.StartsWith(TensorNames.VisualObservationPlaceholderPrefix))
                 {
-                    if (input.name.StartsWith(TensorNames.VisualObservationPlaceholderPrefix))
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
 
@@ -192,8 +190,8 @@ namespace Unity.MLAgents.Inference
                 CheckInputTensorPresence(model, brainParameters, memorySize, sensorComponents)
             );
             failedModelChecks.AddRange(
-                CheckOutputTensorPresence(model, memorySize))
-            ;
+                CheckOutputTensorPresence(model, memorySize)
+            );
             failedModelChecks.AddRange(
                 CheckInputTensorShape(model, brainParameters, sensorComponents, observableAttributeTotalSize)
             );
@@ -574,9 +572,11 @@ namespace Unity.MLAgents.Inference
         {
             var failedModelChecks = new List<string>();
             // Check the presence of action output shape
-            if (!model.outputs.Contains(TensorNames.ActionOutputShapeDeprecated) &&
-                !model.outputs.Contains(TensorNames.ContinuousActionOutputShape) &&
-                !model.outputs.Contains(TensorNames.DiscreteActionOutputShape))
+
+            if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null &&
+
+                model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null &&
+                model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
             {
                 failedModelChecks.Add("The model does not contain an Action Output Shape Node.");
                 return failedModelChecks;

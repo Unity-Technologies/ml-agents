@@ -39,7 +39,7 @@ namespace Unity.MLAgents.Inference
             if (model.UseDeprecated())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0 ?
-                    (int)model.GetTensorByName(TensorNames.ActionOutputDeprecated)[0] : 0;
+                    (int)model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated)[0] : 0;
             }
             else
             {
@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Inference
             if (model.UseDeprecated())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0 ?
-                    0 : (int)model.GetTensorByName(TensorNames.ActionOutputDeprecated)[0];
+                    0 : (int)model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated)[0];
             }
             else
             {
