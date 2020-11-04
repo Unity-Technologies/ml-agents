@@ -52,37 +52,33 @@ namespace Unity.MLAgents.Inference
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
-            bool useDeprecated = false;
-            if (barracudaModel != null)
+            // If model is null, no inference to run and exception is thrown before reaching here.
+            if (barracudaModel == null)
             {
-                var model = (Model)barracudaModel;
-                useDeprecated = model.UseDeprecated();
+                return;
             }
-            if (useDeprecated)
+
+            var model = (Model)barracudaModel;
+            if (model.UseDeprecated())
             {
                 actionSpec.CheckNotHybrid();
             }
             if (actionSpec.NumContinuousActions > 0)
             {
-                var tensorName = useDeprecated ? TensorNames.ActionOutputDeprecated : TensorNames.ContinuousActionOutput;
+                var tensorName = model.ContinuousOutputName();
                 m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
             if (actionSpec.NumDiscreteActions > 0)
             {
-                var tensorName = useDeprecated ? TensorNames.ActionOutputDeprecated : TensorNames.DiscreteActionOutput;
+                var tensorName = model.DiscreteOutputName();
                 m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
 
-            if (barracudaModel != null)
+            for (var i = 0; i < model?.memories.Count; i++)
             {
-                var model = (Model)barracudaModel;
-
-                for (var i = 0; i < model?.memories.Count; i++)
-                {
-                    m_Dict[model.memories[i].output] =
-                        new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
-                }
+                m_Dict[model.memories[i].output] =
+                    new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
             }
         }
 

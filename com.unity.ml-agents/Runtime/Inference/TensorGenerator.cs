@@ -49,6 +49,13 @@ namespace Unity.MLAgents.Inference
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
+            // If model is null, no inference to run and exception is thrown before reaching here.
+            if (barracudaModel == null)
+            {
+                return;
+            }
+            var model = (Model)barracudaModel;
+
             // Generator for Inputs
             m_Dict[TensorNames.BatchSizePlaceholder] =
                 new BatchSizeGenerator(allocator);
@@ -57,14 +64,10 @@ namespace Unity.MLAgents.Inference
             m_Dict[TensorNames.RecurrentInPlaceholder] =
                 new RecurrentInputGenerator(allocator, memories);
 
-            if (barracudaModel != null)
+            for (var i = 0; i < model.memories.Count; i++)
             {
-                var model = (Model)barracudaModel;
-                for (var i = 0; i < model.memories.Count; i++)
-                {
-                    m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
-                }
+                m_Dict[model.memories[i].input] =
+                    new BarracudaRecurrentInputGenerator(i, allocator, memories);
             }
 
             m_Dict[TensorNames.PreviousActionPlaceholder] =
@@ -76,20 +79,13 @@ namespace Unity.MLAgents.Inference
 
 
             // Generators for Outputs
-            bool useDeprecated = false;
-            if (barracudaModel != null)
+            if (model.HasContinuousOutputs())
             {
-                var model = (Model)barracudaModel;
-                useDeprecated = model.UseDeprecated();
+                m_Dict[model.ContinuousOutputName()] = new BiDimensionalOutputGenerator(allocator);
             }
-            if (useDeprecated)
+            if (model.HasDiscreteOutputs())
             {
-                m_Dict[TensorNames.ActionOutputDeprecated] = new BiDimensionalOutputGenerator(allocator);
-            }
-            else
-            {
-                m_Dict[TensorNames.ContinuousActionOutput] = new BiDimensionalOutputGenerator(allocator);
-                m_Dict[TensorNames.DiscreteActionOutput] = new BiDimensionalOutputGenerator(allocator);
+                m_Dict[model.DiscreteOutputName()] = new BiDimensionalOutputGenerator(allocator);
             }
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
