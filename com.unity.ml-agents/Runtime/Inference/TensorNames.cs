@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Inference
         public const string ContinuousActionOutput = "continuous_actions";
         public const string DiscreteActionOutput = "discrete_actions";
 
-        // Deprecated TensorNames entries for backward compatability
+        // Deprecated TensorNames entries for backward compatibility
         public const string IsContinuousControlDeprecated = "is_continuous_control";
         public const string ActionOutputDeprecated = "action";
         public const string ActionOutputShapeDeprecated = "action_output_shape";

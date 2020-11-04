@@ -5,7 +5,6 @@ using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
-using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -572,7 +571,6 @@ namespace Unity.MLAgents.Inference
         {
             var failedModelChecks = new List<string>();
             // Check the presence of action output shape
-
             if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null &&
 
                 model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null &&
