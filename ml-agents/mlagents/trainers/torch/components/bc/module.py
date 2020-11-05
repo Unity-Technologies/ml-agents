@@ -103,7 +103,7 @@ class BCModule:
         selected_actions: AgentAction,
         log_probs: ActionLogProbs,
         expert_actions: torch.Tensor,
-    ):
+    ) -> torch.Tensor:
         if self.policy.use_continuous_act:
             bc_loss = torch.nn.functional.mse_loss(
                 selected_actions.continuous_tensor, expert_actions
