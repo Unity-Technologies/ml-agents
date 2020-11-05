@@ -272,11 +272,13 @@ class TFPolicy(Policy):
 
         self.save_memories(global_agent_ids, run_out.get("memory_out"))
         # For Compatibility with buffer changes for hybrid action support
-        run_out["log_probs"] = {"action_probs": run_out["log_probs"]}
-        if self.behavior_spec.action_spec.is_continuous():
-            run_out["action"] = {"continuous_action": run_out["action"]}
-        else:
-            run_out["action"] = {"discrete_action": run_out["action"]}
+        if "log_probs" in run_out:
+            run_out["log_probs"] = {"action_probs": run_out["log_probs"]}
+        if "action" in run_out:
+            if self.behavior_spec.action_spec.is_continuous():
+                run_out["action"] = {"continuous_action": run_out["action"]}
+            else:
+                run_out["action"] = {"discrete_action": run_out["action"]}
         return ActionInfo(
             action=run_out.get("action"),
             value=run_out.get("value"),
