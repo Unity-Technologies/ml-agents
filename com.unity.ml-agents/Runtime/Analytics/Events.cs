@@ -5,6 +5,7 @@ namespace Unity.MLAgents.Analytics
 {
     internal struct InferenceEvent
     {
+        public string BehaviorName;
         public string BarracudaModelSource;
         public string BarracudaModelVersion;
         public string BarracudaModelProducer;

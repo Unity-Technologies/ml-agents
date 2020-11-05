@@ -30,7 +30,7 @@ namespace Unity.MLAgents.Analytics
             return s_EventRegistered;
         }
 
-        public static void InferenceModelSet(NNModel nnModel, InferenceDevice inferenceDevice)
+        public static void InferenceModelSet(NNModel nnModel, string behaviorName, InferenceDevice inferenceDevice)
         {
             //The event shouldn't be able to report if this is disabled but if we know we're not going to report
             //Lets early out and not waste time gathering all the data
@@ -40,17 +40,19 @@ namespace Unity.MLAgents.Analytics
             if (!EnableAnalytics())
                 return;
 
-            var data = GetEventForModel(nnModel, inferenceDevice);
-            EditorAnalytics.SendEventWithLimit(k_EventName, data);
+            var data = GetEventForModel(nnModel, behaviorName, inferenceDevice);
+            //EditorAnalytics.SendEventWithLimit(k_EventName, data);
         }
 
-        static InferenceEvent GetEventForModel(NNModel nnModel, InferenceDevice inferenceDevice)
+        static InferenceEvent GetEventForModel(NNModel nnModel, string behaviorName, InferenceDevice inferenceDevice)
         {
             var barracudaModel = ModelLoader.Load(nnModel);
             var inferenceEvent = new InferenceEvent();
+            inferenceEvent.BehaviorName = behaviorName;
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;
             inferenceEvent.BarracudaModelProducer = barracudaModel.ProducerName;
+            inferenceEvent.InferenceDevice = (int)inferenceDevice;
 
             if (barracudaModel.ProducerName == "Script")
             {

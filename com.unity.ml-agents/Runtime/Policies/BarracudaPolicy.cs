@@ -45,7 +45,9 @@ namespace Unity.MLAgents.Policies
         public BarracudaPolicy(
             ActionSpec actionSpec,
             NNModel model,
-            InferenceDevice inferenceDevice)
+            InferenceDevice inferenceDevice,
+            string behaviorName
+            )
         {
             var modelRunner = Academy.Instance.GetOrCreateModelRunner(model, actionSpec, inferenceDevice);
             m_ModelRunner = modelRunner;
