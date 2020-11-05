@@ -66,7 +66,6 @@ class DiscriminatorNetwork(torch.nn.Module):
 
     def __init__(self, specs: BehaviorSpec, settings: GAILSettings) -> None:
         super().__init__()
-        self._policy_specs = specs
         self._use_vail = settings.use_vail
         self._settings = settings
 
@@ -77,7 +76,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._action_flattener = ModelUtils.ActionFlattener(specs)
+        self._action_flattener = ModelUtils.ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
         )  # +1 is for dones

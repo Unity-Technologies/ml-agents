@@ -181,3 +181,69 @@ class LSTM(MemoryModule):
         lstm_out, hidden_out = self.lstm(input_tensor, hidden)
         output_mem = torch.cat(hidden_out, dim=-1)
         return lstm_out, output_mem
+
+
+class MultiHeadAttention(torch.nn.Module):
+    NEG_INF = -1e6
+
+    def __init__(
+        self,
+        query_size: int,
+        key_size: int,
+        value_size: int,
+        output_size: int,
+        num_heads: int,
+        embedding_size: int,
+    ):
+        super().__init__()
+        self.n_heads, self.embedding_size = num_heads, embedding_size
+        self.output_size = output_size
+        self.fc_q = torch.nn.Linear(query_size, self.n_heads * self.embedding_size)
+        self.fc_k = torch.nn.Linear(key_size, self.n_heads * self.embedding_size)
+        self.fc_v = torch.nn.Linear(value_size, self.n_heads * self.embedding_size)
+        self.fc_out = torch.nn.Linear(
+            self.n_heads * self.embedding_size, self.output_size
+        )
+
+    def forward(
+        self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        b, n_q, n_k = query.size(0), query.size(1), key.size(1)
+
+        # Create a key mask : Only 1 if all values are 0 # shape = (b, n_k)
+        key_mask = torch.sum(key ** 2, axis=2) < 0.01
+        key_mask = key_mask.reshape(b, 1, 1, n_k)
+
+        query = self.fc_q(query)  # (b, n_q, h*d)
+        key = self.fc_k(key)  # (b, n_k, h*d)
+        value = self.fc_v(value)  # (b, n_k, h*d)
+
+        query = query.reshape(b, n_q, self.n_heads, self.embedding_size)
+        key = key.reshape(b, n_k, self.n_heads, self.embedding_size)
+        value = value.reshape(b, n_k, self.n_heads, self.embedding_size)
+
+        query = query.permute([0, 2, 1, 3])  # (b, h, n_q, emb)
+        # The next few lines are equivalent to : key.permute([0, 2, 3, 1])
+        # This is a hack, ONNX will compress two permute operations and
+        # Barracuda will not like seeing `permute([0,2,3,1])`
+        key = key.permute([0, 2, 1, 3])  # (b, h, emb, n_k)
+        key -= 1
+        key += 1
+        key = key.permute([0, 1, 3, 2])  # (b, h, emb, n_k)
+
+        qk = torch.matmul(query, key)  # (b, h, n_q, n_k)
+
+        qk = qk / (self.embedding_size ** 0.5) + key_mask * self.NEG_INF
+
+        att = torch.softmax(qk, dim=3)  # (b, h, n_q, n_k)
+
+        value = value.permute([0, 2, 1, 3])  # (b, h, n_k, emb)
+        value_attention = torch.matmul(att, value)  # (b, h, n_q, emb)
+
+        value_attention = value_attention.permute([0, 2, 1, 3])  # (b, n_q, h, emb)
+        value_attention = value_attention.reshape(
+            b, n_q, self.n_heads * self.embedding_size
+        )  # (b, n_q, h*emb)
+
+        out = self.fc_out(value_attention)  # (b, n_q, emb)
+        return out, att

@@ -1,8 +1,6 @@
 from unittest import mock
 import pytest
 
-import numpy as np
-
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
 from mlagents_envs.exception import UnityEnvironmentException, UnityActionException
@@ -95,20 +93,13 @@ def test_step(mock_communicator, mock_launcher):
     env.step()
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
-    env.set_actions(
-        "RealFakeBrain", np.zeros((n_agents, spec.action_size), dtype=np.float32)
-    )
+    env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents))
     env.step()
     with pytest.raises(UnityActionException):
-        env.set_actions(
-            "RealFakeBrain",
-            np.zeros((n_agents - 1, spec.action_size), dtype=np.float32),
-        )
+        env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents - 1))
     decision_steps, terminal_steps = env.get_steps("RealFakeBrain")
     n_agents = len(decision_steps)
-    env.set_actions(
-        "RealFakeBrain", -1 * np.ones((n_agents, spec.action_size), dtype=np.float32)
-    )
+    env.set_actions("RealFakeBrain", spec.action_spec.empty_action(n_agents) - 1)
     env.step()
 
     env.close()

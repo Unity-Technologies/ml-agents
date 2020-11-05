@@ -35,7 +35,7 @@ open-source project that enables games and simulations to serve as environments
 for training intelligent agents. Agents can be trained using reinforcement
 learning, imitation learning, neuroevolution, or other machine learning methods
 through a simple-to-use Python API. We also provide implementations (based on
-TensorFlow) of state-of-the-art algorithms to enable game developers and
+PyTorch) of state-of-the-art algorithms to enable game developers and
 hobbyists to easily train intelligent agents for 2D, 3D and VR/AR games. These
 trained agents can be used for multiple purposes, including controlling NPC
 behavior (in a variety of settings such as multi-agent and adversarial),
@@ -51,9 +51,9 @@ transition to the ML-Agents Toolkit easier, we provide several background pages
 that include overviews and helpful resources on the
 [Unity Engine](Background-Unity.md),
 [machine learning](Background-Machine-Learning.md) and
-[TensorFlow](Background-TensorFlow.md). We **strongly** recommend browsing the
+[PyTorch](Background-PyTorch.md). We **strongly** recommend browsing the
 relevant background pages if you're not familiar with a Unity scene, basic
-machine learning concepts or have not previously heard of TensorFlow.
+machine learning concepts or have not previously heard of PyTorch.
 
 The remainder of this page contains a deep dive into ML-Agents, its key
 components, different training modes and scenarios. By the end of it, you should
@@ -280,7 +280,7 @@ for additional information.
 
 ### Custom Training and Inference
 
-In the previous mode, the Agents were used for training to generate a TensorFlow
+In the previous mode, the Agents were used for training to generate a PyTorch
 model that the Agents can later use. However, any user of the ML-Agents Toolkit
 can leverage their own algorithms for training. In this case, the behaviors of
 all the Agents in the scene will be controlled within Python. You can even turn

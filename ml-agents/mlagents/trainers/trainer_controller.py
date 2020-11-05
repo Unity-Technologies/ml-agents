@@ -9,6 +9,7 @@ from collections import defaultdict
 
 import numpy as np
 from mlagents.tf_utils import tf
+from mlagents import tf_utils
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
@@ -66,9 +67,9 @@ class TrainerController:
         self.trainer_threads: List[threading.Thread] = []
         self.kill_trainers = False
         np.random.seed(training_seed)
-        tf.set_random_seed(training_seed)
-        if torch_utils.is_available():
-            torch_utils.torch.manual_seed(training_seed)
+        if tf_utils.is_available():
+            tf.set_random_seed(training_seed)
+        torch_utils.torch.manual_seed(training_seed)
         self.rank = get_rank()
 
     @timed
@@ -166,7 +167,8 @@ class TrainerController:
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_output_path(self.output_path)
-        tf.reset_default_graph()
+        if tf_utils.is_available():
+            tf.reset_default_graph()
         try:
             # Initial reset
             self._reset_env(env_manager)

@@ -105,7 +105,7 @@ class CuriosityModel:
         """
         combined_input = tf.concat([encoded_state, encoded_next_state], axis=1)
         hidden = tf.layers.dense(combined_input, 256, activation=ModelUtils.swish)
-        if self.policy.behavior_spec.is_action_continuous():
+        if self.policy.behavior_spec.action_spec.is_continuous():
             pred_action = tf.layers.dense(
                 hidden, self.policy.act_size[0], activation=None
             )
