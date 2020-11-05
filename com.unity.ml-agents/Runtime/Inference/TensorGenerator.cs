@@ -49,6 +49,13 @@ namespace Unity.MLAgents.Inference
             Dictionary<int, List<float>> memories,
             object barracudaModel = null)
         {
+            // If model is null, no inference to run and exception is thrown before reaching here.
+            if (barracudaModel == null)
+            {
+                return;
+            }
+            var model = (Model)barracudaModel;
+
             // Generator for Inputs
             m_Dict[TensorNames.BatchSizePlaceholder] =
                 new BatchSizeGenerator(allocator);
@@ -57,14 +64,10 @@ namespace Unity.MLAgents.Inference
             m_Dict[TensorNames.RecurrentInPlaceholder] =
                 new RecurrentInputGenerator(allocator, memories);
 
-            if (barracudaModel != null)
+            for (var i = 0; i < model.memories.Count; i++)
             {
-                var model = (Model)barracudaModel;
-                for (var i = 0; i < model.memories.Count; i++)
-                {
-                    m_Dict[model.memories[i].input] =
-                        new BarracudaRecurrentInputGenerator(i, allocator, memories);
-                }
+                m_Dict[model.memories[i].input] =
+                    new BarracudaRecurrentInputGenerator(i, allocator, memories);
             }
 
             m_Dict[TensorNames.PreviousActionPlaceholder] =
@@ -76,7 +79,14 @@ namespace Unity.MLAgents.Inference
 
 
             // Generators for Outputs
-            m_Dict[TensorNames.ActionOutput] = new BiDimensionalOutputGenerator(allocator);
+            if (model.HasContinuousOutputs())
+            {
+                m_Dict[model.ContinuousOutputName()] = new BiDimensionalOutputGenerator(allocator);
+            }
+            if (model.HasDiscreteOutputs())
+            {
+                m_Dict[model.DiscreteOutputName()] = new BiDimensionalOutputGenerator(allocator);
+            }
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
         }

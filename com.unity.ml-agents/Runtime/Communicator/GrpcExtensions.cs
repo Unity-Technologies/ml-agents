@@ -126,8 +126,11 @@ namespace Unity.MLAgents
             {
                 NumContinuousActions = actionSpec.NumContinuousActions,
                 NumDiscreteActions = actionSpec.NumDiscreteActions,
-                DiscreteBranchSizes = { actionSpec.BranchSizes },
             };
+            if (actionSpec.BranchSizes != null)
+            {
+                actionSpecProto.DiscreteBranchSizes.AddRange(actionSpec.BranchSizes);
+            }
             brainParametersProto.ActionSpec = actionSpecProto;
 
             var supportHybrid = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.HybridActions;

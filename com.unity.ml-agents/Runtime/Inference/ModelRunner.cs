@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Inference
     internal class ModelRunner
     {
         List<AgentInfoSensorsPair> m_Infos = new List<AgentInfoSensorsPair>();
-        Dictionary<int, float[]> m_LastActionsReceived = new Dictionary<int, float[]>();
+        Dictionary<int, ActionBuffers> m_LastActionsReceived = new Dictionary<int, ActionBuffers>();
         List<int> m_OrderedAgentsRequestingDecisions = new List<int>();
 
         ITensorAllocator m_TensorAllocator;
@@ -132,7 +132,7 @@ namespace Unity.MLAgents.Inference
 
             if (!m_LastActionsReceived.ContainsKey(info.episodeId))
             {
-                m_LastActionsReceived[info.episodeId] = null;
+                m_LastActionsReceived[info.episodeId] = ActionBuffers.Empty;
             }
             if (info.done)
             {
@@ -195,13 +195,13 @@ namespace Unity.MLAgents.Inference
             return m_Model == other && m_InferenceDevice == otherInferenceDevice;
         }
 
-        public float[] GetAction(int agentId)
+        public ActionBuffers GetAction(int agentId)
         {
             if (m_LastActionsReceived.ContainsKey(agentId))
             {
                 return m_LastActionsReceived[agentId];
             }
-            return null;
+            return ActionBuffers.Empty;
         }
     }
 }
