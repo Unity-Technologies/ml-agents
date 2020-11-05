@@ -92,8 +92,10 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
   triggers:
     cancel_old_ci: true
     {% if platform.name == "mac" %}
+    # TODO remove develop-hybrid trigger before merging to master
     expression: |
       (pull_request.target eq "master" OR
+      pull_request.target match "develop-hybrid.+" OR
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
