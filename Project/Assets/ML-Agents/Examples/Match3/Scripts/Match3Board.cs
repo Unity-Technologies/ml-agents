@@ -23,6 +23,9 @@ namespace Unity.MLAgentsExamples
         bool[,] m_Matched;
 
         System.Random m_Random;
+        public GameObject blankTile;
+
+        public GameObject[] tilePrefabs = new GameObject[6];
 
         void Awake()
         {
