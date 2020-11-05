@@ -4,11 +4,15 @@ using UnityEngine;
 
 public class Match3TileSelector : MonoBehaviour
 {
-
+    private Dictionary<int, MeshRenderer> tileDict = new Dictionary<int, MeshRenderer>();
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
-        SetActiveTile(0);
+        for (int i = 0; i < tileTypes.Length; i++)
+        {
+            tileDict.Add(i, tileTypes[i].GetComponent<MeshRenderer>());
+        }
+        SetActiveTile(0, 0);
     }
 
     // Update is called once per frame
@@ -18,16 +22,16 @@ public class Match3TileSelector : MonoBehaviour
     }
 
     public GameObject[] tileTypes = new GameObject[0];
-    public GameObject[] specialTileTypes = new GameObject[0];
-    public void SetActiveTile(int t)
+    public Material[] materialTypes = new Material[0];
+    public void SetActiveTile(int typeIndex, int matIndex)
     {
         for (int i = 0; i < tileTypes.Length; i++)
         {
-            if (i == t)
+            if (i == typeIndex)
             {
                 tileTypes[i].SetActive(true);
-                //                print($"Activated {t}");
-                //                print(tileTypes[i].gameObject.name);
+                //                print($"Activated {typeIndex} with Mat {matIndex}");
+                tileDict[i].sharedMaterial = materialTypes[matIndex];
             }
             else
             {
@@ -35,4 +39,22 @@ public class Match3TileSelector : MonoBehaviour
             }
         }
     }
+
+
+    //    public void SetActiveTile(int t)
+    //    {
+    //        for (int i = 0; i < tileTypes.Length; i++)
+    //        {
+    //            if (i == t)
+    //            {
+    //                tileTypes[i].SetActive(true);
+    //                //                print($"Activated {t}");
+    //                //                print(tileTypes[i].gameObject.name);
+    //            }
+    //            else
+    //            {
+    //                tileTypes[i].SetActive(false);
+    //            }
+    //        }
+    //    }
 }

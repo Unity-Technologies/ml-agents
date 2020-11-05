@@ -51,7 +51,7 @@ namespace Unity.MLAgentsExamples
                     var go = Instantiate(board.tilePrefab, transform.position, quaternion.identity, transform);
                     go.name = $"r{i}_c{j}";
                     tilesDict.Add((i, j), go.GetComponent<Match3TileSelector>());
-                    tilesDict[(i, j)].SetActiveTile(0);
+                    //                    tilesDict[(i, j)].SetActiveTile(0, 0);
                     //                        tilesDict[item.Key] = go.GetComponent<Match3TileSelector>();
                     //                        tilesDict[item.Key].SetActiveTile(0);
 
@@ -96,20 +96,22 @@ namespace Unity.MLAgentsExamples
                     pos *= cubeSpacing;
 
                     var specialType = board.Cells != null ? board.GetSpecialType(i, j) : 0;
-                    if (specialType == 2)
-                    {
-                        tilesDict[(i, j)].SetActiveTile(8);
-                    }
-                    else if (specialType == 1)
-                    {
-                        tilesDict[(i, j)].SetActiveTile(7);
-                    }
-                    else
-                    {
-                        tilesDict[(i, j)].transform.position = transform.TransformPoint(pos);
-                        tilesDict[(i, j)].SetActiveTile(value + 1);
-                        //                        print(value + 1);
-                    }
+                    //                    if (specialType == 2)
+                    //                    {
+                    ////                        tilesDict[(i, j)].SetActiveTile(8);
+                    //                        tilesDict[(i, j)].SetActiveTile(2, value + 1);
+                    //                    }
+                    //                    else if (specialType == 1)
+                    //                    {
+                    //                        tilesDict[(i, j)].SetActiveTile(1, value + 1);
+                    //                    }
+                    //                    else
+                    //                    {
+                    //                        tilesDict[(i, j)].SetActiveTile(value + 1);
+                    //                        //                        print(value + 1);
+                    //                    }
+                    tilesDict[(i, j)].transform.position = transform.TransformPoint(pos);
+                    tilesDict[(i, j)].SetActiveTile(specialType, value + 1);
 
                 }
             }
