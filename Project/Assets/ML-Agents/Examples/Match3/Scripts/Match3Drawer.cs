@@ -48,7 +48,8 @@ namespace Unity.MLAgentsExamples
             {
                 for (var j = 0; j < board.Columns; j++)
                 {
-                    var go = Instantiate(board.tilePrefabs[0], transform.position, quaternion.identity, transform);
+                    var go = Instantiate(board.tilePrefab, transform.position, quaternion.identity, transform);
+                    go.name = $"r{i}_c{j}";
                     tilesDict.Add((i, j), go.GetComponent<Match3TileSelector>());
                     tilesDict[(i, j)].SetActiveTile(0);
                     //                        tilesDict[item.Key] = go.GetComponent<Match3TileSelector>();
@@ -73,8 +74,7 @@ namespace Unity.MLAgentsExamples
                 InitializeDict();
             }
 
-            var cubeSize = .5f;
-            var matchedWireframeSize = .5f * (cubeSize + cubeSpacing);
+            //            var cubeSize = .5f;
 
             for (var i = 0; i < board.Rows; i++)
             {
@@ -108,7 +108,7 @@ namespace Unity.MLAgentsExamples
                     {
                         tilesDict[(i, j)].transform.position = transform.TransformPoint(pos);
                         tilesDict[(i, j)].SetActiveTile(value + 1);
-                        //                        print(value);
+                        //                        print(value + 1);
                     }
 
                 }
@@ -124,9 +124,13 @@ namespace Unity.MLAgentsExamples
             var matchedWireframeSize = .5f * (cubeSize + cubeSpacing);
 
             //            var board = GetComponent<Match3Board>();
-            if (board == null)
+            //            if (board == null)
+            //            {
+            //                return;
+            //            }
+            if (!board)
             {
-                return;
+                board = GetComponent<Match3Board>();
             }
 
             //            if (clearDict)

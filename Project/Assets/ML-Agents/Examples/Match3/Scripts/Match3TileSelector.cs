@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Match3TileSelector : MonoBehaviour
 {
+
     // Start is called before the first frame update
     void Start()
     {
@@ -25,6 +26,7 @@ public class Match3TileSelector : MonoBehaviour
             if (i == t)
             {
                 tileTypes[i].SetActive(true);
+                //                print($"Activated {t}");
                 //                print(tileTypes[i].gameObject.name);
             }
             else
