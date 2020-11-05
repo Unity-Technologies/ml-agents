@@ -50,7 +50,7 @@ class AgentAction(NamedTuple):
         tensor_list: List[torch.Tensor], action_spec: ActionSpec
     ) -> "AgentAction":
         continuous: torch.Tensor = None
-        discrete: List[torch.Tensor] = None
+        discrete: List[torch.Tensor] = None  # type: ignore
         _offset = 0
         if action_spec.continuous_size > 0:
             continuous = tensor_list[0]
@@ -62,11 +62,13 @@ class AgentAction(NamedTuple):
     @staticmethod
     def from_dict(buff: Dict[str, np.ndarray]) -> "AgentAction":
         continuous: torch.Tensor = None
-        discrete: List[torch.Tensor] = None
+        discrete: List[torch.Tensor] = None  # type: ignore
         if "continuous_action" in buff:
             continuous = ModelUtils.list_to_tensor(buff["continuous_action"])
         if "discrete_action" in buff:
-            discrete_tensor = ModelUtils.list_to_tensor(buff["discrete_action"])
+            discrete_tensor = ModelUtils.list_to_tensor(
+                buff["discrete_action"], dtype=torch.long
+            )
             discrete = [
                 discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
             ]
@@ -81,7 +83,6 @@ class ActionLogProbs(NamedTuple):
     @property
     def discrete_tensor(self):
         return torch.stack(self.discrete_list, dim=-1)
-        return torch.cat([_disc.unsqueeze(-1) for _disc in self.discrete_list], dim=1)
 
     @property
     def all_discrete_tensor(self):
@@ -118,7 +119,7 @@ class ActionLogProbs(NamedTuple):
         all_log_prob_list: List[torch.Tensor] = None,
     ) -> "ActionLogProbs":
         continuous: torch.Tensor = None
-        discrete: List[torch.Tensor] = None
+        discrete: List[torch.Tensor] = None  # type: ignore
         _offset = 0
         if action_spec.continuous_size > 0:
             continuous = log_prob_list[0]
@@ -130,7 +131,7 @@ class ActionLogProbs(NamedTuple):
     @staticmethod
     def from_dict(buff: Dict[str, np.ndarray]) -> "ActionLogProbs":
         continuous: torch.Tensor = None
-        discrete: List[torch.Tensor] = None
+        discrete: List[torch.Tensor] = None  # type: ignore
         if "continuous_log_probs" in buff:
             continuous = ModelUtils.list_to_tensor(buff["continuous_log_probs"])
         if "discrete_log_probs" in buff:
