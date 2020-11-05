@@ -17,103 +17,6 @@ namespace Unity.MLAgents.Inference
         const long k_ApiVersion = 2;
 
         /// <summary>
-        /// Generates the Tensor inputs that are expected to be present in the Model.
-        /// </summary>
-        /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
-        /// </param>
-        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs.</returns>
-        public static IReadOnlyList<TensorProxy> GetInputTensors(Model model)
-        {
-            var tensors = new List<TensorProxy>();
-
-            if (model == null)
-                return tensors;
-
-            foreach (var input in model.inputs)
-            {
-                tensors.Add(new TensorProxy
-                {
-                    name = input.name,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = input.shape.Select(i => (long)i).ToArray()
-                });
-            }
-
-            foreach (var mem in model.memories)
-            {
-                tensors.Add(new TensorProxy
-                {
-                    name = mem.input,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
-                });
-            }
-
-            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
-
-            return tensors;
-        }
-
-        public static int GetNumVisualInputs(Model model)
-        {
-            var count = 0;
-            if (model == null)
-                return count;
-
-            foreach (var input in model.inputs)
-            {
-                if (input.name.StartsWith(TensorNames.VisualObservationPlaceholderPrefix))
-                {
-                    count++;
-                }
-            }
-
-            return count;
-        }
-
-        /// <summary>
-        /// Generates the Tensor outputs that are expected to be present in the Model.
-        /// </summary>
-        /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
-        /// </param>
-        /// <returns>TensorProxy IEnumerable with the expected Tensor outputs</returns>
-        public static string[] GetOutputNames(Model model)
-        {
-            var names = new List<string>();
-
-            if (model == null)
-            {
-                return names.ToArray();
-            }
-
-            if (model.HasContinuousOutputs())
-            {
-                names.Add(model.ContinuousOutputName());
-            }
-            if (model.HasDiscreteOutputs())
-            {
-                names.Add(model.DiscreteOutputName());
-            }
-
-            var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
-            if (memory > 0)
-            {
-                foreach (var mem in model.memories)
-                {
-                    names.Add(mem.output);
-                }
-            }
-
-            names.Sort();
-
-            return names.ToArray();
-        }
-
-        /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
         /// on it.
         /// </summary>
@@ -250,7 +153,7 @@ namespace Unity.MLAgents.Inference
         )
         {
             var failedModelChecks = new List<string>();
-            var tensorsNames = GetInputTensors(model).Select(x => x.name).ToList();
+            var tensorsNames = model.GetInputTensorNames();
 
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((brainParameters.VectorObservationSize != 0) &&
@@ -282,7 +185,7 @@ namespace Unity.MLAgents.Inference
                 visObsIndex++;
             }
 
-            var expectedVisualObs = GetNumVisualInputs(model);
+            var expectedVisualObs = model.GetNumVisualInputs();
             // Check if there's not enough visual sensors (too many would be handled above)
             if (expectedVisualObs > visObsIndex)
             {
@@ -428,7 +331,7 @@ namespace Unity.MLAgents.Inference
             }
 
             // If the model expects an input but it is not in this list
-            foreach (var tensor in GetInputTensors(model))
+            foreach (var tensor in model.GetInputTensors())
             {
                 if (!tensorTester.ContainsKey(tensor.name))
                 {

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Barracuda;
 
 namespace Unity.MLAgents.Inference
@@ -8,6 +10,140 @@ namespace Unity.MLAgents.Inference
     internal static class BarracudaModelExtensions
     {
         /// <summary>
+        /// Get array of the input tensor names of the model.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>Array of the input tensor names of the model</returns>
+        public static string[] GetInputTensorNames(this Model model)
+        {
+            var names = new List<string>();
+
+            if (model == null)
+                return names.ToArray();
+
+            foreach (var input in model.inputs)
+            {
+                names.Add(input.name);
+            }
+
+            foreach (var mem in model.memories)
+            {
+                names.Add(mem.input);
+            }
+
+            names.Sort();
+
+            return names.ToArray();
+        }
+
+        /// <summary>
+        /// Generates the Tensor inputs that are expected to be present in the Model.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs.</returns>
+        public static IReadOnlyList<TensorProxy> GetInputTensors(this Model model)
+        {
+            var tensors = new List<TensorProxy>();
+
+            if (model == null)
+                return tensors;
+
+            foreach (var input in model.inputs)
+            {
+                tensors.Add(new TensorProxy
+                {
+                    name = input.name,
+                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    data = null,
+                    shape = input.shape.Select(i => (long)i).ToArray()
+                });
+            }
+
+            foreach (var mem in model.memories)
+            {
+                tensors.Add(new TensorProxy
+                {
+                    name = mem.input,
+                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    data = null,
+                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
+                });
+            }
+
+            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
+
+            return tensors;
+        }
+
+
+        /// <summary>
+        /// Get number of visual observation inputs to the model.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>Number of visual observation inputs to the model</returns>
+        public static int GetNumVisualInputs(this Model model)
+        {
+            var count = 0;
+            if (model == null)
+                return count;
+
+            foreach (var input in model.inputs)
+            {
+                if (input.name.StartsWith(TensorNames.VisualObservationPlaceholderPrefix))
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Get array of the output tensor names of the model.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>Array of the output tensor names of the model</returns>
+        public static string[] GetOutputNames(this Model model)
+        {
+            var names = new List<string>();
+
+            if (model == null)
+            {
+                return names.ToArray();
+            }
+
+            if (model.HasContinuousOutputs())
+            {
+                names.Add(model.ContinuousOutputName());
+            }
+            if (model.HasDiscreteOutputs())
+            {
+                names.Add(model.DiscreteOutputName());
+            }
+
+            var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            if (memory > 0)
+            {
+                foreach (var mem in model.memories)
+                {
+                    names.Add(mem.output);
+                }
+            }
+
+            names.Sort();
+
+            return names.ToArray();
+        }
+
+        /// <summary>
         /// Check if the model has continuous action outputs.
         /// </summary>
         /// <param name="model">
@@ -16,6 +152,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>True if the model has continuous action outputs.</returns>
         public static bool HasContinuousOutputs(this Model model)
         {
+            if (model == null)
+                return false;
             if (model.UseDeprecated())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0;
@@ -36,6 +174,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>Size of continuous action output.</returns>
         public static int ContinuousOutputSize(this Model model)
         {
+            if (model == null)
+                return 0;
             if (model.UseDeprecated())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0 ?
@@ -56,6 +196,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>Tensor name of continuous action output.</returns>
         public static string ContinuousOutputName(this Model model)
         {
+            if (model == null)
+                return null;
             if (model.UseDeprecated())
             {
                 return TensorNames.ActionOutputDeprecated;
@@ -75,6 +217,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>True if the model has discrete action outputs.</returns>
         public static bool HasDiscreteOutputs(this Model model)
         {
+            if (model == null)
+                return false;
             if (model.UseDeprecated())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] == 0;
@@ -95,6 +239,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>Size of discrete action output.</returns>
         public static int DiscreteOutputSize(this Model model)
         {
+            if (model == null)
+                return 0;
             if (model.UseDeprecated())
             {
                 return (int)model.GetTensorByName(TensorNames.IsContinuousControlDeprecated)[0] > 0 ?
@@ -115,6 +261,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>Tensor name of discrete action output.</returns>
         public static string DiscreteOutputName(this Model model)
         {
+            if (model == null)
+                return null;
             if (model.UseDeprecated())
             {
                 return TensorNames.ActionOutputDeprecated;
@@ -134,6 +282,8 @@ namespace Unity.MLAgents.Inference
         /// <returns>True if the model uses deprecated output fields.</returns>
         public static bool UseDeprecated(this Model model)
         {
+            if (model == null)
+                return false;
             return !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
                 !model.outputs.Contains(TensorNames.DiscreteActionOutput);
         }
