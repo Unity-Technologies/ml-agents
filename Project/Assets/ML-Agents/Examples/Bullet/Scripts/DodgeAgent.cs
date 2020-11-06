@@ -83,8 +83,8 @@ public class DodgeAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
 
-        sensor.AddObservation(transform.position.x - area.transform.position.x);
-        sensor.AddObservation(transform.position.z - area.transform.position.z);
+        sensor.AddObservation((transform.position.x - area.transform.position.x) / 10f);
+        sensor.AddObservation((transform.position.z - area.transform.position.z) / 10f);
 
     }
     /// <summary>

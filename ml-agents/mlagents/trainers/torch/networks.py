@@ -47,7 +47,6 @@ class NetworkBody(nn.Module):
             normalize=self.normalize,
         )
 
-
         total_enc_size = encoder_input_size + encoded_act_size
 
         self.self_embedding = LinearEncoder(6, 1, 64)
@@ -109,37 +108,37 @@ class NetworkBody(nn.Module):
 
         # TODO : This is a Hack
         var_len_input = vis_inputs[0].reshape(-1, 20, 4)
-        key_mask = 0 * (
+        key_mask =  (
             torch.sum(var_len_input ** 2, axis=2) < 0.01
         )  # 1 means mask and 0 means let though
 
         x_self = processed_vec.reshape(-1, processed_vec.shape[1])
         x_self = self.self_embedding(x_self)  # (b, 1,64)
         expanded_x_self = x_self.reshape(-1, 1, 64).repeat(1, 20, 1)
-        objects = torch.cat([expanded_x_self, var_len_input], dim=2)  #(b,20,68)
+        objects = torch.cat([expanded_x_self, var_len_input], dim=2)  # (b,20,68)
 
-        obj_encoding = self.obs_embeding(objects)#(b,20,64)
+        obj_encoding = self.obs_embeding(objects)  # (b,20,64)
 
         # add the self to the entities
-        self_and_key_emb = torch.cat([x_self.reshape(-1,1,64), obj_encoding], dim=1) #(b,21,64)
+        self_and_key_emb = torch.cat(
+            [x_self.reshape(-1, 1, 64), obj_encoding], dim=1
+        )  # (b,21,64)
         key_mask = torch.cat(
             [torch.zeros((self_and_key_emb.shape[0], 1)), key_mask], dim=1
-        ) # first one is never masked
+        )  # first one is never masked
 
         output, _ = self.attention(
             self_and_key_emb, self_and_key_emb, self_and_key_emb, key_mask
         )  # (b, 21, 64)
         output = self.dense_after_attention(output) + self_and_key_emb
 
-
         output = torch.sum(
             output * (1 - key_mask).reshape(-1, 21, 1), dim=1
-        ) / torch.sum(1 - key_mask, dim=1, keepdim=True) # average pooling
-
-
+        ) / torch.sum(
+            1 - key_mask, dim=1, keepdim=True
+        )  # average pooling
 
         encoding = self.linear_encoder(output + x_self)
-
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)

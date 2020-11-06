@@ -81,13 +81,14 @@ public class AttentionSensor : ISensor
         var bullets = m_AgentTransform.parent.GetComponentsInChildren<Bullet>();
         // Sort by closest :
         Array.Sort(bullets , (a, b) => Vector3.Distance(a.transform.position, m_AgentTransform.position) - Vector3.Distance(b.transform.position, m_AgentTransform.position) > 0 ? 1 : -1);
+
         foreach (Bullet b in bullets)
         {
             if (m_CurrentNumObservables >= m_MaxNumObservables){
                 break;
             }
-            m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 0] = b.transform.position.x - m_AgentTransform.position.x;
-            m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 1] = b.transform.position.z - m_AgentTransform.position.z;
+            m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 0] = (b.transform.position.x - m_AgentTransform.parent.position.x) / 10f;
+            m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 1] = (b.transform.position.z - m_AgentTransform.parent.position.z) / 10f;
             m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 2] = b.transform.forward.x;
             m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 3] = b.transform.forward.z;
             m_CurrentNumObservables += 1;
