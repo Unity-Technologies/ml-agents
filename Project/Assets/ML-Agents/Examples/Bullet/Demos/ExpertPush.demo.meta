@@ -1,8 +1,8 @@
 fileFormatVersion: 2
-guid: 7f11f35191533404c9957443a681aaee
+guid: 991552fb1f89746feb752872053e8fea
 ScriptedImporter:
   fileIDToRecycleName:
-    11400002: Assets/ML-Agents/Examples/Bullet/Demos/ExpertPush.demo
+    11400000: Assets/ML-Agents/Examples/Bullet/Demos/ExpertPush.demo
   externalObjects: {}
   userData: ' (Unity.MLAgents.Demonstrations.DemonstrationSummary)'
   assetBundleName: 

@@ -46,14 +46,18 @@ class NetworkBody(nn.Module):
             network_settings.vis_encode_type,
             normalize=self.normalize,
         )
+
+
         total_enc_size = encoder_input_size + encoded_act_size
+
+        self.self_embedding = LinearEncoder(6, 1, 64)
+        self.obs_embeding = LinearEncoder(4 + 64, 1, 64)
+        self.self_and_obs_embedding = LinearEncoder(64 + 64, 1, 64)
+        self.dense_after_attention = LinearEncoder(64, 1, 64)
+
         self.linear_encoder = LinearEncoder(
             total_enc_size, network_settings.num_layers, self.h_size
         )
-
-        self.self_embedding = LinearEncoder(6, 1, 64)
-        self.obs_embeding = LinearEncoder(4, 1, 64)
-        self.self_and_obs_embedding = LinearEncoder(64 + 64, 1, 64)
 
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)
@@ -105,37 +109,37 @@ class NetworkBody(nn.Module):
 
         # TODO : This is a Hack
         var_len_input = vis_inputs[0].reshape(-1, 20, 4)
-        key_mask = (
+        key_mask = 0 * (
             torch.sum(var_len_input ** 2, axis=2) < 0.01
         )  # 1 means mask and 0 means let though
 
-        self_encoding = processed_vec.reshape(-1, 1, processed_vec.shape[1])
-        self_encoding = self.self_embedding(self_encoding)  # (b, 64)
+        x_self = processed_vec.reshape(-1, processed_vec.shape[1])
+        x_self = self.self_embedding(x_self)  # (b, 1,64)
+        expanded_x_self = x_self.reshape(-1, 1, 64).repeat(1, 20, 1)
+        objects = torch.cat([expanded_x_self, var_len_input], dim=2)  #(b,20,68)
 
-        obs_encoding = self.obs_embeding(var_len_input)
-
-        expanded_self_encoding = self_encoding.reshape(-1, 1, 64).repeat(1, 20, 1)
-        self_and_key_emb = self.self_and_obs_embedding(
-            torch.cat([obs_encoding, expanded_self_encoding], dim=2)
-        )
+        obj_encoding = self.obs_embeding(objects)#(b,20,64)
 
         # add the self to the entities
-        self_and_key_emb = torch.cat([self_encoding, self_and_key_emb], dim=1)
+        self_and_key_emb = torch.cat([x_self.reshape(-1,1,64), obj_encoding], dim=1) #(b,21,64)
         key_mask = torch.cat(
             [torch.zeros((self_and_key_emb.shape[0], 1)), key_mask], dim=1
-        )
+        ) # first one is never masked
 
         output, _ = self.attention(
             self_and_key_emb, self_and_key_emb, self_and_key_emb, key_mask
-        )
+        )  # (b, 21, 64)
+        output = self.dense_after_attention(output) + self_and_key_emb
+
 
         output = torch.sum(
             output * (1 - key_mask).reshape(-1, 21, 1), dim=1
-        ) / torch.sum(1 - key_mask, dim=1, keepdim=True)
+        ) / torch.sum(1 - key_mask, dim=1, keepdim=True) # average pooling
 
-        # output = torch.cat([inputs, output], dim=1)
 
-        encoding = self.linear_encoder(output)
+
+        encoding = self.linear_encoder(output + x_self)
+
 
         if self.use_lstm:
             # Resize to (batch, sequence length, encoding size)

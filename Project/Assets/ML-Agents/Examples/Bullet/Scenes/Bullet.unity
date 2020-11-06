@@ -180,7 +180,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (7)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1 &255077123
 GameObject:
@@ -378,7 +384,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1001 &502449554
 PrefabInstance:
@@ -488,7 +500,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (5)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1001 &620285875
 PrefabInstance:
@@ -557,7 +575,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (2)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1001 &721353750
 PrefabInstance:
@@ -626,7 +650,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (4)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1 &1009000883
 GameObject:
@@ -828,7 +858,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (8)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1001 &1426551295
 PrefabInstance:
@@ -897,7 +933,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (3)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1 &1862116114
 GameObject:
@@ -1130,7 +1172,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea (6)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7565593112241766594, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
 --- !u!1001 &7565375909113651404
 PrefabInstance:
@@ -1214,5 +1262,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: BulletArea
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}

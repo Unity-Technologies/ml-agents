@@ -24,8 +24,6 @@ public class DodgeAgent : Agent
     BulletSettings m_BulletSettings;
 
 
-    public bool useVectorObs;
-
     Rigidbody m_AgentRb;  //cached on initialization
     Material m_GroundMaterial; //cached on Awake()
 
@@ -84,7 +82,7 @@ public class DodgeAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        
+
         sensor.AddObservation(transform.position.x - area.transform.position.x);
         sensor.AddObservation(transform.position.z - area.transform.position.z);
 

@@ -10,23 +10,23 @@ public class Bullet : MonoBehaviour
     /// <summary>
     /// The ground. The bounds are used to spawn the elements.
     /// </summary>
-    Rigidbody m_BulletRb;
+    public Rigidbody BulletRb;
     public float speed;
     void Awake()
     {
-        m_BulletRb = GetComponent<Rigidbody>();
-        //m_BulletRb.AddForce(20f*transform.forward, ForceMode.VelocityChange);
+        BulletRb = GetComponent<Rigidbody>();
+        //BulletRb.AddForce(20f*transform.forward, ForceMode.VelocityChange);
     }
 
     public void FixedUpdate()
     {
-       transform.position += transform.forward * speed; 
+       transform.position += transform.forward * speed;
     }
     public void OnCollisionEnter(Collision c)
     {
         if (c.gameObject.CompareTag("wall")){
-            //gameObject.SetActive(false); 
+            //gameObject.SetActive(false);
             Destroy(gameObject);
         }
     }
-} 
+}

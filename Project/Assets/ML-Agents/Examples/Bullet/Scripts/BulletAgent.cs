@@ -75,7 +75,7 @@ public class BulletAgent : MonoBehaviour
     public void FixedUpdate()
     {
         if (Time.time > m_BulletTime + 0.03f)
-        {            
+        {
             //var x = Random.Range(-1f * m_x, m_x) + area.transform.position.x;
             //var z = Random.Range(-1f * m_z, m_z) + area.transform.position.z;
             var r = Random.Range(0f, 360f);
@@ -92,7 +92,7 @@ public class BulletAgent : MonoBehaviour
 
             Quaternion rotation = Quaternion.Euler(0, r, 0);
             //Quaternion rotation = Quaternion.LookRotation(m_center - pos);
-            var ob = Instantiate(m_BulletRb, pos, rotation); 
+            var ob = Instantiate(m_BulletRb, pos, rotation, area.transform);
             m_currX = x;
             m_currZ = z;
     //        ob.GetComponent<Rigidbody>().AddForce(20f*ob.transform.forward, ForceMode.VelocityChange);
@@ -100,4 +100,4 @@ public class BulletAgent : MonoBehaviour
 
         }
     }
-} 
+}
