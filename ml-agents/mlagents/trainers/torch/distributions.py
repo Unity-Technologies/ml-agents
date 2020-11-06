@@ -1,5 +1,5 @@
 import abc
-from typing import List, Tuple
+from typing import List
 from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
@@ -171,9 +171,9 @@ class GaussianDistribution(nn.Module):
             # verified version of Barracuda (1.0.2).
             log_sigma = torch.cat([self.log_sigma] * inputs.shape[0], axis=0)
         if self.tanh_squash:
-            return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
+            return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
-            return [GaussianDistInstance(mu, torch.exp(log_sigma))]
+            return GaussianDistInstance(mu, torch.exp(log_sigma))
 
 
 class MultiCategoricalDistribution(nn.Module):
