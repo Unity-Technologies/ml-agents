@@ -463,7 +463,7 @@ class ModelUtils:
     @staticmethod
     def get_probs_and_entropy(
         action_list: List[torch.Tensor], dists: List[DistInstance]
-    ) -> Tuple[List[torch.Tensor], torch.Tensor, Optional[torch.Tensor]]:
+    ) -> Tuple[List[torch.Tensor], torch.Tensor, Optional[List[torch.Tensor]]]:
         log_probs_list = []
         all_probs_list = []
         entropies_list = []
@@ -474,10 +474,7 @@ class ModelUtils:
             entropies_list.append(entropy)
             if isinstance(action_dist, DiscreteDistInstance):
                 all_probs_list.append(action_dist.all_log_prob())
-        print(entropies_list)
-        entropies = torch.stack(entropies_list, dim=-1)
-        if not all_probs_list:
-            entropies = entropies.squeeze(-1)
+        entropies = torch.cat(entropies_list, dim=1)
         return log_probs_list, entropies, all_probs_list
 
     @staticmethod

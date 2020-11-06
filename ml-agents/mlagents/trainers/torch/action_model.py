@@ -1,12 +1,7 @@
-import abc
 from typing import List, Tuple
 from mlagents.torch_utils import torch, nn
-import numpy as np
-import math
-from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.torch.distributions import (
     DistInstance,
-    DiscreteDistInstance,
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
@@ -59,7 +54,7 @@ class ActionModel(nn.Module):
 
     def _get_dists(
         self, inputs: torch.Tensor, masks: torch.Tensor
-    ) -> Tuple[List[DistInstance], List[DiscreteDistInstance]]:
+    ) -> List[DistInstance]:
         distribution_instances: List[DistInstance] = []
         for distribution in self._distributions:
             dist_instances = distribution(inputs, masks)
@@ -98,4 +93,4 @@ class ActionModel(nn.Module):
         )
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
-        return (actions, log_probs, entropies)
+        return (actions, log_probs, entropy_sum)
