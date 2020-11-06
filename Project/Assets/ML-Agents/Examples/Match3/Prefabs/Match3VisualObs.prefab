@@ -112,7 +112,7 @@ MonoBehaviour:
   Board: {fileID: 0}
   MoveTime: 0.25
   MaxMoves: 500
-  UseSmartHeuristic: 0
+  HeuristicQuality: 0
 --- !u!114 &3019509692332007778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,8 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMoveIndex: -1
-  initialized: 0
-  clearDict: 0
   cubeSpacing: 1.25
   board: {fileID: 3019509692332007776}
   tilePrefab: {fileID: 4007900521885639951, guid: faee4e805953b49e688bd00b45c55f2e,
