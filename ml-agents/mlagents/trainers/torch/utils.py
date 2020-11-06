@@ -474,6 +474,7 @@ class ModelUtils:
             entropies_list.append(entropy)
             if isinstance(action_dist, DiscreteDistInstance):
                 all_probs_list.append(action_dist.all_log_prob())
+        print(entropies_list)
         entropies = torch.stack(entropies_list, dim=-1)
         if not all_probs_list:
             entropies = entropies.squeeze(-1)

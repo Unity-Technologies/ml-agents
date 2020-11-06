@@ -40,28 +40,33 @@ class SimpleEnvironment(BaseEnv):
     def __init__(
         self,
         brain_names,
-        use_discrete,
         step_size=STEP_SIZE,
         num_visual=0,
         num_vector=1,
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
-        action_size=1,
+        continuous_action_size=1,
+        discrete_action_size=1,
     ):
         super().__init__()
-        self.discrete = use_discrete
         self.num_visual = num_visual
         self.num_vector = num_vector
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
-        if use_discrete:
-            action_spec = ActionSpec.create_discrete(
-                tuple(2 for _ in range(action_size))
-            )
+
+        discrete_tuple = tuple(2 for _ in range(discrete_action_size))
+        if continuous_action_size > 0:
+            if discrete_action_size > 0:
+                action_spec = ActionSpec(continuous_action_size, discrete_tuple)
+            else:
+                action_spec = ActionSpec.create_continuous(continuous_action_size)
         else:
-            action_spec = ActionSpec.create_continuous(action_size)
+            action_spec = ActionSpec.create_discrete(discrete_tuple)
+        self.total_action_size = (
+            continuous_action_size + discrete_action_size
+        )  # to set the goals/positions
+        self.action_spec = action_spec
         self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
-        self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
         self.step_count: Dict[str, float] = {}
@@ -134,13 +139,14 @@ class SimpleEnvironment(BaseEnv):
         return done
 
     def _generate_mask(self):
-        if self.discrete:
+        action_mask = None
+        if self.action_spec.discrete_size > 0:
             # LL-Python API will return an empty dim if there is only 1 agent.
-            ndmask = np.array(2 * self.action_size * [False], dtype=np.bool)
+            ndmask = np.array(
+                2 * self.action_spec.discrete_size * [False], dtype=np.bool
+            )
             ndmask = np.expand_dims(ndmask, axis=0)
             action_mask = [ndmask]
-        else:
-            action_mask = None
         return action_mask
 
     def _compute_reward(self, name: str, done: bool) -> float:
@@ -156,7 +162,7 @@ class SimpleEnvironment(BaseEnv):
 
     def _reset_agent(self, name):
         self.goal[name] = self.random.choice([-1, 1])
-        self.positions[name] = [0.0 for _ in range(self.action_size)]
+        self.positions[name] = [0.0 for _ in range(self.total_action_size)]
         self.step_count[name] = 0
         self.rewards[name] = 0
         self.agent_id[name] = self.agent_id[name] + 1
@@ -218,98 +224,6 @@ class SimpleEnvironment(BaseEnv):
 
     def close(self):
         pass
-
-
-class HybridEnvironment(SimpleEnvironment):
-    def __init__(
-        self,
-        brain_names,
-        step_size=STEP_SIZE,
-        num_visual=0,
-        num_vector=1,
-        vis_obs_size=VIS_OBS_SIZE,
-        vec_obs_size=OBS_SIZE,
-        continuous_action_size=1,
-        discrete_action_size=1,
-    ):
-        super().__init__(brain_names, False)
-        self.continuous_env = SimpleEnvironment(
-            brain_names,
-            False,
-            step_size,
-            num_visual,
-            num_vector,
-            vis_obs_size,
-            vec_obs_size,
-            continuous_action_size,
-        )
-        self.discrete_env = SimpleEnvironment(
-            brain_names,
-            True,
-            step_size,
-            num_visual,
-            num_vector,
-            vis_obs_size,
-            vec_obs_size,
-            discrete_action_size,
-        )
-        super().__init__(
-            brain_names,
-            True,  # This is needed for env to generate masks correctly
-            step_size=step_size,
-            num_visual=num_visual,
-            num_vector=num_vector,
-            action_size=discrete_action_size,  # This is needed for env to generate masks correctly
-        )
-        # Number of steps to reveal the goal for. Lower is harder. Should be
-        # less than 1/step_size to force agent to use memory
-        self.behavior_spec = BehaviorSpec(
-            self._make_obs_spec(),
-            ActionSpec(
-                continuous_action_size, tuple(2 for _ in range(discrete_action_size))
-            ),
-        )
-        self.continuous_action_size = continuous_action_size
-        self.discrete_action_size = discrete_action_size
-        self.continuous_action = {}
-        self.discrete_action = {}
-
-    def step(self) -> None:
-        assert all(action is not None for action in self.continuous_env.action.values())
-        assert all(action is not None for action in self.discrete_env.action.values())
-        for name in self.names:
-            cont_done = self.continuous_env._take_action(name)
-            disc_done = self.discrete_env._take_action(name)
-
-            all_done = cont_done and disc_done
-            if all_done:
-                reward = 0
-                for _pos in (
-                    self.continuous_env.positions[name]
-                    + self.discrete_env.positions[name]
-                ):
-                    reward += (SUCCESS_REWARD * _pos * self.goal[name]) / len(
-                        self.continuous_env.positions[name]
-                        + self.discrete_env.positions[name]
-                    )
-            else:
-                reward = -TIME_PENALTY
-            self.rewards[name] += reward
-            self.step_result[name] = self._make_batched_step(name, all_done, reward)
-
-    def reset(self) -> None:  # type: ignore
-        super().reset()
-        self.continuous_env.reset()
-        self.discrete_env.reset()
-        self.continuous_env.goal = self.goal
-        self.discrete_env.goal = self.goal
-
-    def set_actions(self, behavior_name: BehaviorName, action) -> None:
-        # print(action, self.goal[behavior_name])
-        continuous_action = action[:, : self.continuous_action_size]
-        discrete_action = action[:, self.continuous_action_size :]
-        self.continuous_env.set_actions(behavior_name, continuous_action)
-        self.discrete_env.set_actions(behavior_name, discrete_action)
 
 
 class MemoryEnvironment(SimpleEnvironment):

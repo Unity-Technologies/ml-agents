@@ -196,7 +196,7 @@ class ActorCritic(Actor):
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
     ) -> Tuple[
-        List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
     ]:
         """
         Returns distributions, from which actions can be sampled, and value estimates.
@@ -206,7 +206,7 @@ class ActorCritic(Actor):
         :param masks: If using discrete actions, a Tensor of action masks.
         :param memories: If using memory, a Tensor of initial memories.
         :param sequence_length: If using memory, the sequence length.
-        :return: A Tuple of a List of action distribution instances, a Dict of reward signal
+        :return: A Tuple of AgentAction, ActionLogProbs, entropies, Dict of reward signal
             name to value estimate, and memories. Memories will be None if not using memory.
         """
         pass

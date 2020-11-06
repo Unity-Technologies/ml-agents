@@ -39,13 +39,6 @@ class DistInstance(nn.Module, abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
-    def structure_action(self, action: torch.Tensor) -> torch.Tensor:
-        """
-        Return the structured action to be passed to the trainer
-        """
-        pass
-
 
 class DiscreteDistInstance(DistInstance):
     @abc.abstractmethod
@@ -84,9 +77,6 @@ class GaussianDistInstance(DistInstance):
 
     def exported_model_output(self):
         return self.sample()
-
-    def structure_action(self, action):
-        return action[:, :, 0]
 
 
 class TanhGaussianDistInstance(GaussianDistInstance):
@@ -128,7 +118,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         ).squeeze(-1)
 
     def log_prob(self, value):
-        return torch.log(self.pdf(value)).unsqueeze(-1)
+        return torch.log(self.pdf(value))
 
     def all_log_prob(self):
         return torch.log(self.probs)
@@ -138,9 +128,6 @@ class CategoricalDistInstance(DiscreteDistInstance):
 
     def exported_model_output(self):
         return self.all_log_prob()
-
-    def structure_action(self, action):
-        return action[:, 0, :].type(torch.float)
 
 
 class GaussianDistribution(nn.Module):
