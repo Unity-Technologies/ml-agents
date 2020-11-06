@@ -3,13 +3,12 @@ using UnityEngine;
 
 namespace Unity.MLAgentsExamples
 {
-
-
     public class Match3Board : AbstractBoard
     {
         public int RandomSeed = -1;
 
         public const int k_EmptyCell = -1;
+
         [Tooltip("Points earned for clearing a basic cell (cube)")]
         public int BasicCellPoints = 1;
 
@@ -23,7 +22,6 @@ namespace Unity.MLAgentsExamples
         bool[,] m_Matched;
 
         System.Random m_Random;
-        public GameObject tilePrefab;
 
         void Awake()
         {
@@ -41,6 +39,7 @@ namespace Unity.MLAgentsExamples
             {
                 return false;
             }
+
             var originalValue = m_Cells[move.Column, move.Row];
             var (otherRow, otherCol) = move.OtherCell();
             var destinationValue = m_Cells[otherCol, otherRow];
@@ -227,6 +226,7 @@ namespace Unity.MLAgentsExamples
                 {
                     return;
                 }
+
                 ClearMatchedCells();
                 DropCells();
                 FillFromAbove();
@@ -268,6 +268,5 @@ namespace Unity.MLAgentsExamples
 
             return 0;
         }
-
     }
 }

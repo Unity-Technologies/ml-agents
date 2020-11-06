@@ -112,6 +112,7 @@ MonoBehaviour:
   Board: {fileID: 0}
   MoveTime: 0.25
   MaxMoves: 500
+  UseSmartHeuristic: 0
 --- !u!114 &3019509692332007778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,7 +125,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abebb7ad4a5547d7a3b04373784ff195, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugEdgeIndex: -1
+  DebugMoveIndex: -1
+  initialized: 0
+  clearDict: 0
+  cubeSpacing: 1.25
+  board: {fileID: 3019509692332007776}
+  tilePrefab: {fileID: 4007900521885639951, guid: faee4e805953b49e688bd00b45c55f2e,
+    type: 3}
 --- !u!114 &3019509692332007776
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,6 +149,9 @@ MonoBehaviour:
   NumCellTypes: 6
   NumSpecialTypes: 2
   RandomSeed: -1
+  BasicCellPoints: 1
+  SpecialCell1Points: 2
+  SpecialCell2Points: 3
 --- !u!114 &3019509692332007780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,7 +164,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08e4b0da54cb4d56bfcbae22dd49ab8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ForceRandom: 0
+  ActuatorName: Match3 Actuator
+  ForceHeuristic: 0
 --- !u!114 &3019509692332007783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,4 +178,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530d2f105aa145bd8a00e021bdd925fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SensorName: Match3 Sensor
   ObservationType: 2

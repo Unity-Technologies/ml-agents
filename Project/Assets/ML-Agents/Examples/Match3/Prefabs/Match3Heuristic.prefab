@@ -95,6 +95,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DebugMoveIndex: -1
+  initialized: 0
+  clearDict: 0
+  cubeSpacing: 1
+  board: {fileID: 3508723250470608009}
+  tilePrefab: {fileID: 4007900521885639951, guid: faee4e805953b49e688bd00b45c55f2e,
+    type: 3}
 --- !u!114 &3508723250470608009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -115,15 +121,6 @@ MonoBehaviour:
   BasicCellPoints: 1
   SpecialCell1Points: 2
   SpecialCell2Points: 3
-  blankTile: {fileID: 3251703721175616677, guid: 82b3e1bc60b7c43ecb8064ae5a16be4c,
-    type: 3}
-  tilePrefabs:
-  - {fileID: 3910438845973505164, guid: ef950c03f9af8491c9e000d050551f2c, type: 3}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &3508723250470608013
 MonoBehaviour:
   m_ObjectHideFlags: 0
