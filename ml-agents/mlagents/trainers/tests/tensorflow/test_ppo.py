@@ -20,6 +20,8 @@ from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disabl
     ppo_dummy_config,
 )
 
+from mlagents_envs.base_env import ActionSpec
+
 
 @pytest.fixture
 def dummy_config():
@@ -31,6 +33,9 @@ VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
+
+CONTINUOUS_ACTION_SPEC = ActionSpec.create_continuous(VECTOR_ACTION_SPACE)
+DISCRETE_ACTION_SPEC = ActionSpec.create_discrete(tuple(DISCRETE_ACTION_SPACE))
 
 
 def _create_ppo_optimizer_ops_mock(dummy_config, use_rnn, use_discrete, use_visual):
@@ -163,8 +168,7 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
         length=time_horizon,
         observation_shapes=optimizer.policy.behavior_spec.observation_shapes,
         max_step_complete=True,
-        action_space=DISCRETE_ACTION_SPACE if discrete else VECTOR_ACTION_SPACE,
-        is_discrete=discrete,
+        action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
     )
     run_out, final_value_out = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False
@@ -284,7 +288,7 @@ def test_process_trajectory(dummy_config):
         length=time_horizon,
         observation_shapes=behavior_spec.observation_shapes,
         max_step_complete=True,
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()
@@ -308,7 +312,7 @@ def test_process_trajectory(dummy_config):
         length=time_horizon + 1,
         max_step_complete=False,
         observation_shapes=behavior_spec.observation_shapes,
-        action_space=[2],
+        action_spec=behavior_spec.action_spec,
     )
     trajectory_queue.put(trajectory)
     trainer.advance()

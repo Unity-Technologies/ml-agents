@@ -6,7 +6,7 @@ from gym import spaces
 from gym_unity.envs import UnityToGymWrapper
 from mlagents_envs.base_env import (
     BehaviorSpec,
-    ActionType,
+    ActionSpec,
     DecisionSteps,
     TerminalSteps,
     BehaviorMapping,
@@ -211,22 +211,22 @@ def create_mock_group_spec(
     Creates a mock BrainParameters object with parameters.
     """
     # Avoid using mutable object as default param
-    act_type = ActionType.DISCRETE
     if vector_action_space_type == "continuous":
-        act_type = ActionType.CONTINUOUS
         if vector_action_space_size is None:
             vector_action_space_size = 2
         else:
             vector_action_space_size = vector_action_space_size[0]
+        action_spec = ActionSpec.create_continuous(vector_action_space_size)
     else:
         if vector_action_space_size is None:
             vector_action_space_size = (2,)
         else:
             vector_action_space_size = tuple(vector_action_space_size)
+        action_spec = ActionSpec.create_discrete(vector_action_space_size)
     obs_shapes = [(vector_observation_space_size,)]
     for _ in range(number_visual_observations):
         obs_shapes += [(8, 8, 3)]
-    return BehaviorSpec(obs_shapes, act_type, vector_action_space_size)
+    return BehaviorSpec(obs_shapes, action_spec)
 
 
 def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):

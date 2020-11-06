@@ -63,13 +63,14 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6",
         "pyyaml>=3.1.0",
-        "tensorflow>=1.14,<3.0",
-        "cattrs>=1.0.0",
+        # Windows ver. of PyTorch doesn't work from PyPi. Installation:
+        # https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Installation.md#windows-installing-pytorch
+        'torch>=1.6.0,<1.8.0;platform_system!="Windows"',
+        "tensorboard>=1.15",
+        # cattrs 1.1.0 dropped support for python 3.6.
+        "cattrs>=1.0.0,<1.1.0",
         "attrs>=19.3.0",
         'pypiwin32==223;platform_system=="Windows"',
-        # We don't actually need six, but tensorflow does, and pip seems
-        # to get confused and install the wrong version.
-        "six>=1.12.0",
     ],
     python_requires=">=3.6.1",
     entry_points={
@@ -79,5 +80,5 @@ setup(
         ]
     },
     cmdclass={"verify": VerifyVersionCommand},
-    extras_require={"torch": ["torch>=1.5.0"]},
+    extras_require={"tensorflow": ["tensorflow>=1.14,<3.0", "six>=1.12.0"]},
 )

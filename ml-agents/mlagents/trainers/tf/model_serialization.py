@@ -40,9 +40,7 @@ POSSIBLE_INPUT_NODES = frozenset(
     ]
 )
 
-POSSIBLE_OUTPUT_NODES = frozenset(
-    ["action", "action_probs", "recurrent_out", "value_estimate"]
-)
+POSSIBLE_OUTPUT_NODES = frozenset(["action", "recurrent_out", "value_estimate"])
 
 MODEL_CONSTANTS = frozenset(
     [

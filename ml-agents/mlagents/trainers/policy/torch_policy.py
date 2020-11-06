@@ -16,7 +16,8 @@ from mlagents.trainers.torch.networks import (
     SeparateActorCritic,
     GlobalSteps,
 )
-from mlagents.trainers.torch.utils import ModelUtils
+
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 
@@ -72,7 +73,7 @@ class TorchPolicy(Policy):
         self.actor_critic = ac_class(
             observation_shapes=self.behavior_spec.observation_shapes,
             network_settings=trainer_settings.network_settings,
-            action_spec=self.behavior_spec.action_spec,
+            action_spec=behavior_spec.action_spec,
             stream_names=reward_signal_names,
             conditional_sigma=self.condition_sigma_on_obs,
             tanh_squash=tanh_squash,
@@ -97,12 +98,12 @@ class TorchPolicy(Policy):
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
-        if self.discrete_act_size > 0:
-            mask = torch.ones([len(decision_requests), np.sum(self.discrete_act_branches)])
-        if decision_requests.action_mask is not None:
-            mask = torch.as_tensor(
-                1 - np.concatenate(decision_requests.action_mask, axis=1)
-            )
+        if not self.use_continuous_act:
+            mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
+            if decision_requests.action_mask is not None:
+                mask = torch.as_tensor(
+                    1 - np.concatenate(decision_requests.action_mask, axis=1)
+                )
         return vec_vis_obs, mask
 
     def update_normalization(self, vector_obs: np.ndarray) -> None:
@@ -122,38 +123,70 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-        all_log_probs: bool = False,
     ) -> Tuple[
-        torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
     ]:
         """
-        :param all_log_probs: Returns (for discrete actions) a tensor of log probs, one for each action.
+        :param vec_obs: List of vector observations.
+        :param vis_obs: List of visual observations.
+        :param masks: Loss masks for RNN, else None.
+        :param memories: Input memories when using RNN, else None.
+        :param seq_len: Sequence length when using RNN.
+        :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
         actions, log_probs, entropies, value_heads, memories = self.actor_critic.get_action_stats_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        return (
-            actions,
-            log_probs,
-            entropies,
-            value_heads,
-            memories,
-        )
+        return (actions, log_probs, entropies, value_heads, memories)
+
+    # if memories is None:
+    #     dists, memories = self.actor_critic.get_dists(
+    #         vec_obs, vis_obs, masks, memories, seq_len
+    #     )
+    # else:
+    #     # If we're using LSTM. we need to execute the values to get the critic memories
+    #     dists, _, memories = self.actor_critic.get_dist_and_value(
+    #         vec_obs, vis_obs, masks, memories, seq_len
+    #     )
+    # action_list = self.actor_critic.sample_action(dists)
+    # log_probs_list, entropies, all_logs_list = ModelUtils.get_probs_and_entropy(
+    #     action_list, dists
+    # )
+    # actions = AgentAction.create(action_list, self.behavior_spec.action_spec)
+    # log_probs = ActionLogProbs.create(
+    #     log_probs_list, self.behavior_spec.action_spec, all_logs_list
+    # )
+    # # Use the sum of entropy across actions, not the mean
+    # entropy_sum = torch.sum(entropies, dim=1)
+    # return (actions, log_probs, entropy_sum, memories)
 
     def evaluate_actions(
         self,
         vec_obs: torch.Tensor,
         vis_obs: torch.Tensor,
-        actions: torch.Tensor,
+        actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
-
+    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         log_probs, entropies, value_heads = self.actor_critic.get_stats_and_value(
             vec_obs, vis_obs, actions, masks, memories, seq_len
         )
         return log_probs, entropies, value_heads
+
+        # dists, value_heads, _ = self.actor_critic.get_dist_and_value(
+        #    vec_obs, vis_obs, masks, memories, seq_len
+        # )
+        # action_list = actions.to_tensor_list()
+        # log_probs_list, entropies, _ = ModelUtils.get_probs_and_entropy(
+        #    action_list, dists
+        # )
+        # log_probs = ActionLogProbs.create(
+        #    log_probs_list, self.behavior_spec.action_spec
+        # )
+        ## Use the sum of entropy across actions, not the mean
+        # entropy_sum = torch.sum(entropies, dim=1)
+        # return log_probs, entropy_sum, value_heads
 
     @timed
     def evaluate(
@@ -179,10 +212,13 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        # Todo - make pre_action difference
-        run_out["pre_action"] = ModelUtils.to_numpy(action)
-        run_out["action"] = ModelUtils.to_numpy(action)
-        run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
+        run_out["action"] = action.to_numpy_dict()
+        run_out["pre_action"] = (
+            action.to_numpy_dict()["continuous_action"]
+            if self.use_continuous_act
+            else None
+        )  # Todo - make pre_action difference
+        run_out["log_probs"] = log_probs.to_numpy_dict()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["value_heads"] = {
             name: ModelUtils.to_numpy(t) for name, t in value_heads.items()

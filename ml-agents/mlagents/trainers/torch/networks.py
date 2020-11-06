@@ -4,10 +4,9 @@ import abc
 from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionSpec
-from mlagents.trainers.torch.distributions import DistInstance
 from mlagents.trainers.torch.action_model import ActionModel
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
@@ -196,7 +195,9 @@ class ActorCritic(Actor):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        List[DistInstance], List[DistInstance], Dict[str, torch.Tensor], torch.Tensor
+    ]:
         """
         Returns distributions, from which actions can be sampled, and value estimates.
         If memory is enabled, return the memories as well.
@@ -224,20 +225,24 @@ class SimpleActor(nn.Module, Actor):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        action_spec: ActionSpec, 
+        action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
         super().__init__()
-        self.discrete_act_size = action_spec.discrete_action_size
-        self.discrete_act_branches = action_spec.discrete_action_branches
-        self.continuous_act_size = action_spec.continuous_action_size
+        self.action_spec = action_spec
         self.version_number = torch.nn.Parameter(torch.Tensor([2.0]))
-        self.act_size_vector = torch.nn.Parameter(
-            torch.Tensor(action_spec.action_size)
-        )
         self.is_continuous_int = torch.nn.Parameter(
-            torch.Tensor([int(self.continuous_act_size > 0)])
+            torch.Tensor([int(self.action_spec.is_continuous())])
+        )
+        self.act_size_vector = torch.nn.Parameter(
+            torch.Tensor(
+                [
+                    self.action_spec.continuous_size
+                    + sum(self.action_spec.discrete_branches)
+                ]
+            ),
+            requires_grad=False,
         )
         self.network_body = NetworkBody(observation_shapes, network_settings)
         if network_settings.memory is not None:
@@ -289,7 +294,7 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        action_spec: ActionSpec, 
+        action_spec: ActionSpec,
         stream_names: List[str],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
@@ -321,11 +326,11 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
-        actions: torch.Tensor,
+        actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
         )
@@ -340,7 +345,9 @@ class SharedActorCritic(SimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
 
         encoding, memories = self.network_body(
             vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
@@ -355,7 +362,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         observation_shapes: List[Tuple[int, ...]],
         network_settings: NetworkSettings,
-        action_spec: ActionSpec, 
+        action_spec: ActionSpec,
         stream_names: List[str],
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
@@ -400,11 +407,11 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         self,
         vec_inputs: List[torch.Tensor],
         vis_inputs: List[torch.Tensor],
-        actions: torch.Tensor,
+        actions: AgentAction,
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor, Dict[str, torch.Tensor]]:
+    ) -> Tuple[ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor]]:
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
@@ -416,7 +423,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         value_outputs, critic_mem_outs = self.critic(
-        vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
 
         return log_probs, entropies, value_outputs
@@ -428,7 +435,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         sequence_length: int = 1,
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor]:
+    ) -> Tuple[
+        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
+    ]:
         if self.use_lstm:
             # Use only the back half of memories for critic and actor
             actor_mem, critic_mem = torch.split(memories, self.memory_size // 2, dim=-1)
@@ -440,7 +449,7 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         )
         action, log_probs, entropies = self.action_model(encoding, masks)
         value_outputs, critic_mem_outs = self.critic(
-        vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
+            vec_inputs, vis_inputs, memories=critic_mem, sequence_length=sequence_length
         )
         if self.use_lstm:
             mem_out = torch.cat([actor_mem_outs, critic_mem_outs], dim=-1)
@@ -448,25 +457,26 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
             mem_out = None
         return action, log_probs, entropies, value_outputs, mem_out
 
+
 class GlobalSteps(nn.Module):
-   def __init__(self):
-       super().__init__()
-       self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+    def __init__(self):
+        super().__init__()
+        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
 
-   @property
-   def current_step(self):
-       return int(self.__global_step.item())
+    @property
+    def current_step(self):
+        return int(self.__global_step.item())
 
-   @current_step.setter
-   def current_step(self, value):
-       self.__global_step[:] = value
+    @current_step.setter
+    def current_step(self, value):
+        self.__global_step[:] = value
 
-   def increment(self, value):
-       self.__global_step += value
+    def increment(self, value):
+        self.__global_step += value
 
 
 class LearningRate(nn.Module):
-   def __init__(self, lr):
-       # Todo: add learning rate decay
-       super().__init__()
-       self.learning_rate = torch.Tensor([lr])
+    def __init__(self, lr):
+        # Todo: add learning rate decay
+        super().__init__()
+        self.learning_rate = torch.Tensor([lr])

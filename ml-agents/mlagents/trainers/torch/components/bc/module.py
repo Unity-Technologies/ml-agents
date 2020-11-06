@@ -5,7 +5,7 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 
 
 class BCModule:
@@ -98,12 +98,20 @@ class BCModule:
         update_stats = {"Losses/Pretraining Loss": np.mean(batch_losses)}
         return update_stats
 
-    def _behavioral_cloning_loss(self, selected_actions, log_probs, expert_actions):
+    def _behavioral_cloning_loss(
+        self,
+        selected_actions: AgentAction,
+        log_probs: ActionLogProbs,
+        expert_actions: torch.Tensor,
+    ) -> torch.Tensor:
         if self.policy.use_continuous_act:
-            bc_loss = torch.nn.functional.mse_loss(selected_actions, expert_actions)
+            bc_loss = torch.nn.functional.mse_loss(
+                selected_actions.continuous_tensor, expert_actions
+            )
         else:
             log_prob_branches = ModelUtils.break_into_branches(
-                log_probs, self.policy.act_size
+                log_probs.all_discrete_tensor,
+                self.policy.behavior_spec.action_spec.discrete_branches,
             )
             bc_loss = torch.mean(
                 torch.stack(
@@ -130,10 +138,12 @@ class BCModule:
         vec_obs = [ModelUtils.list_to_tensor(mini_batch_demo["vector_obs"])]
         act_masks = None
         if self.policy.use_continuous_act:
-            expert_actions = ModelUtils.list_to_tensor(mini_batch_demo["actions"])
+            expert_actions = ModelUtils.list_to_tensor(
+                mini_batch_demo["continuous_action"]
+            )
         else:
             raw_expert_actions = ModelUtils.list_to_tensor(
-                mini_batch_demo["actions"], dtype=torch.long
+                mini_batch_demo["discrete_action"], dtype=torch.long
             )
             expert_actions = ModelUtils.actions_to_onehot(
                 raw_expert_actions, self.policy.act_size
@@ -142,7 +152,7 @@ class BCModule:
                 np.ones(
                     (
                         self.n_sequences * self.policy.sequence_length,
-                        sum(self.policy.behavior_spec.discrete_action_branches),
+                        sum(self.policy.behavior_spec.action_spec.discrete_branches),
                     ),
                     dtype=np.float32,
                 )
@@ -164,16 +174,15 @@ class BCModule:
         else:
             vis_obs = []
 
-        selected_actions, all_log_probs, _, _ = self.policy.sample_actions(
+        selected_actions, log_probs, _, _ = self.policy.sample_actions(
             vec_obs,
             vis_obs,
             masks=act_masks,
             memories=memories,
             seq_len=self.policy.sequence_length,
-            all_log_probs=True,
         )
         bc_loss = self._behavioral_cloning_loss(
-            selected_actions, all_log_probs, expert_actions
+            selected_actions, log_probs, expert_actions
         )
         self.optimizer.zero_grad()
         bc_loss.backward()

@@ -4,11 +4,11 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
+    ActionBuffers,
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
-    ActionType,
     BehaviorMapping,
     BehaviorName,
     ActionBuffer,
@@ -54,15 +54,13 @@ class SimpleEnvironment(BaseEnv):
         self.num_vector = num_vector
         self.vis_obs_size = vis_obs_size
         self.vec_obs_size = vec_obs_size
-        action_type = ActionType.DISCRETE if use_discrete else ActionType.CONTINUOUS
         if use_discrete:
-            self.behavior_spec = BehaviorSpec(
-                self._make_obs_spec(), ActionSpec(0, tuple(2 for _ in range(action_size)))
+            action_spec = ActionSpec.create_discrete(
+                tuple(2 for _ in range(action_size))
             )
         else:
-            self.behavior_spec = BehaviorSpec(
-                self._make_obs_spec(), ActionSpec(action_size, tuple())
-            )
+            action_spec = ActionSpec.create_continuous(action_size)
+        self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
         self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
@@ -119,11 +117,13 @@ class SimpleEnvironment(BaseEnv):
 
     def _take_action(self, name: str) -> bool:
         deltas = []
-        for _act in self.action[name][0]:
-            if self.discrete:
-                deltas.append(1 if _act else -1)
-            else:
-                deltas.append(_act)
+        _act = self.action[name]
+        if _act.discrete is not None:
+            for _disc in _act.discrete[0]:
+                deltas.append(1 if _disc else -1)
+        if _act.continuous is not None:
+            for _cont in _act.continuous[0]:
+                deltas.append(_cont)
         for i, _delta in enumerate(deltas):
             _delta = clamp(_delta, -self.step_size, self.step_size)
             self.positions[name][i] += _delta
@@ -265,7 +265,9 @@ class HybridEnvironment(SimpleEnvironment):
         # less than 1/step_size to force agent to use memory
         self.behavior_spec = BehaviorSpec(
             self._make_obs_spec(),
-            ActionSpec(continuous_action_size, tuple(2 for _ in range(discrete_action_size))),
+            ActionSpec(
+                continuous_action_size, tuple(2 for _ in range(discrete_action_size))
+            ),
         )
         self.continuous_action_size = continuous_action_size
         self.discrete_action_size = discrete_action_size
@@ -376,8 +378,12 @@ class RecordEnvironment(SimpleEnvironment):
     def step(self) -> None:
         super().step()
         for name in self.names:
+            if self.discrete:
+                action = self.action[name].discrete
+            else:
+                action = self.action[name].continuous
             self.demonstration_protos[name] += proto_from_steps_and_action(
-                self.step_result[name][0], self.step_result[name][1], self.action[name]
+                self.step_result[name][0], self.step_result[name][1], action
             )
             self.demonstration_protos[name] = self.demonstration_protos[name][
                 -self.n_demos :
@@ -388,7 +394,11 @@ class RecordEnvironment(SimpleEnvironment):
         for _ in range(self.n_demos):
             for name in self.names:
                 if self.discrete:
-                    self.action[name] = [[1]] if self.goal[name] > 0 else [[0]]
+                    self.action[name] = ActionBuffers(
+                        [[]], np.array([[1]] if self.goal[name] > 0 else [[0]])
+                    )
                 else:
-                    self.action[name] = [[float(self.goal[name])]]
+                    self.action[name] = ActionBuffers(
+                        np.array([[float(self.goal[name])]]), [[]]
+                    )
             self.step()

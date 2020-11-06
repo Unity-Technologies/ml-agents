@@ -97,7 +97,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         PPO_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=700,
+        max_steps=900,
         summary_freq=100,
     )
     # The number of steps is pretty small for these encoders
@@ -206,7 +206,7 @@ def test_recurrent_sac(use_discrete):
     )
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters,
-        batch_size=128,
+        batch_size=256,
         learning_rate=1e-3,
         buffer_init_steps=1000,
         steps_per_update=2,
@@ -215,7 +215,7 @@ def test_recurrent_sac(use_discrete):
         SAC_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_networksettings,
-        max_steps=5000,
+        max_steps=2000,
     )
     check_environment_trains(env, {BRAIN_NAME: config})
 

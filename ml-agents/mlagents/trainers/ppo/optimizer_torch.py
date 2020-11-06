@@ -7,7 +7,7 @@ from mlagents_envs.timers import timed
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.settings import TrainerSettings, PPOSettings
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 
 
 class TorchPPOOptimizer(TorchOptimizer):
@@ -102,7 +102,6 @@ class TorchPPOOptimizer(TorchOptimizer):
         advantage = advantages.unsqueeze(-1)
 
         decay_epsilon = self.hyperparameters.epsilon
-
         r_theta = torch.exp(log_probs - old_log_probs)
         p_opt_a = r_theta * advantage
         p_opt_b = (
@@ -135,8 +134,7 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
         act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        actions = ModelUtils.list_to_tensor(batch["actions"]).unsqueeze(-1)
-        #discrete_actions = ModelUtils.list_to_tensor(batch["actions"][self.policy.continuous_act_size:], dtype=torch.long)
+        actions = AgentAction.from_dict(batch)
 
         memories = [
             ModelUtils.list_to_tensor(batch["memory"][i])
@@ -163,6 +161,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             memories=memories,
             seq_len=self.policy.sequence_length,
         )
+        old_log_probs = ActionLogProbs.from_dict(batch).flatten()
+        log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
         value_loss = self.ppo_value_loss(
             values, old_values, returns, decay_eps, loss_masks
@@ -170,7 +170,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         policy_loss = self.ppo_policy_loss(
             ModelUtils.list_to_tensor(batch["advantages"]),
             log_probs,
-            ModelUtils.list_to_tensor(batch["action_probs"]),
+            old_log_probs,
             loss_masks,
         )
         loss = (
@@ -186,7 +186,9 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.optimizer.step()
         update_stats = {
-            "Losses/Policy Loss": policy_loss.item(),
+            # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
+            # TODO: After PyTorch is default, change to something more correct.
+            "Losses/Policy Loss": torch.abs(policy_loss).item(),
             "Losses/Value Loss": value_loss.item(),
             "Policy/Learning Rate": decay_lr,
             "Policy/Epsilon": decay_eps,
