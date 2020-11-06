@@ -690,6 +690,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Match3SmartHeuristic
       objectReference: {fileID: 0}
+    - target: {fileID: 3508723250774301855, guid: 2fafdcd0587684641b03b11f04454f1b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3508723250774301920, guid: 2fafdcd0587684641b03b11f04454f1b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1716,6 +1721,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Match3VisualObs
+      objectReference: {fileID: 0}
+    - target: {fileID: 3019509691567202678, guid: aaa471bd5e2014848a66917476671aed,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa471bd5e2014848a66917476671aed, type: 3}
