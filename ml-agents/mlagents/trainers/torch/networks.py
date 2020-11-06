@@ -10,7 +10,7 @@ from mlagents.trainers.torch.distributions import (
     DistInstance,
 )
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction
+from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx
