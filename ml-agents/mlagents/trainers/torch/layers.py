@@ -209,7 +209,11 @@ class MultiHeadAttention(torch.nn.Module):
         )
 
     def forward(
-        self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, key_mask:torch.Tensor
+        self,
+        query: torch.Tensor,
+        key: torch.Tensor,
+        value: torch.Tensor,
+        key_mask: torch.Tensor,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         b, n_q, n_k = query.size(0), query.size(1), key.size(1)
 

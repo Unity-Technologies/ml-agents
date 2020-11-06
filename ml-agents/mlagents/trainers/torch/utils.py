@@ -180,7 +180,7 @@ class ModelUtils:
             elif len(dimension) == 1:
                 vector_size += dimension[0]
             else:
-                print(#raise UnityTrainerException(
+                print(  # raise UnityTrainerException(
                     f"Unsupported shape of {dimension} for observation {i}"
                 )
         if vector_size > 0:
@@ -192,18 +192,18 @@ class ModelUtils:
         max_observables, observable_size, output_size = (20, 4, 64)
         attention = MultiHeadAttention(
             query_size=output_size,
-            key_size= output_size,
+            key_size=output_size,
             value_size=output_size,
             output_size=output_size,
             num_heads=4,
-            embedding_size=64
+            embedding_size=64,
         )
 
         return (
             nn.ModuleList(visual_encoders),
             nn.ModuleList(vector_encoders),
             attention,
-            output_size#total_processed_size + output_size,
+            output_size,  # total_processed_size + output_size,
         )
 
     @staticmethod

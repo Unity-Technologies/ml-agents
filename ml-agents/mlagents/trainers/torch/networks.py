@@ -55,7 +55,6 @@ class NetworkBody(nn.Module):
         self.obs_embeding = LinearEncoder(4, 1, 64)
         self.self_and_obs_embedding = LinearEncoder(64 + 64, 1, 64)
 
-
         if self.use_lstm:
             self.lstm = LSTM(self.h_size, self.m_size)
         else:
@@ -106,7 +105,9 @@ class NetworkBody(nn.Module):
 
         # TODO : This is a Hack
         var_len_input = vis_inputs[0].reshape(-1, 20, 4)
-        key_mask = torch.sum(var_len_input ** 2, axis=2) < 0.01  # 1 means mask and 0 means let though
+        key_mask = (
+            torch.sum(var_len_input ** 2, axis=2) < 0.01
+        )  # 1 means mask and 0 means let though
 
         self_encoding = processed_vec.reshape(-1, 1, processed_vec.shape[1])
         self_encoding = self.self_embedding(self_encoding)  # (b, 64)
@@ -120,12 +121,17 @@ class NetworkBody(nn.Module):
 
         # add the self to the entities
         self_and_key_emb = torch.cat([self_encoding, self_and_key_emb], dim=1)
-        key_mask = torch.cat([torch.zeros((self_and_key_emb.shape[0], 1)), key_mask], dim=1)
+        key_mask = torch.cat(
+            [torch.zeros((self_and_key_emb.shape[0], 1)), key_mask], dim=1
+        )
 
-        output, _ = self.attention(self_and_key_emb, self_and_key_emb, self_and_key_emb, key_mask)
+        output, _ = self.attention(
+            self_and_key_emb, self_and_key_emb, self_and_key_emb, key_mask
+        )
 
-        output = torch.sum(output * (1 - key_mask).reshape(-1,21,1), dim=1) / torch.sum(1-key_mask, dim=1, keepdim=True)
-
+        output = torch.sum(
+            output * (1 - key_mask).reshape(-1, 21, 1), dim=1
+        ) / torch.sum(1 - key_mask, dim=1, keepdim=True)
 
         # output = torch.cat([inputs, output], dim=1)
 

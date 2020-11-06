@@ -156,7 +156,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         #         vis_obs.append(vis_ob)
         # else:
         #     vis_obs = []
-        vis_obs = [ ModelUtils.list_to_tensor(batch["visual_obs%d" % 0])]
+        vis_obs = [ModelUtils.list_to_tensor(batch["visual_obs%d" % 0])]
         log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,
