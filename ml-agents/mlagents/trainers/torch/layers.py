@@ -201,17 +201,20 @@ class MultiHeadAttention(torch.nn.Module):
         self.fc_q = torch.nn.Linear(query_size, self.n_heads * self.embedding_size)
         self.fc_k = torch.nn.Linear(key_size, self.n_heads * self.embedding_size)
         self.fc_v = torch.nn.Linear(value_size, self.n_heads * self.embedding_size)
+        # self.fc_q = LinearEncoder(query_size, 2, self.n_heads * self.embedding_size)
+        # self.fc_k = LinearEncoder(key_size,2, self.n_heads * self.embedding_size)
+        # self.fc_v = LinearEncoder(value_size,2, self.n_heads * self.embedding_size)
         self.fc_out = torch.nn.Linear(
             self.n_heads * self.embedding_size, self.output_size
         )
 
     def forward(
-        self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor
+        self, query: torch.Tensor, key: torch.Tensor, value: torch.Tensor, key_mask:torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         b, n_q, n_k = query.size(0), query.size(1), key.size(1)
 
         # Create a key mask : Only 1 if all values are 0 # shape = (b, n_k)
-        key_mask = torch.sum(key ** 2, axis=2) < 0.01
+        # key_mask = torch.sum(key ** 2, axis=2) < 0.01
         key_mask = key_mask.reshape(b, 1, 1, n_k)
 
         query = self.fc_q(query)  # (b, n_q, h*d)

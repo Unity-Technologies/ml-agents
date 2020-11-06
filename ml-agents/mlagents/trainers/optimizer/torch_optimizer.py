@@ -53,15 +53,16 @@ class TorchOptimizer(Optimizer):  # pylint: disable=W0223
         self, batch: AgentBuffer, next_obs: List[np.ndarray], done: bool
     ) -> Tuple[Dict[str, np.ndarray], Dict[str, float]]:
         vector_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
-        if self.policy.use_vis_obs:
-            visual_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                visual_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                visual_obs.append(visual_ob)
-        else:
-            visual_obs = []
+        # if self.policy.use_vis_obs:
+        #     visual_obs = []
+        #     for idx, _ in enumerate(
+        #         self.policy.actor_critic.network_body.visual_processors
+        #     ):
+        #         visual_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
+        #         visual_obs.append(visual_ob)
+        # else:
+        #     visual_obs = []
+        visual_obs = [ModelUtils.list_to_tensor(batch["visual_obs%d" % 0])]
 
         memory = torch.zeros([1, 1, self.policy.m_size])
 

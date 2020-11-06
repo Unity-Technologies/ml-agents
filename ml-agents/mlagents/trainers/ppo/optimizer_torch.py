@@ -147,15 +147,16 @@ class TorchPPOOptimizer(TorchOptimizer):
         if len(memories) > 0:
             memories = torch.stack(memories).unsqueeze(0)
 
-        if self.policy.use_vis_obs:
-            vis_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                vis_obs.append(vis_ob)
-        else:
-            vis_obs = []
+        # if self.policy.use_vis_obs:
+        #     vis_obs = []
+        #     for idx, _ in enumerate(
+        #         self.policy.actor_critic.network_body.visual_processors
+        #     ):
+        #         vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
+        #         vis_obs.append(vis_ob)
+        # else:
+        #     vis_obs = []
+        vis_obs = [ ModelUtils.list_to_tensor(batch["visual_obs%d" % 0])]
         log_probs, entropy, values = self.policy.evaluate_actions(
             vec_obs,
             vis_obs,
