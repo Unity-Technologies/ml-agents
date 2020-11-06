@@ -36,15 +36,6 @@ AgentId = int
 BehaviorName = str
 
 
-class ActionBuffer(NamedTuple):
-    """
-    Contains continuous and discrete actions as numpy arrays.
-    """
-
-    continuous: np.ndarray
-    discrete: np.ndarray
-
-
 class DecisionStep(NamedTuple):
     """
     Contains the data a single Agent collected since the last
