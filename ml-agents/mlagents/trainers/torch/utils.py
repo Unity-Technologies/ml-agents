@@ -168,22 +168,22 @@ class ModelUtils:
 
         @property
         def flattened_size(self) -> int:
-            if self._specs.is_continuous():
-                return self._specs.continuous_size
-            else:
-                return sum(self._specs.discrete_branches)
+            return self._specs.continuous_size + sum(self._specs.discrete_branches)
 
         def forward(self, action: AgentAction) -> torch.Tensor:
-            if self._specs.is_continuous():
-                return action.continuous_tensor
-            else:
-                return torch.cat(
+            action_list: List[torch.Tensor] = []
+            if self._specs.continuous_size < 0:
+                action_list.append(action.continuous_tensor)
+            if self._specs.discrete_size < 0:
+                flat_discrete = torch.cat(
                     ModelUtils.actions_to_onehot(
                         torch.as_tensor(action.discrete_tensor, dtype=torch.long),
                         self._specs.discrete_branches,
                     ),
                     dim=1,
                 )
+                action_list.append(flat_discrete)
+            return torch.cat(action_list, dim=1)
 
     @staticmethod
     def update_learning_rate(optim: torch.optim.Optimizer, lr: float) -> None:

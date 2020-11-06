@@ -43,8 +43,8 @@ class SimpleEnvironment(BaseEnv):
         num_vector=1,
         vis_obs_size=VIS_OBS_SIZE,
         vec_obs_size=OBS_SIZE,
-        continuous_action_size=1,
-        discrete_action_size=1,
+        continuous_action_size=0,
+        discrete_action_size=0,
     ):
         super().__init__()
         self.num_visual = num_visual
@@ -225,8 +225,19 @@ class SimpleEnvironment(BaseEnv):
 
 
 class MemoryEnvironment(SimpleEnvironment):
-    def __init__(self, brain_names, use_discrete, step_size=0.2):
-        super().__init__(brain_names, use_discrete, step_size=step_size)
+    def __init__(
+        self,
+        brain_names,
+        continuous_action_size=1,
+        discrete_action_size=1,
+        step_size=0.2,
+    ):
+        super().__init__(
+            brain_names,
+            continuous_action_size=continuous_action_size,
+            discrete_action_size=discrete_action_size,
+            step_size=step_size,
+        )
         # Number of steps to reveal the goal for. Lower is harder. Should be
         # less than 1/step_size to force agent to use memory
         self.num_show_steps = 2

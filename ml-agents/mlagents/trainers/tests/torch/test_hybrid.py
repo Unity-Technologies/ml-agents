@@ -38,6 +38,29 @@ PPO_TORCH_CONFIG = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTOR
 SAC_TORCH_CONFIG = attr.evolve(sac_dummy_config(), framework=FrameworkType.PYTORCH)
 
 
+def test_recurrent_ppo():
+    env = MemoryEnvironment(
+        [BRAIN_NAME], continuous_action_size=1, discrete_action_size=1
+    )
+    new_network_settings = attr.evolve(
+        PPO_TORCH_CONFIG.network_settings,
+        memory=NetworkSettings.MemorySettings(memory_size=16),
+    )
+    new_hyperparams = attr.evolve(
+        PPO_TORCH_CONFIG.hyperparameters,
+        learning_rate=1.0e-3,
+        batch_size=64,
+        buffer_size=128,
+    )
+    config = attr.evolve(
+        PPO_TORCH_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_network_settings,
+        max_steps=5000,
+    )
+    check_environment_trains(env, {BRAIN_NAME: config}, success_threshold=0.9)
+
+
 def test_hybrid_ppo():
     env = SimpleEnvironment(
         [BRAIN_NAME], continuous_action_size=1, discrete_action_size=1, step_size=0.8

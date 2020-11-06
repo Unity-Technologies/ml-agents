@@ -84,6 +84,7 @@ class Policy:
     ) -> None:
         if memory_matrix is None:
             return
+
         for index, agent_id in enumerate(agent_ids):
             self.memory_dict[agent_id] = memory_matrix[index, :]
 

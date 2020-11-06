@@ -98,7 +98,7 @@ class TorchPolicy(Policy):
     ) -> Tuple[SplitObservations, np.ndarray]:
         vec_vis_obs = SplitObservations.from_observations(decision_requests.obs)
         mask = None
-        if not self.use_continuous_act:
+        if self.action_spec.discrete_size > 0:
             mask = torch.ones([len(decision_requests), np.sum(self.act_size)])
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
@@ -180,7 +180,7 @@ class TorchPolicy(Policy):
         run_out["action"] = action.to_numpy_dict()
         run_out["pre_action"] = (
             action.to_numpy_dict()["continuous_action"]
-            if self.use_continuous_act
+            if self.action_spec.continuous_size > 0
             else None
         )  # Todo - make pre_action difference
         run_out["log_probs"] = log_probs.to_numpy_dict()

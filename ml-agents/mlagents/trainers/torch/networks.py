@@ -418,8 +418,8 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         else:
             critic_mem = None
             actor_mem = None
-        encoding, memories = self.network_body(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        encoding, actor_mem_outs = self.network_body(
+            vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
         )
         log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
         value_outputs, critic_mem_outs = self.critic(
@@ -444,8 +444,8 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
         else:
             critic_mem = None
             actor_mem = None
-        encoding, memories = self.network_body(
-            vec_inputs, vis_inputs, memories=memories, sequence_length=sequence_length
+        encoding, actor_mem_outs = self.network_body(
+            vec_inputs, vis_inputs, memories=actor_mem, sequence_length=sequence_length
         )
         action, log_probs, entropies = self.action_model(encoding, masks)
         value_outputs, critic_mem_outs = self.critic(
