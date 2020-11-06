@@ -95,12 +95,13 @@ public class DodgeAgent : Agent
     {
         var forwardForce = Mathf.Clamp(actionBuffers.ContinuousActions[0], -1f, 1f);
         var lateralForce = Mathf.Clamp(actionBuffers.ContinuousActions[1], -1f, 1f);
-        var rotationForce = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f);
+        // var rotationForce = Mathf.Clamp(actionBuffers.ContinuousActions[2], -1f, 1f);
 
-        Vector3 dirToGo = transform.forward * forwardForce + transform.right * lateralForce;
-        Vector3 rotateDir = transform.up * rotationForce;
+        // Vector3 dirToGo = transform.forward * forwardForce + transform.right * lateralForce;
+        // Vector3 rotateDir = transform.up * rotationForce;
 
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+        // transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+        Vector3 dirToGo = new Vector3(1,0,0) * forwardForce + new Vector3(0,0,1)*lateralForce;
         m_AgentRb.AddForce(dirToGo * m_BulletSettings.agentRunSpeed,
             ForceMode.VelocityChange);
 
