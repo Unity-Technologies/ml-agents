@@ -22,16 +22,16 @@ namespace Unity.MLAgentsExamples
 
         private static Color s_EmptyColor = new Color(0.5f, 0.5f, 0.5f, .25f);
 
-
         public Dictionary<(int, int), Match3TileSelector> tilesDict = new Dictionary<(int, int), Match3TileSelector>();
-        private bool m_initialized;
-        public float cubeSpacing = 1;
-        public Match3Board board;
-        public GameObject tilePrefab;
+        public float CubeSpacing = 1.25f;
+        public GameObject TilePrefab;
+
+        private bool m_Initialized;
+        private Match3Board m_Board;
 
         void Awake()
         {
-            if (!m_initialized)
+            if (!m_Initialized)
             {
                 InitializeDict();
             }
@@ -39,7 +39,7 @@ namespace Unity.MLAgentsExamples
 
         void InitializeDict()
         {
-            board = GetComponent<Match3Board>();
+            m_Board = GetComponent<Match3Board>();
             foreach (var item in tilesDict)
             {
                 if (item.Value)
@@ -50,40 +50,40 @@ namespace Unity.MLAgentsExamples
 
             tilesDict.Clear();
 
-            for (var i = 0; i < board.Rows; i++)
+            for (var i = 0; i < m_Board.Rows; i++)
             {
-                for (var j = 0; j < board.Columns; j++)
+                for (var j = 0; j < m_Board.Columns; j++)
                 {
-                    var go = Instantiate(tilePrefab, transform.position, Quaternion.identity, transform);
+                    var go = Instantiate(TilePrefab, transform.position, Quaternion.identity, transform);
                     go.name = $"r{i}_c{j}";
                     tilesDict.Add((i, j), go.GetComponent<Match3TileSelector>());
                 }
             }
 
-            m_initialized = true;
+            m_Initialized = true;
         }
 
         void Update()
         {
-            if (!board)
+            if (!m_Board)
             {
-                board = GetComponent<Match3Board>();
+                m_Board = GetComponent<Match3Board>();
             }
 
-            if (!m_initialized)
+            if (!m_Initialized)
             {
                 InitializeDict();
             }
 
-            for (var i = 0; i < board.Rows; i++)
+            for (var i = 0; i < m_Board.Rows; i++)
             {
-                for (var j = 0; j < board.Columns; j++)
+                for (var j = 0; j < m_Board.Columns; j++)
                 {
-                    var value = board.Cells != null ? board.GetCellType(i, j) : Match3Board.k_EmptyCell;
+                    var value = m_Board.Cells != null ? m_Board.GetCellType(i, j) : Match3Board.k_EmptyCell;
                     var pos = new Vector3(j, i, 0);
-                    pos *= cubeSpacing;
+                    pos *= CubeSpacing;
 
-                    var specialType = board.Cells != null ? board.GetSpecialType(i, j) : 0;
+                    var specialType = m_Board.Cells != null ? m_Board.GetSpecialType(i, j) : 0;
                     tilesDict[(i, j)].transform.position = transform.TransformPoint(pos);
                     tilesDict[(i, j)].SetActiveTile(specialType, value);
                 }
@@ -94,11 +94,11 @@ namespace Unity.MLAgentsExamples
         {
             // TODO replace Gizmos for drawing the game state with proper GameObjects and animations.
             var cubeSize = .5f;
-            var matchedWireframeSize = .5f * (cubeSize + cubeSpacing);
+            var matchedWireframeSize = .5f * (cubeSize + CubeSpacing);
 
-            if (!board)
+            if (!m_Board)
             {
-                board = GetComponent<Match3Board>();
+                m_Board = GetComponent<Match3Board>();
             }
             //            var board = GetComponent<Match3Board>();
             //            if (board == null)
@@ -107,11 +107,11 @@ namespace Unity.MLAgentsExamples
             //                return;
             //            }
 
-            for (var i = 0; i < board.Rows; i++)
+            for (var i = 0; i < m_Board.Rows; i++)
             {
-                for (var j = 0; j < board.Columns; j++)
+                for (var j = 0; j < m_Board.Columns; j++)
                 {
-                    var value = board.Cells != null ? board.GetCellType(i, j) : Match3Board.k_EmptyCell;
+                    var value = m_Board.Cells != null ? m_Board.GetCellType(i, j) : Match3Board.k_EmptyCell;
                     if (value >= 0 && value < s_Colors.Length)
                     {
                         Gizmos.color = s_Colors[value];
@@ -122,9 +122,9 @@ namespace Unity.MLAgentsExamples
                     }
 
                     var pos = new Vector3(j, i, 0);
-                    pos *= cubeSpacing;
+                    pos *= CubeSpacing;
 
-                    var specialType = board.Cells != null ? board.GetSpecialType(i, j) : 0;
+                    var specialType = m_Board.Cells != null ? m_Board.GetSpecialType(i, j) : 0;
                     if (specialType == 2)
                     {
                         Gizmos.DrawCube(transform.TransformPoint(pos), cubeSize * new Vector3(1f, .5f, .5f));
@@ -141,7 +141,7 @@ namespace Unity.MLAgentsExamples
                     }
 
                     Gizmos.color = Color.yellow;
-                    if (board.Matched != null && board.Matched[j, i])
+                    if (m_Board.Matched != null && m_Board.Matched[j, i])
                     {
                         Gizmos.DrawWireCube(transform.TransformPoint(pos), matchedWireframeSize * Vector3.one);
                     }
@@ -149,21 +149,21 @@ namespace Unity.MLAgentsExamples
             }
 
             // Draw valid moves
-            foreach (var move in board.AllMoves())
+            foreach (var move in m_Board.AllMoves())
             {
                 if (DebugMoveIndex >= 0 && move.MoveIndex != DebugMoveIndex)
                 {
                     continue;
                 }
 
-                if (!board.IsMoveValid(move))
+                if (!m_Board.IsMoveValid(move))
                 {
                     continue;
                 }
 
                 var (otherRow, otherCol) = move.OtherCell();
-                var pos = new Vector3(move.Column, move.Row, 0) * cubeSpacing;
-                var otherPos = new Vector3(otherCol, otherRow, 0) * cubeSpacing;
+                var pos = new Vector3(move.Column, move.Row, 0) * CubeSpacing;
+                var otherPos = new Vector3(otherCol, otherRow, 0) * CubeSpacing;
 
                 var oneQuarter = Vector3.Lerp(pos, otherPos, .25f);
                 var threeQuarters = Vector3.Lerp(pos, otherPos, .75f);
