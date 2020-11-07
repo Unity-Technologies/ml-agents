@@ -125,7 +125,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
             self._action_spec.continuous_size,
-            self._action_spec.discrete_size,
+            sum(self._action_spec.discrete_branches),
         )
 
         self.target_network = ValueNetwork(
@@ -140,7 +140,7 @@ class TorchSACOptimizer(TorchOptimizer):
         _total_act_size = 0
         if self._action_spec.continuous_size > 0:
             _total_act_size += self._action_spec.continuous_size
-        _total_act_size += self._action_spec.discrete_size
+        _total_act_size += sum(self._action_spec.discrete_branches)
 
         # We create one entropy coefficient per action, whether discrete or continuous.
         self._log_ent_coef = torch.nn.Parameter(
@@ -259,10 +259,12 @@ class TorchSACOptimizer(TorchOptimizer):
             else:
                 disc_action_probs = log_probs.all_discrete_tensor.exp()
                 _branched_q1p = ModelUtils.break_into_branches(
-                    q1p_out[name] * disc_action_probs, self._action_spec.discrete_branches
+                    q1p_out[name] * disc_action_probs,
+                    self._action_spec.discrete_branches,
                 )
                 _branched_q2p = ModelUtils.break_into_branches(
-                    q2p_out[name] * disc_action_probs, self._action_spec.discrete_branches
+                    q2p_out[name] * disc_action_probs,
+                    self._action_spec.discrete_branches,
                 )
                 _q1p_mean = torch.mean(
                     torch.stack(
@@ -293,7 +295,8 @@ class TorchSACOptimizer(TorchOptimizer):
         else:
             disc_log_probs = log_probs.all_discrete_tensor
             branched_per_action_ent = ModelUtils.break_into_branches(
-                disc_log_probs * disc_log_probs.exp(), self._action_spec.discrete_branches
+                disc_log_probs * disc_log_probs.exp(),
+                self._action_spec.discrete_branches,
             )
             # We have to do entropy bonus per action branch
             branched_ent_bonus = torch.stack(
@@ -377,7 +380,8 @@ class TorchSACOptimizer(TorchOptimizer):
                 # Break continuous into separate branch
                 disc_log_probs = log_probs.all_discrete_tensor
                 branched_per_action_ent = ModelUtils.break_into_branches(
-                    disc_log_probs * disc_log_probs.exp(), self._action_spec.discrete_branches
+                    disc_log_probs * disc_log_probs.exp(),
+                    self._action_spec.discrete_branches,
                 )
                 target_current_diff_branched = torch.stack(
                     [
