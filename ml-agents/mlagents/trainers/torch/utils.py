@@ -172,9 +172,9 @@ class ModelUtils:
 
         def forward(self, action: AgentAction) -> torch.Tensor:
             action_list: List[torch.Tensor] = []
-            if self._specs.continuous_size < 0:
+            if self._specs.continuous_size > 0:
                 action_list.append(action.continuous_tensor)
-            if self._specs.discrete_size < 0:
+            if self._specs.discrete_size > 0:
                 flat_discrete = torch.cat(
                     ModelUtils.actions_to_onehot(
                         torch.as_tensor(action.discrete_tensor, dtype=torch.long),
