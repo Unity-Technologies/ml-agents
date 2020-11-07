@@ -1,9 +1,5 @@
-import abc
-from typing import List, Tuple
+from typing import List, Tuple, NamedTuple, Optional
 from mlagents.torch_utils import torch, nn
-import numpy as np
-import math
-from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.torch.distributions import (
     DistInstance,
     DiscreteDistInstance,
@@ -11,91 +7,119 @@ from mlagents.trainers.torch.distributions import (
     MultiCategoricalDistribution,
 )
 
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import AgentAction, ActionLogProbs
+from mlagents_envs.base_env import ActionSpec
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
+
+
+class DistInstances(NamedTuple):
+    continuous: DistInstance
+    discrete: List[DiscreteDistInstance]
 
 
 class ActionModel(nn.Module):
     def __init__(
         self,
         hidden_size: int,
-        continuous_act_size: int,
-        discrete_act_size: List[int],
+        action_spec: ActionSpec,
         conditional_sigma: bool = False,
         tanh_squash: bool = False,
     ):
         super().__init__()
         self.encoding_size = hidden_size
-        self.continuous_act_size = continuous_act_size
-        self.discrete_act_size = discrete_act_size
+        self.action_spec = action_spec
+        self._continuous_distribution = None
+        self._discrete_distribution = None
 
-        self._split_list: List[int] = []
-        self._distributions = torch.nn.ModuleList()
-        if continuous_act_size > 0:
-            self._distributions.append(
-                GaussianDistribution(
-                    self.encoding_size,
-                    continuous_act_size,
-                    conditional_sigma=conditional_sigma,
-                    tanh_squash=tanh_squash,
-                )
+        if self.action_spec.continuous_size > 0:
+            self._continuous_distribution = GaussianDistribution(
+                self.encoding_size,
+                self.action_spec.continuous_size,
+                conditional_sigma=conditional_sigma,
+                tanh_squash=tanh_squash,
             )
-            self._split_list.append(continuous_act_size)
 
-        if len(discrete_act_size) > 0:
-            self._distributions.append(
-                MultiCategoricalDistribution(self.encoding_size, discrete_act_size)
+        if self.action_spec.discrete_size > 0:
+            self._discrete_distribution = MultiCategoricalDistribution(
+                self.encoding_size, self.action_spec.discrete_branches
             )
-            self._split_list += [1 for _ in range(len(discrete_act_size))]
 
-    def _sample_action(self, dists: List[DistInstance]) -> List[torch.Tensor]:
+    def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
         Samples actions from list of distribution instances
         """
-        actions = []
-        for action_dist in dists:
-            action = action_dist.sample()
-            actions.append(action)
-        return actions
+        continuous_action: Optional[torch.Tensor] = None
+        discrete_action: Optional[List[torch.Tensor]] = None
+        if self.action_spec.continuous_size > 0:
+            continuous_action = dists.continuous.sample()
+        if self.action_spec.discrete_size > 0:
+            discrete_action = []
+            for discrete_dist in dists.discrete:
+                discrete_action.append(discrete_dist.sample())
+        return AgentAction(continuous_action, discrete_action)
 
-    def _get_dists(
-        self, inputs: torch.Tensor, masks: torch.Tensor
-    ) -> Tuple[List[DistInstance], List[DiscreteDistInstance]]:
-        distribution_instances: List[DistInstance] = []
-        for distribution in self._distributions:
-            dist_instances = distribution(inputs, masks)
-            for dist_instance in dist_instances:
-                distribution_instances.append(dist_instance)
-        return distribution_instances
+    def _get_dists(self, inputs: torch.Tensor, masks: torch.Tensor) -> DistInstances:
+        continuous_dist: Optional[DistInstance] = None
+        discrete_dist: Optional[List[DiscreteDistInstance]] = None
+        if self.action_spec.continuous_size > 0:
+            continuous_dist = self._continuous_distribution(inputs, masks)
+        if self.action_spec.discrete_size > 0:
+            discrete_dist = self._discrete_distribution(inputs, masks)
+        return DistInstances(continuous_dist, discrete_dist)
+
+    def _get_probs_and_entropy(
+        self, actions: AgentAction, dists: DistInstances
+    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+
+        entropies_list: List[torch.Tensor] = []
+        continuous_log_prob: Optional[torch.Tensor] = None
+        discrete_log_probs: Optional[List[torch.Tensor]] = None
+        all_discrete_log_probs: Optional[List[torch.Tensor]] = None
+        if self.action_spec.continuous_size > 0:
+            continuous_log_prob = dists.continuous.log_prob(actions.continuous_tensor)
+            entropies_list.append(dists.continuous.entropy())
+        if self.action_spec.discrete_size > 0:
+            discrete_log_probs = []
+            all_discrete_log_probs = []
+            for discrete_action, discrete_dist in zip(
+                actions.discrete_list, dists.discrete
+            ):
+                discrete_log_prob = discrete_dist.log_prob(discrete_action)
+                entropies_list.append(discrete_dist.entropy())
+                discrete_log_probs.append(discrete_log_prob)
+                all_discrete_log_probs.append(discrete_dist.all_log_prob())
+        action_log_probs = ActionLogProbs(
+            continuous_log_prob, discrete_log_probs, all_discrete_log_probs
+        )
+        entropies = torch.cat(entropies_list, dim=1)
+        return action_log_probs, entropies
 
     def evaluate(
-        self, inputs: torch.Tensor, masks: torch.Tensor, actions: torch.Tensor
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        self, inputs: torch.Tensor, masks: torch.Tensor, actions: AgentAction
+    ) -> Tuple[ActionLogProbs, torch.Tensor]:
         dists = self._get_dists(inputs, masks)
-        split_actions = torch.split(actions, self._split_list, dim=1)
-        action_lists: List[torch.Tensor] = []
-        for split_action in split_actions:
-            action_list = [split_action[..., i] for i in range(split_action.shape[-1])]
-            action_lists += action_list
-        log_probs, entropies, _ = ModelUtils.get_probs_and_entropy(action_lists, dists)
-        return log_probs, entropies
+        log_probs, entropies = self._get_probs_and_entropy(actions, dists)
+        # Use the sum of entropy across actions, not the mean
+        entropy_sum = torch.sum(entropies, dim=1)
+        return log_probs, entropy_sum
 
     def get_action_out(self, inputs: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
         dists = self._get_dists(inputs, masks)
-        return torch.cat([dist.exported_model_output() for dist in dists], dim=1)
+        out_list: List[torch.Tensor] = []
+        if self.action_spec.continuous_size > 0:
+            out_list.append(dists.continuous.exported_model_output())
+        if self.action_spec.discrete_size > 0:
+            for discrete_dist in dists.discrete:
+                out_list.append(discrete_dist.exported_model_output())
+        return torch.cat(out_list, dim=1)
 
     def forward(
-        self, inputs: torch.Tensor, masks: torch.Tensor, all_probs: bool = False
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        self, inputs: torch.Tensor, masks: torch.Tensor
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor]:
         dists = self._get_dists(inputs, masks)
-        action_outs: List[torch.Tensor] = []
-        action_lists = self._sample_action(dists)
-        for action_list, dist in zip(action_lists, dists):
-            action_out = action_list.unsqueeze(-1)
-            action_outs.append(dist.structure_action(action_out))
-        log_probs, entropies = ModelUtils.get_probs_and_entropy(
-            action_lists, dists, all_disc_probs=all_probs
-        )
-        action = torch.cat(action_outs, dim=1)
-        return (action, log_probs, entropies)
+        actions = self._sample_action(dists)
+        log_probs, entropies = self._get_probs_and_entropy(actions, dists)
+        # Use the sum of entropy across actions, not the mean
+        entropy_sum = torch.sum(entropies, dim=1)
+        return (actions, log_probs, entropy_sum)

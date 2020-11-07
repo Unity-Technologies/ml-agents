@@ -4,6 +4,8 @@ import pytest
 from mlagents.trainers.trajectory import SplitObservations
 from mlagents.trainers.tests.mock_brain import make_fake_trajectory
 
+from mlagents_envs.base_env import ActionSpec
+
 VEC_OBS_SIZE = 6
 ACTION_SIZE = 4
 
@@ -38,17 +40,17 @@ def test_trajectory_to_agentbuffer():
         "masks",
         "done",
         "actions_pre",
-        "actions",
+        "continuous_action",
         "action_probs",
         "action_mask",
-        "prev_action",
+        "prev_continuous_action",
         "environment_rewards",
     ]
     wanted_keys = set(wanted_keys)
     trajectory = make_fake_trajectory(
         length=length,
         observation_shapes=[(VEC_OBS_SIZE,), (84, 84, 3)],
-        action_space=[ACTION_SIZE],
+        action_spec=ActionSpec.create_continuous(ACTION_SIZE),
     )
     agentbuffer = trajectory.to_agentbuffer()
     seen_keys = set()

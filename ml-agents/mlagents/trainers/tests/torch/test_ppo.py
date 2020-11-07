@@ -2,24 +2,25 @@ import pytest
 
 import numpy as np
 from mlagents.tf_utils import tf
-import copy
 import attr
 
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.tests import mock_brain as mb
 from mlagents.trainers.tests.test_trajectory import make_fake_trajectory
-from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.tests.test_simple_rl import PPO_CONFIG
-from mlagents.trainers.tests.test_reward_signals import (  # noqa: F401; pylint: disable=unused-variable
+from mlagents.trainers.settings import NetworkSettings, FrameworkType
+from mlagents.trainers.tests.dummy_config import (  # noqa: F401; pylint: disable=unused-variable
+    ppo_dummy_config,
     curiosity_dummy_config,
     gail_dummy_config,
 )
 
+from mlagents_envs.base_env import ActionSpec
+
 
 @pytest.fixture
 def dummy_config():
-    return copy.deepcopy(PPO_CONFIG)
+    return attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
 
 
 VECTOR_ACTION_SPACE = 2
@@ -27,6 +28,9 @@ VECTOR_OBS_SPACE = 8
 DISCRETE_ACTION_SPACE = [3, 3, 3, 2]
 BUFFER_INIT_SAMPLES = 64
 NUM_AGENTS = 12
+
+CONTINUOUS_ACTION_SPEC = ActionSpec.create_continuous(VECTOR_ACTION_SPACE)
+DISCRETE_ACTION_SPEC = ActionSpec.create_discrete(tuple(DISCRETE_ACTION_SPACE))
 
 
 def create_test_ppo_optimizer(dummy_config, use_rnn, use_discrete, use_visual):
@@ -73,7 +77,14 @@ def test_ppo_optimizer_update(dummy_config, rnn, visual, discrete):
     # NOTE: In TensorFlow, the log_probs are saved as one for every discrete action, whereas
     # in PyTorch it is saved as the total probability per branch. So we need to modify the
     # log prob in the fake buffer here.
-    update_buffer["action_probs"] = np.ones_like(update_buffer["actions"])
+    if discrete:
+        update_buffer["discrete_log_probs"] = np.ones_like(
+            update_buffer["discrete_action"]
+        )
+    else:
+        update_buffer["continuous_log_probs"] = np.ones_like(
+            update_buffer["continuous_action"]
+        )
     return_stats = optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -118,7 +129,14 @@ def test_ppo_optimizer_update_curiosity(
     # NOTE: In TensorFlow, the log_probs are saved as one for every discrete action, whereas
     # in PyTorch it is saved as the total probability per branch. So we need to modify the
     # log prob in the fake buffer here.
-    update_buffer["action_probs"] = np.ones_like(update_buffer["actions"])
+    if discrete:
+        update_buffer["discrete_log_probs"] = np.ones_like(
+            update_buffer["discrete_action"]
+        )
+    else:
+        update_buffer["continuous_log_probs"] = np.ones_like(
+            update_buffer["continuous_action"]
+        )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -129,8 +147,9 @@ def test_ppo_optimizer_update_curiosity(
 def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F811
     # Test evaluate
     dummy_config.reward_signals = gail_dummy_config
+    config = attr.evolve(ppo_dummy_config(), framework=FrameworkType.PYTORCH)
     optimizer = create_test_ppo_optimizer(
-        PPO_CONFIG, use_rnn=False, use_discrete=False, use_visual=False
+        config, use_rnn=False, use_discrete=False, use_visual=False
     )
     # Test update
     update_buffer = mb.simulate_rollout(
@@ -142,6 +161,9 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     update_buffer["extrinsic_value_estimates"] = update_buffer["environment_rewards"]
     update_buffer["gail_returns"] = update_buffer["environment_rewards"]
     update_buffer["gail_value_estimates"] = update_buffer["environment_rewards"]
+    update_buffer["continuous_log_probs"] = np.ones_like(
+        update_buffer["continuous_action"]
+    )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -158,7 +180,9 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
     # NOTE: In TensorFlow, the log_probs are saved as one for every discrete action, whereas
     # in PyTorch it is saved as the total probability per branch. So we need to modify the
     # log prob in the fake buffer here.
-    update_buffer["action_probs"] = np.ones_like(update_buffer["actions"])
+    update_buffer["continuous_log_probs"] = np.ones_like(
+        update_buffer["continuous_action"]
+    )
     optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
@@ -176,9 +200,8 @@ def test_ppo_get_value_estimates(dummy_config, rnn, visual, discrete):
     trajectory = make_fake_trajectory(
         length=time_horizon,
         observation_shapes=optimizer.policy.behavior_spec.observation_shapes,
+        action_spec=DISCRETE_ACTION_SPEC if discrete else CONTINUOUS_ACTION_SPEC,
         max_step_complete=True,
-        action_space=DISCRETE_ACTION_SPACE if discrete else VECTOR_ACTION_SPACE,
-        is_discrete=discrete,
     )
     run_out, final_value_out = optimizer.get_trajectory_value_estimates(
         trajectory.to_agentbuffer(), trajectory.next_obs, done=False

@@ -20,7 +20,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_8_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -32,7 +32,16 @@ namespace Unity.MLAgents
     {
         void FixedUpdate()
         {
-            Academy.Instance.EnvironmentStep();
+            // Check if the stepper belongs to the current Academy and destroy it if it's not.
+            // This is to prevent from having leaked stepper from previous runs.
+            if (!Academy.IsInitialized || !Academy.Instance.IsStepperOwner(this))
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                Academy.Instance.EnvironmentStep();
+            }
         }
     }
 
@@ -52,7 +61,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_8_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -74,15 +83,19 @@ namespace Unity.MLAgents
         ///         <term>1.1.0</term>
         ///         <description>Support concatenated PNGs for compressed observations.</description>
         ///     </item>
+        ///     <item>
+        ///         <term>1.2.0</term>
+        ///         <description>Support compression mapping for stacked compressed observations.</description>
+        ///     </item>
         /// </list>
         /// </remarks>
-        const string k_ApiVersion = "1.1.0";
+        const string k_ApiVersion = "1.2.0";
 
         /// <summary>
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "1.4.0-preview";
+        internal const string k_PackageVersion = "1.5.0-preview";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -142,9 +155,8 @@ namespace Unity.MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
-        // Whether the Academy is in the middle of a step. This is used to detect and Academy
-        // step called by user code that is also called by the Academy.
-        bool m_IsStepping;
+        // Detect an Academy step called by user code that is also called by the Academy.
+        private RecursionChecker m_StepRecursionChecker = new RecursionChecker("EnvironmentStep");
 
         // Random seed used for inference.
         int m_InferenceSeed;
@@ -222,7 +234,25 @@ namespace Unity.MLAgents
             Application.quitting += Dispose;
 
             LazyInitialize();
+
+#if UNITY_EDITOR
+            EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;
+#endif
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Clean up the Academy when switching from edit mode to play mode
+        /// </summary>
+        /// <param name="state">State.</param>
+        void HandleOnPlayModeChanged(PlayModeStateChange state)
+        {
+            if (state == PlayModeStateChange.ExitingEditMode)
+            {
+                Dispose();
+            }
+        }
+#endif
 
         /// <summary>
         /// Initialize the Academy if it hasn't already been initialized.
@@ -504,22 +534,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            // Check whether we're already in the middle of a step.
-            // This shouldn't happen generally, but could happen if user code (e.g. CollectObservations)
-            // that is called by EnvironmentStep() also calls EnvironmentStep(). This would result
-            // in an infinite loop and/or stack overflow, so stop it before it happens.
-            if (m_IsStepping)
-            {
-                throw new UnityAgentsException(
-                    "Academy.EnvironmentStep() called recursively. " +
-                    "This might happen if you call EnvironmentStep() from custom code such as " +
-                    "CollectObservations() or OnActionReceived()."
-                );
-            }
-
-            m_IsStepping = true;
-
-            try
+            using (m_StepRecursionChecker.Start())
             {
                 if (!m_HadFirstReset)
                 {
@@ -552,11 +567,6 @@ namespace Unity.MLAgents
                 {
                     AgentAct?.Invoke();
                 }
-            }
-            finally
-            {
-                // Reset m_IsStepping when we're done (or if an exception occurred).
-                m_IsStepping = false;
             }
         }
 
@@ -630,6 +640,14 @@ namespace Unity.MLAgents
 
             // Reset the Lazy instance
             s_Lazy = new Lazy<Academy>(() => new Academy());
+        }
+
+        /// <summary>
+        /// Check if the input AcademyFixedUpdateStepper belongs to this Academy.
+        /// </summary>
+        internal bool IsStepperOwner(AcademyFixedUpdateStepper stepper)
+        {
+            return GameObject.ReferenceEquals(stepper.gameObject, Academy.Instance.m_StepperObject);
         }
     }
 }

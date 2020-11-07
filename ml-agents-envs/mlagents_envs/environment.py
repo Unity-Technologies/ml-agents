@@ -18,6 +18,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
+    ActionBuffers,
     BehaviorName,
     AgentId,
     BehaviorMapping,
@@ -59,7 +60,8 @@ class UnityEnvironment(BaseEnv):
     # Revision history:
     #  * 1.0.0 - initial version
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
-    API_VERSION = "1.1.0"
+    #  * 1.2.0 - support compression mapping for stacked compressed observations.
+    API_VERSION = "1.2.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -118,6 +120,7 @@ class UnityEnvironment(BaseEnv):
         capabilities = UnityRLCapabilitiesProto()
         capabilities.baseRLCapabilities = True
         capabilities.concatenatedPngObservations = True
+        capabilities.compressedChannelMapping = True
         return capabilities
 
     @staticmethod
@@ -234,7 +237,7 @@ class UnityEnvironment(BaseEnv):
 
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
-        self._env_actions: Dict[str, np.ndarray] = {}
+        self._env_actions: Dict[str, ActionBuffers] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
 
@@ -312,7 +315,7 @@ class UnityEnvironment(BaseEnv):
                     n_agents = len(self._env_state[group_name][0])
                 self._env_actions[group_name] = self._env_specs[
                     group_name
-                ].create_empty_action(n_agents)
+                ].action_spec.empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
             outputs = self._communicator.exchange(step_input)
@@ -334,45 +337,26 @@ class UnityEnvironment(BaseEnv):
                 f"agent group in the environment"
             )
 
-    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: ActionBuffers) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
-        spec = self._env_specs[behavior_name]
-        expected_type = np.float32 if spec.is_action_continuous() else np.int32
-        expected_shape = (len(self._env_state[behavior_name][0]), spec.action_size)
-        if action.shape != expected_shape:
-            raise UnityActionException(
-                f"The behavior {behavior_name} needs an input of dimension "
-                f"{expected_shape} for (<number of agents>, <action size>) but "
-                f"received input of dimension {action.shape}"
-            )
-        if action.dtype != expected_type:
-            action = action.astype(expected_type)
+        action_spec = self._env_specs[behavior_name].action_spec
+        num_agents = len(self._env_state[behavior_name][0])
+        action = action_spec._validate_action(action, num_agents, behavior_name)
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionBuffers
     ) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
-        spec = self._env_specs[behavior_name]
-        expected_shape = (spec.action_size,)
-        if action.shape != expected_shape:
-            raise UnityActionException(
-                f"The Agent {agent_id} with BehaviorName {behavior_name} needs "
-                f"an input of dimension {expected_shape} but received input of "
-                f"dimension {action.shape}"
-            )
-        expected_type = np.float32 if spec.is_action_continuous() else np.int32
-        if action.dtype != expected_type:
-            action = action.astype(expected_type)
-
+        action_spec = self._env_specs[behavior_name].action_spec
+        num_agents = len(self._env_state[behavior_name][0])
+        action = action_spec._validate_action(action, num_agents, behavior_name)
         if behavior_name not in self._env_actions:
-            self._env_actions[behavior_name] = spec.create_empty_action(
-                len(self._env_state[behavior_name][0])
-            )
+            self._env_actions[behavior_name] = action_spec.empty_action(num_agents)
         try:
             index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
                 0
@@ -427,7 +411,7 @@ class UnityEnvironment(BaseEnv):
 
     @timed
     def _generate_step_input(
-        self, vector_action: Dict[str, np.ndarray]
+        self, vector_action: Dict[str, ActionBuffers]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -435,7 +419,12 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
-                action = AgentActionProto(vector_actions=vector_action[b][i])
+                # TODO: extend to AgentBuffers
+                if vector_action[b].continuous is not None:
+                    _act = vector_action[b].continuous[i]
+                else:
+                    _act = vector_action[b].discrete[i]
+                action = AgentActionProto(vector_actions=_act)
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
         rl_in.side_channel = bytes(

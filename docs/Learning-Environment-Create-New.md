@@ -333,7 +333,7 @@ public override void OnActionReceived(float[] vectorAction)
     }
 
     // Fell off platform
-    if (this.transform.localPosition.y < 0)
+    else if (this.transform.localPosition.y < 0)
     {
         EndEpisode();
     }
@@ -356,8 +356,6 @@ code.
 1. Add the `Decision Requester` script with the Add Component button from the
    RollerAgent Inspector.
 1. Change **Decision Period** to `10`. For more information on decisions, see [the Agent documentation](Learning-Environment-Design-Agents.md#decisions)
-1. Drag the Target GameObject from the Hierarchy window to the RollerAgent
-   Target field.
 1. Add the `Behavior Parameters` script with the Add Component button from the
    RollerAgent Inspector.
 1. Modify the Behavior Parameters of the Agent :

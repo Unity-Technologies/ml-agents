@@ -208,4 +208,56 @@ namespace Unity.MLAgents.Sensors
             }
         }
     }
+
+    public static class ObservationWriterExtension
+    {
+
+        /// <summary>
+        /// Writes a Texture2D into a ObservationWriter.
+        /// </summary>
+        /// <param name="obsWriter">
+        /// Writer to fill with Texture data.
+        /// </param>
+        /// <param name="texture">
+        /// The texture to be put into the tensor.
+        /// </param>
+        /// <param name="grayScale">
+        /// If set to <c>true</c> the textures will be converted to grayscale before
+        /// being stored in the tensor.
+        /// </param>
+        /// <returns>The number of floats written</returns>
+        public static int WriteTexture(
+            this ObservationWriter obsWriter,
+            Texture2D texture,
+            bool grayScale)
+        {
+            var width = texture.width;
+            var height = texture.height;
+
+            var texturePixels = texture.GetPixels32();
+            // During training, we convert from Texture to PNG before sending to the trainer, which has the
+            // effect of flipping the image. We need another flip here at inference time to match this.
+            for (var h = height - 1; h >= 0; h--)
+            {
+                for (var w = 0; w < width; w++)
+                {
+                    var currentPixel = texturePixels[(height - h - 1) * width + w];
+                    if (grayScale)
+                    {
+                        obsWriter[h, w, 0] =
+                            (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
+                    }
+                    else
+                    {
+                        // For Color32, the r, g and b values are between 0 and 255.
+                        obsWriter[h, w, 0] = currentPixel.r / 255.0f;
+                        obsWriter[h, w, 1] = currentPixel.g / 255.0f;
+                        obsWriter[h, w, 2] = currentPixel.b / 255.0f;
+                    }
+                }
+            }
+
+            return height * width * (grayScale ? 1 : 3);
+        }
+    }
 }

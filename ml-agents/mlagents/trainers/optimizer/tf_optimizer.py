@@ -6,11 +6,11 @@ from mlagents.trainers.buffer import AgentBuffer
 from mlagents.trainers.policy.tf_policy import TFPolicy
 from mlagents.trainers.optimizer import Optimizer
 from mlagents.trainers.trajectory import SplitObservations
-from mlagents.trainers.components.reward_signals.reward_signal_factory import (
+from mlagents.trainers.tf.components.reward_signals.reward_signal_factory import (
     create_reward_signal,
 )
 from mlagents.trainers.settings import TrainerSettings, RewardSignalType
-from mlagents.trainers.components.bc.module import BCModule
+from mlagents.trainers.tf.components.bc.module import BCModule
 
 
 class TFOptimizer(Optimizer):  # pylint: disable=W0223
@@ -55,14 +55,16 @@ class TFOptimizer(Optimizer):  # pylint: disable=W0223
             ]
             feed_dict[self.memory_in] = [np.zeros((self.m_size), dtype=np.float32)]
         if self.policy.prev_action is not None:
-            feed_dict[self.policy.prev_action] = batch["prev_action"]
+            feed_dict[self.policy.prev_action] = batch["prev_discrete_action"]
 
         if self.policy.use_recurrent:
             value_estimates, policy_mem, value_mem = self.sess.run(
                 [self.value_heads, self.policy.memory_out, self.memory_out], feed_dict
             )
             prev_action = (
-                batch["actions"][-1] if not self.policy.use_continuous_act else None
+                batch["discrete_action"][-1]
+                if not self.policy.use_continuous_act
+                else None
             )
         else:
             value_estimates = self.sess.run(self.value_heads, feed_dict)

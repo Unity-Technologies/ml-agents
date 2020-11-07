@@ -6,16 +6,10 @@ from typing import List, Optional
 
 
 def get_unity_executable_path():
-    UNITY_VERSION = os.environ["UNITY_VERSION"]
-    BOKKEN_UNITY = f"/Users/bokken/{UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
-    HUB_UNITY = (
-        f"/Applications/Unity/Hub/Editor/{UNITY_VERSION}/Unity.app/Contents/MacOS/Unity"
-    )
-    if os.path.exists(BOKKEN_UNITY):
-        return BOKKEN_UNITY
-    if os.path.exists(HUB_UNITY):
-        return HUB_UNITY
-    raise FileNotFoundError("Can't find bokken or hub executables")
+    downloader_install_path = "./.Editor/Unity.app/Contents/MacOS/Unity"
+    if os.path.exists(downloader_install_path):
+        return downloader_install_path
+    raise FileNotFoundError("Can't find executable from unity-downloader-cli")
 
 
 def get_base_path():
@@ -156,10 +150,11 @@ def checkout_csharp_version(csharp_version):
         return
 
     csharp_tag = f"com.unity.ml-agents_{csharp_version}"
-    csharp_dirs = ["com.unity.ml-agents", "Project"]
+    csharp_dirs = ["com.unity.ml-agents", "com.unity.ml-agents.extensions", "Project"]
     for csharp_dir in csharp_dirs:
         subprocess.check_call(f"rm -rf {csharp_dir}", shell=True)
-        subprocess.check_call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
+        # Allow the checkout to fail, since the extensions folder isn't availabe in 1.0.0
+        subprocess.call(f"git checkout {csharp_tag} -- {csharp_dir}", shell=True)
 
 
 def undo_git_checkout():

@@ -1,0 +1,14 @@
+# List of editor versions for standalone-build-test and its dependencies.
+# csharp_backcompat_version is used in training-int-tests to determine the
+# older package version to run the backwards compat tests against.
+test_editors:
+  - version: 2018.4
+    csharp_backcompat_version: 1.0.0
+  - version: 2019.4
+    csharp_backcompat_version: 1.0.0
+  - version: 2020.1
+    csharp_backcompat_version: 1.0.0
+  - version: 2020.2
+    # 2020.2 moved the AssetImporters namespace
+    # but we didn't handle this until 1.2.0
+    csharp_backcompat_version: 1.2.0

@@ -68,9 +68,8 @@ def test_stat_reporter_property():
     )
 
 
-@mock.patch("mlagents.tf_utils.tf.Summary")
-@mock.patch("mlagents.tf_utils.tf.summary.FileWriter")
-def test_tensorboard_writer(mock_filewriter, mock_summary):
+@mock.patch("mlagents.trainers.stats.SummaryWriter")
+def test_tensorboard_writer(mock_summary):
     # Test write_stats
     category = "category1"
     with tempfile.TemporaryDirectory(prefix="unittest-") as base_dir:
@@ -83,22 +82,17 @@ def test_tensorboard_writer(mock_filewriter, mock_summary):
             basedir=base_dir, category=category
         )
         assert os.path.exists(filewriter_dir)
-        mock_filewriter.assert_called_once_with(filewriter_dir)
+        mock_summary.assert_called_once_with(filewriter_dir)
 
         # Test that the filewriter was written to and the summary was added.
-        mock_summary.return_value.value.add.assert_called_once_with(
-            tag="key1", simple_value=1.0
-        )
-        mock_filewriter.return_value.add_summary.assert_called_once_with(
-            mock_summary.return_value, 10
-        )
-        mock_filewriter.return_value.flush.assert_called_once()
+        mock_summary.return_value.add_scalar.assert_called_once_with("key1", 1.0, 10)
+        mock_summary.return_value.flush.assert_called_once()
 
         # Test hyperparameter writing - no good way to parse the TB string though.
         tb_writer.add_property(
             "category1", StatsPropertyType.HYPERPARAMETERS, {"example": 1.0}
         )
-        assert mock_filewriter.return_value.add_summary.call_count > 1
+        assert mock_summary.return_value.add_text.call_count >= 1
 
 
 def test_tensorboard_writer_clear(tmp_path):
@@ -153,7 +147,7 @@ class ConsoleWriterTest(unittest.TestCase):
                 },
                 10,
             )
-            # Test hyperparameter writing - no good way to parse the TB string though.
+            # Test hyperparameter writing
             console_writer.add_property(
                 "category1", StatsPropertyType.HYPERPARAMETERS, {"example": 1.0}
             )

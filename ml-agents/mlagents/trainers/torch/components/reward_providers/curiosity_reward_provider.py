@@ -9,7 +9,7 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 from mlagents.trainers.settings import CuriositySettings
 
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.utils import ModelUtils, AgentAction
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
 from mlagents.trainers.settings import NetworkSettings, EncoderType
@@ -61,7 +61,7 @@ class CuriosityNetwork(torch.nn.Module):
 
     def __init__(self, specs: BehaviorSpec, settings: CuriositySettings) -> None:
         super().__init__()
-        self._policy_specs = specs
+        self._action_spec = specs.action_spec
         state_encoder_settings = NetworkSettings(
             normalize=False,
             hidden_units=settings.encoding_size,
@@ -73,7 +73,7 @@ class CuriosityNetwork(torch.nn.Module):
             specs.observation_shapes, state_encoder_settings
         )
 
-        self._action_flattener = ModelUtils.ActionFlattener(specs)
+        self._action_flattener = ModelUtils.ActionFlattener(self._action_spec)
 
         self.inverse_model_action_prediction = torch.nn.Sequential(
             LinearEncoder(2 * settings.encoding_size, 1, 256),
@@ -134,11 +134,11 @@ class CuriosityNetwork(torch.nn.Module):
             (self.get_current_state(mini_batch), self.get_next_state(mini_batch)), dim=1
         )
         hidden = self.inverse_model_action_prediction(inverse_model_input)
-        if self._policy_specs.is_action_continuous():
+        if self._action_spec.is_continuous():
             return hidden
         else:
             branches = ModelUtils.break_into_branches(
-                hidden, self._policy_specs.discrete_action_branches
+                hidden, self._action_spec.discrete_branches
             )
             branches = [torch.softmax(b, dim=1) for b in branches]
             return torch.cat(branches, dim=1)
@@ -148,13 +148,13 @@ class CuriosityNetwork(torch.nn.Module):
         Uses the current state embedding and the action of the mini_batch to predict
         the next state embedding.
         """
-        if self._policy_specs.is_action_continuous():
-            action = ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.float)
+        actions = AgentAction.from_dict(mini_batch)
+        if self._action_spec.is_continuous():
+            action = actions.continuous_tensor
         else:
             action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.long),
-                    self._policy_specs.discrete_action_branches,
+                    actions.discrete_tensor, self._action_spec.discrete_branches
                 ),
                 dim=1,
             )
@@ -170,11 +170,9 @@ class CuriosityNetwork(torch.nn.Module):
         action prediction (given the current and next state).
         """
         predicted_action = self.predict_action(mini_batch)
-        if self._policy_specs.is_action_continuous():
-            sq_difference = (
-                ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.float)
-                - predicted_action
-            ) ** 2
+        actions = AgentAction.from_dict(mini_batch)
+        if self._action_spec.is_continuous():
+            sq_difference = (actions.continuous_tensor - predicted_action) ** 2
             sq_difference = torch.sum(sq_difference, dim=1)
             return torch.mean(
                 ModelUtils.dynamic_partition(
@@ -186,8 +184,7 @@ class CuriosityNetwork(torch.nn.Module):
         else:
             true_action = torch.cat(
                 ModelUtils.actions_to_onehot(
-                    ModelUtils.list_to_tensor(mini_batch["actions"], dtype=torch.long),
-                    self._policy_specs.discrete_action_branches,
+                    actions.discrete_tensor, self._action_spec.discrete_branches
                 ),
                 dim=1,
             )

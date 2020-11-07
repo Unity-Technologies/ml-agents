@@ -167,12 +167,14 @@ class RewardSignalType(Enum):
     EXTRINSIC: str = "extrinsic"
     GAIL: str = "gail"
     CURIOSITY: str = "curiosity"
+    RND: str = "rnd"
 
     def to_settings(self) -> type:
         _mapping = {
             RewardSignalType.EXTRINSIC: RewardSignalSettings,
             RewardSignalType.GAIL: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
+            RewardSignalType.RND: RNDSettings,
         }
         return _mapping[self]
 
@@ -214,6 +216,12 @@ class CuriositySettings(RewardSignalSettings):
     learning_rate: float = 3e-4
 
 
+@attr.s(auto_attribs=True)
+class RNDSettings(RewardSignalSettings):
+    encoding_size: int = 64
+    learning_rate: float = 1e-4
+
+
 # SAMPLERS #############################################################################
 class ParameterRandomizationType(Enum):
     UNIFORM: str = "uniform"
@@ -235,6 +243,12 @@ class ParameterRandomizationType(Enum):
 @attr.s(auto_attribs=True)
 class ParameterRandomizationSettings(abc.ABC):
     seed: int = parser.get_default("seed")
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        raise TrainerConfigError(f"__str__ not implemented for type {self.__class__}.")
 
     @staticmethod
     def structure(
@@ -297,6 +311,12 @@ class ParameterRandomizationSettings(abc.ABC):
 class ConstantSettings(ParameterRandomizationSettings):
     value: float = 0.0
 
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"Float: value={self.value}"
+
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
         """
         Helper method to send sampler settings over EnvironmentParametersChannel
@@ -311,6 +331,12 @@ class ConstantSettings(ParameterRandomizationSettings):
 class UniformSettings(ParameterRandomizationSettings):
     min_value: float = attr.ib()
     max_value: float = 1.0
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"Uniform sampler: min={self.min_value}, max={self.max_value}"
 
     @min_value.default
     def _min_value_default(self):
@@ -340,6 +366,12 @@ class GaussianSettings(ParameterRandomizationSettings):
     mean: float = 1.0
     st_dev: float = 1.0
 
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"Gaussian sampler: mean={self.mean}, stddev={self.st_dev}"
+
     def apply(self, key: str, env_channel: EnvironmentParametersChannel) -> None:
         """
         Helper method to send sampler settings over EnvironmentParametersChannel
@@ -355,6 +387,12 @@ class GaussianSettings(ParameterRandomizationSettings):
 @attr.s(auto_attribs=True)
 class MultiRangeUniformSettings(ParameterRandomizationSettings):
     intervals: List[Tuple[float, float]] = attr.ib()
+
+    def __str__(self) -> str:
+        """
+        Helper method to output sampler stats to console.
+        """
+        return f"MultiRangeUniform sampler: intervals={self.intervals}"
 
     @intervals.default
     def _intervals_default(self):
@@ -582,7 +620,7 @@ class TrainerSettings(ExportableSettings):
     threaded: bool = True
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
-    framework: FrameworkType = FrameworkType.TENSORFLOW
+    framework: FrameworkType = FrameworkType.PYTORCH
 
     cattr.register_structure_hook(
         Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure

@@ -1,6 +1,6 @@
 from mlagents_envs.base_env import (
+    ActionSpec,
     BehaviorSpec,
-    ActionType,
     DecisionSteps,
     TerminalSteps,
 )
@@ -14,7 +14,7 @@ from mlagents_envs.communicator_objects.observation_pb2 import (
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import numpy as np
 import io
-from typing import cast, List, Tuple, Union, Collection, Optional, Iterable
+from typing import cast, List, Tuple, Collection, Optional, Iterable
 from PIL import Image
 
 
@@ -31,18 +31,11 @@ def behavior_spec_from_proto(
     :return: BehaviorSpec object.
     """
     observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    action_type = (
-        ActionType.DISCRETE
-        if brain_param_proto.vector_action_space_type == 0
-        else ActionType.CONTINUOUS
-    )
-    if action_type == ActionType.CONTINUOUS:
-        action_shape: Union[
-            int, Tuple[int, ...]
-        ] = brain_param_proto.vector_action_size[0]
+    if brain_param_proto.vector_action_space_type == 1:
+        action_spec = ActionSpec(brain_param_proto.vector_action_size[0], ())
     else:
-        action_shape = tuple(brain_param_proto.vector_action_size)
-    return BehaviorSpec(observation_shape, action_type, action_shape)
+        action_spec = ActionSpec(0, tuple(brain_param_proto.vector_action_size))
+    return BehaviorSpec(observation_shape, action_spec)
 
 
 class OffsetBytesIO:
@@ -78,7 +71,9 @@ class OffsetBytesIO:
 
 
 @timed
-def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
+def process_pixels(
+    image_bytes: bytes, expected_channels: int, mappings: Optional[List[int]] = None
+) -> np.ndarray:
     """
     Converts byte array observation image into numpy array, re-sizes it,
     and optionally converts it to grey scale
@@ -88,23 +83,12 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
     """
     image_fp = OffsetBytesIO(image_bytes)
 
-    if expected_channels == 1:
-        # Convert to grayscale
-        with hierarchical_timer("image_decompress"):
-            image = Image.open(image_fp)
-            # Normally Image loads lazily, load() forces it to do loading in the timer scope.
-            image.load()
-        s = np.array(image, dtype=np.float32) / 255.0
-        s = np.mean(s, axis=2)
-        s = np.reshape(s, [s.shape[0], s.shape[1], 1])
-        return s
-
     image_arrays = []
-
     # Read the images back from the bytes (without knowing the sizes).
     while True:
         with hierarchical_timer("image_decompress"):
             image = Image.open(image_fp)
+            # Normally Image loads lazily, load() forces it to do loading in the timer scope.
             image.load()
         image_arrays.append(np.array(image, dtype=np.float32) / 255.0)
 
@@ -116,13 +100,61 @@ def process_pixels(image_bytes: bytes, expected_channels: int) -> np.ndarray:
             # Didn't find the header, so must be at the end.
             break
 
-    img = np.concatenate(image_arrays, axis=2)
-    # We can drop additional channels since they may need to be added to include
-    # numbers of observation channels not divisible by 3.
-    actual_channels = list(img.shape)[2]
-    if actual_channels > expected_channels:
-        img = img[..., 0:expected_channels]
+    if mappings is not None and len(mappings) > 0:
+        return _process_images_mapping(image_arrays, mappings)
+    else:
+        return _process_images_num_channels(image_arrays, expected_channels)
 
+
+def _process_images_mapping(image_arrays, mappings):
+    """
+    Helper function for processing decompressed images with compressed channel mappings.
+    """
+    image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
+
+    if len(mappings) != len(image_arrays):
+        raise UnityObservationException(
+            f"Compressed observation and its mapping had different number of channels - "
+            f"observation had {len(image_arrays)} channels but its mapping had {len(mappings)} channels"
+        )
+    if len({m for m in mappings if m > -1}) != max(mappings) + 1:
+        raise UnityObservationException(
+            f"Invalid Compressed Channel Mapping: the mapping {mappings} does not have the correct format."
+        )
+    if max(mappings) >= len(image_arrays):
+        raise UnityObservationException(
+            f"Invalid Compressed Channel Mapping: the mapping has index larger than the total "
+            f"number of channels in observation - mapping index {max(mappings)} is"
+            f"invalid for input observation with {len(image_arrays)} channels."
+        )
+
+    processed_image_arrays: List[np.array] = [[] for _ in range(max(mappings) + 1)]
+    for mapping_idx, img in zip(mappings, image_arrays):
+        if mapping_idx > -1:
+            processed_image_arrays[mapping_idx].append(img)
+
+    for i, img_array in enumerate(processed_image_arrays):
+        processed_image_arrays[i] = np.mean(img_array, axis=0)
+    img = np.stack(processed_image_arrays, axis=2)
+    return img
+
+
+def _process_images_num_channels(image_arrays, expected_channels):
+    """
+    Helper function for processing decompressed images with number of expected channels.
+    This is for old API without mapping provided. Use the first n channel, n=expected_channels.
+    """
+    if expected_channels == 1:
+        # Convert to grayscale
+        img = np.mean(image_arrays[0], axis=2)
+        img = np.reshape(img, [img.shape[0], img.shape[1], 1])
+    else:
+        img = np.concatenate(image_arrays, axis=2)
+        # We can drop additional channels since they may need to be added to include
+        # numbers of observation channels not divisible by 3.
+        actual_channels = list(img.shape)[2]
+        if actual_channels > expected_channels:
+            img = img[..., 0:expected_channels]
     return img
 
 
@@ -147,7 +179,9 @@ def observation_to_np_array(
         img = np.reshape(img, obs.shape)
         return img
     else:
-        img = process_pixels(obs.compressed_data, expected_channels)
+        img = process_pixels(
+            obs.compressed_data, expected_channels, list(obs.compressed_channel_mapping)
+        )
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):
             raise UnityObservationException(
@@ -277,13 +311,13 @@ def steps_from_proto(
         [agent_info.id for agent_info in terminal_agent_info_list], dtype=np.int32
     )
     action_mask = None
-    if behavior_spec.is_action_discrete():
+    if behavior_spec.action_spec.discrete_size > 0:
         if any(
             [agent_info.action_mask is not None]
             for agent_info in decision_agent_info_list
         ):
             n_agents = len(decision_agent_info_list)
-            a_size = np.sum(behavior_spec.discrete_action_branches)
+            a_size = np.sum(behavior_spec.action_spec.discrete_branches)
             mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
             for agent_index, agent_info in enumerate(decision_agent_info_list):
                 if agent_info.action_mask is not None:
@@ -293,7 +327,9 @@ def steps_from_proto(
                             for k in range(a_size)
                         ]
             action_mask = (1 - mask_matrix).astype(np.bool)
-            indices = _generate_split_indices(behavior_spec.discrete_action_branches)
+            indices = _generate_split_indices(
+                behavior_spec.action_spec.discrete_branches
+            )
             action_mask = np.split(action_mask, indices, axis=1)
     return (
         DecisionSteps(

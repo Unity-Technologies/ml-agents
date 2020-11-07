@@ -2,11 +2,13 @@ import os
 from unittest import mock
 import pytest
 import mlagents.trainers.tests.mock_brain as mb
-from mlagents.trainers.policy.checkpoint_manager import NNCheckpoint
+from mlagents.trainers.policy.checkpoint_manager import ModelCheckpoint
 from mlagents.trainers.trainer.rl_trainer import RLTrainer
 from mlagents.trainers.tests.test_buffer import construct_fake_buffer
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.settings import TrainerSettings, FrameworkType
+
+from mlagents_envs.base_env import ActionSpec
 
 
 # Add concrete implementations of abstract methods
@@ -92,7 +94,7 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model):
         length=time_horizon,
         observation_shapes=[(1,)],
         max_step_complete=True,
-        action_space=[2],
+        action_spec=ActionSpec.create_discrete((2,)),
     )
     trajectory_queue.put(trajectory)
 
@@ -126,7 +128,9 @@ def test_advance(mocked_clear_update_buffer, mocked_save_model):
     "framework", [FrameworkType.TENSORFLOW, FrameworkType.PYTORCH], ids=["tf", "torch"]
 )
 @mock.patch("mlagents.trainers.trainer.trainer.StatsReporter.write_stats")
-@mock.patch("mlagents.trainers.trainer.rl_trainer.NNCheckpointManager.add_checkpoint")
+@mock.patch(
+    "mlagents.trainers.trainer.rl_trainer.ModelCheckpointManager.add_checkpoint"
+)
 def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
     trainer = create_rl_trainer(framework)
     mock_policy = mock.Mock()
@@ -142,7 +146,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
         length=time_horizon,
         observation_shapes=[(1,)],
         max_step_complete=True,
-        action_space=[2],
+        action_spec=ActionSpec.create_discrete((2,)),
     )
     # Check that we can turn off the trainer and that the buffer is cleared
     num_trajectories = 5
@@ -170,7 +174,7 @@ def test_summary_checkpoint(mock_add_checkpoint, mock_write_summary, framework):
     add_checkpoint_calls = [
         mock.call(
             trainer.brain_name,
-            NNCheckpoint(
+            ModelCheckpoint(
                 step,
                 f"{trainer.model_saver.model_path}/{trainer.brain_name}-{step}.{export_ext}",
                 None,

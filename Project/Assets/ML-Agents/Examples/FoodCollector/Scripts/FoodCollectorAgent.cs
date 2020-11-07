@@ -30,6 +30,10 @@ public class FoodCollectorAgent : Agent
     public GameObject myLaser;
     public bool contribute;
     public bool useVectorObs;
+    [Tooltip("Use only the frozen flag in vector observations. If \"Use Vector Obs\" " +
+             "is checked, this option has no effect. This option is necessary for the " +
+             "VisualFoodCollector scene.")]
+    public bool useVectorFrozenFlag;
 
     EnvironmentParameters m_ResetParams;
 
@@ -51,6 +55,10 @@ public class FoodCollectorAgent : Agent
             sensor.AddObservation(localVelocity.z);
             sensor.AddObservation(m_Frozen);
             sensor.AddObservation(m_Shoot);
+        }
+        else if (useVectorFrozenFlag)
+        {
+            sensor.AddObservation(m_Frozen);
         }
     }
 

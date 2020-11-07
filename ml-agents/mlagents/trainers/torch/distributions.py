@@ -1,5 +1,5 @@
 import abc
-from typing import List, Tuple
+from typing import List
 from mlagents.torch_utils import torch, nn
 import numpy as np
 import math
@@ -36,13 +36,6 @@ class DistInstance(nn.Module, abc.ABC):
     def exported_model_output(self) -> torch.Tensor:
         """
         Returns the tensor to be exported to ONNX for the distribution
-        """
-        pass
-
-    @abc.abstractmethod
-    def structure_action(self, action: torch.Tensor) -> torch.Tensor:
-        """
-        Return the structured action to be passed to the trainer
         """
         pass
 
@@ -85,9 +78,6 @@ class GaussianDistInstance(DistInstance):
     def exported_model_output(self):
         return self.sample()
 
-    def structure_action(self, action):
-        return action[:, :, 0]
-
 
 class TanhGaussianDistInstance(GaussianDistInstance):
     def __init__(self, mean, std):
@@ -128,7 +118,7 @@ class CategoricalDistInstance(DiscreteDistInstance):
         ).squeeze(-1)
 
     def log_prob(self, value):
-        return torch.log(self.pdf(value)).unsqueeze(-1)
+        return torch.log(self.pdf(value))
 
     def all_log_prob(self):
         return torch.log(self.probs)
@@ -138,10 +128,6 @@ class CategoricalDistInstance(DiscreteDistInstance):
 
     def exported_model_output(self):
         return self.all_log_prob()
-
-    def structure_action(self, action):
-        return action[:, 0, :].type(torch.float)
-
 
 
 class GaussianDistribution(nn.Module):
@@ -180,11 +166,14 @@ class GaussianDistribution(nn.Module):
         if self.conditional_sigma:
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
-            log_sigma = self.log_sigma
+            # Expand so that entropy matches batch size. Note that we're using
+            # torch.cat here instead of torch.expand() becuase it is not supported in the
+            # verified version of Barracuda (1.0.2).
+            log_sigma = torch.cat([self.log_sigma] * inputs.shape[0], axis=0)
         if self.tanh_squash:
-            return [TanhGaussianDistInstance(mu, torch.exp(log_sigma))]
+            return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
         else:
-            return [GaussianDistInstance(mu, torch.exp(log_sigma))]
+            return GaussianDistInstance(mu, torch.exp(log_sigma))
 
 
 class MultiCategoricalDistribution(nn.Module):
