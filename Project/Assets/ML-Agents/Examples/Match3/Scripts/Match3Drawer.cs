@@ -24,71 +24,71 @@ namespace Unity.MLAgentsExamples
 
 
         public Dictionary<(int, int), Match3TileSelector> tilesDict = new Dictionary<(int, int), Match3TileSelector>();
-        //        private bool m_initialized;
+        private bool m_initialized;
         public float cubeSpacing = 1;
         public Match3Board board;
         public GameObject tilePrefab;
 
-        //        void Awake()
-        //        {
-        //            if (!m_initialized)
-        //            {
-        //                InitializeDict();
-        //            }
-        //        }
+        void Awake()
+        {
+            if (!m_initialized)
+            {
+                InitializeDict();
+            }
+        }
 
-        //        void InitializeDict()
-        //        {
-        //            board = GetComponent<Match3Board>();
-        //            foreach (var item in tilesDict)
-        //            {
-        //                if (item.Value)
-        //                {
-        //                    DestroyImmediate(item.Value.gameObject);
-        //                }
-        //            }
-        //
-        //            tilesDict.Clear();
-        //
-        //            for (var i = 0; i < board.Rows; i++)
-        //            {
-        //                for (var j = 0; j < board.Columns; j++)
-        //                {
-        //                    var go = Instantiate(tilePrefab, transform.position, quaternion.identity, transform);
-        //                    go.name = $"r{i}_c{j}";
-        //                    tilesDict.Add((i, j), go.GetComponent<Match3TileSelector>());
-        //                }
-        //            }
-        //
-        //            m_initialized = true;
-        //        }
+        void InitializeDict()
+        {
+            board = GetComponent<Match3Board>();
+            foreach (var item in tilesDict)
+            {
+                if (item.Value)
+                {
+                    DestroyImmediate(item.Value.gameObject);
+                }
+            }
 
-        //        void Update()
-        //        {
-        //            if (!board)
-        //            {
-        //                board = GetComponent<Match3Board>();
-        //            }
-        //
-        //            if (!m_initialized)
-        //            {
-        //                InitializeDict();
-        //            }
-        //
-        //            for (var i = 0; i < board.Rows; i++)
-        //            {
-        //                for (var j = 0; j < board.Columns; j++)
-        //                {
-        //                    var value = board.Cells != null ? board.GetCellType(i, j) : Match3Board.k_EmptyCell;
-        //                    var pos = new Vector3(j, i, 0);
-        //                    pos *= cubeSpacing;
-        //
-        //                    var specialType = board.Cells != null ? board.GetSpecialType(i, j) : 0;
-        //                    tilesDict[(i, j)].transform.position = transform.TransformPoint(pos);
-        //                    tilesDict[(i, j)].SetActiveTile(specialType, value);
-        //                }
-        //            }
-        //        }
+            tilesDict.Clear();
+
+            for (var i = 0; i < board.Rows; i++)
+            {
+                for (var j = 0; j < board.Columns; j++)
+                {
+                    var go = Instantiate(tilePrefab, transform.position, Quaternion.identity, transform);
+                    go.name = $"r{i}_c{j}";
+                    tilesDict.Add((i, j), go.GetComponent<Match3TileSelector>());
+                }
+            }
+
+            m_initialized = true;
+        }
+
+        void Update()
+        {
+            if (!board)
+            {
+                board = GetComponent<Match3Board>();
+            }
+
+            if (!m_initialized)
+            {
+                InitializeDict();
+            }
+
+            for (var i = 0; i < board.Rows; i++)
+            {
+                for (var j = 0; j < board.Columns; j++)
+                {
+                    var value = board.Cells != null ? board.GetCellType(i, j) : Match3Board.k_EmptyCell;
+                    var pos = new Vector3(j, i, 0);
+                    pos *= cubeSpacing;
+
+                    var specialType = board.Cells != null ? board.GetSpecialType(i, j) : 0;
+                    tilesDict[(i, j)].transform.position = transform.TransformPoint(pos);
+                    tilesDict[(i, j)].SetActiveTile(specialType, value);
+                }
+            }
+        }
 
         void OnDrawGizmos()
         {
@@ -96,16 +96,16 @@ namespace Unity.MLAgentsExamples
             var cubeSize = .5f;
             var matchedWireframeSize = .5f * (cubeSize + cubeSpacing);
 
-            //            if (!board)
-            //            {
-            //                board = GetComponent<Match3Board>();
-            //            }
-            var board = GetComponent<Match3Board>();
-            if (board == null)
+            if (!board)
             {
-                //                board = GetComponent<Match3Board>();
-                return;
+                board = GetComponent<Match3Board>();
             }
+            //            var board = GetComponent<Match3Board>();
+            //            if (board == null)
+            //            {
+            //                //                board = GetComponent<Match3Board>();
+            //                return;
+            //            }
 
             for (var i = 0; i < board.Rows; i++)
             {
