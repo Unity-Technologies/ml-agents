@@ -133,7 +133,6 @@ class BCModule:
                     ]
                 )
             )
-        print(bc_loss)
         return bc_loss
 
     def _update_batch(
