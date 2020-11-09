@@ -78,9 +78,17 @@ public class AttentionSensor : ISensor
 
     /// <inheritdoc/>
     public void Update() {
+        Reset();
         var bullets = m_AgentTransform.parent.GetComponentsInChildren<Bullet>();
         // Sort by closest :
         Array.Sort(bullets , (a, b) => Vector3.Distance(a.transform.position, m_AgentTransform.position) - Vector3.Distance(b.transform.position, m_AgentTransform.position) > 0 ? 1 : -1);
+
+        // foreach (Bullet b in bullets)
+        // {
+        //     b.transform.localScale = 0.5f * new Vector3(1,1,1);
+        // }
+
+
 
         foreach (Bullet b in bullets)
         {
@@ -94,6 +102,7 @@ public class AttentionSensor : ISensor
             m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 2] = b.transform.forward.x;
             m_ObservationBuffer[m_CurrentNumObservables * m_ObservableSize + 3] = b.transform.forward.z;
             m_CurrentNumObservables += 1;
+            // b.transform.localScale = 1f* new Vector3(1,1,1);
         }
 
     }
