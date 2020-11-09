@@ -311,8 +311,6 @@ class PPOOptimizer(TFOptimizer):
             )
             stats_needed.update(reward_signal.stats_name_to_update_name)
 
-        for tens, d in feed_dict.items():
-            print(tens, d)
         update_vals = self._execute_model(feed_dict, self.update_dict)
         for stat_name, update_name in stats_needed.items():
             update_stats[stat_name] = update_vals[update_name]
