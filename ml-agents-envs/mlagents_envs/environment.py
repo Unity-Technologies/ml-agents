@@ -367,7 +367,10 @@ class UnityEnvironment(BaseEnv):
                     agent_id
                 )
             ) from ie
-        self._env_actions[behavior_name][index] = action
+        if action_spec.continuous_size > 0:
+            self._env_actions[behavior_name].continuous[index] = action.continuous[0]
+        if action_spec.discrete_size > 0:
+            self._env_actions[behavior_name].discrete[index] = action.discrete[0]
 
     def get_steps(
         self, behavior_name: BehaviorName

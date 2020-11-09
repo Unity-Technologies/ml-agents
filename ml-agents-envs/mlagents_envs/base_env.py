@@ -451,7 +451,9 @@ class BaseEnv(ABC):
         step. The Actions must be in the same order as the order received in
         the DecisionSteps.
         :param behavior_name: The name of the behavior the agents are part of
-        :param action: ActionTuple tuple of continuous and/or discrete action
+        :param action: ActionTuple tuple of continuous and/or discrete action.
+        Actions are np.arrays with dimensions  (n_agents, continuous_size) and
+        (n_agents, discrete_size), respectively.
         """
 
     @abstractmethod
@@ -464,6 +466,9 @@ class BaseEnv(ABC):
         :param behavior_name: The name of the behavior the agent is part of
         :param agent_id: The id of the agent the action is set for
         :param action: ActionTuple tuple of continuous and/or discrete action
+        Actions are np.arrays with dimensions  (1, continuous_size) and
+        (1, discrete_size), respectively. Note, this initial dimensions of 1 is because
+        this action is meant for a single agent.
         """
 
     @abstractmethod
