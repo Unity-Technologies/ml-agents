@@ -7,7 +7,7 @@ from mlagents_envs.base_env import (
     TerminalSteps,
     BehaviorSpec,
     BehaviorName,
-    ActionBuffers,
+    ActionTuple,
 )
 from mlagents_envs.side_channel.stats_side_channel import EnvironmentStats
 
@@ -150,11 +150,11 @@ class EnvManager(ABC):
     @staticmethod
     def action_buffers_from_numpy_dict(
         action_dict: Dict[str, np.ndarray]
-    ) -> ActionBuffers:
-        continuous: np.ndarray = None
-        discrete: np.ndarray = None
+    ) -> ActionTuple:
+        continuous: np.ndarray = np.array([], dtype=np.float32)
+        discrete: np.ndarray = np.array([], dtype=np.int32)
         if "continuous_action" in action_dict:
             continuous = action_dict["continuous_action"]
         if "discrete_action" in action_dict:
             discrete = action_dict["discrete_action"]
-        return ActionBuffers(continuous, discrete)
+        return ActionTuple(continuous, discrete)
