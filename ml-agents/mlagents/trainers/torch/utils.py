@@ -31,7 +31,11 @@ class AgentAction(NamedTuple):
         """
         Returns the discrete action list as a stacked tensor
         """
-        return torch.stack(self.discrete_list, dim=-1)
+        return (
+            torch.stack(self.discrete_list, dim=-1)
+            if self.discrete_list
+            else torch.tensor([])
+        )
 
     def to_numpy_dict(self) -> Dict[str, np.ndarray]:
         """

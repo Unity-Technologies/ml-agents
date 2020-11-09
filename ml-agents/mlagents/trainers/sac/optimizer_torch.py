@@ -137,10 +137,9 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor_critic.critic, self.target_network, 1.0
         )
 
-        _total_act_size = 0
-        if self._action_spec.continuous_size > 0:
-            _total_act_size += self._action_spec.continuous_size
-        _total_act_size += sum(self._action_spec.discrete_branches)
+        _total_act_size = self._action_spec.continuous_size + sum(
+            self._action_spec.discrete_branches
+        )
 
         # We create one entropy coefficient per action, whether discrete or continuous.
         self._log_ent_coef = torch.nn.Parameter(
