@@ -109,9 +109,10 @@ class ActionLogProbs(NamedTuple):
     discrete log probs of individual actions as well as all the log probs for an entire branch.
     Utility functions provide numpy <=> tensor conversions to be used by the optimizers.
     :param continuous_tensor: Torch tensor corresponding to log probs of continuous actions
-    :param discrete_list: List of Torch tensors each corresponding to log probs of discrete actions
+    :param discrete_list: List of Torch tensors each corresponding to log probs of the discrete actions that were sampled.
     :param all_discrete_list: List of Torch tensors each corresponding to all log probs of
-    a discrete action branch
+    a discrete action branch, even the discrete actions that were not sampled. all_discrete_list is a list of Tensors,
+    each Tensor corresponds to one discrete branch log probabilities. 
     """
 
     continuous_tensor: torch.Tensor
