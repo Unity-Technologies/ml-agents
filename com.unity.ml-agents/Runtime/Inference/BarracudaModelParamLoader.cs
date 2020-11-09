@@ -52,13 +52,13 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
-            if (modelApiVersionTensor == null)
+            var hasExpectedTensors = model.CheckExpectedTensors(failedModelChecks);
+            if (!hasExpectedTensors)
             {
-                failedModelChecks.Add($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.");
                 return failedModelChecks;
             }
-            var modelApiVersion = (int)modelApiVersionTensor[0];
+
+            var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
             if (modelApiVersion == -1)
             {
                 failedModelChecks.Add(
@@ -74,20 +74,13 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var memorySizeTensor = model.GetTensorByName(TensorNames.MemorySize);
-            if (memorySizeTensor == null)
+            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            if (memorySize == -1)
             {
-                failedModelChecks.Add($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.");
+                failedModelChecks.Add($"Missing node in the model provided : {TensorNames.MemorySize}");
                 return failedModelChecks;
             }
-            var memorySize = (int)memorySizeTensor[0];
 
-            failedModelChecks.AddRange(
-                CheckIntScalarPresenceHelper(new Dictionary<string, int>()
-                {
-                    {TensorNames.MemorySize, memorySize},
-                })
-            );
             failedModelChecks.AddRange(
                 CheckInputTensorPresence(model, brainParameters, memorySize, sensorComponents)
             );
@@ -100,27 +93,6 @@ namespace Unity.MLAgents.Inference
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, actuatorComponents)
             );
-            return failedModelChecks;
-        }
-
-
-        /// <summary>
-        /// Given a Dictionary of node names to int values, create checks if the values have the
-        /// invalid value of -1.
-        /// </summary>
-        /// <param name="requiredScalarFields"> Mapping from node names to int values</param>
-        /// <returns>The list the error messages of the checks that failed</returns>
-        static IEnumerable<string> CheckIntScalarPresenceHelper(
-            Dictionary<string, int> requiredScalarFields)
-        {
-            var failedModelChecks = new List<string>();
-            foreach (var field in requiredScalarFields)
-            {
-                if (field.Value == -1)
-                {
-                    failedModelChecks.Add($"Missing node in the model provided : {field.Key}");
-                }
-            }
             return failedModelChecks;
         }
 
@@ -232,13 +204,6 @@ namespace Unity.MLAgents.Inference
         static IEnumerable<string> CheckOutputTensorPresence(Model model, int memory)
         {
             var failedModelChecks = new List<string>();
-            // If there is no Action Output.
-            if (!model.outputs.Contains(TensorNames.ActionOutputDeprecated) &&
-                !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
-                !model.outputs.Contains(TensorNames.DiscreteActionOutput))
-            {
-                failedModelChecks.Add("The model does not contain an Action Output Node.");
-            }
 
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
@@ -473,15 +438,6 @@ namespace Unity.MLAgents.Inference
             ActuatorComponent[] actuatorComponents)
         {
             var failedModelChecks = new List<string>();
-            // Check the presence of action output shape
-            if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null &&
-
-                model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null &&
-                model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
-            {
-                failedModelChecks.Add("The model does not contain an Action Output Shape Node.");
-                return failedModelChecks;
-            }
 
             var tensorTester = new Dictionary<string, Func<BrainParameters, ActuatorComponent[], TensorShape?, int, int, string>>();
             if (model.HasContinuousOutputs())

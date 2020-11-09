@@ -287,5 +287,72 @@ namespace Unity.MLAgents.Inference
             return !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
                 !model.outputs.Contains(TensorNames.DiscreteActionOutput);
         }
+
+        /// <summary>
+        /// Check if the model contains all the expected input/output tensors.
+        /// </summary>
+        /// <param name="model">
+        /// The Barracuda engine model for loading static parameters.
+        /// </param>
+        /// <returns>True if the model contains all the expected tensors.</returns>
+        public static bool CheckExpectedTensors(this Model model, List<string> failedModelChecks)
+        {
+            // Check the presence of model version
+            var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
+            if (modelApiVersionTensor == null)
+            {
+                failedModelChecks.Add($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.");
+                return false;
+            }
+
+            // Check the presence of memory size
+            var memorySizeTensor = model.GetTensorByName(TensorNames.MemorySize);
+            if (memorySizeTensor == null)
+            {
+                failedModelChecks.Add($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.");
+                return false;
+            }
+
+            // Check the presence of action output tensor
+            if (!model.outputs.Contains(TensorNames.ActionOutputDeprecated) &&
+                !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
+                !model.outputs.Contains(TensorNames.DiscreteActionOutput))
+            {
+                failedModelChecks.Add("The model does not contain any Action Output Node.");
+                return false;
+            }
+
+            // Check the presence of action output shape tensor
+            if (model.UseDeprecated())
+            {
+                if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null)
+                {
+                    failedModelChecks.Add("The model does not contain any Action Output Shape Node.");
+                    return false;
+                }
+                if (model.GetTensorByName(TensorNames.IsContinuousControlDeprecated) == null)
+                {
+                    failedModelChecks.Add($"Required constant \"{TensorNames.IsContinuousControlDeprecated}\" was not found in the model file. " +
+                        "This is only required for model that uses a deprecated model format.");
+                    return false;
+                }
+            }
+            else
+            {
+                if (model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
+                    model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null)
+                {
+                    failedModelChecks.Add("The model uses continuous action but does not contain Continuous Action Output Shape Node.");
+                    return false;
+                }
+                if (model.outputs.Contains(TensorNames.DiscreteActionOutput) &&
+                    model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
+                {
+                    failedModelChecks.Add("The model uses discrete action but does not contain Discrete Action Output Shape Node.");
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 }
