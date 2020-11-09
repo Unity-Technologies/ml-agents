@@ -152,7 +152,7 @@ namespace Unity.MLAgents.Tests
         public void TestGetInputTensorsContinuous(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
-            var inputNames = model.GetInputTensorNames();
+            var inputNames = model.GetInputNames();
             // Model should contain 3 inputs : vector, visual 1 and visual 2
             Assert.AreEqual(3, inputNames.Count());
             Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
@@ -172,7 +172,7 @@ namespace Unity.MLAgents.Tests
         public void TestGetInputTensorsDiscrete(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
-            var inputNames = model.GetInputTensorNames();
+            var inputNames = model.GetInputNames();
             // Model should contain 2 inputs : recurrent and visual 1
 
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "0", inputNames);
@@ -183,7 +183,7 @@ namespace Unity.MLAgents.Tests
         public void TestGetInputTensorsHybrid()
         {
             var model = ModelLoader.Load(hybridONNXModel);
-            var inputNames = model.GetInputTensorNames();
+            var inputNames = model.GetInputNames();
             Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
         }
 

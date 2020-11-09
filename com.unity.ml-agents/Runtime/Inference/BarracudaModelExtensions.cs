@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Inference
         /// The Barracuda engine model for loading static parameters.
         /// </param>
         /// <returns>Array of the input tensor names of the model</returns>
-        public static string[] GetInputTensorNames(this Model model)
+        public static string[] GetInputNames(this Model model)
         {
             var names = new List<string>();
 

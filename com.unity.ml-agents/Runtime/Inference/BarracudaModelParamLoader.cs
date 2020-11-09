@@ -125,7 +125,7 @@ namespace Unity.MLAgents.Inference
         )
         {
             var failedModelChecks = new List<string>();
-            var tensorsNames = model.GetInputTensorNames();
+            var tensorsNames = model.GetInputNames();
 
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((brainParameters.VectorObservationSize != 0) &&
