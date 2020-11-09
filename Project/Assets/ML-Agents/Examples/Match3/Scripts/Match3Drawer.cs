@@ -92,7 +92,6 @@ namespace Unity.MLAgentsExamples
 
         void OnDrawGizmos()
         {
-            // TODO replace Gizmos for drawing the game state with proper GameObjects and animations.
             var cubeSize = .5f;
             var matchedWireframeSize = .5f * (cubeSize + CubeSpacing);
 
@@ -100,12 +99,6 @@ namespace Unity.MLAgentsExamples
             {
                 m_Board = GetComponent<Match3Board>();
             }
-            //            var board = GetComponent<Match3Board>();
-            //            if (board == null)
-            //            {
-            //                //                board = GetComponent<Match3Board>();
-            //                return;
-            //            }
 
             for (var i = 0; i < m_Board.Rows; i++)
             {
