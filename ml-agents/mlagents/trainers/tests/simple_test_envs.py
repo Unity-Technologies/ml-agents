@@ -4,7 +4,7 @@ import numpy as np
 
 from mlagents_envs.base_env import (
     ActionSpec,
-    ActionBuffers,
+    ActionTuple,
     BaseEnv,
     BehaviorSpec,
     DecisionSteps,
@@ -300,11 +300,11 @@ class RecordEnvironment(SimpleEnvironment):
         for _ in range(self.n_demos):
             for name in self.names:
                 if self.discrete:
-                    self.action[name] = ActionBuffers(
+                    self.action[name] = ActionTuple(
                         [[]], np.array([[1]] if self.goal[name] > 0 else [[0]])
                     )
                 else:
-                    self.action[name] = ActionBuffers(
+                    self.action[name] = ActionTuple(
                         np.array([[float(self.goal[name])]]), [[]]
                     )
             self.step()

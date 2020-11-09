@@ -18,7 +18,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
-    ActionBuffers,
+    ActionTuple,
     BehaviorName,
     AgentId,
     BehaviorMapping,
@@ -237,7 +237,7 @@ class UnityEnvironment(BaseEnv):
 
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
-        self._env_actions: Dict[str, ActionBuffers] = {}
+        self._env_actions: Dict[str, ActionTuple] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
 
@@ -337,7 +337,7 @@ class UnityEnvironment(BaseEnv):
                 f"agent group in the environment"
             )
 
-    def set_actions(self, behavior_name: BehaviorName, action: ActionBuffers) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: ActionTuple) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
@@ -347,7 +347,7 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionBuffers
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionTuple
     ) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
@@ -411,7 +411,7 @@ class UnityEnvironment(BaseEnv):
 
     @timed
     def _generate_step_input(
-        self, vector_action: Dict[str, ActionBuffers]
+        self, vector_action: Dict[str, ActionTuple]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
