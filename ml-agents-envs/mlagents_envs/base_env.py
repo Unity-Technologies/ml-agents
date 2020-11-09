@@ -244,14 +244,30 @@ class TerminalSteps(Mapping):
         )
 
 
-class ActionTuple(NamedTuple):
+class ActionTuple:
     """
-    A NamedTuple whose fields correspond to actions of different types.
-    Continuous and discrete actions are numpy arrays.
+    An object whose fields correspond to actions of different types.
+    Continuous and discrete actions are numpy arrays of type float32 and
+    int32, respectively and are type checked on construction.
+    Dimensions are of (n_agents, continuous_size) and (n_agents, discrete_size),
+    respectively.
     """
 
-    continuous: np.ndarray  # dims (n_agents, continuous_size)
-    discrete: np.ndarray  # dims (n_agents, discrete_size)
+    def __init__(self, continuous: np.ndarray, discrete: np.ndarray):
+        if continuous.dtype != np.float32:
+            continuous = continuous.astype(np.float32, copy=False)
+        self._continuous = continuous
+        if discrete.dtype != np.int32:
+            discrete = discrete.astype(np.int32, copy=False)
+        self._discrete = discrete
+
+    @property
+    def continuous(self) -> np.ndarray:
+        return self._continuous
+
+    @property
+    def discrete(self) -> np.ndarray:
+        return self._discrete
 
 
 class ActionSpec(NamedTuple):
@@ -303,13 +319,8 @@ class ActionSpec(NamedTuple):
         for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        continuous: np.ndarray = None
-        discrete: np.ndarray = None
-        if self.continuous_size > 0:
-            continuous = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
-
-        if self.discrete_size > 0:
-            discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
+        continuous = np.zeros((n_agents, self.continuous_size), dtype=np.float32)
+        discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
         return ActionTuple(continuous, discrete)
 
     def random_action(self, n_agents: int) -> ActionTuple:
@@ -318,13 +329,10 @@ class ActionSpec(NamedTuple):
         or continuous) for a number of agents.
         :param n_agents: The number of agents that will have actions generated
         """
-        continuous: np.ndarray = None
-        discrete: np.ndarray = None
-        if self.continuous_size > 0:
-            continuous = np.random.uniform(
-                low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
-            ).astype(np.float32)
-
+        continuous = np.random.uniform(
+            low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
+        )
+        discrete = np.array([])
         if self.discrete_size > 0:
             discrete = np.column_stack(
                 [
@@ -347,24 +355,19 @@ class ActionSpec(NamedTuple):
         for the correct number of agents and ensures the type.
         """
         _expected_shape = (n_agents, self.continuous_size)
-        if self.continuous_size > 0 and actions.continuous.shape != _expected_shape:
+        if actions.continuous.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a continuous input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.continuous.shape}"
             )
-        if actions.continuous.dtype != np.float32:
-            actions.continuous = actions.continuous.astype(np.float32)
-
         _expected_shape = (n_agents, self.discrete_size)
-        if self.discrete_size > 0 and actions.discrete.shape != _expected_shape:
+        if actions.discrete.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a discrete input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.discrete.shape}"
             )
-        if actions.discrete.dtype != np.int32:
-            actions.discrete = actions.discrete.astype(np.int32)
         return actions
 
     @staticmethod

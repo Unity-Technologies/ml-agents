@@ -110,11 +110,11 @@ class Policy:
         :return: Dict of action type to np.ndarray
         """
         act_dict: Dict[str, np.ndarray] = {}
-        action_buffer = self.behavior_spec.action_spec.empty_action(num_agents)
-        if action_buffer.continuous is not None:
-            act_dict["continuous_action"] = action_buffer.continuous
-        if action_buffer.discrete is not None:
-            act_dict["discrete_action"] = action_buffer.discrete
+        action_tuple = self.behavior_spec.action_spec.empty_action(num_agents)
+        if self.behavior_spec.action_spec.continuous_size > 0:
+            act_dict["continuous_action"] = action_tuple.continuous
+        if self.behavior_spec.action_spec.discrete_size > 0:
+            act_dict["discrete_action"] = action_tuple.discrete
         return act_dict
 
     def save_previous_action(

@@ -59,6 +59,7 @@ class SimpleEnvironment(BaseEnv):
         else:
             action_spec = ActionSpec.create_continuous(action_size)
         self.behavior_spec = BehaviorSpec(self._make_obs_spec(), action_spec)
+        self.action_spec = action_spec
         self.action_size = action_size
         self.names = brain_names
         self.positions: Dict[str, List[float]] = {}
@@ -116,10 +117,10 @@ class SimpleEnvironment(BaseEnv):
     def _take_action(self, name: str) -> bool:
         deltas = []
         _act = self.action[name]
-        if _act.discrete is not None:
+        if self.action_spec.discrete_size > 0:
             for _disc in _act.discrete[0]:
                 deltas.append(1 if _disc else -1)
-        if _act.continuous is not None:
+        if self.action_spec.continuous_size > 0:
             for _cont in _act.continuous[0]:
                 deltas.append(_cont)
         for i, _delta in enumerate(deltas):
@@ -301,10 +302,14 @@ class RecordEnvironment(SimpleEnvironment):
             for name in self.names:
                 if self.discrete:
                     self.action[name] = ActionTuple(
-                        [[]], np.array([[1]] if self.goal[name] > 0 else [[0]])
+                        np.array([], dtype=np.float32),
+                        np.array(
+                            [[1]] if self.goal[name] > 0 else [[0]], dtype=np.int32
+                        ),
                     )
                 else:
                     self.action[name] = ActionTuple(
-                        np.array([[float(self.goal[name])]]), [[]]
+                        np.array([[float(self.goal[name])]], dtype=np.float32),
+                        np.array([], dtype=np.int32),
                     )
             self.step()
