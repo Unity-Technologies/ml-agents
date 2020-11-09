@@ -160,9 +160,9 @@ public class DodgeAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
-        var rotation = Random.Range(0, 4);
-        var rotationAngle = rotation * 90f;
-        area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
+        // var rotation = Random.Range(0, 4);
+        // var rotationAngle = rotation * 90f;
+        // area.transform.Rotate(new Vector3(0f, rotationAngle, 0f));
 
         transform.position = GetRandomSpawnPos();//
         m_AgentRb.velocity = Vector3.zero;
