@@ -17,103 +17,6 @@ namespace Unity.MLAgents.Inference
         const long k_ApiVersion = 2;
 
         /// <summary>
-        /// Generates the Tensor inputs that are expected to be present in the Model.
-        /// </summary>
-        /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
-        /// </param>
-        /// <returns>TensorProxy IEnumerable with the expected Tensor inputs.</returns>
-        public static IReadOnlyList<TensorProxy> GetInputTensors(Model model)
-        {
-            var tensors = new List<TensorProxy>();
-
-            if (model == null)
-                return tensors;
-
-            foreach (var input in model.inputs)
-            {
-                tensors.Add(new TensorProxy
-                {
-                    name = input.name,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = input.shape.Select(i => (long)i).ToArray()
-                });
-            }
-
-            foreach (var mem in model.memories)
-            {
-                tensors.Add(new TensorProxy
-                {
-                    name = mem.input,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
-                    data = null,
-                    shape = TensorUtils.TensorShapeFromBarracuda(mem.shape)
-                });
-            }
-
-            tensors.Sort((el1, el2) => el1.name.CompareTo(el2.name));
-
-            return tensors;
-        }
-
-        public static int GetNumVisualInputs(Model model)
-        {
-            var count = 0;
-            if (model == null)
-                return count;
-
-            foreach (var input in model.inputs)
-            {
-                if (input.name.StartsWith(TensorNames.VisualObservationPlaceholderPrefix))
-                {
-                    count++;
-                }
-            }
-
-            return count;
-        }
-
-        /// <summary>
-        /// Generates the Tensor outputs that are expected to be present in the Model.
-        /// </summary>
-        /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
-        /// </param>
-        /// <returns>TensorProxy IEnumerable with the expected Tensor outputs</returns>
-        public static string[] GetOutputNames(Model model)
-        {
-            var names = new List<string>();
-
-            if (model == null)
-            {
-                return names.ToArray();
-            }
-
-            if (model.HasContinuousOutputs())
-            {
-                names.Add(model.ContinuousOutputName());
-            }
-            if (model.HasDiscreteOutputs())
-            {
-                names.Add(model.DiscreteOutputName());
-            }
-
-            var memory = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
-            if (memory > 0)
-            {
-                foreach (var mem in model.memories)
-                {
-                    names.Add(mem.output);
-                }
-            }
-
-            names.Sort();
-
-            return names.ToArray();
-        }
-
-        /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
         /// on it.
         /// </summary>
@@ -149,13 +52,13 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var modelApiVersionTensor = model.GetTensorByName(TensorNames.VersionNumber);
-            if (modelApiVersionTensor == null)
+            var hasExpectedTensors = model.CheckExpectedTensors(failedModelChecks);
+            if (!hasExpectedTensors)
             {
-                failedModelChecks.Add($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.");
                 return failedModelChecks;
             }
-            var modelApiVersion = (int)modelApiVersionTensor[0];
+
+            var modelApiVersion = (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
             if (modelApiVersion == -1)
             {
                 failedModelChecks.Add(
@@ -171,20 +74,13 @@ namespace Unity.MLAgents.Inference
                 return failedModelChecks;
             }
 
-            var memorySizeTensor = model.GetTensorByName(TensorNames.MemorySize);
-            if (memorySizeTensor == null)
+            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            if (memorySize == -1)
             {
-                failedModelChecks.Add($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.");
+                failedModelChecks.Add($"Missing node in the model provided : {TensorNames.MemorySize}");
                 return failedModelChecks;
             }
-            var memorySize = (int)memorySizeTensor[0];
 
-            failedModelChecks.AddRange(
-                CheckIntScalarPresenceHelper(new Dictionary<string, int>()
-                {
-                    {TensorNames.MemorySize, memorySize},
-                })
-            );
             failedModelChecks.AddRange(
                 CheckInputTensorPresence(model, brainParameters, memorySize, sensorComponents)
             );
@@ -197,27 +93,6 @@ namespace Unity.MLAgents.Inference
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, actuatorComponents)
             );
-            return failedModelChecks;
-        }
-
-
-        /// <summary>
-        /// Given a Dictionary of node names to int values, create checks if the values have the
-        /// invalid value of -1.
-        /// </summary>
-        /// <param name="requiredScalarFields"> Mapping from node names to int values</param>
-        /// <returns>The list the error messages of the checks that failed</returns>
-        static IEnumerable<string> CheckIntScalarPresenceHelper(
-            Dictionary<string, int> requiredScalarFields)
-        {
-            var failedModelChecks = new List<string>();
-            foreach (var field in requiredScalarFields)
-            {
-                if (field.Value == -1)
-                {
-                    failedModelChecks.Add($"Missing node in the model provided : {field.Key}");
-                }
-            }
             return failedModelChecks;
         }
 
@@ -250,7 +125,7 @@ namespace Unity.MLAgents.Inference
         )
         {
             var failedModelChecks = new List<string>();
-            var tensorsNames = GetInputTensors(model).Select(x => x.name).ToList();
+            var tensorsNames = model.GetInputNames();
 
             // If there is no Vector Observation Input but the Brain Parameters expect one.
             if ((brainParameters.VectorObservationSize != 0) &&
@@ -282,7 +157,7 @@ namespace Unity.MLAgents.Inference
                 visObsIndex++;
             }
 
-            var expectedVisualObs = GetNumVisualInputs(model);
+            var expectedVisualObs = model.GetNumVisualInputs();
             // Check if there's not enough visual sensors (too many would be handled above)
             if (expectedVisualObs > visObsIndex)
             {
@@ -329,13 +204,6 @@ namespace Unity.MLAgents.Inference
         static IEnumerable<string> CheckOutputTensorPresence(Model model, int memory)
         {
             var failedModelChecks = new List<string>();
-            // If there is no Action Output.
-            if (!model.outputs.Contains(TensorNames.ActionOutputDeprecated) &&
-                !model.outputs.Contains(TensorNames.ContinuousActionOutput) &&
-                !model.outputs.Contains(TensorNames.DiscreteActionOutput))
-            {
-                failedModelChecks.Add("The model does not contain an Action Output Node.");
-            }
 
             // If there is no Recurrent Output but the model is Recurrent.
             if (memory > 0)
@@ -428,7 +296,7 @@ namespace Unity.MLAgents.Inference
             }
 
             // If the model expects an input but it is not in this list
-            foreach (var tensor in GetInputTensors(model))
+            foreach (var tensor in model.GetInputTensors())
             {
                 if (!tensorTester.ContainsKey(tensor.name))
                 {
@@ -570,15 +438,6 @@ namespace Unity.MLAgents.Inference
             ActuatorComponent[] actuatorComponents)
         {
             var failedModelChecks = new List<string>();
-            // Check the presence of action output shape
-            if (model.GetTensorByName(TensorNames.ActionOutputShapeDeprecated) == null &&
-
-                model.GetTensorByName(TensorNames.ContinuousActionOutputShape) == null &&
-                model.GetTensorByName(TensorNames.DiscreteActionOutputShape) == null)
-            {
-                failedModelChecks.Add("The model does not contain an Action Output Shape Node.");
-                return failedModelChecks;
-            }
 
             var tensorTester = new Dictionary<string, Func<BrainParameters, ActuatorComponent[], TensorShape?, int, int, string>>();
             if (model.HasContinuousOutputs())

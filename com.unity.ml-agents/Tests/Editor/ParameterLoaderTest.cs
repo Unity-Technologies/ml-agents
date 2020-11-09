@@ -152,19 +152,19 @@ namespace Unity.MLAgents.Tests
         public void TestGetInputTensorsContinuous(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
-            var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
-            var inputNames = inputTensors.Select(x => x.name).ToList();
+            var inputNames = model.GetInputNames();
             // Model should contain 3 inputs : vector, visual 1 and visual 2
-            Assert.AreEqual(3, inputNames.Count);
+            Assert.AreEqual(3, inputNames.Count());
             Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "0", inputNames);
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "1", inputNames);
 
-            Assert.AreEqual(2, BarracudaModelParamLoader.GetNumVisualInputs(model));
+            Assert.AreEqual(2, model.GetNumVisualInputs());
 
             // Test if the model is null
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetInputTensors(null).Count);
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetNumVisualInputs(null));
+            model = null;
+            Assert.AreEqual(0, model.GetInputTensors().Count);
+            Assert.AreEqual(0, model.GetNumVisualInputs());
         }
 
         [TestCase(true)]
@@ -172,8 +172,7 @@ namespace Unity.MLAgents.Tests
         public void TestGetInputTensorsDiscrete(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
-            var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
-            var inputNames = inputTensors.Select(x => x.name).ToList();
+            var inputNames = model.GetInputNames();
             // Model should contain 2 inputs : recurrent and visual 1
 
             Assert.Contains(TensorNames.VisualObservationPlaceholderPrefix + "0", inputNames);
@@ -184,8 +183,7 @@ namespace Unity.MLAgents.Tests
         public void TestGetInputTensorsHybrid()
         {
             var model = ModelLoader.Load(hybridONNXModel);
-            var inputTensors = BarracudaModelParamLoader.GetInputTensors(model);
-            var inputNames = inputTensors.Select(x => x.name).ToList();
+            var inputNames = model.GetInputNames();
             Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
         }
 
@@ -194,12 +192,13 @@ namespace Unity.MLAgents.Tests
         public void TestGetOutputTensorsContinuous(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(continuousNNModel) : ModelLoader.Load(continuousONNXModel);
-            var outputNames = BarracudaModelParamLoader.GetOutputNames(model);
+            var outputNames = model.GetOutputNames();
             var actionOutputName = useDeprecatedNNModel ? TensorNames.ActionOutputDeprecated : TensorNames.ContinuousActionOutput;
             Assert.Contains(actionOutputName, outputNames);
             Assert.AreEqual(1, outputNames.Count());
 
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetOutputNames(null).Count());
+            model = null;
+            Assert.AreEqual(0, model.GetOutputNames().Count());
         }
 
         [TestCase(true)]
@@ -207,7 +206,7 @@ namespace Unity.MLAgents.Tests
         public void TestGetOutputTensorsDiscrete(bool useDeprecatedNNModel)
         {
             var model = useDeprecatedNNModel ? ModelLoader.Load(discreteNNModel) : ModelLoader.Load(discreteONNXModel);
-            var outputNames = BarracudaModelParamLoader.GetOutputNames(model);
+            var outputNames = model.GetOutputNames();
             var actionOutputName = useDeprecatedNNModel ? TensorNames.ActionOutputDeprecated : TensorNames.DiscreteActionOutput;
             Assert.Contains(actionOutputName, outputNames);
             // TODO : There are some memory tensors as well
@@ -217,13 +216,14 @@ namespace Unity.MLAgents.Tests
         public void TestGetOutputTensorsHybrid()
         {
             var model = ModelLoader.Load(hybridONNXModel);
-            var outputNames = BarracudaModelParamLoader.GetOutputNames(model);
+            var outputNames = model.GetOutputNames();
 
             Assert.AreEqual(2, outputNames.Count());
             Assert.Contains(TensorNames.ContinuousActionOutput, outputNames);
             Assert.Contains(TensorNames.DiscreteActionOutput, outputNames);
 
-            Assert.AreEqual(0, BarracudaModelParamLoader.GetOutputNames(null).Count());
+            model = null;
+            Assert.AreEqual(0, model.GetOutputNames().Count());
         }
 
         [TestCase(true)]

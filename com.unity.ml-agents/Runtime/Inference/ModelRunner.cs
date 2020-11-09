@@ -78,8 +78,8 @@ namespace Unity.MLAgents.Inference
                 m_Engine = null;
             }
 
-            m_InferenceInputs = BarracudaModelParamLoader.GetInputTensors(barracudaModel);
-            m_OutputNames = BarracudaModelParamLoader.GetOutputNames(barracudaModel);
+            m_InferenceInputs = barracudaModel.GetInputTensors();
+            m_OutputNames = barracudaModel.GetOutputNames();
             m_TensorGenerator = new TensorGenerator(
                 seed, m_TensorAllocator, m_Memories, barracudaModel);
             m_TensorApplier = new TensorApplier(
