@@ -53,10 +53,11 @@ class GaussianDistInstance(DistInstance):
         return torch.clamp(sample, -3, 3) / 3
 
     def log_prob(self, value):
+        unscaled_val = value * 3  # Inverse of the clipping
         var = self.std ** 2
         log_scale = torch.log(self.std + EPSILON)
         return (
-            -((value - self.mean) ** 2) / (2 * var + EPSILON)
+            -((unscaled_val - self.mean) ** 2) / (2 * var + EPSILON)
             - log_scale
             - math.log(math.sqrt(2 * math.pi))
         )

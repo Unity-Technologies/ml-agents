@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1603413570",
+        "python_version": "3.8.5 (default, Aug 26 2020, 18:43:21) \n[Clang 10.0.0 (clang-1000.10.44.4)]",
+        "command_line_arguments": "/Users/ervin/.virtualenvs/mlagents-torchonly/bin/mlagents-learn",
+        "mlagents_version": "0.22.0.dev0",
+        "mlagents_envs_version": "0.22.0.dev0",
+        "communication_protocol_version": "1.2.0",
+        "pytorch_version": "1.6.0",
+        "numpy_version": "1.18.5",
+        "end_time_seconds": "1603413575"
+    },
+    "total": 4.865803542,
+    "count": 1,
+    "self": 0.12232865100000012,
+    "children": {
+        "run_training.setup": {
+            "total": 0.017890174000000147,
+            "count": 1,
+            "self": 0.017890174000000147
+        },
+        "TrainerController.start_learning": {
+            "total": 4.725584717,
+            "count": 1,
+            "self": 0.0008521860000003656,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 4.724625777,
+                    "count": 1,
+                    "self": 4.724625777
+                },
+                "trainer_threads": {
+                    "total": 3.208999999948503e-06,
+                    "count": 1,
+                    "self": 3.208999999948503e-06
+                },
+                "TrainerController._save_models": {
+                    "total": 0.00010354499999998268,
+                    "count": 1,
+                    "self": 0.00010354499999998268
+                }
+            }
+        }
+    }
+}

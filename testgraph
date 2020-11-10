@@ -1,0 +1,51 @@
+digraph {
+	graph [size="12,12"]
+	node [align=left fontsize=12 height=0.2 ranksep=0.1 shape=box style=filled]
+	5635290840 [label=MeanBackward1 fillcolor=darkolivegreen1]
+	5635291512 -> 5635290840
+	5635291512 [label=StackBackward]
+	5635291456 -> 5635291512
+	5635291456 [label=SumBackward1]
+	5635291400 -> 5635291456
+	5635291400 [label=MulBackward0]
+	5635291680 -> 5635291400
+	5635291680 [label=SliceBackward]
+	5635104552 -> 5635291680
+	5635104552 [label=SqueezeBackward1]
+	5635289160 -> 5635104552
+	5635289160 [label=AddmmBackward]
+	5635289552 -> 5635289160
+	5635289552 [label="q1_network.q_heads.value_heads.extrinsic.bias
+ (3)" fillcolor=lightblue]
+	5635289832 -> 5635289160
+	5635289832 [label=SumBackward1]
+	5635290672 -> 5635289832
+	5635290672 [label=StackBackward]
+	5635290784 -> 5635290672
+	5635290784 [label=ReluBackward0]
+	5635290896 -> 5635290784
+	5635290896 [label=AddmmBackward]
+	5635291008 -> 5635290896
+	5635291008 [label="q1_network.vector_encoders.0.seq_layers.1.bias
+ (20)" fillcolor=lightblue]
+	5635291064 -> 5635290896
+	5635291064 [label=AddmmBackward]
+	5635290560 -> 5635291064
+	5635290560 [label="q1_network.vector_encoders.0.seq_layers.0.bias
+ (20)" fillcolor=lightblue]
+	5635291288 -> 5635291064
+	5635291288 [label=TBackward]
+	5635291232 -> 5635291288
+	5635291232 [label="q1_network.vector_encoders.0.seq_layers.0.weight
+ (20, 20)" fillcolor=lightblue]
+	5635291120 -> 5635290896
+	5635291120 [label=TBackward]
+	5635291344 -> 5635291120
+	5635291344 [label="q1_network.vector_encoders.0.seq_layers.1.weight
+ (20, 20)" fillcolor=lightblue]
+	5635290392 -> 5635289160
+	5635290392 [label=TBackward]
+	5635290728 -> 5635290392
+	5635290728 [label="q1_network.q_heads.value_heads.extrinsic.weight
+ (3, 20)" fillcolor=lightblue]
+}

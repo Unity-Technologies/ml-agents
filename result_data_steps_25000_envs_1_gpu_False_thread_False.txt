@@ -1,0 +1,2 @@
+name steps use_torch num_torch_threads num_envs use_gpu total tc_advance_total tc_advance_count update_total update_count evaluate_total evaluate_count
+3DBall 25000 True 1 1 False 29.153259196000004 20.549189107999954 2334 1.5307083690000134 561 1.4450991369999908 1596
