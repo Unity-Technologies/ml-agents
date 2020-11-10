@@ -28,7 +28,7 @@ public class AttentionSensorComponent : SensorComponent
     /// <inheritdoc/>
     public override int[] GetObservationShape()
     {
-        return new[] { MaxNumObservables, ObservableSize,1};
+        return new[] { MaxNumObservables, ObservableSize, 1};
     }
 }
 

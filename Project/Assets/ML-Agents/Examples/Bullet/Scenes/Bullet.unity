@@ -1192,6 +1192,11 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1790823965615916200, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6206438415594346407, guid: e8cf070fe398a4cf49e159e022b4c70f,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -1261,6 +1266,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BulletArea
+      objectReference: {fileID: 0}
+    - target: {fileID: 7807211597913259905, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8381723296076531545, guid: e8cf070fe398a4cf49e159e022b4c70f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7960826675695843403, guid: e8cf070fe398a4cf49e159e022b4c70f, type: 3}
