@@ -332,7 +332,7 @@ class ActionSpec(NamedTuple):
         continuous = np.random.uniform(
             low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
         )
-        discrete = np.array([])
+        discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
         if self.discrete_size > 0:
             discrete = np.column_stack(
                 [
