@@ -107,7 +107,7 @@ class Policy:
         """
         Creates empty previous action for use with RNNs and discrete control
         :param num_agents: Number of agents.
-        :return: Dict of action type to np.ndarray
+        :return: Numpy array of zeros.
         """
         return np.zeros(
             (num_agents, self.behavior_spec.action_spec.discrete_size), dtype=np.int32
