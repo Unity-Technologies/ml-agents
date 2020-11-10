@@ -67,7 +67,9 @@ class GaussianDistInstance(DistInstance):
 
     def entropy(self):
         return torch.mean(
-            0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON), dim=1
+            0.5 * torch.log(2 * math.pi * math.e * self.std + EPSILON),
+            dim=1,
+            keepdim=True,
         )  # Use equivalent behavior to TF
 
 
