@@ -50,14 +50,13 @@ class GaussianDistInstance(DistInstance):
 
     def sample(self):
         sample = self.mean + torch.randn_like(self.mean) * self.std
-        return sample / 3
+        return sample
 
     def log_prob(self, value):
-        unscaled_val = value * 3  # Inverse of the clipping
         var = self.std ** 2
         log_scale = torch.log(self.std + EPSILON)
         return (
-            -((unscaled_val - self.mean) ** 2) / (2 * var + EPSILON)
+            -((value - self.mean) ** 2) / (2 * var + EPSILON)
             - log_scale
             - math.log(math.sqrt(2 * math.pi))
         )
