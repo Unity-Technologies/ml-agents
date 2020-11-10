@@ -110,7 +110,6 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory["actions_pre"].append(exp.action_pre)
 
             # Adds the log prob and action of continuous/discrete separately
-            action_shape = None
             for act_type, act_array in exp.action.items():
                 agent_buffer_trajectory[act_type].append(act_array)
             for log_type, log_array in exp.action_probs.items():
