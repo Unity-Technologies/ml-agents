@@ -18,9 +18,9 @@ def create_agent_buffer(
     ]
     action_buffer = behavior_spec.action_spec.random_action(1)
     action = {}
-    if action_buffer.continuous is not None:
+    if behavior_spec.action_spec.continuous_size > 0:
         action["continuous_action"] = action_buffer.continuous
-    if action_buffer.discrete is not None:
+    if behavior_spec.action_spec.discrete_size > 0:
         action["discrete_action"] = action_buffer.discrete
 
     for _ in range(number):
