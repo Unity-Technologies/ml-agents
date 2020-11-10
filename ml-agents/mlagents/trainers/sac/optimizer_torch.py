@@ -10,6 +10,7 @@ from mlagents.trainers.torch.networks import ValueNetwork
 from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
 from mlagents.trainers.buffer import AgentBuffer
 from mlagents_envs.timers import timed
+from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.settings import TrainerSettings, SACSettings
 from contextlib import ExitStack
@@ -26,12 +27,11 @@ class TorchSACOptimizer(TorchOptimizer):
             stream_names: List[str],
             observation_shapes: List[Tuple[int, ...]],
             network_settings: NetworkSettings,
-            continuous_act_size: int,
-            discrete_act_size: int,
+            action_spec: ActionSpec,
         ):
             super().__init__()
-            num_value_outs = max(discrete_act_size, 1)
-            num_action_ins = int(continuous_act_size)
+            num_value_outs = max(sum(action_spec.discrete_branches), 1)
+            num_action_ins = int(action_spec.continuous_size)
 
             self.q1_network = ValueNetwork(
                 stream_names,
@@ -135,8 +135,7 @@ class TorchSACOptimizer(TorchOptimizer):
             self.stream_names,
             self.policy.behavior_spec.observation_shapes,
             policy_network_settings,
-            self._action_spec.continuous_size,
-            sum(self._action_spec.discrete_branches),
+            self.policy.action_spec,
         )
 
         self.target_network = ValueNetwork(
