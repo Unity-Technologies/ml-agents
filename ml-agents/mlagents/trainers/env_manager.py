@@ -148,9 +148,7 @@ class EnvManager(ABC):
         return len(step_infos)
 
     @staticmethod
-    def action_buffers_from_numpy_dict(
-        action_dict: Dict[str, np.ndarray]
-    ) -> ActionTuple:
+    def action_tuple_from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> ActionTuple:
         continuous: np.ndarray = np.array([], dtype=np.float32)
         discrete: np.ndarray = np.array([], dtype=np.int32)
         if "continuous_action" in action_dict:

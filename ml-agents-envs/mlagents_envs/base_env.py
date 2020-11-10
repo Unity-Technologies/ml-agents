@@ -253,11 +253,15 @@ class ActionTuple:
     respectively.
     """
 
-    def __init__(self, continuous: np.ndarray, discrete: np.ndarray):
-        if continuous.dtype != np.float32:
+    def __init__(
+        self,
+        continuous: Optional[np.ndarray] = None,
+        discrete: Optional[np.ndarray] = None,
+    ):
+        if continuous is not None and continuous.dtype != np.float32:
             continuous = continuous.astype(np.float32, copy=False)
         self._continuous = continuous
-        if discrete.dtype != np.int32:
+        if discrete is not None and discrete.dtype != np.int32:
             discrete = discrete.astype(np.int32, copy=False)
         self._discrete = discrete
 
