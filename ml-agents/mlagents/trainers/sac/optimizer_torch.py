@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, List, Mapping, cast, Tuple, Optional
+from typing import Dict, List, Mapping, NamedTuple, cast, Tuple, Optional
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
@@ -95,6 +95,17 @@ class TorchSACOptimizer(TorchOptimizer):
                 )
             return q1_out, q2_out
 
+    class TargetEntropy(NamedTuple):
+
+        discrete: List[float] = []  # One per branch
+        continuous: float = 0.0
+
+    class LogEntCoef(nn.Module):
+        def __init__(self, discrete, continuous):
+            super().__init__()
+            self.discrete = discrete
+            self.continuous = continuous
+
     def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
         super().__init__(policy, trainer_params)
         hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
@@ -137,29 +148,36 @@ class TorchSACOptimizer(TorchOptimizer):
             self.policy.actor_critic.critic, self.target_network, 1.0
         )
 
-        _total_act_size = self._action_spec.continuous_size + sum(
-            self._action_spec.discrete_branches
-        )
-
         # We create one entropy coefficient per action, whether discrete or continuous.
-        self._log_ent_coef = torch.nn.Parameter(
-            torch.log(torch.as_tensor([self.init_entcoef] * _total_act_size)),
+        _disc_log_ent_coef = torch.nn.Parameter(
+            torch.log(
+                torch.as_tensor(
+                    [self.init_entcoef] * sum(self._action_spec.discrete_branches)
+                )
+            ),
             requires_grad=True,
         )
-        self.target_entropy = []
-        if self._action_spec.continuous_size > 0:
-            for _ in range(self._action_spec.continuous_size):
-                self.target_entropy.append(
-                    torch.as_tensor(
-                        -1
-                        * self.continuous_target_entropy_scale
-                        * np.prod(self._action_spec.continuous_size).astype(np.float32)
-                    )
-                )
-        self.target_entropy += [
+        _cont_log_ent_coef = torch.nn.Parameter(
+            torch.log(
+                torch.as_tensor([self.init_entcoef] * self._action_spec.continuous_size)
+            ),
+            requires_grad=True,
+        )
+        self._log_ent_coef = TorchSACOptimizer.LogEntCoef(
+            discrete=_disc_log_ent_coef, continuous=_cont_log_ent_coef
+        )
+        _cont_target = (
+            -1
+            * self.continuous_target_entropy_scale
+            * np.prod(self._action_spec.continuous_size).astype(np.float32)
+        )
+        _disc_target = [
             self.discrete_target_entropy_scale * np.log(i).astype(np.float32)
             for i in self._action_spec.discrete_branches
         ]
+        self.target_entropy = TorchSACOptimizer.TargetEntropy(
+            continuous=_cont_target, discrete=_disc_target
+        )
         policy_params = list(self.policy.actor_critic.network_body.parameters()) + list(
             self.policy.actor_critic.action_model.parameters()
         )
@@ -187,7 +205,7 @@ class TorchSACOptimizer(TorchOptimizer):
             value_params, lr=hyperparameters.learning_rate
         )
         self.entropy_optimizer = torch.optim.Adam(
-            [self._log_ent_coef], lr=hyperparameters.learning_rate
+            self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate
         )
         self._move_to_device(default_device())
 
@@ -251,7 +269,8 @@ class TorchSACOptimizer(TorchOptimizer):
     ) -> torch.Tensor:
         min_policy_qs = {}
         with torch.no_grad():
-            _ent_coef = torch.exp(self._log_ent_coef)
+            _cont_ent_coef = self._log_ent_coef.continuous.exp()
+            _disc_ent_coef = self._log_ent_coef.discrete.exp()
         for name in values.keys():
             if self._action_spec.discrete_size <= 0:
                 min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
@@ -285,7 +304,7 @@ class TorchSACOptimizer(TorchOptimizer):
             for name in values.keys():
                 with torch.no_grad():
                     v_backup = min_policy_qs[name] - torch.sum(
-                        _ent_coef * log_probs.continuous_tensor, dim=1
+                        _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
@@ -300,7 +319,7 @@ class TorchSACOptimizer(TorchOptimizer):
             # We have to do entropy bonus per action branch
             branched_ent_bonus = torch.stack(
                 [
-                    torch.sum(_ent_coef[i] * _lp, dim=1, keepdim=True)
+                    torch.sum(_disc_ent_coef[i] * _lp, dim=1, keepdim=True)
                     for i, _lp in enumerate(branched_per_action_ent)
                 ]
             )
@@ -325,8 +344,9 @@ class TorchSACOptimizer(TorchOptimizer):
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
     ) -> torch.Tensor:
-        _cont_ent_coef, _disc_ent_coef = self._split_discrete_continuous(
-            self._log_ent_coef
+        _cont_ent_coef, _disc_ent_coef = (
+            self._log_ent_coef.continuous,
+            self._log_ent_coef.discrete,
         )
         _cont_ent_coef = _cont_ent_coef.exp()
         _disc_ent_coef = _disc_ent_coef.exp()
@@ -367,11 +387,9 @@ class TorchSACOptimizer(TorchOptimizer):
     def sac_entropy_loss(
         self, log_probs: ActionLogProbs, loss_masks: torch.Tensor
     ) -> torch.Tensor:
-        _cont_target_entropy, _disc_target_entropy = self._split_discrete_continuous(
-            self.target_entropy
-        )
-        _cont_ent_coef, _disc_ent_coef = self._split_discrete_continuous(
-            self._log_ent_coef
+        _cont_ent_coef, _disc_ent_coef = (
+            self._log_ent_coef.continuous,
+            self._log_ent_coef.discrete,
         )
         entropy_loss = 0
         if self._action_spec.discrete_size > 0:
@@ -386,7 +404,7 @@ class TorchSACOptimizer(TorchOptimizer):
                     [
                         torch.sum(_lp, axis=1, keepdim=True) + _te
                         for _lp, _te in zip(
-                            branched_per_action_ent, _disc_target_entropy
+                            branched_per_action_ent, self.target_entropy.discrete
                         )
                     ],
                     axis=1,
@@ -401,7 +419,7 @@ class TorchSACOptimizer(TorchOptimizer):
             with torch.no_grad():
                 cont_log_probs = log_probs.continuous_tensor
                 target_current_diff = torch.sum(
-                    cont_log_probs + _cont_target_entropy[0], dim=1
+                    cont_log_probs + self.target_entropy.continuous, dim=1
                 )
             # We update all the _cont_ent_coef as one block
             entropy_loss += -1 * ModelUtils.masked_mean(
@@ -578,7 +596,12 @@ class TorchSACOptimizer(TorchOptimizer):
             "Losses/Value Loss": value_loss.item(),
             "Losses/Q1 Loss": q1_loss.item(),
             "Losses/Q2 Loss": q2_loss.item(),
-            "Policy/Entropy Coeff": torch.mean(torch.exp(self._log_ent_coef)).item(),
+            "Policy/Discrete Entropy Coeff": torch.mean(
+                torch.exp(self._log_ent_coef.discrete)
+            ).item(),
+            "Policy/Continuous Entropy Coeff": torch.mean(
+                torch.exp(self._log_ent_coef.continuous)
+            ).item(),
             "Policy/Learning Rate": decay_lr,
         }
 
