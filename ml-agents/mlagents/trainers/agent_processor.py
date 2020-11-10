@@ -144,10 +144,7 @@ class AgentProcessor:
                 action_probs[prob_type] = prob_array[idx]
 
             action_mask = stored_decision_step.action_mask
-            prev_action = self.policy.retrieve_previous_action([global_id])
-            prev_action_dict: Dict[str, np.ndarray] = {}
-            for _prev_act_type, _prev_act in prev_action.items():
-                prev_action_dict[_prev_act_type] = _prev_act[0, :]
+            prev_action = self.policy.retrieve_previous_action([global_id])[0, :]
             experience = AgentExperience(
                 obs=obs,
                 reward=step.reward,
@@ -156,7 +153,7 @@ class AgentProcessor:
                 action_probs=action_probs,
                 action_pre=action_pre,
                 action_mask=action_mask,
-                prev_action=prev_action_dict,
+                prev_action=prev_action,
                 interrupted=interrupted,
                 memory=memory,
             )

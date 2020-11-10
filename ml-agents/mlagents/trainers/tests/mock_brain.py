@@ -102,10 +102,9 @@ def make_fake_trajectory(
             if action_spec.is_discrete()
             else None
         )
-        if action_spec.is_continuous():
-            prev_action = {"continuous_action": np.ones(action_size, dtype=np.float32)}
-        else:
-            prev_action = {"discrete_action": np.ones(action_size, dtype=np.float32)}
+        prev_action = None
+        if action_spec.is_discrete():
+            prev_action = np.ones(action_size, dtype=np.int32)
 
         max_step = False
         memory = np.ones(memory_size, dtype=np.float32)

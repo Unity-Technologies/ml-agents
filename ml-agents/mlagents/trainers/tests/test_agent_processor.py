@@ -20,9 +20,7 @@ def create_mock_policy():
     mock_policy = mock.Mock()
     mock_policy.reward_signals = {}
     mock_policy.retrieve_memories.return_value = np.zeros((1, 1), dtype=np.float32)
-    mock_policy.retrieve_previous_action.return_value = {
-        "prev_continuous_action": np.zeros((1, 1), dtype=np.float32)
-    }
+    mock_policy.retrieve_previous_action.return_value = np.zeros((1, 1), dtype=np.int32)
     return mock_policy
 
 

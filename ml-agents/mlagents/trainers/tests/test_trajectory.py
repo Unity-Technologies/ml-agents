@@ -43,7 +43,7 @@ def test_trajectory_to_agentbuffer():
         "continuous_action",
         "action_probs",
         "action_mask",
-        "prev_continuous_action",
+        "prev_action",
         "environment_rewards",
     ]
     wanted_keys = set(wanted_keys)

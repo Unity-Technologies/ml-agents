@@ -614,7 +614,7 @@ class SACOptimizer(TFOptimizer):
         else:
             feed_dict[policy.output] = batch["discrete_action"]
             if self.policy.use_recurrent:
-                feed_dict[policy.prev_action] = batch["prev_discrete_action"]
+                feed_dict[policy.prev_action] = batch["prev_action"]
             feed_dict[policy.action_masks] = batch["action_mask"]
         if self.policy.use_vec_obs:
             feed_dict[policy.vector_in] = batch["vector_obs"]

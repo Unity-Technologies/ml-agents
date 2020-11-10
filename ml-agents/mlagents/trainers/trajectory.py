@@ -12,7 +12,7 @@ class AgentExperience(NamedTuple):
     action_probs: Dict[str, np.ndarray]
     action_pre: np.ndarray  # TODO: Remove this
     action_mask: np.ndarray
-    prev_action: Dict[str, np.ndarray]
+    prev_action: np.ndarray
     interrupted: bool
     memory: np.ndarray
 
@@ -131,10 +131,7 @@ class Trajectory(NamedTuple):
                 agent_buffer_trajectory["action_mask"].append(
                     np.ones(action_shape, dtype=np.float32), padding_value=1
                 )
-
-            for act_type, act_array in exp.prev_action.items():
-                agent_buffer_trajectory["prev_" + act_type].append(act_array)
-
+            agent_buffer_trajectory["prev_action"].append(exp.prev_action)
             agent_buffer_trajectory["environment_rewards"].append(exp.reward)
 
             # Store the next visual obs as the current
