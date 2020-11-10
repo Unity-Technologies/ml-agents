@@ -203,8 +203,10 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = ModelUtils.to_numpy(action)
+
+        clipped_action = torch.clamp(action, -3, 3) / 3
         run_out["pre_action"] = ModelUtils.to_numpy(action)
+        run_out["action"] = ModelUtils.to_numpy(clipped_action)
         # Todo - make pre_action difference
         run_out["log_probs"] = ModelUtils.to_numpy(log_probs)
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
