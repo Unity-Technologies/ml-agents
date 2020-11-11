@@ -188,7 +188,7 @@ using the help utility:
 mlagents-learn --help
 ```
 
-These additional CLI arguments are grouped into environment, engine and checkpoint
+These additional CLI arguments are grouped into environment, engine and checkpoint. The available settings and example values are shown below. 
 
 #### Environment settings
 
