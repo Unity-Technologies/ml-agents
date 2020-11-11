@@ -137,6 +137,9 @@ namespace Unity.MLAgents
         // Flag used to keep track of the first time the Academy is reset.
         bool m_HadFirstReset;
 
+        // Detect an Academy step called by user code that is also called by the Academy.
+        private RecursionChecker m_StepRecursionChecker = new RecursionChecker("EnvironmentStep");
+
         // Random seed used for inference.
         int m_InferenceSeed;
 
@@ -514,36 +517,41 @@ namespace Unity.MLAgents
         /// </summary>
         public void EnvironmentStep()
         {
-            if (!m_HadFirstReset)
+            using (m_StepRecursionChecker.Start())
             {
-                ForcedFullReset();
-            }
 
-            AgentPreStep?.Invoke(m_StepCount);
 
-            m_StepCount += 1;
-            m_TotalStepCount += 1;
-            AgentIncrementStep?.Invoke();
+                if (!m_HadFirstReset)
+                {
+                    ForcedFullReset();
+                }
 
-            using (TimerStack.Instance.Scoped("AgentSendState"))
-            {
-                AgentSendState?.Invoke();
-            }
+                AgentPreStep?.Invoke(m_StepCount);
 
-            using (TimerStack.Instance.Scoped("DecideAction"))
-            {
-                DecideAction?.Invoke();
-            }
+                m_StepCount += 1;
+                m_TotalStepCount += 1;
+                AgentIncrementStep?.Invoke();
 
-            // If the communicator is not on, we need to clear the SideChannel sending queue
-            if (!IsCommunicatorOn)
-            {
-                SideChannelsManager.GetSideChannelMessage();
-            }
+                using (TimerStack.Instance.Scoped("AgentSendState"))
+                {
+                    AgentSendState?.Invoke();
+                }
 
-            using (TimerStack.Instance.Scoped("AgentAct"))
-            {
-                AgentAct?.Invoke();
+                using (TimerStack.Instance.Scoped("DecideAction"))
+                {
+                    DecideAction?.Invoke();
+                }
+
+                // If the communicator is not on, we need to clear the SideChannel sending queue
+                if (!IsCommunicatorOn)
+                {
+                    SideChannelsManager.GetSideChannelMessage();
+                }
+
+                using (TimerStack.Instance.Scoped("AgentAct"))
+                {
+                    AgentAct?.Invoke();
+                }
             }
         }
 

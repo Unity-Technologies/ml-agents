@@ -16,6 +16,9 @@ and this project adheres to
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
 - Fixed a bug with visual observations using .onnx model files and newer versions of Barracuda (1.1.0 or later). (#4533)
+- `Agent.CollectObservations()`, `Agent.EndEpisode()`, and `Academy.EnvironmentStep()` will now throw an exception
+if they are called recursively (for example, if they call `Agent.EndEpisode()`).
+Previously, this would result in an infinite loop and cause the editor to hang. (#4638)
 - Fixed a bug where accessing the Academy outside of play mode would cause the Academy to get stepped multiple times when in play mode. (#4637)
 
 ## [1.0.5] - 2020-09-23
