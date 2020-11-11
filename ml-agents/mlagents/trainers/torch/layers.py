@@ -39,8 +39,9 @@ def linear_layer(
     :param output_size: The size of the output tensor
     :param kernel_init: The Initialization to use for the weights of the layer
     :param kernel_gain: The multiplier for the weights of the kernel. Note that in
-    TensorFlow, calling variance_scaling with scale 0.01 is equivalent to calling
-    KaimingHeNormal with kernel_gain of 0.1
+    TensorFlow, the gain is square-rooted, and in Torch, it is set to a default value of sqrt(2).
+    Therefore calling variance_scaling with scale 0.01 is equivalent to calling
+    KaimingHeNormal with kernel_gain of 0.1 * sqrt(2)
     :param bias_init: The Initialization to use for the weights of the bias layer
     """
     layer = torch.nn.Linear(input_size, output_size)
@@ -119,7 +120,7 @@ class LinearEncoder(torch.nn.Module):
                 input_size,
                 hidden_size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=1.0,
+                kernel_gain=0.707,  # Equivalent to TF gain = 1
             )
         ]
         self.layers.append(Swish())
@@ -129,7 +130,7 @@ class LinearEncoder(torch.nn.Module):
                     hidden_size,
                     hidden_size,
                     kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=1.0,
+                    kernel_gain=0.707,
                 )
             )
             self.layers.append(Swish())
