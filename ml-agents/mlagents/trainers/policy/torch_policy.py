@@ -125,9 +125,7 @@ class TorchPolicy(Policy):
         masks: Optional[torch.Tensor] = None,
         memories: Optional[torch.Tensor] = None,
         seq_len: int = 1,
-    ) -> Tuple[
-        AgentAction, ActionLogProbs, torch.Tensor, Dict[str, torch.Tensor], torch.Tensor
-    ]:
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
         :param vec_obs: List of vector observations.
         :param vis_obs: List of visual observations.
@@ -136,10 +134,10 @@ class TorchPolicy(Policy):
         :param seq_len: Sequence length when using RNN.
         :return: Tuple of AgentAction, ActionLogProbs, entropies, and output memories.
         """
-        actions, log_probs, entropies, value_heads, memories = self.actor_critic.get_action_stats_and_value(
+        actions, log_probs, entropies, _, memories = self.actor_critic.get_action_stats_and_value(
             vec_obs, vis_obs, masks, memories, seq_len
         )
-        return (actions, log_probs, entropies, value_heads, memories)
+        return (actions, log_probs, entropies, memories)
 
     def evaluate_actions(
         self,
@@ -176,7 +174,7 @@ class TorchPolicy(Policy):
 
         run_out = {}
         with torch.no_grad():
-            action, log_probs, entropy, value_heads, memories = self.sample_actions(
+            action, log_probs, entropy, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
         action_dict = action.to_numpy_dict()
@@ -186,10 +184,6 @@ class TorchPolicy(Policy):
         )
         run_out["log_probs"] = log_probs.to_numpy_dict()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
-        run_out["value_heads"] = {
-            name: ModelUtils.to_numpy(t) for name, t in value_heads.items()
-        }
-        run_out["value"] = np.mean(list(run_out["value_heads"].values()), 0)
         run_out["learning_rate"] = 0.0
         if self.use_recurrent:
             run_out["memory_out"] = ModelUtils.to_numpy(memories).squeeze(0)
