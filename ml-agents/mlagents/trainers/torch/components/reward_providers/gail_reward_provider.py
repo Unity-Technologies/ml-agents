@@ -8,7 +8,9 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 )
 from mlagents.trainers.settings import GAILSettings
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction
+from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_flattener import ActionFlattener
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import linear_layer, Initialization
 from mlagents.trainers.settings import NetworkSettings, EncoderType
@@ -76,7 +78,7 @@ class DiscriminatorNetwork(torch.nn.Module):
             vis_encode_type=EncoderType.SIMPLE,
             memory=None,
         )
-        self._action_flattener = ModelUtils.ActionFlattener(specs.action_spec)
+        self._action_flattener = ActionFlattener(specs.action_spec)
         unencoded_size = (
             self._action_flattener.flattened_size + 1 if settings.use_actions else 0
         )  # +1 is for dones

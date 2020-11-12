@@ -47,9 +47,7 @@ def test_simple_ppo(action_sizes):
 
 @pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
 def test_2d_ppo(action_sizes):
-    env = SimpleEnvironment(
-        [BRAIN_NAME], action_sizes=action_sizes, action_size=2, step_size=0.8
-    )
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
     new_hyperparams = attr.evolve(
         PPO_TORCH_CONFIG.hyperparameters, batch_size=64, buffer_size=640
     )
@@ -135,9 +133,7 @@ def test_simple_sac(action_sizes):
 
 @pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
 def test_2d_sac(action_sizes):
-    env = SimpleEnvironment(
-        [BRAIN_NAME], action_sizes=action_sizes, action_size=2, step_size=0.8
-    )
+    env = SimpleEnvironment([BRAIN_NAME], action_sizes=action_sizes, step_size=0.8)
     new_hyperparams = attr.evolve(
         SAC_TORCH_CONFIG.hyperparameters, buffer_init_steps=2000
     )

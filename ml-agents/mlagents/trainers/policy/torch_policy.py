@@ -17,7 +17,9 @@ from mlagents.trainers.torch.networks import (
     GlobalSteps,
 )
 
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
 

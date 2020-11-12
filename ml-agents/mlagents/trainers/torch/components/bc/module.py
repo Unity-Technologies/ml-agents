@@ -5,7 +5,9 @@ from mlagents.torch_utils import torch
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.demo_loader import demo_to_buffer
 from mlagents.trainers.settings import BehavioralCloningSettings, ScheduleType
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
 
 
 class BCModule:

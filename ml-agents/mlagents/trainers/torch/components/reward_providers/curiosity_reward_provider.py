@@ -9,7 +9,9 @@ from mlagents.trainers.torch.components.reward_providers.base_reward_provider im
 from mlagents.trainers.settings import CuriositySettings
 
 from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_flattener import ActionFlattener
+from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.networks import NetworkBody
 from mlagents.trainers.torch.layers import LinearEncoder, linear_layer
 from mlagents.trainers.settings import NetworkSettings, EncoderType
@@ -78,7 +80,7 @@ class CuriosityNetwork(torch.nn.Module):
             specs.observation_shapes, state_encoder_settings
         )
 
-        self._action_flattener = ModelUtils.ActionFlattener(self._action_spec)
+        self._action_flattener = ActionFlattener(self._action_spec)
 
         self.inverse_model_action_encoding = torch.nn.Sequential(
             LinearEncoder(2 * settings.encoding_size, 1, 256)

@@ -5,8 +5,10 @@ from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.torch.action_model import ActionModel
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.utils import ModelUtils, AgentAction, ActionLogProbs
+from mlagents.trainers.torch.utils import ModelUtils
 from mlagents.trainers.torch.decoders import ValueHeads
 from mlagents.trainers.torch.layers import LSTM, LinearEncoder
 from mlagents.trainers.torch.model_serialization import exporting_to_onnx

@@ -6,8 +6,8 @@ from mlagents.trainers.torch.distributions import (
     GaussianDistribution,
     MultiCategoricalDistribution,
 )
-
-from mlagents.trainers.torch.utils import AgentAction, ActionLogProbs
+from mlagents.trainers.torch.agent_action import AgentAction
+from mlagents.trainers.torch.action_log_probs import ActionLogProbs
 from mlagents_envs.base_env import ActionSpec
 
 EPSILON = 1e-7  # Small value to avoid divide by zero
