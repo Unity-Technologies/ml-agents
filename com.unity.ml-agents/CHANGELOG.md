@@ -20,6 +20,7 @@ and this project adheres to
 if they are called recursively (for example, if they call `Agent.EndEpisode()`).
 Previously, this would result in an infinite loop and cause the editor to hang. (#4638)
 - Fixed a bug where accessing the Academy outside of play mode would cause the Academy to get stepped multiple times when in play mode. (#4637)
+- Update Barracuda to 1.0.3. (#4644)
 
 ## [1.0.5] - 2020-09-23
 ### Minor Changes
