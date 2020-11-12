@@ -253,11 +253,15 @@ class ActionTuple:
     respectively.
     """
 
-    def __init__(self, continuous: np.ndarray, discrete: np.ndarray):
-        if continuous.dtype != np.float32:
+    def __init__(
+        self,
+        continuous: Optional[np.ndarray] = None,
+        discrete: Optional[np.ndarray] = None,
+    ):
+        if continuous is not None and continuous.dtype != np.float32:
             continuous = continuous.astype(np.float32, copy=False)
         self._continuous = continuous
-        if discrete.dtype != np.int32:
+        if discrete is not None and discrete.dtype != np.int32:
             discrete = discrete.astype(np.int32, copy=False)
         self._discrete = discrete
 
@@ -332,7 +336,7 @@ class ActionSpec(NamedTuple):
         continuous = np.random.uniform(
             low=-1.0, high=1.0, size=(n_agents, self.continuous_size)
         )
-        discrete = np.array([])
+        discrete = np.zeros((n_agents, self.discrete_size), dtype=np.int32)
         if self.discrete_size > 0:
             discrete = np.column_stack(
                 [
@@ -355,14 +359,14 @@ class ActionSpec(NamedTuple):
         for the correct number of agents and ensures the type.
         """
         _expected_shape = (n_agents, self.continuous_size)
-        if actions.continuous.shape != _expected_shape:
+        if self.continuous_size > 0 and actions.continuous.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a continuous input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "
                 f"received input of dimension {actions.continuous.shape}"
             )
         _expected_shape = (n_agents, self.discrete_size)
-        if actions.discrete.shape != _expected_shape:
+        if self.discrete_size > 0 and actions.discrete.shape != _expected_shape:
             raise UnityActionException(
                 f"The behavior {name} needs a discrete input of dimension "
                 f"{_expected_shape} for (<number of agents>, <action size>) but "

@@ -177,12 +177,11 @@ class TorchPolicy(Policy):
             action, log_probs, entropy, value_heads, memories = self.sample_actions(
                 vec_obs, vis_obs, masks=masks, memories=memories
             )
-        run_out["action"] = action.to_numpy_dict()
+        action_dict = action.to_numpy_dict()
+        run_out["action"] = action_dict
         run_out["pre_action"] = (
-            action.to_numpy_dict()["continuous_action"]
-            if self.action_spec.continuous_size > 0
-            else None
-        )  # Todo - make pre_action difference
+            action_dict["continuous_action"] if self.use_continuous_act else None
+        )
         run_out["log_probs"] = log_probs.to_numpy_dict()
         run_out["entropy"] = ModelUtils.to_numpy(entropy)
         run_out["value_heads"] = {

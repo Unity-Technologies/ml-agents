@@ -24,7 +24,7 @@ class AgentAction(NamedTuple):
     """
 
     continuous_tensor: torch.Tensor
-    discrete_list: List[torch.Tensor]
+    discrete_list: Optional[List[torch.Tensor]]
 
     @property
     def discrete_tensor(self):
@@ -84,7 +84,7 @@ class ActionLogProbs(NamedTuple):
     """
 
     continuous_tensor: torch.Tensor
-    discrete_list: List[torch.Tensor]
+    discrete_list: Optional[List[torch.Tensor]]
     all_discrete_list: Optional[List[torch.Tensor]]
 
     @property
