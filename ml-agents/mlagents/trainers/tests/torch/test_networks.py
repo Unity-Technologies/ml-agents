@@ -124,52 +124,6 @@ def test_valuenetwork():
             assert _out[0] == pytest.approx(1.0, abs=0.1)
 
 
-@pytest.mark.parametrize("use_discrete", [True, False])
-def test_simple_actor(use_discrete):
-    obs_size = 4
-    network_settings = NetworkSettings()
-    obs_shapes = [(obs_size,)]
-    act_size = [2]
-    if use_discrete:
-        masks = torch.ones((1, 1))
-        action_spec = ActionSpec.create_discrete(tuple(act_size))
-    else:
-        masks = None
-        action_spec = ActionSpec.create_continuous(act_size[0])
-    actor = SimpleActor(obs_shapes, network_settings, action_spec)
-    # Test get_dist
-    sample_obs = torch.ones((1, obs_size))
-    dists, _ = actor.get_dists([sample_obs], [], masks=masks)
-    for dist in dists:
-        if use_discrete:
-            assert isinstance(dist, CategoricalDistInstance)
-        else:
-            assert isinstance(dist, GaussianDistInstance)
-
-    # Test sample_actions
-    actions = actor.sample_action(dists)
-    for act in actions:
-        if use_discrete:
-            assert act.shape == (1, 1)
-        else:
-            assert act.shape == (1, act_size[0])
-
-    # Test forward
-    actions, ver_num, mem_size, is_cont, act_size_vec = actor.forward(
-        [sample_obs], [], masks=masks
-    )
-    for act in actions:
-        # This is different from above for ONNX export
-        if use_discrete:
-            assert act.shape == tuple(act_size)
-        else:
-            assert act.shape == (act_size[0], 1)
-
-    assert mem_size == 0
-    assert is_cont == int(not use_discrete)
-    assert act_size_vec == torch.tensor(act_size)
-
-
 @pytest.mark.parametrize("ac_type", [SharedActorCritic, SeparateActorCritic])
 @pytest.mark.parametrize("lstm", [True, False])
 def test_actor_critic(ac_type, lstm):

@@ -222,7 +222,7 @@ def test_simple_sac(action_sizes):
     _check_environment_trains(env, {BRAIN_NAME: config})
 
 
-@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+@pytest.mark.parametrize("action_sizes", [(0, 2), (2, 0)])
 def test_2d_sac(action_sizes):
     env = SimpleEnvironment(
         [BRAIN_NAME], action_sizes=action_sizes, action_size=2, step_size=0.8

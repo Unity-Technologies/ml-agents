@@ -47,7 +47,7 @@ class ActionModel(nn.Module):
 
     def _sample_action(self, dists: DistInstances) -> AgentAction:
         """
-        Samples actions from list of distribution instances
+        Samples actions from a DistInstances tuple
         """
         continuous_action: Optional[torch.Tensor] = None
         discrete_action: Optional[List[torch.Tensor]] = None
