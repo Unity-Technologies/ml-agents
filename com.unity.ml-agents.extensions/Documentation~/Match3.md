@@ -1,7 +1,9 @@
-# Match-3 Game Support
+# Example Match-3 with ML-Agents
 
+<img src="images/match3.png" align="center" width="3000"/>
+
+## Overview
 We provide some utilities to integrate ML-Agents with Match-3 games.
-<img src="images/match3.png" align="middle" width="3000"/>
 
 ## AbstractBoard class
 The `AbstractBoard` is the bridge between ML-Agents and your game. It allows ML-Agents to
