@@ -149,8 +149,8 @@ class EnvManager(ABC):
 
     @staticmethod
     def action_tuple_from_numpy_dict(action_dict: Dict[str, np.ndarray]) -> ActionTuple:
-        continuous: np.ndarray = np.array([], dtype=np.float32)
-        discrete: np.ndarray = np.array([], dtype=np.int32)
+        continuous: np.ndarray = None
+        discrete: np.ndarray = None
         if "continuous_action" in action_dict:
             continuous = action_dict["continuous_action"]
         if "discrete_action" in action_dict:
