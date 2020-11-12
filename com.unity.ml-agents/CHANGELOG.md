@@ -12,6 +12,7 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - Update documentation with recommended version of Python trainer. (#4535)
 - Log a warning if a version of the Python trainer is used that is newer than expected. (#4535)
+- Update Barracuda to 1.0.4. (#4644)
 
 ### Bug Fixes
 #### com.unity.ml-agents (C#)
