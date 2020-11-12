@@ -45,7 +45,13 @@ def linear_layer(
     :param bias_init: The Initialization to use for the weights of the bias layer
     """
     layer = torch.nn.Linear(input_size, output_size)
-    _init_methods[kernel_init](layer.weight.data)
+    if (
+        kernel_init == Initialization.KaimingHeNormal
+        or kernel_init == Initialization.KaimingHeUniform
+    ):
+        _init_methods[kernel_init](layer.weight.data, nonlinearity="linear")
+    else:
+        _init_methods[kernel_init](layer.weight.data)
     layer.weight.data *= kernel_gain
     _init_methods[bias_init](layer.bias.data)
     return layer
@@ -120,7 +126,7 @@ class LinearEncoder(torch.nn.Module):
                 input_size,
                 hidden_size,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.707,  # Equivalent to TF gain = 1
+                kernel_gain=1,
             )
         ]
         self.layers.append(Swish())
@@ -130,7 +136,7 @@ class LinearEncoder(torch.nn.Module):
                     hidden_size,
                     hidden_size,
                     kernel_init=Initialization.KaimingHeNormal,
-                    kernel_gain=0.707,
+                    kernel_gain=1,
                 )
             )
             self.layers.append(Swish())
