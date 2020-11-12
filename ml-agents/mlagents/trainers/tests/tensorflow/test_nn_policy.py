@@ -265,5 +265,25 @@ def test_min_visual_size():
                 enc_func(vis_input, 32, ModelUtils.swish, 1, "test", False)
 
 
+def test_step_overflow():
+    behavior_spec = mb.setup_test_behavior_specs(
+        use_discrete=True, use_visual=False, vector_action_space=[2], vector_obs_space=1
+    )
+
+    policy = TFPolicy(
+        0,
+        behavior_spec,
+        TrainerSettings(network_settings=NetworkSettings(normalize=True)),
+        create_tf_graph=False,
+    )
+    policy.create_input_placeholders()
+    policy.initialize()
+
+    policy.set_step(2 ** 31 - 1)
+    assert policy.get_current_step() == 2 ** 31 - 1
+    policy.increment_step(3)
+    assert policy.get_current_step() == 2 ** 31 + 2
+
+
 if __name__ == "__main__":
     pytest.main()
