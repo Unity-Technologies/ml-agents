@@ -1,6 +1,6 @@
 from mlagents.torch_utils import torch
 import abc
-from typing import Tuple
+from typing import Tuple, List
 from enum import Enum
 
 
@@ -184,6 +184,18 @@ class LSTM(MemoryModule):
 
 
 class MultiHeadAttention(torch.nn.Module):
+    """
+    Multi Head Attention module. We do not use the regular Torch implementation since
+    Barracuda does not support some operators it uses.
+    Takes as input to the forward method 3 tensors:
+     - query: of dimensions (batch_size, number_of_queries, key_size)
+     - key: of dimensions (batch_size, number_of_keys, key_size)
+     - value: of dimensions (batch_size, number_of_keys, value_size)
+    The forward method will return 2 tensors:
+     - The output: (batch_size, number_of_queries, output_size)
+     - The attention matrix: (batch_size, num_heads, number_of_queries, number_of_keys)
+    """
+
     NEG_INF = -1e6
 
     def __init__(
@@ -254,3 +266,66 @@ class MultiHeadAttention(torch.nn.Module):
 
         out = self.fc_out(value_attention)  # (b, n_q, emb)
         return out, att
+
+
+class SimpleTransformer(torch.nn.Module):
+    """
+    A simple architecture inspired from https://arxiv.org/pdf/1909.07528.pdf that uses
+    multi head self attention to encode information about a "Self" and a list of
+    relevant "Entities".
+    """
+
+    EPISLON = 1e-7
+
+    def __init__(
+        self, x_self_size: int, entities_sizes: List[int], embedding_size: int
+    ):
+        super().__init__()
+        self.self_size = x_self_size
+        self.entities_sizes = entities_sizes
+        self.ent_encoders = torch.nn.ModuleList(
+            [
+                LinearEncoder(self.self_size + ent_size, 1, embedding_size)
+                for ent_size in self.entities_sizes
+            ]
+        )
+        self.attention = MultiHeadAttention(
+            query_size=embedding_size,
+            key_size=embedding_size,
+            value_size=embedding_size,
+            output_size=embedding_size,
+            num_heads=4,
+            embedding_size=embedding_size,
+        )
+        self.residual_layer = LinearEncoder(embedding_size, 1, embedding_size)
+
+    def forward(self, x_self: torch.Tensor, entities: List[torch.Tensor]):
+        # Generate the masking tensors for each entities tensor (mask only if all zeros)
+        key_masks: List[torch.Tensor] = [
+            (torch.sum(ent ** 2, axis=2) < 0.01).type(torch.FloatTensor)
+            for ent in entities
+        ]
+        # Concatenate all observations with self
+        self_and_ent: List[torch.Tensor] = []
+        for ent_size, ent in zip(self.entities_sizes, entities):
+            num_entities = ent.shape[1]
+            expanded_self = x_self.reshape(-1, 1, self.self_size).repeat(
+                1, num_entities, 1
+            )
+            self_and_ent.append(torch.cat([expanded_self, ent], dim=2))
+        # Generate the tensor that will serve as query, key and value to self attention
+        qkv = torch.cat(
+            [ent_encoder(x) for ent_encoder, x in zip(self.ent_encoders, self_and_ent)],
+            dim=1,
+        )
+        mask = torch.cat(key_masks, dim=1)
+        # Feed to self attention
+        output, _ = self.attention(qkv, qkv, qkv, mask)
+        # Residual
+        output = self.residual_layer(output) + qkv
+        # Average Pooling
+        max_num_ent = qkv.shape[1]
+        numerator = torch.sum(output * (1 - mask).reshape(-1, max_num_ent, 1), dim=1)
+        denominator = torch.sum(1 - mask, dim=1, keepdim=True) + self.EPISLON
+        output = numerator / denominator
+        return output

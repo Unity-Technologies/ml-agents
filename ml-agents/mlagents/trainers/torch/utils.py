@@ -188,22 +188,10 @@ class ModelUtils:
         # Total output size for all inputs + CNNs
         total_processed_size = vector_size + visual_output_size
 
-        # HardCoded
-        max_observables, observable_size, output_size = (20, 4, 64)
-        attention = MultiHeadAttention(
-            query_size=output_size,
-            key_size=output_size,
-            value_size=output_size,
-            output_size=output_size,
-            num_heads=4,
-            embedding_size=64,
-        )
-
         return (
             nn.ModuleList(visual_encoders),
             nn.ModuleList(vector_encoders),
-            attention,
-            output_size,  # total_processed_size + output_size,
+            total_processed_size,
         )
 
     @staticmethod
