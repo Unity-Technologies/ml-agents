@@ -1,11 +1,25 @@
-# Example Match-3 with ML-Agents
+# Match-3 with ML-Agents
 
 <img src="images/match3.png" align="center" width="3000"/>
 
 ## Overview
-We provide some utilities to integrate ML-Agents with Match-3 games.
+One of the main feedback we get is for us on the team to illustrate more real game examples using ML-Agents. We are excited to provide an example implementation of Match-3 using ML-Agents and additional utilities to integrate ML-Agents with Match-3 games.
 
-## AbstractBoard class
+Our aim is to enable Match-3 teams to create intelligent player bots using deep learning in order for these player bots to test and play different Match-3 levels. This implementation is intended as a starting point and guide for teams to get started (as there are many nuances with Match-3 for training ML-Agents) and for us to iterate both on the C#, hyperparameters, and trainers to improve Match-3 for ML-Agents.
+
+This implementation includes:
+
+* C# implementation catered toward a Match-3 setup including concepts around encoding for moves in [Human Like Playtesting with Deep Learning](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)
+* An example Match-3 scene with ML-Agents implemented (located under /Project/Assets/ML-Agents/Examples/match3)
+* Python training code for training a Match-3 agent
+
+If you are a Match-3 developer and are trying to leverage ML-Agents to 
+
+## Getting started
+
+## Technical specifications
+
+### AbstractBoard class
 The `AbstractBoard` is the bridge between ML-Agents and your game. It allows ML-Agents to
 * ask your game what the "color" of a cell is
 * ask whether the cell is a "special" piece type or not
@@ -16,27 +30,27 @@ These are handled by implementing the `GetCellType()`, `IsMoveValid()`, and `Mak
 
 The AbstractBoard also tracks the number of rows, columns, and potential piece types that the board can have.
 
-#### `public abstract int GetCellType(int row, int col)`
+##### `public abstract int GetCellType(int row, int col)`
 Returns the "color" of piece at the given row and column.
 This should be between 0 and NumCellTypes-1 (inclusive).
 The actual order of the values doesn't matter.
 
-#### `public abstract int GetSpecialType(int row, int col)`
+##### `public abstract int GetSpecialType(int row, int col)`
 Returns the special type of the piece at the given row and column.
 This should be between 0 and NumSpecialTypes (inclusive).
 The actual order of the values doesn't matter.
 
-#### `public abstract bool IsMoveValid(Move m)`
+##### `public abstract bool IsMoveValid(Move m)`
 Check whether the particular `Move` is valid for the game.
 The actual results will depend on the rules of the game, but we provide the `SimpleIsMoveValid()` method
 that handles basic match3 rules with no special or immovable pieces.
 
-#### `public abstract bool MakeMove(Move m)`
+##### `public abstract bool MakeMove(Move m)`
 Instruct the game to make the given move. Returns true if the move was made.
 Note that during training, a move that was marked as invalid may occasionally still be
 requested. If this happens, it is safe to do nothing and request another move.
 
-## Move struct
+### Move struct
 The Move struct encapsulates a swap of two adjacent cells. You can get the number of potential moves
 for a board of a given size with. `Move.NumPotentialMoves(NumRows, NumColumns)`. There are two helper
 functions to create a new `Move`:
@@ -45,7 +59,7 @@ iterate over all potential moves for the board by looping from 0 to `Move.NumPot
 * `public static Move FromPositionAndDirection(int row, int col, Direction dir, int maxRows, int maxCols)` creates
 a `Move` from a row, column, and direction (and board size).
 
-## `Match3Sensor` and `Match3SensorComponent` classes
+#### `Match3Sensor` and `Match3SensorComponent` classes
 The `Match3Sensor` generates observations about the state using the `AbstractBoard` interface. You can
 choose whether to use vector or "visual" observations; in theory, visual observations should perform
 better because they are 2-dimensional like the board, but we need to experiment more on this.
@@ -53,14 +67,14 @@ better because they are 2-dimensional like the board, but we need to experiment 
 A `Match3SensorComponent` generates a `Match3Sensor` at runtime, and should be added to the same GameObject
 as your `Agent` implementation. You do not need to write any additional code to use them.
 
-## `Match3Actuator` and `Match3ActuatorComponent` classes
+#### `Match3Actuator` and `Match3ActuatorComponent` classes
 The `Match3Actuator` converts actions from training or inference into a `Move` that is sent to` AbstractBoard.MakeMove()`
 It also checks `AbstractBoard.IsMoveValid` for each potential move and uses this to set the action mask for Agent.
 
 A `Match3ActuatorComponent` generates a `Match3Actuator` at runtime, and should be added to the same GameObject
 as your `Agent` implementation.  You do not need to write any additional code to use them.
 
-# Setting up match-3 simulation
+## Setting up Match-3 simulation
 * Implement the `AbstractBoard` methods to integrate with your game.
 * Give the `Agent` rewards when it does what you want it to (match multiple pieces in a row, clears pieces of a certain
 type, etc).
