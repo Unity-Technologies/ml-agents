@@ -52,13 +52,7 @@ class SimpleEnvironment(BaseEnv):
         self.vec_obs_size = vec_obs_size
         continuous_action_size, discrete_action_size = action_sizes
         discrete_tuple = tuple(2 for _ in range(discrete_action_size))
-        if continuous_action_size > 0:
-            if discrete_action_size > 0:
-                action_spec = ActionSpec(continuous_action_size, discrete_tuple)
-            else:
-                action_spec = ActionSpec.create_continuous(continuous_action_size)
-        else:
-            action_spec = ActionSpec.create_discrete(discrete_tuple)
+        action_spec = ActionSpec(continuous_action_size, discrete_tuple)
         self.total_action_size = (
             continuous_action_size + discrete_action_size
         )  # to set the goals/positions
