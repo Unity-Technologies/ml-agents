@@ -3,21 +3,26 @@
 <img src="images/match3.png" align="center" width="3000"/>
 
 ## Overview
-One of the main feedback we get is for us on the team to illustrate more real game examples using ML-Agents. We are excited to provide an example implementation of Match-3 using ML-Agents and additional utilities to integrate ML-Agents with Match-3 games.
+One of the main feedback we get is to illustrate more real game examples using ML-Agents. We are excited to provide an example implementation of Match-3 using ML-Agents and additional utilities to integrate ML-Agents with Match-3 games.
 
-Our aim is to enable Match-3 teams to create intelligent player bots using deep learning in order for these player bots to test and play different Match-3 levels. This implementation is intended as a starting point and guide for teams to get started (as there are many nuances with Match-3 for training ML-Agents) and for us to iterate both on the C#, hyperparameters, and trainers to improve Match-3 for ML-Agents.
+Our aim is to enable Match-3 teams to leverage ML-Agents to create player agents to learn and play different Match-3 levels. This implementation is intended as a starting point and guide for teams to get started (as there are many nuances with Match-3 for training ML-Agents) and for us to iterate both on the C#, hyperparameters, and trainers to improve ML-Agents for Match-3.
 
 This implementation includes:
 
 * C# implementation catered toward a Match-3 setup including concepts around encoding for moves in [Human Like Playtesting with Deep Learning](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)
 * An example Match-3 scene with ML-Agents implemented (located under /Project/Assets/ML-Agents/Examples/match3)
-* Python training code for training a Match-3 agent
 
-If you are a Match-3 developer and are trying to leverage ML-Agents to 
+If you are a Match-3 developer and are trying to leverage ML-Agents for this scenario, [we want to hear from you](LINK TO GOOGLE FORM). Additionally, we are also looking for interested Match-3 teams to speak with us for 45 minutes. If you are interested, please indicate that in the [form](LINK TO FORM).  If selected, we will provide gift cards as a token of appreciation.
+
+## Interested in more game templates?
+Do you have a type of game you are interested for ML-Agents?  If so, please post a [forum issue](https://forum.unity.com/forums/ml-agents.453/) with [GAME TEMPLATE] in the title.
 
 ## Getting started
+The C# code for Match-3 exists inside of the extensions package (com.unity.ml-agents.extensions).  A good first step would be to familiarize with the extensions package by reading the document [here](com.unity.ml-agents.extensions.md).  The second step would be to take a look at how we have implemented the C# code in the example Match-3 scene (located under /Project/Assets/ML-Agents/Examples/match3).  Once you have some familiarity, then the next step would be to implement the C# code for Match-3 from the extensions package. 
 
-## Technical specifications
+Additionally, see below for additional technical specifications on the C# code for Match-3.
+
+## Technical specifications for Match-3 with ML-Agents
 
 ### AbstractBoard class
 The `AbstractBoard` is the bridge between ML-Agents and your game. It allows ML-Agents to
@@ -74,7 +79,7 @@ It also checks `AbstractBoard.IsMoveValid` for each potential move and uses this
 A `Match3ActuatorComponent` generates a `Match3Actuator` at runtime, and should be added to the same GameObject
 as your `Agent` implementation.  You do not need to write any additional code to use them.
 
-## Setting up Match-3 simulation
+### Setting up Match-3 simulation
 * Implement the `AbstractBoard` methods to integrate with your game.
 * Give the `Agent` rewards when it does what you want it to (match multiple pieces in a row, clears pieces of a certain
 type, etc).
