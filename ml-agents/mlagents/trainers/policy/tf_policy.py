@@ -79,7 +79,7 @@ class TFPolicy(Policy):
         )
         if self.action_spec.continuous_size > 0 and self.action_spec.discrete_size > 0:
             raise UnityPolicyException(
-                "Tensorflow does not support mixed action spaces. Please run with --torch."
+                "TensorFlow does not support mixed action spaces. Please run with the Torch framework."
             )
         # for ghost trainer save/load snapshots
         self.assign_phs: List[tf.Tensor] = []
