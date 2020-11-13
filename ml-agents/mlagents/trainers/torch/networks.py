@@ -488,7 +488,9 @@ class SeparateActorCritic(SimpleActor, ActorCritic):
 class GlobalSteps(nn.Module):
     def __init__(self):
         super().__init__()
-        self.__global_step = nn.Parameter(torch.Tensor([0]), requires_grad=False)
+        self.__global_step = nn.Parameter(
+            torch.Tensor([0]).to(torch.int64), requires_grad=False
+        )
 
     @property
     def current_step(self):
