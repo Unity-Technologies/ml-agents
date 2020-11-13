@@ -135,7 +135,7 @@ class GaussianDistribution(nn.Module):
             hidden_size,
             num_outputs,
             kernel_init=Initialization.KaimingHeNormal,
-            kernel_gain=0.2,
+            kernel_gain=0.5,
             bias_init=Initialization.Zero,
         )
         self.tanh_squash = tanh_squash
@@ -144,7 +144,7 @@ class GaussianDistribution(nn.Module):
                 hidden_size,
                 num_outputs,
                 kernel_init=Initialization.KaimingHeNormal,
-                kernel_gain=0.2,
+                kernel_gain=0.5,
                 bias_init=Initialization.Zero,
             )
         else:
