@@ -50,9 +50,11 @@ namespace MLAgents
         public float agentFallingSpeed = 50f;
 
         public Camera cam;
-        private Vector3 lookDir;
+        private float lookDir;
         private Rigidbody rb;
         private AgentCubeGroundCheck groundCheck;
+        private float inputH;
+        private float inputV;
         void Awake()
         {
             rb = GetComponent<Rigidbody>();
@@ -65,12 +67,36 @@ namespace MLAgents
             var camForward = cam.transform.forward;
             camForward.y = 0;
             var camRight = cam.transform.right;
-            lookDir = Vector3.zero;
-            lookDir += Input.GetKey(KeyCode.D) ? Vector3.right : Vector3.zero;
-            lookDir += Input.GetKey(KeyCode.W) ? Vector3.forward : Vector3.zero;
-            lookDir += Input.GetKey(KeyCode.A) ? Vector3.left : Vector3.zero;
-            lookDir += Input.GetKey(KeyCode.S) ? Vector3.back : Vector3.zero;
+            //            lookDir = Vector3.zero;
+            //            lookDir += Input.GetKey(KeyCode.W) ? Vector3.forward : Vector3.zero;
+            //            lookDir += Input.GetKey(KeyCode.S) ? Vector3.back : Vector3.zero;
+            //            lookDir += Input.GetKey(KeyCode.D) ? Vector3.right : Vector3.zero;
+            //            lookDir += Input.GetKey(KeyCode.A) ? Vector3.left : Vector3.zero;
 
+            //BODY ROTATION
+            lookDir = Input.GetAxis("Horizontal");
+
+            //FORWARD MOVEMENT
+            inputV = Input.GetAxis("Vertical");
+
+            //LATERAL MOVEMENT
+            inputH = 0;
+            inputH += Input.GetKey(KeyCode.Q) ? -1 : 0;
+            inputH += Input.GetKey(KeyCode.E) ? 1 : 0;
+
+            //            lookDir = Input.GetKey(KeyCode.A)?
+            //            var moveLateral = Vector3.zero;
+            //            //FORWARD MOVEMENT
+            //            moveforward += Input.GetKey(KeyCode.W) ? Vector3.forward : Vector3.zero;
+            //            moveforward += Input.GetKey(KeyCode.S) ? Vector3.back : Vector3.zero;
+            //
+            //            //LATERAL MOVEMENT
+            //            moveLateral += Input.GetKey(KeyCode.Q) ? Vector3.right : Vector3.zero;
+            //            moveLateral += Input.GetKey(KeyCode.E) ? Vector3.left : Vector3.zero;
+            //
+            //            //BODY ROTATION
+            //            lookDir += Input.GetKey(KeyCode.D) ? Vector3.right : Vector3.zero;
+            //            lookDir += Input.GetKey(KeyCode.A) ? Vector3.left : Vector3.zero;
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -88,8 +114,6 @@ namespace MLAgents
             }
 
             spinAttack = Input.GetKey(KeyCode.H);
-
-
             dashPressed = Input.GetKeyDown(KeyCode.K);
             if (dashPressed)
             {
@@ -123,39 +147,65 @@ namespace MLAgents
                 //                rb.AddTorque(Vector3.up * spinAttackSpeed);
                 rb.angularVelocity = Vector3.up * spinAttackSpeed;
             }
-            if (lookDir != Vector3.zero)
+
+            var allMoveInput = inputH + inputV;
+            if (allMoveInput != 0)
             {
-                //                var camRotDir = lookDir;
-                //                camRotDir.z = Mathf.Clamp01(camRotDir.z);
-                //                var rot = quaternion.LookRotation(camRotDir, Vector3.up);
 
+                var dir = cam.transform.TransformDirection(new Vector3(inputH, 0, inputV));
+                //                dir.y = 0;
+                //HANDLE WALKING
+                if (groundCheck.isGrounded)
+                {
+                    RunOnGround(rb, dir.normalized);
+                }
 
-                var dir = cam.transform.TransformDirection(lookDir);
-                dir.y = 0;
-                var rot = quaternion.LookRotation(dir, Vector3.up);
+            }
+
+            if (lookDir != 0)
+            {
                 if (!spinAttack)
                 {
-                    rb.rotation = Quaternion.Lerp(rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
+                    var rot = rb.rotation * Quaternion.Euler(0, lookDir * agentRotationSpeed * Time.fixedDeltaTime, 0);
+                    rb.MoveRotation(rot);
+                    //                    rb.rotation *= Quaternion.AngleAxis(); rb.rotation * Quaternion. (rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
                 }
-                //                RunOnGround(rb, dir.normalized);
-                //                var dirToGo = rb.transform.forward;
-                var dirToGo = dir;
-                //                RunOnGround(rb, dirToGo);
-                if (!groundCheck.isGrounded)
-                {
-                    //                    RunInAir(rb, dirToGo.normalized);
-                }
-                else
-                {
-                    //                    var forwardMovement = lookDir;
-                    ////                    forwardMovement.x = 0; //
-                    //                    var walkDir = cam.transform.TransformDirection(forwardMovement);
-                    //                    RunOnGround(rb, walkDir.normalized);
 
-                    RunOnGround(rb, dirToGo.normalized);
-                }
-                //                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(agentRotationSpeed, rotationAxis));
             }
+
+            //            if (lookDir != Vector3.zero)
+            //            {
+            //                //                var camRotDir = lookDir;
+            //                //                camRotDir.z = Mathf.Clamp01(camRotDir.z);
+            //                //                var rot = quaternion.LookRotation(camRotDir, Vector3.up);
+            //
+            //
+            //                var dir = cam.transform.TransformDirection(lookDir);
+            //                dir.y = 0;
+            //                var rot = quaternion.LookRotation(dir, Vector3.up);
+            //                if (!spinAttack)
+            //                {
+            //                    rb.rotation = Quaternion.Lerp(rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
+            //                }
+            //                //                RunOnGround(rb, dir.normalized);
+            //                //                var dirToGo = rb.transform.forward;
+            //                var dirToGo = dir;
+            //                //                RunOnGround(rb, dirToGo);
+            //                if (!groundCheck.isGrounded)
+            //                {
+            //                    //                    RunInAir(rb, dirToGo.normalized);
+            //                }
+            //                else
+            //                {
+            //                    //                    var forwardMovement = lookDir;
+            //                    ////                    forwardMovement.x = 0; //
+            //                    //                    var walkDir = cam.transform.TransformDirection(forwardMovement);
+            //                    //                    RunOnGround(rb, walkDir.normalized);
+            //
+            //                    RunOnGround(rb, dirToGo.normalized);
+            //                }
+            //                //                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(agentRotationSpeed, rotationAxis));
+            //            }
             else //is idle
             {
                 if (groundCheck && groundCheck.isGrounded && !dashPressed)
@@ -171,6 +221,69 @@ namespace MLAgents
 
 
         }
+        //        void FixedUpdate()
+        //        {
+        //            if (spinAttack)
+        //            {
+        //                //                rb.AddTorque(Vector3.up * spinAttackSpeed);
+        //                rb.angularVelocity = Vector3.up * spinAttackSpeed;
+        //            }
+        //
+        //            //HANDLE WALKING
+        //            if (groundCheck.isGrounded)
+        //            {
+        //                RunOnGround(rb, dirToGo.normalized);
+        //            }
+        //
+        //
+        //            if (lookDir != Vector3.zero)
+        //            {
+        //                //                var camRotDir = lookDir;
+        //                //                camRotDir.z = Mathf.Clamp01(camRotDir.z);
+        //                //                var rot = quaternion.LookRotation(camRotDir, Vector3.up);
+        //
+        //
+        //                var dir = cam.transform.TransformDirection(lookDir);
+        //                dir.y = 0;
+        //                var rot = quaternion.LookRotation(dir, Vector3.up);
+        //                if (!spinAttack)
+        //                {
+        //                    rb.rotation = Quaternion.Lerp(rb.rotation, rot, agentRotationSpeed * Time.fixedDeltaTime);
+        //                }
+        //                //                RunOnGround(rb, dir.normalized);
+        //                //                var dirToGo = rb.transform.forward;
+        //                var dirToGo = dir;
+        //                //                RunOnGround(rb, dirToGo);
+        //                if (!groundCheck.isGrounded)
+        //                {
+        //                    //                    RunInAir(rb, dirToGo.normalized);
+        //                }
+        //                else
+        //                {
+        //                    //                    var forwardMovement = lookDir;
+        //                    ////                    forwardMovement.x = 0; //
+        //                    //                    var walkDir = cam.transform.TransformDirection(forwardMovement);
+        //                    //                    RunOnGround(rb, walkDir.normalized);
+        //
+        //                    RunOnGround(rb, dirToGo.normalized);
+        //                }
+        //                //                rb.MoveRotation(rb.rotation * Quaternion.AngleAxis(agentRotationSpeed, rotationAxis));
+        //            }
+        //            else //is idle
+        //            {
+        //                if (groundCheck && groundCheck.isGrounded && !dashPressed)
+        //                {
+        //                    AddIdleDrag(rb);
+        //                }
+        //            }
+        //
+        //            if (groundCheck && !groundCheck.isGrounded)
+        //            {
+        //                AddFallingForce(rb);
+        //            }
+        //
+        //
+        //        }
 
         public void Jump(Rigidbody rb)
         {
