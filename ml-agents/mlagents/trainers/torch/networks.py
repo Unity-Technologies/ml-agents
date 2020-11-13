@@ -241,13 +241,12 @@ class SimpleActor(nn.Module, Actor):
             torch.Tensor([int(self.action_spec.continuous_size)]), requires_grad=False
         )
         self.discrete_act_size_vector = torch.nn.Parameter(
-            torch.Tensor([int(sum(self.action_spec.discrete_branches))]),
-            requires_grad=False,
+            torch.Tensor([sum(self.action_spec.discrete_branches)]), requires_grad=False
         )
         self.act_size_vector_deprecated = torch.nn.Parameter(
             torch.Tensor(
                 [
-                    int(self.action_spec.continuous_size)
+                    self.action_spec.continuous_size
                     + sum(self.action_spec.discrete_branches)
                 ]
             ),
